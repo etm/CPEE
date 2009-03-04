@@ -1,24 +1,24 @@
 require 'Wee'
-require 'MyHandler'
+require 'MyHandlerFactory'
 
 class Workflow < Wee
-  include MyHandler
-
-  search true, [:a2_1_1, :a2_2_4]
+  include MyHandlerFactory
+  
+  search true, [:a1_1]
   endpoint :endpoint1 => 'http://www.heise.de'
   endpoint :endpoint2 => 'http://www.orf.at'
-  context :x => '', :y => 0
-  endstatus :success # :stopped
+  context :x => 'a', :y => 0
+  endstatus :normal
 
   def execute
-    puts "=== Staring execution ==="
     activity :a1_1, :call, :endpoint1 do |result|
       @x = result;
     end
     activity :a1_2, :call, :endpoint1
     activity :a1_3, :manipulate do
-      @y = 1;
+      @y = "ab";
     end
+    context :z => 'neue Variable'
     parallel :wait do
       parallel_branch do
         activity :a2_1_1, :call, :endpoint1

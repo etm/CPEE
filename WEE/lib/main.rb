@@ -2,4 +2,9 @@ require 'logger'
 require 'Workflow'
 # $LOG = Logger.new('wee.log', 'monthly')  
 t = Workflow.new
-t.execute
+result = nil
+execution = Thread.new { result = t.execute }
+sleep(2)
+t.stop
+execution.join()
+puts "Ergebnis: #{result}"
