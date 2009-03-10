@@ -1,10 +1,11 @@
-require 'logger'  
+
+require 'logger'
 require 'Workflow'
-# $LOG = Logger.new('wee.log', 'monthly')  
+puts "========> Starting Workflow"
 t = Workflow.new
 result = nil
 execution = Thread.new { result = t.execute }
-sleep(2)
-t.stop
 execution.join()
-puts "Ergebnis: #{result}"
+puts "========> Ending-Result: #{result}"
+
+# t.instance_eval()

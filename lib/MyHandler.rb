@@ -5,22 +5,26 @@ class MyHandler
     @__myhandler_finished = false
     @__myhandler_returnValue = nil
   end
+
+  # executes a ws-call to the given endpoint with the given parameters 
   def handle_call(endpoint,*parameters)
-    # $LOG.debug('MyHandler.handle_call'){ "Calling [#{endpoint}] with parameters #{parameters.inspect}"}
-    Thread.new() {
-      sleep(0.5)
+    t = Thread.new() {
       if @__myhandler_stopped
-        $LOG.debug('MyHandler.handle_call'){ "Call interrupped"}
+        $LOG.debug('MyHandler.handle_call'){ "Recieved stop signal, aborting!"}
         return
       end
       @__myhandler_finished = true
-      @__myhandler_returnValue = 1
+      @__myhandler_returnValue = 'Handler_Dummy_Result'
     }
   end
-  
+ 
+  # returns true if the last handled call has finished processing, or the
+  # call runs independent (asynchronous call) 
   def finished_call
     return @__myhandler_finished
   end
+  
+  # returns the result of the last handled call
   def return_value
     if @__myhandler_finished
       return @__myhandler_returnValue
@@ -29,6 +33,11 @@ class MyHandler
     end
   end
   def stop_call()
+    $LOG.debug('MyHandler.stop_call'){ "Recieved stop signal, deciding if stopping"}
+    @__myhandler_stopped = true
+  end
+  def no_longer_necessary
+    $LOG.debug('MyHandler.stop_call'){ "Recieved no_longer_necessary signal, deciding if stopping"}
     @__myhandler_stopped = true
   end
     
