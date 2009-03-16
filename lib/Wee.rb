@@ -14,6 +14,7 @@ class Wee
       
       @search = @__wee_search
       @search_position = @__wee_search_positions
+      @stop_position = Array.new
       @__wee_threads = Array.new;
       @__wee_endstate = :normal
       $LOG = Logger.new(STDOUT) unless defined? $LOG
@@ -22,11 +23,11 @@ class Wee
   def self::search(wee_search,wee_search_positions=[])
     define_method :initialize_search do
       @__wee_search = wee_search
+      @__wee_search_positions = Hash.new
       if wee_search_positions.is_a?(Array)
-        @__wee_search_positions = wee_search_positions
+        wee_search_positions.each { |searchPos| @__wee_search_positions[searchPos.position] = searchPos }
       else
-        @__wee_search_positions = Array.new
-        @__wee_search_positions << wee_search_positions
+        @__wee_search_positions[wee_search_positions.position] = wee_search_positions
       end
     end
     wee_initialize
@@ -39,7 +40,7 @@ class Wee
     end
   end
   def self::context(variables)
-    # define method to get context
+    # define method to get context and set context variables
     define_method :context do |*optNew|
 
       if optNew.size == 1 && optNew[0].is_a?(Hash) # New Context Variable(s) are going to be defined
@@ -76,11 +77,10 @@ class Wee
   
   protected
     def position
-      
+      return @stop_position
     end
     def activity(position, type, endpoint=nil,*parameters, &block)
-      return if endstate == :stopped || is_in_search_mode(position)
-      return if Thread.current[:nolongernecessary]
+      return if is_in_search_mode(position) || endstate == :stopped || Thread.current[:nolongernecessary]
       
       handler = create_handler
       begin
@@ -90,10 +90,11 @@ class Wee
             refreshcontext
             handler.inform_activity_done position, context
           when :call
-            retValue = perform_external_call handler, endpoint, parameters
+            passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
+            retValue = perform_external_call position, passthrough, handler, endpoint, parameters
             yield(retValue) if block && endstate != :stopped && !Thread.current[:nolongernecessary]
             refreshcontext
-            handler.inform_activity_done position, context if endstate != :stopped || !Thread.current[:nolongernecessary]
+            handler.inform_activity_done position, context unless endstate == :stopped || Thread.current[:nolongernecessary]
         else
           raise "Invalid activity type #{type}. Only :manipulate or :call allowed"
         end
@@ -116,18 +117,14 @@ class Wee
         yield #(pid)
         mythreads = @__wee_threads.clone
       }
-      
-      
-      if type == :wait # Wait for each branch to join
-        mythreads.each { |thread| thread.join } 
-      else # wait until at least 1 thread(=branch) finished
-        allthreadsrunning = true 
-        while allthreadsrunning 
-          mythreads.each { |thread|  allthreadsrunning = false unless thread.alive?}
-          Thread.pass;
-        end
-        mythreads.each { |thread|  thread[:nolongernecessary] = true}
+      wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && type[:wait].is_a?(Integer)) ? wait_count = type[:wait] : mythreads.size
+      finished_threads_count = 0;
+      while(finished_threads_count < wait_count && finished_threads_count <= mythreads.size)
+        Thread.pass;
+        finished_threads_count = 0;
+        mythreads.each { |thread|  finished_threads_count+=1 unless thread.alive?}
       end
+      mythreads.each { |thread|  thread[:nolongernecessary] = true if thread.alive?}
     end
     # Defines a branch of a parallel-Construct
     def parallel_branch
@@ -149,12 +146,11 @@ class Wee
     # searchmode is active (to find the starting position)
     def alternative(condition = nil)
       if(condition == nil)
-        yield if Thread.current[:alternative_executed]
+        yield unless Thread.current[:alternative_executed]
       else
         yield if is_in_search_mode || condition
         Thread.current[:alternative_executed] = true if condition
       end
-      
     end
     
   private
@@ -163,38 +159,39 @@ class Wee
       semaphore = Mutex.new
       semaphore.synchronize { 
         branch = Thread.current;
-        if position && @search_position.member?(position) # matching searchposition => start execution from here
+        if position && get_matching_search_position(position) # matching searchposition => start execution from here
+          searchpos = get_matching_search_position(position)
           $LOG.debug("Wee.activity") {"position #{position} found, processing branch from here"}
+          $LOG.debug("Wee.activity") {"exactly: starting after this activity "} if searchpos.detail == :after
           branch[:branch_search] = false;
           @search = false;
+          return false if searchpos.detail == :at
+          return true if searchpos.detail == :after
         end
         if branch[:branch_search] || @search # is activity part of a branch and in search mode?
           $LOG.debug("Wee.activity") {"omitting #{position}, this branch is still in search mode"}
           return true;
         end
       }
-      return false;
     end
-    def perform_external_call(handler, endpoint, *parameters)
+    def perform_external_call(position, passthrough, handler, endpoint, *parameters)
       # handshake call and wait until it finisheds
-      handler.handle_call endpoint, parameters
+      handler.handle_call passthrough, endpoint, parameters
       Thread.pass until handler.finished_call() || endstate == :stopped || Thread.current[:nolongernecessary]
-
-      if Thread.current[:nolongernecessary]
-        handler.no_longer_necessary
-      end
-      unless endstate == :stopped
-        return handler.return_value
-      else
-        handler.stop_call
-        return nil;
-      end
-      
+       
+      handler.no_longer_necessary if Thread.current[:nolongernecessary]
+      handler.stop_call if endstate == :stopped
+      @stop_position << SearchPos.new(position, :at, handler.passthrough) if endstate == :stopped
+      return ((Thread.current[:nolongernecessary] || endstate == :stopped) ? nil : handler.return_value)
     end
     def refreshcontext()
       @__wee_context.each { |varname, value| 
         @__wee_context[varname] = instance_variable_get(varname)
       }
+    end
+    def get_matching_search_position(position)
+      return @search_position[position] if @search_position[position]
+      return nil
     end
     
   public
@@ -208,10 +205,10 @@ class Wee
 end
 
 class SearchPos
-  attr_accessor :position, :detail, :toggle
-  def initialize(position, detail=:at, toggle=nil)
+  attr_accessor :position, :detail, :passthrough
+  def initialize(position, detail=:at, passthrough=nil)
     @position = position
     @detail = detail
-    @toggle = toggle
+    @passthrough = passthrough
   end
 end
