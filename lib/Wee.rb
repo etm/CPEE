@@ -1,78 +1,91 @@
 require 'thread'
+require 'logger'
 
-class Wee
-  
+class Wee 
   def initialize
     # Attention (!!!), redefined, see wee_initialize
-    wee_initialize
+    ###### self::wee_initialize
   end
   def self::wee_initialize
     send :define_method, :initialize do
-      @__wee_context = Hash.new
       initialize_search if methods.include?('initialize_search')
       initialize_context if methods.include?('initialize_context')
-      
+      initialize_endstate if methods.include?('initialize_endstate')
       @search = @__wee_search
       @search_position = @__wee_search_positions
       @stop_position = Array.new
       @__wee_threads = Array.new;
-      @__wee_endstate = :normal
       $LOG = Logger.new(STDOUT) unless defined? $LOG
     end
   end
-  def self::search(wee_search,wee_search_positions=[])
-    define_method :initialize_search do
-      @__wee_search = wee_search
+  def self::search(wee_search)
+    define_method 'search=' do |new_wee_search|
       @__wee_search_positions = Hash.new
-      if wee_search_positions.is_a?(Array)
-        wee_search_positions.each { |searchPos| @__wee_search_positions[searchPos.position] = searchPos }
+      if new_wee_search.is_a?(Hash) && new_wee_search.size == 1
+          @__wee_search = new_wee_search.keys[0]
+          search_positions = new_wee_search[@__wee_search] ? new_wee_search[@__wee_search] : Array.new
+          search_positions.each { |search_position| @__wee_search_positions[search_position.position] = search_position } if search_positions.is_a?(Array)
+          @__wee_search_positions[search_positions.position] = search_positions if search_positions.is_a?(SearchPos)
       else
-        @__wee_search_positions[wee_search_positions.position] = wee_search_positions
+        @__wee_search = false
       end
     end
+    define_method :search do
+      return {@__wee_search => @__wee_search_positions}
+    end
+    define_method :initialize_search do self.search=wee_search end
     wee_initialize
   end
+
   def self::endpoint(endpoints)
     endpoints.each do |name,value|
       define_method name do
         return value
       end
+      define_method "#{name}=" do |new_value|
+        instance_variable_set("@#{name}", new_value)
+        instance_eval("def #{name}\n return @#{name}\n end")
+      end
+    end
+    define_method :endpoint do |new_endpoint|
+      new_endpoint.each do |name,value|
+        instance_variable_set("@#{name}", value)
+        instance_eval("def #{name}\n return @#{name}\n end")
+      end
     end
   end
+
   def self::context(variables)
-    # define method to get context and set context variables
-    define_method :context do |*optNew|
-
-      if optNew.size == 1 && optNew[0].is_a?(Hash) # New Context Variable(s) are going to be defined
-        optNew[0].each do |name, value|
-          instance_variable_set(("@" + name.to_s).to_sym,value)
-          @__wee_context[("@" + name.to_s).to_sym] = value
-        end
-      end 
-      return @__wee_context
-    end 
-
-    # translate context into instance variables
-    define_method :initialize_context do
-      unless @__wee_context
-        @__wee_context = Hash.new
-      end
-      variables.each do |name, value|
+    @@newVariables ||= Array.new
+    @@newVariables << variables
+    define_method 'context=' do |newContext|
+      @__wee_context ||= Hash.new
+      newContext.each do |name, value|
         instance_variable_set(("@" + name.to_s).to_sym,value)
         @__wee_context[("@" + name.to_s).to_sym] = value
       end
     end
+    define_method :context do |*optParam|
+      optParam.each{ |entry| self.context=entry}
+      return @__wee_context ? @__wee_context : Hash.new
+    end
+    define_method :initialize_context do
+      @@newVariables.each { |item|  self.context=item}
+    end
     wee_initialize
   end
+
   def self::endstate(state)
-    @__wee_endstate = state;
-    define_method :endstate do |*optState|
-      newState = *optState
-      if newState
-        @__wee_endstate = newState
-      end
-      return @__wee_endstate  
+    define_method 'endstate=' do |newState|
+      @__wee_endstate = newState
     end
+    define_method :endstate do
+      return @__wee_endstate
+    end
+    define_method :initialize_endstate do
+      self.endstate=state
+    end
+    wee_initialize
   end
   
   protected
@@ -176,7 +189,7 @@ class Wee
     end
     def perform_external_call(position, passthrough, handler, endpoint, *parameters)
       # handshake call and wait until it finisheds
-      handler.handle_call passthrough, endpoint, parameters
+      handler.handle_call position, passthrough, endpoint, parameters
       Thread.pass until handler.finished_call() || endstate == :stopped || Thread.current[:nolongernecessary]
        
       handler.no_longer_necessary if Thread.current[:nolongernecessary]
@@ -198,9 +211,6 @@ class Wee
     def stop()
       $LOG.debug('Wee.stop') {"Got Stop signal, ...."}
       @__wee_endstate = :stopped
-    end
-    def replace_execute(&block)
-      # instance_eval
     end
 end
 

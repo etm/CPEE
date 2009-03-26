@@ -1,5 +1,5 @@
 
-class MyHandler
+class WebHandler
   def initialize
     @__myhandler_stopped = false
     @__myhandler_finished = false
@@ -9,12 +9,20 @@ class MyHandler
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
   def handle_call(position, passthrough, endpoint,*parameters)
-    $LOG.debug('MyHandler.handle_call'){ "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]"}
+    $message += "Handle call: position=[#{position}] passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]. Waiting for release<BR/>"
     t = Thread.new() {
-      sleep(0.6)
-      if @__myhandler_stopped
-        $LOG.debug('MyHandler.handle_call'){ "Recieved stop signal, aborting!"}
-        return
+      released = false
+      until(released) do
+        if @__myhandler_stopped
+          $message += "handle_call: : Recieved stop signal, process is stoppable =>aborting!<BR/>"
+          return
+        end
+        if($released.include?("release #{position.to_s}"))
+          released = true
+          $released["release #{position.to_s}"]=""
+          $message += "Handler: Released: #{position}<BR/>"
+        end
+        Thread.pass
       end
       @__myhandler_finished = true
       @__myhandler_returnValue = 'Handler_Dummy_Result'
@@ -39,7 +47,7 @@ class MyHandler
   # with this situation is given to the handler. To provide the possibility
   # of a continue the Handler will be asked for a passthrough
   def stop_call()
-    $LOG.debug('MyHandler.stop_call'){ "Recieved stop signal, deciding if stopping"}
+    $message += "Handler: Recieved stop signal, deciding if stopping<BR/>"
     @__myhandler_stopped = true
   end
   # is called from Wee after stop_call to ask for a passthrough-value that may give
@@ -55,16 +63,16 @@ class MyHandler
   # At this stage, this is only the case if parallel branches are not needed
   # anymore to continue the workflow
   def no_longer_necessary
-    $LOG.debug('MyHandler.stop_call'){ "Recieved no_longer_necessary signal, deciding if stopping"}
+    $message += "Handler: Recieved no_longer_necessary signal, deciding if stopping<BR/>"
     @__myhandler_stopped = true
   end
   # Is called if a Activity is executed correctly
   def inform_activity_done(activity, context)
-    $LOG.info('MyHandler.inform_activity_done'){"Activity #{activity} done"}
+    $message += "Activity #{activity} done<BR/>"
   end
   # Is called if a Activity is executed with an error
   def inform_activity_failed(activity, context, err)
-    $LOG.error('MyHandler.inform_activity_failed'){"Activity #{activity} failed with error #{err}"}
+    $message += "Activity #{activity} failed with error #{err}<BR/>"
     raise(err)
   end
 end
