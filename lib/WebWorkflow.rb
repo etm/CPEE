@@ -17,12 +17,4 @@ class WebWorkflow < Wee
     end
     return [endstate, position, context]            # Return the ending environment
   end
-
-  def replace_execute(&block)
-    instance_eval() {
-      def execute
-        yield(block)
-      end
-    }
-  end
 end

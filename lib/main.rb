@@ -32,8 +32,27 @@ def show_stop_and_replace
   execution.join
   return result
 end
-
+def show_stop_and_replace
+  t = Workflow.new
+  result = nil
+  execution = Thread.new { result = t.execute }
+  t.stop
+  execution.join()
+  t.endstate = :normal
+  t.instance_eval do
+    def execute
+      activity :a1_1, :call, :endpoint1 do |result|    # Call an endpoint and use the result
+        @y = result;                                   # Alter a defined context variable
+        @x = "Successfull replaced the execution code"
+      end
+      return [endstate, position, context]
+    end
+  end
+  execution = Thread.new { result = t.execute }
+  execution.join
+  return result
+end
 
 puts "===================================================="
-result = show_stop
+result = show_stop_and_replace
 puts "========> Ending-Result: #{result.inspect}"

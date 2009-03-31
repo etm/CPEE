@@ -11,9 +11,8 @@ class MyHandler
   def handle_call(position, passthrough, endpoint,*parameters)
     $LOG.debug('MyHandler.handle_call'){ "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]"}
     t = Thread.new() {
-      sleep(0.6)
+#      sleep(0.6)
       if @__myhandler_stopped
-        $LOG.debug('MyHandler.handle_call'){ "Recieved stop signal, aborting!"}
         return
       end
       @__myhandler_finished = true
@@ -39,7 +38,7 @@ class MyHandler
   # with this situation is given to the handler. To provide the possibility
   # of a continue the Handler will be asked for a passthrough
   def stop_call()
-    $LOG.debug('MyHandler.stop_call'){ "Recieved stop signal, deciding if stopping"}
+    $LOG.debug('MyHandler.stop_call'){ "Recieved stop signal, aborting on next possibility"}
     @__myhandler_stopped = true
   end
   # is called from Wee after stop_call to ask for a passthrough-value that may give
@@ -55,7 +54,7 @@ class MyHandler
   # At this stage, this is only the case if parallel branches are not needed
   # anymore to continue the workflow
   def no_longer_necessary
-    $LOG.debug('MyHandler.stop_call'){ "Recieved no_longer_necessary signal, deciding if stopping"}
+    $LOG.debug('MyHandler.stop_call'){ "Recieved no_longer_necessary signal, aborting on next possibility"}
     @__myhandler_stopped = true
   end
   # Is called if a Activity is executed correctly

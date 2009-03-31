@@ -4,7 +4,7 @@ require 'MyHandlerFactory'
 class Workflow < Wee
   include MyHandlerFactory
   
-  search true => [SearchPos.new(:a1_2, :at, 'id_123')]      # Define searchmodus=true and positions to start from
+  search false => SearchPos.new(:a1_2, :at, 'id_123')      # Define searchmodus=true and positions to start from
   endpoint :endpoint1 => 'http://www.heise.de'  # Define endpoint for activity calls
   endpoint :endpoint2 => 'http://www.orf.at'
   endpoint :endpoint3 => 'http://www.google.com'
@@ -52,11 +52,5 @@ class Workflow < Wee
     return [endstate, position, context]            # Return the ending environment
   end
 
-  def replace_execute(&block)
-    instance_eval() {
-      def execute
-        yield(block)
-      end
-    }
-  end
+  
 end
