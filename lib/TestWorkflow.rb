@@ -1,9 +1,9 @@
 require 'Wee'
-require 'WebHandlerFactory'
+require 'TestHandlerFactory'
 
-class WebWorkflow < Wee
-  include WebHandlerFactory
-  
+class TestWorkflow < Wee
+  include TestHandlerFactory
+
   search true => SearchPos.new(:a1_1, :at)
   endpoint :endpoint1 => 'http://www.heise.de'
   context :x => 'begin_'
