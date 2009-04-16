@@ -9,18 +9,18 @@ class TestHandler
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
   def handle_call(position, passthrough, endpoint,*parameters)
-    $message += "Handle call: position=[#{position}] passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]. Waiting for release<BR/>"
+    $message += "Handle call: position=[#{position}] passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]. Waiting for release\n"
     t = Thread.new() {
       released = false
       until(released) do
         if @__myhandler_stopped
-          $message += "handle_call: : Recieved stop signal, process is stoppable =>aborting!<BR/>"
+          $message += "handle_call: : Recieved stop signal, process is stoppable =>aborting!\n"
           return
         end
         if($released.include?("release #{position.to_s}"))
           released = true
           $released["release #{position.to_s}"]=""
-          $message += "Handler: Released: #{position}<BR/>"
+          $message += "Handler: Released: #{position}\n"
         end
         Thread.pass
       end
@@ -47,7 +47,7 @@ class TestHandler
   # with this situation is given to the handler. To provide the possibility
   # of a continue the Handler will be asked for a passthrough
   def stop_call()
-    $message += "Handler: Recieved stop signal, deciding if stopping<BR/>"
+    $message += "Handler: Recieved stop signal, deciding if stopping\n"
     @__myhandler_stopped = true
   end
   # is called from Wee after stop_call to ask for a passthrough-value that may give
@@ -63,16 +63,16 @@ class TestHandler
   # At this stage, this is only the case if parallel branches are not needed
   # anymore to continue the workflow
   def no_longer_necessary
-    $message += "Handler: Recieved no_longer_necessary signal, deciding if stopping<BR/>"
+    $message += "Handler: Recieved no_longer_necessary signal, deciding if stopping\n"
     @__myhandler_stopped = true
   end
   # Is called if a Activity is executed correctly
   def inform_activity_done(activity, context)
-    $message += "Activity #{activity} done<BR/>"
+    $message += "Activity #{activity} done\n"
   end
   # Is called if a Activity is executed with an error
   def inform_activity_failed(activity, context, err)
-    $message += "Activity #{activity} failed with error #{err}<BR/>"
+    $message += "Activity #{activity} failed with error #{err}\n"
     raise(err)
   end
 end

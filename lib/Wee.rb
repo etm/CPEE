@@ -20,21 +20,6 @@ class Wee
   end
 
   def self::search(wee_search)
-    define_method 'search=' do |new_wee_search|
-      @__wee_search_positions = Hash.new
-      if new_wee_search.is_a?(Hash) && new_wee_search.size == 1
-          @__wee_search_original = new_wee_search.keys[0]
-          @__wee_search_positions_original = new_wee_search[@__wee_search_original]
-          @__wee_search_positions_original.each { |search_position| @__wee_search_positions[search_position.position] = search_position } if @__wee_search_positions_original.is_a?(Array)
-          @__wee_search_positions[@__wee_search_positions_original.position] = @__wee_search_positions_original if @__wee_search_positions_original.is_a?(SearchPos)
-      else
-        @__wee_search_original = false
-      end
-      @__wee_search = @__wee_search_original
-    end
-    define_method :search do
-      return {@__wee_search_original => @__wee_search_positions_original}
-    end
     define_method :initialize_search do 
       self.search=wee_search
     end
@@ -51,28 +36,11 @@ class Wee
         instance_eval("def #{name}\n return @#{name}\n end")
       end
     end
-    define_method :endpoint do |new_endpoint|
-      new_endpoint.each do |name,value|
-        instance_variable_set("@#{name}", value)
-        instance_eval("def #{name}\n return @#{name}\n end")
-      end
-    end
   end
 
   def self::context(variables)
     @@__wee_new_context_variables ||= Array.new
     @@__wee_new_context_variables << variables
-    define_method 'context=' do |newContext|
-      @__wee_context ||= Hash.new
-      newContext.each do |name, value|
-        instance_variable_set(("@" + name.to_s).to_sym,value)
-        @__wee_context[("@" + name.to_s).to_sym] = value
-      end
-    end
-    define_method :context do |*optParam|
-      optParam.each{ |entry| self.context=entry }
-      return @__wee_context ? @__wee_context : Hash.new
-    end
     define_method :initialize_context do
       @@__wee_new_context_variables.each { |item| self.context=item }
     end
@@ -84,9 +52,6 @@ class Wee
       @__wee_stop_positions = Array.new if @__wee_endstate != newState
       self.search= {@__wee_search_original => @__wee_search_positions_original}
       @__wee_endstate = newState
-    end
-    define_method :endstate do
-      return @__wee_endstate
     end
     define_method :initialize_endstate do
       self.endstate=state
@@ -142,12 +107,14 @@ class Wee
     # May contain multiple branches (parallel_branch)
     def parallel(type=:wait)
       return if endstate == :stopped || Thread.current[:nolongernecessary]
-      @__wee_threads = Array.new
+
       mythreads = Array.new
       # Handle the yield block (= def of parallel branches) in a 
       # Mutex to resolve conflicts (waiting for branches) in 
       # nested parallel blocks
-      Mutex.new.synchronize do
+      @__wee_mutex ||= Mutex.new
+      @__wee_mutex.synchronize do
+        @__wee_threads = Array.new
         yield
         mythreads = @__wee_threads.clone
       end
@@ -228,6 +195,47 @@ class Wee
     end
     
   public
+    def endstate
+      @__wee_endstate || :normal
+    end
+    def endpoint(new_endpoint)
+      new_endpoint.each do |name,value|
+        instance_variable_set("@#{name}", value)
+        instance_eval("def #{name}\n return @#{name}\n end")
+      end
+    end
+    def search
+      if(@__wee_search_original)
+        {@__wee_search_original => @__wee_search_positions_original}
+      else
+        {false => []}
+      end
+    end
+    def search=(new_wee_search)
+      @__wee_search_positions = {}
+      @__wee_search_positions_original = []
+      if new_wee_search.is_a?(Hash) && new_wee_search.size == 1
+          @__wee_search_original = new_wee_search.keys[0]
+          @__wee_search_positions_original = new_wee_search[@__wee_search_original]
+          @__wee_search_positions_original.each { |search_position| @__wee_search_positions[search_position.position] = search_position } if @__wee_search_positions_original.is_a?(Array)
+          @__wee_search_positions[@__wee_search_positions_original.position] = @__wee_search_positions_original if @__wee_search_positions_original.is_a?(SearchPos)
+      else
+        @__wee_search_original = false
+      end
+      @__wee_search = @__wee_search_original
+    end
+    def context=(new_context)
+      @__wee_context ||= Hash.new
+      new_context.each do |name, value|
+        instance_variable_set(("@" + name.to_s).to_sym,value)
+        @__wee_context[("@" + name.to_s).to_sym] = value
+      end
+    end
+    def context (opt_param = [])
+      opt_param.each{ |entry| self.context=entry }
+      return @__wee_context ? @__wee_context : Hash.new
+    end
+
     def stop()
       @__wee_endstate = :stopped
     end

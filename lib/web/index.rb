@@ -30,7 +30,7 @@ run Rum.new {
                       <tr><td colspan="2">Release</td></tr>
                       <tr>
                           <td colspan="2">
-                            <input type="text" name="position" value="a1_1"/>
+                            <input type="text" name="position" value="a1"/>
                             <input value="release Call" type="button" onclick="window.document.f.code.value = '$released +=&quot;release '+window.document.f.position.value+'&quot;'"/>
                           </td>
                       </tr>
@@ -97,7 +97,7 @@ run Rum.new {
                           <td colspan="2">
                               <input type="button" value="show" onclick="window.document.f.code.value = '$message += &quot;Search=&quot+CGI.escapeHTML($wf.search.inspect)+&quot;<BR/>&quot;'"/>
                               <select name="search" size="1"><option>true</option><option>false</option></select>
-                              <input type="text" name="searchpos1" value=":a1_1"/>
+                              <input type="text" name="searchpos1" value=":a1"/>
                               <input type="text" name="searchdetail1" value=":at"/>
                               <input type="text" name="searchpassthrough1" value="abc"/>
                               <input type="button" value="set" onclick="window.document.f.code.value = '$wf.search ={'+window.document.f.search.value+' => SearchPos.new('+window.document.f.searchpos1.value+', '+window.document.f.searchdetail1.value+', &quot;'+window.document.f.searchpassthrough1.value+'&quot;)}'"/>
@@ -109,7 +109,7 @@ run Rum.new {
           </table>
           <hr/>
           <p>Sample Execute:</p>
-<pre>activity :a1_1, :call, :endpoint1 do |result|
+<pre>activity :a1, :call, endpoint1 do |result|
   @y = result;
 end</pre>
       </form>
@@ -125,7 +125,7 @@ end</pre>
   end
   on default do
     $released = "";
-    $message = "";
+    $message = ""
     $wf = WebWorkflow.new
     $wf_thread = Thread.new { $wf_result = $wf.start }
     sleep(2)
