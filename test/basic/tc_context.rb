@@ -23,6 +23,14 @@ class TestContext < Test::Unit::TestCase
     assert(context.keys[0] == :@x, "Context.keys[0] has not the correct value [#{context.keys[0]}]")
     assert(context[:@x] == "begin_", "Context[:@x] has not the correct value")
   end
+  def test_set_context_variable
+    $wf.context({:a => "test1"})
+    context = $wf.context
+    assert(context.is_a?(Hash), "Context is not a Hash")
+    assert(context.keys.include?(:@a), "Context has no key @a")
+    assert(context[:@a] == "test1", "Context[:@a] has not the correct value [#{context[:@x]}]")
+    assert($wf.instance_eval("@a") == "test1", "Instance_eval of @a = 1, wrong new value")
+  end
   def test_set_context
     $wf.context = {:x => "test1", :y =>"test2"}
     context = $wf.context

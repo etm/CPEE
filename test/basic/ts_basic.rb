@@ -1,6 +1,7 @@
 
 require 'test/unit'
 
+require 'tc_handler'
 require 'tc_wf_control'
 require 'tc_codereplace'
 require 'tc_search'

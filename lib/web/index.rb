@@ -100,7 +100,7 @@ run Rum.new {
                               <input type="text" name="searchpos1" value=":a1"/>
                               <input type="text" name="searchdetail1" value=":at"/>
                               <input type="text" name="searchpassthrough1" value="abc"/>
-                              <input type="button" value="set" onclick="window.document.f.code.value = '$wf.search ={'+window.document.f.search.value+' => SearchPos.new('+window.document.f.searchpos1.value+', '+window.document.f.searchdetail1.value+', &quot;'+window.document.f.searchpassthrough1.value+'&quot;)}'"/>
+                              <input type="button" value="set" onclick="window.document.f.code.value = '$wf.search ={'+window.document.f.search.value+' => Wee::SearchPos.new('+window.document.f.searchpos1.value+', '+window.document.f.searchdetail1.value+', &quot;'+window.document.f.searchpassthrough1.value+'&quot;)}'"/>
                           </td>
                       </tr>
                     </table>
@@ -109,9 +109,21 @@ run Rum.new {
           </table>
           <hr/>
           <p>Sample Execute:</p>
-<pre>activity :a1, :call, endpoint1 do |result|
-  @y = result;
-end</pre>
+<pre>    activity :a1, :call, endpoint1
+    activity :a2, :call, endpoint1 do |result|
+      @x += result;
+    end
+    activity :a3, :call, endpoint1, @x</pre>
+<hr/>
+<pre>    activity :a1, :call, endpoint1
+    parallel do
+      parallel_branch do activity :a2_1, :call, endpoint2 end
+      parallel_branch do activity :a2_2, :call, endpoint2 end
+    end
+    activity :a2, :call, endpoint1 do |result|
+      @x += result;
+    end
+    activity :a3, :call, endpoint1, @x</pre>
       </form>
       </body>
     END

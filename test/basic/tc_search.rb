@@ -22,13 +22,13 @@ class TestSearch < Test::Unit::TestCase
     assert(search.is_a?(Hash), "Search is not a Hashtable")
     assert(search.size == 1, "Search does not have exectly 1 entry, it has #{search.size}")
     assert(search.keys[0], "Search is not true")
-    assert(search[true].is_a?(SearchPos), "Value of search is not a searchposition")
+    assert(search[true].is_a?(Wee::SearchPos), "Value of search is not a searchposition")
     assert(search[true].position == :a1_1, "SearchPosition has wrong position value")
     assert(search[true].detail == :at, "SearchPosition has wrong detail value")
     assert(search[true].passthrough == nil, "SearchPosition has wrong passthrough value")
   end
   def test_set_search
-    $wf.search = {true => [SearchPos.new(:a2_1_1, :at, 'test1'), SearchPos.new(:a2_1_1, :at, 'test2')]}
+    $wf.search = {true => [Wee::SearchPos.new(:a2_1_1, :at, 'test1'), Wee::SearchPos.new(:a2_1_1, :at, 'test2')]}
     search = $wf.search
     assert(search.is_a?(Hash), "Search is not a Hashtable")
     assert(search.size == 1, "Search does not have exectly 1 entry, it has #{search.size}")
@@ -58,7 +58,7 @@ class TestSearch < Test::Unit::TestCase
       activity :a1_2, :call, endpoint1
       activity :a1_3, :call, endpoint1
     end
-    $wf.search= {true=>SearchPos.new(:a1_2, :at)}
+    $wf.search= {true=>Wee::SearchPos.new(:a1_2, :at)}
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a1_1";
     $released +="release a1_2";
@@ -81,7 +81,7 @@ class TestSearch < Test::Unit::TestCase
       end
       activity :a3, :call, endpoint1
     end
-    $wf.search= {true=>[SearchPos.new(:a2_1, :at), SearchPos.new(:a2_2, :at)]}
+    $wf.search= {true=>[Wee::SearchPos.new(:a2_1, :at), Wee::SearchPos.new(:a2_2, :at)]}
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a1";
     $released +="release a2_1";

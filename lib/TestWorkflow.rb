@@ -1,10 +1,10 @@
 require 'Wee'
-require 'TestHandlerFactory'
+require 'TestHandler'
 
 class TestWorkflow < Wee
-  include TestHandlerFactory
+  handler TestHandler
 
-  search true => SearchPos.new(:a1_1, :at)
+  search true => Wee::SearchPos.new(:a1_1, :at)
   endpoint :endpoint1 => 'http://www.heise.de'
   context :x => 'begin_'
   endstate :normal

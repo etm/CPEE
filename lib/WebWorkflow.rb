@@ -1,10 +1,10 @@
 require 'Wee'
-require 'WebHandlerFactory'
+require 'WebHandler'
 
 class WebWorkflow < Wee
-  include WebHandlerFactory
+  handler WebHandler
   
-  search true => SearchPos.new(:a1, :at)
+  search true => Wee::SearchPos.new(:a1, :at)
   endpoint :endpoint1 => 'http://www.heise.de'
   endpoint :endpoint2 => 'http://www.orf.at'
   endpoint :endpoint3 => 'http://www.google.com'

@@ -2,8 +2,8 @@
 require 'test/unit'
 
 require 'tc_generalizedjoin'
-require 'tc_generalizedsynchronizingmerge'
-require 'tc_localsynchornizingmerge'
+require 'tc_generalsynchronizingmerge'
+require 'tc_localsynchronizingmerge'
 require 'tc_multichoice_structuredsynchronizingmerge'
 require 'tc_multimerge'
 require 'tc_structured_discriminator'

@@ -1,10 +1,10 @@
 require 'Wee'
-require 'MyHandlerFactory'
+require 'MyHandler'
 
 class Workflow < Wee
-  include MyHandlerFactory
+  handler MyHandler
   
-  search true => SearchPos.new(:a1_1, :at, 'id_123')      # Define searchmodus=true and positions to start from
+  search true => Wee::SearchPos.new(:a1_1, :at, 'id_123')      # Define searchmodus=true and positions to start from
   endpoint :endpoint1 => 'http://www.heise.de'  # Define endpoint for activity calls
   endpoint :endpoint2 => 'http://www.orf.at'
   endpoint :endpoint3 => 'http://www.google.com'

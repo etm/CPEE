@@ -1,6 +1,16 @@
 require 'thread'
 
 class Wee
+  class SearchPos
+    attr_accessor :position, :detail, :passthrough
+    def initialize(position, detail=:at, passthrough=nil)
+      @position = position
+      @detail = detail
+      @passthrough = passthrough
+    end
+  end
+  class HandlerBase
+  end
   def initialize
     # Waring: redefined, see wee_initialize
     # setting default values
@@ -16,6 +26,7 @@ class Wee
       initialize_search if methods.include?('initialize_search')
       initialize_context if methods.include?('initialize_context')
       initialize_endstate if methods.include?('initialize_endstate')
+      initialize_handler if methods.include?('initialize_handler')
     end
   end
 
@@ -58,6 +69,11 @@ class Wee
     end
     wee_initialize
   end
+  def self::handler(aClassname)
+    define_method :initialize_handler do self.handler=aClassname end
+    wee_initialize
+  end
+
   def self::control(flow, &block)
     @@__wee_control_blocks ||= Array.new
     @@__wee_control_blocks << block
@@ -81,7 +97,7 @@ class Wee
     def activity(position, type, endpoint=nil, *parameters)
       return if endstate == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
       
-      handler = create_handler
+      handler = @__wee_handler.new
       begin
         case type
           when :manipulate
@@ -141,7 +157,7 @@ class Wee
     # May contain multiple execution alternatives
     def choose
       return if endstate == :stopped || Thread.current[:nolongernecessary]
-      thread_search = Thread.current[:branch_search] ?  Thread.current[:branch_search] : @__wee_search
+      thread_search = is_in_search_mode
       Thread.new do
         Thread.current[:branch_search] = thread_search
         Thread.current[:alternative_executed] = false
@@ -160,6 +176,30 @@ class Wee
       return if endstate == :stopped || Thread.current[:nolongernecessary]
       yield if is_in_search_mode || !Thread.current[:alternative_executed]
     end
+
+    def critical(id)
+      @__wee_critical ||= Mutex.new
+      semaphore = nil
+      @__wee_critical.synchronize do
+        @__wee_critical_sections ||= {}
+        semaphore = @__wee_critical_sections[id] ? @__wee_critical_sections[id] : Mutex.new
+        @__wee_critical_sections[id] = semaphore if id
+      end
+      semaphore.synchronize do
+        yield
+      end
+    end
+    def cycle(condition)
+      raise "condition must be a string to evaluate" unless condition.is_a?(String)
+      return if endstate == :stopped || Thread.current[:nolongernecessary]
+      yield if is_in_search_mode
+      return if is_in_search_mode
+      while eval(condition)
+        yield
+      end
+
+    end
+
     
   private
     def is_in_search_mode(position = nil)
@@ -182,7 +222,7 @@ class Wee
        
       handler.no_longer_necessary if Thread.current[:nolongernecessary]
       handler.stop_call if endstate == :stopped
-      @__wee_stop_positions << SearchPos.new(position, :at, handler.passthrough) if endstate == :stopped
+      @__wee_stop_positions << Wee::SearchPos.new(position, :at, handler.passthrough) if endstate == :stopped
       Thread.current[:nolongernecessary] || endstate == :stopped ? nil : handler.return_value
     end
     def refreshcontext()
@@ -195,6 +235,15 @@ class Wee
     end
     
   public
+    def handler=(new_wee_handler)
+      superclass = new_wee_handler
+      while(superclass)
+        check_ok = true if(superclass == Wee::HandlerBase)
+        superclass = superclass.superclass;
+      end
+      raise("Handler is not inhereted from HandlerBase") unless check_ok
+      @__wee_handler = new_wee_handler
+    end
     def endstate
       @__wee_endstate || :normal
     end
@@ -218,7 +267,7 @@ class Wee
           @__wee_search_original = new_wee_search.keys[0]
           @__wee_search_positions_original = new_wee_search[@__wee_search_original]
           @__wee_search_positions_original.each { |search_position| @__wee_search_positions[search_position.position] = search_position } if @__wee_search_positions_original.is_a?(Array)
-          @__wee_search_positions[@__wee_search_positions_original.position] = @__wee_search_positions_original if @__wee_search_positions_original.is_a?(SearchPos)
+          @__wee_search_positions[@__wee_search_positions_original.position] = @__wee_search_positions_original if @__wee_search_positions_original.is_a?(Wee::SearchPos)
       else
         @__wee_search_original = false
       end
@@ -232,7 +281,11 @@ class Wee
       end
     end
     def context (opt_param = [])
-      opt_param.each{ |entry| self.context=entry }
+      if(opt_param.is_a?(Hash))
+        self.context=opt_param
+      else
+        opt_param.each{ |entry| self.context=entry }
+      end
       return @__wee_context ? @__wee_context : Hash.new
     end
 
@@ -248,13 +301,4 @@ class Wee
         end
       end
     end
-end
-
-class SearchPos
-  attr_accessor :position, :detail, :passthrough
-  def initialize(position, detail=:at, passthrough=nil)
-    @position = position
-    @detail = detail
-    @passthrough = passthrough
-  end
 end
