@@ -9,7 +9,7 @@ class Wee
       @passthrough = passthrough
     end
   end
-  class HandlerBase
+  class HandlerWrapperBase
   end
   def initialize
     # Waring: redefined, see wee_initialize
@@ -83,7 +83,8 @@ class Wee
     end
   end
 
-  def self::flow; end
+  def self::flow;
+  end
 
   public
     def start
@@ -238,10 +239,10 @@ class Wee
     def handler=(new_wee_handler)
       superclass = new_wee_handler
       while(superclass)
-        check_ok = true if(superclass == Wee::HandlerBase)
+        check_ok = true if(superclass == Wee::HandlerWrapperBase)
         superclass = superclass.superclass;
       end
-      raise("Handler is not inhereted from HandlerBase") unless check_ok
+      raise("Handler is not inhereted from HandlerWrapperBase") unless check_ok
       @__wee_handler = new_wee_handler
     end
     def endstate

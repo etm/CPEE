@@ -1,5 +1,5 @@
 
-class MyHandler < Wee::HandlerBase
+class MyHandler < Wee::HandlerWrapperBase
   def initialize
     @__myhandler_stopped = false
     @__myhandler_finished = false

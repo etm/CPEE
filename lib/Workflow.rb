@@ -4,19 +4,52 @@ require 'MyHandler'
 class Workflow < Wee
   handler MyHandler
   
-  search true => Wee::SearchPos.new(:a1_1, :at, 'id_123')      # Define searchmodus=true and positions to start from
-  endpoint :endpoint1 => 'http://www.heise.de'  # Define endpoint for activity calls
-  endpoint :endpoint2 => 'http://www.orf.at'
-  endpoint :endpoint3 => 'http://www.google.com'
-  context :x => 'X_Value', :y => 'Y_Value'      # Set context variables
-  context :a => 'XXXX'
-  endstate :normal                              # define a default endstate
+  endpoint :epAirlineBooking => 'http://airline.com/booking'
+  endpoint :epHotelBooking => 'http://hotel.com/booking'
+  endpoint :epAirlinePayment => 'http://airline.com/payment'
+  endpoint :epHotelPayment => 'http://hotel.com/payment'
+  endpoint :epApproval => 'http://company.com/approval'
+
+  context :persons => 3
+  context :creditcard => 'Visa_12345'
+  context :airBookingId => nil, :hotelBookingID => nil
+  context :departure => 'Vienna', :destination => 'Prag'
+  context :sum => 0
+  endstate :normal
 
   control flow do
-    activity :a1, :call, endpoint1
-    activity :a2, :call, endpoint1 do |result|
-      @x += result;
+
+    cycle("@persons > 0") do
+      parallel(:wait) do
+        parallel_branch do
+          critical(:airbooking) do
+            activity :a1_1, :call, epAirBook, @departure, @destination do |id|
+              @airBookingId = id
+            end
+            activity :a1_2, :call, epAirPay, @airBookingId, @creditcard do |amount|
+              @sum += amount
+            end
+          end
+        end
+        parallel_branch do
+          critical(:hotelbooking) do
+            activity :a2_1, :call, epHotelBook, @destination do |id|
+                @hotelBookingId = id
+            end
+            activity :a2_2, :call, epHotelPay, @hotelBooking, @creditcard do |amount|
+              @sum += amount
+            end
+          end
+        end
+      end
+      activity :a3, :manipulate do
+        @persons -= 1
+      end
     end
-    activity :a3, :call, endpoint1, @x
+    choose do
+      alternative(@sum > 10000) do
+        activity :a3, :call, epApproval, @sum
+      end
+    end
   end
 end
