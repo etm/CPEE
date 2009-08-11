@@ -7,8 +7,7 @@ class TestWorkflow < Wee
   search true => Wee::SearchPos.new(:a1_1, :at)
   endpoint :endpoint1 => 'http://www.heise.de'
   context :x => 'begin_'
-  endstate :normal
-
+  
   control flow do
     activity :a1_1, :call, endpoint1 do |result|
       @x += result;

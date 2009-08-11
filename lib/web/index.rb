@@ -39,7 +39,7 @@ run Rum.new {
                       <tr>
                           <td colspan="2">
                             <input value="prepare new workflow" type="button" onclick="window.document.f.code.value = '$wf = WebWorkflow.new;'"/>
-                            <input value="start new workflow" type="button" onclick="window.document.f.code.value = '$wf.endstate=:normal;\\n$wf_thread = Thread.new { $wf_result = $wf.start }'"/>
+                            <input value="start new workflow" type="button" onclick="window.document.f.code.value = '$wf.state=:normal;\\n$wf_thread = Thread.new { $wf_result = $wf.start }'"/>
                             <input value="stop workflow" type="button" onclick="window.document.f.code.value = '$wf.stop;'"/>
                             <input value="clear log" type="button" onclick="window.document.f.code.value = '$message = &quot;&quot;;'"/>
                           </td>

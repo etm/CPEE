@@ -9,8 +9,7 @@ class WebWorkflow < Wee
   endpoint :endpoint2 => 'http://www.orf.at'
   endpoint :endpoint3 => 'http://www.google.com'
   context :x => 'begin_', :y => "y", :z => "z"
-  endstate :normal
-
+  
   control flow do
     activity :a1, :call, endpoint1
     activity :a2, :call, endpoint1 do |result|

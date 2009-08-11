@@ -76,7 +76,7 @@ class TestHandler < Wee::HandlerWrapperBase
     raise(err)
   end
   def inform_workflow_state(newstate)
-    $LOG.info('MyHandler.inform_workflow_state'){"State changed to #{newstate}"}
+    $message += "State changed to #{newstate}"
   end
 
 

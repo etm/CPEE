@@ -15,28 +15,32 @@ class Workflow < Wee
   context :airBookingId => nil, :hotelBookingID => nil
   context :departure => 'Vienna', :destination => 'Prag'
   context :sum => 0
-  endstate :normal
 
   control flow do
+
+    activity :a1, :call, epHotelPayment, @hotelBooking, @creditcard do |amount|
+      #@sum += amount
+     end
+
 
     cycle("@persons > 0") do
       parallel(:wait) do
         parallel_branch do
           critical(:airbooking) do
-            activity :a1_1, :call, epAirBook, @departure, @destination do |id|
+            activity :a1_1, :call, epAirBooking, @departure, @destination do |id|
               @airBookingId = id
             end
-            activity :a1_2, :call, epAirPay, @airBookingId, @creditcard do |amount|
+            activity :a1_2, :call, epAirPayment, @airBookingId, @creditcard do |amount|
               @sum += amount
             end
           end
         end
         parallel_branch do
           critical(:hotelbooking) do
-            activity :a2_1, :call, epHotelBook, @destination do |id|
+            activity :a2_1, :call, epHotelBooking, @destination do |id|
                 @hotelBookingId = id
             end
-            activity :a2_2, :call, epHotelPay, @hotelBooking, @creditcard do |amount|
+            activity :a2_2, :call, epHotelPayment, @hotelBooking, @creditcard do |amount|
               @sum += amount
             end
           end

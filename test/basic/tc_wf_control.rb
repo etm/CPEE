@@ -8,7 +8,6 @@ class TestWorkflowControl < Test::Unit::TestCase
     $message = ""
     $released = ""
     $wf = TestWorkflow.new
-    $wf.endstate=:normal;
   end
   def teardown
     $wf.stop
@@ -32,7 +31,7 @@ class TestWorkflowControl < Test::Unit::TestCase
     $released +="release a4a";
     sleep(0.1)
     assert($message.include?("Activity a4a done"), "Pos a2_2_1 was not proper released/called");
-    assert($wf_result.inspect.include?("[:normal, [], {:@x=>\"begin_Handler_Dummy_Result_end\"}]"), "Ending environment not correct, see resul=#{$wf_result.inspect}");
+    assert($wf_result.inspect.include?("[:finished, [], {:@x=>\"begin_Handler_Dummy_Result_end\"}]"), "Ending environment not correct, see resul=#{$wf_result.inspect}");
   end
   def test_stop
     $wf.replace do
@@ -49,7 +48,7 @@ class TestWorkflowControl < Test::Unit::TestCase
     $wf.stop
     $wf_thread.join
     assert($wf_result != nil, "Workflow did not end/join properly")
-    assert($wf_result[0] == :stopped, "Stopped workflow has wrong endstate, #{$wf_result[0]} instead of :stopped")
+    assert($wf_result[0] == :stopped, "Stopped workflow has wrong state, #{$wf_result[0]} instead of :stopped")
     assert($wf_result[1].is_a?(Array), "wf_result[1] has wrong type, should be an array ")
     assert($wf_result[1][0].position == :a_test_1_2, "Stop-position has wrong value: #{$wf_result[1][0].position} instead of :a_test_2_1")
     assert($wf_result[1][0].detail == :at, "Stop-Position is not :at")
@@ -67,7 +66,6 @@ class TestWorkflowControl < Test::Unit::TestCase
     $wf.stop
     $wf_thread.join
     $wf.search={true => $wf_result[1]}
-    $wf.endstate=:normal
     $message = "";
     $wf_thread = Thread.new { $wf_result = $wf.start };
     assert($message.include?("Handle call: position=[a_test_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_test_1_2 was not called, see message=[#{$message}]");

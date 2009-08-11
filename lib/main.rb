@@ -13,7 +13,7 @@ end
 def show_stop
   t = Workflow.new
   result = nil
-  execution = Thread.new { result = t.execute }
+  execution = Thread.new { result = t.start }
   sleep(0.5)
   t.stop
   execution.join
@@ -22,7 +22,7 @@ end
 def show_stop_and_replace
   t = Workflow.new
   result = nil
-  execution = Thread.new { result = t.execute }
+  execution = Thread.new { result = t.start }
   t.stop
   execution.join()
   t.replace do
@@ -31,7 +31,7 @@ def show_stop_and_replace
       @x = "Successfull replaced the execution code"
     end
   end
-  execution = Thread.new { result = t.execute }
+  execution = Thread.new { result = t.start }
   execution.join
   return result
 end

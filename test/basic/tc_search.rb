@@ -8,7 +8,6 @@ class TestSearch < Test::Unit::TestCase
     $message = ""
     $released = ""
     $wf = TestWorkflow.new
-    $wf.endstate=:normal;
   end
   def teardown
     $wf.stop
