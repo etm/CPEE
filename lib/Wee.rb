@@ -33,7 +33,7 @@ class Wee
 
   def self::search(wee_search)
     define_method :initialize_search do 
-      self.search=wee_search
+      self.search wee_search
     end
     wee_initialize
   end
@@ -223,7 +223,7 @@ class Wee
 
     def state=(newState)
       @__wee_stop_positions = Array.new if self.state != newState
-      self.search = {@__wee_search_original => @__wee_search_positions_original}
+      self.search @__wee_search_positions_original
       @__wee_state = newState
       handler = @__wee_handler.new
       handler.inform_workflow_state newState
@@ -249,23 +249,18 @@ class Wee
         instance_eval("def #{name}\n return @#{name}\n end")
       end
     end
-    def search
-      if(@__wee_search_original)
-        {@__wee_search_original => @__wee_search_positions_original}
-      else
-        {false => []}
-      end
-    end
-    def search=(new_wee_search)
+    def search(new_wee_search)
       @__wee_search_positions = {}
       @__wee_search_positions_original = []
-      if new_wee_search.is_a?(Hash) && new_wee_search.size == 1
-          @__wee_search_original = new_wee_search.keys[0]
-          @__wee_search_positions_original = new_wee_search[@__wee_search_original]
-          @__wee_search_positions_original.each { |search_position| @__wee_search_positions[search_position.position] = search_position } if @__wee_search_positions_original.is_a?(Array)
-          @__wee_search_positions[@__wee_search_positions_original.position] = @__wee_search_positions_original if @__wee_search_positions_original.is_a?(Wee::SearchPos)
-      else
+  
+      # man müsste sowohl für einzelne als auch für arrays überprüfen ob sie SearchPos sind 
+      if new_wee_search.nil? || new_wee_search.empty?
         @__wee_search_original = false
+      else  
+        @__wee_search_original = true
+        @__wee_search_positions_original = new_wee_search
+        @__wee_search_positions_original.each { |search_position| @__wee_search_positions[search_position.position] = search_position } if @__wee_search_positions_original.is_a?(Array)
+        @__wee_search_positions[@__wee_search_positions_original.position] = @__wee_search_positions_original if @__wee_search_positions_original.is_a?(Wee::SearchPos)
       end
       @__wee_search = @__wee_search_original
     end
