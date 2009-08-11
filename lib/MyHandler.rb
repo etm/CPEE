@@ -60,4 +60,7 @@ class MyHandler < Wee::HandlerWrapperBase
     $LOG.error('MyHandler.inform_activity_failed'){"Activity #{activity} failed with error #{err}"}
     raise(err)
   end
+  def inform_workflow_state(newstate)
+    $LOG.info('MyHandler.inform_workflow_state'){"State changed to #{newstate}"}
+  end
 end

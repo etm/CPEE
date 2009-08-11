@@ -75,4 +75,9 @@ class WebHandler < Wee::HandlerWrapperBase
     $message += "Activity #{activity} failed with error #{err}<BR/>"
     raise(err)
   end
+
+  def inform_workflow_state(newstate)
+    $LOG.info('MyHandler.inform_workflow_state'){"State changed to #{newstate}"}
+  end
+
 end
