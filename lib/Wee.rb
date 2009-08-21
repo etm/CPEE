@@ -249,20 +249,30 @@ class Wee
         instance_eval("def #{name}\n return @#{name}\n end")
       end
     end
+    def search=(new_wee_search)
+      search new_wee_search
+    end
     def search(new_wee_search)
       @__wee_search_positions = {}
       @__wee_search_positions_original = []
+
+      new_wee_search = [new_wee_search] if new_wee_search.is_a?(SearchPos)
   
-      # man müsste sowohl für einzelne als auch für arrays überprüfen ob sie SearchPos sind 
-      if new_wee_search.nil? || new_wee_search.empty?
+      if(new_wee_search == false || new_wee_search.empty?)
         @__wee_search_original = false
       else  
         @__wee_search_original = true
-        @__wee_search_positions_original = new_wee_search
+        if new_wee_search.is_a?(Array)
+          @__wee_search_positions_original = new_wee_search
+        else
+          @__wee_search_positions_original = [new_wee_search]
+        end
         @__wee_search_positions_original.each { |search_position| @__wee_search_positions[search_position.position] = search_position } if @__wee_search_positions_original.is_a?(Array)
-        @__wee_search_positions[@__wee_search_positions_original.position] = @__wee_search_positions_original if @__wee_search_positions_original.is_a?(Wee::SearchPos)
       end
       @__wee_search = @__wee_search_original
+    end
+    def search_positions
+      return @__wee_search_positions_original
     end
     def context=(new_context)
       @__wee_context ||= Hash.new

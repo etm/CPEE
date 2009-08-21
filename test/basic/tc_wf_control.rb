@@ -39,7 +39,7 @@ class TestWorkflowControl < Test::Unit::TestCase
       activity :a_test_1_2, :call, endpoint1
       activity :a_test_1_3, :call, endpoint1
     end
-    $wf.search={true => Wee::SearchPos.new(:a_test_1_1, :at)}
+    $wf.search=Wee::SearchPos.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a_test_1_1";
     sleep(0.1)
@@ -49,7 +49,7 @@ class TestWorkflowControl < Test::Unit::TestCase
     $wf_thread.join
     assert($wf_result != nil, "Workflow did not end/join properly")
     assert($wf_result[0] == :stopped, "Stopped workflow has wrong state, #{$wf_result[0]} instead of :stopped")
-    assert($wf_result[1].is_a?(Array), "wf_result[1] has wrong type, should be an array ")
+    assert($wf_result[1].is_a?(Array), "wf_result[1] has wrong type, should be an array, it is: #{$wf_result[1].inspect}")
     assert($wf_result[1][0].position == :a_test_1_2, "Stop-position has wrong value: #{$wf_result[1][0].position} instead of :a_test_2_1")
     assert($wf_result[1][0].detail == :at, "Stop-Position is not :at")
   end
@@ -59,13 +59,13 @@ class TestWorkflowControl < Test::Unit::TestCase
       activity :a_test_1_2, :call, endpoint1
       activity :a_test_1_3, :call, endpoint1
     end
-    $wf.search={true => Wee::SearchPos.new(:a_test_1_1, :at)}
+    $wf.search=Wee::SearchPos.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a_test_1_1";
     sleep(0.1)
     $wf.stop
     $wf_thread.join
-    $wf.search={true => $wf_result[1]}
+    $wf.search=$wf_result[1]
     $message = "";
     $wf_thread = Thread.new { $wf_result = $wf.start };
     assert($message.include?("Handle call: position=[a_test_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_test_1_2 was not called, see message=[#{$message}]");

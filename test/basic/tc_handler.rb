@@ -5,7 +5,7 @@ require 'TestWorkflow'
 
 
 
-class TestSearch < Test::Unit::TestCase
+class TestCaseHandler < Test::Unit::TestCase
   def setup
     $message = ""
     $released = ""

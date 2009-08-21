@@ -4,7 +4,7 @@ require 'TestHandler'
 class TestWorkflow < Wee
   handler TestHandler
 
-  search true => Wee::SearchPos.new(:a1_1, :at)
+  search Wee::SearchPos.new(:a1_1, :at)
   endpoint :endpoint1 => 'http://www.heise.de'
   context :x => 'begin_'
   

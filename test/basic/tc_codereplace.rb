@@ -21,7 +21,7 @@ class TestCodeReplace < Test::Unit::TestCase
       activity :a_test_1_2, :call, endpoint1
       activity :a_test_1_3, :call, endpoint1
     end
-    $wf.search={true => Wee::SearchPos.new(:a_test_1_1, :at)}
+    $wf.search=Wee::SearchPos.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a_test_1_1";
     $released +="release a_test_1_2";

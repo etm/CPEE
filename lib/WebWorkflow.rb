@@ -4,7 +4,7 @@ require 'WebHandler'
 class WebWorkflow < Wee
   handler WebHandler
   
-  search true => Wee::SearchPos.new(:a1, :at)
+  search Wee::SearchPos.new(:a1, :at)
   endpoint :endpoint1 => 'http://www.heise.de'
   endpoint :endpoint2 => 'http://www.orf.at'
   endpoint :endpoint3 => 'http://www.google.com'

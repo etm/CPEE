@@ -56,7 +56,7 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
       end
       activity :a3, :call, endpoint1
     end
-    $wf.search= {true => Wee::SearchPos.new(:a2_2, :at)};
+    $wf.search= Wee::SearchPos.new(:a2_2, :at)
     $wf.context({:x => 0})
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.1)
@@ -83,7 +83,7 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
       end
       activity :a3, :call, endpoint1
     end
-    $wf.search= {true => Wee::SearchPos.new(:a3, :at)};
+    $wf.search= Wee::SearchPos.new(:a3, :at)
     $wf.context({:x => 0})
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.1)
