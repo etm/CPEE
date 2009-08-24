@@ -307,4 +307,10 @@ class Wee
         end
       end
     end
+    def wf_description(code=nil, &blk)
+      @__wee_wfsource = code
+      blk = Proc.new { instance_eval(@__wee_wfsource)} if @__wee_wfsource
+      replace(&blk)
+      return @__wee_wfsource
+    end
 end
