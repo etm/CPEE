@@ -15,7 +15,9 @@ and open the template in the editor.
   <body>
     
 
-    <h1>WEE - Will - <div id="workflow">???</div></h1>
+
+    <h1>WEE - WICK: Workflow1</h1>
+    
     <input type="button" value="Start" name="btn_startstop" id="btn_startstop" onclick="javascript:togglestartstop()"/>
 
     <form id="frm_userinterface" name="frm_userinterface">
@@ -30,7 +32,7 @@ and open the template in the editor.
                 </tr>
                 <tr>
                     <td valign="top">State: </td>
-                    <td><div id="state">TODO</div></td>
+                    <td><div id="state">ready</div></td>
                 </tr>
                 <tr>
                     <td valign="top">Context:</td>
@@ -55,6 +57,28 @@ and open the template in the editor.
                                     <img class='small' src='Images/list-add.png' width='16' height='16' alt="Endpoint hinzufügen" title="Endpoint hinzufügen"/>
                                 </button>
                             </div>
+                            <div>
+                                <button type="button" onclick="this.parentNode.remove(this)" title="Contextvariable entfernen">
+                                    <img class='small' src='Images/list-remove.png' width='16' height='16' alt="Contextvariable entfernen" title="Contextvariable entfernen"/>
+                                </button>
+                                <input value="endpoint1" type="text" name="context_variable_name"/>
+                                <input value="http://service1.com" type="text" name="context_variable_value"/>
+                            </div>
+                            <div>
+                                <button type="button" onclick="this.parentNode.remove(this)" title="Contextvariable entfernen">
+                                    <img class='small' src='Images/list-remove.png' width='16' height='16' alt="Contextvariable entfernen" title="Contextvariable entfernen"/>
+                                </button>
+                                <input value="endpoint2" type="text" name="context_variable_name"/>
+                                <input value="http://service2.com" type="text" name="context_variable_value"/>
+                            </div>
+                            <div>
+                                <button type="button" onclick="this.parentNode.remove(this)" title="Contextvariable entfernen">
+                                    <img class='small' src='Images/list-remove.png' width='16' height='16' alt="Contextvariable entfernen" title="Contextvariable entfernen"/>
+                                </button>
+                                <input value="endpoint3" type="text" name="context_variable_name"/>
+                                <input value="http://service3.com" type="text" name="context_variable_value"/>
+                            </div>
+
                         </div>
                     </td>
                 </tr>
@@ -63,13 +87,32 @@ and open the template in the editor.
                     <td>
                         <a href="javascript:unhide('description');">Show/Hide</a>
                         <div id="description" class="hidden">
-                            <textarea name="txt_description" id="txt_description" cols="100" rows="20"></textarea>
+                            <textarea name="txt_description" id="txt_description" cols="80" rows="12">activity :a1, :call, endpoint1, 3
+activity :a2, :call, endpoint2, 3
+activity :a3, :call, endpoint3, 3</textarea>
+                        </div>
+                        <div id="desc_readonly" class="hidden">
+                            <table>
+                                <tr>
+                                    <td><img id="img_arrow_pos1" class='small' src='Images/arrow.png' width='16' height='16' alt="aktuelle Position" title="aktuelle Position"/></td>
+                                    <td>activity :a1, :call, endpoint1, 3</td>
+                                </tr>
+                                <tr>
+                                    <td><img id="img_arrow_pos2" class='small' src='Images/arrow.png' width='16' height='16' alt="aktuelle Position" title="aktuelle Position"/></td>
+                                    <td>activity :a2, :call, endpoint2, 3</td>
+                                </tr>
+                                <tr>
+                                    <td><img id="img_arrow_pos3" class='small' src='Images/arrow.png' width='16' height='16' alt="aktuelle Position" title="aktuelle Position"/></td>
+                                    <td>activity :a3, :call, endpoint3, 3</td>
+                                </tr>
+                            </table>
                         </div>
                     </td>
                 </tr>
             </table>
             <button id="btn_apply" type="button" onclick="javascript:apply()">Apply to current instance</button>
     </form>
+    <h5>WorkflowExecutionEngine - Workflow Information CocKpit</h5>
   </body>
 
 
