@@ -1,0 +1,66 @@
+<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <message name="description">
+    <parameter name="description" type="string"/>
+  </message>
+  <message name="context-pair">
+    <parameter name="name" type="string">
+      <param name="pattern">[a-zA-Z_][a-zA-Z0-9_]*</param>
+    </parameter>
+    <parameter name="value" type="string"/>
+  </message>
+  <message name="list-of-workflow-instances">
+    <parameter name="wis" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="rngs/wis.rng"/>
+    </parameter>
+  </message>
+
+  <resource>
+    <get in="*" out="list-of-workflow-instances"/>
+    <post in="*" out="instance-id"/>
+    <delete in="workflow-id"/>
+    <resource>
+      <resource name="status">
+        <get in="*" out="status"/>
+        <put in="control-message" out="status"/>
+      </resource>
+      <resource name="properties">
+        <resource name="context">
+          <get in="*" out="list-of-context-vars"/>
+          <post in="context-pair" out="context-id"/>
+          <delete in="context-id"/>
+          <resource>
+            <get in="*" out="context-value"/>
+            <put in="context-value"/>
+          </resource>
+        </resource>
+        <resource name="endpoints">
+          <get in="*" out="list-of-endpoint-ids"/>
+          <post in="endpoint-pair" out="endpoint-id"/>
+          <delete in="endpoint-id"/>
+          <resource>
+            <get in="*" out="endpoint"/>
+            <put in="endpoint"/>
+          </resource>
+        </resource>
+        <resource name="description">
+          <get in="*" out="description"/>
+          <put in="description"/>
+        </resource>   
+        <resource name="handlers">
+          <get in="*" out="list-of-handler-types"/>
+          <resource>
+            <get in="*" out="list-handlers"/>
+            <post in="handler" out="handler-id"/>
+            <delete in="handler-id"/>
+            <resource>
+              <get in="*" out="handler"/>
+              <put in="handler"/>
+            </resource>
+          </resource>
+        </resource>
+      </resource>  
+    </resource>
+  </resource>  
+
+</description>
