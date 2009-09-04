@@ -12,15 +12,62 @@
     <table>
         <tr>
             <td>
-                <input type="radio" name="wf_selection" value="wf1" id="radio_wf1"><a href="details.html">Workflow1</a></input>
+                Book Flight & Hotel
+            </td>
+            <td>
+                <button type="button" id="btn_book" onclick="document.open('details.html')">New Instance</button>
             </td>
         </tr>
         <tr>
             <td>
-                <input type="radio" name="wf_selection" value="wf2" id="radio_wf2"><a href="details.html">Workflow2</a></input>
+                Pay Wages
+            </td>
+            <td>
+                <button type="button" id="btn_book">New Instance</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                New Customer Order
+            </td>
+            <td>
+                <button type="button" id="btn_book">New Instance</button>
             </td>
         </tr>
     </table>
-    <textarea cols="100" rows="20">Log</textarea>
+    <textarea id="txt_log" cols="100" rows="20">Log</textarea>
   </body>
+<script type='text/javascript'>//<![CDATA[
+
+var msgs = ['Activity :bookhotel done',
+            'Activity :bookhotel done',
+            'Activity :bookhotel failed: not available',
+            'Activity :bookflight done',
+            'Activity :bookflight done',
+            'Activity :bookflight failed: out of seats',
+            'Activity :calcpayment done',
+            'Activity :ordertransfer done',
+            'Activity :newfile done',
+            'Activity :sendconfirmation done',
+            'Activity :shipgoods done',
+            'Activity :shipgoods failed: need export permission',
+            'Handling call: endpoint=http://localhost:2211/transfer',
+            'Handling call: endpoint=http://mandriva.at:3323/file',
+            'Handling call: endpoint=http://sundw.com:8214/allef',
+            'Handling call: endpoint=http://owod.net:80/booking',
+            'Handling call: endpoint=http://unicredit.it:999/order'
+    ];
+produceMessage();
+
+function produceMessage()
+{
+
+    var msgno = Math.round((Math.random() * (msgs.length - 1) + 1));
+    var area = document.getElementById('txt_log');
+    area.innerHTML = msgs[msgno-1] + '\n' + area.innerHTML;
+    var waitfor = Math.round((Math.random() * (3000 - 1000) + 1000));
+    setTimeout('produceMessage()', waitfor);
+}
+//]]></script>
+
 </html>

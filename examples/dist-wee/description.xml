@@ -1,24 +1,97 @@
 <description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 
-  <message name="description">
-    <parameter name="description" type="string"/>
-  </message>
-  <message name="context-pair">
-    <parameter name="name" type="string">
+  <message name="list-of-workflow-instances"><!--{{{-->
+    <parameter name="wis" mimetype="text/html" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="rngs/workflow_instances.rng"/>
+    </parameter>
+  </message><!--}}}-->
+
+  <message name="instance-id"><!--{{{-->
+    <parameter name="id" type="integer"/>
+  </message><!--}}}-->
+
+  <message name="status"><!--{{{-->
+    <parameter name="status" type="string">
+      <param name="pattern">ready|running|stopped|finished</param>
+    </parameter>
+  </message><!--}}}-->
+
+  <message name="control-message"><!--{{{-->
+    <parameter name="control" type="string">
+      <param name="pattern">start|stop</param>
+    </parameter>
+  </message><!--}}}-->
+
+  <message name="list-of-context-vars"><!--{{{-->
+    <parameter name="cvs" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="rngs/context_vars.rng"/>
+    </parameter>
+  </message><!--}}}-->
+
+  <message name="context-pair"><!--{{{-->
+    <parameter name="id" type="string">
       <param name="pattern">[a-zA-Z_][a-zA-Z0-9_]*</param>
     </parameter>
     <parameter name="value" type="string"/>
-  </message>
-  <message name="list-of-workflow-instances">
-    <parameter name="wis" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="rngs/wis.rng"/>
+  </message><!--}}}-->
+
+  <message name="context-id"><!--{{{-->
+    <parameter name="name" type="string"/>
+  </message><!--}}}-->
+
+  <message name="context-value"><!--{{{-->
+    <parameter name="value" type="string"/>
+  </message><!--}}}-->
+
+  <message name="list-of-endpoint-ids"><!--{{{-->
+    <parameter name="cvs" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="rngs/endpoints.rng"/>
     </parameter>
-  </message>
+  </message><!--}}}-->
+
+  <message name="endpoint-pair"><!--{{{-->
+    <parameter name="id" type="string">
+      <param name="pattern">[a-zA-Z_][a-zA-Z0-9_]*</param>
+    </parameter>
+    <parameter name="value" type="string"/>
+  </message><!--}}}-->
+
+  <message name="endpoint-id"><!--{{{-->
+    <parameter name="name" type="string"/>
+  </message><!--}}}-->
+
+  <message name="endpoint-value"><!--{{{-->
+    <parameter name="value" type="string"/>
+  </message><!--}}}-->
+
+  <message name="description"><!--{{{-->
+    <parameter name="description" type="string"/>
+  </message><!--}}}-->
+
+  <message name="list-of-handler-types"><!--{{{-->
+    <parameter name="cvs" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="rngs/handler_types.rng"/>
+    </parameter>
+  </message><!--}}}-->
+
+  <message name="list-handlers"><!--{{{-->
+    <parameter name="cvs" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="rngs/handlers.rng"/>
+    </parameter>
+  </message><!--}}}-->
+
+  <message name="handler-id"><!--{{{-->
+    <parameter name="id" type="string"/>
+  </message><!--}}}-->
+  <message name="handler"><!--{{{-->
+    <parameter name="value" type="string"/>
+  </message><!--}}}-->
+
 
   <resource>
     <get in="*" out="list-of-workflow-instances"/>
     <post in="*" out="instance-id"/>
-    <delete in="workflow-id"/>
+    <delete in="instance-id"/>
     <resource>
       <resource name="status">
         <get in="*" out="status"/>
@@ -39,8 +112,8 @@
           <post in="endpoint-pair" out="endpoint-id"/>
           <delete in="endpoint-id"/>
           <resource>
-            <get in="*" out="endpoint"/>
-            <put in="endpoint"/>
+            <get in="*" out="endpoint-value"/>
+            <put in="endpoint-value"/>
           </resource>
         </resource>
         <resource name="description">
@@ -62,5 +135,4 @@
       </resource>  
     </resource>
   </resource>  
-
 </description>
