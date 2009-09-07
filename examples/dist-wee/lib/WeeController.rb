@@ -5,6 +5,8 @@ class WeeController
 
   def initialize
     @instances = {}
+    @threads = {}
+    @results = {}
     @id = 1
   end
   def make_instance
@@ -17,5 +19,15 @@ class WeeController
   end
   def [](id)
     @instances[id]
+  end
+  def start(id)
+    @threads[id] = Thread.new() {@results[id] = self[id].start}
+  end
+  def stop(id)
+    self[id].stop
+    @threads[id].join;
+  end
+  def result(id)
+    @results[id];
   end
 end

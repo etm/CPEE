@@ -1,10 +1,22 @@
 #!/usr/bin/ruby
 require '../../../riddl/lib/ruby/client'
 
-library = Riddl::Client.new("http://localhost:9292/")
-main = library.resource("/")
+srv = Riddl::Client.new("http://localhost:9292/")
+main = srv.resource("/")
 status, res = main.request :post => []
 status, res = main.request :post => []
 status, res = main.request :post => []
-three = library.resource("/3/state")
-status, res = three.get
+three = srv.resource("/3/state")
+status, res = three.request :get => []
+status, res = three.request :put => [ 
+  Riddl::Parameter::Simple.new("control","start")
+]
+status, res = three.request :put => [ 
+  Riddl::Parameter::Simple.new("control","stop")
+]
+three_context = srv.resource("/3/properties/context")
+status, res = three_context.request :get => []
+status, res = three_context.request :post => [
+  Riddl::Parameter::Simple.new("id", "x"), 
+  Riddl::Parameter::Simple.new("value", "1")
+]

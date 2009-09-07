@@ -22,7 +22,13 @@ run(
       on resource do          # wf instance level
         on resource 'state' do
           run StateGET if method :get => '*'  # returns the status
-          run StatePOST if method :post => 'control-message' # start or stop the instance
+          run StatePUT if method :put => 'control-message' # start or stop the instance
+        end
+        on resource 'properties' do
+          on resource 'context' do
+            run ContextGET if method :get => '*'  # returns the context
+            run ContextPOST if method :post => 'context-pair' # adds a context variable
+          end
         end
       end
     end
