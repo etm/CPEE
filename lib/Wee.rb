@@ -14,12 +14,12 @@ class Wee
   def initialize
     # Waring: redefined, see wee_initialize
     # setting default values
-    @__wee_search_positions = Hash.new
+    @__wee_search_positions = @__wee_search_positions_original = {}
     @__wee_search = false
   end
   def self::wee_initialize
     define_method :initialize do
-      @__wee_search_positions = Hash.new
+      @__wee_search_positions = @__wee_search_positions = @__wee_search_positions_original = {}
       @__wee_search = false
       @__wee_stop_positions = Array.new
       @__wee_threads = Array.new;

@@ -7,11 +7,11 @@
   </message><!--}}}-->
 
   <message name="instance-id"><!--{{{-->
-    <parameter name="id" type="integer"/>
+    <parameter name="id" type="string"/>
   </message><!--}}}-->
 
-  <message name="status"><!--{{{-->
-    <parameter name="status" type="string">
+  <message name="state"><!--{{{-->
+    <parameter name="state" type="string">
       <param name="pattern">ready|running|stopped|finished</param>
     </parameter>
   </message><!--}}}-->
@@ -93,9 +93,9 @@
     <post in="*" out="instance-id"/>
     <delete in="instance-id"/>
     <resource>
-      <resource name="status">
-        <get in="*" out="status"/>
-        <put in="control-message" out="status"/>
+      <resource name="state">
+        <get in="*" out="state"/>
+        <put in="control-message" out="state"/>
       </resource>
       <resource name="properties">
         <resource name="context">

@@ -1,3 +1,4 @@
+require 'logger'
 
 class MyHandler < Wee::HandlerWrapperBase
   def initialize
