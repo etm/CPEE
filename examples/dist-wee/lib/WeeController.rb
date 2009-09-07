@@ -15,7 +15,7 @@ class WeeController
   def remove_instance(delete_id)
     @instances.delete delete_id
   end
-  def get_instance(id)
+  def [](id)
     @instances[id]
   end
 end

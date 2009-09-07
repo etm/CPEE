@@ -4,9 +4,9 @@ class StateGET < Riddl::Implementation
   include MarkUSModule
 
   def response
-    pp "StateGET"
-    instance_id = @p[0].value
-    wf = $controller.get_instance instance_id
+    pp "StateGET r0=#{@r[0]}"
+    instance_id = @r[0].to_i
+    wf = $controller[instance_id]
     r = Riddl::Parameter::Simple.new("state", wf.state)
   end
 end
