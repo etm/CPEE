@@ -27,6 +27,7 @@ run(
         end
         on resource 'properties' do
           on resource 'context' do
+            p "hallo"
             run ContextGET if method :get => '*'              # returns the context
             run ContextPOST if method :post => 'context-pair' # adds a context variable
           end
