@@ -20,3 +20,6 @@ status, res = three_context.request :post => [
   Riddl::Parameter::Simple.new("id", "x"), 
   Riddl::Parameter::Simple.new("value", "1")
 ]
+three_context_x = srv.resource("/3/properties/context/@x")
+status, res = three_context.request :get => []
+p status, res

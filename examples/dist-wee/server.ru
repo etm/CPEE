@@ -27,9 +27,13 @@ run(
         end
         on resource 'properties' do
           on resource 'context' do
-            p "hallo"
             run ContextGET if method :get => '*'              # returns the context
             run ContextPOST if method :post => 'context-pair' # adds a context variable
+            run ContextDELETE if method :delete => 'context-id' # deletes a context variable
+            on resource do
+              run ContextVarGET if method :get => '*'         # returns the value of a context var
+              run ContextVarPUT if method :put => 'context-value' # sets the value of a context var
+            end
           end
         end
       end
