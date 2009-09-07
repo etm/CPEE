@@ -214,7 +214,7 @@ class Wee
     end
     def refreshcontext()
       @__wee_context.each do |varname, value|
-        @__wee_context[varname] = instance_variable_get(varname)
+        @__wee_context[varname] = instance_variable_get("@"+varname.to_s)
       end
     end
     def get_matching_search_position(position)
@@ -278,7 +278,7 @@ class Wee
       @__wee_context ||= Hash.new
       new_context.each do |name, value|
         instance_variable_set(("@" + name.to_s).to_sym,value)
-        @__wee_context[("@" + name.to_s).to_sym] = value
+        @__wee_context[name.to_s.to_sym] = value
       end
     end
     def context (opt_param = [])

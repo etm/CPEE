@@ -31,7 +31,7 @@ class TestWorkflowControl < Test::Unit::TestCase
     $released +="release a4a";
     sleep(0.1)
     assert($message.include?("Activity a4a done"), "Pos a2_2_1 was not proper released/called");
-    assert($wf_result.inspect.include?("[:finished, [], {:@x=>\"begin_Handler_Dummy_Result_end\"}]"), "Ending environment not correct, see resul=#{$wf_result.inspect}");
+    assert($wf_result.inspect.include?("[:finished, [], {:x=>\"begin_Handler_Dummy_Result_end\"}]"), "Ending environment not correct, see resul=#{$wf_result.inspect}");
   end
   def test_stop
     $wf.replace do

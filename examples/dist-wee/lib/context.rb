@@ -23,7 +23,7 @@ class ContextPOST < Riddl::Implementation
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
     wf.context @p[0].value => @p[1].value
-    Riddl::Parameter::Simple.new("name", "@#{@p[0].value}")
+    Riddl::Parameter::Simple.new("name", @p[0].value)
   end
 end
 
@@ -38,24 +38,34 @@ end
 class ContextVarGET < Riddl::Implementation
   def response
     pp "ContextVarGET, r0=#{@r[0]}, r3=#{@r[3]}"
-    contextvar_id = @r[3]
+    contextvar_id = @r[3].to_sym
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
-    p "=====> #{wf.context[contextvar_id.to_sym]}";
-
-    r = Riddl::Parameter::Simple.new("value", wf.context[contextvar_id.to_sym])
-    pp r
-    r
+    if wf.context.has_key? contextvar_id
+      Riddl::Parameter::Simple.new("value", wf.context[contextvar_id.to_sym])
+    else
+      @status = 404
+    end
   end
 end
 class ContextVarPUT < Riddl::Implementation
   def response
     pp "ContextVarPUT, r0=#{@r[0]}, r3=#{@r[3]}, p0=#{@p[0]}"
-    contextvar_id = @r[3]
-    contextvar_value = @p[0]
+    contextvar_id = @r[3].to_sym
+    contextvar_value = @p[0].value
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
-    wf.context contextvar_id => contextvar_value
+
+    pp "Contextvar = #{contextvar_id}"
+    pp "Contextvarval = #{contextvar_value}"
+    pp "haskey = #{wf.context.has_key? contextvar_id}"
+    pp "context = #{wf.context.inspect}"
+    
+    if wf.context.has_key? contextvar_id
+      wf.context contextvar_id.to_sym => contextvar_value
+    else
+      @status = 404
+    end
   end
 end
 
