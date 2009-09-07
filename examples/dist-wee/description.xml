@@ -93,12 +93,12 @@
     <post in="*" out="instance-id"/>
     <delete in="instance-id"/>
     <resource>
-      <resource name="state">
+      <resource relative="state">
         <get in="*" out="state"/>
         <put in="control-message" out="state"/>
       </resource>
-      <resource name="properties">
-        <resource name="context">
+      <resource relative="properties">
+        <resource relative="context">
           <get in="*" out="list-of-context-vars"/>
           <post in="context-pair" out="context-id"/>
           <delete in="context-id"/>
@@ -107,7 +107,7 @@
             <put in="context-value"/>
           </resource>
         </resource>
-        <resource name="endpoints">
+        <resource relative="endpoints">
           <get in="*" out="list-of-endpoint-ids"/>
           <post in="endpoint-pair" out="endpoint-id"/>
           <delete in="endpoint-id"/>
@@ -116,11 +116,11 @@
             <put in="endpoint-value"/>
           </resource>
         </resource>
-        <resource name="description">
+        <resource relative="description">
           <get in="*" out="description"/>
           <put in="description"/>
         </resource>   
-        <resource name="handlers">
+        <resource relative="handlers">
           <get in="*" out="list-of-handler-types"/>
           <resource>
             <get in="*" out="list-handlers"/>

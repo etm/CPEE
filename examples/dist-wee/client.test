@@ -1,66 +1,10 @@
 #!/usr/bin/ruby
 require '../../../riddl/lib/ruby/client'
 
-
-if ((ARGV[0] == '-h') || (ARGV.size == 0) || (ARGV[0] == '--help'))
-  puts <<-END
-Help for the repository administration
-
-Use: client.test METHOD RES [-p parameter] [-f file]
-  METHOD The method which scould be used for the request: GET, POST, PUT, DELETE, RIDDL
-  RES The resource the request schould be sent to, e.g. /cinemas/arthouse/
-  -p The parameter which schould be appended to the request as key-value pairs, e.g. -p name:ralph
-  -f The mimetype and the file where the value of the parameter is stored as key-value pair, e.g. -f properties:text/xml:/something/prosp.xml
-END
-else
-  argType = 'none'
-  method = ARGV[0]
-  resource = ARGV[1]
-  files = Array.new
-  params = Array.new
-
-  ARGV.each do |arg|
-   case argType
-      when 'param'
-        params << arg.split(':')
-        argType = 'none'
-      when 'file'
-        files << arg.split(':')
-        argType = 'none'
-      when 'none'
-        case arg
-          when '-f' 
-            argType = 'file'
-          when '-p' 
-            argType = 'param'
-        end
-    end  
-  end
-  puts "Sending: #{method} at #{resource}"
-  puts "  Using params: #{params.inspect}"
-  puts "  Using files: #{files.inspect}" 
-  
-  repos =  Riddl::Client.new("http://localhost:9292/")
-  uri = repos.resource(resource)
-
-  ps = params.map do |param|
-    Riddl::Parameter::Simple.new(param[0], param[1])
-  end
-
-  fs = files.map do |file|
-    Riddl::Parameter::Complex.new(file[0], file[1], File.new(file[2]))
-  end
-
-  ps += fs
-  status, res = uri.request method => ps 
-
-  puts "Finished with status code: #{status}"
-  res.each do |param|
-    puts "-" * 50
-    puts "Parameter: #{param.name}"
-    puts "-" * 50
-    pp param
-    puts "Value:\n"
-    #pp param.value.read
-  end  
-end
+library = Riddl::Client.new("http://localhost:9292/")
+main = library.resource("/")
+status, res = main.request :post => []
+status, res = main.request :post => []
+status, res = main.request :post => []
+three = library.resource("/3/state")
+status, res = three.get
