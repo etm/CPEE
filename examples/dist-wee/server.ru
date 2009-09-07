@@ -19,7 +19,7 @@ run(
       run InstancesGET if method :get => '*'      # deliver list of running workflow instances (id)
       run InstancesPOST if method :post => '*'    # start new instance and return instance-id
       run InstancesDELETE if method :delete => 'instance-id'    # delete an instance
-      on resource do          # wf instance level      
+      on resource do          # wf instance level
         on resource 'state' do
           run StateGET if method :get => '*'  # returns the status
           run StatePOST if method :post => 'control-message' # start or stop the instance

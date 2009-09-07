@@ -7,7 +7,7 @@
   </message><!--}}}-->
 
   <message name="instance-id"><!--{{{-->
-    <parameter name="id" type="string"/>
+    <parameter name="id" type="integer"/>
   </message><!--}}}-->
 
   <message name="state"><!--{{{-->

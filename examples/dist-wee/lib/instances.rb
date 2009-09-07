@@ -26,8 +26,8 @@ class InstancesDELETE < Riddl::Implementation
   def response
     begin
       pp "InstanceDELETE, p0 = #{@p[0].value}"
-      id = @p[0].value
-      
+      id = @p[0].value.to_i;
+
       raise Exception.new("invalid instance_id given") unless ($controller.instances.has_key? id)
       $controller.remove_instance id
     rescue
