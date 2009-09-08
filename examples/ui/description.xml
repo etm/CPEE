@@ -1,0 +1,33 @@
+<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <message name="html">
+    <parameter name="html" mimetype="text/html"/>
+  </message>
+  <message name="xml">
+    <parameter name="xml" mimetype="text/xml"/>
+  </message>
+  <message name="file">
+    <parameter name="file" mimetype="*"/>
+  </message>
+  <message name="log-format">
+    <parameter name="stamp" type="dateTime"/>
+    <parameter name="type" type="string"/>
+    <parameter name="details" type="string"/>
+  </message>
+
+  <resource>
+    <get in="*" out="html"/>
+    <resource>
+      <get in="*" out="html"/>
+    </resource>
+    <resource relative="monitor">
+      <get in="*" out="xml"/>
+      <post in="log-format"/>
+    </resource>
+    <resource relative="static"> 
+      <resource recursice="true"> 
+        <get in="*" out="file"/>
+      </resource>
+    </resource>
+  </resource>
+</description>
