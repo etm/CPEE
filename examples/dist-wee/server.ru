@@ -10,11 +10,11 @@ require ::File.dirname(__FILE__) + '/lib/WeeController'
 require ::File.dirname(__FILE__) + '/lib/EmptyWorkflow'
 
 use Rack::ShowStatus
+options = {:Port => 9293, :Host => "0.0.0.0", :AccessLog => []}
+$0 = "wee-riddl"
 
 $controller = WeeController.new
 
-class Bar < Riddl::Implementation
-end
 
 run(
   Riddl::Server.new("description.xml") do
