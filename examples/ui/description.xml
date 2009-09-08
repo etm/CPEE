@@ -25,7 +25,7 @@
       <post in="log-format"/>
     </resource>
     <resource relative="static"> 
-      <resource recursice="true"> 
+      <resource recursive="true"> 
         <get in="*" out="file"/>
       </resource>
     </resource>
