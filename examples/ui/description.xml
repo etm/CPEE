@@ -6,6 +6,9 @@
   <message name="xml">
     <parameter name="xml" mimetype="text/xml"/>
   </message>
+  <message name="url">
+    <parameter name="url" mimetype="text/plain"/>
+  </message>
   <message name="file">
     <parameter name="file" mimetype="*"/>
   </message>
@@ -19,6 +22,9 @@
     <get in="*" out="html"/>
     <resource>
       <get in="*" out="html"/>
+    </resource>
+    <resource relative="remote">
+        <get in="*" out="url"/>
     </resource>
     <resource relative="monitor">
       <get in="*" out="xml"/>

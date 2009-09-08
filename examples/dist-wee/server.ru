@@ -1,5 +1,5 @@
 require 'rack'
-require  '../../../riddl/lib/ruby/server'
+require ::File.dirname(__FILE__) + '/../../../riddl/lib/ruby/server'
 require 'pp'
 require ::File.dirname(__FILE__) + '/lib/instances'
 require ::File.dirname(__FILE__) + '/lib/state'
@@ -10,14 +10,15 @@ require ::File.dirname(__FILE__) + '/lib/WeeController'
 require ::File.dirname(__FILE__) + '/lib/EmptyWorkflow'
 
 use Rack::ShowStatus
-options = {:Port => 9293, :Host => "0.0.0.0", :AccessLog => []}
+options = {:Port => 9295, :Host => "0.0.0.0", :AccessLog => []}
 $0 = "wee-riddl"
 
 $controller = WeeController.new
 
-
 run(
-  Riddl::Server.new("description.xml") do
+  Riddl::Server.new(::File.dirname(__FILE__) + '/description.xml') do
+    cross_site_xhr true
+
     on resource do
       run InstancesGET if method :get => '*'                  # deliver list of running workflow instances (id)
       run InstancesPOST if method :post => '*'                # start new instance and return instance-id
