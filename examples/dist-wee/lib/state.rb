@@ -1,4 +1,4 @@
-require 'lib/MarkUS_V3.0'
+require ::File.dirname(__FILE__) + '/MarkUS_V3.0'
 
 class StateGET < Riddl::Implementation
   

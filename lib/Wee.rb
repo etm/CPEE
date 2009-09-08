@@ -26,6 +26,7 @@ class Wee
 
       initialize_search if methods.include?('initialize_search')
       initialize_context if methods.include?('initialize_context')
+      initialize_endpoints if methods.include?('initialize_endpoints')
       initialize_handler if methods.include?('initialize_handler')
       self.state = :ready
     end
@@ -39,19 +40,26 @@ class Wee
   end
 
   def self::endpoint(endpoints)
-    endpoints.each do |name,value|
-      define_method name do
-        return value
-      end
-      define_method "#{name}=" do |new_value|
-        instance_variable_set("@#{name}", new_value)
-        instance_eval("def #{name}\n return @#{name}\n end")
-      end
+    @@__wee_new_endpoints ||= {}
+    @@__wee_new_endpoints.merge! endpoints
+    define_method :initialize_endpoints do
+      self.endpoint @@__wee_new_endpoints
     end
   end
+#    end
+#    endpoints.each do |name,value|
+#      define_method name do
+#        return value
+#      end
+#      define_method "#{name}=" do |new_value|
+#        instance_variable_set("@#{name}", new_value)
+#        instance_eval("def #{name}\n return @#{name}\n end")
+#      end
+#    end
+#  end
 
   def self::context(variables)
-    @@__wee_new_context_variables ||= Array.new
+    @@__wee_new_context_variables ||= []
     @@__wee_new_context_variables << variables
     define_method :initialize_context do
       @@__wee_new_context_variables.each { |item| self.context=item }
@@ -93,8 +101,8 @@ class Wee
             handler.inform_activity_done position, context
           when :call
             passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
-            retValue = perform_external_call position, passthrough, handler, endpoint, parameters
-            yield(retValue) if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
+            ret_value = perform_external_call position, passthrough, handler, endpoint, parameters
+            yield(ret_value) if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
             refreshcontext
             handler.inform_activity_done position, context unless self.state == :stopped || Thread.current[:nolongernecessary]
         else
@@ -243,12 +251,21 @@ class Wee
     def state
       @__wee_state || :ready
     end
-    def endpoint(new_endpoint)
+    def endpoint(new_endpoint = {})
+      @__wee_endpoints ||= {}
       new_endpoint.each do |name,value|
-        instance_variable_set("@#{name}", value)
-        instance_eval("def #{name}\n return @#{name}\n end")
+        @__wee_endpoints[name] = value;
+
+        instance_variable_set("@__wee_ep_#{name}", value)
+        instance_eval("def #{name}\n return @__wee_ep_#{name}\n end")
+        instance_eval("def #{name}=(newvalue)\n @__wee_endpoints[\"#{name}\".to_sym] = @__wee_ep_#{name} = newvalue\n end")
       end
+      @__wee_endpoints
     end
+    def endpoints
+      @__wee_endpoints || {}
+    end
+
     def search=(new_wee_search)
       search new_wee_search
     end
@@ -308,9 +325,12 @@ class Wee
       end
     end
     def wf_description(code=nil, &blk)
-      @__wee_wfsource = code
+      @__wee_wfsource = code if code || blk
       blk = Proc.new { instance_eval(@__wee_wfsource)} if @__wee_wfsource
-      replace(&blk)
+      replace(&blk) if blk
       return @__wee_wfsource
+    end
+    def wf_description=(code)
+      wf_description(code)
     end
 end

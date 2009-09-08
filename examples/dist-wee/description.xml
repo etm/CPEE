@@ -44,7 +44,7 @@
   </message><!--}}}-->
 
   <message name="list-of-endpoint-ids"><!--{{{-->
-    <parameter name="cvs" mimetype="text/html" handler="http://riddl.org/ns/handlers/relaxng">
+    <parameter name="eps" mimetype="text/html" handler="http://riddl.org/ns/handlers/relaxng">
       <xi:include href="rngs/endpoints.rng"/>
     </parameter>
   </message><!--}}}-->

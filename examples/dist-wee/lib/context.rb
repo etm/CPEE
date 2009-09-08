@@ -1,4 +1,4 @@
-require 'lib/MarkUS_V3.0'
+require ::File.dirname(__FILE__) + '/MarkUS_V3.0'
 
 class ContextGET < Riddl::Implementation
   include MarkUSModule
@@ -56,11 +56,6 @@ class ContextVarPUT < Riddl::Implementation
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
 
-    pp "Contextvar = #{contextvar_id}"
-    pp "Contextvarval = #{contextvar_value}"
-    pp "haskey = #{wf.context.has_key? contextvar_id}"
-    pp "context = #{wf.context.inspect}"
-    
     if wf.context.has_key? contextvar_id
       wf.context contextvar_id.to_sym => contextvar_value
     else

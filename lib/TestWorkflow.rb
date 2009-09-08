@@ -1,5 +1,5 @@
-require 'Wee'
-require 'TestHandler'
+require ::File.dirname(__FILE__)+ '/Wee'
+require ::File.dirname(__FILE__)+ '/TestHandler'
 
 class TestWorkflow < Wee
   handler TestHandler

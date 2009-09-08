@@ -1,11 +1,13 @@
 require 'rack'
-require '../../../riddl/lib/ruby/server'
+require  '../../../riddl/lib/ruby/server'
 require 'pp'
-require 'lib/instances'
-require 'lib/state'
-require 'lib/context'
-require 'lib/WeeController'
-require 'lib/EmptyWorkflow'
+require ::File.dirname(__FILE__) + '/lib/instances'
+require ::File.dirname(__FILE__) + '/lib/state'
+require ::File.dirname(__FILE__) + '/lib/context'
+require ::File.dirname(__FILE__) + '/lib/endpoints'
+require ::File.dirname(__FILE__) + '/lib/description'
+require ::File.dirname(__FILE__) + '/lib/WeeController'
+require ::File.dirname(__FILE__) + '/lib/EmptyWorkflow'
 
 use Rack::ShowStatus
 
@@ -34,6 +36,19 @@ run(
               run ContextVarGET if method :get => '*'         # returns the value of a context var
               run ContextVarPUT if method :put => 'context-value' # sets the value of a context var
             end
+          end
+          on resource 'endpoints' do
+            run EndpointsGET if method :get => '*'              # returns the endpoints
+            run EndpointsPOST if method :post => 'endpoint-pair' # adds a endpoint
+            run EndpointsDELETE if method :delete => 'endpoint-id' # deletes a endpoint
+            on resource do
+              run EndpointGET if method :get => '*'         # returns the value of a context var
+              run EndpointPUT if method :put => 'endpoint-value' # sets the value of a context var
+            end
+          end
+          on resource 'description' do
+            run DescriptionGET if method :get => '*'            # returns the description
+            run DescriptionPUT if method :put => 'description'  # sets the description
           end
         end
       end

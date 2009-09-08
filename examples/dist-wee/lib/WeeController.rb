@@ -1,4 +1,4 @@
-require 'lib/EmptyWorkflow'
+require ::File.dirname(__FILE__) + '/EmptyWorkflow'
 
 class WeeController
   attr_reader :instances
