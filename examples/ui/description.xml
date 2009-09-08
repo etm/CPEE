@@ -24,10 +24,8 @@
       <get in="*" out="xml"/>
       <post in="log-format"/>
     </resource>
-    <resource relative="static"> 
-      <resource recursive="true"> 
-        <get in="*" out="file"/>
-      </resource>
+    <resource relative="static" recursive="true"> 
+      <get in="*" out="file"/>
     </resource>
   </resource>
 </description>

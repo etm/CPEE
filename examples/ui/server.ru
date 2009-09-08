@@ -1,16 +1,16 @@
 require 'rack'
 require  '../../../riddl/lib/ruby/server'
+require  '../../../riddl/lib/ruby/utils/fileserve'
 require 'pp'
 
 use Rack::ShowStatus
 options = {:Port => 9293, :Host => "0.0.0.0", :AccessLog => []}
 $0 = "wee-ui"
 
-$controller = WeeController.new
-
-
 run(
   Riddl::Server.new("description.xml") do
+    cross_site_xhr true
+
     on resource do
       run IndexGET if method :get => '*'
       on resource do
@@ -21,9 +21,7 @@ run(
         end
       end
       on resource 'static' do
-        on resource do
-          run Dispatcher if method :get => '*'
-        end
+        run Riddl::Utils::FileServe, 'content' if method :get => '*'
       end
     end
   end
