@@ -22,6 +22,10 @@
                   success: function(instance_id){
                     console.log("Got instance_id: "+instance_id);
                     $("#div_instances").innerHTML += "<a href=\""+instance_id+"/\">Go to instance "+instance_id+"</a>";
+                  },
+                  error: function(xhr, desc, err) {
+                    console.log(xhr);
+                    console.log("Desc: " + desc + "\nErr:" + err);
                   }
                 });
               }

@@ -16,8 +16,7 @@ $0 = "wee-riddl"
 $controller = WeeController.new
 
 run(
-  Riddl::Server.new(::File.dirname(__FILE__) + '/description.xml') do
-    cross_site_xhr true
+  Riddl::Server.new(::File.dirname(__FILE__) + '/description.xml', true) do
 
     on resource do
       run InstancesGET if method :get => '*'                  # deliver list of running workflow instances (id)
