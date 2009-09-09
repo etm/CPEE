@@ -36,6 +36,44 @@ and open the template in the editor.
                 $("#div_description").innerHTML = instance_description;
               }
             });
+            // Getting the Context
+            $.ajax({
+              type: "GET", cache: false,
+              url: (wee_url+location.path+"/properties/context/"),
+              success: function(context){
+                $(xml).find("a").each(function() {
+                  var a = $(this);
+                  var context_id = a.text;
+                  console.log("found context id "+context_id);
+                  $.ajax({
+                    type: "GET", cache: false,
+                    url: (wee_url+location.path+"/properties/context/"+context_id),
+                    success: function(context_value){
+                      console.log("found context value. id="+context_id+", value="+context_value);
+                    }
+                  });
+                })
+              }
+            });
+            // Getting the Endpoints
+            $.ajax({
+              type: "GET", cache: false,
+              url: (wee_url+location.path+"/properties/endpoints/"),
+              success: function(endpoints){
+                $(xml).find("a").each(function() {
+                  var a = $(this);
+                  var endpoint_id = a.text;
+                  console.log("found endpoint id "+endpoint_id);
+                  $.ajax({
+                    type: "GET", cache: false,
+                    url: (wee_url+location.path+"/properties/endpoints/"+endpoint_id),
+                    success: function(endpoint_value){
+                      console.log("found endpoint value. id="+endpoint_id+", value="+endpoint_value);
+                    }
+                  });
+                })
+              }
+            });
           }
         });
 

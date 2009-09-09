@@ -17,7 +17,7 @@
                 // create a new instance and add a link
                 console.log("calling: "+wee_url);
                 $.ajax({
-                  type: "GET", cache: false,
+                  type: "PUT", cache: false,
                   url: wee_url,
                   success: function(instance_id){
                     console.log("Got instance_id: "+instance_id);
@@ -25,9 +25,7 @@
                   }
                 });
               }
-            });
-
-            
+            });            
         }
     </script>
     <h1>WorkflowExecutionEngine - Demo</h1>
