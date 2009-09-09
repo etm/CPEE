@@ -16,26 +16,40 @@
               success: function(wee_url){
                 // create a new instance and add a link
                 console.log("calling: "+wee_url);
-                $.ajax({
-                  type: "PUT", cache: false,
-                  url: wee_url,
-                  success: function(instance_id){
-                    console.log("Got instance_id: "+instance_id);
-                    $("#div_instances").innerHTML += "<a href=\""+instance_id+"/\">Go to instance "+instance_id+"</a>";
-                  },
-                  error: function(xhr, desc, err) {
-                    console.log(xhr);
-                    console.log("Desc: " + desc + "\nErr:" + err);
-                  }
-                });
+                makeRequest("POST", wee_url, new_instance_created, report_failure);
+                
               }
             });            
         }
+        function new_instance_created(instance_id) {
+            console.info("Adding Instance "+instance_id);
+            $("#div_instances").append("<a href=\""+instance_id+"\" style=\"display:block\">Go to Instance "+instance_id+"</a>");
+        }
+        function report_failure(text) {
+            console.log("ERROR: "+text);
+        }
+        function makeRequest(method, url, success, failure) {
+            var req = new XMLHttpRequest();  
+            var ret = "";
+            req.open(method, url, true);  
+            req.onreadystatechange = function (e) {  
+                if (req.readyState === 4) {  
+                    if(req.status === 200) {
+                        success(req.responseText);
+                    } else {  
+                        failure("method "+method+" to "+url+" failed");
+                    }
+                    method
+                }  
+            };  
+            req.send(null);
+        }
+
     </script>
     <h1>WorkflowExecutionEngine - Demo</h1>
     <table>
         <tr>
-            <td>
+            <td valign="top">
                 Book Flight & Hotel
             </td>
             <td>
@@ -44,7 +58,8 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td valign="top">
+
                 Pay Wages
             </td>
             <td>
@@ -52,7 +67,7 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td valign="top">
                 New Customer Order
             </td>
             <td>
