@@ -1,13 +1,13 @@
 <description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <message name="html">
-    <parameter name="html" mimetype="text/html"/>
+    <parameter name="file" mimetype="text/html"/>
   </message>
   <message name="xml">
-    <parameter name="xml" mimetype="text/xml"/>
+    <parameter name="file" mimetype="text/xml"/>
   </message>
   <message name="url">
-    <parameter name="url" mimetype="text/plain"/>
+    <parameter name="file" mimetype="text/plain"/>
   </message>
   <message name="file">
     <parameter name="file" mimetype="*"/>
