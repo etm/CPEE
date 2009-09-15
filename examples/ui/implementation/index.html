@@ -8,21 +8,40 @@
   </head>
   <body>
     <script type="text/javascript">
-        function makeFlightInstance() {
+        function listInstances() {
             // Fetch the url of the wee-riddle
+            console.log("Fetching existing instances");
+            $.ajax({
+              type: "GET", cache: false,
+              url: "remote",
+              success: function(wee_url){
+                console.log("calling: "+wee_url);
+                makeRequest("GET", wee_url, 
+                function(result) {
+                    console.log("appending "+result+" to instance listing");
+                    $("#div_instances").append(result);
+                },
+                report_failure);
+
+              }
+            });
+        }
+        function makeNewInstance() {
+            // Fetch the url of the wee-riddle
+            console.log("Creating new instance");
             $.ajax({
               type: "GET", cache: false,
               url: "remote",
               success: function(wee_url){
                 // create a new instance and add a link
+                var instance_name = $("#txt_name").val();
                 console.log("calling: "+wee_url);
-                makeRequest("POST", wee_url, new_instance_created, report_failure);
-                
+                makeRequest("POST", wee_url+"?name="+instance_name, new_instance_created, report_failure);
               }
             });            
         }
         function new_instance_created(instance_id) {
-            console.info("Adding Instance "+instance_id);
+            console.info("Adding Instance "+instance_id+"to list");
             var instance_name = $("#txt_name").val();
             console.log("Instance name = "+instance_name);
             $("#div_instances").append("<a href=\""+instance_id+"\" style=\"display:block\">Go to Instance "+instance_name+"</a>");
@@ -55,11 +74,14 @@
             </td>
             <td>
                 <input type="text" id="txt_name"></input>
-                <button type="button" id="btn_book" onclick="makeFlightInstance()">New Instance</button>
+                <button type="button" id="btn_book" onclick="makeNewInstance()">New Instance</button>
                 <div id="div_instances"></div>
             </td>
         </tr>
     </table>
     <textarea id="txt_log" cols="100" rows="20">Log</textarea>
+    <script type="text/javascript">
+        listInstances();
+    </script>
   </body>
 </html>

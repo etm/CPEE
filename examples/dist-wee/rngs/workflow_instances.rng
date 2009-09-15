@@ -7,7 +7,7 @@
       <attribute name="style">
         <data type="string"/>
       </attribute>
-      <data type="positiveInteger"/>
+      <data type="string"/>
     </element>
   </zeroOrMore>
 </element>

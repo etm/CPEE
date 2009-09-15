@@ -10,6 +10,10 @@
     <parameter name="id" type="integer"/>
   </message><!--}}}-->
 
+  <message name="instance-name"><!--{{{-->
+    <parameter name="name" type="string"/>
+  </message><!--}}}-->
+
   <message name="state"><!--{{{-->
     <parameter name="state" type="string">
       <param name="pattern">ready|running|stopped|finished</param>
@@ -90,7 +94,7 @@
 
   <resource>
     <get in="*" out="list-of-workflow-instances"/>
-    <post in="*" out="instance-id"/>
+    <post in="instance-name" out="instance-id"/>
     <delete in="instance-id"/>
     <resource>
       <resource relative="state">

@@ -20,7 +20,7 @@ run(
 
     on resource do
       run InstancesGET if method :get => '*'                  # deliver list of running workflow instances (id)
-      run InstancesPOST if method :post => '*'                # start new instance and return instance-id
+      run InstancesPOST if method :post => 'instance-name'    # start new instance and return instance-id
       run InstancesDELETE if method :delete => 'instance-id'  # delete an instance
       on resource do                                          # wf instance level
         on resource 'state' do

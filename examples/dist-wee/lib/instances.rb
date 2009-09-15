@@ -8,7 +8,7 @@ class InstancesGET < Riddl::Implementation
     Riddl::Parameter::Complex.new("wis","text/html") do
       div_ do
         $controller.instances.each do |id, value|
-          a_ id, :href => id, :style => "display:block"
+          a_ $controller.name[id], :href => id, :style => "display:block"
         end
       end
     end
@@ -18,7 +18,10 @@ end
 class InstancesPOST < Riddl::Implementation
   def response
     pp "InstancePOST"
-    Riddl::Parameter::Simple.new("id", $controller.make_instance)
+    name = @p[0].value;
+    instance_id = $controller.make_instance
+    $controller.set_name instance_id, name
+    Riddl::Parameter::Simple.new("id", instance_id)
   end
 end
 

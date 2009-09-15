@@ -7,6 +7,7 @@ use Rack::ShowStatus
 options = {:Port => 9296, :Host => "0.0.0.0", :AccessLog => []}
 $0 = "wee-ui"
 
+
 run(
   Riddl::Server.new(::File.dirname(__FILE__) + '/description.xml') do
     on resource do

@@ -6,6 +6,7 @@ class WeeController
   def initialize
     @instances = {}
     @threads = {}
+    @names = {}
     @results = {}
     @id = 1
   end
@@ -25,9 +26,15 @@ class WeeController
   end
   def stop(id)
     self[id].stop
-    @threads[id].join;
+    @threads[id].join
   end
   def result(id)
-    @results[id];
+    @results[id]
+  end
+  def name
+    return @names
+  end
+  def set_name(id, name)
+    @names[id] = name
   end
 end
