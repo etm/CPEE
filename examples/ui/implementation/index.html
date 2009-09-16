@@ -8,23 +8,27 @@
   </head>
   <body>
     <script type="text/javascript">
-        function listInstances() {
-            // Fetch the url of the wee-riddle
-            console.log("Fetching existing instances");
-            $.ajax({
-              type: "GET", cache: false,
-              url: "remote",
-              success: function(wee_url){
-                console.log("calling: "+wee_url);
-                makeRequest("GET", wee_url, 
-                function(result) {
-                    console.log("appending "+result+" to instance listing");
-                    $("#div_instances").append(result);
-                },
-                report_failure);
+        var wee_url = "";
 
-              }
-            });
+        // Fetch the url of the wee-riddle
+        $.ajax({
+          type: "GET", cache: false,
+          url: "remote",
+          success: function(url){
+            wee_url = url;
+            listInstances();
+          }
+        });
+
+
+        function listInstances() {
+            console.log("Fetching existing instances");
+            makeRequest("GET", wee_url,
+            function(result) {
+                console.log("appending "+result+" to instance listing");
+                $("#div_instances").append(result);
+            },
+            report_failure);
         }
         function makeNewInstance() {
             // Fetch the url of the wee-riddle
@@ -44,6 +48,12 @@
             console.info("Adding Instance "+instance_id+"to list");
             var instance_name = $("#txt_name").val();
             console.log("Instance name = "+instance_name);
+            console.log("Setting Instance Handler parameters");
+            makeRequest("POST", wee_url+instance_id+"/properties/handlers?class=MonitoringHandler&argument="+encodeURIComponent(location.href+instance_id)+"/monitor",
+                function() {
+                    console.log("Done setting handler");
+                },
+                report_failure);
             $("#div_instances").append("<a href=\""+instance_id+"\" style=\"display:block\">Go to Instance "+instance_name+"</a>");
         }
         function report_failure(text) {

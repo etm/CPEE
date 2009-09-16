@@ -6,8 +6,10 @@ require ::File.dirname(__FILE__) + '/lib/state'
 require ::File.dirname(__FILE__) + '/lib/context'
 require ::File.dirname(__FILE__) + '/lib/endpoints'
 require ::File.dirname(__FILE__) + '/lib/description'
+require ::File.dirname(__FILE__) + '/lib/handler'
 require ::File.dirname(__FILE__) + '/lib/WeeController'
 require ::File.dirname(__FILE__) + '/lib/EmptyWorkflow'
+
 
 use Rack::ShowStatus
 options = {:Port => 9295, :Host => "0.0.0.0", :AccessLog => []}
@@ -49,6 +51,9 @@ run(
           on resource 'description' do
             run DescriptionGET if method :get => '*'            # returns the description
             run DescriptionPUT if method :put => 'description'  # sets the description
+          end
+          on resource 'handlers' do
+            run HandlerPOST if method :post => 'handler-pair'   # set the handler and argument
           end
         end
       end

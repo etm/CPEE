@@ -14,6 +14,7 @@ class WeeController
     @instances[@id] = EmptyWorkflow.new
     @id += 1
     @id-1
+
   end
   def remove_instance(delete_id)
     @instances.delete delete_id

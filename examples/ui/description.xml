@@ -13,7 +13,7 @@
     <parameter name="file" mimetype="*"/>
   </message>
   <message name="log-format">
-    <parameter name="stamp" type="dateTime"/>
+    <parameter name="stamp" type="string"/>
     <parameter name="type" type="string"/>
     <parameter name="details" type="string"/>
   </message>
@@ -22,13 +22,13 @@
     <get in="*" out="html"/>
     <resource>
       <get in="*" out="html"/>
+      <resource relative="monitor">
+        <get in="*" out="xml"/>
+        <post in="log-format"/>
+      </resource>
     </resource>
     <resource relative="remote">
         <get in="*" out="url"/>
-    </resource>
-    <resource relative="monitor">
-      <get in="*" out="xml"/>
-      <post in="log-format"/>
     </resource>
     <resource relative="static" recursive="true"> 
       <get in="*" out="file"/>

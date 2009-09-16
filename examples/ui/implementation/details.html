@@ -62,7 +62,7 @@ and open the template in the editor.
                     <td>
                         <a href="javascript:unhide('div_description');">Show/Hide</a>
                         <div id="div_description" class="hidden">
-                            <textarea id ="txt_description" cols="80" rows="20">undefined</textarea>
+                            <textarea id ="txt_description" cols="60" rows="10"></textarea>
                         </div>
                     </td>
                 </tr>
@@ -70,7 +70,7 @@ and open the template in the editor.
             <button id="btn_apply" type="button" onclick="javascript:apply()">Apply to current instance</button>
     </form>
     <h5>WorkflowExecutionEngine - Workflow Information CocKpit</h5>
-    <p>activity :a1, :call, hotel, x, y</p>
+    <p>activity :a1, :call, hotel, @x, @y</p>
   </body>
 
 
@@ -99,18 +99,8 @@ and open the template in the editor.
 <script type='text/javascript'>
 
     var wee_url = "";
+    var demo = true;
 
-    console.log("Fetching wee url");
-    $.ajax({
-      type: "GET",
-      url: "remote",
-      cache: false,
-      success: function(url){
-        wee_url = url;
-        console.log("got wee url: "+wee_url+". my path is "+location.pathname);
-        loadInstance();
-      }
-    });
     function makeRequest(method, url, success, failure) {
         var req = new XMLHttpRequest();  
         req.open(method, url, true);  
@@ -185,6 +175,13 @@ and open the template in the editor.
             }, report_failure
         );
     }
+    function setDummyValues() {
+        console.log("setting dummy values");
+        addContext("x", "1");
+        addContext("y", "2");
+        addEndpoint("hotel", "http://server.com");
+        $("#txt_description").val("activity :a1, :call, hotel, @x, @y");
+    }
 
     function setContextVariable_serverside(context_id, context_value) {
         makeRequest(
@@ -221,6 +218,9 @@ and open the template in the editor.
     }
 
     var context_i = 0;
+    function clearContext() {
+        $("#div_context").html("");
+    }
     function addContext(name, value) {
         console.log("Adding new context, name="+name+", value="+value);
         var text = $("#add_context").html();
@@ -231,7 +231,11 @@ and open the template in the editor.
         $("#div_context").append(text);
         context_i += 1;
     }
+
     var endpoint_i = 0;
+    function clearEndpoints() {
+        $("#div_endpoints").html("");
+    }
     function addEndpoint(name, url) {
         console.log("Adding new endpoint, name="+name+", url="+url);
         var text = $("#add_endpoint").html();
@@ -242,8 +246,7 @@ and open the template in the editor.
         $("#div_endpoints").append(text);
         endpoint_i += 1;
     }
-
-
+    
     function apply() {
         // apply context
         for(var i = 0; i < context_i; i++) {
@@ -262,7 +265,14 @@ and open the template in the editor.
         desc = $("#txt_description").val();
         setDescription_serverside(desc);
     }
+
     var running = false;
+    function setPolling() {
+        if(running) {
+//            loadInstance();
+//            setTimeout(setPolling, 5);
+        }
+    }
     function togglestartstop() {
         if(!running) {
             // deactivate controls
@@ -279,6 +289,7 @@ and open the template in the editor.
             $("#btn_startstop").val("Stop");
             running = true;
             // refresh ui constantly
+            setPolling();
         }
         else {
             // stop the wee
@@ -296,6 +307,24 @@ and open the template in the editor.
         }
 
     }
+
+    console.log("Fetching wee url");
+    $.ajax({
+      type: "GET",
+      url: "remote",
+      cache: false,
+      success: function(url){
+        wee_url = url;
+        console.log("got wee url: "+wee_url+". my path is "+location.pathname);
+        loadInstance();
+        console.log("checking for dummy values");
+        if(demo) {
+            console.log("ok, adding dummy values");
+            setDummyValues();
+        }
+      }
+    });
+
 </script>
 
 </html>

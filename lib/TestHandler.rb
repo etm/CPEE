@@ -1,6 +1,6 @@
 
 class TestHandler < Wee::HandlerWrapperBase
-  def initialize
+  def initialize(*args)
     @__myhandler_stopped = false
     @__myhandler_finished = false
     @__myhandler_returnValue = nil

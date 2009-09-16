@@ -14,7 +14,7 @@ class StatePUT < Riddl::Implementation
   include MarkUSModule
 
   def response
-    pp "StatePUT, r0=#{@r[0]}, p0=#{@p[0]}"
+    pp "StatePUT, r0=#{@r[0]}, p0=#{@p[0].value}"
     instance_id = @r[0].to_i
     if @p[0].value == "stop"
       pp "Stopping instance no #{instance_id}"

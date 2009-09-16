@@ -67,8 +67,8 @@ class Wee
     wee_initialize
   end
 
-  def self::handler(aClassname)
-    define_method :initialize_handler do self.handler=aClassname end
+  def self::handler(aClassname, *args)
+    define_method :initialize_handler do self.handler=aClassname; self.handlerargs(args); end
     wee_initialize
   end
 
@@ -92,7 +92,7 @@ class Wee
     def activity(position, type, endpoint=nil, *parameters)
       return if self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
       
-      handler = @__wee_handler.new
+      handler = @__wee_handler.new handlerargs
       begin
         case type
           when :manipulate
@@ -233,7 +233,7 @@ class Wee
       @__wee_stop_positions = Array.new if self.state != newState
       self.search @__wee_search_positions_original
       @__wee_state = newState
-      handler = @__wee_handler.new
+      handler = @__wee_handler.new(handlerargs)
       handler.inform_workflow_state newState
     end
 
@@ -248,8 +248,15 @@ class Wee
       raise("Handler is not inhereted from HandlerWrapperBase") unless check_ok
       @__wee_handler = new_wee_handler
     end
+    def handlerargs(*args)
+      @__wee_handlerargs = args unless args.size() == 0;
+      return @__wee_handlerargs
+    end
     def state
       @__wee_state || :ready
+    end
+    def endpoint=(new_endpoint = {})
+      endpoint new_endpoint
     end
     def endpoint(new_endpoint = {})
       @__wee_endpoints ||= {}
@@ -318,16 +325,18 @@ class Wee
     def replace(&blk)
       (class << self; self; end).class_eval do
         define_method :__wee_execute do
+          p "WEE: Lets bring it on! source=#{@__wee_wfsource.inspect}, blk = #{blk.inspect}"
           self.state = :running
-          instance_eval(&blk)
+          blk.call
           [self.state, position, context]
         end
       end
     end
     def wf_description(code=nil, &blk)
       @__wee_wfsource = code if code || blk
+      p "WEE: setting description to: #{@__wee_wfsource.inspect}"
       blk = Proc.new { instance_eval(@__wee_wfsource)} if @__wee_wfsource
-      replace(&blk) if blk
+      replace(blk) if blk
       return @__wee_wfsource
     end
     def wf_description=(code)

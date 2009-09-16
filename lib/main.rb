@@ -1,5 +1,15 @@
 require 'logger'
-require 'Workflow'
+require 'SimpleWorkflow'
+
+t = SimpleWorkflow.new
+result = nil
+t.wf_description= "p \"test\""
+execution = Thread.new {
+  result = t.start
+}
+execution.join()
+p result
+
 
 def show_normal
   t = Workflow.new
@@ -36,9 +46,9 @@ def show_stop_and_replace
   return result
 end
 
-puts "===================================================="
-result = show_normal
-puts "========> Ending-Result: #{result.inspect}"
+# puts "===================================================="
+# result = show_normal
+# puts "========> Ending-Result: #{result.inspect}"
 
 #  control flow do
 #    activity :a1, :call, endpoint1

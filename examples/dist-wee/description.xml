@@ -90,6 +90,10 @@
   <message name="handler"><!--{{{-->
     <parameter name="value" type="string"/>
   </message><!--}}}-->
+  <message name="handler-pair"><!--{{{-->
+    <parameter name="class" type="string"/>
+    <parameter name="argument" type="string"/>
+  </message><!--}}}-->
 
 
   <resource>
@@ -126,6 +130,7 @@
         </resource>   
         <resource relative="handlers">
           <get in="*" out="list-of-handler-types"/>
+          <post in="handler-pair"/>
           <resource>
             <get in="*" out="list-handlers"/>
             <post in="handler" out="handler-id"/>
