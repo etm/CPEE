@@ -8,7 +8,7 @@ class MonitorGET < Riddl::Implementation
     pp "MonitorGET"
     $monitor_log ||= []
 
-    Riddl::Parameter::Simple.new("file","text/xml") do
+    Riddl::Parameter::Complex.new("file","text/xml") do
       log_ do
         $monitor_log.each do |line|
           entry_ :stamp => line[:stamp], :type => line[:type], :details => line[:details]
