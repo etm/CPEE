@@ -10,17 +10,6 @@
     <script type="text/javascript">
         var wee_url = "";
 
-        // Fetch the url of the wee-riddle
-        $.ajax({
-          type: "GET", cache: false,
-          url: "remote",
-          success: function(url){
-            wee_url = url;
-            listInstances();
-          }
-        });
-
-
         function listInstances() {
             console.log("Fetching existing instances");
             makeRequest("GET", wee_url,
@@ -74,6 +63,32 @@
             };  
             req.send(null);
         }
+        function setPolling() {
+            console.log("setting the polling");
+            refreshLog();
+            setTimeout(setPolling, 5);
+        }
+        function refreshLog() {
+            console.log("Refreshing log");
+            makeRequest("GET", 'monitor',
+                function(log) {
+                    $("#txt_log").val(log);
+                }, report_failure
+            );
+        }
+
+        // Fetch the url of the wee-riddle
+        $.ajax({
+          type: "GET", cache: false,
+          url: "remote",
+          success: function(url){
+            wee_url = url;
+            setPolling();
+            listInstances();
+            
+          }
+        });
+
 
     </script>
     <h1>WorkflowExecutionEngine - Demo</h1>

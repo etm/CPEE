@@ -23,7 +23,7 @@ class WeeController
     @instances[id]
   end
   def start(id)
-    @threads[id] = Thread.new() {@results[id] = self[id].start}
+    @threads[id] = Thread.new {Thread.current.abort_on_exception = true; @results[id] = self[id].start}
   end
   def stop(id)
     self[id].stop

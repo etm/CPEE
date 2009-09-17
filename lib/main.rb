@@ -1,9 +1,12 @@
+require 'pp'
 require 'logger'
 require 'SimpleWorkflow'
 
 t = SimpleWorkflow.new
 result = nil
-t.wf_description= "p \"test\""
+description = "p \"test\""
+pp "description will be set to #{description}"
+t.wf_description= description
 execution = Thread.new {
   result = t.start
 }

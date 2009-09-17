@@ -325,18 +325,17 @@ class Wee
     def replace(&blk)
       (class << self; self; end).class_eval do
         define_method :__wee_execute do
-          p "WEE: Lets bring it on! source=#{@__wee_wfsource.inspect}, blk = #{blk.inspect}"
           self.state = :running
-          blk.call
+          instance_eval(&blk);
+          self.state = :finished if self.state == :running
           [self.state, position, context]
         end
       end
     end
     def wf_description(code=nil, &blk)
       @__wee_wfsource = code if code || blk
-      p "WEE: setting description to: #{@__wee_wfsource.inspect}"
       blk = Proc.new { instance_eval(@__wee_wfsource)} if @__wee_wfsource
-      replace(blk) if blk
+      replace(&blk) if blk
       return @__wee_wfsource
     end
     def wf_description=(code)

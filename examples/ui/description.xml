@@ -27,6 +27,9 @@
         <post in="log-format"/>
       </resource>
     </resource>
+    <resource relative="monitor">
+      <get in="*" out="xml"/>
+    </resource>
     <resource relative="remote">
         <get in="*" out="url"/>
     </resource>
