@@ -45,12 +45,13 @@
                 report_failure);
             $("#div_instances").append("<a href=\""+instance_id+"\" style=\"display:block\">Go to Instance "+instance_name+"</a>");
         }
+        console.log("TEST!");
         function report_failure(text) {
             console.log("ERROR: "+text);
         }
         function makeRequest(method, url, success, failure) {
             var req = new XMLHttpRequest();  
-            req.open(method, url, true);  
+            req.open(method, url, true);
             req.onreadystatechange = function (e) {  
                 if (req.readyState === 4) {  
                     if(req.status === 200) {
@@ -70,7 +71,7 @@
         }
         function refreshLog() {
             console.log("Refreshing log");
-            makeRequest("GET", 'monitor',
+            makeRequest("GET", "monitor",
                 function(log) {
                     $("#txt_log").val(log);
                 }, report_failure
@@ -78,10 +79,12 @@
         }
 
         // Fetch the url of the wee-riddle
+        console.log("TEST");
         $.ajax({
           type: "GET", cache: false,
           url: "remote",
           success: function(url){
+            console.log("WEE-url getted: "+url);
             wee_url = url;
             setPolling();
             listInstances();
@@ -106,7 +109,7 @@
     </table>
     <textarea id="txt_log" cols="100" rows="20">Log</textarea>
     <script type="text/javascript">
-        listInstances();
+        // listInstances();
     </script>
   </body>
 </html>
