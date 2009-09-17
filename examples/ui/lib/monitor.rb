@@ -23,6 +23,6 @@ class MonitorPOST < Riddl::Implementation
     pp "MonitorPOST, p0=#{@p[0].value}, p1=#{@p[1].value}, p2=#{@p[2].value}"
     $monitor_log ||= []
     $monitor_log.push({:stamp => @p[0].value, :type => @p[1].value, :details => @p[2].value})
-    
+    []
   end
 end
