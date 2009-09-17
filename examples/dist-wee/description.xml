@@ -26,6 +26,10 @@
     </parameter>
   </message><!--}}}-->
 
+  <message name="search-pos"><!--{{{-->
+    <parameter name="searchpos" type="string"/>
+  </message><!--}}}-->
+
   <message name="list-of-context-vars"><!--{{{-->
     <parameter name="cvs" mimetype="text/html" handler="http://riddl.org/ns/handlers/relaxng">
       <xi:include href="rngs/context_vars.rng"/>
@@ -104,6 +108,7 @@
       <resource relative="state">
         <get in="*" out="state"/>
         <put in="control-message" out="state"/>
+        <put in="search-pos"/>
       </resource>
       <resource relative="properties">
         <resource relative="context">

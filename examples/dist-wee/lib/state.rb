@@ -1,7 +1,5 @@
-require ::File.dirname(__FILE__) + '/MarkUS_V3.0'
 
 class StateGET < Riddl::Implementation
-  
   def response
     pp "StateGET, r0=#{@r[0]}"
     instance_id = @r[0].to_i
@@ -11,8 +9,6 @@ class StateGET < Riddl::Implementation
 end
 
 class StatePUT < Riddl::Implementation
-  include MarkUSModule
-
   def response
     pp "StatePUT, r0=#{@r[0]}, p0=#{@p[0].value}"
     instance_id = @r[0].to_i
@@ -25,5 +21,16 @@ class StatePUT < Riddl::Implementation
       $controller.start instance_id
     end
     Riddl::Parameter::Simple.new("state", $controller[instance_id].state);
+  end
+end
+
+class StatePUTSearch < Riddl::Implementation
+  def response
+    pp "StatePUTSearch, r0=#{@r[0]}, p0=#{@p[0].value}"
+    instance_id = @r[0].to_i
+    
+    pp "Setting search position of instance no #{instance_id} to #{@p[0].value}"
+    $controller[instance_id].search @p[0].value
+    []
   end
 end

@@ -7,7 +7,7 @@ class MonitorGET < Riddl::Implementation
   def response
     pp "MonitorGET"
     $monitor_log ||= []
-
+    @__markus_indent = true;
     Riddl::Parameter::Complex.new("file","text/xml") do
       log_ do
         $monitor_log.each do |line|

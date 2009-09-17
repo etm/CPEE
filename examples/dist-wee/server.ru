@@ -28,6 +28,7 @@ run(
         on resource 'state' do
           run StateGET if method :get => '*'                  # returns the status
           run StatePUT if method :put => 'control-message'    # start or stop the instance
+          run StatePUTSearch if method :put => 'search-pos'         # set the search position
         end
         on resource 'properties' do
           on resource 'context' do

@@ -86,9 +86,18 @@
         }
         function refreshLog() {
             console.log("Refreshing log");
+            var log_plain = "";
             makeRequest("GET", "monitor",
                 function(log) {
-                    $("#txt_log").val(log);
+                    $("entry", log).each(function(){
+                            stamp = $(this).attr("stamp");
+                            type = $(this).attr("type");
+                            details = $(this).attr("details");
+                            log_plain = log_plain+"["+stamp+"]"+type+": "+details+"\n";
+                        }
+
+                    );
+                    $("#txt_log").val(log_plain);
                 }, report_failure
             );
         }
