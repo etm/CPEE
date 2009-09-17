@@ -10,7 +10,6 @@ require ::File.dirname(__FILE__) + '/lib/handler'
 require ::File.dirname(__FILE__) + '/lib/WeeController'
 require ::File.dirname(__FILE__) + '/lib/EmptyWorkflow'
 
-
 use Rack::ShowStatus
 options = {:Port => 9295, :Host => "0.0.0.0", :AccessLog => []}
 $0 = "wee-riddl"
