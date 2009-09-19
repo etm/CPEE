@@ -9,6 +9,9 @@
   <message name="url">
     <parameter name="file" mimetype="text/plain"/>
   </message>
+  <message name="css">
+    <parameter name="data" mimetype="text/css"/>
+  </message>
   <message name="file">
     <parameter name="file" mimetype="*"/>
   </message>
@@ -31,7 +34,10 @@
       <get in="*" out="xml"/>
     </resource>
     <resource relative="remote">
-        <get in="*" out="url"/>
+      <get in="*" out="url"/>
+    </resource>
+    <resource relative="styles" recursive="true">
+      <get in="*" out="css"/>
     </resource>
     <resource relative="static" recursive="true"> 
       <get in="*" out="file"/>
