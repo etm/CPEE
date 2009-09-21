@@ -26,12 +26,15 @@ class MonitoringHandler < Wee::HandlerWrapperBase
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
   def handle_call(position, passthrough, endpoint, *parameters)
-    log "handle_call", "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]"
+    log "handle_call", "Handle call: position=[#{position}]; passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
     Thread.new do
-      sleep(0.6)
-      return if @__myhandler_stopped
+      tosleep = parameters ? parameters.last : 1
+      tosleep.to_i.times do
+        sleep(1) unless @__myhandler_stopped
+        # Thread.pass
+      end
       @__myhandler_finished = true
-      @__myhandler_returnValue = 'Handler_Dummy_Result'
+      @__myhandler_returnValue = tosleep
     end
   end
 
@@ -64,12 +67,12 @@ class MonitoringHandler < Wee::HandlerWrapperBase
   # At this stage, this is only the case if parallel branches are not needed
   # anymore to continue the workflow
   def no_longer_necessary
-    log "MyHandler.stop_call", "Recieved no_longer_necessary signal, aborting on next possibility"
+    log "stop_call", "Recieved no_longer_necessary signal, aborting on next possibility"
     @__myhandler_stopped = true
   end
   # Is called if a Activity is executed correctly
   def inform_activity_done(activity, context)
-    log "MyHandler.inform_activity_done", "Activity #{activity} done"
+    log "inform_activity_done", "Activity #{activity} done"
   end
   # Is called if a Activity is executed with an error
   def inform_activity_failed(activity, context, err)
@@ -77,6 +80,6 @@ class MonitoringHandler < Wee::HandlerWrapperBase
     raise(err)
   end
   def inform_workflow_state(newstate)
-    log "MyHandler.inform_workflow_state", "State changed to #{newstate}"
+    log "inform_workflow_state", "State changed to #{newstate}"
   end
 end

@@ -27,7 +27,9 @@
   </message><!--}}}-->
 
   <message name="search-pos"><!--{{{-->
-    <parameter name="searchpos" type="string"/>
+    <parameter name="pos" type="string"/>
+    <parameter name="detail" type="string"/>
+    <parameter name="passthrough" type="string"/>
   </message><!--}}}-->
 
   <message name="list-of-context-vars"><!--{{{-->

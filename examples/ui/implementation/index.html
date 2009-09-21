@@ -20,7 +20,7 @@
             </td>
         </tr>
     </table>
-    <textarea id="txt_log" cols="100" rows="20">Log</textarea>
+    <div id="txt_log">Log</div>
 
 
     <script type="text/javascript">
@@ -80,24 +80,24 @@
             req.send(null);
         }
         function setPolling() {
-            console.log("setting the polling");
             refreshLog();
             window.setTimeout("setPolling()", 3000);
         }
+        var lastRefresh = "1.1.1980";
         function refreshLog() {
-            console.log("Refreshing log");
             var log_plain = "";
-            makeRequest("GET", "monitor",
+            makeRequest("GET", "monitor?since="+encodeURIComponent(lastRefresh),
                 function(log) {
                     $("entry", log).each(function(){
                             stamp = $(this).attr("stamp");
                             type = $(this).attr("type");
                             details = $(this).attr("details");
-                            log_plain = log_plain+"["+stamp+"]"+type+": "+details+"\n";
+                            log_plain = log_plain+"["+stamp+"]"+type+": "+details+"<BR/>";
+                            lastRefresh = stamp;
                         }
 
                     );
-                    $("#txt_log").val(log_plain);
+                    $("#txt_log").append("<p>"+log_plain+"</p>");
                 }, report_failure
             );
         }

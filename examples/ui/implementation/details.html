@@ -1,6 +1,9 @@
 <!--
-To change this template, choose Tools | Templates
-and open the template in the editor.
+TODO
+1) show execution process with green arrows going through the description - DONE
+2) only append diff to logging monitor on index-page  - DONE
+3) appending/setting of multiple monitoring handlers
+4) 
 -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -10,18 +13,21 @@ and open the template in the editor.
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="static/index.css" type="text/css"/>
     <script src="static/jquery-1.3.2.min.js" type="text/javascript"></script>
-<!--    <script src="static/script.js" type="text/javascript"></script>-->
   </head>
   <body>
     <h1>WEE - WICK</h1>
-    
+    <div id="div_message"></div>
     <input type="button" value="Start" id="btn_startstop" onclick="togglestartstop()"/>
 
     <form id="frm_userinterface" name="frm_userinterface">
             <table>
                 <tr>
                     <td valign="top">Monitor:</td>
-                    <td>undefined</td>
+                    <td>
+                        <a href="javascript:unhide('div_monitor');">Show/Hide</a>
+                        <div id="div_monitor" class="hidden">
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td valign="top">Repair: </td>
@@ -48,11 +54,19 @@ and open the template in the editor.
                     </td>
                 </tr>
                 <tr>
+                    <td valign="top">Search:</td>
+                    <td>
+                        <a href="javascript:unhide('div_search');">Show/Hide</a>
+                        <div id="div_search" class="hidden">
+                            <input type="text" id="txt_search" value=""/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
                     <td valign="top">Description:</td>
                     <td>
                         <a href="javascript:unhide('div_description');">Show/Hide</a>
                         <div id="div_description" class="hidden">
-                            <textarea id ="txt_description" cols="60" rows="10"></textarea>
                         </div>
                     </td>
                 </tr>
@@ -65,7 +79,20 @@ and open the template in the editor.
 
 
 
-
+    <div class="invisible" id="template_description">
+        arrow description <BR/>
+    </div>
+    <div class="invisible" id="template_arrow">
+        <img class='small' src='static/Images/arrow.png' width='16' height='16' alt="act Position" title="act Position"/>
+    </div>
+    <div class="invisible" id="add_monitor">
+        <div>
+            <button type="button" onclick="$(this).parent().remove()" title="Monitor entfernen">
+                <img class='small' src='static/Images/list-remove.png' width='16' height='16' alt="Contextvariable entfernen" title="Monitor entfernen"/>
+            </button>
+            <input value="value" type="text" id="monitor_url" />
+        </div>
+    </div>
     <div class="invisible" id="add_context">
         <div>
             <button type="button" onclick="$(this).parent().remove()" title="Contextvariable entfernen">
@@ -85,7 +112,12 @@ and open the template in the editor.
             <input value="url" type="text" id="endpoint_value"/>
         </div>
     </div>
-    
+
+    <div class="invisible" id="monitor_add_button">
+        <button id="btn_addmonitor" type="button" onclick="$('#div_monitor').append(generateMonitor('http://localhost:9296/monitor'))" title="Monitor hinzufügen">
+            <img class='small' src='static/Images/list-add.png' width='16' height='16' alt="Monitor hinzufügen" title="Monitor hinzufügen"/>
+        </button>
+    </div>
     <div class="invisible" id="context_add_button">
         <button id="btn_addcontext" type="button" onclick="$('#div_context').append(generateContext('name', 'value'))" title="Contextvariable hinzufügen">
             <img class='small' src='static/Images/list-add.png' width='16' height='16' alt="Contextvariable hinzufügen" title="Contextvariable hinzufügen"/>
@@ -106,8 +138,8 @@ and open the template in the editor.
       }
     }
 
-
     var wee_url = "";
+    var running = false;
 
     function makeRequest(method, url, success, failure) {
         var req = new XMLHttpRequest();  
@@ -126,16 +158,36 @@ and open the template in the editor.
     }
     function report_failure(text) {
         console.log("ERROR: "+text);
+        $("#div_message").append(text+"<BR/>");
     }
 
     function loadInstance() {
         console.log("Loading instance data");
+
+        // Getting the monitoring handlers and args
+        monitor_i = 0;
+/*        makeRequest(
+            "GET", (wee_url+location.pathname+"/properties/handlers/monitor/"),
+            function(xml){
+                var handler_text = "";
+                var count = 0;
+                $(xml).find("a").each(function() {
+                  var a = $(this);
+                  var handler_url = a.text();
+                  handler_text += generateHandler(handler_url);
+                  count++;
+                  if(count == $(xml).find("a").length) replaceHandler(handler_text);
+                })
+            }, report_failure
+        );
+*/
         // Getting the state of execution
         makeRequest(
             "GET", (wee_url+location.pathname+"/state/"),
             function(instance_state){
                 $("#div_state").text(instance_state);
                 if(instance_state == "finished") {
+                    console.log("instance state changed to "+instance_state+" => stopping now");
                     running = false;
                     $("#btn_startstop").val("Start");
                     toggleControls(true);
@@ -146,10 +198,34 @@ and open the template in the editor.
         makeRequest(
             "GET", (wee_url+location.pathname+"/properties/description/"),
             function(instance_description){
-                $("#txt_description").val(instance_description);
-            },report_failure
+                if(running) {
+                   makeRequest(
+                        "GET", (location.pathname+"/monitor/actpos"),
+                        function(actPos) {
+                            console.log("ActPos: "+actPos)
+                            var desc_to_set = "";
+                            var lines = instance_description.split("\n");
+                            for(var i = 0; i < lines.length; i++) {
+                                var actDescLine = lines[i];
+                                var text = $("#template_description").html();
+                                if(actDescLine.indexOf(":"+actPos) != -1)
+                                    text = text.replace(/arrow/,$("#template_arrow").html());
+                                else
+                                    text = text.replace(/arrow/,"");
+                                text = text.replace(/description/,actDescLine);
+                                desc_to_set += text
+                            }
+                            console.log(desc_to_set)
+                            $("#div_description").html(desc_to_set);
+                        }, report_failure
+                    )
+                }else {
+                    $("#div_description").html("<textarea id=\"txt_description\" cols=\"60\" rows=\"10\">"+instance_description+"</textarea>");
+                }
+            }, report_failure
         );
         // Getting the Context
+        context_i = 0;
         makeRequest(
             "GET", (wee_url+location.pathname+"/properties/context/"),
             function(xml){
@@ -163,7 +239,9 @@ and open the template in the editor.
                     function(context_value){
                       context_text += generateContext(context_id, context_value);
                       count++;
-                      if(count == $(xml).find("a").length) replaceContext(context_text);
+                      if(count == $(xml).find("a").length) {
+                        replaceContext(context_text);
+                      }
                     },report_failure
                   );
                 })
@@ -171,6 +249,7 @@ and open the template in the editor.
         );
 
         // Getting the Endpoints
+        endpoint_i = 0;
         makeRequest(
             "GET", (wee_url+location.pathname+"/properties/endpoints/"),
             function(xml){
@@ -191,6 +270,19 @@ and open the template in the editor.
             }, report_failure
         );
     }
+    var monitor_i = 0;
+    function replaceMonitor(text) {
+        $("#div_monitor").html($("#monitor_add_button").html()+text);
+    }
+    function generateMonitor(name, value) {
+        var text = $("#add_monitor").html();
+        text = text.replace(/monitor_class/,"monitor_class_" + monitor_i);
+        text = text.replace(/monitor_url/,"monitor_url_" + monitor_i);
+        text = text.replace(/value=\"name\"/, "value=\""+name+"\"");
+        text = text.replace(/value=\"value\"/, "value=\""+value+"\"");
+        monitor_i += 1;
+        return text;
+    }
     var context_i = 0;
     function replaceContext(text) {
         $("#div_context").html($("#context_add_button").html()+text);
@@ -206,6 +298,7 @@ and open the template in the editor.
     }
     var endpoint_i = 0;
     function replaceEndpoints(text) {
+        endpoint_i = 0;
         $("#div_endpoints").html($("#endpoint_add_button").html()+text);
     }
     function generateEndpoint(name, url) {
@@ -233,6 +326,13 @@ and open the template in the editor.
             },report_failure
         );
     }
+    function setSearch_serverside(pos) {
+        makeRequest(
+            "PUT", (wee_url+location.pathname+"/state?pos="+encodeURIComponent(pos)+"&detail=at&passthrough="),
+            function(){
+            },report_failure
+        );
+    }
     function setDescription_serverside(description) {
         makeRequest(
             "PUT", (wee_url+location.pathname+"/properties/description?description="+encodeURIComponent(description)),
@@ -248,27 +348,28 @@ and open the template in the editor.
     function apply() {
         // apply context
         for(var i = 0; i < context_i; i++) {
-            name = $("#context_variable_name_"+i).val();
-            value = $("#context_variable_value_"+i).val();
+            var name = $("#context_variable_name_"+i).val();
+            var value = $("#context_variable_value_"+i).val();
             setContextVariable_serverside(name, value);
         }
         // apply endpoints
         for(var i = 0; i < endpoint_i; i++) {
-            name = $("#endpoint_name_"+i).val();
-            value = $("#endpoint_value_"+i).val();
+            var name = $("#endpoint_name_"+i).val();
+            var value = $("#endpoint_value_"+i).val();
             setEndpoint_serverside(name, value);
         }
-
+        // apply search
+        var pos = $("#txt_search").val();
+        setSearch_serverside(pos);
         // apply description
-        desc = $("#txt_description").val();
+        var desc = $("#txt_description").val();
         setDescription_serverside(desc);
     }
 
-    var running = false;
     function setPolling() {
         if(running) {
-            loadInstance();
             window.setTimeout("setPolling()", 4000);
+            loadInstance();
         }
     }
     function togglestartstop() {
@@ -289,14 +390,15 @@ and open the template in the editor.
             function(instance_state){
                 console.log("got instance state = "+instance_state);
                 $("#div_state").text(instance_state);
+                // update start/stop button
+                $("#btn_startstop").val("Stop");
+                running = true;
+                // refresh ui constantly
+                setPolling();
+                toggleControls(false);
             },report_failure
         );
-        // update start/stop button
-        $("#btn_startstop").val("Stop");
-        running = true;
-        // refresh ui constantly
-        setPolling();
-        toggleControls(false);
+
     }
     function stop() {
         // stop the wee
@@ -306,12 +408,13 @@ and open the template in the editor.
             function(instance_state){
                 console.log("got instance state = "+instance_state);
                 $("#div_state").text(instance_state);
+                // update start/stop button
+                $("#btn_startstop").val("Start");
+                running = false;
+                toggleControls(true);
             },report_failure
         );
-        // update start/stop button
-        $("#btn_startstop").val("Start");
-        running = false;
-        toggleControls(true);
+
     }
     function toggleControls(on) {
         if(!on) {
@@ -336,7 +439,6 @@ and open the template in the editor.
         wee_url = url;
         console.log("got wee url: "+wee_url+". my path is "+location.pathname);
         loadInstance();
-        console.log("checking for dummy values");
       }
     });
 

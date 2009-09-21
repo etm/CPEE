@@ -26,11 +26,15 @@ end
 
 class StatePUTSearch < Riddl::Implementation
   def response
-    pp "StatePUTSearch, r0=#{@r[0]}, p0=#{@p[0].value}"
+    pp "StatePUTSearch, r0=#{@r[0]}, p0=#{@p[0].value}, p1=#{@p[1].value}, p2=#{@p[2].value}"
     instance_id = @r[0].to_i
     
     pp "Setting search position of instance no #{instance_id} to #{@p[0].value}"
-    $controller[instance_id].search @p[0].value
+    if(@p[0].value == "")
+      $controller[instance_id].search false;
+    else
+      $controller[instance_id].search Wee::SearchPos.new(@p[0].value.to_sym, @p[1].value.to_sym, @p[2].value);
+    end
     []
   end
 end

@@ -12,10 +12,16 @@
   <message name="file">
     <parameter name="file" mimetype="*"/>
   </message>
+  <message name="since">
+    <parameter name="since" type="string"/>
+  </message>
   <message name="log-format">
     <parameter name="stamp" type="string"/>
     <parameter name="type" type="string"/>
     <parameter name="details" type="string"/>
+  </message>
+  <message name="pos">
+      <parameter name="pos" type="string"/>
   </message>
 
   <resource>
@@ -23,12 +29,15 @@
     <resource>
       <get in="*" out="html"/>
       <resource relative="monitor">
-        <get in="*" out="xml"/>
+        <get in="since" out="xml"/>
         <post in="log-format"/>
+        <resource relative="actpos">
+            <get in="*" out="pos"/>
+        </resource>
       </resource>
     </resource>
     <resource relative="monitor">
-      <get in="*" out="xml"/>
+      <get in="since" out="xml"/>
     </resource>
     <resource relative="remote">
         <get in="*" out="url"/>

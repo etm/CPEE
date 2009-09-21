@@ -1,4 +1,5 @@
 require 'logger'
+require 'pp'
 
 class MyHandler < Wee::HandlerWrapperBase
   def initialize(*args)
@@ -11,7 +12,8 @@ class MyHandler < Wee::HandlerWrapperBase
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
   def handle_call(position, passthrough, endpoint, *parameters)
-    $LOG.debug('MyHandler.handle_call'){ "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]"}
+    $LOG.debug('MyHandler.handle_call'){ "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"}
+    pp "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
     Thread.new do
       sleep(0.6)
       return if @__myhandler_stopped

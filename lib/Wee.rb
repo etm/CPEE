@@ -24,6 +24,8 @@ class Wee
       @__wee_stop_positions = Array.new
       @__wee_threads = Array.new;
 
+      @__wee_context ||= {}
+
       initialize_search if methods.include?('initialize_search')
       initialize_context if methods.include?('initialize_context')
       initialize_endpoints if methods.include?('initialize_endpoints')
@@ -91,7 +93,7 @@ class Wee
     end
     def activity(position, type, endpoint=nil, *parameters)
       return if self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
-      
+      p "activity: parameters = #{parameters.inspect}"
       handler = @__wee_handler.new handlerargs
       begin
         case type
@@ -101,7 +103,7 @@ class Wee
             handler.inform_activity_done position, context
           when :call
             passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
-            ret_value = perform_external_call position, passthrough, handler, endpoint, parameters
+            ret_value = perform_external_call position, passthrough, handler, endpoint, *parameters
             yield(ret_value) if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
             refreshcontext
             handler.inform_activity_done position, context unless self.state == :stopped || Thread.current[:nolongernecessary]
@@ -212,7 +214,7 @@ class Wee
     end
     def perform_external_call(position, passthrough, handler, endpoint, *parameters)
       # handshake call and wait until it finisheds
-      handler.handle_call position, passthrough, endpoint, parameters
+      handler.handle_call position, passthrough, endpoint, *parameters
       Thread.pass until handler.finished_call() || self.state == :stopped || Thread.current[:nolongernecessary]
        
       handler.no_longer_necessary if Thread.current[:nolongernecessary]

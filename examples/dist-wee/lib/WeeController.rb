@@ -23,6 +23,7 @@ class WeeController
     @instances[id]
   end
   def start(id)
+    Thread.abort_on_exception = true;
     @threads[id] = Thread.new {Thread.current.abort_on_exception = true; @results[id] = self[id].start}
   end
   def stop(id)
