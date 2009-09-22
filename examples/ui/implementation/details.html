@@ -187,7 +187,6 @@ TODO
             function(instance_state){
                 $("#div_state").text(instance_state);
                 if(instance_state == "finished") {
-                    console.log("instance state changed to "+instance_state+" => stopping now");
                     running = false;
                     $("#btn_startstop").val("Start");
                     toggleControls(true);
@@ -202,7 +201,6 @@ TODO
                    makeRequest(
                         "GET", (location.pathname+"/monitor/actpos"),
                         function(actPos) {
-                            console.log("ActPos: "+actPos)
                             var desc_to_set = "";
                             var lines = instance_description.split("\n");
                             for(var i = 0; i < lines.length; i++) {
@@ -215,7 +213,6 @@ TODO
                                 text = text.replace(/description/,actDescLine);
                                 desc_to_set += text
                             }
-                            console.log(desc_to_set)
                             $("#div_description").html(desc_to_set);
                         }, report_failure
                     )
