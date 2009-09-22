@@ -295,7 +295,6 @@ TODO
     }
     var endpoint_i = 0;
     function replaceEndpoints(text) {
-        endpoint_i = 0;
         $("#div_endpoints").html($("#endpoint_add_button").html()+text);
     }
     function generateEndpoint(name, url) {
@@ -337,11 +336,7 @@ TODO
             },report_failure
         );
     }
-
-
-
-
-    
+  
     function apply() {
         // apply context
         for(var i = 0; i < context_i; i++) {
