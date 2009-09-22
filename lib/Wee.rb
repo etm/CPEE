@@ -16,14 +16,17 @@ class Wee
     # setting default values
     @__wee_search_positions = @__wee_search_positions_original = {}
     @__wee_search = false
+    @__wee_stop_positions = Array.new
+    @__wee_threads = Array.new;
+    @__wee_context ||= {}
+    self.state = :ready
   end
   def self::wee_initialize
     define_method :initialize do
-      @__wee_search_positions = @__wee_search_positions = @__wee_search_positions_original = {}
+      @__wee_search_positions = @__wee_search_positions_original = {}
       @__wee_search = false
       @__wee_stop_positions = Array.new
       @__wee_threads = Array.new;
-
       @__wee_context ||= {}
 
       initialize_search if methods.include?('initialize_search')
@@ -48,17 +51,6 @@ class Wee
       self.endpoint @@__wee_new_endpoints
     end
   end
-#    end
-#    endpoints.each do |name,value|
-#      define_method name do
-#        return value
-#      end
-#      define_method "#{name}=" do |new_value|
-#        instance_variable_set("@#{name}", new_value)
-#        instance_eval("def #{name}\n return @#{name}\n end")
-#      end
-#    end
-#  end
 
   def self::context(variables)
     @@__wee_new_context_variables ||= []
@@ -91,9 +83,15 @@ class Wee
     def position
       @__wee_stop_positions
     end
+    # DSL-Construct for an atomic activity
+    # position: a unique identifier within the wf-description (may be used by the search to identify a starting point
+    # type:
+    #   - :manipulate - just yield a given block
+    #   - :call - order the handler to perform a service call
+    # endpoint: (only with :call) ep of the service
+    # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters)
       return if self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
-      p "activity: parameters = #{parameters.inspect}"
       handler = @__wee_handler.new handlerargs
       begin
         case type
@@ -115,6 +113,7 @@ class Wee
         handler.inform_activity_failed position, context, err
       end
     end
+    
     # Parallel DSL-Construct
     # Defines Workflow paths that can be executed parallel.
     # May contain multiple branches (parallel_branch)
@@ -140,6 +139,7 @@ class Wee
       end
       mythreads.each { |thread| thread[:nolongernecessary] = true if thread.alive? }
     end
+
     # Defines a branch of a parallel-Construct
     def parallel_branch
       return if self.state == :stopped || Thread.current[:nolongernecessary]
@@ -161,6 +161,7 @@ class Wee
         yield
       end.join
     end
+
     # Defines a possible choice of a choose-Construct
     # Block is executed if condition == true or
     # searchmode is active (to find the starting position)
@@ -174,6 +175,7 @@ class Wee
       yield if is_in_search_mode || !Thread.current[:alternative_executed]
     end
 
+    # Defines a critical block (=Mutex)
     def critical(id)
       @__wee_critical ||= Mutex.new
       semaphore = nil
@@ -186,6 +188,8 @@ class Wee
         yield
       end
     end
+
+    # Defines a Cycle (loop/iteration)
     def cycle(condition)
       raise "condition must be a string to evaluate" unless condition.is_a?(String)
       return if self.state == :stopped || Thread.current[:nolongernecessary]
@@ -241,6 +245,7 @@ class Wee
 
 
   public
+    # set the Handler
     def handler=(new_wee_handler)
       superclass = new_wee_handler
       while(superclass)
@@ -250,16 +255,20 @@ class Wee
       raise("Handler is not inhereted from HandlerWrapperBase") unless check_ok
       @__wee_handler = new_wee_handler
     end
+    # Get/Set the handler arguments
     def handlerargs(*args)
       @__wee_handlerargs = args unless args.size() == 0;
       return @__wee_handlerargs
     end
+    # Get the state of execution (ready|running|stopped|finished)
     def state
       @__wee_state || :ready
     end
+    # Set a Endpoint
     def endpoint=(new_endpoint = {})
       endpoint new_endpoint
     end
+    # Get all endpoints | Set endpoints
     def endpoint(new_endpoint = {})
       @__wee_endpoints ||= {}
       new_endpoint.each do |name,value|
@@ -271,13 +280,16 @@ class Wee
       end
       @__wee_endpoints
     end
+    # Get all endpoints
     def endpoints
-      @__wee_endpoints || {}
+      endpoint
     end
 
+    # Set a search position / set search positions
     def search=(new_wee_search)
       search new_wee_search
     end
+    # Set search positions
     def search(new_wee_search)
       @__wee_search_positions = {}
       @__wee_search_positions_original = []
@@ -297,9 +309,11 @@ class Wee
       end
       @__wee_search = @__wee_search_original
     end
+    # Get search positions
     def search_positions
       return @__wee_search_positions_original
     end
+    # Set context variables
     def context=(new_context)
       @__wee_context ||= Hash.new
       new_context.each do |name, value|
@@ -307,6 +321,7 @@ class Wee
         @__wee_context[name.to_s.to_sym] = value
       end
     end
+    # Get/Set context variables
     def context (opt_param = [])
       if(opt_param.is_a?(Hash))
         self.context=opt_param
@@ -316,14 +331,22 @@ class Wee
       return @__wee_context ? @__wee_context : Hash.new
     end
 
-    def stop()
-      self.state = :stopped
-    end
-    def start()
-      return nil if self.state == :running
-      __wee_execute
+    # Set the workflow description. description may be given either by String param or by a code block
+    # Get the workflow description, only if description was set by String.
+    def wf_description(code=nil, &blk)
+      @__wee_wfsource = code if code || blk
+      blk = Proc.new { instance_eval(@__wee_wfsource)} if @__wee_wfsource
+      replace(&blk) if blk
+      
+      return @__wee_wfsource
     end
 
+    # Set the workflow description
+    def wf_description=(code=nil)
+      wf_description(code)
+    end
+
+    # Replace the workflow description by a code block
     def replace(&blk)
       (class << self; self; end).class_eval do
         define_method :__wee_execute do
@@ -334,13 +357,16 @@ class Wee
         end
       end
     end
-    def wf_description(code=nil, &blk)
-      @__wee_wfsource = code if code || blk
-      blk = Proc.new { instance_eval(@__wee_wfsource)} if @__wee_wfsource
-      replace(&blk) if blk
-      return @__wee_wfsource
+
+    # Stop the workflow execution
+    def stop()
+      self.state = :stopped
     end
-    def wf_description=(code)
-      wf_description(code)
+    # Start the workflow execution
+    def start()
+      return nil if self.state == :running
+      __wee_execute
     end
+
+
 end

@@ -1,7 +1,5 @@
-$:.unshift File.join(File.dirname(__FILE__),'..', '..','lib')
-
 require 'test/unit'
-require 'TestWorkflow'
+require ::File.dirname(__FILE__) + '/../TestWorkflow'
 
 class TestCodeReplace < Test::Unit::TestCase
   def setup
@@ -33,8 +31,7 @@ class TestCodeReplace < Test::Unit::TestCase
   end
   def test_wfdescription_string
     ret = $wf.wf_description "activity :a_test_1_1, :call, endpoint1"
-
-    assert(ret == "activity :a_test_1_1, :call, endpoint1", "Invalid wf_description coped")
+    assert(ret == "activity :a_test_1_1, :call, endpoint1", "Invalid wf_description coped: #{ret}")
 
     $wf.search=Wee::SearchPos.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };

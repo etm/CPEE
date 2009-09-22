@@ -1,7 +1,5 @@
-$:.unshift File.join(File.dirname(__FILE__),'..', '..','lib')
-
 require 'test/unit'
-require 'TestWorkflow'
+require ::File.dirname(__FILE__) + '/../TestWorkflow'
 
 # only variant Cancelling Discriminator is implemented, but that's the coolest one 8)
 class TestStructuredDiscriminator < Test::Unit::TestCase

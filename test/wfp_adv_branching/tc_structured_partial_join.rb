@@ -1,8 +1,5 @@
-$:.unshift File.join(File.dirname(__FILE__),'..', '..','lib')
-
 require 'test/unit'
-require 'TestWorkflow'
-
+require ::File.dirname(__FILE__) + '/../TestWorkflow'
 # only variant Cancelling Structured Partial Join is implemented, but that's the coolest one 8)
 class TestCancellingStructuredPartialJoin < Test::Unit::TestCase
   def setup

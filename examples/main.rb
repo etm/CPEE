@@ -1,15 +1,18 @@
 require 'pp'
 require 'logger'
-require 'SimpleWorkflow'
+require 'thread'
+require ::File.dirname(__FILE__) + '/SimpleWorkflow'
+require ::File.dirname(__FILE__) + '/Workflow'
 
-t = SimpleWorkflow.new
-result = nil
-execution = Thread.new {
-  result = t.start
-}
-execution.join()
-p result
-
+def show_simple
+  t = SimpleWorkflow.new
+  result = nil
+  execution = Thread.new {
+    result = t.start
+  }
+  execution.join()
+  p result
+end
 
 def show_normal
   t = Workflow.new
@@ -46,9 +49,9 @@ def show_stop_and_replace
   return result
 end
 
-# puts "===================================================="
-# result = show_normal
-# puts "========> Ending-Result: #{result.inspect}"
+puts "===================================================="
+result = show_normal
+puts "========> Ending-Result: #{result.inspect}"
 
 #  control flow do
 #    activity :a1, :call, endpoint1

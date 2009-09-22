@@ -1,7 +1,5 @@
-$:.unshift File.join(File.dirname(__FILE__),'..', '..','lib')
-
 require 'test/unit'
-require 'TestWorkflow'
+require ::File.dirname(__FILE__) + '/../TestWorkflow'
 # unknown/not implemented
 class TestThreadMerge < Test::Unit::TestCase
   def setup

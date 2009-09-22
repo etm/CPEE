@@ -1,5 +1,5 @@
-require 'Wee'
-require 'MyHandler'
+require ::File.dirname(__FILE__) + '/../lib/Wee'
+require ::File.dirname(__FILE__) + '/MyHandler'
 
 class Workflow < Wee
   handler MyHandler

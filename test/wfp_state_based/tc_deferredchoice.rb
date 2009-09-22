@@ -1,7 +1,5 @@
-$:.unshift File.join(File.dirname(__FILE__),'..', '..','lib')
-
 require 'test/unit'
-require 'TestWorkflow'
+require ::File.dirname(__FILE__) + '/../TestWorkflow'
 # implemented as a combination of the Cancelling Structured Partial Join and the Exclusive Choice Pattern
 class TestDeferredChoice < Test::Unit::TestCase
   def setup
