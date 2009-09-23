@@ -1,8 +1,8 @@
 require ::File.dirname(__FILE__) + '/../lib/Wee'
-require ::File.dirname(__FILE__) + '/MyHandler'
+require ::File.dirname(__FILE__) + '/../lib/BasicHandler'
 
 class SimpleWorkflow < Wee
-  handler MyHandler
+  handler BasicHandler
   
   control flow do
     activity :a1, :call, "orf.at", 1, 2

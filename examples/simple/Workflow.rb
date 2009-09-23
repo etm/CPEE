@@ -1,8 +1,8 @@
 require ::File.dirname(__FILE__) + '/../lib/Wee'
-require ::File.dirname(__FILE__) + '/MyHandler'
+require ::File.dirname(__FILE__) + '/../lib/BasicHandler'
 
 class Workflow < Wee
-  handler MyHandler
+  handler BasicHandler
   
   endpoint :epAirlineBooking => 'http://airline.com/booking'
   endpoint :epHotelBooking => 'http://hotel.com/booking'

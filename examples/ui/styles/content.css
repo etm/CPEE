@@ -688,6 +688,7 @@
 #content select.align-vertical-baseline   { vertical-align:baseline; }
 #content select.align-horizontal-center   { text-align:center; }
 
+#content button.nowrap                    { white-space:nowrap; }
 #content button.border                    { border: 1px solid #DDDDDD; }
 #content button.important                 { background-color: #F2F2F2; }
 #content button.all-important             { background-color: #DDDDDD; }

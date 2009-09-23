@@ -5,25 +5,40 @@
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
     <meta name="description" content="Distributed Wee"/>
     <link rel="stylesheet" href="/styles/content.css" type="text/css"/>
+    <link rel="stylesheet" href="/styles/uni.css" type="text/css"/>
     <script src="static/jquery-1.3.2.min.js" type="text/javascript"></script>
   </head>
   <body>
-    <div id="header">
+    <div id='header'>
+      <div class='back'><img src='/static/StyleImages/uni_siegel.png' width='215' height='60' alt=''/></div>
+      <div class='right'><a href='http://www.univie.ac.at'><img src='/static/StyleImages/uni_logo.png' width='180' height='50' alt='University of Vienna'/></a></div>
+      <div class='title'>
+        <h1 class='title1'>Distributed WEE Cockpit</h1>
+        <p class='title2'><a href="mailto:gerhard.stuermer@gmail.com">roemer</a>, eTM, schiki</p>
+      </div>  
+      <div class='bread'>
+        <div><a href='/'>Overview</a></div>
+      </div>
     </div>
+
     <div id="content">
-      <table>
+      <table class="size-max">
         <tr>
-          <td valign="top">
-            Create new Instance
-          </td>
-          <td>
-            <input type="text" id="txt_name"></input>
-            <button type="button" id="btn_book" onclick="makeNewInstance()">New Instance</button>
-            <div id="div_instances"></div>
-          </td>
+          <td class="nowrap align-vertical-center margin-right-big">Create new Instance:</td>
+          <td><input type="text" id="txt_name"/></td>
+          <td><button class="nowrap" type="button" id="btn_book" onclick="makeNewInstance()">New Instance</button></td>
+          <td class="size-max"></td>
+        </tr>    
+        <tr>
+          <td colspan="3"><div id="div_instances"></div></td>
         </tr>
       </table>
-      <div id="txt_log">Log</div>
+
+      <div>
+        <h2>Log:</h2>
+        <div class="margin-bottom-small">The log shows all messages sent to the built in monitor from all created instances.</div>
+        <div class="border size-max" id="txt_log"></div>
+      </div>
     </div>  
 
 
@@ -106,6 +121,31 @@
               }, report_failure
           );
       }
+
+      // maximize log
+      function setHeight() {
+        if (typeof window.innerHeight != 'undefined') {
+          var secure = 5;
+          var cc = $('contentcontainer');
+          var ic = $('icontent');
+          var co = $('content');
+          var h_text = $('CEWebS_text');
+          if (cc.getHeight() == ic.getHeight()) {
+            var h_window  = document.viewport.getHeight();
+            var h_content = document.getElementsByTagName('body')[0].getHeight();
+            var imed = (parseInt(co.getStyle('margin-bottom'))+parseInt(co.getStyle('padding-bottom')));
+            if (h_window - h_content != 0) {
+              h_text.style.height = (h_text.getHeight() + (h_window - h_content) - imed - secure)  + 'px';
+            } else
+              h_text.style.height = (h_text.offsetParent.getHeight()) + 'px';
+          } else {
+            var imed = (parseInt(co.getStyle('margin-top'))+parseInt(co.getStyle('margin-bottom'))+parseInt(co.getStyle('padding-top'))+parseInt(co.getStyle('padding-bottom')));
+            h_text.style.height = (h_text.getHeight() + cc.getHeight() - ic.getHeight() - (co.positionedOffset().top * 2) - secure - imed) + 'px';
+          }  
+        }  
+      }
+      // window.onload = function() { setHeight(); };
+      // window.onresize = function() { setHeight(); };
 
       // Fetch the url of the wee-riddle
       $.ajax({

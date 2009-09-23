@@ -1,9 +1,9 @@
 
 class WebHandler < Wee::HandlerWrapperBase
   def initialize(*args)
-    @__myhandler_stopped = false
-    @__myhandler_finished = false
-    @__myhandler_returnValue = nil
+    @__webhandler_stopped = false
+    @__webhandler_finished = false
+    @__webhandler_returnValue = nil
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
@@ -13,7 +13,7 @@ class WebHandler < Wee::HandlerWrapperBase
     t = Thread.new() {
       released = false
       until(released) do
-        if @__myhandler_stopped
+        if @__webhandler_stopped
           $message += "handle_call: : Recieved stop signal, process is stoppable =>aborting!<BR/>"
           return
         end
@@ -24,21 +24,21 @@ class WebHandler < Wee::HandlerWrapperBase
         end
         Thread.pass
       end
-      @__myhandler_finished = true
-      @__myhandler_returnValue = 'Handler_Dummy_Result'
+      @__webhandler_finished = true
+      @__webhandler_returnValue = 'Handler_Dummy_Result'
     }
   end
  
   # returns true if the last handled call has finished processing, or the
   # call runs independent (asynchronous call) 
   def finished_call
-    return @__myhandler_finished
+    return @__webhandler_finished
   end
   
   # returns the result of the last handled call
   def return_value
-    if @__myhandler_finished
-      return @__myhandler_returnValue
+    if @__webhandler_finished
+      return @__webhandler_returnValue
     else
       return nil
     end
@@ -48,7 +48,7 @@ class WebHandler < Wee::HandlerWrapperBase
   # of a continue the Handler will be asked for a passthrough
   def stop_call()
     $message += "Handler: Recieved stop signal, deciding if stopping<BR/>"
-    @__myhandler_stopped = true
+    @__webhandler_stopped = true
   end
   # is called from Wee after stop_call to ask for a passthrough-value that may give
   # information about how to continue the call. This passthrough-value is given
@@ -64,7 +64,7 @@ class WebHandler < Wee::HandlerWrapperBase
   # anymore to continue the workflow
   def no_longer_necessary
     $message += "Handler: Recieved no_longer_necessary signal, deciding if stopping<BR/>"
-    @__myhandler_stopped = true
+    @__webhandler_stopped = true
   end
   # Is called if a Activity is executed correctly
   def inform_activity_done(activity, context)
@@ -77,7 +77,7 @@ class WebHandler < Wee::HandlerWrapperBase
   end
 
   def inform_workflow_state(newstate)
-    $LOG.info('MyHandler.inform_workflow_state'){"State changed to #{newstate}"}
+    $LOG.info('WebHandler.inform_workflow_state'){"State changed to #{newstate}"}
   end
 
 end
