@@ -1,18 +1,18 @@
-<?
-  header( "Content-Type: text/css" );
-  $mtime = filemtime($_SERVER['SCRIPT_FILENAME']);
-  header('Last-Modified: '.gmdate('D, d M Y H:i:s', $mtime).' GMT');
-  header('ETag: ' . md5($mtime));
-  if (strtotime($_SERVER["HTTP_IF_MODIFIED_SINCE"]) == $mtime) {
-    header("HTTP/1.0 304 Not Modified");
-    header('Connection: close');
-    exit;
-  }
-
-  $ie = (strpos($_SERVER['HTTP_USER_AGENT'],"MSIE")>0 && strpos($_SERVER['HTTP_USER_AGENT'],"Opera") == false);
-  $save = (strpos($_SERVER['HTTP_USER_AGENT'],"MSIE") == false || strpos($_SERVER['HTTP_USER_AGENT'],"Opera") > 0 || strpos($_SERVER['HTTP_USER_AGENT'],"MSIE 7") > 0 || strpos($_SERVER['HTTP_USER_AGENT'],"MSIE 8") > 0);
-?>
-/* <?= $_SERVER['HTTP_USER_AGENT'] ?> */
+% mtime = ::File.mtime(__ERB_FILE__)
+% @headers << Riddl::Header.new("Last-Modified",mtime.httpdate)
+% @headers << Riddl::Header.new("ETag",Digest::MD5.hexdigest(mtime.httpdate))
+% htime = @e["HTTP_IF_MODIFIED_SINCE"].nil? ? Time.at(0) : Time.parse(@e["HTTP_IF_MODIFIED_SINCE"])
+% if htime == mtime
+%   @headers << Riddl::Header.new("Connection","close")
+%   @status = 304 # Not modified
+% else 
+%   if @e['HTTP_USER_AGENT']=~ /MSIE/ && @e['HTTP_USER_AGENT'] !~ /Opera/
+%     formsizeS = '100.6%'
+%   else
+%     formsizeS = '101.2%'
+%   end
+/* <%= "Last-Modified: #{mtime}" %> */
+/* <%= @e['HTTP_USER_AGENT'] %> */
 /* Please see the LICENSE.GPL file for copyright and distribution information */
 
 <? if ($ie) { ?>
@@ -337,3 +337,4 @@ a:active  { color:#000000; text-decoration:underline; }
   margin:0px;
   padding:0px;
 }
+% end

@@ -1,119 +1,124 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>WEE - Index</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="static/index.css" type="text/css"/>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
+    <meta name="description" content="Distributed Wee"/>
+    <link rel="stylesheet" href="/styles/content.css" type="text/css"/>
     <script src="static/jquery-1.3.2.min.js" type="text/javascript"></script>
   </head>
   <body>
-    <h1>WorkflowExecutionEngine - Demo</h1>
-    <table>
-        <tr>
-            <td valign="top">
-                Create new Instance
-            </td>
-            <td>
-                <input type="text" id="txt_name"></input>
-                <button type="button" id="btn_book" onclick="makeNewInstance()">New Instance</button>
-                <div id="div_instances"></div>
-            </td>
-        </tr>
-    </table>
-    <div id="txt_log">Log</div>
+    <div id="header">
+    </div>
+    <div id="content">
+      <table>
+          <tr>
+              <td valign="top">
+                  Create new Instance
+              </td>
+              <td>
+                  <input type="text" id="txt_name"></input>
+                  <button type="button" id="btn_book" onclick="makeNewInstance()">New Instance</button>
+                  <div id="div_instances"></div>
+              </td>
+          </tr>
+      </table>
+      <div id="txt_log">Log</div>
+    </div>  
 
 
     <script type="text/javascript">
-        var wee_url = "";
+    //<![CDATA[
+      var wee_url = "";
 
-        function listInstances() {
-            console.log("Fetching existing instances");
-            makeRequest("GET", wee_url,
-            function(result) {
-                console.log("appending "+result+" to instance listing");
-                $("#div_instances").append(result);
-            },
-            report_failure);
-        }
-        function makeNewInstance() {
-            // Fetch the url of the wee-riddle
-            console.log("Creating new instance");
-            $.ajax({
-              type: "GET", cache: false,
-              url: "remote",
-              success: function(wee_url){
-                // create a new instance and add a link
-                var instance_name = $("#txt_name").val();
-                console.log("calling: "+wee_url);
-                makeRequest("POST", wee_url+"?name="+instance_name, new_instance_created, report_failure);
-              }
-            });
-        }
-        function new_instance_created(instance_id) {
-            console.info("Adding Instance "+instance_id+"to list");
-            var instance_name = $("#txt_name").val();
-            console.log("Instance name = "+instance_name);
-            console.log("Setting Instance Handler parameters");
-            makeRequest("POST", wee_url+instance_id+"/properties/handlers?class=MonitoringHandler&argument="+encodeURIComponent(location.href+instance_id)+"/monitor",
-                function() {
-                    console.log("Done setting handler");
-                },
-                report_failure);
-            $("#div_instances").append("<a href=\""+instance_id+"\" style=\"display:block\">Go to Instance "+instance_name+"</a>");
-        }
-        function report_failure(text) {
-            console.log("ERROR: "+text);
-        }
-        function makeRequest(method, url, success, failure) {
-            var req = new XMLHttpRequest();  
-            req.open(method, url, true);
-            req.onreadystatechange = function (e) {  
-                if (req.readyState === 4) {  
-                    if(req.status === 200) {
-                        success(req.responseText);
-                    } else {  
-                        failure("method "+method+" to "+url+" failed");
-                    }
-                    method
-                }  
-            };  
-            req.send(null);
-        }
-        function setPolling() {
-            refreshLog();
-            window.setTimeout("setPolling()", 3000);
-        }
-        var lastRefresh = "1.1.1980";
-        function refreshLog() {
-            var log_plain = "";
-            makeRequest("GET", "monitor?since="+encodeURIComponent(lastRefresh),
-                function(log) {
-                    $("entry", log).each(function(){
-                            stamp = $(this).attr("stamp");
-                            type = $(this).attr("type");
-                            details = $(this).attr("details");
-                            log_plain = log_plain+"["+stamp+"]"+type+": "+details+"<BR/>";
-                            lastRefresh = stamp;
-                        }
+      function listInstances() {
+          console.log("Fetching existing instances");
+          makeRequest("GET", wee_url,
+          function(result) {
+              console.log("appending "+result+" to instance listing");
+              $("#div_instances").append(result);
+          },
+          report_failure);
+      }
+      function makeNewInstance() {
+          // Fetch the url of the wee-riddle
+          console.log("Creating new instance");
+          $.ajax({
+            type: "GET", cache: false,
+            url: "remote",
+            success: function(wee_url){
+              // create a new instance and add a link
+              var instance_name = $("#txt_name").val();
+              console.log("calling: "+wee_url);
+              makeRequest("POST", wee_url+"?name="+instance_name, new_instance_created, report_failure);
+            }
+          });
+      }
+      function new_instance_created(instance_id) {
+          console.info("Adding Instance "+instance_id+"to list");
+          var instance_name = $("#txt_name").val();
+          console.log("Instance name = "+instance_name);
+          console.log("Setting Instance Handler parameters");
+          makeRequest("POST", wee_url+instance_id+"/properties/handlers?class=MonitoringHandler&argument="+encodeURIComponent(location.href+instance_id)+"/monitor",
+              function() {
+                  console.log("Done setting handler");
+              },
+              report_failure);
+          $("#div_instances").append("<a href=\""+instance_id+"\" style=\"display:block\">Go to Instance "+instance_name+"</a>");
+      }
+      function report_failure(text) {
+          console.log("ERROR: "+text);
+      }
+      function makeRequest(method, url, success, failure) {
+          var req = new XMLHttpRequest();  
+          req.open(method, url, true);
+          req.onreadystatechange = function (e) {  
+              if (req.readyState === 4) {  
+                  if(req.status === 200) {
+                      success(req.responseText);
+                  } else {  
+                      failure("method "+method+" to "+url+" failed");
+                  }
+                  method
+              }  
+          };  
+          req.send(null);
+      }
+      function setPolling() {
+          refreshLog();
+          window.setTimeout("setPolling()", 3000);
+      }
+      var lastRefresh = "1.1.1980";
+      function refreshLog() {
+          var log_plain = "";
+          makeRequest("GET", "monitor?since="+encodeURIComponent(lastRefresh),
+              function(log) {
+                  $("entry", log).each(function(){
+                          stamp = $(this).attr("stamp");
+                          type = $(this).attr("type");
+                          details = $(this).attr("details");
+                          log_plain = log_plain+"["+stamp+"]"+type+": "+details+"<br/>";
+                          lastRefresh = stamp;
+                      }
 
-                    );
-                    $("#txt_log").append("<p>"+log_plain+"</p>");
-                }, report_failure
-            );
-        }
+                  );
+                  $("#txt_log").append("<p>"+log_plain+"</p>");
+              }, report_failure
+          );
+      }
 
-        // Fetch the url of the wee-riddle
-        $.ajax({
-          type: "GET", cache: false,
-          url: "remote",
-          success: function(url){
-            wee_url = url;
-            setPolling();
-            listInstances();
-          }
-        });
+      // Fetch the url of the wee-riddle
+      $.ajax({
+        type: "GET", cache: false,
+        url: "remote",
+        success: function(url){
+          wee_url = url;
+          setPolling();
+          listInstances();
+        }
+      });
+      //]]>
     </script>
-
 
   </body>
 </html>

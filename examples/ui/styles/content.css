@@ -1,22 +1,18 @@
-<? 
-  header( "Content-Type: text/css" ); 
-  $mtime = filemtime($_SERVER['SCRIPT_FILENAME']);
-  header('Last-Modified: '.gmdate('D, d M Y H:i:s', $mtime).' GMT');
-  header('ETag: ' . md5($mtime));
-  if (strtotime($_SERVER["HTTP_IF_MODIFIED_SINCE"]) == $mtime) {
-    header("HTTP/1.0 304 Not Modified");
-    header('Connection: close');
-    exit;
-  }
-
-  if (strpos($_SERVER['HTTP_USER_AGENT'],"MSIE") && !strpos($_SERVER['HTTP_USER_AGENT'],"Opera")) {
-    $formsizeS = "100.6%";
-  } else {
-    $formsizeS = "101.2%";
-  }  
-?>
-/* <?= 'Last-Modified: '.gmdate('D, d M Y H:i:s', $mtime).' GMT' ?> */
-/* <?= $_SERVER['HTTP_USER_AGENT'] ?> */
+% mtime = ::File.mtime(__ERB_FILE__)
+% @headers << Riddl::Header.new("Last-Modified",mtime.httpdate)
+% @headers << Riddl::Header.new("ETag",Digest::MD5.hexdigest(mtime.httpdate))
+% htime = @e["HTTP_IF_MODIFIED_SINCE"].nil? ? Time.at(0) : Time.parse(@e["HTTP_IF_MODIFIED_SINCE"])
+% if htime == mtime
+%   @headers << Riddl::Header.new("Connection","close")
+%   @status = 304 # Not modified
+% else 
+%   if @e['HTTP_USER_AGENT']=~ /MSIE/ && @e['HTTP_USER_AGENT'] !~ /Opera/
+%     formsizeS = '100.6%'
+%   else
+%     formsizeS = '101.2%'
+%   end
+/* <%= "Last-Modified: #{mtime}" %> */
+/* <%= @e['HTTP_USER_AGENT'] %> */
 /* Please see the LICENSE.GPL file for copyright and distribution information */
 
 #content > *:first-child { margin-top:0px; }
@@ -142,47 +138,44 @@
 #content div.tab-off                      { float:left; border-top: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD; background-color: #FFFFFF; padding:0.32em; padding-top:0.2em; margin-right:1em; }
 #content div.code                         { border: 1px dashed #425d73; background-color: #DEE6EE; margin:0px; padding: 0.5em 1em; font-family: monospace; font-size:1.3em; }
 
-<?
-  $format = array("","a","a:link","a:visited","a:hover","a:active");
-  foreach ($format as $f) {
-?>  
 /* Browser Bug, IE is to stupid to inherit,thus repeat for all */
-#content span.urgent                     <?= $f ?> { color: #DD0000; }
-#content span.important                  <?= $f ?> { background-color: #F2F2F2; }
-#content span.all-important              <?= $f ?> { background-color: #DDDDDD; }
-#content span.background-baseA           <?= $f ?> { background-color: #ffc0c0; }
-#content span.background-baseB           <?= $f ?> { background-color: #c0ffc0; }
-#content span.background-baseC           <?= $f ?> { background-color: #c0c0ff; }
-#content span.background-baseD           <?= $f ?> { background-color: #ffffa0; }
-#content span.background-baseE           <?= $f ?> { background-color: #ffffff; }
-#content span.background-baseF           <?= $f ?> { background-color: #fcedd7; }
-#content span.background-baseG           <?= $f ?> { background-color: #d7e6fc; }
-#content span.background-baseH           <?= $f ?> { background-color: #edd7fc; }
-#content span.background-baseI           <?= $f ?> { background-color: #e0c9ab; }
-#content span.background-baseA-intensive <?= $f ?> { background-color: #ff9f9f; }
-#content span.background-baseB-intensive <?= $f ?> { background-color: #a0ff9f; }
-#content span.background-baseC-intensive <?= $f ?> { background-color: #9fa0ff; }
-#content span.background-baseD-intensive <?= $f ?> { background-color: #feff6f; }
-#content span.line-through               <?= $f ?> { text-decoration: line-through; }
-#content span.underline                  <?= $f ?> { text-decoration: underline; }
-#content span.invisible                  <?= $f ?> { display:none; }
-#content span.visible                    <?= $f ?> { display:inline; }
-#content span.hidden                     <?= $f ?> { visibility:hidden; }
-#content span.monospace                  <?= $f ?> { font-family:monospace; font-size: 1em;}
-#content span.small                      <?= $f ?> { font-size: 0.9em;}
-#content span.align-top                  <?= $f ?> { vertical-align:top; }
-#content span.align-bottom               <?= $f ?> { vertical-align:bottom; }
-#content span.align-vertical-center      <?= $f ?> { vertical-align:middle; }
-#content span.align-vertical-baseline    <?= $f ?> { vertical-align:baseline; }
-#content span.align-horizontal-center    <?= $f ?> { text-align:center; }
-#content span.margin-left-small          <?= $f ?> { margin-left: 0.1em; }
-#content span.margin-left-big            <?= $f ?> { margin-left: 0.5em; }
-#content span.margin-left-huge           <?= $f ?> { margin-left: 1em; }
-#content span.margin-right-small         <?= $f ?> { margin-right: 0.1em; }
-#content span.margin-right-big           <?= $f ?> { margin-right: 0.5em; }
-#content span.margin-right-huge          <?= $f ?> { margin-right: 1em; }
-#content span.click                      <?= $f ?> { cursor:pointer; }
-<? } ?>
+% ["","a","a:link","a:visited","a:hover","a:active"].each do |f|
+#content span.urgent                     <%= f %> { color: #DD0000; }
+#content span.important                  <%= f %> { background-color: #F2F2F2; }
+#content span.all-important              <%= f %> { background-color: #DDDDDD; }
+#content span.background-baseA           <%= f %> { background-color: #ffc0c0; }
+#content span.background-baseB           <%= f %> { background-color: #c0ffc0; }
+#content span.background-baseC           <%= f %> { background-color: #c0c0ff; }
+#content span.background-baseD           <%= f %> { background-color: #ffffa0; }
+#content span.background-baseE           <%= f %> { background-color: #ffffff; }
+#content span.background-baseF           <%= f %> { background-color: #fcedd7; }
+#content span.background-baseG           <%= f %> { background-color: #d7e6fc; }
+#content span.background-baseH           <%= f %> { background-color: #edd7fc; }
+#content span.background-baseI           <%= f %> { background-color: #e0c9ab; }
+#content span.background-baseA-intensive <%= f %> { background-color: #ff9f9f; }
+#content span.background-baseB-intensive <%= f %> { background-color: #a0ff9f; }
+#content span.background-baseC-intensive <%= f %> { background-color: #9fa0ff; }
+#content span.background-baseD-intensive <%= f %> { background-color: #feff6f; }
+#content span.line-through               <%= f %> { text-decoration: line-through; }
+#content span.underline                  <%= f %> { text-decoration: underline; }
+#content span.invisible                  <%= f %> { display:none; }
+#content span.visible                    <%= f %> { display:inline; }
+#content span.hidden                     <%= f %> { visibility:hidden; }
+#content span.monospace                  <%= f %> { font-family:monospace; font-size: 1em;}
+#content span.small                      <%= f %> { font-size: 0.9em;}
+#content span.align-top                  <%= f %> { vertical-align:top; }
+#content span.align-bottom               <%= f %> { vertical-align:bottom; }
+#content span.align-vertical-center      <%= f %> { vertical-align:middle; }
+#content span.align-vertical-baseline    <%= f %> { vertical-align:baseline; }
+#content span.align-horizontal-center    <%= f %> { text-align:center; }
+#content span.margin-left-small          <%= f %> { margin-left: 0.1em; }
+#content span.margin-left-big            <%= f %> { margin-left: 0.5em; }
+#content span.margin-left-huge           <%= f %> { margin-left: 1em; }
+#content span.margin-right-small         <%= f %> { margin-right: 0.1em; }
+#content span.margin-right-big           <%= f %> { margin-right: 0.5em; }
+#content span.margin-right-huge          <%= f %> { margin-right: 1em; }
+#content span.click                      <%= f %> { cursor:pointer; }
+% end
 
 #content span.float-on                    { float:left; }
 #content span.float-off                   { clear:both; }
@@ -199,43 +192,40 @@
 #content span.function                    { }
 #content span.symbol                      { }
 
-<?
-  $format = array("a", "a:link","a:visited","a:hover","a:active");
-  foreach ($format as $f) {
-?>  
-#content <?= $f ?>.urgent                        { color: #DD0000; }
-#content <?= $f ?>.important                     { background-color: #F2F2F2; }
-#content <?= $f ?>.all-important                 { background-color: #DDDDDD; }
-#content <?= $f ?>.background-baseA              { background-color: #ffc0c0; }
-#content <?= $f ?>.background-baseB              { background-color: #c0ffc0; }
-#content <?= $f ?>.background-baseC              { background-color: #c0c0ff; }
-#content <?= $f ?>.background-baseD              { background-color: #ffffa0; }
-#content <?= $f ?>.background-baseE              { background-color: #ffffff; }
-#content <?= $f ?>.background-baseF              { background-color: #fcedd7; }
-#content <?= $f ?>.background-baseG              { background-color: #d7e6fc; }
-#content <?= $f ?>.background-baseH              { background-color: #edd7fc; }
-#content <?= $f ?>.background-baseI              { background-color: #e0c9ab; }
-#content <?= $f ?>.background-baseA-intensive    { background-color: #ff9f9f; }
-#content <?= $f ?>.background-baseB-intensive    { background-color: #a0ff9f; }
-#content <?= $f ?>.background-baseC-intensive    { background-color: #9fa0ff; }
-#content <?= $f ?>.background-baseD-intensive    { background-color: #feff6f; }
-#content <?= $f ?>.line-through                  { text-decoration: line-through; }
-#content <?= $f ?>.invisible                     { display:none; }
-#content <?= $f ?>.hidden                        { visibility:hidden; }
-#content <?= $f ?>.visible                       { display:inline; }
-#content <?= $f ?>.monospace                     { font-family:monospace; font-size: 1em;}
-#content <?= $f ?>.small                         { font-size: 0.9em;}
-#content <?= $f ?>.align-vertical-center         { vertical-align:middle; }
-#content <?= $f ?>.align-vertical-baseline       { vertical-align:baseline; }
-#content <?= $f ?>.align-horizontal-center       { text-align:center; }
-#content <?= $f ?>.margin-left-small             { margin-left: 0.1em; }
-#content <?= $f ?>.margin-left-big               { margin-left: 0.5em; }
-#content <?= $f ?>.margin-left-huge              { margin-left: 1em; }
-#content <?= $f ?>.margin-right-small            { margin-right: 0.1em; }
-#content <?= $f ?>.margin-right-big              { margin-right: 0.5em; }
-#content <?= $f ?>.margin-right-huge             { margin-right: 1em; }
-#content <?= $f ?>.click                         { cursor:pointer; }
-<? } ?>
+% ["","a","a:link","a:visited","a:hover","a:active"].each do |f|
+#content <%= f %>.urgent                        { color: #DD0000; }
+#content <%= f %>.important                     { background-color: #F2F2F2; }
+#content <%= f %>.all-important                 { background-color: #DDDDDD; }
+#content <%= f %>.background-baseA              { background-color: #ffc0c0; }
+#content <%= f %>.background-baseB              { background-color: #c0ffc0; }
+#content <%= f %>.background-baseC              { background-color: #c0c0ff; }
+#content <%= f %>.background-baseD              { background-color: #ffffa0; }
+#content <%= f %>.background-baseE              { background-color: #ffffff; }
+#content <%= f %>.background-baseF              { background-color: #fcedd7; }
+#content <%= f %>.background-baseG              { background-color: #d7e6fc; }
+#content <%= f %>.background-baseH              { background-color: #edd7fc; }
+#content <%= f %>.background-baseI              { background-color: #e0c9ab; }
+#content <%= f %>.background-baseA-intensive    { background-color: #ff9f9f; }
+#content <%= f %>.background-baseB-intensive    { background-color: #a0ff9f; }
+#content <%= f %>.background-baseC-intensive    { background-color: #9fa0ff; }
+#content <%= f %>.background-baseD-intensive    { background-color: #feff6f; }
+#content <%= f %>.line-through                  { text-decoration: line-through; }
+#content <%= f %>.invisible                     { display:none; }
+#content <%= f %>.hidden                        { visibility:hidden; }
+#content <%= f %>.visible                       { display:inline; }
+#content <%= f %>.monospace                     { font-family:monospace; font-size: 1em;}
+#content <%= f %>.small                         { font-size: 0.9em;}
+#content <%= f %>.align-vertical-center         { vertical-align:middle; }
+#content <%= f %>.align-vertical-baseline       { vertical-align:baseline; }
+#content <%= f %>.align-horizontal-center       { text-align:center; }
+#content <%= f %>.margin-left-small             { margin-left: 0.1em; }
+#content <%= f %>.margin-left-big               { margin-left: 0.5em; }
+#content <%= f %>.margin-left-huge              { margin-left: 1em; }
+#content <%= f %>.margin-right-small            { margin-right: 0.1em; }
+#content <%= f %>.margin-right-big              { margin-right: 0.5em; }
+#content <%= f %>.margin-right-huge             { margin-right: 1em; }
+#content <%= f %>.click                         { cursor:pointer; }
+% end
 
 #content p.size-max                   { width: 100%; }
 #content p.size-half                  { width: 50%; }
@@ -399,91 +389,88 @@
 
 #content table th                             { background-color: #F2F2F2; font-weight:bold; padding:0.1em 0.5em; margin:0; vertical-align:top }
 #content table td                             { margin:0px; padding:0px; vertical-align:top; }
-<?
-  $format = array("th","td");
-  foreach ($format as $f) {
-?>  
-#content table <?= $f ?>.margin-small                { padding: 0.2em 0.1em; }
-#content table <?= $f ?>.margin-big                  { padding: 0.5em; }
-#content table <?= $f ?>.margin-huge                 { padding: 1em; }
-#content table <?= $f ?>.margin-bottom-small         { padding-bottom: 0.2em; }
-#content table <?= $f ?>.margin-bottom-big           { padding-bottom: 0.5em; }
-#content table <?= $f ?>.margin-bottom-huge          { padding-bottom: 1em; }
-#content table <?= $f ?>.margin-top-small            { padding-top: 0.2em; }
-#content table <?= $f ?>.margin-top-big              { padding-top: 0.5em; }
-#content table <?= $f ?>.margin-top-huge             { padding-top: 1em; }
-#content table <?= $f ?>.margin-left-small           { padding-left: 0.1em; }
-#content table <?= $f ?>.margin-left-big             { padding-left: 0.5em; }
-#content table <?= $f ?>.margin-left-huge            { padding-left: 1em; }
-#content table <?= $f ?>.margin-right-small          { padding-right: 0.1em; }
-#content table <?= $f ?>.margin-right-big            { padding-right: 0.5em; }
-#content table <?= $f ?>.margin-right-huge           { padding-right: 1em; }
-#content table <?= $f ?>.border                      { border:        1px solid #DDDDDD; }
-#content table <?= $f ?>.border-bottom               { border-bottom: 1px solid #DDDDDD; }
-#content table <?= $f ?>.border-left                 { border-left:   1px solid #DDDDDD; }
-#content table <?= $f ?>.border-top                  { border-top:    1px solid #DDDDDD; }
-#content table <?= $f ?>.border-right                { border-right:  1px solid #DDDDDD; }
-#content table <?= $f ?>.border-transparent          { border:        1px solid #FFFFFF; }
-#content table <?= $f ?>.border-bottom-transparent   { border-bottom: 1px solid #FFFFFF; }
-#content table <?= $f ?>.border-left-transparent     { border-left:   1px solid #FFFFFF; }
-#content table <?= $f ?>.border-top-transparent      { border-top:    1px solid #FFFFFF; }
-#content table <?= $f ?>.border-right-transparent    { border-right:  1px solid #FFFFFF; }
-#content table <?= $f ?>.border-dark                 { border:        1px solid #444444; }
-#content table <?= $f ?>.border-dark-bottom          { border-bottom: 1px solid #444444; }
-#content table <?= $f ?>.border-dark-left            { border-left:   1px solid #444444; }
-#content table <?= $f ?>.border-dark-top             { border-top:    1px solid #444444; }
-#content table <?= $f ?>.border-dark-right           { border-right:  1px solid #444444; }
-#content table <?= $f ?>.important                   { background-color: #F2F2F2; }
-#content table <?= $f ?>.all-important               { background-color: #DDDDDD; }
-#content table <?= $f ?>.urgent                      { color: #DD0000; }
-#content table <?= $f ?>.background-baseA            { background-color: #ffc0c0; }
-#content table <?= $f ?>.background-baseB            { background-color: #c0ffc0; }
-#content table <?= $f ?>.background-baseC            { background-color: #c0c0ff; }
-#content table <?= $f ?>.background-baseD            { background-color: #ffffa0; }
-#content table <?= $f ?>.background-baseE            { background-color: #ffffff; }
-#content table <?= $f ?>.background-baseF            { background-color: #fcedd7; }
-#content table <?= $f ?>.background-baseG            { background-color: #d7e6fc; }
-#content table <?= $f ?>.background-baseH            { background-color: #edd7fc; }
-#content table <?= $f ?>.background-baseI            { background-color: #e0c9ab; }
-#content table <?= $f ?>.background-baseA-intensive  { background-color: #ff9f9f; }
-#content table <?= $f ?>.background-baseB-intensive  { background-color: #a0ff9f; }
-#content table <?= $f ?>.background-baseC-intensive  { background-color: #9fa0ff; }
-#content table <?= $f ?>.background-baseD-intensive  { background-color: #feff6f; }
-#content table <?= $f ?>.background-baseF-intensive  { background-color: #7cdaff; }
-#content table <?= $f ?>:hover.hover-background-baseA            { background-color: #ffc0c0; }
-#content table <?= $f ?>:hover.hover-background-baseB            { background-color: #c0ffc0; }
-#content table <?= $f ?>:hover.hover-background-baseC            { background-color: #c0c0ff; }
-#content table <?= $f ?>:hover.hover-background-baseD            { background-color: #ffffa0; }
-#content table <?= $f ?>:hover.hover-background-baseE            { background-color: #ffffff; }
-#content table <?= $f ?>:hover.hover-background-baseF            { background-color: #fcedd7; }
-#content table <?= $f ?>:hover.hover-background-baseG            { background-color: #d7e6fc; }
-#content table <?= $f ?>:hover.hover-background-baseH            { background-color: #edd7fc; }
-#content table <?= $f ?>:hover.hover-background-baseI            { background-color: #e0c9ab; }
-#content table <?= $f ?>:hover.hover-background-baseA-intensive  { background-color: #ff9f9f; }
-#content table <?= $f ?>:hover.hover-background-baseB-intensive  { background-color: #a0ff9f; }
-#content table <?= $f ?>:hover.hover-background-baseC-intensive  { background-color: #9fa0ff; }
-#content table <?= $f ?>:hover.hover-background-baseD-intensive  { background-color: #feff6f; }
-#content table <?= $f ?>:hover.hover-background-baseF-intensive  { background-color: #7cdaff; }
-#content table <?= $f ?>.align-bottom                { vertical-align:bottom; }
-#content table <?= $f ?>.align-top                   { vertical-align:top; }
-#content table <?= $f ?>.align-left                  { text-align:left; }
-#content table <?= $f ?>.align-right                 { text-align:right; }
-#content table <?= $f ?>.align-vertical-center       { vertical-align:middle; }
-#content table <?= $f ?>.align-vertical-baseline     { vertical-align:baseline; }
-#content table <?= $f ?>.align-horizontal-center     { text-align:center; }
-#content table <?= $f ?>.size-max                    { width: 100%; }
-#content table <?= $f ?>.size-half                   { width: 50%; }
-#content table <?= $f ?>.size-xxl                    { width: 30em; }
-#content table <?= $f ?>.size-xl                     { width: 20em; }
-#content table <?= $f ?>.size-l                      { width: 12em; }
-#content table <?= $f ?>.size-m                      { width: 8em; }
-#content table <?= $f ?>.size-s                      { width: 4em; }
-#content table <?= $f ?>.size-xs                     { width: 2em; }
-#content table <?= $f ?>.nowrap                      { white-space:nowrap; }
-#content table <?= $f ?>.click                       { cursor:pointer; }
-#content table <?= $f ?>.hidden                      { visibility:hidden; }
-#content table <?= $f ?>.invisible                   { display:none; }
-<? } ?>
+% ["th","td"].each do |f|
+#content table <%= f %>.margin-small                { padding: 0.2em 0.1em; }
+#content table <%= f %>.margin-big                  { padding: 0.5em; }
+#content table <%= f %>.margin-huge                 { padding: 1em; }
+#content table <%= f %>.margin-bottom-small         { padding-bottom: 0.2em; }
+#content table <%= f %>.margin-bottom-big           { padding-bottom: 0.5em; }
+#content table <%= f %>.margin-bottom-huge          { padding-bottom: 1em; }
+#content table <%= f %>.margin-top-small            { padding-top: 0.2em; }
+#content table <%= f %>.margin-top-big              { padding-top: 0.5em; }
+#content table <%= f %>.margin-top-huge             { padding-top: 1em; }
+#content table <%= f %>.margin-left-small           { padding-left: 0.1em; }
+#content table <%= f %>.margin-left-big             { padding-left: 0.5em; }
+#content table <%= f %>.margin-left-huge            { padding-left: 1em; }
+#content table <%= f %>.margin-right-small          { padding-right: 0.1em; }
+#content table <%= f %>.margin-right-big            { padding-right: 0.5em; }
+#content table <%= f %>.margin-right-huge           { padding-right: 1em; }
+#content table <%= f %>.border                      { border:        1px solid #DDDDDD; }
+#content table <%= f %>.border-bottom               { border-bottom: 1px solid #DDDDDD; }
+#content table <%= f %>.border-left                 { border-left:   1px solid #DDDDDD; }
+#content table <%= f %>.border-top                  { border-top:    1px solid #DDDDDD; }
+#content table <%= f %>.border-right                { border-right:  1px solid #DDDDDD; }
+#content table <%= f %>.border-transparent          { border:        1px solid #FFFFFF; }
+#content table <%= f %>.border-bottom-transparent   { border-bottom: 1px solid #FFFFFF; }
+#content table <%= f %>.border-left-transparent     { border-left:   1px solid #FFFFFF; }
+#content table <%= f %>.border-top-transparent      { border-top:    1px solid #FFFFFF; }
+#content table <%= f %>.border-right-transparent    { border-right:  1px solid #FFFFFF; }
+#content table <%= f %>.border-dark                 { border:        1px solid #444444; }
+#content table <%= f %>.border-dark-bottom          { border-bottom: 1px solid #444444; }
+#content table <%= f %>.border-dark-left            { border-left:   1px solid #444444; }
+#content table <%= f %>.border-dark-top             { border-top:    1px solid #444444; }
+#content table <%= f %>.border-dark-right           { border-right:  1px solid #444444; }
+#content table <%= f %>.important                   { background-color: #F2F2F2; }
+#content table <%= f %>.all-important               { background-color: #DDDDDD; }
+#content table <%= f %>.urgent                      { color: #DD0000; }
+#content table <%= f %>.background-baseA            { background-color: #ffc0c0; }
+#content table <%= f %>.background-baseB            { background-color: #c0ffc0; }
+#content table <%= f %>.background-baseC            { background-color: #c0c0ff; }
+#content table <%= f %>.background-baseD            { background-color: #ffffa0; }
+#content table <%= f %>.background-baseE            { background-color: #ffffff; }
+#content table <%= f %>.background-baseF            { background-color: #fcedd7; }
+#content table <%= f %>.background-baseG            { background-color: #d7e6fc; }
+#content table <%= f %>.background-baseH            { background-color: #edd7fc; }
+#content table <%= f %>.background-baseI            { background-color: #e0c9ab; }
+#content table <%= f %>.background-baseA-intensive  { background-color: #ff9f9f; }
+#content table <%= f %>.background-baseB-intensive  { background-color: #a0ff9f; }
+#content table <%= f %>.background-baseC-intensive  { background-color: #9fa0ff; }
+#content table <%= f %>.background-baseD-intensive  { background-color: #feff6f; }
+#content table <%= f %>.background-baseF-intensive  { background-color: #7cdaff; }
+#content table <%= f %>:hover.hover-background-baseA            { background-color: #ffc0c0; }
+#content table <%= f %>:hover.hover-background-baseB            { background-color: #c0ffc0; }
+#content table <%= f %>:hover.hover-background-baseC            { background-color: #c0c0ff; }
+#content table <%= f %>:hover.hover-background-baseD            { background-color: #ffffa0; }
+#content table <%= f %>:hover.hover-background-baseE            { background-color: #ffffff; }
+#content table <%= f %>:hover.hover-background-baseF            { background-color: #fcedd7; }
+#content table <%= f %>:hover.hover-background-baseG            { background-color: #d7e6fc; }
+#content table <%= f %>:hover.hover-background-baseH            { background-color: #edd7fc; }
+#content table <%= f %>:hover.hover-background-baseI            { background-color: #e0c9ab; }
+#content table <%= f %>:hover.hover-background-baseA-intensive  { background-color: #ff9f9f; }
+#content table <%= f %>:hover.hover-background-baseB-intensive  { background-color: #a0ff9f; }
+#content table <%= f %>:hover.hover-background-baseC-intensive  { background-color: #9fa0ff; }
+#content table <%= f %>:hover.hover-background-baseD-intensive  { background-color: #feff6f; }
+#content table <%= f %>:hover.hover-background-baseF-intensive  { background-color: #7cdaff; }
+#content table <%= f %>.align-bottom                { vertical-align:bottom; }
+#content table <%= f %>.align-top                   { vertical-align:top; }
+#content table <%= f %>.align-left                  { text-align:left; }
+#content table <%= f %>.align-right                 { text-align:right; }
+#content table <%= f %>.align-vertical-center       { vertical-align:middle; }
+#content table <%= f %>.align-vertical-baseline     { vertical-align:baseline; }
+#content table <%= f %>.align-horizontal-center     { text-align:center; }
+#content table <%= f %>.size-max                    { width: 100%; }
+#content table <%= f %>.size-half                   { width: 50%; }
+#content table <%= f %>.size-xxl                    { width: 30em; }
+#content table <%= f %>.size-xl                     { width: 20em; }
+#content table <%= f %>.size-l                      { width: 12em; }
+#content table <%= f %>.size-m                      { width: 8em; }
+#content table <%= f %>.size-s                      { width: 4em; }
+#content table <%= f %>.size-xs                     { width: 2em; }
+#content table <%= f %>.nowrap                      { white-space:nowrap; }
+#content table <%= f %>.click                       { cursor:pointer; }
+#content table <%= f %>.hidden                      { visibility:hidden; }
+#content table <%= f %>.invisible                   { display:none; }
+% end
 
 #content table.list tr td:first-child { font-weight:bold; padding-right:0.5em; }
 
@@ -680,7 +667,7 @@
 #content textarea.noborder                { border: 0px none; }
 
 #content select                           { vertical-align: middle; }
-#content select.size-max                  { width: <?= $formsizeS ?>; }
+#content select.size-max                  { width: <%= formsizeS %>; }
 #content select.size-xxl                  { width: 30em; }
 #content select.size-xl                   { width: 20em; }
 #content select.size-l                    { width: 12em; }
@@ -733,3 +720,5 @@
 #content math                             { margin:0px; padding:0px; font-size: 1.3em; }
 
 .noprint { }
+
+%end
