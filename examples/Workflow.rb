@@ -15,6 +15,8 @@ class Workflow < Wee
   context :airBookingId => nil, :hotelBookingID => nil
   context :departure => 'Vienna', :destination => 'Prag'
   context :sum => 0
+  context :x => 1
+  context :y => 2
 
   control flow do
 
