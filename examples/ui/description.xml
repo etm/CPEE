@@ -1,7 +1,7 @@
 <description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <message name="html">
-    <parameter name="file" mimetype="text/html"/>
+    <parameter name="file" mimetype="application/xhtml+xml"/>
   </message>
   <message name="xml">
     <parameter name="file" mimetype="text/xml"/>

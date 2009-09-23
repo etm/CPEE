@@ -12,12 +12,12 @@ $0 = "wee-ui"
 run(
   Riddl::Server.new(::File.dirname(__FILE__) + '/description.xml') do
     on resource do
-      run Riddl::Utils::FileServe, 'implementation/index.html' if get
+      run Riddl::Utils::FileServe, 'implementation/index.xhtml' if get
       on resource 'monitor' do
           run MonitorGET if get 'since'
       end
       on resource do
-        run Riddl::Utils::FileServe, 'implementation/details.html' if get
+        run Riddl::Utils::FileServe, 'implementation/details.xhtml' if get
         on resource 'monitor' do
           run MonitorGET if get 'since'
           run MonitorPOST if post 'log-format'
