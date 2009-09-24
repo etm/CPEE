@@ -3,8 +3,10 @@ require ::File.dirname(__FILE__) + '/../../../lib/BasicHandler'
 
 class EmptyWorkflow < Wee
   handler BasicHandler
-  context :x => 1
-  context :y => 2
+  
+  context :delay => 5
+  context :longdelay => 99
+
   endpoint :hotel => 'http://www.marriot.com'
   endpoint :flight => 'http://www.aerlingus.com'
   

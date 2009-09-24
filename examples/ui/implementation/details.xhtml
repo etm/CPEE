@@ -89,7 +89,17 @@
         <button id="btn_apply" type="button" onclick="javascript:apply()">Apply to current instance</button>
       </form>
       <h5>WorkflowExecutionEngine - Workflow Information CocKpit</h5>
-      <p>activity :a1, :call, hotel, @x, @y</p>
+      <h5>Original Workflow</h5>
+      <p>
+        activity :posBookFlight, :call, flight, @delay<BR/>
+        activity :posBookHotel, :call, hotel, @longdelay
+      </p>
+      <h5>Replace Workflow</h5>
+      <p>
+        activity :posBookFlight, :call, flight, @delay<BR/>
+        activity :posBookHotel, :call, hotel, @delay<BR/>
+        activity :posBookTaxi, :call, taxi, @delay<BR/>
+      </p>
     </div>  
     
     <div class="invisible" id="template_description">
