@@ -1,18 +1,8 @@
 require 'pp'
 require 'logger'
 require 'thread'
-require ::File.dirname(__FILE__) + '/SimpleWorkflow'
 require ::File.dirname(__FILE__) + '/Workflow'
 
-def show_simple
-  t = SimpleWorkflow.new
-  result = nil
-  execution = Thread.new {
-    result = t.start
-  }
-  execution.join()
-  p result
-end
 
 def show_normal
   t = Workflow.new
@@ -53,16 +43,6 @@ puts "===================================================="
 result = show_normal
 puts "========> Ending-Result: #{result.inspect}"
 
-#  control flow do
-#    activity :a1, :call, endpoint1
-#    parallel do
-#      parallel_branch do activity :a2_1, :call, endpoint2 end
-#      parallel_branch do activity :a2_2, :call, endpoint2 end
-#    end
-#    activity :a2, :call, endpoint1 do |result|
-#      @x += result;
-#    end
-#    activity :a3, :call, endpoint1, @x
-#  end
+
 
 

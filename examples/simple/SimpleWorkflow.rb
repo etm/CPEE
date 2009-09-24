@@ -5,6 +5,7 @@ class SimpleWorkflow < Wee
   handler BasicHandler
   
   control flow do
-    activity :a1, :call, "orf.at", 1, 2
+    endpoint :ep1 => "orf.at"
+    activity :a1, :call, ep1, 1, 2
   end
 end
