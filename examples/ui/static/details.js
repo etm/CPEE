@@ -1,28 +1,13 @@
 function unhide(divID) {
   var item = document.getElementById(divID);
   if (item) {
-    item.className=(item.className=='hidden')?'unhidden':'hidden';
+    item.className=(item.className=='invisible')?'visible':'invisible';
   }
 }
 
 var wee_url = "";
 var running = false;
 
-function makeRequest(method, url, success, failure) {
-  var req = new XMLHttpRequest();  
-  req.open(method, url, true);  
-  req.onreadystatechange = function (e) {  
-    if (req.readyState === 4) {  
-      if(req.status === 200) {
-        success(req.responseText);
-      } else {  
-        failure("method "+method+" to "+url+" failed");
-      }
-      method
-    }  
-  };  
-  req.send(null);
-}
 function report_failure(text) {
   console.log("ERROR: "+text);
   $("#div_message").append(text+"<BR/>");
