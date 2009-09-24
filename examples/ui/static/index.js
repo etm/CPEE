@@ -31,7 +31,7 @@ function new_instance_created(instance_id) {
   var instance_name = $("#txt_name").val();
   console.log("Instance name = "+instance_name);
   console.log("Setting Instance Handler parameters");
-  makeRequest("POST", wee_url+instance_id+"/properties/handlers?class=MonitoringHandler&argument="+encodeURIComponent(location.href+instance_id)+"/monitor",
+  makeRequest("POST", wee_url+instance_id+"/properties/handlers?class=MonitoringHandler&argument="+encodeURIComponent(location.href+instance_id)+encodeURIComponent("/monitor"),
     function() {
       console.log("Done setting handler");
     },
