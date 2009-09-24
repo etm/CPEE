@@ -1,6 +1,7 @@
 # require 'Thread'
 require ::File.dirname(__FILE__) + '/../../../lib/Wee'
 require ::File.dirname(__FILE__) + '/../../../../riddl/lib/ruby/client'
+require ::File.dirname(__FILE__) + '/tweeter'
 
 class MonitoringHandler < Wee::HandlerWrapperBase
   def initialize(url)
@@ -27,6 +28,8 @@ class MonitoringHandler < Wee::HandlerWrapperBase
   # can be executed asynchron, see finished_call & return_value
   def handle_call(position, passthrough, endpoint, *parameters)
     log "handle_call", "Handle call: position=[#{position}]; passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
+
+    Tweeter.new.tweet(parameters[-2].to_s) if parameters.length >= 2
     Thread.new do
       tosleep = parameters ? parameters.last : 1
       tosleep.to_i.times do
