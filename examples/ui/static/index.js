@@ -1,5 +1,8 @@
 var wee_url = "";
 
+function printInstance(href,text) {
+  $("#instances").append("<div class='margin-left-huge'><img src=\"/static/Images/arrow.png\" width=\"14\" height=\"14\" class=\"small\"/> Instance <a href=\""+href+"\">"+text+"</a></div>");
+}
 function listInstances() {
   console.log("Fetching existing instances");
   makeRequest("GET", wee_url,
@@ -7,7 +10,7 @@ function listInstances() {
     console.log("appending "+result+" to instance listing");
     $('a',result).each(function(){
       console.log(this);
-      $("#instances").append("<div>Instance <a href=\""+$(this).attr("href")+"\">"+$(this).text()+"</a></div>");
+      printInstance($(this).attr("href"),$(this).text());
     });  
   },
   report_failure);
@@ -36,25 +39,10 @@ function new_instance_created(instance_id) {
       console.log("Done setting handler");
     },
     report_failure);
-  $("#instances").append("<div>Instance <a href=\""+instance_id+"\">"+instance_name+"</a></div>");
+  printInstance(instance_id,instance_name);
 }
 function report_failure(text) {
   console.log("ERROR: "+text);
-}
-function makeRequest(method, url, success, failure) {
-  var req = new XMLHttpRequest();
-  req.open(method, url, true);
-  req.onreadystatechange = function (e) {
-    if (req.readyState === 4) {
-      if(req.status === 200) {
-        success(req.responseText);
-      } else {
-        failure("method "+method+" to "+url+" failed");
-      }
-      method
-    }
-  };  
-  req.send(null);
 }
 function setPolling() {
   refreshLog();
@@ -76,31 +64,6 @@ function refreshLog() {
     }, report_failure
   );
 }
-
-// maximize log
-function setHeight() {
-  if (typeof window.innerHeight != 'undefined') {
-    var secure = 5;
-    var cc = $('contentcontainer');
-    var ic = $('icontent');
-    var co = $('content');
-    var h_text = $('CEWebS_text');
-    if (cc.getHeight() == ic.getHeight()) {
-      var h_window  = document.viewport.getHeight();
-      var h_content = document.getElementsByTagName('body')[0].getHeight();
-      var imed = (parseInt(co.getStyle('margin-bottom'))+parseInt(co.getStyle('padding-bottom')));
-      if (h_window - h_content != 0) {
-        h_text.style.height = (h_text.getHeight() + (h_window - h_content) - imed - secure)  + 'px';
-      } else
-        h_text.style.height = (h_text.offsetParent.getHeight()) + 'px';
-    } else {
-      var imed = (parseInt(co.getStyle('margin-top'))+parseInt(co.getStyle('margin-bottom'))+parseInt(co.getStyle('padding-top'))+parseInt(co.getStyle('padding-bottom')));
-      h_text.style.height = (h_text.getHeight() + cc.getHeight() - ic.getHeight() - (co.positionedOffset().top * 2) - secure - imed) + 'px';
-    }  
-  }  
-}
-// window.onload = function() { setHeight(); };
-// window.onresize = function() { setHeight(); };
 
 // Fetch the url of the wee-riddle
 $.ajax({
