@@ -226,7 +226,7 @@ function apply() {
 
 function setPolling() {
     if(running) {
-        window.setTimeout("setPolling()", 4000);
+        window.setTimeout("setPolling()", 3000);
         loadInstance();
     }
 }
@@ -269,10 +269,10 @@ function stop() {
             // update start/stop button
             $("#btn_startstop").val("Start");
             running = false;
+            loadInstance();
             toggleControls(true);
         },report_failure
     );
-
 }
 function toggleControls(on) {
   if(!on) {

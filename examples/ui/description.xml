@@ -3,6 +3,9 @@
   <message name="html">
     <parameter name="file" mimetype="text/html"/>
   </message>
+  <message name="xhtml">
+    <parameter name="file" mimetype="application/xhtml+xml"/>
+  </message>
   <message name="xml">
     <parameter name="file" mimetype="text/xml"/>
   </message>
@@ -28,7 +31,7 @@
   </message>
 
   <resource>
-    <get in="*" out="html"/>
+    <get in="*" out="xhtml"/>
     <resource>
       <get in="*" out="html"/>
       <resource relative="monitor">
