@@ -69,6 +69,10 @@
   <message name="endpoint-id"><!--{{{-->
     <parameter name="name" type="string"/>
   </message><!--}}}-->
+  
+  <message name="name"><!--{{{-->
+    <parameter name="name" type="string"/>
+  </message><!--}}}-->
 
   <message name="endpoint-value"><!--{{{-->
     <parameter name="value" type="string"/>
@@ -113,6 +117,9 @@
         <put in="search-pos"/>
       </resource>
       <resource relative="properties">
+        <resource relative="name">
+          <get in="*" out="name"/>
+        </resource>
         <resource relative="context">
           <get in="*" out="list-of-context-vars"/>
           <post in="context-pair" out="context-id"/>

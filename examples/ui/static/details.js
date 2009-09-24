@@ -284,3 +284,12 @@ $.ajax({
     loadInstance();
   }
 });
+
+
+makeRequest(
+    "GET", (wee_url+location.pathname+"/properties/name)),
+    function(xml){
+    },
+    function(){
+    },report_failure
+);

@@ -2,6 +2,7 @@ require 'rack'
 require ::File.dirname(__FILE__) + '/../../../riddl/lib/ruby/server'
 require 'pp'
 require ::File.dirname(__FILE__) + '/lib/instances'
+require ::File.dirname(__FILE__) + '/lib/name'
 require ::File.dirname(__FILE__) + '/lib/state'
 require ::File.dirname(__FILE__) + '/lib/context'
 require ::File.dirname(__FILE__) + '/lib/endpoints'
@@ -30,6 +31,9 @@ run(
           run StatePUTSearch if method :put => 'search-pos'         # set the search position
         end
         on resource 'properties' do
+          on resource 'name' do
+            run NameGET if get
+          end
           on resource 'context' do
             run ContextGET if method :get => '*'              # returns the context
             run ContextPOST if method :post => 'context-pair' # adds a context variable
