@@ -33,6 +33,16 @@ function loadInstance() {
         }, report_failure
     );
 */
+    // Getting the name of the Instance
+    makeRequest(
+      "GET", (wee_url+location.pathname+"/properties/name"),
+      function(xml){
+
+      },
+      function(){
+      },
+      report_failure
+    );
     // Getting the state of execution
     makeRequest(
         "GET", (wee_url+location.pathname+"/state/"),
@@ -284,14 +294,3 @@ $.ajax({
     loadInstance();
   }
 });
-
-
-makeRequest(
-  "GET", (wee_url+location.pathname+"/properties/name"),
-  function(xml){
-
-  },
-  function(){
-  },
-  report_failure
-);
