@@ -93,16 +93,23 @@
         <button id="btn_apply" type="button" onclick="javascript:apply()">Apply to current instance</button>
       </form>
 
+      <h2>RubyConf Workflow</h2>
+      <p>
+          activity :posTwitter, :call, twitter, :text => @text<br/>
+      </p>
+
+
+
       <h2>Example Workflow 1</h2>
       <p>
-        activity :posBookFlight, :call, flight, @delay<br/>
-        activity :posBookHotel, :call, hotel, @longdelay
+        activity :posBookFlight, :call, flight, :delay => @delay<br/>
+        activity :posBookHotel, :call, hotel, :delay => @longdelay
       </p>
       <h2>Example Workflow 2</h2>
       <p>
-        activity :posBookFlight, :call, flight, @delay<br/>
-        activity :posBookHotel, :call, hotel, @delay<br/>
-        activity :posBookTaxi, :call, taxi, @delay<br/>
+        activity :posBookFlight, :call, flight, :delay => @delay<br/>
+        activity :posBookHotel, :call, hotel, :delay => @delay<br/>
+        activity :posBookTaxi, :call, taxi, :delay => @delay<br/>
       </p>
     
       <div class="invisible" id="template_description">

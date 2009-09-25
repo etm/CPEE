@@ -6,9 +6,11 @@ class EmptyWorkflow < Wee
   
   context :delay => 5
   context :longdelay => 99
+  context :text => "Hello out there"
 
   endpoint :hotel => 'http://www.marriot.com'
   endpoint :flight => 'http://www.aerlingus.com'
+  endpoint :twitter => 'http://sumatra.pri.univie.ac.at/services/twitter.php'
   
   control flow do
   end
