@@ -4,12 +4,12 @@ function printInstance(href,text) {
   $("#instances").append("<div class='margin-left-huge'><img src=\"/static/Images/arrow.png\" width=\"14\" height=\"14\" class=\"small\"/> Instance <a href=\""+href+"\">"+text+"</a></div>");
 }
 function listInstances() {
-  console.log("Fetching existing instances");
+  // console.log("Fetching existing instances");
   makeRequest("GET", wee_url,
   function(result) {
-    console.log("appending "+result+" to instance listing");
+    // console.log("appending "+result+" to instance listing");
     $('a',result).each(function(){
-      console.log(this);
+      // console.log(this);
       printInstance($(this).attr("href"),$(this).text());
     });  
   },
@@ -17,32 +17,32 @@ function listInstances() {
 }
 function makeNewInstance() {
   // Fetch the url of the wee-riddle
-  console.log("Creating new instance");
+  // console.log("Creating new instance");
   $.ajax({
     type: "GET", cache: false,
     url: "remote",
     success: function(wee_url){
       // create a new instance and add a link
       var instance_name = $("#txt_name").val();
-      console.log("calling: "+wee_url);
+      // console.log("calling: "+wee_url);
       makeRequest("POST", wee_url+"?name="+instance_name, new_instance_created, report_failure);
     }
   });
 }
 function new_instance_created(instance_id) {
-  console.info("Adding Instance "+instance_id+"to list");
+  // console.info("Adding Instance "+instance_id+"to list");
   var instance_name = $("#txt_name").val();
-  console.log("Instance name = "+instance_name);
-  console.log("Setting Instance Handler parameters");
+  // console.log("Instance name = "+instance_name);
+  // console.log("Setting Instance Handler parameters");
   makeRequest("POST", wee_url+instance_id+"/properties/handlers/monitor?class=MonitoringHandler&argument="+encodeURIComponent(location.href+instance_id)+encodeURIComponent("/monitor"),
     function() {
-      console.log("Done setting handler");
+      // console.log("Done setting handler");
     },
     report_failure);
   printInstance(instance_id,instance_name);
 }
 function report_failure(text) {
-  console.log("ERROR: "+text);
+  // console.log("ERROR: "+text);
 }
 function setPolling() {
   refreshLog();

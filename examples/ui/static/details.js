@@ -9,12 +9,12 @@ var wee_url = "";
 var running = false;
 
 function report_failure(text) {
-  console.log("ERROR: "+text);
+  // // console.log("ERROR: "+text);
   $("#div_message").text(text);
 }
 
 function loadInstance() {
-    console.log("Loading instance data");
+    // // console.log("Loading instance data");
 
     // Getting the monitoring handlers and args
     monitor_i = 0;
@@ -23,7 +23,7 @@ function loadInstance() {
         function(xml){
             var handler_text = "";
             var count = 0;
-            console.log(xml)
+            // // console.log(xml)
             $(xml).find("a").each(function() {
               var a = $(this);
               var handler_urls = a.text().split(",");
@@ -138,7 +138,7 @@ function replaceMonitor(text) {
     $("#div_monitor").html($("#monitor_add_button").html()+text);
 }
 function generateMonitor(value) {
-    console.log("generatemonitor: "+value);
+    // // console.log("generatemonitor: "+value);
     var text = $("#add_monitor").html();
     text = text.replace(/monitor_url/,"monitor_url_" + monitor_i);
     text = text.replace(/value=\"value\"/, "value=\""+value+"\"");
@@ -173,10 +173,10 @@ function generateEndpoint(name, url) {
 }
 
 function setMonitor_serverside(urls) {
-    console.log("URLS: "+urls)
+    // // console.log("URLS: "+urls)
     makeRequest("POST", wee_url+location.pathname+"/properties/handlers/monitor?class=MonitoringHandler&argument="+urls,
         function() {
-          console.log("Done setting handler");
+          // // console.log("Done setting handler");
         },
         report_failure
     );
@@ -256,11 +256,11 @@ function togglestartstop() {
 function start() {
     // deactivate controls
     // start the wee
-    console.log("Starting the wee")
+    // // console.log("Starting the wee")
     makeRequest(
         "PUT", (wee_url+location.pathname+"/state?control=start"),
         function(instance_state){
-            console.log("got instance state = "+instance_state);
+            // // console.log("got instance state = "+instance_state);
             $("#div_state").text(instance_state);
             // update start/stop button
             $("#btn_startstop").val("Stop");
@@ -274,11 +274,11 @@ function start() {
 }
 function stop() {
     // stop the wee
-    console.log("Stop the wee")
+    // console.log("Stop the wee")
     makeRequest(
         "PUT", (wee_url+location.pathname+"/state?control=stop"),
         function(instance_state){
-            console.log("got instance state = "+instance_state);
+            // console.log("got instance state = "+instance_state);
             $("#div_state").text(instance_state);
             // update start/stop button
             $("#btn_startstop").val("Start");
@@ -302,14 +302,14 @@ function toggleControls(on) {
   }
 }
 
-console.log("Fetching wee url");
+// console.log("Fetching wee url");
 $.ajax({
   type: "GET",
   url: "remote",
   cache: false,
   success: function(url){
     wee_url = url;
-    console.log("got wee url: "+wee_url+". my path is "+location.pathname);
+    // console.log("got wee url: "+wee_url+". my path is "+location.pathname);
     loadInstance();
   }
 });

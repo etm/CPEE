@@ -37,6 +37,7 @@ class MonitoringHandler < Wee::HandlerWrapperBase
           end
         end
       end
+      p "Calling Riddl Service: #{endpoint} ... params = #{rdl_params.inspect}"
       status, res = Riddl::Client.new(endpoint).post rdl_params
       raise RuntimeError, "Invalid riddle request, return status = #{status.inspect}" if status != "200"
       id = res[0].value
@@ -47,8 +48,6 @@ class MonitoringHandler < Wee::HandlerWrapperBase
         status, res = Riddl::Client.new("#{endpoint}/#{id}").request :get => []
         raise RuntimeError, "Invalid riddle request, return status = #{status.inspect}" if status != "200"
         p "Checking Riddl Request: url = #{endpoint}/#{id}, Status = #{status.inspect}, res = #{res.inspect}"
-        p res[0].value.read
-        p "---------------"
         break if res[0].value == "stopped" || res[0].value == "finished"
         if @__myhandler_stopped
           break
