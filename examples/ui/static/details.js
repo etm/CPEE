@@ -10,7 +10,7 @@ var running = false;
 
 function report_failure(text) {
   console.log("ERROR: "+text);
-  $("#div_message").append(text+"<BR/>");
+  $("#div_message").text(text);
 }
 
 function loadInstance() {
@@ -18,21 +18,25 @@ function loadInstance() {
 
     // Getting the monitoring handlers and args
     monitor_i = 0;
-/*        makeRequest(
+    makeRequest(
         "GET", (wee_url+location.pathname+"/properties/handlers/monitor/"),
         function(xml){
             var handler_text = "";
             var count = 0;
+            console.log(xml)
             $(xml).find("a").each(function() {
               var a = $(this);
-              var handler_url = a.text();
-              handler_text += generateHandler(handler_url);
+              var handler_urls = a.text().split(",");
+              for(var i = 0; i < handler_urls.length; i++) {
+                  if(handler_urls[i] != "")
+                    handler_text += generateMonitor(handler_urls[i]);
+              }
               count++;
-              if(count == $(xml).find("a").length) replaceHandler(handler_text);
+              if(count == $(xml).find("a").length) replaceMonitor(handler_text);
             })
         }, report_failure
     );
-*/
+
     // Getting the name of the Instance
     makeRequest(
       "GET", (wee_url+location.pathname+"/properties/name"),
@@ -133,11 +137,10 @@ var monitor_i = 0;
 function replaceMonitor(text) {
     $("#div_monitor").html($("#monitor_add_button").html()+text);
 }
-function generateMonitor(name, value) {
+function generateMonitor(value) {
+    console.log("generatemonitor: "+value);
     var text = $("#add_monitor").html();
-    text = text.replace(/monitor_class/,"monitor_class_" + monitor_i);
     text = text.replace(/monitor_url/,"monitor_url_" + monitor_i);
-    text = text.replace(/value=\"name\"/, "value=\""+name+"\"");
     text = text.replace(/value=\"value\"/, "value=\""+value+"\"");
     monitor_i += 1;
     return text;
@@ -169,6 +172,15 @@ function generateEndpoint(name, url) {
     return text;
 }
 
+function setMonitor_serverside(urls) {
+    console.log("URLS: "+urls)
+    makeRequest("POST", wee_url+location.pathname+"/properties/handlers/monitor?class=MonitoringHandler&argument="+urls,
+        function() {
+          console.log("Done setting handler");
+        },
+        report_failure
+    );
+}
 function setContextVariable_serverside(context_id, context_value) {
     makeRequest(
         "POST", (wee_url+location.pathname+"/properties/context?id="+context_id+"&value="+context_value),
@@ -199,6 +211,13 @@ function setDescription_serverside(description) {
 }
 
 function apply() {
+    // apply monitors
+    var value = new Array();
+    for(var i = 0; i < monitor_i; i++) {
+        value.push($("#monitor_url_"+i).val());
+    }
+    setMonitor_serverside(value.join(","));
+
     // apply context
     for(var i = 0; i < context_i; i++) {
         var name = $("#context_variable_name_"+i).val();

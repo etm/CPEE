@@ -57,7 +57,10 @@ run(
             run DescriptionPUT if method :put => 'description'  # sets the description
           end
           on resource 'handlers' do
-            run HandlerPOST if method :post => 'handler-pair'   # set the handler and argument
+            on resource do
+              run HandlerPOST if method :post => 'handler-pair'   # set the handler and argument
+              run HandlerGET if method :get => '*' # get the handlers of a handlertype
+            end
           end
         end
       end

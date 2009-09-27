@@ -1,13 +1,12 @@
 # require 'Thread'
+require 'pp'
 require ::File.dirname(__FILE__) + '/../../../lib/Wee'
 require ::File.dirname(__FILE__) + '/../../../../riddl/lib/ruby/client'
 
 class MonitoringHandler < Wee::HandlerWrapperBase
   def initialize(url)
     p "MonitoringHandler.initialize: url = #{url.inspect}"
-    url = url.is_a?(String) ? url : url[0];
-    srv = Riddl::Client.new(/(.*:\/\/.*:[0-9]*\/)(.*)/.match(url)[1])
-    @logresource = srv.resource(/(.*:\/\/.*:[0-9]*\/)(.*)/.match(url)[2])
+    @urls = url.is_a?(String) ? url.split(',') : url[0].split(',')
 
     @__myhandler_stopped = false
     @__myhandler_finished = false
@@ -16,11 +15,13 @@ class MonitoringHandler < Wee::HandlerWrapperBase
 
   def log(type, details)
     p "[#{Time.now.to_s}] #{type}: #{details}"
-    @logresource.request :post => [
-      Riddl::Parameter::Simple.new("stamp", Time.now.to_s),
-      Riddl::Parameter::Simple.new("type", type),
-      Riddl::Parameter::Simple.new("details", details)
-    ]
+    @urls.each do |url|
+      Riddl::Client.new(url).post [
+        Riddl::Parameter::Simple.new("stamp", Time.now.to_s),
+        Riddl::Parameter::Simple.new("type", type),
+        Riddl::Parameter::Simple.new("details", details)
+      ]
+    end
   end
 
   # executes a Riddle-call to the given endpoint with the given parameters.
@@ -37,17 +38,26 @@ class MonitoringHandler < Wee::HandlerWrapperBase
         end
       end
       status, res = Riddl::Client.new(endpoint).post rdl_params
-      raise RuntimeError "Invalid riddle request, return status = #{status}" if status != 200
+      raise RuntimeError, "Invalid riddle request, return status = #{status.inspect}" if status != "200"
       id = res[0].value
+      p "Service ID = #{id}"
+      p "--------------------"
 
       while(true)
-        status, res = Riddl::Client.new(endpoint).resource("/"+id).get []
-        raise RuntimeError "Invalid riddle request, return status = #{status}" if status != 200
-        break if res[0].value != ""
-        sleep 1 unless @__myhandler_stopped
+        status, res = Riddl::Client.new("#{endpoint}/#{id}").request :get => []
+        raise RuntimeError, "Invalid riddle request, return status = #{status.inspect}" if status != "200"
+        p "Checking Riddl Request: url = #{endpoint}/#{id}, Status = #{status.inspect}, res = #{res.inspect}"
+        p res[0].value.read
+        p "---------------"
+        break if res[0].value == "stopped" || res[0].value == "finished"
+        if @__myhandler_stopped
+          break
+        else
+          sleep 1
+        end
       end
       @__myhandler_finished = true
-      @__myhandler_returnValue = tosleep
+      @__myhandler_returnValue = "dummy_value"
     end
   end
 

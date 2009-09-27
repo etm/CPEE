@@ -93,8 +93,10 @@
         <button id="btn_apply" type="button" onclick="javascript:apply()">Apply to current instance</button>
       </form>
 
-      <h2>RubyConf Workflow</h2>
+      <h2>curucamp Workflow</h2>
       <p>
+          activity :posDelay, :call, delay, :delay => @delay<br/>
+          activity :posLongDelay, :call, delay, :delay => @longdelay<br/>
           activity :posTwitter, :call, twitter, :text => @text<br/>
       </p>
 
@@ -122,7 +124,7 @@
 
       <div class="invisible" id="add_monitor">
           <div>
-              <button type="button" onclick="$(this).parent().remove()" title="Monitor entfernen">
+              <button type="button" onclick="$(this).parent().remove(); monitor_i--;" title="Monitor entfernen">
                   <img class='small' src='/static/Images/list-remove.png' width='16' height='16' alt="Contextvariable entfernen" title="Monitor entfernen"/>
               </button>
               <input value="value" type="text" id="monitor_url" />
@@ -131,7 +133,7 @@
 
       <div class="invisible" id="add_context">
           <div>
-              <button type="button" onclick="$(this).parent().remove()" title="Contextvariable entfernen">
+              <button type="button" onclick="$(this).parent().remove(); context_i--;" title="Contextvariable entfernen">
                   <img class='small' src='/static/Images/list-remove.png' width='16' height='16' alt="Contextvariable entfernen" title="Contextvariable entfernen"/>
               </button>
               <input value="name" type="text" id="context_variable_name"/>
@@ -141,7 +143,7 @@
 
       <div class="invisible" id="add_endpoint">
           <div>
-              <button type="button" onclick="$(this).parent().remove()" title="Endpoint entfernen">
+              <button type="button" onclick="$(this).parent().remove(); endpoint_i--;" title="Endpoint entfernen">
                   <img class='small' src='/static/Images/list-remove.png' width='16' height='16' alt="Endpoint entfernen" title="Endpoint entfernen"/>
               </button>
               <input value="name" type="text" id="endpoint_name"/>

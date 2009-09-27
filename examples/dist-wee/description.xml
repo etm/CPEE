@@ -89,7 +89,7 @@
   </message><!--}}}-->
 
   <message name="list-handlers"><!--{{{-->
-    <parameter name="cvs" mimetype="text/html" handler="http://riddl.org/ns/handlers/relaxng">
+    <parameter name="handlers" mimetype="text/html" handler="http://riddl.org/ns/handlers/relaxng">
       <xi:include href="rngs/handlers.rng"/>
     </parameter>
   </message><!--}}}-->
@@ -144,15 +144,9 @@
         </resource>   
         <resource relative="handlers">
           <get in="*" out="list-of-handler-types"/>
-          <post in="handler-pair"/>
           <resource>
             <get in="*" out="list-handlers"/>
-            <post in="handler" out="handler-id"/>
-            <delete in="handler-id"/>
-            <resource>
-              <get in="*" out="handler"/>
-              <put in="handler"/>
-            </resource>
+            <post in="handler-pair"/>
           </resource>
         </resource>
       </resource>  

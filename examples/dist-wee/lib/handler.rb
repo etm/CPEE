@@ -1,5 +1,7 @@
 require 'pp'
 require ::File.dirname(__FILE__) + '/MonitoringHandler'
+require ::File.dirname(__FILE__) + '/MarkUS_V3.0'
+
 
 class HandlerPOST < Riddl::Implementation
   def response
@@ -10,5 +12,24 @@ class HandlerPOST < Riddl::Implementation
     wf = $controller[instance_id]
     wf.handler=Kernel.const_get(classname)
     wf.handlerargs(arg)
+  end
+end
+
+class HandlerGET < Riddl::Implementation
+  include MarkUSModule
+
+  def response
+    pp "HandlerGET, r0=#{@r[0]}, r[-1]=#{@r[-1]}"
+    instance_id = @r[0].to_i
+    wf = $controller[instance_id]
+    args = wf.handlerargs
+    args = args.is_a?(Array) ? args : [args]
+    Riddl::Parameter::Complex.new("handlers","text/html") do
+      div_ do
+        args.each do |value|
+          a_ "#{value}", :href => value, :style => "display:block"
+        end
+      end
+    end
   end
 end

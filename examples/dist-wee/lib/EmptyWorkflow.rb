@@ -11,6 +11,7 @@ class EmptyWorkflow < Wee
   endpoint :hotel => 'http://www.marriot.com'
   endpoint :flight => 'http://www.aerlingus.com'
   endpoint :twitter => 'http://sumatra.pri.univie.ac.at/services/twitter.php'
+  endpoint :delay => 'http://sumatra.pri.univie.ac.at/services/delay.php'
   
   control flow do
   end
