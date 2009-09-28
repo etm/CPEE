@@ -29,36 +29,51 @@ class MonitoringHandler < Wee::HandlerWrapperBase
     log "handle_call", "Handle call: position=[#{position}]; passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
 
     Thread.new do
-      rdl_params = []
-      parameters.each do |param|
-        if param.is_a?Hash
-          param.each do |key, value|
-            rdl_params.push Riddl::Parameter::Simple.new key, value
-          end
-        end
-      end
-      p "Calling Riddl Service: #{endpoint} ... params = #{rdl_params.inspect}"
-      status, res = Riddl::Client.new(endpoint).post rdl_params
-      raise RuntimeError, "Invalid riddle request, return status = #{status.inspect}" if status != "200"
-      id = res[0].value
-      p "Service ID = #{id}"
-      p "--------------------"
-
-      while(true)
-        status, res = Riddl::Client.new("#{endpoint}/#{id}").request :get => []
-        raise RuntimeError, "Invalid riddle request, return status = #{status.inspect}" if status != "200"
-        p "Checking Riddl Request: url = #{endpoint}/#{id}, Status = #{status.inspect}, res = #{res.inspect}"
-        break if res[0].value == "stopped" || res[0].value == "finished"
-        if @__myhandler_stopped
-          break
-        else
-          sleep 1
-        end
-      end
-      @__myhandler_finished = true
-      @__myhandler_returnValue = "dummy_value"
+    #  do_the_riddle position, passthrough, endpoint, parameters
+      do_the_sim position, passthrough, endpoint, parameters
     end
   end
+
+  def do_the_sim(position, passthrough, endpoint, parameters)
+    to_wait = parameters ? parameters[-1].to_i : 5
+    to_wait.times() {
+      sleep 1 unless @__myhandler_stopped
+    }
+    @__myhandler_finished = true
+    @__myhandler_returnValue = "dummy_value"
+  end
+
+  def do_the_riddle(position, passthrough, endpoint, parameters)
+    rdl_params = []
+    parameters.each do |param|
+      if param.is_a?Hash
+        param.each do |key, value|
+          rdl_params.push Riddl::Parameter::Simple.new key, value
+        end
+      end
+    end
+    p "Calling Riddl Service: #{endpoint} ... params = #{rdl_params.inspect}"
+    status, res = Riddl::Client.new(endpoint).post rdl_params
+    raise RuntimeError, "Invalid riddle request, return status = #{status.inspect}" if status != "200"
+    id = res[0].value
+    p "Service ID = #{id}"
+    p "--------------------"
+
+    while(true)
+      status, res = Riddl::Client.new("#{endpoint}/#{id}").request :get => []
+      raise RuntimeError, "Invalid riddle request, return status = #{status.inspect}" if status != "200"
+      p "Checking Riddl Request: url = #{endpoint}/#{id}, Status = #{status.inspect}, res = #{res.inspect}"
+      break if res[0].value == "stopped" || res[0].value == "finished"
+      if @__myhandler_stopped
+        break
+      else
+        sleep 1
+      end
+    end
+    @__myhandler_finished = true
+    @__myhandler_returnValue = "dummy_value"
+  end
+
 
   # returns true if the last handled call has finished processing, or the
   # call runs independent (asynchronous call)

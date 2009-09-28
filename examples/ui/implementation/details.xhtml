@@ -93,25 +93,17 @@
         <button id="btn_apply" type="button" onclick="javascript:apply()">Apply to current instance</button>
       </form>
 
-      <h2>curucamp Workflow</h2>
-      <p>
-          activity :posDelay, :call, delay, :delay => @delay<br/>
-          activity :posLongDelay, :call, delay, :delay => @longdelay<br/>
-          activity :posTwitter, :call, twitter, :text => @text<br/>
-      </p>
-
-
 
       <h2>Example Workflow 1</h2>
       <p>
-        activity :posBookFlight, :call, flight, :delay => @delay<br/>
-        activity :posBookHotel, :call, hotel, :delay => @longdelay
+        activity :posBookFlight, :call, flight, 5<br/>
+        activity :posBookHotel, :call, hotel, 99
       </p>
       <h2>Example Workflow 2</h2>
       <p>
-        activity :posBookFlight, :call, flight, :delay => @delay<br/>
-        activity :posBookHotel, :call, hotel, :delay => @delay<br/>
-        activity :posBookTaxi, :call, taxi, :delay => @delay<br/>
+        activity :posBookFlight, :call, flight, 5<br/>
+        activity :posBookHotel, :call, hotel, 5<br/>
+        activity :posBookTaxi, :call, taxi, 5<br/>
       </p>
     
       <div class="invisible" id="template_description">

@@ -3,15 +3,8 @@ require ::File.dirname(__FILE__) + '/../../../lib/BasicHandler'
 
 class EmptyWorkflow < Wee
   handler BasicHandler
-  
-  context :delay => 5
-  context :longdelay => 99
-  context :text => "Hello out there"
-
-  endpoint :hotel => 'http://www.marriot.com'
-  endpoint :flight => 'http://www.aerlingus.com'
-  endpoint :twitter => 'http://sumatra.pri.univie.ac.at/services/twitter.php'
-  endpoint :delay => 'http://sumatra.pri.univie.ac.at/services/delay.php'
+  context :x=>5
+  endpoint :flight => 'http://sumatra.pri.univie.ac.at/services/delay.php'
   
   control flow do
   end
