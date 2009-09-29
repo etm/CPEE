@@ -41,9 +41,7 @@ function loadInstance() {
     makeRequest(
       "GET", (wee_url+location.pathname+"/properties/name"),
       function(xml){
-
-      },
-      function(){
+        $('#instance_name').text(xml);
       },
       report_failure
     );

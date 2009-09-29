@@ -11,6 +11,11 @@
 %   else
 %     formsizeS = '101.2%'
 %   end
+%   if @e['HTTP_USER_AGENT']=~ /OS X/
+%     osx = true
+%   else
+%     osx = false
+%   end
 /* <%= "Last-Modified: #{mtime}" %> */
 /* <%= @e['HTTP_USER_AGENT'] %> */
 /* Please see the LICENSE.GPL file for copyright and distribution information */
@@ -48,7 +53,11 @@ a:active  { color:#000000; text-decoration:underline; }
   width:100%;
   z-index: 11;
   height: 5em;
+% if osx  
+  background-color: #005289;
+% else  
   background-color: #00659C;
+% end  
 }
 #header div.back img {
   width: 17.91666667em;
