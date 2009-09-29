@@ -10,7 +10,7 @@ var running = false;
 
 function report_failure(text) {
   // // console.log("ERROR: "+text);
-  $("#div_message").text(text);
+  $("#div_message").html("<div class='margin-bottom-huge'>"+text+"</div>");
 }
 
 function loadInstance() {
@@ -72,10 +72,9 @@ function loadInstance() {
                         for(var i = 0; i < lines.length; i++) {
                             var actDescLine = lines[i];
                             var text = $("#template_description").html();
+                            // TODO search /activity\s+:([a-z0-9]+\s+,/
                             if(actDescLine.indexOf(":"+actPos) != -1)
-                                text = text.replace(/arrow/,$("#template_arrow").html());
-                            else
-                                text = text.replace(/arrow/,"");
+                              text = text.replace(/small hidden/,"small");
                             text = text.replace(/description/,actDescLine);
                             desc_to_set += text
                         }
@@ -83,7 +82,7 @@ function loadInstance() {
                     }, report_failure
                 )
             }else {
-                $("#div_description").html("<textarea id=\"txt_description\" cols=\"60\" rows=\"10\">"+instance_description+"</textarea>");
+                $("#div_description").html("<textarea class=\"size-max\" id=\"txt_description\" cols=\"60\" rows=\"4\">"+instance_description+"</textarea>");
             }
         }, report_failure
     );

@@ -30,63 +30,63 @@
     </div>
 
     <div id="content">
-      <div id="div_message"></div>
+      <div id="div_message" class="urgent"></div>
       <input type="button" value="Start" id="btn_startstop" onclick="togglestartstop()"/>
 
       <form id="frm_userinterface" name="frm_userinterface">
-        <table>
+        <table class="size-max">
           <tr>
-            <td class='margin-right-huge margin-left-huge align-vertical-baseline'>Monitor:</td>
+            <td class='margin-right-huge margin-left-huge align-vertical-baseline size-s'>Monitor:</td>
             <td><a href="javascript:unhide('div_monitor');">Show/Hide</a></td>
           </tr>
           <tr>
-            <td/>
+            <td class="size-s"/>
             <td id="div_monitor" class="invisible"/>
           </tr>  
 
           <tr>
-            <td class='margin-right-huge margin-left-huge align-vertical-baseline'>Repair: </td>
+            <td class='margin-right-huge margin-left-huge align-vertical-baseline size-s'>Repair: </td>
             <td>undefined</td>
           </tr>
 
           <tr>
-            <td class='margin-right-huge margin-left-huge align-vertical-baseline'>State: </td>
+            <td class='margin-right-huge margin-left-huge align-vertical-baseline size-s'>State: </td>
             <td><div id="div_state">undefined</div></td>
           </tr>
 
           <tr>
-            <td class='margin-right-huge margin-left-huge align-vertical-baseline'>Context:</td>
+            <td class='margin-right-huge margin-left-huge align-vertical-baseline size-s'>Context:</td>
             <td><a href="javascript:unhide('div_context');">Show/Hide</a></td>
           </tr>
           <tr>
-            <td/>
+            <td class="size-s"/>
             <td id="div_context" class="invisible"/>
           </tr>  
 
           <tr>
-            <td class='margin-right-huge margin-left-huge align-vertical-baseline'>Endpoints:</td>
+            <td class='margin-right-huge margin-left-huge align-vertical-baseline size-s'>Endpoints:</td>
             <td><a href="javascript:unhide('div_endpoints');">Show/Hide</a></td>
           </tr>
           <tr>
-            <td/>
+            <td class="size-s"/>
             <td id="div_endpoints" class="invisible"/>
           </tr>  
 
           <tr>
-            <td class='margin-right-huge margin-left-huge align-vertical-baseline'>Search:</td>
+            <td class='margin-right-huge margin-left-huge align-vertical-baseline size-s'>Search:</td>
             <td><a href="javascript:unhide('div_search');">Show/Hide</a></td>
           </tr>  
           <tr>
-            <td/>
-            <td id="div_search" class="invisible"><input type="text" id="txt_search" value=""/></td>
+            <td class="size-s"/>
+            <td id="div_search" class="invisible"><input class="size-m" type="text" id="txt_search" value=""/></td>
           </tr>  
 
           <tr>
-            <td class='margin-right-huge margin-left-huge align-vertical-baseline'>Description:</td>
+            <td class='margin-right-huge margin-left-huge align-vertical-baseline size-s'>Description:</td>
             <td><a href="javascript:unhide('div_description');">Show/Hide</a></td>
           </tr>
           <tr>
-            <td/>
+            <td class="size-s"/>
             <td id="div_description" class="invisible"/>
           </tr>  
         </table>
@@ -95,19 +95,10 @@
 
 
       <h2>Example Workflow 1</h2>
-      <p>
-        activity :posBookFlight, :call, flight, 5<br/>
-        activity :posBookHotel, :call, hotel, 99
-      </p>
-      <h2>Example Workflow 2</h2>
-      <p>
-        activity :posBookFlight, :call, flight, 5<br/>
-        activity :posBookHotel, :call, hotel, 5<br/>
-        activity :posBookTaxi, :call, taxi, 5<br/>
-      </p>
+      <div>activity :posBookFlight, :call, flight, 5</div><div>activity :posBookHotel, :call, hotel, 99</div><div>activity :posBookTaxi, :call, taxi, 5</div>
     
       <div class="invisible" id="template_description">
-        arrow description <br/>
+        <div><img class='small hidden' src='/static/Images/arrow.png' width='16' height='16' alt="Current position" title="Current position"/> description</div>
       </div>
 
       <div class="invisible" id="template_arrow">
@@ -115,50 +106,50 @@
       </div>
 
       <div class="invisible" id="add_monitor">
-          <div>
-              <button type="button" onclick="$(this).parent().remove(); monitor_i--;" title="Monitor entfernen">
-                  <img class='small' src='/static/Images/list-remove.png' width='16' height='16' alt="Contextvariable entfernen" title="Monitor entfernen"/>
-              </button>
-              <input value="value" type="text" id="monitor_url" />
-          </div>
+        <div>
+          <button type="button" onclick="$(this).parent().remove(); monitor_i--;" title="Monitor entfernen">
+            <img class='small' src='/static/Images/list-remove.png' width='16' height='16' alt="Contextvariable entfernen" title="Monitor entfernen"/>
+          </button>
+          <input value="value" type="text" class="size-xxl" id="monitor_url" />
+        </div>
       </div>
 
       <div class="invisible" id="add_context">
-          <div>
-              <button type="button" onclick="$(this).parent().remove(); context_i--;" title="Contextvariable entfernen">
-                  <img class='small' src='/static/Images/list-remove.png' width='16' height='16' alt="Contextvariable entfernen" title="Contextvariable entfernen"/>
-              </button>
-              <input value="name" type="text" id="context_variable_name"/>
-              <input value="value" type="text" id="context_variable_value" />
-          </div>
+        <div>
+          <button type="button" onclick="$(this).parent().remove(); context_i--;" title="Contextvariable entfernen">
+            <img class='small' src='/static/Images/list-remove.png' width='16' height='16' alt="Contextvariable entfernen" title="Contextvariable entfernen"/>
+          </button>
+          <input value="name" class="size-m" type="text" id="context_variable_name"/>
+          <input value="value" class="size-m" type="text" id="context_variable_value" />
+        </div>
       </div>
 
       <div class="invisible" id="add_endpoint">
-          <div>
-              <button type="button" onclick="$(this).parent().remove(); endpoint_i--;" title="Endpoint entfernen">
-                  <img class='small' src='/static/Images/list-remove.png' width='16' height='16' alt="Endpoint entfernen" title="Endpoint entfernen"/>
-              </button>
-              <input value="name" type="text" id="endpoint_name"/>
-              <input value="url" type="text" id="endpoint_value"/>
-          </div>
+        <div>
+          <button type="button" onclick="$(this).parent().remove(); endpoint_i--;" title="Endpoint entfernen">
+            <img class='small' src='/static/Images/list-remove.png' width='16' height='16' alt="Endpoint entfernen" title="Endpoint entfernen"/>
+          </button>
+          <input value="name" class="size-m" type="text" id="endpoint_name"/>
+          <input value="url" class="size-xxl" type="text" id="endpoint_value"/>
+        </div>
       </div>
 
       <div class="invisible" id="monitor_add_button">
-          <button id="btn_addmonitor" type="button" onclick="$('#div_monitor').append(generateMonitor('http://localhost:9296/monitor'))" title="Monitor hinzufügen">
-              <img class='small' src='/static/Images/list-add.png' width='16' height='16' alt="Monitor hinzufügen" title="Monitor hinzufügen"/>
-          </button>
+        <button id="btn_addmonitor" type="button" onclick="$('#div_monitor').append(generateMonitor('http://localhost:9296/monitor'))" title="Monitor hinzufügen">
+          <img class='small' src='/static/Images/list-add.png' width='16' height='16' alt="Monitor hinzufügen" title="Monitor hinzufügen"/>
+        </button>
       </div>
 
       <div class="invisible" id="context_add_button">
-          <button id="btn_addcontext" type="button" onclick="$('#div_context').append(generateContext('name', 'value'))" title="Contextvariable hinzufügen">
-              <img class='small' src='/static/Images/list-add.png' width='16' height='16' alt="Contextvariable hinzufügen" title="Contextvariable hinzufügen"/>
-          </button>
+        <button id="btn_addcontext" type="button" onclick="$('#div_context').append(generateContext('name', 'value'))" title="Contextvariable hinzufügen">
+          <img class='small' src='/static/Images/list-add.png' width='16' height='16' alt="Contextvariable hinzufügen" title="Contextvariable hinzufügen"/>
+        </button>
       </div>
 
       <div class="invisible" id="endpoint_add_button">
-          <button id="btn_addendpoint" type="button" onclick="$('#div_endpoints').append(generateEndpoint('name', 'url'))" title="Endpoint hinzufügen">
-              <img class='small' src='/static/Images/list-add.png' width='16' height='16' alt="Endpoint hinzufügen" title="Endpoint hinzufügen"/>
-          </button>
+        <button id="btn_addendpoint" type="button" onclick="$('#div_endpoints').append(generateEndpoint('name', 'url'))" title="Endpoint hinzufügen">
+          <img class='small' src='/static/Images/list-add.png' width='16' height='16' alt="Endpoint hinzufügen" title="Endpoint hinzufügen"/>
+        </button>
       </div>
     </div>  
     
