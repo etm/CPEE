@@ -1,5 +1,5 @@
 require 'rack'
-require ::File.dirname(__FILE__) + '/../../../riddl/lib/ruby/server'
+require ::File.dirname(__FILE__) + '/includes/server'
 require 'pp'
 require ::File.dirname(__FILE__) + '/lib/instances'
 require ::File.dirname(__FILE__) + '/lib/name'
