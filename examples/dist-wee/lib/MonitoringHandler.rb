@@ -1,7 +1,7 @@
 # require 'Thread'
 require 'pp'
 require ::File.dirname(__FILE__) + '/../../../lib/Wee'
-require ::File.dirname(__FILE__) + '/../../../../riddl/lib/ruby/client'
+require ::File.dirname(__FILE__) + '/../includes/client'
 
 class MonitoringHandler < Wee::HandlerWrapperBase
   def initialize(url)
