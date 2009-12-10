@@ -621,7 +621,7 @@
 #content input                            { vertical-align: middle; }
 #content input.size-max                   { width: 100%; }
 #content input.size-xxl                   { width: 30em; }
-#content input.size-xl                    { width: 20em; }
+#content input.size-xl                    { width: 24em; }
 #content input.size-l                     { width: 12em; }
 #content input.size-m                     { width: 8em; }
 #content input.size-s                     { width: 4em; }
