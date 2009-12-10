@@ -4,6 +4,7 @@ require ::File.dirname(__FILE__) + '/Wee'
 
 class BasicHandler < Wee::HandlerWrapperBase
   def initialize(*args)
+    @expand_params = true
     @__basichandler_stopped = false
     @__basichandler_finished = false
     @__basichandler_returnValue = nil

@@ -61,7 +61,3 @@ end
 puts "===================================================="
 result = show_test
 puts "========> Ending-Result: #{result.inspect}"
-
-
-
-
