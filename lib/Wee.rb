@@ -9,7 +9,12 @@ class Wee
       @passthrough = passthrough
     end
   end
-  class HandlerWrapperBase; end
+  class HandlerWrapperBase; 
+    # indicates if the return values should be expanded before given to the block
+    def expand_params?
+      @expand_params || false
+    end
+  end
 
   def initialize
     # Waring: redefined, see wee_initialize
@@ -102,7 +107,13 @@ class Wee
           when :call
             passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
             ret_value = perform_external_call position, passthrough, handler, endpoint, *parameters
-            yield(ret_value) if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
+            if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
+              if handler.expand_params?
+                yield *ret_value
+              else
+                yield ret_value
+              end
+            end
             refreshcontext
             handler.inform_activity_done position, context unless self.state == :stopped || Thread.current[:nolongernecessary]
         else

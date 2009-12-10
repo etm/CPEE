@@ -1,7 +1,7 @@
 require 'rack'
-require ::File.dirname(__FILE__) + '/../../../riddl/lib/ruby/server'
-require ::File.dirname(__FILE__) + '/../../../riddl/lib/ruby/utils/fileserve'
-require ::File.dirname(__FILE__) + '/../../../riddl/lib/ruby/utils/erbserve'
+require ::File.dirname(__FILE__) + '/includes/server'
+require ::File.dirname(__FILE__) + '/includes/utils/fileserve'
+require ::File.dirname(__FILE__) + '/includes/utils/erbserve'
 require ::File.dirname(__FILE__) + '/lib/monitor'
 require 'pp'
 
