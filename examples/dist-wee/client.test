@@ -1,15 +1,15 @@
 #!/usr/bin/ruby
 require '../../../riddl/lib/ruby/client'
 
-srv = Riddl::Client.new("http://localhost:9292/")
+srv = Riddl::Client.new("http://localhost:9295/")
 
 # === Generate Wee-Instances
 main = srv.resource("/")
-status, res = main.request :post => []
-status, res = main.request :post => []
-status, res = main.request :post => []
+status, res = main.request :post => [ Riddl::Parameter::Simple.new("name","a") ]
+status, res = main.request :post => [ Riddl::Parameter::Simple.new("name","b") ]
+status, res = main.request :post => [ Riddl::Parameter::Simple.new("name","c") ]
 
-# === State check / Start / Stop instance
+## === State check / Start / Stop instance
 three = srv.resource("/3/state")
 status, res = three.request :get => []
 status, res = three.request :put => [ 

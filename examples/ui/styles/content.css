@@ -1,18 +1,18 @@
 % mtime = ::File.mtime(__ERB_FILE__)
 % @headers << Riddl::Header.new("Last-Modified",mtime.httpdate)
 % @headers << Riddl::Header.new("ETag",Digest::MD5.hexdigest(mtime.httpdate))
-% htime = @e["HTTP_IF_MODIFIED_SINCE"].nil? ? Time.at(0) : Time.parse(@e["HTTP_IF_MODIFIED_SINCE"])
+% htime = @env["HTTP_IF_MODIFIED_SINCE"].nil? ? Time.at(0) : Time.parse(@env["HTTP_IF_MODIFIED_SINCE"])
 % if htime == mtime
 %   @headers << Riddl::Header.new("Connection","close")
 %   @status = 304 # Not modified
 % else 
-%   if @e['HTTP_USER_AGENT']=~ /MSIE/ && @e['HTTP_USER_AGENT'] !~ /Opera/
+%   if @env['HTTP_USER_AGENT']=~ /MSIE/ && @env['HTTP_USER_AGENT'] !~ /Opera/
 %     formsizeS = '100.6%'
 %   else
 %     formsizeS = '101.2%'
 %   end
 /* <%= "Last-Modified: #{mtime}" %> */
-/* <%= @e['HTTP_USER_AGENT'] %> */
+/* <%= @env['HTTP_USER_AGENT'] %> */
 /* Please see the LICENSE.GPL file for copyright and distribution information */
 
 #content > *:first-child { margin-top:0px; }
@@ -621,7 +621,7 @@
 #content input                            { vertical-align: middle; }
 #content input.size-max                   { width: 100%; }
 #content input.size-xxl                   { width: 30em; }
-#content input.size-xl                    { width: 20em; }
+#content input.size-xl                    { width: 24em; }
 #content input.size-l                     { width: 12em; }
 #content input.size-m                     { width: 8em; }
 #content input.size-s                     { width: 4em; }
