@@ -30,7 +30,7 @@ run(
         run Riddl::Utils::ERBServe, 'styles' if get
       end
       on resource 'remote' do
-        run  Riddl::Utils::FileServe, 'implementation/remote.txt' if get
+        run Riddl::Utils::FileServe, 'implementation/remote.txt' if get
       end
       on resource 'static' do
         run Riddl::Utils::FileServe, 'static' if get
