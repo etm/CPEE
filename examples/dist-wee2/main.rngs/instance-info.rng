@@ -1,0 +1,19 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://riddl.org/ns/common-patterns/properties/1.0">
+  <start>
+    <element name="info">
+      <zeroOrMore>
+        <ref name="info"/>
+      </zeroOrMore>  
+   	</element>
+  </start>
+
+  <define name="info">
+    <element name="properties">
+      <data type="string"/>
+    </element>  
+    <element name="callbacks">
+      <data type="string"/>
+    </element>  
+  </define>  
+
+</grammar>

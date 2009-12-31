@@ -1,0 +1,17 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://riddl.org/ns/common-patterns/properties/1.0">
+  <start>
+    <element name="instances">
+      <zeroOrMore>
+        <ref name="instance"/>
+      </zeroOrMore>  
+   	</element>
+  </start>
+
+  <define name="instance">
+    <element>
+      <anyName/>
+      <data type="integer"/>
+    </element>
+  </define>  
+
+</grammar>

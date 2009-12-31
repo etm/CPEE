@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<properties xmlns="http://riddl.org/ns/common-patterns/properties/1.0">
+  <name/>
+  <state>ready</state>
+  <context-variables/>
+  <endpoints/>
+  <handlers/>
+  <description/>
+</properties>
