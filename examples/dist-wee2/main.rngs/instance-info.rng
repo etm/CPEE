@@ -1,6 +1,9 @@
-<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://riddl.org/ns/common-patterns/properties/1.0">
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <element name="info">
+      <attribute name='instance'>
+        <data type="integer"/>
+      </attribute>
       <zeroOrMore>
         <ref name="info"/>
       </zeroOrMore>  
@@ -9,7 +12,7 @@
 
   <define name="info">
     <element name="properties">
-      <data type="string"/>
+      <empty/>
     </element>  
     <element name="callbacks">
       <data type="string"/>

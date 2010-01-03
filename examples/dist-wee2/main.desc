@@ -19,10 +19,18 @@
       <xi:include href="main.rngs/instance-info.rng"/>
     </parameter>
   </message>
+  <message name="xsl">
+    <parameter name="xsl" mimetype="application/xml"/>
+  </message>
 
   <resource>
     <get in="*" out="list-of-workflow-instances"/>
     <post in="instance-name" out="instance-id"/>
+    <resource relative='xsls'>
+      <resource>
+        <get in="*" out="xsl"/>
+      </resource>  
+    </resource>
     <resource>
       <get in="*" out="instance-info"/>
       <delete in="*"/>
