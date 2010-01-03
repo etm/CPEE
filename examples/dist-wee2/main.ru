@@ -15,7 +15,7 @@ $controller = WeeController.new
 class Instances < Riddl::Implementation
   def response
     Riddl::Parameter::Complex.new("wis","text/xml") do
-      ins = XML::Smart::string('<?xml-stylesheet href="xsls/instances.xsl" type="text/xsl"?><instances/>')
+      ins = XML::Smart::string('<?xml-stylesheet href="./xsls/instances.xsl" type="text/xsl"?><instances/>')
       Dir['Data/*/properties.xml'].each do |i|
         name = XML::Smart::open(i).find("string(/p:properties/p:name)",{'p'=>'http://riddl.org/ns/common-patterns/properties/1.0'})
         ins.root.add('instance',name,'id'=>File::basename(File::dirname(i)))
@@ -44,9 +44,13 @@ end
 
 class Info < Riddl::Implementation
   def response
+    unless File.exists?("Data/#{@r[0]}")
+      @status = 400
+      return
+    end
     Riddl::Parameter::Complex.new("info","text/xml") do
       i = XML::Smart::string <<-END
-        <?xml-stylesheet href="xsls/info.xsl" type="text/xsl"?>
+        <?xml-stylesheet href="../xsls/info.xsl" type="text/xsl"?>
         <info instance='#{@r[0]}'>
           <properties/>
           <callbacks>0</callbacks>

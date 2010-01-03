@@ -7,11 +7,12 @@ use Rack::ShowStatus
 options[:Port] = 9295
 $0 = "dist-wee2-properties"
 
-run Riddl::Server.new(::File.dirname(__FILE__) + 'properties.desc') {
-  properties  = "properties.xml"
+run Riddl::Server.new(::File.dirname(__FILE__) + '/properties.desc') {
+
+  ### do once when starting the server
   fschema     = "properties.schema"
-  if !File.exists?(properties) || !File.exists?(fschema)
-    raise "properties or schema file not found"
+  unless File.exists?(fschema)
+    raise "schema file not found"
   end
   schema      = XML::Smart::open(fschema)
   schema.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
@@ -19,8 +20,15 @@ run Riddl::Server.new(::File.dirname(__FILE__) + 'properties.desc') {
     raise "properties schema transformation file not found"
   end  
   strans = schema.transform_with(XML::Smart::open(Riddl::Utils::Properties::PROPERTIES_SCHEMA_XSL_RNG))
+  ###
 
-  on resource do
+  on resource do |r|
+    ### for each request, check which resource is called
+    properties  = "Data/" + r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1] + "/properties.xml"
+    unless File.exists?(properties)
+      raise "properties file not found"
+    end
+
     run Riddl::Utils::Properties::All, properties, schema, strans if get
     run Riddl::Utils::Properties::Query, properties, schema, strans if get 'query'
     on resource 'schema' do
