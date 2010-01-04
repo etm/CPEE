@@ -7,27 +7,14 @@ use Rack::ShowStatus
 options[:Port] = 9295
 $0 = "dist-wee2-properties"
 
-run Riddl::Server.new(::File.dirname(__FILE__) + '/properties.desc') {
-
-  ### do once when starting the server
-  fschema     = "properties.schema"
-  unless File.exists?(fschema)
-    raise "schema file not found"
-  end
-  schema      = XML::Smart::open(fschema)
-  schema.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
-  if !File::exists?(Riddl::Utils::Properties::PROPERTIES_SCHEMA_XSL_RNG)
-    raise "properties schema transformation file not found"
-  end  
-  strans = schema.transform_with(XML::Smart::open(Riddl::Utils::Properties::PROPERTIES_SCHEMA_XSL_RNG))
-  ###
+run Riddl::Server.new(File.dirname(__FILE__) + '/properties.desc') {
+  schema, strans = Riddl::Utils::Properties::Helper::schema(File.dirname(__FILE__) + '/properties.schema')
 
   on resource do |r|
-    ### for each request, check which resource is called
-    properties  = "Data/" + r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1] + "/properties.xml"
-    unless File.exists?(properties)
-      raise "properties file not found"
-    end
+    ### header RIDDL_DECLARATION_PATH holds the full path used in the declaration
+    ### from there we get the instance, which is not present in the path used for properties
+    fproperties = File.dirname(__FILE__) + '/Data/' + r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1] + '/properties.xml'
+    properties  = Riddl::Utils::Properties::Helper::properties(fproperties)
 
     run Riddl::Utils::Properties::All, properties, schema, strans if get
     run Riddl::Utils::Properties::Query, properties, schema, strans if get 'query'
