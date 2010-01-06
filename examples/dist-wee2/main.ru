@@ -1,4 +1,4 @@
-require 'rack'
+#\ -p 9296
 require 'fileutils'
 require 'pp'
 require '../../../riddl/lib/ruby/server'
@@ -10,7 +10,6 @@ require ::File.dirname(__FILE__) + '/lib/EmptyWorkflow'
 require ::File.dirname(__FILE__) + '/lib/main'
 
 use Rack::ShowStatus
-options[:Port] = 9296
 $0 = "dist-wee2-main"
 
 run Riddl::Server.new(::File.dirname(__FILE__) + '/main.desc') {

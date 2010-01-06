@@ -1,4 +1,4 @@
-require 'rack'
+#\ -p 9297
 require 'fileutils'
 require 'pp'
 require '../../../riddl/lib/ruby/server'
@@ -6,7 +6,6 @@ require '../../../riddl/lib/ruby/client'
 require '../../../riddl/lib/ruby/utils/declaration'
 
 use Rack::ShowStatus
-options[:Port] = 9297
 $0 = "dist-wee2-declaration"
 
 declaration, description = Riddl::Utils::Declaration::helper('declaration.xml',true)
