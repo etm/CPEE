@@ -23,8 +23,7 @@ class NewInstance < Riddl::Implementation
       doc.find("/p:properties/p:name",{'p'=>'http://riddl.org/ns/common-patterns/properties/1.0'}).first.text = name
     end
 
-    #instance_id = $controller.make_instance
-    #$controller.set_name instance_id, name
+    $controller.make_instance(id,name)
 
     Riddl::Parameter::Simple.new("id", id)
   end

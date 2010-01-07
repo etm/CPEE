@@ -4,17 +4,13 @@ class WeeController
   attr_reader :instances
 
   def initialize
-    @instances = {}
+    @instances =  {}
     @threads = {}
     @names = {}
     @results = {}
-    @id = 1
   end
-  def make_instance
-    @instances[@id] = EmptyWorkflow.new
-    @id += 1
-    @id-1
-
+  def make_instance(id)
+    @instances[id] = EmptyWorkflow.new
   end
   def remove_instance(delete_id)
     @instances.delete delete_id
