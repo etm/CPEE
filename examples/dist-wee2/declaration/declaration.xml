@@ -1,0 +1,17 @@
+<declaration xmlns="http://riddl.org/ns/declaration/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <interface name="main" path="http://localhost:9296">
+    <xi:include href="main.desc"/>
+  </interface>
+  <interface name="properties" path="http://localhost:9295">
+    <xi:include href="properties.desc"/>
+  </interface>
+
+  <facade>
+    <tile>
+      <layer name="main"/>
+      <layer name="properties">
+        <apply-to>/{}/properties</apply-to>
+      </layer>
+    </tile>
+  </facade>
+</declaration>
