@@ -6,7 +6,7 @@ require '../../../../riddl/lib/ruby/utils/properties'
 use Rack::ShowStatus
 $0 = "dist-wee2-properties"
 
-run Riddl::Server.new(File.dirname(__FILE__) + '/description.xml') {
+run Riddl::Server.new(File.dirname(__FILE__) + '/properties.xml') {
   a_schema, a_strans = Riddl::Utils::Properties::schema(File.dirname(__FILE__) + '/instances/properties.schema.active')
   i_schema, i_strans = Riddl::Utils::Properties::schema(File.dirname(__FILE__) + '/instances/properties.schema.inactive')
 
