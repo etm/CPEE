@@ -1,8 +1,8 @@
-require ::File.dirname(__FILE__) + '/empty_workflow
+require ::File.dirname(__FILE__) + '/empty_workflow'
 require 'xml/smart'
 
 class Controller
-  def initialize(id,file)
+  def initialize(id)
     @instance = EmptyWorkflow.new
     @thread = nil
     @result = nil

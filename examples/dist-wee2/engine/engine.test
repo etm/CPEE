@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
-require '../../../riddl/lib/ruby/client'
+require '../../../../riddl/lib/ruby/client'
 require 'socket'
 require 'pp'
 
 t = Thread.new do
-  puts `rackup main.ru`
+  puts `rackup engine.ru`
 end
 
 up = false
@@ -18,20 +18,22 @@ until up
 end
 
 begin
-  props = Riddl::Client.new("http://localhost:9296/","main.desc")
+  props = Riddl::Client.new("http://localhost:9296/","engine.xml")
 
-  test = props.resource("/")
-  status, res = test.post [
-    Riddl::Parameter::Simple.new("name","laller")
-  ]
+  #test = props.resource("/")
+  #status, res = test.post [
+  #  Riddl::Parameter::Simple.new("name","laller")
+  #]
+  test = props.resource("/2")
+  status, res = test.delete
 
   puts status
   p "----"
   p res
   p "----"
-  res.each do |r|
-    puts r.value.read if r.value.respond_to?(:read)
-  end  
+  #res.each do |r|
+  #  puts r.value.read if r.value.respond_to?(:read)
+  #end  
 ensure  
   `pkill rackup`
   t.join

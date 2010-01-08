@@ -1,6 +1,3 @@
-require 'pp'
-require ::File.dirname(__FILE__) + '/Wee'
-
 class Handler < Wee::HandlerWrapperBase
   def initialize(*args)
     @expand_params = true

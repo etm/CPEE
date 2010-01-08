@@ -1,8 +1,8 @@
 #\ -p 9296
 require 'fileutils'
 require 'pp'
-require '../../../riddl/lib/ruby/server'
-require '../../../riddl/lib/ruby/utils/fileserve'
+require '../../../../riddl/lib/ruby/server'
+require '../../../../riddl/lib/ruby/utils/fileserve'
 
 require ::File.dirname(__FILE__) + '/engine/implementation'
 
