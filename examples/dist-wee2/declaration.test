@@ -1,16 +1,16 @@
 #!/usr/bin/ruby
-require '../../../../riddl/lib/ruby/client'
+require '../../../riddl/lib/ruby/client'
 require 'socket'
 require 'pp'
 
 t = Thread.new do
-  puts `rackup engine.ru`
+  puts `rackup declaration.ru`
 end
 
 up = false
 until up
   begin
-    TCPSocket.new('localhost', 9296)
+    TCPSocket.new('localhost', 9292)
     up = true
   rescue => e
     sleep 0.1
@@ -18,14 +18,14 @@ until up
 end
 
 begin
-  props = Riddl::Client.new("http://localhost:9296/","engine.xml")
+  props = Riddl::Client.new("http://localhost:9292/","declaration.xml")
 
-  #test = props.resource("/")
-  #status, res = test.post [
-  #  Riddl::Parameter::Simple.new("name","laller")
-  #]
-  test = props.resource("/2")
-  status, res = test.delete
+  test = props.resource("/")
+  status, res = test.post [
+    Riddl::Parameter::Simple.new("name","maria")
+  ]
+  #test = props.resource("/2")
+  #status, res = test.delete
 
   puts status
   p "----"
