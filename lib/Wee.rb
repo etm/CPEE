@@ -228,8 +228,19 @@ class Wee
       end
     end
     def perform_external_call(position, passthrough, handler, endpoint, *parameters)
+      params = { }
+      parameters.each do |p|
+        if p.class == Hash && parameters.length == 1
+          params = parameters
+        else  
+          if !p.is_a?(Symbol) || !@__wee_context.include?(p)
+            raise("not all passed parameters are context variables")
+          end
+          params[p] = @__wee_context[p]
+        end
+      end
       # handshake call and wait until it finisheds
-      handler.handle_call position, passthrough, endpoint, *parameters
+      handler.handle_call position, passthrough, endpoint, params
       Thread.pass until handler.finished_call() || self.state == :stopped || Thread.current[:nolongernecessary]
        
       handler.no_longer_necessary if Thread.current[:nolongernecessary]
