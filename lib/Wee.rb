@@ -115,7 +115,7 @@ class Wee
               end
             end
             refreshcontext
-            handler.inform_activity_done position, context unless self.state == :stopped || Thread.current[:nolongernecessary]
+            handler.inform_activity_done position, context
         else
           raise "Invalid activity type #{type}. Only :manipulate or :call allowed"
         end
@@ -133,8 +133,7 @@ class Wee
 
       mythreads = Array.new
       # Handle the yield block (= def of parallel branches) in a 
-      # Mutex to resolve conflicts (waiting for branches) in 
-      # nested parallel blocks
+      # Mutex to resolve conflicts (waiting for branches)
       @__wee_mutex ||= Mutex.new
       @__wee_mutex.synchronize do
         @__wee_threads = Array.new
