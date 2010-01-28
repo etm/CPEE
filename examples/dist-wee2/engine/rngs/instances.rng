@@ -1,0 +1,19 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <element name="instances">
+      <zeroOrMore>
+        <ref name="instance"/>
+      </zeroOrMore>  
+   	</element>
+  </start>
+
+  <define name="instance">
+    <element name='instance'>
+      <attribute name='id'>
+        <data type="integer"/>
+      </attribute>
+      <data type="string"/>
+    </element>
+  </define>  
+
+</grammar>
