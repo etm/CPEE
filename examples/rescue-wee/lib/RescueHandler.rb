@@ -5,8 +5,11 @@ require ::File.dirname(__FILE__) + '/../includes/client'
 
 class RescueHandler < Wee::HandlerWrapperBase
   def initialize(url)
-    p "MonitoringHandler.initialize: url = #{url.inspect}"
+    puts '-'*50
+    p "Exeuting workflow for device: #{url.inspect}"
+    puts '-'*50
     @urls = url.is_a?(String) ? url.split(',') : url[0].split(',')
+    @expand_params = true
 
     @__myhandler_stopped = false
     @__myhandler_finished = false
@@ -14,6 +17,7 @@ class RescueHandler < Wee::HandlerWrapperBase
   end
 
   def log(type, details)
+=begin
     p "[#{Time.now.to_s}] #{type}: #{details}"
     @urls.each do |url|
       Riddl::Client.new(url).post [
@@ -22,27 +26,20 @@ class RescueHandler < Wee::HandlerWrapperBase
         Riddl::Parameter::Simple.new("details", details)
       ]
     end
+=end
   end
 
   # executes a Riddle-call to the given endpoint with the given parameters.
   def handle_call(position, passthrough, endpoint, parameters)
-    log "handle_call", "Handle call: position=[#{position}]; passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
-
-    Thread.new do
-    #  do_the_riddle position, passthrough, endpoint, parameters
-      do_the_sim position, passthrough, endpoint, parameters[:timeout]
-    end
+    puts '-'*50
+    p "Searching serivces at endpoint: #{endpoint}"
+    p "Using the parameters:"
+    puts '-'*50
+    pp parameters.inspect
+    puts '-'*50
   end
 
-  def do_the_sim(position, passthrough, endpoint, parameters)
-    to_wait = parameters ? parameters[-1].to_i : 5
-    to_wait.times() {
-      sleep 1 unless @__myhandler_stopped
-    }
-    @__myhandler_finished = true
-    @__myhandler_returnValue = "dummy_value"
-  end
-
+=begin
   def do_the_riddle(position, passthrough, endpoint, parameters)
     rdl_params = []
     parameters.each do |param|
@@ -73,7 +70,7 @@ class RescueHandler < Wee::HandlerWrapperBase
     @__myhandler_finished = true
     @__myhandler_returnValue = "dummy_value"
   end
-
+=end
 
   # returns true if the last handled call has finished processing, or the
   # call runs independent (asynchronous call)
