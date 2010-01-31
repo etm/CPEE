@@ -11,7 +11,9 @@ class HandlerPOST < Riddl::Implementation
     arg = @p[1].value
     wf = $controller[instance_id]
     wf.handler=Kernel.const_get(classname)
-    wf.handlerargs(arg)
+    p "HandlerPOST => #{arg}"
+    wf.handlerargs=arg
+    p "HandlerPOST2 => #{wf.handlerargs}"
   end
 end
 

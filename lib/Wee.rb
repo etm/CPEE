@@ -67,7 +67,7 @@ class Wee
   end
 
   def self::handler(aClassname, *args)
-    define_method :initialize_handler do self.handler=aClassname; self.handlerargs(args); end
+    define_method :initialize_handler do self.handler=aClassname; self.handlerargs=args; end
     wee_initialize
   end
 
@@ -277,9 +277,11 @@ class Wee
       @__wee_handler = new_wee_handler
     end
     # Get/Set the handler arguments
-    def handlerargs(*args)
-      @__wee_handlerargs = args unless args.size() == 0
-      return @__wee_handlerargs
+    def handlerargs=(*args)
+      @__wee_handlerargs = args
+    end
+    def handlerargs
+      @__wee_handlerargs
     end
     # Get the state of execution (ready|running|stopped|finished)
     def state
