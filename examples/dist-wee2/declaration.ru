@@ -4,16 +4,17 @@ require 'fileutils'
 require '../../../riddl/lib/ruby/server'
 require '../../../riddl/lib/ruby/utils/properties'
 require '../../../riddl/lib/ruby/utils/fileserve'
+require 'engine/MarkUS_V3.0'
 require 'engine/implementation'
 
 use Rack::ShowStatus
 $0 = "dist-wee2"
 
-run Riddl::Server.new(File.dirname(__FILE__) + '/declaration.xml') {
+run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
   accessible_description true
 
-  a_schema, a_strans = Riddl::Utils::Properties::schema(File.dirname(__FILE__) + '/instances/properties.schema.active')
-  i_schema, i_strans = Riddl::Utils::Properties::schema(File.dirname(__FILE__) + '/instances/properties.schema.inactive')
+  a_schema, a_strans = Riddl::Utils::Properties::schema(::File.dirname(__FILE__) + '/instances/properties.schema.active')
+    i_schema, i_strans = Riddl::Utils::Properties::schema(::File.dirname(__FILE__) + '/instances/properties.schema.inactive')
   
   on resource do
     run Riddl::Utils::Declaration::Description, description_string if get 'riddl-description-request'
