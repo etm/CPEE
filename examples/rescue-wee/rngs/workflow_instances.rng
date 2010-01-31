@@ -1,0 +1,13 @@
+<element name="div" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0">
+  <zeroOrMore>
+    <element name="a">
+      <attribute name="href">
+        <data type="anyURI"/>
+      </attribute>
+      <attribute name="style">
+        <data type="string"/>
+      </attribute>
+      <data type="string"/>
+    </element>
+  </zeroOrMore>
+</element>

@@ -9,7 +9,7 @@ class Wee
       @passthrough = passthrough
     end
   end
-  class HandlerWrapperBase; 
+  class HandlerWrapperBase 
     # indicates if the return values should be expanded before given to the block
     def expand_params?
       @expand_params || false
@@ -22,7 +22,7 @@ class Wee
     @__wee_search_positions = @__wee_search_positions_original = {}
     @__wee_search = false
     @__wee_stop_positions = Array.new
-    @__wee_threads = Array.new;
+    @__wee_threads = Array.new
     @__wee_context ||= {}
     self.state = :ready
   end
@@ -31,7 +31,7 @@ class Wee
       @__wee_search_positions = @__wee_search_positions_original = {}
       @__wee_search = false
       @__wee_stop_positions = Array.new
-      @__wee_threads = Array.new;
+      @__wee_threads = Array.new
       @__wee_context ||= {}
 
       initialize_search if methods.include?('initialize_search')
@@ -271,7 +271,7 @@ class Wee
       superclass = new_wee_handler
       while(superclass)
         check_ok = true if(superclass == Wee::HandlerWrapperBase)
-        superclass = superclass.superclass;
+        superclass = superclass.superclass
       end
       raise("Handler is not inhereted from HandlerWrapperBase") unless check_ok
       @__wee_handler = new_wee_handler
@@ -295,7 +295,7 @@ class Wee
     def endpoint(new_endpoint = {})
       @__wee_endpoints ||= {}
       new_endpoint.each do |name,value|
-        @__wee_endpoints[name] = value;
+        @__wee_endpoints[name] = value
 
         instance_variable_set("@__wee_ep_#{name}", value)
         instance_eval("def #{name}\n return @__wee_ep_#{name}\n end")
@@ -374,7 +374,7 @@ class Wee
       (class << self; self; end).class_eval do
         define_method :__wee_execute do
           self.state = :running
-          instance_eval(&blk);
+          instance_eval(&blk)
           self.state = :finished if self.state == :running
           [self.state, position, context]
         end
@@ -390,6 +390,5 @@ class Wee
       return nil if self.state == :running
       __wee_execute
     end
-
 
 end
