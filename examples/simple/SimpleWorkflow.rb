@@ -6,6 +6,6 @@ class SimpleWorkflow < Wee
   
   control flow do
     endpoint :ep1 => "orf.at"
-    activity :a1, :call, ep1, 1, 2
+    activity :a1, :call, ep1, :a => 1, :b => 2
   end
 end

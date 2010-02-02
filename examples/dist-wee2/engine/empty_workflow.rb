@@ -5,6 +5,7 @@ class EmptyWorkflow < Wee
   handler Handler
 
   control flow do
+    # control flow will be set externally
   end
 end
 
