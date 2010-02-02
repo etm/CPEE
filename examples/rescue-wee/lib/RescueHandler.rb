@@ -51,7 +51,7 @@ class RescueHandler < Wee::HandlerWrapperBase
     elsif res[0].name == "details-of-service"
       link = xml.find("string(//service/URI)")
       name = xml.find("string(//vendor/name)")
-      services <<  {'id'=>name+' ('+resource+')', 'link'=>link}
+      services <<  {'name'=>name+' ('+resource+')', 'link'=>link}
     end
   end
 
@@ -74,6 +74,8 @@ class RescueHandler < Wee::HandlerWrapperBase
         end
       end
     end
+
+
 puts '-'*50
 puts "Query-Parameters:"
 puts riddlParams.inspect
@@ -82,11 +84,14 @@ puts '-'*50
     # Find services within the given endpoint
     services = Array.new()
     getServices(@urls[1], endpoint, services)
+
+
 puts '-'*50
 puts "Found services:"
 puts services.inspect
 puts '-'*50
     
+
     id = 0
     xml = XML::Smart.string("<?xml version='1.0'?><queryResultsList/>")
     xml.root.attributes.add("uri", endpoint)
@@ -123,14 +128,14 @@ puts '-'*50
       puts "Server (#{interactionURI}) refused connection on resource: #{interactionWEE}"
     end
     puts '-'*50
-    puts "\t\tPosted results at #{interactionURI}/#{interactionWEE}"
+    puts "\t\tPosted results at #{interactionURI}/#{interactionResource}/wee"
     puts '-'*50
 
     # Reading user selection
     begin
       status, userSelection = interactionRESCUE.request :get => [Riddl::Parameter::Simple.new("xml", xml)]
     rescue
-      puts "Server (#{interactionURI}) refused connection on resource: #{interactionRESCUE}"
+      puts "Server (#{interactionURI}) refused connection on resource: #{interactionResource}/rescue"
     end
     puts '-'*50
     puts "================= User selected service with ID #{userSelection[0].value} to use for #{endpoint} at #{position}"
@@ -138,38 +143,6 @@ puts '-'*50
     @__myhandler_finished = true
   end
 
-=begin
-  def do_the_riddle(position, passthrough, endpoint, parameters)
-    rdl_params = []
-    parameters.each do |param|
-      if param.is_a?Hash
-        param.each do |key, value|
-          rdl_params.push Riddl::Parameter::Simple.new key, value
-        end
-      end
-    end
-    p "Calling Riddl Service: #{endpoint} ... params = #{rdl_params.inspect}"
-    status, res = Riddl::Client.new(endpoint).post rdl_params
-    raise RuntimeError, "Invalid riddle request, return status = #{status.inspect}" if status != "200"
-    id = res[0].value
-    p "Service ID = #{id}"
-    p "--------------------"
-
-    while(true)
-      status, res = Riddl::Client.new("#{endpoint}/#{id}").request :get => []
-      raise RuntimeError, "Invalid riddle request, return status = #{status.inspect}" if status != "200"
-      p "Checking Riddl Request: url = #{endpoint}/#{id}, Status = #{status.inspect}, res = #{res.inspect}"
-      break if res[0].value == "stopped" || res[0].value == "finished"
-      if @__myhandler_stopped
-        break
-      else
-        sleep 1
-      end
-    end
-    @__myhandler_finished = true
-    @__myhandler_returnValue = "dummy_value"
-  end
-=end
 
   # returns true if the last handled call has finished processing, or the
   # call runs independent (asynchronous call)
