@@ -31,49 +31,109 @@ class RescueHandler < Wee::HandlerWrapperBase
 =end
   end
 
+  def getServices( link, resource, services )
+    client = Riddl::Client.new(link).resource('/'+resource)
+
+    begin
+      status, res = client.request :get => []
+    rescue
+      message = "Server (#{link}) refused connection on resource: " + resource
+      p message
+      return Show.new().showPage("Error: Connection refused", message, status, true)
+    end
+
+    xml = XML::Smart::string(res[0].value.read)
+    if res[0].name == "list-of-subgroups" || res[0].name == "list-of-services"
+      xml.namespaces = {"atom" => "http://www.w3.org/2005/atom"}
+      xml.find("//atom:entry/atom:id").each do |id|
+        getServices(link, resource+"/"+id.text, services)
+      end
+    elsif res[0].name == "details-of-service"
+      link = xml.find("string(//service/URI)")
+      name = xml.find("string(//vendor/name)")
+      services <<  {'id'=>name+' ('+resource+')', 'link'=>link}
+    end
+  end
+
+
   # executes a Riddle-call to the given endpoint with the given parameters.
   def handle_call(position, passthrough, endpoint, parameters)
     @__myhandler_finished = false
-    $xml = "<queryResultsList uri=\"Cinemas/Arthouse/\" position=\"#{position}\">
-<interactionURI>#{@urls[0]}</interactionURI>
-<entry id=\"1\" serviceURI=\"Cinemas/Arthouse/BlacksProduction/\">
-<movieID>DYSK--21</movieID>
-<date>31.01.2010</date>
-<startingTime>16:42:00</startingTime>
-<price>12.58</price>
-</entry>
-<entry id=\"2\" serviceURI=\"Cinemas/Arthouse/BlacksProduction/\">
-<movieID>DYSK--12</movieID>
-<date>31.01.2010</date>
-<startingTime>10:47:00</startingTime>
-<price>16.69</price>
-</entry>
-<entry id=\"3\" serviceURI=\"Cinemas/Arthouse/BlacksProduction/\">
-<movieID>DYSK--42</movieID>
-<date>31.01.2010</date>
-<startingTime>15:55:00</startingTime>
-<price>19.33</price>
-</entry>
-</queryResultsList>"
-    $u = @urls[0].split("/")[0..2].join("/")
-    $r = @urls[0].split("/")[3..-1].join("/")
-    $wee = Riddl::Client.new($u).resource($r+"/wee")
-    $rescue = Riddl::Client.new($u).resource($r+"/rescue")
+
+    interactionURI = @urls[0].split("/")[0..2].join("/")
+    interactionResource = @urls[0].split("/")[3..-1].join("/")
+    interactionWEE = Riddl::Client.new(interactionURI).resource(interactionResource+"/wee")
+    interactionRESCUE = Riddl::Client.new(interactionURI).resource(interactionResource+"/rescue")
+
+    # Preparing parameters for query-requests
+    riddlParams = Array.new()
+    parameters.each do |param|
+      if param.is_a?Hash
+        param.each do |key, value|
+          riddlParams.push Riddl::Parameter::Simple.new key.to_s(), value
+        end
+      end
+    end
+puts '-'*50
+puts "Query-Parameters:"
+puts riddlParams.inspect
+puts '-'*50
+
+    # Find services within the given endpoint
+    services = Array.new()
+    getServices(@urls[1], endpoint, services)
+puts '-'*50
+puts "Found services:"
+puts services.inspect
+puts '-'*50
+    
+    id = 0
+    xml = XML::Smart.string("<?xml version='1.0'?><queryResultsList/>")
+    xml.root.attributes.add("uri", endpoint)
+    xml.root.attributes.add("position", position)
+    xml.root.add("interactionURI", @urls[0])
+
+    services.each do |s|
+      client = Riddl::Client.new(s['link'])
+      begin
+        status, resp = client.get riddlParams
+      rescue
+        puts "Error while executing query at #{s['link']}"
+      end
+      if status == 200
+        respXML = XML::Smart.string(resp[0].value.read)
+        entries = respXML.find("//entry")
+        entries.each do |entry|
+          entry.attributes.add("id", id)
+          entry.attributes.add("name", s['name'])
+          xml.root.add(entry)
+          id = id + 1
+        end
+      end
+    end
+
+    # Posting alternatives
+puts '-'*50
+puts xml
+puts '-'*50
+
     begin
-      $status, $qi = $wee.request :post => [Riddl::Parameter::Simple.new("xml", $xml)]
+      status, qi = interactionWEE.request :post => [Riddl::Parameter::Simple.new("xml", xml)]
     rescue
-      puts "Server (#{$u}) refused connection on resource: #{$r}"
+      puts "Server (#{interactionURI}) refused connection on resource: #{interactionWEE}"
     end
     puts '-'*50
-    puts "\t\tPosted results at #{$u}/#{$r}"
+    puts "\t\tPosted results at #{interactionURI}/#{interactionWEE}"
     puts '-'*50
+
+    # Reading user selection
     begin
-      $status, $userSelection = $rescue.request :get => [Riddl::Parameter::Simple.new("xml", $xml)]
+      status, userSelection = interactionRESCUE.request :get => [Riddl::Parameter::Simple.new("xml", xml)]
     rescue
-      puts "Server (#{$u}) refused connection on resource: #{$r}"
+      puts "Server (#{interactionURI}) refused connection on resource: #{interactionRESCUE}"
     end
     puts '-'*50
-    puts "================= User selected service with ID #{$userSelection[0].value} to use for #{endpoint} at #{position}"
+    puts "================= User selected service with ID #{userSelection[0].value} to use for #{endpoint} at #{position}"
     puts '-'*50
     @__myhandler_finished = true
   end
