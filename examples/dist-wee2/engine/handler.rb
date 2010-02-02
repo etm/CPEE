@@ -1,9 +1,16 @@
 class Handler < Wee::HandlerWrapperBase
-  def initialize(*args)
+  include MarkUSModule
+
+  def initialize
+
     @expand_params = true
     @__basichandler_stopped = false
     @__basichandler_finished = false
     @__basichandler_returnValue = nil
+
+    hallo_ do
+      b_ "test"
+    end
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call

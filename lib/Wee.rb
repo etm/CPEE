@@ -9,7 +9,7 @@ class Wee
       @passthrough = passthrough
     end
   end
-  class HandlerWrapperBase; 
+  class HandlerWrapperBase 
     # indicates if the return values should be expanded before given to the block
     def expand_params?
       @expand_params || false
@@ -22,7 +22,7 @@ class Wee
     @__wee_search_positions = @__wee_search_positions_original = {}
     @__wee_search = false
     @__wee_stop_positions = Array.new
-    @__wee_threads = Array.new;
+    @__wee_threads = Array.new
     @__wee_context ||= {}
     self.state = :ready
   end
@@ -31,7 +31,7 @@ class Wee
       @__wee_search_positions = @__wee_search_positions_original = {}
       @__wee_search = false
       @__wee_stop_positions = Array.new
-      @__wee_threads = Array.new;
+      @__wee_threads = Array.new
       @__wee_context ||= {}
 
       initialize_search if methods.include?('initialize_search')
@@ -67,7 +67,7 @@ class Wee
   end
 
   def self::handler(aClassname, *args)
-    define_method :initialize_handler do self.handler=aClassname; self.handlerargs(args); end
+    define_method :initialize_handler do self.handler=aClassname; self.handlerargs=args; end
     wee_initialize
   end
 
@@ -115,7 +115,7 @@ class Wee
               end
             end
             refreshcontext
-            handler.inform_activity_done position, context unless self.state == :stopped || Thread.current[:nolongernecessary]
+            handler.inform_activity_done position, context
         else
           raise "Invalid activity type #{type}. Only :manipulate or :call allowed"
         end
@@ -133,8 +133,7 @@ class Wee
 
       mythreads = Array.new
       # Handle the yield block (= def of parallel branches) in a 
-      # Mutex to resolve conflicts (waiting for branches) in 
-      # nested parallel blocks
+      # Mutex to resolve conflicts (waiting for branches)
       @__wee_mutex ||= Mutex.new
       @__wee_mutex.synchronize do
         @__wee_threads = Array.new
@@ -228,8 +227,19 @@ class Wee
       end
     end
     def perform_external_call(position, passthrough, handler, endpoint, *parameters)
+      params = { }
+      parameters.each do |p|
+        if p.class == Hash && parameters.length == 1
+          params = parameters
+        else  
+          if !p.is_a?(Symbol) || !@__wee_context.include?(p)
+            raise("not all passed parameters are context variables")
+          end
+          params[p] = @__wee_context[p]
+        end
+      end
       # handshake call and wait until it finisheds
-      handler.handle_call position, passthrough, endpoint, *parameters
+      handler.handle_call position, passthrough, endpoint, params
       Thread.pass until handler.finished_call() || self.state == :stopped || Thread.current[:nolongernecessary]
        
       handler.no_longer_necessary if Thread.current[:nolongernecessary]
@@ -261,15 +271,17 @@ class Wee
       superclass = new_wee_handler
       while(superclass)
         check_ok = true if(superclass == Wee::HandlerWrapperBase)
-        superclass = superclass.superclass;
+        superclass = superclass.superclass
       end
       raise("Handler is not inhereted from HandlerWrapperBase") unless check_ok
       @__wee_handler = new_wee_handler
     end
     # Get/Set the handler arguments
-    def handlerargs(*args)
-      @__wee_handlerargs = args unless args.size() == 0;
-      return @__wee_handlerargs
+    def handlerargs=(*args)
+      @__wee_handlerargs = args
+    end
+    def handlerargs
+      @__wee_handlerargs
     end
     # Get the state of execution (ready|running|stopped|finished)
     def state
@@ -283,7 +295,7 @@ class Wee
     def endpoint(new_endpoint = {})
       @__wee_endpoints ||= {}
       new_endpoint.each do |name,value|
-        @__wee_endpoints[name] = value;
+        @__wee_endpoints[name] = value
 
         instance_variable_set("@__wee_ep_#{name}", value)
         instance_eval("def #{name}\n return @__wee_ep_#{name}\n end")
@@ -362,7 +374,7 @@ class Wee
       (class << self; self; end).class_eval do
         define_method :__wee_execute do
           self.state = :running
-          instance_eval(&blk);
+          instance_eval(&blk)
           self.state = :finished if self.state == :running
           [self.state, position, context]
         end
@@ -378,6 +390,5 @@ class Wee
       return nil if self.state == :running
       __wee_execute
     end
-
 
 end

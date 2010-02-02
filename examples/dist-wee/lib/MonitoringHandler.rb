@@ -25,12 +25,12 @@ class MonitoringHandler < Wee::HandlerWrapperBase
   end
 
   # executes a Riddle-call to the given endpoint with the given parameters.
-  def handle_call(position, passthrough, endpoint, *parameters)
+  def handle_call(position, passthrough, endpoint, parameters)
     log "handle_call", "Handle call: position=[#{position}]; passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
 
     Thread.new do
     #  do_the_riddle position, passthrough, endpoint, parameters
-      do_the_sim position, passthrough, endpoint, parameters
+      do_the_sim position, passthrough, endpoint, parameters[:timeout]
     end
   end
 
