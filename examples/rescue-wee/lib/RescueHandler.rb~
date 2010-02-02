@@ -4,8 +4,12 @@ require ::File.dirname(__FILE__) + '/../../../lib/Wee'
 require ::File.dirname(__FILE__) + '/../includes/client'
 
 class RescueHandler < Wee::HandlerWrapperBase
+  include MarkUSModule
+
   def initialize(url)
-    p "Exeuting workflow for device: #{url.inspect}"
+    puts '-'*50
+    puts "\t\tExeuting workflow for device: #{url.inspect}"
+    puts '-'*50
     @urls = url.is_a?(String) ? url.split(',') : url[0].split(',')
     @expand_params = true
 
@@ -29,9 +33,49 @@ class RescueHandler < Wee::HandlerWrapperBase
 
   # executes a Riddle-call to the given endpoint with the given parameters.
   def handle_call(position, passthrough, endpoint, parameters)
-    p "Searching serivces at endpoint: #{endpoint}"
-    p "Using the parameters:"
-    pp parameters.inspect
+    @__myhandler_finished = false
+    $xml = "<queryResultsList uri=\"Cinemas/Arthouse/\" position=\"+{position}\">
+<interactionURI>#{@urls[0]}</interactionURI>
+<entry id=\"1\" serviceURI=\"Cinemas/Arthouse/BlacksProduction/\">
+<movieID>DYSK--21</movieID>
+<date>31.01.2010</date>
+<startingTime>16:42:00</startingTime>
+<price>12.58</price>
+</entry>
+<entry id=\"2\" serviceURI=\"Cinemas/Arthouse/BlacksProduction/\">
+<movieID>DYSK--12</movieID>
+<date>31.01.2010</date>
+<startingTime>10:47:00</startingTime>
+<price>16.69</price>
+</entry>
+<entry id=\"3\" serviceURI=\"Cinemas/Arthouse/BlacksProduction/\">
+<movieID>DYSK--42</movieID>
+<date>31.01.2010</date>
+<startingTime>15:55:00</startingTime>
+<price>19.33</price>
+</entry>
+</queryResultsList>"
+    $u = @urls[0].split("/")[0..2].join("/")
+    $r = @urls[0].split("/")[3..-1].join("/")
+    $wee = Riddl::Client.new($u).resource($r+"/wee")
+    $rescue = Riddl::Client.new($u).resource($r+"/rescue")
+    begin
+      $status, $qi = $wee.request :post => [Riddl::Parameter::Simple.new("xml", $xml)]
+    rescue
+      puts "Server (#{$u}) refused connection on resource: #{$r}"
+    end
+    puts '-'*50
+    puts "\t\tPosted results at #{$u}/#{$r}"
+    puts '-'*50
+    begin
+      $status, $userSelection = $rescue.request :get => [Riddl::Parameter::Simple.new("xml", $xml)]
+    rescue
+      puts "Server (#{$u}) refused connection on resource: #{$r}"
+    end
+    puts '-'*50
+    puts "================= User selected service with ID #{$userSelection[0].value} to use for #{endpoint} at #{position}"
+    puts '-'*50
+    @__myhandler_finished = true
   end
 
 =begin
