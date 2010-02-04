@@ -1,0 +1,10 @@
+<topics xmlns='http://riddl.org/ns/common-patterns/notification-producer/1.0'>
+  <topic id='/oliver'>
+    <event>get</event>
+    <event>post</event>
+  </topic>
+  <topic id='/juergen'>
+    <event>praise</event>
+    <event>adore</event>
+  </topic>
+</topics>
