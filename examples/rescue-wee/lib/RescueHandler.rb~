@@ -67,17 +67,22 @@ class RescueHandler < Wee::HandlerWrapperBase
 
     # Preparing parameters for query-requests
     riddlParams = Array.new()
-    parameters.each do |param|
-      if param.is_a?Hash
-        param.each do |key, value|
-          riddlParams.push Riddl::Parameter::Simple.new key.to_s(), value
-        end
-      end
+    begin
+      status, res = Riddl::Client.new(@urls[1]).resource(endpoint.split("/")[0]).get [Riddl::Parameter::Simple.new("queryInput", "")]
+    rescue
+      puts "Error receiving queryInput-Properties for #{endpoint}"
+    end
+
+    rng = XML::Smart::string(res[0].value.read)
+    rng.namespaces = {"rng" => "http://relaxng.org/ns/structure/1.0"}
+    elements = rng.find("//rng:define/rng:element/@name")
+    elements.each do |e|
+      riddlParams.push Riddl::Parameter::Simple.new e.to_s(), parameters[e.value]
     end
 
 
 puts '-'*50
-puts "Query-Parameters:"
+puts "QueryInput-Parameters:"
 puts riddlParams.inspect
 puts '-'*50
 
@@ -128,18 +133,46 @@ puts '-'*50
       puts "Server (#{interactionURI}) refused connection on resource: #{interactionWEE}"
     end
     puts '-'*50
-    puts "\t\tPosted results at #{interactionURI}/#{interactionWEE}"
+    puts "\t\tPosted results at #{interactionURI}/#{interactionResource}/wee"
     puts '-'*50
 
     # Reading user selection
     begin
       status, userSelection = interactionRESCUE.request :get => [Riddl::Parameter::Simple.new("xml", xml)]
     rescue
-      puts "Server (#{interactionURI}) refused connection on resource: #{interactionRESCUE}"
+      puts "Server (#{interactionURI}) refused connection on resource: #{interactionResource}/rescue"
     end
-    puts '-'*50
-    puts "================= User selected service with ID #{userSelection[0].value} to use for #{endpoint} at #{position}"
-    puts '-'*50
+
+    # Preparing invoke-Parameter
+
+    riddlParams = Array.new()
+    begin
+      status, res = Riddl::Client.new(@urls[1]).resource(endpoint.split("/")[0]).get [Riddl::Parameter::Simple.new("invokeInput", "")]
+    rescue
+      puts "Error receiving queryInput-Properties for #{endpoint}"
+    end
+
+    # Select entry to user-selection
+    selected = xml.find("//entry[@id=#{userSelection[0].value}]")
+
+    rng = XML::Smart::string(res[0].value.read)
+    rng.namespaces = {"rng" => "http://relaxng.org/ns/structure/1.0"}
+    elements = rng.find("//rng:define/rng:element/@name")
+    elements.each do |e|
+      if parameters.include?(e.value)
+        riddlParamsQI.push Riddl::Parameter::Simple.new e.value, parameters[e.value] 
+      else
+puts "string(//rng:define/rng:element/@name[@name=#{e.value}])"
+        riddlParamsQI.push Riddl::Parameter::Simple.new e.value, selected.find("string(//rng:define/rng:element/@name[@name=#{e.value}])")
+      end
+    end
+
+
+puts '-'*50
+puts "invokeInput-Parameters:"
+puts riddlParams.inspect
+puts '-'*50
+    
     @__myhandler_finished = true
   end
 
