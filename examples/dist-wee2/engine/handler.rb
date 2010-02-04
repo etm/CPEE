@@ -1,27 +1,18 @@
 class Handler < Wee::HandlerWrapperBase
-  include MarkUSModule
-
   def initialize
-
     @expand_params = true
     @__basichandler_stopped = false
     @__basichandler_finished = false
     @__basichandler_returnValue = nil
-
-    hallo_ do
-      b_ "test"
-    end
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
   def handle_call(position, passthrough, endpoint, *parameters)
-    p = parameters
-    Riddl::cl  
-      sleep(0.6)
-      return if @__basichandler_stopped
-      @__basichandler_finished = true
-      @__basichandler_returnValue = 'Handler_Dummy_Result'
+    sleep(0.6)
+    return if @__basichandler_stopped
+    @__basichandler_finished = true
+    @__basichandler_returnValue = 'Handler_Dummy_Result'
   end
  
   # returns true if the last handled call has finished processing, or the

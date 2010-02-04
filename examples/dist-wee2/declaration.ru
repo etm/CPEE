@@ -4,7 +4,6 @@ require 'fileutils'
 require '../../../riddl/lib/ruby/server'
 require '../../../riddl/lib/ruby/utils/properties'
 require '../../../riddl/lib/ruby/utils/fileserve'
-require 'engine/MarkUS_V3.0'
 require 'engine/implementation'
 
 use Rack::ShowStatus
@@ -14,7 +13,11 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
   accessible_description true
 
   a_schema, a_strans = Riddl::Utils::Properties::schema(::File.dirname(__FILE__) + '/instances/properties.schema.active')
-    i_schema, i_strans = Riddl::Utils::Properties::schema(::File.dirname(__FILE__) + '/instances/properties.schema.inactive')
+  i_schema, i_strans = Riddl::Utils::Properties::schema(::File.dirname(__FILE__) + '/instances/properties.schema.inactive')
+  xsls = {
+    :overview => '/xsls/overview.xsl',
+    :subscriptions => '/xsls/subscriptions.xsl'
+  }
   
   on resource do
     run Riddl::Utils::Declaration::Description, description_string if get 'riddl-description-request'
@@ -36,5 +39,9 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
         run Riddl::Utils::FileServe, "xsls"  if get
       end  
     end  
+    on resource 'notifications' do
+      ndir = File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/notifications/'
+      use Riddl::Utils::Notification::Provider::implementation(ndir,xsls)
+    end
   end
 }

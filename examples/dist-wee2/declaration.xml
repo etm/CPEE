@@ -5,6 +5,9 @@
   <interface name="properties">
     <xi:include href="properties.xml"/>
   </interface>
+  <interface name="notifications">
+    <xi:include href="producer.xml"/>
+  </interface>
 
   <facade>
     <tile>
@@ -12,6 +15,7 @@
       <layer name="properties">
         <apply-to>/{}/properties</apply-to>
       </layer>
+      <layer name="notifications"/>
     </tile>
   </facade>
 </declaration>

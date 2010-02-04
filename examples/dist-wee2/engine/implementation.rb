@@ -1,9 +1,9 @@
 require ::File.dirname(__FILE__) + '/controller'
 
-$controller = {}
-Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e))}.each do |id|
-  $controller[id] = Controller.new(id)
-end
+#$controller = {}
+#Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e))}.each do |id|
+#  $controller[id] = Controller.new(id)
+#end
 
 class Instances < Riddl::Implementation
   def response
@@ -24,12 +24,13 @@ class NewInstance < Riddl::Implementation
     id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e))}.sort.last.to_i + 1
     Dir.mkdir("instances/#{id}")
     FileUtils.cp('instances/properties.init',"instances/#{id}/properties.xml")
+    FileUtils.cp_r('instances/notifications.init',"instances/#{id}/")
     FileUtils.ln_sf('../properties.schema.inactive',"instances/#{id}/properties.schema.inactive")
     XML::Smart.modify("instances/#{id}/properties.xml") do |doc|
       doc.find("/p:properties/p:name",{'p'=>'http://riddl.org/ns/common-patterns/properties/1.0'}).first.text = name
     end
 
-    $controller[id] = Controller.new(id)
+    # $controller[id] = Controller.new(id)
 
     Riddl::Parameter::Simple.new("id", id)
   end
@@ -45,6 +46,7 @@ class Info < Riddl::Implementation
       i = XML::Smart::string <<-END
         <?xml-stylesheet href="../xsls/info.xsl" type="text/xsl"?>
         <info instance='#{@r[0]}'>
+          <notifications/>
           <properties/>
           <callbacks>0</callbacks>
         </info>
@@ -61,6 +63,6 @@ class DeleteInstance < Riddl::Implementation
       return
     end
     FileUtils.rm_r("instances/#{@r[0]}")
-    $controller.delete(@r[0])
+    # $controller.delete(@r[0])
   end
 end

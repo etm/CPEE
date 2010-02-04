@@ -11,6 +11,9 @@
   </start>
 
   <define name="info">
+    <element name="notifications">
+      <empty/>
+    </element>  
     <element name="properties">
       <empty/>
     </element>  
