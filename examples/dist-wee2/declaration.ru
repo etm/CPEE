@@ -2,6 +2,7 @@
 require 'pp'
 require 'fileutils'
 require '../../../riddl/lib/ruby/server'
+require '../../../riddl/lib/ruby/utils/notification_provider'
 require '../../../riddl/lib/ruby/utils/properties'
 require '../../../riddl/lib/ruby/utils/fileserve'
 require 'engine/implementation'
@@ -27,21 +28,21 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
       run Info if get
       run DeleteInstance if delete
       on resource 'properties' do |r|
-        instance = File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/'
+        instance = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/'
         properties     = Riddl::Utils::Properties::file(instance + 'properties.xml')
-        schema, strans = File.exists?(instance + 'properties.schema.active') ? [a_schema,a_strans] : [i_schema,i_strans]
+        schema, strans = ::File.exists?(instance + 'properties.schema.active') ? [a_schema,a_strans] : [i_schema,i_strans]
 
         use Riddl::Utils::Properties::implementation(properties, schema, strans)
       end
+      on resource 'notifications' do |r|
+        ndir = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/notifications/'
+        use Riddl::Utils::Notification::Provider::implementation(ndir,xsls)
+    end
     end  
     on resource 'xsls' do
       on resource do
         run Riddl::Utils::FileServe, "xsls"  if get
       end  
     end  
-    on resource 'notifications' do
-      ndir = File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/notifications/'
-      use Riddl::Utils::Notification::Provider::implementation(ndir,xsls)
-    end
   end
 }

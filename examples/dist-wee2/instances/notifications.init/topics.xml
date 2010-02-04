@@ -1,10 +1,22 @@
 <topics xmlns='http://riddl.org/ns/common-patterns/notification-producer/1.0'>
-  <topic id='/oliver'>
-    <event>get</event>
-    <event>post</event>
+  <topic id='properties/process'>
+    <event>update</event>
   </topic>
-  <topic id='/juergen'>
-    <event>praise</event>
-    <event>adore</event>
+  <topic id='properties/state'>
+    <event>update</event>
+  </topic>
+  <topic id='properties/context-variables'>
+    <event>update</event>
+    <event>delete</event>
+    <event>create</event>
+  </topic>
+  <topic id='properties/endpoints'>
+    <event>update</event>
+    <event>delete</event>
+    <event>create</event>
+  </topic>
+  <topic id='properties/handlers'>
+    <event>create</event>
+    <event>delete</event>
   </topic>
 </topics>

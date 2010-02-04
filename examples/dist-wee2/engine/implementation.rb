@@ -24,7 +24,7 @@ class NewInstance < Riddl::Implementation
     id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e))}.sort.last.to_i + 1
     Dir.mkdir("instances/#{id}")
     FileUtils.cp('instances/properties.init',"instances/#{id}/properties.xml")
-    FileUtils.cp_r('instances/notifications.init',"instances/#{id}/")
+    FileUtils.cp_r('instances/notifications.init',"instances/#{id}/notifications")
     FileUtils.ln_sf('../properties.schema.inactive',"instances/#{id}/properties.schema.inactive")
     XML::Smart.modify("instances/#{id}/properties.xml") do |doc|
       doc.find("/p:properties/p:name",{'p'=>'http://riddl.org/ns/common-patterns/properties/1.0'}).first.text = name
