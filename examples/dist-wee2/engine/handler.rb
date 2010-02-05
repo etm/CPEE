@@ -1,5 +1,5 @@
 class Handler < Wee::HandlerWrapperBase
-  def initialize
+  def initialize(arguments)
     @expand_params = true
     @__basichandler_stopped = false
     @__basichandler_finished = false

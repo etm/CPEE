@@ -1,9 +1,11 @@
 require ::File.dirname(__FILE__) + '/controller'
 
-#$controller = {}
-#Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e))}.each do |id|
-#  $controller[id] = Controller.new(id)
-#end
+$controller = {}
+Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.each do |id|
+  $controller[id] = Controller.new(id)
+end
+
+pp $controller
 
 class Instances < Riddl::Implementation
   def response
