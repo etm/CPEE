@@ -4,6 +4,7 @@
       <param name="pattern">\c*</param>
     </data>
   </name>
+  <process type="content" modifiable="false" mutable="false"/>
   <description type="content" modifiable="true"/>
   <optional>
     <transformation type="content" modifiable="true"/>

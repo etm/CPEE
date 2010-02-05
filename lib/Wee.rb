@@ -230,7 +230,7 @@ class Wee
       params = { }
       parameters.each do |p|
         if p.class == Hash && parameters.length == 1
-          params = parameters
+          params = p
         else  
           if !p.is_a?(Symbol) || !@__wee_context.include?(p)
             raise("not all passed parameters are context variables")

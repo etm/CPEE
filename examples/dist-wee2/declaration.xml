@@ -15,7 +15,9 @@
       <layer name="properties">
         <apply-to>/{}/properties</apply-to>
       </layer>
-      <layer name="notifications"/>
+      <layer name="notifications">
+        <apply-to>/{}</apply-to>
+      </layer>  
     </tile>
   </facade>
 </declaration>
