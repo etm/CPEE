@@ -29,7 +29,7 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
       run Info if get
       run DeleteInstance if delete
       on resource 'properties' do |r|
-        instance = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/'
+        instance       = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/'
         properties     = Riddl::Utils::Properties::file(instance + 'properties.xml')
         schema, strans = ::File.exists?(instance + 'properties.schema.active') ? [a_schema,a_strans] : [i_schema,i_strans]
 

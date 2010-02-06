@@ -4,7 +4,6 @@ $controller = {}
 Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.each do |id|
   $controller[id] = Controller.new(id)
 end
-pp $controller
 
 class Instances < Riddl::Implementation #{{{
   def response
@@ -70,8 +69,8 @@ end #}}}
 
 class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{
   def sync
-    p @properties
-    p @property
+    id = ::File::basename(::File::dirname(@properties"))
+    $controller[id].unserialize
   end
 
   def add;    sync; end
