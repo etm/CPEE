@@ -4,10 +4,9 @@ $controller = {}
 Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.each do |id|
   $controller[id] = Controller.new(id)
 end
-
 pp $controller
 
-class Instances < Riddl::Implementation
+class Instances < Riddl::Implementation #{{{
   def response
     Riddl::Parameter::Complex.new("wis","text/xml") do
       ins = XML::Smart::string('<?xml-stylesheet href="./xsls/instances.xsl" type="text/xsl"?><instances/>')
@@ -18,9 +17,9 @@ class Instances < Riddl::Implementation
       ins.to_s
     end
   end
-end
+end #}}}
 
-class NewInstance < Riddl::Implementation
+class NewInstance < Riddl::Implementation #{{{
   def response
     name = @p[0].value
     id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e))}.sort.last.to_i + 1
@@ -36,9 +35,9 @@ class NewInstance < Riddl::Implementation
 
     Riddl::Parameter::Simple.new("id", id)
   end
-end
+end #}}}
 
-class Info < Riddl::Implementation
+class Info < Riddl::Implementation #{{{
   def response
     unless File.exists?("instances/#{@r[0]}")
       @status = 400
@@ -56,9 +55,9 @@ class Info < Riddl::Implementation
       i.to_s
     end
   end
-end
+end #}}}
 
-class DeleteInstance < Riddl::Implementation
+class DeleteInstance < Riddl::Implementation #{{{
   def response
     unless File.exists?("instances/#{@r[0]}")
       @status = 400
@@ -67,4 +66,27 @@ class DeleteInstance < Riddl::Implementation
     FileUtils.rm_r("instances/#{@r[0]}")
     # $controller.delete(@r[0])
   end
-end
+end #}}}
+
+class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{
+  def sync
+    p @properties
+    p @property
+  end
+
+  def add;    sync; end
+  def delete; sync; end
+  def change; sync; end
+end #}}}
+
+class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase #{{
+  def sync
+    p @notifications
+    p @key
+    p @topics
+  end
+
+  def add;    sync; end
+  def delete; sync; end
+  def change; sync; end
+end #}}}

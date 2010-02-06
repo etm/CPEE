@@ -24,5 +24,4 @@
   </state>  
   <context-variables type="map" modifiable="false" mutable="true"/>
   <endpoints type="map" modifiable="false" mutable="false"/>
-  <handlers type="map" modifiable="false" mutable="false"/>
 </properties>
