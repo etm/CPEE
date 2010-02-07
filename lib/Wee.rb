@@ -61,7 +61,7 @@ class Wee
     @@__wee_new_context_variables ||= []
     @@__wee_new_context_variables << variables
     define_method :initialize_context do
-      @@__wee_new_context_variables.each { |item| self.context=item }
+      @@__wee_new_context_variables.each { |item| self.context = item }
     end
     wee_initialize
   end
@@ -88,6 +88,7 @@ class Wee
     def position
       @__wee_stop_positions
     end
+
     # DSL-Construct for an atomic activity
     # position: a unique identifier within the wf-description (may be used by the search to identify a starting point
     # type:
@@ -106,7 +107,7 @@ class Wee
             handler.inform_activity_done position, context
           when :call
             passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
-            ret_value = perform_external_call position, passthrough, handler, endpoint, *parameters
+            ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
             if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
               if handler.expand_params?
                 yield *ret_value
@@ -208,9 +209,7 @@ class Wee
       while eval(condition)
         yield
       end
-
     end
-
     
   private
     def is_in_search_mode(position = nil)
@@ -264,18 +263,18 @@ class Wee
       handler.inform_workflow_state newState
     end
 
-
   public
     # set the Handler
     def handler=(new_wee_handler)
       superclass = new_wee_handler
-      while(superclass)
-        check_ok = true if(superclass == Wee::HandlerWrapperBase)
+      while superclass
+        check_ok = true if superclass == Wee::HandlerWrapperBase
         superclass = superclass.superclass
       end
-      raise("Handler is not inhereted from HandlerWrapperBase") unless check_ok
+      raise "Handler is not inhereted from HandlerWrapperBase" unless check_ok
       @__wee_handler = new_wee_handler
     end
+
     # Get/Set the handler arguments
     def handlerargs=(*args)
       @__wee_handlerargs = args
@@ -283,29 +282,10 @@ class Wee
     def handlerargs
       @__wee_handlerargs
     end
+
     # Get the state of execution (ready|running|stopped|finished)
     def state
       @__wee_state || :ready
-    end
-    # Set a Endpoint
-    def endpoint=(new_endpoint = {})
-      endpoint new_endpoint
-    end
-    # Get all endpoints | Set endpoints
-    def endpoint(new_endpoint = {})
-      @__wee_endpoints ||= {}
-      new_endpoint.each do |name,value|
-        @__wee_endpoints[name] = value
-
-        instance_variable_set("@__wee_ep_#{name}", value)
-        instance_eval("def #{name}\n return @__wee_ep_#{name}\n end")
-        instance_eval("def #{name}=(newvalue)\n @__wee_endpoints[\"#{name}\".to_sym] = @__wee_ep_#{name} = newvalue\n end")
-      end
-      @__wee_endpoints
-    end
-    # Get all endpoints
-    def endpoints
-      endpoint
     end
 
     # Set a search position / set search positions
@@ -336,40 +316,62 @@ class Wee
     def search_positions
       return @__wee_search_positions_original
     end
-    # Set context variables
+
+    # get/set/clean context
     def context=(new_context)
       @__wee_context ||= Hash.new
-      new_context.each do |name, value|
-        instance_variable_set(("@" + name.to_s).to_sym,value)
-        @__wee_context[name.to_s.to_sym] = value
-      end
+      if new_context.is_a?(Hash)
+        new_context.each do |name, value|
+          @__wee_context[name.to_s.to_sym] = value
+        end
+      end  
+      nil
     end
-    # Get/Set context variables
-    def context (opt_param = [])
-      if(opt_param.is_a?(Hash))
-        self.context=opt_param
+    def context(c = nil)
+      if c.nil?
+        @__wee_context ? @__wee_context : Hash.new
+      else  
+        self.context = c
+      end  
+    end
+
+    # get/set/clean endpoints
+    def endpoints=(new_endpoints)
+      @__wee_endpoints ||= {}
+      if new_endpoints.is_a?(Hash)
+        new_endpoints.each do |name,value|
+          @__wee_endpoints[name.to_s.to_sym] = value
+        end
+      end
+      nil
+    end
+    def endpoints(e = nil)
+      if e.nil?
+        @__wee_endpoints ? @__wee_endpoints : Hash.new
       else
-        opt_param.each{ |entry| self.context=entry }
+        self.endpoints = e
+      end  
+    end
+    def endpoint(e)
+      self.endpoints = e
+    end
+
+    # get/set workflow description
+    def wf_description(code = nil)
+      if code.nil?
+        @__wee_wfsource
+      else  
+        @__wee_wfsource = code
+        blk = Proc.new{instance_eval(@__wee_wfsource)}
+        replace(&blk)
       end
-      return @__wee_context ? @__wee_context : Hash.new
+      nil
     end
-
-    # Set the workflow description. description may be given either by String param or by a code block
-    # Get the workflow description, only if description was set by String.
-    def wf_description(code=nil, &blk)
-      @__wee_wfsource = code if code || blk
-      blk = Proc.new { instance_eval(@__wee_wfsource)} if @__wee_wfsource
-      replace(&blk) if blk
-      
-      return @__wee_wfsource
-    end
-
-    # Set the workflow description
     def wf_description=(code=nil)
       wf_description(code)
     end
 
-    # Replace the workflow description by a code block
+    # set directly through block
     def replace(&blk)
       (class << self; self; end).class_eval do
         define_method :__wee_execute do

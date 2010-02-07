@@ -69,13 +69,46 @@ end #}}}
 
 class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{
   def sync
-    id = ::File::basename(::File::dirname(@properties"))
-    $controller[id].unserialize
+    if @property == 'description'
+      XML::Smart::modify(@properties) do |doc|
+        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        dsl   = doc.find("/p:properties/p:dsl").first
+        trans = doc.find("/p:properties/p:transformation").first
+        desc  = doc.find("/p:properties/p:description").first
+        if trans.nil?
+          dsl.text = desc.to_s
+        else
+          trans = XML::Smart::string(trans.children.empty? ? trans.to_s : trans.children.first.dump)
+          desc  = XML::Smart::string(desc.children.empty? ? desc.to_s : desc.children.first.dump)
+          dsl.text = desc.transform_with()
+        end
+      end
+    end  
+    id = ::File::basename(::File::dirname(@properties))
+    if @property == 'state'
+      XML::Smart::open(@properties) do |doc|
+        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        state = doc.find("string(/p:properties/p:state)")
+        if state == 'stopped'
+          $controller[id].stop
+        end
+        if state == 'running'
+          $controller[id].start
+        end
+      end
+    else
+      $controller[id].unserialize!
+    end
   end
 
-  def add;    sync; end
+  def read
+    id = ::File::basename(::File::dirname(@properties))
+    $controller[id].serialize!
+  end
+
+  def create; sync; end
+  def update; sync; end
   def delete; sync; end
-  def change; sync; end
 end #}}}
 
 class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase #{{
@@ -85,7 +118,7 @@ class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase 
     p @topics
   end
 
-  def add;    sync; end
+  def create; sync; end
   def delete; sync; end
-  def change; sync; end
+  def update; sync; end
 end #}}}
