@@ -333,9 +333,10 @@ class Wee
       if new_context.nil?
         @__wee_context ? @__wee_context : CHash.new
       else  
-        if new_context.is_a?(CHash)
+        if new_context.is_a?(Hash)
           new_context.each do |name, value|
             @__wee_context[name.to_s.to_sym] = value
+            p "@#{name}".to_sym
             self.instance_variable_set("@#{name}".to_sym,value)
           end
         end
