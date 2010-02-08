@@ -1,7 +1,7 @@
 require 'thread'
 
 class Wee
-  class EPHash < Hash
+  class CHash < Hash
     def clear
       self.each do |k,v|
         self.remove_instance_variable(k)
@@ -31,7 +31,7 @@ class Wee
     @__wee_search = false
     @__wee_stop_positions = Array.new
     @__wee_threads = Array.new
-    @__wee_context ||= EPHash.new
+    @__wee_context ||= CHash.new
     self.state = :ready
   end
   def self::wee_initialize
@@ -40,7 +40,7 @@ class Wee
       @__wee_search = false
       @__wee_stop_positions = Array.new
       @__wee_threads = Array.new
-      @__wee_context ||= EPHash.new
+      @__wee_context ||= CHash.new
 
       initialize_search if methods.include?('initialize_search')
       initialize_context if methods.include?('initialize_context')
@@ -328,10 +328,11 @@ class Wee
 
     # get/set/clean context
     def context(new_context = nil)
+      @__wee_context ||= CHash.new
       if new_context.nil?
-        @__wee_context ? @__wee_context : Hash.new
+        @__wee_context ? @__wee_context : CHash.new
       else  
-        if new_context.is_a?(Hash)
+        if new_context.is_a?(CHash)
           new_context.each do |name, value|
             @__wee_context[name.to_s.to_sym] = value
             self.instance_variable_set("@#{name}".to_sym,value)
@@ -342,10 +343,11 @@ class Wee
 
     # get/set/clean endpoints
     def endpoints(new_endpoints = nil)
+      @__wee_endpoints ||= Hash.new
       if new_endpoints.nil?
-        @__wee_endpoints ? @__wee_endpoints : EPHash.new
+        @__wee_endpoints ? @__wee_endpoints : Hash.new
       else
-        if new_endpoints.is_a?(EPHash)
+        if new_endpoints.is_a?(Hash)
           new_endpoints.each do |name,value|
             @__wee_endpoints["@#{name}".to_sym] = value
           end
