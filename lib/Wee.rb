@@ -323,6 +323,9 @@ class Wee
     end
 
     # get/set/clean context
+    def context=(new_context)
+      self.context new_context
+    end
     def context(new_context = nil)
       if new_context.nil?
         @__wee_context ? @__wee_context : Hash.new
@@ -337,6 +340,9 @@ class Wee
     end
 
     # get/set/clean endpoints
+    def endpoints=(e)
+      self.endpoints e
+    end
     def endpoints(new_endpoints = nil)
       if ew_endpoints.nil?
         @__wee_endpoints ? @__wee_endpoints : EPHash.new
@@ -347,6 +353,9 @@ class Wee
           end
         end
       end
+    end
+    def endpoint=(e)
+      self.endpoints e
     end
     def endpoint(e)
       self.endpoints e
