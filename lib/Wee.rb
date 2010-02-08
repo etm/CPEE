@@ -69,7 +69,7 @@ class Wee
     @@__wee_new_context_variables ||= []
     @@__wee_new_context_variables << variables
     define_method :initialize_context do
-      @@__wee_new_context_variables.each { |item| self.context = item }
+      @@__wee_new_context_variables.each { |item| self.context item }
     end
     wee_initialize
   end
