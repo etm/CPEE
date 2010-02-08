@@ -102,18 +102,19 @@ class Wee
       begin
         case type
           when :manipulate
-            yield if block_given?
+            if block_given?
+              handler.inform_activity_manipulate position, context
+              yield
+            end  
             refreshcontext
             handler.inform_activity_done position, context
           when :call
             passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
+            handler.inform_activity_next position, context
             ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
             if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
-              if handler.expand_params?
-                yield *ret_value
-              else
-                yield ret_value
-              end
+              handler.inform_activity_manipulate position, context
+              yield ret_value
             end
             refreshcontext
             handler.inform_activity_done position, context

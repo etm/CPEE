@@ -1,4 +1,12 @@
 <topics xmlns='http://riddl.org/ns/common-patterns/notification-producer/1.0'>
+  <topic id='monitoring'>
+    <event>activity_request</event>
+    <event>activity_response</event>
+    <event>activity_manipulate</event>
+    <event>activity_no_longer_necessary</event>
+    <event>activity_done</event>
+    <event>activity_failed</event>
+  </topic>
   <topic id='properties/process'>
     <event>update</event>
   </topic>
