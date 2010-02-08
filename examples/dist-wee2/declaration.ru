@@ -32,7 +32,7 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
         properties     = Riddl::Utils::Properties::file(instance + 'properties.xml')
         schema, strans = ::File.exists?(instance + 'properties.schema.active') ? [a_schema,a_strans] : [i_schema,i_strans]
 
-        use Riddl::Utils::Properties::implementation(properties, schema, strans)
+        use Riddl::Utils::Properties::implementation(properties, schema, strans, r[:match].count)
       end
       on resource 'notifications' do |r|
         ndir = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/notifications/'
