@@ -342,7 +342,7 @@ class Wee
 
     # get/set/clean endpoints
     def endpoints(new_endpoints = nil)
-      if ew_endpoints.nil?
+      if new_endpoints.nil?
         @__wee_endpoints ? @__wee_endpoints : EPHash.new
       else
         if new_endpoints.is_a?(EPHash)
