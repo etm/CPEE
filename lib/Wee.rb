@@ -38,6 +38,7 @@ class Wee
     @__wee_stop_positions = Array.new
     @__wee_threads = Array.new
     @__wee_context ||= CHash.new
+    @__wee_endpoints ||= Hash.new
     self.state = :ready
   end
   def self::wee_initialize
@@ -47,7 +48,7 @@ class Wee
       @__wee_stop_positions = Array.new
       @__wee_threads = Array.new
       @__wee_context ||= CHash.new
-
+      @__wee_endpoints ||= Hash.new
       initialize_search if methods.include?('initialize_search')
       initialize_context if methods.include?('initialize_context')
       initialize_endpoints if methods.include?('initialize_endpoints')
@@ -334,7 +335,6 @@ class Wee
 
     # get/set/clean context
     def context(new_context = nil)
-      @__wee_context ||= CHash.new
       if new_context.nil?
         @__wee_context ? @__wee_context : CHash.new
       else  
@@ -349,7 +349,6 @@ class Wee
 
     # get/set/clean endpoints
     def endpoints(new_endpoints = nil)
-      @__wee_endpoints ||= Hash.new
       if new_endpoints.nil?
         @__wee_endpoints ? @__wee_endpoints : Hash.new
       else
