@@ -1,0 +1,12 @@
+#!/usr/bin/ruby
+require '../../../../riddl/lib/ruby/client'
+
+srv = Riddl::Client.new("http://localhost:9292/")
+
+# === Generate Wee-Instances
+main = srv.resource("/1/properties/values/endpoints")
+
+status, res = main.post [ 
+  Riddl::Parameter::Simple.new("key","b"),
+  Riddl::Parameter::Simple.new("value","aller") 
+]
