@@ -2,9 +2,10 @@
 require 'pp'
 require 'fileutils'
 require '../../../riddl/lib/ruby/server'
-require '../../../riddl/lib/ruby/utils/notification_provider'
+require '../../../riddl/lib/ruby/utils/notifications_producer'
 require '../../../riddl/lib/ruby/utils/properties'
 require '../../../riddl/lib/ruby/utils/fileserve'
+require '../../../riddl/lib/ruby/utils/declaration'
 require 'engine/implementation'
 
 use Rack::ShowStatus
@@ -28,15 +29,15 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
       run Info if get
       run DeleteInstance if delete
       on resource 'properties' do |r|
-        instance = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/'
+        instance       = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/'
         properties     = Riddl::Utils::Properties::file(instance + 'properties.xml')
         schema, strans = ::File.exists?(instance + 'properties.schema.active') ? [a_schema,a_strans] : [i_schema,i_strans]
 
-        use Riddl::Utils::Properties::implementation(properties, schema, strans, r[:match].count)
+        use Riddl::Utils::Properties::implementation(properties, schema, strans, PropertiesHandler, r[:match].count)
       end
       on resource 'notifications' do |r|
         ndir = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/notifications/'
-        use Riddl::Utils::Notification::Provider::implementation(ndir,xsls)
+        use Riddl::Utils::Notification::Producer::implementation(ndir,xsls, NotificationsHandler)
     end
     end  
     on resource 'xsls' do

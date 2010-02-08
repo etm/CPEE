@@ -4,7 +4,6 @@
   <state>ready</state>
   <context-variables/>
   <endpoints/>
-  <handlers/>
-  <process/>
+  <dsl/>
   <description/>
 </properties>

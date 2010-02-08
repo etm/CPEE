@@ -4,7 +4,7 @@
       <param name="pattern">\c*</param>
     </data>
   </name>
-  <process type="content" modifiable="false" mutable="false"/>
+  <dsl type="content" modifiable="false" mutable="false"/>
   <description type="content" modifiable="true"/>
   <optional>
     <transformation type="content" modifiable="true"/>
@@ -24,5 +24,4 @@
   </state>  
   <context-variables type="map" modifiable="true"/>
   <endpoints type="map" modifiable="true"/>
-  <handlers type="map" modifiable="true"/>
 </properties>

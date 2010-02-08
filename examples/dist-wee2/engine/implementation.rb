@@ -5,9 +5,7 @@ Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.e
   $controller[id] = Controller.new(id)
 end
 
-pp $controller
-
-class Instances < Riddl::Implementation
+class Instances < Riddl::Implementation #{{{
   def response
     Riddl::Parameter::Complex.new("wis","text/xml") do
       ins = XML::Smart::string('<?xml-stylesheet href="./xsls/instances.xsl" type="text/xsl"?><instances/>')
@@ -18,9 +16,9 @@ class Instances < Riddl::Implementation
       ins.to_s
     end
   end
-end
+end #}}}
 
-class NewInstance < Riddl::Implementation
+class NewInstance < Riddl::Implementation #{{{
   def response
     name = @p[0].value
     id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e))}.sort.last.to_i + 1
@@ -36,9 +34,9 @@ class NewInstance < Riddl::Implementation
 
     Riddl::Parameter::Simple.new("id", id)
   end
-end
+end #}}}
 
-class Info < Riddl::Implementation
+class Info < Riddl::Implementation #{{{
   def response
     unless File.exists?("instances/#{@r[0]}")
       @status = 400
@@ -56,9 +54,9 @@ class Info < Riddl::Implementation
       i.to_s
     end
   end
-end
+end #}}}
 
-class DeleteInstance < Riddl::Implementation
+class DeleteInstance < Riddl::Implementation #{{{
   def response
     unless File.exists?("instances/#{@r[0]}")
       @status = 400
@@ -67,4 +65,60 @@ class DeleteInstance < Riddl::Implementation
     FileUtils.rm_r("instances/#{@r[0]}")
     # $controller.delete(@r[0])
   end
-end
+end #}}}
+
+class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{
+  def sync
+    if @property == 'description'
+      XML::Smart::modify(@properties) do |doc|
+        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        dsl   = doc.find("/p:properties/p:dsl").first
+        trans = doc.find("/p:properties/p:transformation").first
+        desc  = doc.find("/p:properties/p:description").first
+        if trans.nil?
+          dsl.text = desc.to_s
+        else
+          trans = XML::Smart::string(trans.children.empty? ? trans.to_s : trans.children.first.dump)
+          desc  = XML::Smart::string(desc.children.empty? ? desc.to_s : desc.children.first.dump)
+          dsl.text = desc.transform_with()
+        end
+      end
+    end  
+    id = ::File::basename(::File::dirname(@properties))
+    if @property == 'state'
+      XML::Smart::open(@properties) do |doc|
+        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        state = doc.find("string(/p:properties/p:state)")
+        if state == 'stopped'
+          $controller[id].stop
+        end
+        if state == 'running'
+          $controller[id].start
+        end
+      end
+    else
+      $controller[id].unserialize!
+    end
+  end
+
+  def read
+    id = ::File::basename(::File::dirname(@properties))
+    $controller[id].serialize!
+  end
+
+  def create; sync; end
+  def update; sync; end
+  def delete; sync; end
+end #}}}
+
+class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase #{{
+  def sync
+    p @notifications
+    p @key
+    p @topics
+  end
+
+  def create; sync; end
+  def delete; sync; end
+  def update; sync; end
+end #}}}
