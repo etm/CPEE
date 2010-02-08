@@ -7,6 +7,6 @@ srv = Riddl::Client.new("http://localhost:9292/")
 main = srv.resource("/1/properties/values/context-variables")
 
 status, res = main.post [ 
-  Riddl::Parameter::Simple.new("key","b"),
-  Riddl::Parameter::Simple.new("value","aller") 
+  Riddl::Parameter::Simple.new("key","test9"),
+  Riddl::Parameter::Simple.new("value",12) 
 ]

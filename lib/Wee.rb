@@ -2,15 +2,18 @@ require 'thread'
 
 class Wee
   class CHash < Hash
+    def initialize(bndg)
+      @bndg = bndg
+    end  
     def clear
       self.each do |k,v|
-        self.remove_instance_variable(k)
+        @bndg.send :remove_instance_variable, "@#{k}".to_sym
       end
-      superclass.clear    
+      super
     end
     def delete(key)
-      if res = superclass.delete(key)
-        self.remove_instance_variable(key)
+      if res = super(key)
+        @bndg.send :remove_instance_variable, "@#{k}".to_sym
       end
       res
     end
@@ -37,7 +40,7 @@ class Wee
     @__wee_search = false
     @__wee_stop_positions = Array.new
     @__wee_threads = Array.new
-    @__wee_context ||= CHash.new
+    @__wee_context ||= CHash.new(self)
     @__wee_endpoints ||= Hash.new
     self.state = :ready
   end
@@ -47,7 +50,7 @@ class Wee
       @__wee_search = false
       @__wee_stop_positions = Array.new
       @__wee_threads = Array.new
-      @__wee_context ||= CHash.new
+      @__wee_context ||= CHash.new(self)
       @__wee_endpoints ||= Hash.new
       initialize_search if methods.include?('initialize_search')
       initialize_context if methods.include?('initialize_context')
@@ -331,12 +334,11 @@ class Wee
     # get/set/clean context
     def context(new_context = nil)
       if new_context.nil?
-        @__wee_context ? @__wee_context : CHash.new
+        @__wee_context ? @__wee_context : CHash.new(self)
       else  
         if new_context.is_a?(Hash)
           new_context.each do |name, value|
             @__wee_context[name.to_s.to_sym] = value
-            p "@#{name}".to_sym
             self.instance_variable_set("@#{name}".to_sym,value)
           end
         end

@@ -50,15 +50,15 @@ class Controller
 
       @instance.context.clear
       doc.find("/p:properties/p:context-variables/p:*").each do |e|
-        @instance.context = { e.name.to_s.to_sym => e.text } 
+        @instance.context e.name.to_s.to_sym => e.text
       end
 
       @instance.endpoints.clear
       doc.find("/p:properties/p:endpoints/p:*").each do |e|
-        @instance.endpoint(e.name.to_s.to_sym => e.text)
+        @instance.endpoint e.name.to_s.to_sym => e.text
       end
 
-      @instance.wf_description = doc.find("string(/p:properties/p:dsl)")
+      @instance.wf_description doc.find("string(/p:properties/p:dsl)")
     end
     pp @instance
   end
