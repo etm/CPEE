@@ -122,10 +122,11 @@ class Wee
             ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
             if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
               handler.inform_activity_manipulate position, context
-              if(ret_value.is_a?(Array) && handler.expand_params?)
+              if ret_value.is_a?(Array) && handler.expand_params? 
                 yield *ret_value
               else
                 yield ret_value
+              end
             end
             refreshcontext
             handler.inform_activity_done position, context
