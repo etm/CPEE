@@ -3,7 +3,7 @@ require 'pp'
 require ::File.dirname(__FILE__) + '/Wee'
 
 class BasicHandler < Wee::HandlerWrapperBase
-  def initialize(*args)
+  def initialize(args)
     @expand_params = true
     @__basichandler_stopped = false
     @__basichandler_finished = false
@@ -13,7 +13,7 @@ class BasicHandler < Wee::HandlerWrapperBase
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
-  def handle_call(position, passthrough, endpoint, *parameters)
+  def handle_call(position, passthrough, endpoint, parameters)
     $LOG.debug('BasicHandler.handle_call'){ "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"}
     pp "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
     Thread.new do
@@ -59,6 +59,11 @@ class BasicHandler < Wee::HandlerWrapperBase
   # Is called if a Activity is executed correctly
   def inform_activity_done(activity, context)
     $LOG.info('BasicHandler.inform_activity_done'){"Activity #{activity} done"}
+  end
+  # Is called before the results of a call are manipulated
+  def inform_activity_manipulate(activity, context)
+    $LOG.info('BasicHandler.inform_activity_manipulate'){"Activity #{activity} manipulating"}
+    raise(err)
   end
   # Is called if a Activity is executed with an error
   def inform_activity_failed(activity, context, err)

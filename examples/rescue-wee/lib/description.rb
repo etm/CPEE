@@ -17,6 +17,6 @@ class DescriptionPUT < Riddl::Implementation
     description = @p[0].value
     wf = $controller[instance_id]
     pp "description will be set to #{description}"
-    wf.wf_description= description
+    wf.wf_description description
   end
 end

@@ -1,6 +1,20 @@
 require 'thread'
 
 class Wee
+  class CHash < Hash
+    def clear
+      self.each do |k,v|
+        self.remove_instance_variable(k)
+      end
+      superclass.clear    
+    end
+    def delete(key)
+      if res = superclass.delete(key)
+        self.remove_instance_variable(key)
+      end
+      res
+    end
+  end
   class SearchPos
     attr_accessor :position, :detail, :passthrough
     def initialize(position, detail=:at, passthrough=nil)
@@ -23,7 +37,8 @@ class Wee
     @__wee_search = false
     @__wee_stop_positions = Array.new
     @__wee_threads = Array.new
-    @__wee_context ||= {}
+    @__wee_context ||= CHash.new
+    @__wee_endpoints ||= Hash.new
     self.state = :ready
   end
   def self::wee_initialize
@@ -32,8 +47,8 @@ class Wee
       @__wee_search = false
       @__wee_stop_positions = Array.new
       @__wee_threads = Array.new
-      @__wee_context ||= {}
-
+      @__wee_context ||= CHash.new
+      @__wee_endpoints ||= Hash.new
       initialize_search if methods.include?('initialize_search')
       initialize_context if methods.include?('initialize_context')
       initialize_endpoints if methods.include?('initialize_endpoints')
@@ -61,7 +76,7 @@ class Wee
     @@__wee_new_context_variables ||= []
     @@__wee_new_context_variables << variables
     define_method :initialize_context do
-      @@__wee_new_context_variables.each { |item| self.context = item }
+      @@__wee_new_context_variables.each { |item| self.context item }
     end
     wee_initialize
   end
@@ -110,7 +125,6 @@ class Wee
             handler.inform_activity_done position, context
           when :call
             passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
-            handler.inform_activity_next position, context
             ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
             if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
               handler.inform_activity_manipulate position, context
@@ -289,10 +303,6 @@ class Wee
       @__wee_state || :ready
     end
 
-    # Set a search position / set search positions
-    def search=(new_wee_search)
-      search new_wee_search
-    end
     # Set search positions
     def search(new_wee_search)
       @__wee_search_positions = {}
@@ -319,57 +329,47 @@ class Wee
     end
 
     # get/set/clean context
-    def context=(new_context)
-      @__wee_context ||= Hash.new
-      if new_context.is_a?(Hash)
-        new_context.each do |name, value|
-          @__wee_context[name.to_s.to_sym] = value
-        end
-      end  
-      nil
-    end
-    def context(c = nil)
-      if c.nil?
-        @__wee_context ? @__wee_context : Hash.new
+    def context(new_context = nil)
+      if new_context.nil?
+        @__wee_context ? @__wee_context : CHash.new
       else  
-        self.context = c
+        if new_context.is_a?(CHash)
+          new_context.each do |name, value|
+            @__wee_context[name.to_s.to_sym] = value
+            self.instance_variable_set("@#{name}".to_sym,value)
+          end
+        end
       end  
     end
 
     # get/set/clean endpoints
-    def endpoints=(new_endpoints)
-      @__wee_endpoints ||= {}
-      if new_endpoints.is_a?(Hash)
-        new_endpoints.each do |name,value|
-          @__wee_endpoints[name.to_s.to_sym] = value
-        end
-      end
-      nil
-    end
-    def endpoints(e = nil)
-      if e.nil?
+    def endpoints(new_endpoints = nil)
+      if new_endpoints.nil?
         @__wee_endpoints ? @__wee_endpoints : Hash.new
       else
-        self.endpoints = e
-      end  
+        if new_endpoints.is_a?(Hash)
+          new_endpoints.each do |name,value|
+            @__wee_endpoints["#{name}".to_sym] = value
+          end
+        end
+      end
     end
     def endpoint(e)
-      self.endpoints = e
+      self.endpoints e
     end
 
     # get/set workflow description
-    def wf_description(code = nil)
-      if code.nil?
+    def wf_description(code = nil,&blk)
+      if code.nil? && !block_given?
         @__wee_wfsource
-      else  
-        @__wee_wfsource = code
-        blk = Proc.new{instance_eval(@__wee_wfsource)}
+      else
+        unless block_given?
+          @__wee_wfsource = code
+          blk = Proc.new{instance_eval(@__wee_wfsource)}
+        end
         replace(&blk)
       end
       nil
-    end
-    def wf_description=(code=nil)
-      wf_description(code)
     end
 
     # set directly through block
