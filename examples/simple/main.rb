@@ -1,32 +1,12 @@
 require 'pp'
 require 'logger'
 require 'thread'
-#require ::File.dirname(__FILE__) + '/Workflow'
-#require ::File.dirname(__FILE__) + '/SimpleWorkflow'
-require ::File.dirname(__FILE__) + '/TestWorkflow'
+require ::File.dirname(__FILE__) + '/SimpleWorkflow'
 
-def show_test
-  t = TestWorkflow.new
-  result = nil
-  execution = Thread.new {
-    result = t.start
-  }
-  execution.join()
-  return result
-end
 def show_simple
   t = SimpleWorkflow.new
   result = nil
   execution = Thread.new {
-    result = t.start
-  }
-  execution.join()
-  return result
-end
-def show_normal
-  t = Workflow.new
-  result = nil
-  execution = Thread.new { 
     result = t.start
   }
   execution.join()
@@ -59,5 +39,5 @@ def show_stop_and_replace
 end
 
 puts "===================================================="
-result = show_test
+result = show_simple
 puts "========> Ending-Result: #{result.inspect}"
