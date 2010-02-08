@@ -4,12 +4,8 @@ require ::File.dirname(__FILE__) + '/../../../lib/Wee'
 require ::File.dirname(__FILE__) + '/../includes/client'
 
 class RescueHandler < Wee::HandlerWrapperBase
-  include MarkUSModule
 
   def initialize(url)
-    puts '-'*50
-    puts "\t\tExeuting workflow for device: #{url.inspect}"
-    puts '-'*50
     @urls = url.is_a?(String) ? url.split(',') : url[0].split(',')
     @expand_params = true
 
@@ -19,16 +15,6 @@ class RescueHandler < Wee::HandlerWrapperBase
   end
 
   def log(type, details)
-=begin
-    p "[#{Time.now.to_s}] #{type}: #{details}"
-    @urls.each do |url|
-      Riddl::Client.new(url).post [
-        Riddl::Parameter::Simple.new("stamp", Time.now.to_s),
-        Riddl::Parameter::Simple.new("type", type),
-        Riddl::Parameter::Simple.new("details", details)
-      ]
-    end
-=end
   end
 
   def getServices( link, resource, services )
@@ -51,7 +37,7 @@ class RescueHandler < Wee::HandlerWrapperBase
     elsif res[0].name == "details-of-service"
       link = xml.find("string(//service/URI)")
       name = xml.find("string(//vendor/name)")
-      services <<  {'name'=>name+' ('+resource+')', 'link'=>link}
+      services <<  {'name'=>name, 'link'=>link, 'repoURI'=> resource}
     end
   end
 
@@ -60,10 +46,19 @@ class RescueHandler < Wee::HandlerWrapperBase
   def handle_call(position, passthrough, endpoint, parameters)
     @__myhandler_finished = false
 
+puts '-'*50
+pp parameters.inspect
+puts endpoint
+puts"="
+puts :endpoint
+puts '-'*50
+
+
     interactionURI = @urls[0].split("/")[0..2].join("/")
     interactionResource = @urls[0].split("/")[3..-1].join("/")
     interactionWEE = Riddl::Client.new(interactionURI).resource(interactionResource+"/wee")
     interactionRESCUE = Riddl::Client.new(interactionURI).resource(interactionResource+"/rescue")
+    @__myhandler_returnValue = Array.new
 
     # Preparing parameters for query-requests
     riddlParams = Array.new()
@@ -77,13 +72,13 @@ class RescueHandler < Wee::HandlerWrapperBase
     rng.namespaces = {"rng" => "http://relaxng.org/ns/structure/1.0"}
     elements = rng.find("//rng:define/rng:element/@name")
     elements.each do |e|
-      riddlParams.push Riddl::Parameter::Simple.new e.to_s(), parameters[e.value]
+      riddlParams.push Riddl::Parameter::Simple.new e.value, parameters[e.value.to_sym]
     end
 
 
 puts '-'*50
 puts "QueryInput-Parameters:"
-puts riddlParams.inspect
+pp riddlParams.inspect
 puts '-'*50
 
     # Find services within the given endpoint
@@ -116,6 +111,8 @@ puts '-'*50
         entries.each do |entry|
           entry.attributes.add("id", id)
           entry.attributes.add("name", s['name'])
+          entry.attributes.add("serviceURI", s['link'])
+          entry.attributes.add("repiURI", s['repoURI'])
           xml.root.add(entry)
           id = id + 1
         end
@@ -132,15 +129,27 @@ puts '-'*50
     rescue
       puts "Server (#{interactionURI}) refused connection on resource: #{interactionWEE}"
     end
-    puts '-'*50
-    puts "\t\tPosted results at #{interactionURI}/#{interactionResource}/wee"
-    puts '-'*50
 
     # Reading user selection
     begin
       status, userSelection = interactionRESCUE.request :get => [Riddl::Parameter::Simple.new("xml", xml)]
     rescue
       puts "Server (#{interactionURI}) refused connection on resource: #{interactionResource}/rescue"
+    end
+
+    # Select entry to user-selection
+    selected = xml.find("//entry[@id=#{userSelection[0].value}]").first
+
+    # Prepare invokeOutput to be stored in the context
+    begin
+      status, res = Riddl::Client.new(@urls[1]).resource(endpoint.split("/")[0]).get [Riddl::Parameter::Simple.new("queryOutput", "")]
+    rescue
+      puts "Error receiving queryInput-Properties for #{endpoint}"
+    end    
+    rng = XML::Smart::string(res[0].value.read)
+    rng.namespaces = {"rng" => "http://relaxng.org/ns/structure/1.0"}
+    rng.find("//rng:define/rng:element/@name").each do |e|
+      @__myhandler_returnValue.push selected.find("string(//#{e.value})").first
     end
 
     # Preparing invoke-Parameter
@@ -150,20 +159,14 @@ puts '-'*50
       status, res = Riddl::Client.new(@urls[1]).resource(endpoint.split("/")[0]).get [Riddl::Parameter::Simple.new("invokeInput", "")]
     rescue
       puts "Error receiving queryInput-Properties for #{endpoint}"
-    end
-
-    # Select entry to user-selection
-    selected = xml.find("//entry[@id=#{userSelection[0].value}]")
-
+    end    
     rng = XML::Smart::string(res[0].value.read)
     rng.namespaces = {"rng" => "http://relaxng.org/ns/structure/1.0"}
-    elements = rng.find("//rng:define/rng:element/@name")
-    elements.each do |e|
-      if parameters.include?(e.value)
-        riddlParams.push Riddl::Parameter::Simple.new e.value, parameters[e.value] 
+    rng.find("//rng:define/rng:element/@name").each do |e|
+      if parameters.include?(e.value.to_sym)
+        riddlParams.push Riddl::Parameter::Simple.new e.value, parameters[e.value.to_sym] 
       else
-puts "string(//rng:define/rng:element/@name[@name=#{e.value}])"
-        riddlParams.push Riddl::Parameter::Simple.new e.value, selected.find("string(//rng:define/rng:element/@name[@name=#{e.value}])")
+        riddlParams.push Riddl::Parameter::Simple.new e.value, selected.find("string(//entry/#{e.value})").first
       end
     end
 
@@ -172,10 +175,44 @@ puts '-'*50
 puts "invokeInput-Parameters:"
 puts riddlParams.inspect
 puts '-'*50
-    
+
+    # invoke service
+    serviceURI = selected.attributes.get_attr('serviceURI').value
+    begin
+      status, res = Riddl::Client.new(serviceURI).resource("").post riddlParams
+    rescue
+      puts "Error invoking service #{serviceURI}"
+      puts $!
+    end
+
+    xml = XML::Smart::string(res[0].value.read)
+
+puts "invoke-Output"
+puts xml
+
+    # save invoke-output to context
+    begin
+      status, res = Riddl::Client.new(@urls[1]).resource(endpoint.split("/")[0]).get [Riddl::Parameter::Simple.new("invokeOutput", "")]
+    rescue
+      puts "Error receiving invokeOutput-Properties for #{endpoint}"
+    end
+
+    rng = XML::Smart::string(res[0].value.read)
+    rng.namespaces = {"rng" => "http://relaxng.org/ns/structure/1.0"}
+    elements = rng.find("//rng:define/rng:element/@name")
+    elements.each do |e|
+puts "\t\tInvokeOUT: #{e.value} => #{xml.find("string(//#{e.value})").first} "
+      @__myhandler_returnValue.push xml.find("string(//#{e.value})").first
+    end
+
     @__myhandler_finished = true
   end
 
+  def inform_activity_next(position, context)
+  end
+
+  def inform_activity_manipulate(position, context)
+  end
 
   # returns true if the last handled call has finished processing, or the
   # call runs independent (asynchronous call)
@@ -187,6 +224,7 @@ puts '-'*50
   def return_value
     @__myhandler_finished ? @__myhandler_returnValue : nil
   end
+
   # Called if the WS-Call should be interrupted. The decision how to deal
   # with this situation is given to the handler. To provide the possibility
   # of a continue the Handler will be asked for a passthrough
