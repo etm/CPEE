@@ -8,6 +8,12 @@ class Wee
       end
       superclass.clear    
     end
+    def delete(key)
+      if res = superclass.delete(key)
+        self.remove_instance_variable(key)
+      end
+      res
+    end
   end
   class SearchPos
     attr_accessor :position, :detail, :passthrough
