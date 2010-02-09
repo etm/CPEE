@@ -1,6 +1,6 @@
 class Handler < Wee::HandlerWrapperBase
   def initialize(arguments)
-    @expand_params = true
+    @instance = arguments[0]    
     @__basichandler_stopped = false
     @__basichandler_finished = false
     @__basichandler_returnValue = nil
@@ -44,14 +44,5 @@ class Handler < Wee::HandlerWrapperBase
   # anymore to continue the workflow
   def no_longer_necessary
     @__basichandler_stopped = true
-  end
-  # Is called if a Activity is executed correctly
-  def inform_activity_done(activity, context)
-  end
-  # Is called if a Activity is executed with an error
-  def inform_activity_failed(activity, context, err)
-    raise(err)
-  end
-  def inform_workflow_state(newstate)
   end
 end

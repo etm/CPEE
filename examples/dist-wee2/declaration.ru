@@ -37,7 +37,7 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
       end
       on resource 'notifications' do |r|
         ndir = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/notifications/'
-        use Riddl::Utils::Notification::Producer::implementation(ndir,xsls, NotificationsHandler)
+        use Riddl::Utils::Notifications::Producer::implementation(ndir,xsls, NotificationsHandler)
     end
     end  
     on resource 'xsls' do

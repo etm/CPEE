@@ -26,12 +26,12 @@ class Wee
       @passthrough = passthrough
     end
   end
-  class HandlerWrapperBase 
-    # indicates if the return values should be expanded before given to the block
-    def expand_params?
-      @expand_params || false
-    end
-  end
+  class HandlerWrapperBase
+    def inform_activity_done(activity, context); end
+    def inform_activity_manipulate(activity, context); end
+    def inform_activity_failed(activity, context, err); raise(err); end
+    def inform_workflow_state(newstate); end
+  end  
 
   def initialize
     # Waring: redefined, see wee_initialize

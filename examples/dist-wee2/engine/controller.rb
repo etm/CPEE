@@ -5,6 +5,7 @@ class Controller
   def initialize(id)
     @properties = ::File.dirname(__FILE__) + '/../instances/' + id  + '/properties.xml'
     @instance = EmptyWorkflow.new
+    @instance.handlerargs = id
     self.unserialize!
     @thread = nil
     @result = nil
