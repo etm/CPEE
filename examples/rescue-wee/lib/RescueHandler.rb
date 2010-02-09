@@ -6,7 +6,7 @@ require ::File.dirname(__FILE__) + '/../includes/client'
 class RescueHandler < Wee::HandlerWrapperBase
 
   def initialize(url)
-    @urls = url.is_a?(String) ? url.split(',') : url[0].split(',')
+    @urls = url[0].split(',')
     @expand_params = true
 
     @__myhandler_stopped = false
