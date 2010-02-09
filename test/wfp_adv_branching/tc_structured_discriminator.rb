@@ -17,7 +17,7 @@ class TestStructuredDiscriminator < Test::Unit::TestCase
 
 
   def test_cancelling_discriminator
-    $wf.replace do
+    $wf.description do
       parallel :wait => 1 do
         parallel_branch do
           activity :a_1_1, :call, :endpoint1

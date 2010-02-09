@@ -15,7 +15,7 @@ class TestParallel < Test::Unit::TestCase
   end
   def test_parallel_simple
     $wf.search false
-    $wf.replace do
+    $wf.description do
       parallel do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -43,7 +43,7 @@ class TestParallel < Test::Unit::TestCase
   end
   def test_parallel_wait
     $wf.search false
-    $wf.replace do
+    $wf.description do
       parallel :wait do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -69,7 +69,7 @@ class TestParallel < Test::Unit::TestCase
   end
   def test_parallel_nowait
     $wf.search false
-    $wf.replace do
+    $wf.description do
       parallel :wait => 1 do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -91,7 +91,7 @@ class TestParallel < Test::Unit::TestCase
   end
   def test_parallel_no_longer_necessary
     $wf.search false
-    $wf.replace do
+    $wf.description do
       parallel :wait => 1 do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -118,7 +118,7 @@ class TestParallel < Test::Unit::TestCase
   end
   def test_parallel_wait_partial
     $wf.search false
-    $wf.replace do
+    $wf.description do
       parallel :wait => 3 do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -164,7 +164,7 @@ class TestParallel < Test::Unit::TestCase
     # |-|- :a_2_3
     # |- => :a_3
     $wf.search false
-    $wf.replace do
+    $wf.description do
       parallel :wait do
         parallel_branch do activity :a_1, :call, :endpoint1 end
         parallel_branch do

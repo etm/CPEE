@@ -17,7 +17,7 @@ class TestChoose < Test::Unit::TestCase
 
   def test_choose_alternative
     $wf.search false
-    $wf.replace do
+    $wf.description do
       choose do
         alternative(true) do
           activity :a_1, :call, :endpoint1
@@ -39,7 +39,7 @@ class TestChoose < Test::Unit::TestCase
 
   def test_choose_otherwise
     $wf.search false
-    $wf.replace do
+    $wf.description do
       choose do
         alternative(false) do
           activity :a_1, :call, :endpoint1
@@ -57,7 +57,7 @@ class TestChoose < Test::Unit::TestCase
 
   def test_choose_nested
     $wf.search false
-    $wf.replace do
+    $wf.description do
       choose do
         alternative(true) do
           choose do

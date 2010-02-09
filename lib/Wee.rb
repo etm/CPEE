@@ -266,7 +266,7 @@ class Wee
     end
     def refreshcontext()
       @__wee_context.each do |varname, value|
-        @__wee_context[varname] = instance_variable_get("@"+varname.to_s)
+        @__wee_context[varname] = instance_variable_get("@#{varname}".to_sym)
       end
     end
     def get_matching_search_position(position)
@@ -365,7 +365,7 @@ class Wee
     end
 
     # get/set workflow description
-    def wf_description(code = nil,&blk)
+    def description(code = nil,&blk)
       if code.nil? && !block_given?
         @__wee_wfsource
       else
@@ -373,20 +373,15 @@ class Wee
           @__wee_wfsource = code
           blk = Proc.new{instance_eval(@__wee_wfsource)}
         end
-        replace(&blk)
-      end
-      nil
-    end
-
-    # set directly through block
-    def replace(&blk)
-      (class << self; self; end).class_eval do
-        define_method :__wee_execute do
-          self.state = :running
-          instance_eval(&blk)
-          self.state = :finished if self.state == :running
-          [self.state, position, context]
+        (class << self; self; end).class_eval do
+          define_method :__wee_execute do
+            self.state = :running
+            instance_eval(&blk)
+            self.state = :finished if self.state == :running
+            [self.state, position, context]
+          end
         end
+        blk  
       end
     end
 

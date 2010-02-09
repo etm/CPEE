@@ -16,7 +16,7 @@ class TestParallel < Test::Unit::TestCase
 
 
   def test_parallel_split
-    $wf.replace do
+    $wf.description do
       parallel :wait do
         parallel_branch do
           activity :a1_1, :call, :endpoint1

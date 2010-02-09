@@ -18,7 +18,7 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
 
 
   def test_interleaved
-    $wf.replace do
+    $wf.description do
       parallel do
         parallel_branch do
           critical(:section1) do

@@ -14,7 +14,7 @@ class TestCodeReplace < Test::Unit::TestCase
     $wf_thread.join if defined?($wf_thread)
   end
   def test_replace
-    $wf.replace do
+    $wf.description do
       activity :a_test_1_1, :call, :endpoint1
       activity :a_test_1_2, :call, :endpoint1
       activity :a_test_1_3, :call, :endpoint1
@@ -30,8 +30,7 @@ class TestCodeReplace < Test::Unit::TestCase
     assert($message.include?("Activity a_test_1_3 done"), "pos a_test_1_3 not properly ended, see $message=#{$message}");
   end
   def test_wfdescription_string
-    ret = $wf.wf_description "activity :a_test_1_1, :call, :endpoint1"
-    assert(ret == "activity :a_test_1_1, :call, :endpoint1", "Invalid wf_description coped: #{ret}")
+    ret = $wf.description "activity :a_test_1_1, :call, :endpoint1"
 
     $wf.search Wee::SearchPos.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
@@ -40,11 +39,11 @@ class TestCodeReplace < Test::Unit::TestCase
     assert($message.include?("Activity a_test_1_1 done"), "pos a_test_1_1 not properly ended, see $message=#{$message}");
   end
   def test_wfdescription_block
-    ret = $wf.wf_description do
+    ret = $wf.description do
       activity :a_test_1_1, :call, :endpoint1
     end
 
-    assert(ret.nil?, "wf_description should be nil => not available. codeblock was given!")
+    assert(ret.class == Proc, "wf_description should be nil => not available. codeblock was given!")
 
     $wf.search Wee::SearchPos.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };

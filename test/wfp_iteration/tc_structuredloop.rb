@@ -16,7 +16,7 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
 
 
   def test_loop
-    $wf.replace do
+    $wf.description do
       activity :a1, :manipulate do
         @x = 0
       end
@@ -42,7 +42,7 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
     assert($message.include?("Handle call: position=[a3]"), "Pos a3 should be called by now, see message=[#{$message}]");
   end
   def test_loop_search
-    $wf.replace do
+    $wf.description do
       activity :a1, :manipulate do
         @x = 0
       end
@@ -69,7 +69,7 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
     assert($message.include?("Handle call: position=[a3]"), "Pos a3 should be called by now, see message=[#{$message}]");
   end
   def test_loop_jump_over
-    $wf.replace do
+    $wf.description do
       activity :a1, :manipulate do
         @x = 0
       end

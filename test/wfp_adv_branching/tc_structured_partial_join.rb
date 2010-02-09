@@ -16,7 +16,7 @@ class TestCancellingStructuredPartialJoin < Test::Unit::TestCase
 
 
   def test_cancelling_structured_partial_join
-    $wf.replace do
+    $wf.description do
       parallel :wait => 3 do
         parallel_branch do
           activity :a_1, :call, :endpoint1

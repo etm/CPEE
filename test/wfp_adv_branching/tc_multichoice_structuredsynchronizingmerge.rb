@@ -16,7 +16,7 @@ class TestMultiChoice < Test::Unit::TestCase
 
 
   def test_multichoice_chained
-    $wf.replace do
+    $wf.description do
       context :x => 1
       choose do
         alternative(@x == 1) do
@@ -45,7 +45,7 @@ class TestMultiChoice < Test::Unit::TestCase
     assert($message.include?("Activity a2 done"), "pos a2 not properly ended, see $message=#{$message}");
   end
   def test_multichoice_parallel
-    $wf.replace do
+    $wf.description do
       context :x => 1
       parallel do
         choose do

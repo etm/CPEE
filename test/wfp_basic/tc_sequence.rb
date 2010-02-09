@@ -16,7 +16,7 @@ class TestSequence < Test::Unit::TestCase
 
 
   def test_sequence
-    $wf.replace do
+    $wf.description do
       activity :a1_1, :call, :endpoint1
       activity :a1_2, :call, :endpoint1
       activity :a1_3, :call, :endpoint1

@@ -16,7 +16,7 @@ class TestDeferredChoice < Test::Unit::TestCase
 
 
   def test_sequence
-    $wf.replace do
+    $wf.description do
       parallel :wait=>1 do
         parallel_branch do
           activity :a1_1, :call, :endpoint1 do

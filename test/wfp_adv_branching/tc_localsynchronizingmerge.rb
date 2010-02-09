@@ -16,7 +16,7 @@ class TestLocalSynchronizingMerge < Test::Unit::TestCase
 
 
   def test_localsyncmerge
-    $wf.replace do
+    $wf.description do
       parallel :wait do
         parallel_branch do
           activity :a1_1, :call, :endpoint1

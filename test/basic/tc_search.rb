@@ -43,7 +43,7 @@ class TestSearch < Test::Unit::TestCase
 
   end
   def test_search_impact_single
-    $wf.replace do
+    $wf.description do
       activity :a1_1, :call, :endpoint1
       activity :a1_2, :call, :endpoint1
       activity :a1_3, :call, :endpoint1
@@ -59,7 +59,7 @@ class TestSearch < Test::Unit::TestCase
     assert($message.include?("Activity a1_3 done"), "pos a1_3 not properly ended, see $message=#{$message}");
   end
   def test_search_impact_dual
-    $wf.replace do
+    $wf.description do
       activity :a1, :call, :endpoint1
       parallel do
         parallel_branch do

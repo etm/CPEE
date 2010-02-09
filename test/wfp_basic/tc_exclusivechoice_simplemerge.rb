@@ -16,7 +16,7 @@ class TestExclusiveChoice < Test::Unit::TestCase
 
 
   def test_exclusive_choice
-    $wf.replace do
+    $wf.description do
       choose do
         alternative(true) do
           activity :a1_1, :call, :endpoint1
