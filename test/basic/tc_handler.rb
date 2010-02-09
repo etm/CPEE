@@ -25,7 +25,7 @@ class TestCaseHandler < Test::Unit::TestCase
     end
   end
   def test_handlerargs
-    $wf.handlerargs= ("1", "2")
+    $wf.handlerargs  ("1", "2")
     assert($wf.handlerargs.is_a?(Array), "Handler arguments is not an array, it is a #{$wf.handlerargs.inspect}")
   end
 end

@@ -19,24 +19,24 @@ class TestCancellingStructuredPartialJoin < Test::Unit::TestCase
     $wf.replace do
       parallel :wait => 3 do
         parallel_branch do
-          activity :a_1, :call, endpoint1
+          activity :a_1, :call, :endpoint1
         end
         parallel_branch do
-          activity :a_2, :call, endpoint1
+          activity :a_2, :call, :endpoint1
         end
         parallel_branch do
-          activity :a_3, :call, endpoint1
+          activity :a_3, :call, :endpoint1
         end
         parallel_branch do
-          activity :a_4, :call, endpoint1
+          activity :a_4, :call, :endpoint1
         end
         parallel_branch do
-          activity :a_5, :call, endpoint1
+          activity :a_5, :call, :endpoint1
         end
       end
-      activity :a_6, :call, endpoint1
+      activity :a_6, :call, :endpoint1
     end
-    $wf.search = false
+    $wf.search false
     $wf_thread = Thread.new { $wf_result = $wf.start}
     sleep(0.1)
     assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
