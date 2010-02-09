@@ -295,7 +295,10 @@ class Wee
 
     # Get/Set the handler arguments
     def handlerargs=(args)
-      @__wee_handlerargs = args
+      if args.class == Array
+        @__wee_handlerargs = args
+      end
+      nil
     end
     def handlerargs
       @__wee_handlerargs
