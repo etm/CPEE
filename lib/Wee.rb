@@ -27,20 +27,22 @@ class Wee
     end
   end
   class HandlerWrapperBase
-    def inform_activity_done(activity, context); end
-    def inform_activity_manipulate(activity, context); end
-    def inform_activity_failed(activity, context, err); raise(err); end
+    def inform_activity_done(activity); end
+    def inform_activity_manipulate(activity); end
+    def inform_activity_failed(activity, err); raise(err); end
+    def inform_context_change(changed); end
     def inform_workflow_state(newstate); end
   end  
 
   def initialize
-    # Waring: redefined, see wee_initialize
+    # Warning: redefined, see wee_initialize
     # setting default values
     @__wee_search_positions = @__wee_search_positions_original = {}
     @__wee_search = false
     @__wee_stop_positions = Array.new
     @__wee_threads = Array.new
     @__wee_context ||= CHash.new(self)
+    @__wee_context_change = true
     @__wee_endpoints ||= Hash.new
     self.state = :ready
   end
@@ -51,6 +53,7 @@ class Wee
       @__wee_stop_positions = Array.new
       @__wee_threads = Array.new
       @__wee_context ||= CHash.new(self)
+      @__wee_context_change = true
       @__wee_endpoints ||= Hash.new
       initialize_search if methods.include?('initialize_search')
       initialize_context if methods.include?('initialize_context')
@@ -116,30 +119,33 @@ class Wee
     def activity(position, type, endpoint=nil, *parameters)
       return if self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
       handler = @__wee_handler.new handlerargs
+      @__wee_context_change = false
       begin
         case type
           when :manipulate
             if block_given?
-              handler.inform_activity_manipulate position, context
+              handler.inform_activity_manipulate position
               yield
             end  
-            refreshcontext
-            handler.inform_activity_done position, context
+            refreshcontext handler
+            handler.inform_activity_done position
           when :call
             passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
             ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
             if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
-              handler.inform_activity_manipulate position, context
+              handler.inform_activity_manipulate position
               yield ret_value
             end
-            refreshcontext
-            handler.inform_activity_done position, context
+            refreshcontext handler
+            handler.inform_activity_done position
         else
           raise "Invalid activity type #{type}. Only :manipulate or :call allowed"
         end
       rescue => err
-        refreshcontext
-        handler.inform_activity_failed position, context, err
+        refreshcontext handler
+        handler.inform_activity_failed position, err
+      ensure
+        @__wee_context_change = true
       end
     end
     
@@ -263,10 +269,15 @@ class Wee
       @__wee_stop_positions << Wee::SearchPos.new(position, :at, handler.passthrough) if self.state == :stopped
       Thread.current[:nolongernecessary] || self.state == :stopped ? nil : handler.return_value
     end
-    def refreshcontext()
+    def refreshcontext(handler)
+      changed = []
       @__wee_context.each do |varname, value|
-        @__wee_context[varname] = instance_variable_get("@#{varname}".to_sym)
+        if @__wee_context[varname] != instance_variable_get("@#{varname}".to_sym)
+          changed << varname
+          @__wee_context[varname] = instance_variable_get("@#{varname}".to_sym)
+        end  
       end
+      handler.inform_context_change(changed) unless changed.empty?
     end
     def get_matching_search_position(position)
       @__wee_search_positions[position]
@@ -340,7 +351,11 @@ class Wee
       else  
         if new_context.is_a?(Hash) || new_context.is_a?(CHash)
           new_context.each do |name, value|
-            @__wee_context[name.to_s.to_sym] = value
+            if @__wee_context_change # during manipulate (or call block) changing the context is not allowed, changes are only written to instance variables
+              @__wee_context[name.to_s.to_sym] = value
+            else
+              @__wee_context[name.to_s.to_sym] = nil
+            end  
             self.instance_variable_set("@#{name}".to_sym,value)
           end
         end

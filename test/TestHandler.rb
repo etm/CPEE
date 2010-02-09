@@ -68,11 +68,11 @@ class TestHandler < Wee::HandlerWrapperBase
     @__myhandler_stopped = true
   end
   # Is called if a Activity is executed correctly
-  def inform_activity_done(activity, context)
+  def inform_activity_done(activity)
     $message += "Activity #{activity} done\n"
   end
   # Is called if a Activity is executed with an error
-  def inform_activity_failed(activity, context, err)
+  def inform_activity_failed(activity, err)
     $message += "Activity #{activity} failed with error #{err}\n"
     raise(err)
   end

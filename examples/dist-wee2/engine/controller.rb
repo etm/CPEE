@@ -59,7 +59,7 @@ class Controller
         @instance.endpoint e.name.to_s.to_sym => e.text
       end
 
-      @instance.wf_description doc.find("string(/p:properties/p:dsl)")
+      @instance.description doc.find("string(/p:properties/p:dsl)")
     end
     pp @instance
   end
