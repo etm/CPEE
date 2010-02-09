@@ -90,11 +90,10 @@ class Wee
   end
 
   def self::control(flow, &block)
-    @@__wee_control_blocks ||= Array.new
-    @@__wee_control_blocks << block
+    @@__wee_control_block = block
     define_method :__wee_execute do
       self.state = :running
-      @@__wee_control_blocks.each{ |a_block| instance_eval(&a_block)}
+      instance_eval(&(@@__wee_control_block))
       self.state = :finished if self.state == :running
       [self.state, position, context]
     end
