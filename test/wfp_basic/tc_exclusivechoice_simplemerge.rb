@@ -19,15 +19,15 @@ class TestExclusiveChoice < Test::Unit::TestCase
     $wf.replace do
       choose do
         alternative(true) do
-          activity :a1_1, :call, endpoint1
+          activity :a1_1, :call, :endpoint1
         end
         otherwise do
-          activity :a1_2, :call, endpoint1
+          activity :a1_2, :call, :endpoint1
         end
-        activity :a2, :call, endpoint1
+        activity :a2, :call, :endpoint1
       end
     end
-    $wf.search= false
+    $wf.search false
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.02)
     assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");

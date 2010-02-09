@@ -339,7 +339,7 @@ class Wee
       if new_context.nil?
         @__wee_context ? @__wee_context : CHash.new(self)
       else  
-        if new_context.is_a?(Hash)
+        if new_context.is_a?(Hash) || new_context.is_a?(CHash)
           new_context.each do |name, value|
             @__wee_context[name.to_s.to_sym] = value
             self.instance_variable_set("@#{name}".to_sym,value)

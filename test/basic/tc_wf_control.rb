@@ -33,11 +33,11 @@ class TestWorkflowControl < Test::Unit::TestCase
   end
   def test_stop
     $wf.replace do
-      activity :a_test_1_1, :call, endpoint1
-      activity :a_test_1_2, :call, endpoint1
-      activity :a_test_1_3, :call, endpoint1
+      activity :a_test_1_1, :call, :endpoint1
+      activity :a_test_1_2, :call, :endpoint1
+      activity :a_test_1_3, :call, :endpoint1
     end
-    $wf.search=Wee::SearchPos.new(:a_test_1_1, :at)
+    $wf.search Wee::SearchPos.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a_test_1_1";
     sleep(0.1)
@@ -53,17 +53,17 @@ class TestWorkflowControl < Test::Unit::TestCase
   end
   def test_continue
     $wf.replace do
-      activity :a_test_1_1, :call, endpoint1
-      activity :a_test_1_2, :call, endpoint1
-      activity :a_test_1_3, :call, endpoint1
+      activity :a_test_1_1, :call, :endpoint1
+      activity :a_test_1_2, :call, :endpoint1
+      activity :a_test_1_3, :call, :endpoint1
     end
-    $wf.search=Wee::SearchPos.new(:a_test_1_1, :at)
+    $wf.search Wee::SearchPos.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a_test_1_1";
     sleep(0.1)
     $wf.stop
     $wf_thread.join
-    $wf.search=$wf_result[1]
+    $wf.search $wf_result[1]
     $message = "";
     $wf_thread = Thread.new { $wf_result = $wf.start };
     assert($message.include?("Handle call: position=[a_test_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_test_1_2 was not called, see message=[#{$message}]");

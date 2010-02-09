@@ -19,24 +19,24 @@ class TestLocalSynchronizingMerge < Test::Unit::TestCase
     $wf.replace do
       parallel :wait do
         parallel_branch do
-          activity :a1_1, :call, endpoint1
+          activity :a1_1, :call, :endpoint1
         end
         parallel_branch do
           choose do
             alternative(false) do
-              activity :a2_1, :call, endpoint1
+              activity :a2_1, :call, :endpoint1
             end
             otherwise do
               Thread.new() do
-                activity :a2_2, :call, endpoint1
+                activity :a2_2, :call, :endpoint1
               end
             end
           end
         end
       end
-      activity :a3, :call, endpoint1
+      activity :a3, :call, :endpoint1
     end
-    $wf.search= false
+    $wf.search false
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.02)
     assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");

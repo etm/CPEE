@@ -21,13 +21,13 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
         @x = 0
       end
       cycle("@x < 3") do
-        activity :a2, :call, endpoint1 do
+        activity :a2, :call, :endpoint1 do
           @x += 1
         end
       end
-      activity :a3, :call, endpoint1
+      activity :a3, :call, :endpoint1
     end
-    $wf.search= false
+    $wf.search false
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.1)
     assert($message.include?("Handle call: position=[a2]"), "Pos a2 should be called by now, see message=[#{$message}]");
@@ -47,14 +47,14 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
         @x = 0
       end
       cycle("@x < 3") do
-        activity :a2_1, :call, endpoint1
+        activity :a2_1, :call, :endpoint1
         activity :a2_2, :manipulate do
           @x += 1
         end
       end
-      activity :a3, :call, endpoint1
+      activity :a3, :call, :endpoint1
     end
-    $wf.search= Wee::SearchPos.new(:a2_2, :at)
+    $wf.search Wee::SearchPos.new(:a2_2, :at)
     $wf.context({:x => 0})
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.1)
@@ -74,14 +74,14 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
         @x = 0
       end
       cycle("@x < 3") do
-        activity :a2_1, :call, endpoint1
+        activity :a2_1, :call, :endpoint1
         activity :a2_2, :manipulate do
           @x += 1
         end
       end
-      activity :a3, :call, endpoint1
+      activity :a3, :call, :endpoint1
     end
-    $wf.search= Wee::SearchPos.new(:a3, :at)
+    $wf.search Wee::SearchPos.new(:a3, :at)
     $wf.context({:x => 0})
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.1)

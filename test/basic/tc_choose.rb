@@ -32,7 +32,7 @@ class TestChoose < Test::Unit::TestCase
     end
     $wf_thread = Thread.new { $wf_result = $wf.start}
     sleep(0.1)
-    assert($message.include?("Handle call: position=[a_1] passthrough=[], :endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
+    assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
     assert(!$message.include?("Handle call: position=[a_2]"), "Pos a_2 should not have been called, see message=[#{$message}]");
     assert(!$message.include?("Handle call: position=[a_3]"), "Pos a_3 should not have been called, see message=[#{$message}]");
   end

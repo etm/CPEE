@@ -14,36 +14,32 @@ class TestEndpoint < Test::Unit::TestCase
     $wf_thread.join if defined?($wf_thread)
   end
   def test_check_endpoint
-    assert($wf.method(:endpoint1) != nil, "Workflow has no method endpoint1")
-    ep1 = $wf.endpoint1
+    ep1 = $wf.endpoints[:endpoint1]
     assert(ep1.is_a?(String), "Endpoint1 is no string but should be")
     assert(ep1 == "http://www.heise.de", "Endpoint1 has wrong value [#{ep1}]")
   end
   def test_create_endpoint
     $wf.endpoint :endpoint2 => "http://www.test.at"
-    assert($wf.method(:endpoint2) != nil, "Workflow has no method endpoint1")
-    ep2 = $wf.endpoint2
+    ep2 = $wf.endpoints[:endpoint2]
     assert(ep2.is_a?(String), "Endpoint1 is no string but should be")
     assert(ep2 == "http://www.test.at", "Endpoint1 has wrong value [#{ep2}]")
   end
   def test_change_endpoint
     $wf.endpoint :endpoint1 => "http://www.newpoint.com"
-    assert($wf.method(:endpoint1) != nil, "Workflow has no method endpoint1")
-    ep1 = $wf.endpoint1
+    ep1 = $wf.endpoints[:endpoint1]
     assert(ep1.is_a?(String), "Endpoint1 is no string but should be")
     assert(ep1 == "http://www.newpoint.com", "Endpoint1 has wrong value [#{ep1}]")
   end
   def test_change_endpoint2
-    $wf.endpoint1 = "http://www.newpoint2.com"
-    assert($wf.method(:endpoint1) != nil, "Workflow has no method endpoint1")
-    ep1 = $wf.endpoint1
+    $wf.endpoints[:endpoint1] = "http://www.newpoint2.com"
+    ep1 = $wf.endpoints[:endpoint1]
     assert(ep1.is_a?(String), "Endpoint1 is no string but should be")
     assert(ep1 == "http://www.newpoint2.com", "Endpoint1 has wrong value [#{ep1}]")
   end
 
   def test_endpoints
     $wf.endpoint :endpoint2 => "http://www.test.at" # asure that there is endpoint1 & endpoint2
-    $wf.endpoint1="http://www.test2.com" # asure that ep1 has original value
+    $wf.endpoints[:endpoint1]="http://www.test2.com" # asure that ep1 has original value
     eps = $wf.endpoints
     assert(eps.is_a?(Hash), "Endpoints should result a Hash but returns a #{eps.class}")
     assert(eps.size == 2, "Endpoints should have two entries: #{eps.inspect}")

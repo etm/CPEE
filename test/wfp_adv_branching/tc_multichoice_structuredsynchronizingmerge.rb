@@ -20,15 +20,15 @@ class TestMultiChoice < Test::Unit::TestCase
       context :x => 1
       choose do
         alternative(@x == 1) do
-          activity :a1_1, :call, endpoint1
+          activity :a1_1, :call, :endpoint1
         end
         alternative(@x > 0) do
-          activity :a1_2, :call, endpoint1
+          activity :a1_2, :call, :endpoint1
         end
       end
-      activity :a2, :call, endpoint1
+      activity :a2, :call, :endpoint1
     end
-    $wf.search= false
+    $wf.search false
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.02)
     assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");
@@ -51,19 +51,19 @@ class TestMultiChoice < Test::Unit::TestCase
         choose do
           parallel_branch do
             alternative(@x == 1) do
-              activity :a1_1, :call, endpoint1
+              activity :a1_1, :call, :endpoint1
             end
           end
           parallel_branch do
             alternative(@x > 0) do
-              activity :a1_2, :call, endpoint1
+              activity :a1_2, :call, :endpoint1
             end
           end
         end
       end
-      activity :a2, :call, endpoint1
+      activity :a2, :call, :endpoint1
     end
-    $wf.search= false
+    $wf.search false
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.02)
     assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");

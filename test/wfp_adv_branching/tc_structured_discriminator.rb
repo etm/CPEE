@@ -20,15 +20,15 @@ class TestStructuredDiscriminator < Test::Unit::TestCase
     $wf.replace do
       parallel :wait => 1 do
         parallel_branch do
-          activity :a_1_1, :call, endpoint1
+          activity :a_1_1, :call, :endpoint1
         end
         parallel_branch do
-          activity :a_1_2, :call, endpoint1
+          activity :a_1_2, :call, :endpoint1
         end
       end
-      activity :a_2, :call, endpoint1
+      activity :a_2, :call, :endpoint1
     end
-    $wf.search= false
+    $wf.search false
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.02)
     assert($message.include?("Handle call: position=[a_1_1]"), "Pos a_1_1 should be called by now, see message=[#{$message}]");

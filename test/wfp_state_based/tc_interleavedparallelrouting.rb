@@ -22,20 +22,20 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
       parallel do
         parallel_branch do
           critical(:section1) do
-            activity :a1, :call, endpoint1
+            activity :a1, :call, :endpoint1
           end
           critical(:section1) do
-            activity :a3, :call, endpoint1
+            activity :a3, :call, :endpoint1
           end
         end
         parallel_branch do
           critical(:section1) do
-            activity :a2, :call, endpoint1
+            activity :a2, :call, :endpoint1
           end
         end
       end
     end
-    $wf.search= false
+    $wf.search false
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.2)
     assert($message.include?("Handle call: position=[a1]"), "Pos a1 should be called by now, see message=[#{$message}]");

@@ -24,7 +24,7 @@ class TestSearch < Test::Unit::TestCase
     assert(search[0].passthrough == nil, "SearchPosition has wrong passthrough value")
   end
   def test_set_search
-    $wf.search = [Wee::SearchPos.new(:a2_1_1, :at, 'test1'), Wee::SearchPos.new(:a2_1_1, :at, 'test2')]
+    $wf.search [Wee::SearchPos.new(:a2_1_1, :at, 'test1'), Wee::SearchPos.new(:a2_1_1, :at, 'test2')]
     search = $wf.search_positions
     assert(search.is_a?(Array), "Search is not a Array, it is: #{search}")
     assert(search.size == 2, "Search does not have exectly 2 entries, it has #{search.size}")
@@ -36,7 +36,7 @@ class TestSearch < Test::Unit::TestCase
     assert(search[1].passthrough == "test2", "SearchPosition[1] has wrong passthrough value")
   end
   def test_set_search_false
-    $wf.search = false
+    $wf.search false
     search = $wf.search_positions
     assert(search.is_a?(Array), "Search is not a Array, it is: #{search}")
     assert(search.size == 0, "Search does not have exectly 0 entries, it has #{search.size}")
@@ -44,11 +44,11 @@ class TestSearch < Test::Unit::TestCase
   end
   def test_search_impact_single
     $wf.replace do
-      activity :a1_1, :call, endpoint1
-      activity :a1_2, :call, endpoint1
-      activity :a1_3, :call, endpoint1
+      activity :a1_1, :call, :endpoint1
+      activity :a1_2, :call, :endpoint1
+      activity :a1_3, :call, :endpoint1
     end
-    $wf.search= Wee::SearchPos.new(:a1_2, :at)
+    $wf.search Wee::SearchPos.new(:a1_2, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a1_1";
     $released +="release a1_2";
@@ -60,18 +60,18 @@ class TestSearch < Test::Unit::TestCase
   end
   def test_search_impact_dual
     $wf.replace do
-      activity :a1, :call, endpoint1
+      activity :a1, :call, :endpoint1
       parallel do
         parallel_branch do
-          activity :a2_1, :call, endpoint1
+          activity :a2_1, :call, :endpoint1
         end
         parallel_branch do
-          activity :a2_2, :call, endpoint1
+          activity :a2_2, :call, :endpoint1
         end
       end
-      activity :a3, :call, endpoint1
+      activity :a3, :call, :endpoint1
     end
-    $wf.search= [Wee::SearchPos.new(:a2_1, :at), Wee::SearchPos.new(:a2_2, :at)]
+    $wf.search [Wee::SearchPos.new(:a2_1, :at), Wee::SearchPos.new(:a2_2, :at)]
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a1";
     $released +="release a2_1";

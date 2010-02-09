@@ -19,15 +19,15 @@ class TestParallel < Test::Unit::TestCase
     $wf.replace do
       parallel :wait do
         parallel_branch do
-          activity :a1_1, :call, endpoint1
+          activity :a1_1, :call, :endpoint1
         end
         parallel_branch do
-          activity :a1_2, :call, endpoint1
+          activity :a1_2, :call, :endpoint1
         end
       end
-      activity :a2, :call, endpoint1
+      activity :a2, :call, :endpoint1
     end
-    $wf.search= false
+    $wf.search false
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a1_1";
     sleep(0.02)

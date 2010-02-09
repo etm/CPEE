@@ -17,11 +17,11 @@ class TestSequence < Test::Unit::TestCase
 
   def test_sequence
     $wf.replace do
-      activity :a1_1, :call, endpoint1
-      activity :a1_2, :call, endpoint1
-      activity :a1_3, :call, endpoint1
+      activity :a1_1, :call, :endpoint1
+      activity :a1_2, :call, :endpoint1
+      activity :a1_3, :call, :endpoint1
     end
-    $wf.search= false
+    $wf.search false
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a1_1";
     sleep(0.02)
