@@ -294,7 +294,7 @@ class Wee
     end
 
     # Get/Set the handler arguments
-    def handlerargs=(*args)
+    def handlerargs=(args)
       @__wee_handlerargs = args
     end
     def handlerargs
