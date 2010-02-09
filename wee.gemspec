@@ -10,13 +10,13 @@ Write useful stuff.
 Also see http://www.pri.univie.ac.at/workgroups/wee/.
 EOF
 
-  s.files            = Dir['{lib/*,example/*}'] + %w(COPYING Rakefile wee.gemspec README AUTHORS)
+  s.files            = Dir['{lib/*,example/simple/*}'] + %w(COPYING Rakefile wee.gemspec README AUTHORS)
   s.require_path     = 'lib'
   s.has_rdoc         = false
   s.extra_rdoc_files = ['README']
-  s.test_files       = Dir['test/{test,spec}_*.rb']
+  s.test_files       = Dir['test/*/tc_*.rb']
 
-  s.author           = 'Gerhard Stuermer, Juergen eTM Mangler'
+  s.authors          = ['Gerhard Stuermer, Juergen eTM Mangler']
   s.email            = 'juergen.mangler@gmail.com'
   s.homepage         = 'http://www.pri.univie.ac.at/workgroups/wee/'
 

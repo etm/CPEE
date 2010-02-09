@@ -1,20 +1,17 @@
-# 
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
-# 
-
 require 'rake'
+require 'rake/gempackagetask'
 require 'rake/testtask'
 require 'rake/rdoctask'
 
 Rake::TestTask.new do |t|
-    t.libs << "test"
-    t.test_files = FileList['test/basic/tc_*.rb', 
-                            'test/wfp_basic/tc_*.rb',
-                            'test/wfp_iteration/tc_*.rb',
-                            'test/wfp_state_based/tc_*.rb',
-                            'test/wfp_adv_branching/tc_*.rb']
-#   t.verbose = true
-  end
+  t.libs << "test"
+  t.test_files = FileList['test/*/tc_*.rb']
+  t.verbose = false
+end
 
+spec = eval(File.read('wee.gemspec'))
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.need_zip = true
+  pkg.need_tar = true
+end
 
