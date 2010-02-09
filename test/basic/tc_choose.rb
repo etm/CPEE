@@ -51,7 +51,7 @@ class TestChoose < Test::Unit::TestCase
     end
     $wf_thread = Thread.new { $wf_result = $wf.start}
     sleep(0.1)
-    assert($message.include?("Handle call: position=[a_2] passthrough=[], :endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
+    assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
     assert(!$message.include?("Handle call: position=[a_1]"), "Pos a_1 should not have been called, see message=[#{$message}]");
   end
 
@@ -86,7 +86,7 @@ class TestChoose < Test::Unit::TestCase
     end
     $wf_thread = Thread.new { $wf_result = $wf.start}
     sleep(0.1)
-    assert($message.include?("Handle call: position=[a_1_1_2] passthrough=[], :endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1_1_2 was not called, see message=[#{$message}]");
+    assert($message.include?("Handle call: position=[a_1_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1_1_2 was not called, see message=[#{$message}]");
     assert(!$message.include?("Handle call: position=[a_1_1]"), "Pos a_1_1 should not have been called, see message=[#{$message}]");
     assert(!$message.include?("Handle call: position=[a_1_1_1]"), "Pos a_1_1_1 should not have been called, see message=[#{$message}]");
     assert(!$message.include?("Handle call: position=[a_1_3]"), "Pos a_1_3 should not have been called, see message=[#{$message}]");

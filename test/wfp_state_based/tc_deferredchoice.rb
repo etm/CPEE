@@ -19,22 +19,22 @@ class TestDeferredChoice < Test::Unit::TestCase
     $wf.replace do
       parallel :wait=>1 do
         parallel_branch do
-          activity :a1_1, :call, endpoint1 do
+          activity :a1_1, :call, :endpoint1 do
             context :choice => 1
           end
         end
         parallel_branch do
-          activity :a1_2, :call, endpoint1 do
+          activity :a1_2, :call, :endpoint1 do
             context :choice => 2
           end
         end
       end
       choose do
         alternative(@choice == 1) do
-          activity :a2_1, :call, endpoint1
+          activity :a2_1, :call, :endpoint1
         end
         alternative(@choice == 2) do
-          activity :a2_2, :call, endpoint1
+          activity :a2_2, :call, :endpoint1
         end
       end
     end
@@ -42,7 +42,7 @@ class TestDeferredChoice < Test::Unit::TestCase
     $wf_thread = Thread.new { $wf_result = $wf.start };
     sleep(0.02)
     assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a1_2]"), "Pos a1_1 should be called by now, see message=[#{$message}]");
+    assert($message.include?("Handle call: position=[a1_2]"), "Pos a1_2 should be called by now, see message=[#{$message}]");
     $released +="release a1_1";
     sleep(0.02)
     assert($message.include?("Activity a1_1 done"), "pos a1_1 not properly ended, see $message=#{$message}");
