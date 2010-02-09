@@ -1,0 +1,13 @@
+#!/usr/bin/ruby
+require '../../../../riddl/lib/ruby/client'
+
+srv = Riddl::Client.new("http://localhost:9292/")
+
+# === Generate Wee-Instances
+main = srv.resource("/1/notifications/subscriptions")
+
+status, res = main.post [
+  Riddl::Parameter::Simple.new("url","http://test.org"),
+  Riddl::Parameter::Simple.new("topic","monitoring"),
+  Riddl::Parameter::Simple.new("event","activity_request,activity_done")
+]
