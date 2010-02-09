@@ -14,7 +14,7 @@ Rake::TestTask.new do |t|
                             'test/wfp_iteration/tc_*.rb',
                             'test/wfp_state_based/tc_*.rb',
                             'test/wfp_adv_branching/tc_*.rb']
-#    t.verbose = true
+#   t.verbose = true
   end
 
 
