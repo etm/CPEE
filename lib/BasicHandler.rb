@@ -57,16 +57,16 @@ class BasicHandler < Wee::HandlerWrapperBase
     @__basichandler_stopped = true
   end
   # Is called if a Activity is executed correctly
-  def inform_activity_done(activity, context)
+  def inform_activity_done(activity)
     $LOG.info('BasicHandler.inform_activity_done'){"Activity #{activity} done"}
   end
   # Is called before the results of a call are manipulated
-  def inform_activity_manipulate(activity, context)
+  def inform_activity_manipulate(activity)
     $LOG.info('BasicHandler.inform_activity_manipulate'){"Activity #{activity} manipulating"}
     raise(err)
   end
   # Is called if a Activity is executed with an error
-  def inform_activity_failed(activity, context, err)
+  def inform_activity_failed(activity, err)
     $LOG.error('BasicHandler.inform_activity_failed'){"Activity #{activity} failed with error #{err}"}
     raise(err)
   end
