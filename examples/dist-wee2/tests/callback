@@ -1,0 +1,10 @@
+#!/usr/bin/ruby
+require '../../../../riddl/lib/ruby/client'
+
+srv = Riddl::Client.new("http://localhost:9292/")
+
+main = srv.resource("/1/callbacks/864105b335185a6d48d51b65facb93de")
+
+status, res = main.put [ 
+  Riddl::Parameter::Simple.new("a","27")
+]
