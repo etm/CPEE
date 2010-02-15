@@ -103,7 +103,6 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{
 
   def read
     id = ::File::basename(::File::dirname(@properties))
-    $controller[id].serialize!
   end
 
   def create; sync; end

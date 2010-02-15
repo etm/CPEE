@@ -4,8 +4,7 @@ require 'xml/smart'
 class Controller
   def initialize(id)
     @properties = ::File.dirname(__FILE__) + '/../instances/' + id  + '/properties.xml'
-    @instance = EmptyWorkflow.new
-    @instance.handlerargs = id
+    @instance = EmptyWorkflow.new(id)
     self.unserialize!
     @thread = nil
     @result = nil
@@ -61,7 +60,6 @@ class Controller
 
       @instance.description doc.find("string(/p:properties/p:dsl)")
     end
-    pp @instance
   end
 
   attr_reader :result

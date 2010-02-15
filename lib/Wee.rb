@@ -29,14 +29,13 @@ class Wee
   class HandlerWrapperBase
     def inform_activity_done(activity); end
     def inform_activity_manipulate(activity); end
-    def inform_activity_failed(activity, err); raise(err); end
+    def inform_activity_failed(activity, err); end
+    def inform_syntax_error(err); end
     def inform_context_change(changed); end
-    def inform_workflow_state(newstate); end
+    def inform_state(newstate); end
   end  
 
-  def initialize
-    # Warning: redefined, see wee_initialize
-    # setting default values
+  def initialize(*handlerargs)
     @__wee_search_positions = @__wee_search_positions_original = {}
     @__wee_search = false
     @__wee_stop_positions = Array.new
@@ -44,30 +43,21 @@ class Wee
     @__wee_context ||= CHash.new(self)
     @__wee_context_change = true
     @__wee_endpoints ||= Hash.new
+      
+    initialize_search if methods.include?('initialize_search')
+    initialize_context if methods.include?('initialize_context')
+    initialize_endpoints if methods.include?('initialize_endpoints')
+    initialize_handler if methods.include?('initialize_handler')
+    
+    @__wee_handlerargs = handlerargs
+
     self.state = :ready
-  end
-  def self::wee_initialize
-    define_method :initialize do
-      @__wee_search_positions = @__wee_search_positions_original = {}
-      @__wee_search = false
-      @__wee_stop_positions = Array.new
-      @__wee_threads = Array.new
-      @__wee_context ||= CHash.new(self)
-      @__wee_context_change = true
-      @__wee_endpoints ||= Hash.new
-      initialize_search if methods.include?('initialize_search')
-      initialize_context if methods.include?('initialize_context')
-      initialize_endpoints if methods.include?('initialize_endpoints')
-      initialize_handler if methods.include?('initialize_handler')
-      self.state = :ready
-    end
   end
 
   def self::search(wee_search)
     define_method :initialize_search do 
       self.search wee_search
     end
-    wee_initialize
   end
 
   def self::endpoint(endpoints)
@@ -84,12 +74,13 @@ class Wee
     define_method :initialize_context do
       @@__wee_new_context_variables.each { |item| self.context item }
     end
-    wee_initialize
   end
 
   def self::handler(aClassname, *args)
-    define_method :initialize_handler do self.handler=aClassname; self.handlerargs=args; end
-    wee_initialize
+    define_method :initialize_handler do 
+      self.handler = aClassname
+      self.handlerargs = args
+    end
   end
 
   def self::control(flow, &block)
@@ -98,7 +89,7 @@ class Wee
       self.state = :running
       instance_eval(&(@@__wee_control_block))
       self.state = :finished if self.state == :running
-      [self.state, position, context]
+      [@__wee_state, position, context]
     end
   end
 
@@ -118,7 +109,7 @@ class Wee
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters)
       return if self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
-      handler = @__wee_handler.new handlerargs
+      handler = @__wee_handler.new @__wee_handlerargs
       @__wee_context_change = false
       begin
         case type
@@ -132,7 +123,7 @@ class Wee
           when :call
             passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
             ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
-            if block_given? && self.state != :stopped && !Thread.current[:nolongernecessary]
+            if block_given? && @__wee_state != :stopped && !Thread.current[:nolongernecessary]
               handler.inform_activity_manipulate position
               yield ret_value
             end
@@ -144,6 +135,7 @@ class Wee
       rescue => err
         refreshcontext handler
         handler.inform_activity_failed position, err
+        self.state = :stopped
       ensure
         @__wee_context_change = true
       end
@@ -284,11 +276,11 @@ class Wee
     end
 
     def state=(newState)
-      @__wee_stop_positions = Array.new if self.state != newState
+      @__wee_stop_positions = Array.new if @__wee_state != newState
       self.search @__wee_search_positions_original
       @__wee_state = newState
-      handler = @__wee_handler.new(handlerargs)
-      handler.inform_workflow_state newState
+      handler = @__wee_handler.new @__wee_handlerargs
+      handler.inform_state newState
     end
 
   public
@@ -316,7 +308,7 @@ class Wee
 
     # Get the state of execution (ready|running|stopped|finished)
     def state
-      @__wee_state || :ready
+      @__wee_state
     end
 
     # Set search positions
@@ -385,14 +377,22 @@ class Wee
       else
         unless block_given?
           @__wee_wfsource = code
-          blk = Proc.new{instance_eval(@__wee_wfsource)}
+          blk = Proc.new do
+            begin 
+              instance_eval(@__wee_wfsource)
+            rescue SyntaxError => err
+              self.state = :stopped
+              handler = @__wee_handler.new @__wee_handlerargs
+              handler.inform_syntax_error(err)
+            end
+          end
         end
         (class << self; self; end).class_eval do
           define_method :__wee_execute do
             self.state = :running
             instance_eval(&blk)
             self.state = :finished if self.state == :running
-            [self.state, position, context]
+            [@__wee_state, position, context]
           end
         end
         blk  

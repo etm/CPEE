@@ -45,4 +45,25 @@ class Handler < Wee::HandlerWrapperBase
   def no_longer_necessary
     @__basichandler_stopped = true
   end
+
+  def inform_activity_done(activity)
+    p "inform_activity_done #{activity}"
+  end
+  def inform_activity_manipulate(activity)
+    p "inform_activity_manipulate #{activity}"
+  end
+  def inform_activity_failed(activity, err)
+    p"inform_activity_failed #{err}"
+  end
+  def inform_syntax_error(err)
+    p"inform_activity_failed #{err}"
+  end
+  def inform_context_change(changed)
+    $controller[@instance].serialize!
+    p "inform_context_change #{changed}"
+  end
+  def inform_state(newstate)
+    $controller[@instance].serialize! if $controller[@instance]
+    p "inform_state #{newstate}"
+  end
 end
