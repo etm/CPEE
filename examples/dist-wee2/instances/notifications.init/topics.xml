@@ -1,4 +1,4 @@
-<topics xmlns='http://riddl.org/ns/common-patterns/notification-producer/1.0'>
+<topics xmlns='http://riddl.org/ns/common-patterns/notifications-producer/1.0'>
   <topic id='monitoring'>
     <event>activity_call</event>
     <event>activity_manipulate</event>
