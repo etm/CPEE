@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 require '../../../../riddl/lib/ruby/client'
 
-srv = Riddl::Client.new("http://localhost:9292/")
+srv = Riddl::Client.new("http://localhost:9298/")
 
 main = srv.resource("/1/callbacks/864105b335185a6d48d51b65facb93de")
 

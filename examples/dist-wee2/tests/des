@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 require '../../../../riddl/lib/ruby/client'
 
-srv = Riddl::Client.new("http://localhost:9292/")
+srv = Riddl::Client.new("http://localhost:9298/")
 
 # === Generate Wee-Instances
 main = srv.resource("/1/properties/values/description")
@@ -11,25 +11,25 @@ status, res = main.put [
     activity :a1_1, :call, :timeout, :method => 'post', :parameters => [ { :timeout => 2 } ] do |result|
       @x += result.inspect
     end
-#    parallel :wait => 2 do
-#      parallel_branch do
-#        activity :a2_1_1, :call, :timeout
-#      end
-#      parallel_branch do
-#        activity :a2_2_1, :call, :timeout
-#      end
-#    end
-#    activity :a3, :manipulate do
-#      @x += '_end'
-#    end
-#    choose do
-#      alternative(@x != nil) do
-#        activity :a4a, :call, :timeout
-#      end
-#      otherwise do
-#        activity :a4b, :call, :timeout
-#      end
-#    end
+    parallel :wait => 2 do
+      parallel_branch do
+        activity :a2_1_1, :call, :timeout, :method => 'post', :parameters => [ { :timeout => 2 } ]
+      end
+      parallel_branch do
+        activity :a2_2_1, :call, :timeout, :method => 'post', :parameters => [ { :timeout => 2 } ]
+      end
+    end
+    activity :a3, :manipulate do
+      @x += '_end'
+    end
+    choose do
+      alternative(@x != nil) do
+        activity :a4a, :call, :timeout, :method => 'post', :parameters => [ { :timeout => 2 } ]
+      end
+      otherwise do
+        activity :a4b, :call, :timeout, :method => 'post', :parameters => [ { :timeout => 2 } ]
+      end
+    end
   END
   )
 ]
