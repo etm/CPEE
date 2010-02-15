@@ -391,7 +391,8 @@ class Wee
           define_method :__wee_execute do
             self.state = :running
             instance_eval(&blk)
-            self.state = :finished if self.state == :running
+            # TODO finished
+            self.state = :ready if self.state == :running
             [@__wee_state, position, context]
           end
         end

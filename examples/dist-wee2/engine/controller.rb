@@ -3,18 +3,21 @@ require 'xml/smart'
 
 class Controller
   def initialize(id)
-    @properties = ::File.dirname(__FILE__) + '/../instances/' + id  + '/properties.xml'
+    @directory = ::File.dirname(__FILE__) + "/../instances/#{id}/"
+    @handlers = {}
+    @callbacks = {}
     @instance = EmptyWorkflow.new(id)
     self.unserialize!
     @thread = nil
-    @result = nil
   end
+
+  attr_reader :callbacks
 
   def start
     Thread.abort_on_exception = true
     @thread = Thread.new do
       Thread.current.abort_on_exception = true
-      @result = @instance.start
+      @instance.start
     end
   end
 
@@ -25,7 +28,7 @@ class Controller
   end
 
   def serialize!
-    XML::Smart::modify(@properties) do |doc|
+    XML::Smart::modify(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
       
       node = doc.find("/p:properties/p:context-variables").first
@@ -34,18 +37,25 @@ class Controller
         node.add(k.to_s,v.to_s)
       end
 
-      node = doc.find("/p:properties/p:endpoints").first
-      node.children.delete_all!
-      @instance.endpoints.each do |k,v|
-        node.add(k.to_s,v.to_s)
-      end
-
       node = doc.find("/p:properties/p:state").first
       node.text = @instance.state
     end 
   end
   def unserialize!
-    XML::Smart::open(@properties) do |doc|
+    Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
+      XML::Smart::open(sub) do |doc|
+        key = ::File::basename(::File::dirname(sub))
+        doc.namespaces = { 'n' => 'http://riddl.org/ns/common-patterns/notifications-producer/1.0' }
+        url = doc.find('string(/n:subscription/@url)')
+        doc.find('/n:subscription/n:topic').each do |t|
+          t.find('n:event').each do |e|
+            @handlers["#{t.attributes['id']}/#{e}"] ||= {}
+            @handlers["#{t.attributes['id']}/#{e}"][key] = url
+          end
+        end
+      end
+    end
+    XML::Smart::open(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
 
       @instance.context.clear
@@ -62,5 +72,29 @@ class Controller
     end
   end
 
-  attr_reader :result
+  def notify(what,content={})
+    if @handlers[what]
+      @handlers[what].each do |key,url|
+        topic        = ::File::dirname(what)
+        event        = ::File::basename(what)
+        notification = []
+        cid          = -1
+        fp           = ''
+
+        content.each do |k,v|
+          notification << "#{k}: #{v.inspect}" 
+        end
+
+        client = Riddl::Client.new(url)
+        client.post [
+          Riddl::Parameter::Simple.new("key",key),
+          Riddl::Parameter::Simple.new("topic",topic),
+          Riddl::Parameter::Simple.new("event",event),
+          Riddl::Parameter::Simple.new("notification",notification.join('; ')),
+          Riddl::Parameter::Simple.new("consumer-id",cid),
+          Riddl::Parameter::Simple.new("fingerprint-with-consumer-secret",fp)
+        ]
+      end
+    end
+  end
 end

@@ -2,8 +2,29 @@ require ::File.dirname(__FILE__) + '/controller'
 
 $controller = {}
 Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.each do |id|
-  $controller[id] = Controller.new(id)
+  $controller[id.to_i] = Controller.new(id)
 end
+
+class Callback #{{{
+  def initialize(handler)
+    @handler = handler
+  end
+
+  def callback(result)
+    @handler.callback(result)
+  end
+end #}}}
+
+class ExCallback < Riddl::Implementation #{{{
+  def response
+    id = @r[0]  
+    callback = @r[2]
+    p id
+    p callback
+    $controller[id.to_i].callbacks[callback].callback(@p)
+    $controller[id.to_i].callbacks.delete(callback)
+  end
+end #}}}
 
 class Instances < Riddl::Implementation #{{{
   def response
@@ -30,7 +51,7 @@ class NewInstance < Riddl::Implementation #{{{
       doc.find("/p:properties/p:name",{'p'=>'http://riddl.org/ns/common-patterns/properties/1.0'}).first.text = name
     end
 
-    # $controller[id] = Controller.new(id)
+    $controller[id.to_i] = Controller.new(id)
 
     Riddl::Parameter::Simple.new("id", id)
   end
@@ -63,11 +84,11 @@ class DeleteInstance < Riddl::Implementation #{{{
       return
     end
     FileUtils.rm_r("instances/#{@r[0]}")
-    # $controller.delete(@r[0])
+    $controller.delete(@r[0])
   end
 end #}}}
 
-class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{
+class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
   def sync
     if @property == 'description'
       XML::Smart::modify(@properties) do |doc|
@@ -84,21 +105,27 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{
         end
       end
     end  
-    id = ::File::basename(::File::dirname(@properties))
+    id = ::File::basename(::File::dirname(@properties)).to_i
     if @property == 'state'
       XML::Smart::open(@properties) do |doc|
         doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
         state = doc.find("string(/p:properties/p:state)")
         if state == 'stopped'
-          $controller[id].stop
+          $controller[id.to_i].stop
         end
         if state == 'running'
-          $controller[id].start
+          $controller[id.to_i].start
         end
       end
     else
-      $controller[id].unserialize!
+      $controller[id.to_i].unserialize!
     end
+    case @property
+      when 'description'
+        $controller[id.to_i].notify('properties/description/change')
+      when 'endpoints'
+        $controller[id.to_i].notify('properties/endpoints/change')
+    end  
   end
 
   def read
@@ -110,11 +137,11 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{
   def delete; sync; end
 end #}}}
 
-class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase #{{
+class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase #{{{
   def sync
-    p @notifications
-    p @key
-    p @topics
+    id = ::File::basename(::File::dirname(@notifications)).to_i
+    $controller[id.to_i].unserialize!
+    $controller[id.to_i].notify('properties/handlers/change')
   end
 
   def create; sync; end

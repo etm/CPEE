@@ -3,6 +3,6 @@ require '../../../../riddl/lib/ruby/client'
 
 srv = Riddl::Client.new("http://localhost:9292/")
 
-main = srv.resource("/1/properties/values/endpoints/timeout")
+main = srv.resource("/1/properties/values/endpoints/timeouter")
 
 status, res = main.delete

@@ -34,10 +34,10 @@
     <resource>
       <get in="*" out="instance-info"/>
       <delete in="*"/>
-    </resource>
-    <resource relative="callbacks">
-      <resource>
-        <put in="*"/>
+      <resource relative="callbacks">
+        <resource>
+          <put in="*"/>
+        </resource>
       </resource>
     </resource>
   </resource>

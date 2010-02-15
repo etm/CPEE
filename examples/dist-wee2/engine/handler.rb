@@ -1,6 +1,6 @@
 class Handler < Wee::HandlerWrapperBase
   def initialize(arguments)
-    @instance = arguments[0]    
+    @instance = arguments[0].to_i
     @__basichandler_stopped = false
     @__basichandler_finished = false
     @__basichandler_returnValue = nil
@@ -8,11 +8,55 @@ class Handler < Wee::HandlerWrapperBase
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
-  def handle_call(position, passthrough, endpoint, *parameters)
-    sleep(0.6)
-    return if @__basichandler_stopped
+  def handle_call(position, passthrough, endpoint, parameters)
+    $controller[@instance].notify("monitoring/activity_call", :activity => position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
+    begin
+
+    client = Riddl::Client.new(endpoint,::File.dirname(__FILE__) + '/endpoint.xml')
+
+    params = []
+    callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+    (parameters[:parameters] || {}).each do |h|
+      if h.class == Hash
+        h.each do |k,v|
+          params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
+        end  
+      end  
+    end
+    params << Riddl::Header.new("WEE_CALLBACK",callback)
+
+    type = parameters[:method] || 'post'
+    status, result = client.request type => params
+
+    raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
+
     @__basichandler_finished = true
-    @__basichandler_returnValue = 'Handler_Dummy_Result'
+    @__basichandler_returnValue = ''
+    if result.find{ |r| r.class == Riddl::Header && r.name == "WEE_CALLBACK" && r.value == "true" }
+      $controller[@instance].callbacks[callback] = Callback.new(self)
+      @__basichandler_finished = false
+      return
+    end
+
+
+    result.each do |r|
+      if r.class == Riddl::Parameter::Complex
+        @__basichandler_finished = true
+        @__basichandler_returnValue = result
+      end
+    end
+    
+    rescue => e
+      p e
+      puts e.backtrace
+
+    end
+
+  end
+
+  def callback(result)
+    @__basichandler_returnValue = result
+    @__basichandler_finished = true
   end
  
   # returns true if the last handled call has finished processing, or the
@@ -47,23 +91,25 @@ class Handler < Wee::HandlerWrapperBase
   end
 
   def inform_activity_done(activity)
-    p "inform_activity_done #{activity}"
+    $controller[@instance].notify("monitoring/activity_done", :activity => activity)
   end
   def inform_activity_manipulate(activity)
-    p "inform_activity_manipulate #{activity}"
+    $controller[@instance].notify("monitoring/activity_manipulate", :activity => activity)
   end
   def inform_activity_failed(activity, err)
-    p"inform_activity_failed #{err}"
+    $controller[@instance].notify("monitoring/activity_failed", :activity => activity, :message => err.message)
   end
   def inform_syntax_error(err)
-    p"inform_activity_failed #{err}"
+    $controller[@instance].notify("properties/description/error", :message => err.message)
   end
   def inform_context_change(changed)
     $controller[@instance].serialize!
-    p "inform_context_change #{changed}"
+    $controller[@instance].notify("properties/context-variables/change", :changed => changed)
   end
   def inform_state(newstate)
-    $controller[@instance].serialize! if $controller[@instance]
-    p "inform_state #{newstate}"
+    if $controller[@instance]
+      $controller[@instance].serialize!
+      $controller[@instance].notify("properties/state/change", :state => newstate)
+    end
   end
 end

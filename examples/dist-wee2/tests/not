@@ -7,7 +7,17 @@ srv = Riddl::Client.new("http://localhost:9292/")
 main = srv.resource("/1/notifications/subscriptions")
 
 status, res = main.post [
-  Riddl::Parameter::Simple.new("url","http://test.org"),
-  Riddl::Parameter::Simple.new("topic","monitoring"),
-  Riddl::Parameter::Simple.new("event","activity_request,activity_done")
+  Riddl::Parameter::Simple.new("url","http://www.pri.univie.ac.at/~mangler/monitor.php"),
+  Riddl::Parameter::Simple.new("topic",'monitoring'),
+  Riddl::Parameter::Simple.new("event","activity_call,activity_manipulate,activity_done,activity_failed"),
+  Riddl::Parameter::Simple.new("topic",'properties/description'),
+  Riddl::Parameter::Simple.new("event","change,error"),
+  Riddl::Parameter::Simple.new("topic",'properties/state'),
+  Riddl::Parameter::Simple.new("event","change"),
+  Riddl::Parameter::Simple.new("topic",'properties/context-variables'),
+  Riddl::Parameter::Simple.new("event","change"),
+  Riddl::Parameter::Simple.new("topic",'properties/endpoints'),
+  Riddl::Parameter::Simple.new("event","change"),
+  Riddl::Parameter::Simple.new("topic",'properties/handlers'),
+  Riddl::Parameter::Simple.new("event","change")
 ]

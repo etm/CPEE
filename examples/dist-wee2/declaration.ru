@@ -2,6 +2,7 @@
 require 'pp'
 require 'fileutils'
 require '../../../riddl/lib/ruby/server'
+require '../../../riddl/lib/ruby/client'
 require '../../../riddl/lib/ruby/utils/notifications_producer'
 require '../../../riddl/lib/ruby/utils/properties'
 require '../../../riddl/lib/ruby/utils/fileserve'
@@ -38,11 +39,16 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
       on resource 'notifications' do |r|
         ndir = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/notifications/'
         use Riddl::Utils::Notifications::Producer::implementation(ndir,xsls, NotificationsHandler)
-    end
+      end
+      on resource 'callbacks' do
+        on resource do
+          run ExCallback if put
+        end  
+      end  
     end  
     on resource 'xsls' do
       on resource do
-        run Riddl::Utils::FileServe, "xsls"  if get
+        run Riddl::Utils::FileServe, "xsls" if get
       end  
     end  
   end
