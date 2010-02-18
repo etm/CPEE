@@ -19,7 +19,7 @@ class TestCodeReplace < Test::Unit::TestCase
       activity :a_test_1_2, :call, :endpoint1
       activity :a_test_1_3, :call, :endpoint1
     end
-    $wf.search Wee::SearchPos.new(:a_test_1_1, :at)
+    $wf.search Wee::Position.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a_test_1_1";
     $released +="release a_test_1_2";
@@ -32,7 +32,7 @@ class TestCodeReplace < Test::Unit::TestCase
   def test_wfdescription_string
     ret = $wf.description "activity :a_test_1_1, :call, :endpoint1"
 
-    $wf.search Wee::SearchPos.new(:a_test_1_1, :at)
+    $wf.search Wee::Position.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a_test_1_1";
     sleep(0.1)
@@ -45,7 +45,7 @@ class TestCodeReplace < Test::Unit::TestCase
 
     assert(ret.class == Proc, "wf_description should be nil => not available. codeblock was given!")
 
-    $wf.search Wee::SearchPos.new(:a_test_1_1, :at)
+    $wf.search Wee::Position.new(:a_test_1_1, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a_test_1_1";
     sleep(0.1)

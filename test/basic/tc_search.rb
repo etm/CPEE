@@ -18,22 +18,22 @@ class TestSearch < Test::Unit::TestCase
     search = $wf.search_positions
     assert(search.is_a?(Array), "Search is not a Array, it is: #{search}")
     assert(search.size == 1, "Search does not have exectly 1 entry, it has #{search.size}")
-    assert(search[0].is_a?(Wee::SearchPos), "Value of search is not a searchposition")
-    assert(search[0].position == :a1_1, "SearchPosition has wrong position value")
-    assert(search[0].detail == :at, "SearchPosition has wrong detail value")
-    assert(search[0].passthrough == nil, "SearchPosition has wrong passthrough value")
+    assert(search[0].is_a?(Wee::Position), "Value of search is not a Position")
+    assert(search[0].position == :a1_1, "Position has wrong position value")
+    assert(search[0].detail == :at, "Position has wrong detail value")
+    assert(search[0].passthrough == nil, "Position has wrong passthrough value")
   end
   def test_set_search
-    $wf.search [Wee::SearchPos.new(:a2_1_1, :at, 'test1'), Wee::SearchPos.new(:a2_1_1, :at, 'test2')]
+    $wf.search [Wee::Position.new(:a2_1_1, :at, 'test1'), Wee::Position.new(:a2_1_1, :at, 'test2')]
     search = $wf.search_positions
     assert(search.is_a?(Array), "Search is not a Array, it is: #{search}")
     assert(search.size == 2, "Search does not have exectly 2 entries, it has #{search.size}")
-    assert(search[0].position == :a2_1_1, "SearchPosition[0] has wrong position value")
-    assert(search[0].detail == :at, "SearchPosition[0] has wrong detail value")
-    assert(search[0].passthrough == "test1", "SearchPosition[0] has wrong passthrough value")
-    assert(search[1].position == :a2_1_1, "SearchPosition[1] has wrong position value")
-    assert(search[1].detail == :at, "SearchPosition[1] has wrong detail value")
-    assert(search[1].passthrough == "test2", "SearchPosition[1] has wrong passthrough value")
+    assert(search[0].position == :a2_1_1, "Position[0] has wrong position value")
+    assert(search[0].detail == :at, "Position[0] has wrong detail value")
+    assert(search[0].passthrough == "test1", "Position[0] has wrong passthrough value")
+    assert(search[1].position == :a2_1_1, "Position[1] has wrong position value")
+    assert(search[1].detail == :at, "Position[1] has wrong detail value")
+    assert(search[1].passthrough == "test2", "Position[1] has wrong passthrough value")
   end
   def test_set_search_false
     $wf.search false
@@ -48,7 +48,7 @@ class TestSearch < Test::Unit::TestCase
       activity :a1_2, :call, :endpoint1
       activity :a1_3, :call, :endpoint1
     end
-    $wf.search Wee::SearchPos.new(:a1_2, :at)
+    $wf.search Wee::Position.new(:a1_2, :at)
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a1_1";
     $released +="release a1_2";
@@ -71,7 +71,7 @@ class TestSearch < Test::Unit::TestCase
       end
       activity :a3, :call, :endpoint1
     end
-    $wf.search [Wee::SearchPos.new(:a2_1, :at), Wee::SearchPos.new(:a2_2, :at)]
+    $wf.search [Wee::Position.new(:a2_1, :at), Wee::Position.new(:a2_2, :at)]
     $wf_thread = Thread.new { $wf_result = $wf.start };
     $released +="release a1";
     $released +="release a2_1";

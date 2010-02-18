@@ -18,9 +18,9 @@ class Wee
       res
     end
   end
-  class SearchPos
+  class Position
     attr_accessor :position, :detail, :passthrough
-    def initialize(position, detail=:at, passthrough=nil)
+    def initialize(position, detail=:at, passthrough=nil) # :at or :after
       @position = position
       @detail = detail
       @passthrough = passthrough
@@ -38,7 +38,7 @@ class Wee
   def initialize(*handlerargs)
     @__wee_search_positions = @__wee_search_positions_original = {}
     @__wee_search = false
-    @__wee_stop_positions = Array.new
+    @__wee_positions = Array.new
     @__wee_threads = Array.new
     @__wee_context ||= CHash.new(self)
     @__wee_context_change = true
@@ -50,8 +50,7 @@ class Wee
     initialize_handler if methods.include?('initialize_handler')
     
     @__wee_handlerargs = handlerargs
-
-    self.state = :ready
+    @__wee_state = :ready
   end
 
   def self::search(wee_search)
@@ -89,15 +88,15 @@ class Wee
       self.state = :running
       instance_eval(&(@@__wee_control_block))
       self.state = :finished if self.state == :running
-      [@__wee_state, position, context]
+      [@__wee_state, positions, context]
     end
   end
 
   def self::flow; end
 
   protected
-    def position
-      @__wee_stop_positions
+    def positions
+      @__wee_positions
     end
 
     # DSL-Construct for an atomic activity
@@ -231,7 +230,7 @@ class Wee
       # set semaphore to avoid conflicts if @__wee_search is changed by another thread
       Mutex.new.synchronize do
         branch = Thread.current
-        if position && get_matching_search_position(position) # matching searchposition => start execution from here
+        if position && get_matching_search_position(position) # matching searchpos => start execution from here
           searchpos = get_matching_search_position(position)
           branch[:branch_search] = false
           @__wee_search = false
@@ -242,6 +241,8 @@ class Wee
     end
     def perform_external_call(position, passthrough, handler, endpoint, *parameters)
       params = { }
+      wp = Wee::Position.new(position, :at, nil)
+      @__wee_positions << wp
       parameters.each do |p|
         if p.class == Hash && parameters.length == 1
           params = p
@@ -257,8 +258,12 @@ class Wee
       Thread.pass until handler.finished_call() || self.state == :stopped || Thread.current[:nolongernecessary]
        
       handler.no_longer_necessary if Thread.current[:nolongernecessary]
-      handler.stop_call if self.state == :stopped
-      @__wee_stop_positions << Wee::SearchPos.new(position, :at, handler.passthrough) if self.state == :stopped
+      if self.state == :stopped
+        handler.stop_call
+        wp.passthrough = handler.passthrough
+      else
+        @__wee_positions.delete wp
+      end  
       Thread.current[:nolongernecessary] || self.state == :stopped ? nil : handler.return_value
     end
     def refreshcontext(handler)
@@ -276,7 +281,7 @@ class Wee
     end
 
     def state=(newState)
-      @__wee_stop_positions = Array.new if @__wee_state != newState
+      @__wee_positions = Array.new if @__wee_state != newState
       self.search @__wee_search_positions_original
       @__wee_state = newState
       handler = @__wee_handler.new @__wee_handlerargs
@@ -316,7 +321,7 @@ class Wee
       @__wee_search_positions = {}
       @__wee_search_positions_original = []
 
-      new_wee_search = [new_wee_search] if new_wee_search.is_a?(SearchPos)
+      new_wee_search = [new_wee_search] if new_wee_search.is_a?(Position)
   
       if(new_wee_search == false || new_wee_search.empty?)
         @__wee_search_original = false
@@ -393,7 +398,7 @@ class Wee
             instance_eval(&blk)
             # TODO finished
             self.state = :ready if self.state == :running
-            [@__wee_state, position, context]
+            [@__wee_state, positions, context]
           end
         end
         blk  
