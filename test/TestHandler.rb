@@ -15,7 +15,7 @@ class TestHandler < Wee::HandlerWrapperBase
       released = false
       until(released) do
         if @__myhandler_stopped
-          $message += "handle_call: : Recieved stop signal, process is stoppable =>aborting!\n"
+          $message += "handle_call: : Receiived stop signal, process is stoppable =>aborting!\n"
           return
         end
         if($released.include?("release #{position.to_s}"))

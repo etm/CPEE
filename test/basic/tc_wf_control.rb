@@ -14,7 +14,7 @@ class TestWorkflowControl < Test::Unit::TestCase
     $released = ""
     @wf_thread.join if defined?(@wf_thread)
   end
-  def test_arunthrough
+  def test_runthrough
     wf_result = nil
     @wf_thread = Thread.new { wf_result = @wf.start };
     $released +="release a1_1";
@@ -33,7 +33,7 @@ class TestWorkflowControl < Test::Unit::TestCase
     assert($message.include?("Activity a4a done"), "Pos a2_2_1 was not proper released/called");
     assert(wf_result.inspect.include?("[:finished, [], {:x=>\"begin_Handler_Dummy_Result_end\"}]"), "Ending environment not correct, see result=#{wf_result.inspect}");
   end
-  def test_bstop
+  def test_stop
     @wf.description do
       activity :a_test_1_1, :call, :endpoint1
       activity :a_test_1_2, :call, :endpoint1
@@ -54,7 +54,7 @@ class TestWorkflowControl < Test::Unit::TestCase
     assert(wf_result[1][0].position == :a_test_1_2, "Stop-position has wrong value: #{wf_result[1][0].position} instead of :a_test_2_1")
     assert(wf_result[1][0].detail == :at, "Stop-Position is not :at")
   end
-  def test_ccontinue
+  def test_continue
     @wf.description do
       activity :a_test_1_1, :call, :endpoint1
       activity :a_test_1_2, :call, :endpoint1
@@ -68,14 +68,8 @@ class TestWorkflowControl < Test::Unit::TestCase
     @wf.stop
     @wf_thread.join
     @wf.search wf_result[1]
-    p wf_result[1]
     $message = "";
     @wf_thread = Thread.new { wf_result = @wf.start };
-    sleep 1
-    puts "\n"
-    p "Handle call: position=[a_test_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"
-    p $message
-
     assert($message.include?("Handle call: position=[a_test_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_test_1_2 was not called, see message=[#{$message}]");
     $released +="release a_test_1_2";
     $released +="release a_test_1_3";
