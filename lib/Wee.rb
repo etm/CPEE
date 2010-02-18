@@ -281,7 +281,7 @@ class Wee
     end
 
     def state=(newState)
-      @__wee_positions = Array.new if @__wee_state != newState
+      @__wee_positions = Array.new if @__wee_state != newState && newState == :running
       self.search @__wee_search_positions_original
       @__wee_state = newState
       handler = @__wee_handler.new @__wee_handlerargs
