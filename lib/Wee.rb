@@ -88,17 +88,13 @@ class Wee
       self.state = :running
       instance_eval(&(@@__wee_control_block))
       self.state = :finished if self.state == :running
-      [@__wee_state, positions, context]
+      [self.state, self.positions, self.context]
     end
   end
 
   def self::flow; end
 
   protected
-    def positions
-      @__wee_positions
-    end
-
     # DSL-Construct for an atomic activity
     # position: a unique identifier within the wf-description (may be used by the search to identify a starting point
     # type:
@@ -289,6 +285,10 @@ class Wee
     end
 
   public
+    def positions
+      @__wee_positions
+    end
+
     # set the Handler
     def handler=(new_wee_handler)
       superclass = new_wee_handler
@@ -396,9 +396,8 @@ class Wee
           define_method :__wee_execute do
             self.state = :running
             instance_eval(&blk)
-            # TODO finished
-            self.state = :ready if self.state == :running
-            [@__wee_state, positions, context]
+            self.state = :finished if self.state == :running
+            [self.state, self.positions, self.context]
           end
         end
         blk  
