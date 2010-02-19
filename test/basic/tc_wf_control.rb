@@ -77,5 +77,21 @@ class TestWorkflowControl < Test::Unit::TestCase
     assert($message.include?("Activity a_test_1_2 done"), "pos a_test_1_2 not properly ended, see $message=#{$message}");
     assert($message.include?("Activity a_test_1_3 done"), "pos a_test_1_3 not properly ended, see $message=#{$message}");
   end
-
+  
+  def test_continue_after
+    @wf.description do
+      activity :a_test_1_1, :call, :endpoint1
+      activity :a_test_1_2, :call, :endpoint1
+      activity :a_test_1_3, :call, :endpoint1
+    end
+    @wf.search Wee::Position.new(:a_test_1_1, :after)
+    wf_result = nil
+    @wf_thread = Thread.new { wf_result = @wf.start };
+    assert($message.include?("Handle call: position=[a_test_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_test_1_2 was not called, see message=[#{$message}]");
+    $released +="release a_test_1_2";
+    $released +="release a_test_1_3";
+    sleep(0.1)
+    assert($message.include?("Activity a_test_1_2 done"), "pos a_test_1_2 not properly ended, see $message=#{$message}");
+    assert($message.include?("Activity a_test_1_3 done"), "pos a_test_1_3 not properly ended, see $message=#{$message}");
+  end
 end

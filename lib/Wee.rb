@@ -19,7 +19,8 @@ class Wee
     end
   end
   class Position
-    attr_accessor :position, :detail, :passthrough
+    attr_reader :position
+    attr_accessor :detail, :passthrough
     def initialize(position, detail=:at, passthrough=nil) # :at or :after
       @position = position
       @detail = detail
