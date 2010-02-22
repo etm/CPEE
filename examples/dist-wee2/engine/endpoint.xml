@@ -1,0 +1,15 @@
+<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <message name="something">
+    <header name="wee-callback" type="boolean"/>
+    <parameter name="return" mimetype="*"/>
+  </message>
+
+  <resource>
+    <get    in="*" out="something"/>
+    <post   in="*" out="something"/>
+    <put    in="*" out="something"/>
+    <delete in="*" out="something"/>
+  </resource>
+
+</description>

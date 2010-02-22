@@ -42,7 +42,8 @@ end #}}}
 class NewInstance < Riddl::Implementation #{{{
   def response
     name = @p[0].value
-    id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e))}.sort.last.to_i + 1
+    id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e)).to_i}.sort.last
+    id = (id.nil? ? 1 : id  + 1)
     Dir.mkdir("instances/#{id}")
     FileUtils.cp('instances/properties.init',"instances/#{id}/properties.xml")
     FileUtils.cp_r('instances/notifications.init',"instances/#{id}/notifications")
