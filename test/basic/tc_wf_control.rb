@@ -14,7 +14,7 @@ class TestWorkflowControl < Test::Unit::TestCase
     $released = ""
     @wf_thread.join if defined?(@wf_thread)
   end
-  def test_arunthrough
+  def test_runthrough
     wf_result = nil
     @wf_thread = Thread.new { wf_result = @wf.start };
     $released +="release a1_1";
@@ -33,13 +33,13 @@ class TestWorkflowControl < Test::Unit::TestCase
     assert($message.include?("Activity a4a done"), "Pos a2_2_1 was not proper released/called");
     assert(wf_result.inspect.include?("[:finished, [], {:x=>\"begin_Handler_Dummy_Result_end\"}]"), "Ending environment not correct, see result=#{wf_result.inspect}");
   end
-  def test_bstop
+  def test_stop
     @wf.description do
       activity :a_test_1_1, :call, :endpoint1
       activity :a_test_1_2, :call, :endpoint1
       activity :a_test_1_3, :call, :endpoint1
     end
-    @wf.search Wee::SearchPos.new(:a_test_1_1, :at)
+    @wf.search Wee::Position.new(:a_test_1_1, :at)
     wf_result = nil
     @wf_thread = Thread.new { wf_result = @wf.start };
     $released +="release a_test_1_1";
@@ -54,13 +54,13 @@ class TestWorkflowControl < Test::Unit::TestCase
     assert(wf_result[1][0].position == :a_test_1_2, "Stop-position has wrong value: #{wf_result[1][0].position} instead of :a_test_2_1")
     assert(wf_result[1][0].detail == :at, "Stop-Position is not :at")
   end
-  def test_ccontinue
+  def test_continue
     @wf.description do
       activity :a_test_1_1, :call, :endpoint1
       activity :a_test_1_2, :call, :endpoint1
       activity :a_test_1_3, :call, :endpoint1
     end
-    @wf.search Wee::SearchPos.new(:a_test_1_1, :at)
+    @wf.search Wee::Position.new(:a_test_1_1, :at)
     wf_result = nil
     @wf_thread = Thread.new { wf_result = @wf.start };
     $released +="release a_test_1_1";
@@ -77,5 +77,21 @@ class TestWorkflowControl < Test::Unit::TestCase
     assert($message.include?("Activity a_test_1_2 done"), "pos a_test_1_2 not properly ended, see $message=#{$message}");
     assert($message.include?("Activity a_test_1_3 done"), "pos a_test_1_3 not properly ended, see $message=#{$message}");
   end
-
+  
+  def test_continue_after
+    @wf.description do
+      activity :a_test_1_1, :call, :endpoint1
+      activity :a_test_1_2, :call, :endpoint1
+      activity :a_test_1_3, :call, :endpoint1
+    end
+    @wf.search Wee::Position.new(:a_test_1_1, :after)
+    wf_result = nil
+    @wf_thread = Thread.new { wf_result = @wf.start };
+    assert($message.include?("Handle call: position=[a_test_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_test_1_2 was not called, see message=[#{$message}]");
+    $released +="release a_test_1_2";
+    $released +="release a_test_1_3";
+    sleep(0.1)
+    assert($message.include?("Activity a_test_1_2 done"), "pos a_test_1_2 not properly ended, see $message=#{$message}");
+    assert($message.include?("Activity a_test_1_3 done"), "pos a_test_1_3 not properly ended, see $message=#{$message}");
+  end
 end
