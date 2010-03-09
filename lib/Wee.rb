@@ -94,7 +94,7 @@ class Wee
 
   def self::control(flow, &block)
     @@__wee_control_block = block
-    define_method :__wee_execute do
+    define_method :__wee_control_flow do
       self.state = :running
       instance_eval(&(@@__wee_control_block))
       self.state = :finished if self.state == :running
@@ -403,7 +403,7 @@ class Wee
           end
         end
         (class << self; self; end).class_eval do
-          define_method :__wee_execute do
+          define_method :__wee_control_flow do
             self.state = :running
             instance_eval(&blk)
             self.state = :finished if self.state == :running
@@ -421,7 +421,7 @@ class Wee
     # Start the workflow execution
     def start()
       return nil if self.state == :running
-      __wee_execute
+      __wee_control_flow
     end
 
 end
