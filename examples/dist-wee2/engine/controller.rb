@@ -4,7 +4,8 @@ require 'xml/smart'
 class Controller
   def initialize(id)
     @directory = ::File.dirname(__FILE__) + "/../instances/#{id}/"
-    @handlers = {}
+    @events = {}
+    @votes = {}
     @callbacks = {}
     @instance = EmptyWorkflow.new(id)
     self.unserialize!
@@ -49,8 +50,8 @@ class Controller
         url = doc.find('string(/n:subscription/@url)')
         doc.find('/n:subscription/n:topic').each do |t|
           t.find('n:event').each do |e|
-            @handlers["#{t.attributes['id']}/#{e}"] ||= {}
-            @handlers["#{t.attributes['id']}/#{e}"][key] = url
+            @events["#{t.attributes['id']}/#{e}"] ||= {}
+            @events["#{t.attributes['id']}/#{e}"][key] = url
           end
         end
       end
@@ -72,9 +73,10 @@ class Controller
     end
   end
 
-  def notify(what,content={})
-    if @handlers[what]
-      @handlers[what].each do |key,url|
+  def notify(type,what,content={})
+    item = type == :event ? @events[what] : @votes[what]
+    if item
+      item.each do |key,url|
         topic        = ::File::dirname(what)
         event        = ::File::basename(what)
         notification = []

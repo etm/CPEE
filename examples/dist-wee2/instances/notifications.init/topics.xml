@@ -7,6 +7,7 @@
   </topic>
   <topic id='properties/description'>
     <event>change</event>
+    <ack>change</ack>
     <event>error</event>
   </topic>
   <topic id='properties/state'>
@@ -14,9 +15,11 @@
   </topic>
   <topic id='properties/context-variables'>
     <event>change</event>
+    <ack>change</ack>
   </topic>
   <topic id='properties/endpoints'>
     <event>change</event>
+    <ack>change</ack>
   </topic>
   <topic id='properties/handlers'>
     <event>change</event>

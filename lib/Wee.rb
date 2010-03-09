@@ -28,6 +28,15 @@ class Wee
     end
   end
   class HandlerWrapperBase
+    def activity_handle(position, passthrough, endpoint, parameters); end
+    def activity_finished?; end
+    def activity_result_value; end
+
+    def activity_stop; end
+    def activity_passthrough_value; end
+
+    def activity_no_longer_necessary; end
+
     def inform_activity_done(activity); end
     def inform_activity_manipulate(activity); end
     def inform_activity_failed(activity, err); end
