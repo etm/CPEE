@@ -1,25 +1,24 @@
 <topics xmlns='http://riddl.org/ns/common-patterns/notifications-producer/1.0'>
-  <topic id='monitoring'>
-    <event>activity_call</event>
-    <event>activity_manipulate</event>
-    <event>activity_done</event>
+  <topic id='running'>
+    <event>activity_calling</event>
     <event>activity_failed</event>
+    <event>activity_manipulating</event>
+    <event>activity_done</event>
+    <vote>syncing</vote>
   </topic>
   <topic id='properties/description'>
     <event>change</event>
-    <ack>change</ack>
     <event>error</event>
   </topic>
   <topic id='properties/state'>
     <event>change</event>
+    <vote>change_to_running</vote>
   </topic>
   <topic id='properties/context-variables'>
     <event>change</event>
-    <ack>change</ack>
   </topic>
   <topic id='properties/endpoints'>
     <event>change</event>
-    <ack>change</ack>
   </topic>
   <topic id='properties/handlers'>
     <event>change</event>
