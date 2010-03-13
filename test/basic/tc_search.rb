@@ -40,7 +40,6 @@ class TestSearch < Test::Unit::TestCase
     search = $wf.search_positions
     assert(search.is_a?(Array), "Search is not a Array, it is: #{search}")
     assert(search.size == 0, "Search does not have exectly 0 entries, it has #{search.size}")
-
   end
   def test_search_impact_single
     $wf.description do
@@ -81,6 +80,7 @@ class TestSearch < Test::Unit::TestCase
     assert(!$message.include?("Activity a1 done"), "pos a1 should not have been executed, see $message=#{$message}");
     assert($message.include?("Activity a2_1 done"), "pos a2_1 not properly ended, see $message=#{$message}");
     assert($message.include?("Activity a2_2 done"), "pos a2_2 not properly ended, see $message=#{$message}");
+    puts $message
     assert($message.include?("Activity a3 done"), "pos a3 not properly ended, see $message=#{$message}");
   end
 end

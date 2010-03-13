@@ -172,7 +172,12 @@ class Wee
       if self.state == :stopped
         mythreads.each { |thread| continue_thread(thread) if thread.alive? }
       else  
-        mythreads.each { |thread| thread[:nolongernecessary] = true if thread.alive? }
+        mythreads.each do |thread| 
+          if thread.alive? 
+            thread[:nolongernecessary] = true
+            continue_thread(thread)
+          end  
+        end
       end  
     end
 
@@ -237,7 +242,7 @@ class Wee
     
   private
     def continue_thread(thread)
-      if thread && thread[:continue] && thread[:continue].alive?
+      if thread && thread.alive? && thread[:continue] && thread[:continue].alive?
         thread[:continue].wakeup
       end  
     end  
@@ -273,7 +278,7 @@ class Wee
       continue = Thread.new{Thread.stop}
       Thread.current[:continue] = continue
       handler.handle_call position, continue, passthrough, endpoint, params
-      continue.join
+      continue.join unless Thread.current[:nolongernecessary] || self.state == :stopped
        
       handler.no_longer_necessary if Thread.current[:nolongernecessary]
       if self.state == :stopped

@@ -62,14 +62,15 @@ class TestWorkflowControl < Test::Unit::TestCase
     end
     @wf.search Wee::Position.new(:a_test_1_1, :at)
     wf_result = nil
-    @wf_thread = Thread.new { wf_result = @wf.start };
+    @wf_thread = Thread.new { wf_result = @wf.start }
     $released +="release a_test_1_1";
     sleep(0.1)
     @wf.stop
     @wf_thread.join
     @wf.search wf_result[1]
     $message = "";
-    @wf_thread = Thread.new { wf_result = @wf.start };
+    @wf_thread = Thread.new { wf_result = @wf.start }
+    sleep(0.1)
     assert($message.include?("Handle call: position=[a_test_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_test_1_2 was not called, see message=[#{$message}]");
     $released +="release a_test_1_2";
     $released +="release a_test_1_3";
@@ -86,7 +87,8 @@ class TestWorkflowControl < Test::Unit::TestCase
     end
     @wf.search Wee::Position.new(:a_test_1_1, :after)
     wf_result = nil
-    @wf_thread = Thread.new { wf_result = @wf.start };
+    @wf_thread = Thread.new { wf_result = @wf.start }
+    sleep(0.1)
     assert($message.include?("Handle call: position=[a_test_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_test_1_2 was not called, see message=[#{$message}]");
     $released +="release a_test_1_2";
     $released +="release a_test_1_3";
