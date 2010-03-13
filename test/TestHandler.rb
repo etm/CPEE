@@ -3,19 +3,20 @@ require ::File.dirname(__FILE__) + '/../lib/Wee'
 class TestHandler < Wee::HandlerWrapperBase
   def initialize(args)
     @__myhandler_stopped = false
-    @__myhandler_finished = false
+    @__myhandler_continue = nil
     @__myhandler_returnValue = nil
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
-  def handle_call(position, passthrough, endpoint,parameters)
+  def handle_call(position, continue, passthrough, endpoint,parameters)
+    @__myhandler_continue = continue
     $message += "Handle call: position=[#{position}] passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]. Waiting for release\n"
     t = Thread.new() {
       released = false
       until(released) do
         if @__myhandler_stopped
-          $message += "handle_call: : Receiived stop signal, process is stoppable =>aborting!\n"
+          $message += "handle_call: : Received stop signal, process is stoppable =>aborting!\n"
           return
         end
         if($released.include?("release #{position.to_s}"))
@@ -25,24 +26,14 @@ class TestHandler < Wee::HandlerWrapperBase
         end
         Thread.pass
       end
-      @__myhandler_finished = true
       @__myhandler_returnValue = 'Handler_Dummy_Result'
+      @__myhandler_continue.wakeup
     }
   end
  
-  # returns true if the last handled call has finished processing, or the
-  # call runs independent (asynchronous call) 
-  def finished_call
-    return @__myhandler_finished
-  end
-  
   # returns the result of the last handled call
   def return_value
-    if @__myhandler_finished
-      return @__myhandler_returnValue
-    else
-      return nil
-    end
+    @__myhandler_returnValue
   end
   # Called if the WS-Call should be interrupted. The decision how to deal
   # with this situation is given to the handler. To provide the possibility
@@ -57,7 +48,6 @@ class TestHandler < Wee::HandlerWrapperBase
   def passthrough
     return nil
   end
-
 
   # Called if the execution of the actual handle_call is not necessary anymore
   # It is definit that the call will not be continued.
@@ -79,6 +69,5 @@ class TestHandler < Wee::HandlerWrapperBase
   def inform_workflow_state(newstate)
     $message += "State changed to #{newstate}"
   end
-
 
 end

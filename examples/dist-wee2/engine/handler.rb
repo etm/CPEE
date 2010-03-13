@@ -38,7 +38,6 @@ class Handler < Wee::HandlerWrapperBase
       return
     end
 
-
     result.each do |r|
       if r.class == Riddl::Parameter::Complex
         @__basichandler_finished = true
@@ -51,7 +50,6 @@ class Handler < Wee::HandlerWrapperBase
       puts e.backtrace
 
     end
-
   end
 
   def callback(result)

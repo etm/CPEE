@@ -28,8 +28,7 @@ class Wee
     end
   end
   class HandlerWrapperBase
-    def activity_handle(position, passthrough, endpoint, parameters); end
-    def activity_finished?; end
+    def activity_handle(position, continue, passthrough, endpoint, parameters); end
     def activity_result_value; end
 
     def activity_stop; end
@@ -49,6 +48,7 @@ class Wee
     @__wee_search_positions = @__wee_search_positions_original = {}
     @__wee_search = false
     @__wee_positions = Array.new
+    @__wee_main = nil
     @__wee_threads = Array.new
     @__wee_context ||= CHash.new(self)
     @__wee_context_change = true
@@ -163,12 +163,17 @@ class Wee
       end
       wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && type[:wait].is_a?(Integer)) ? wait_count = type[:wait] : mythreads.size
       finished_threads_count = 0
-      while(finished_threads_count < wait_count && finished_threads_count < mythreads.size)
+      while (finished_threads_count < wait_count && finished_threads_count < mythreads.size)
         Thread.pass
         finished_threads_count = 0
         mythreads.each { |thread| finished_threads_count+=1 unless thread.alive? }
+        finished_threads_count = wait_count if self.state == :stopped
       end
-      mythreads.each { |thread| thread[:nolongernecessary] = true if thread.alive? }
+      if self.state == :stopped
+        mythreads.each { |thread| continue_thread(thread) if thread.alive? }
+      else  
+        mythreads.each { |thread| thread[:nolongernecessary] = true if thread.alive? }
+      end  
     end
 
     # Defines a branch of a parallel-Construct
@@ -185,12 +190,11 @@ class Wee
     # May contain multiple execution alternatives
     def choose
       return if self.state == :stopped || Thread.current[:nolongernecessary]
-      thread_search = is_in_search_mode
-      Thread.new do
-        Thread.current[:branch_search] = thread_search
-        Thread.current[:alternative_executed] = false
-        yield
-      end.join
+      Thread.current[:alternative_executed] ||= []
+      Thread.current[:alternative_executed] << false
+      yield
+      Thread.current[:alternative_executed].pop
+      nil
     end
 
     # Defines a possible choice of a choose-Construct
@@ -199,11 +203,11 @@ class Wee
     def alternative(condition)
       return if self.state == :stopped || Thread.current[:nolongernecessary]
       yield if is_in_search_mode || condition
-      Thread.current[:alternative_executed] = true if condition
+      Thread.current[:alternative_executed][-1] = true if condition
     end
     def otherwise
       return if self.state == :stopped || Thread.current[:nolongernecessary]
-      yield if is_in_search_mode || !Thread.current[:alternative_executed]
+      yield if is_in_search_mode || !Thread.current[:alternative_executed].last
     end
 
     # Defines a critical block (=Mutex)
@@ -232,6 +236,12 @@ class Wee
     end
     
   private
+    def continue_thread(thread)
+      if thread && thread[:continue] && thread[:continue].alive?
+        thread[:continue].wakeup
+      end  
+    end  
+
     def is_in_search_mode(position = nil)
       # set semaphore to avoid conflicts if @__wee_search is changed by another thread
       Mutex.new.synchronize do
@@ -259,9 +269,11 @@ class Wee
           params[p] = @__wee_context[p]
         end
       end
-      # handshake call and wait until it finisheds
-      handler.handle_call position, passthrough, endpoint, params
-      Thread.pass until handler.finished_call() || self.state == :stopped || Thread.current[:nolongernecessary]
+      # handshake call and wait until it finished
+      continue = Thread.new{Thread.stop}
+      Thread.current[:continue] = continue
+      handler.handle_call position, continue, passthrough, endpoint, params
+      continue.join
        
       handler.no_longer_necessary if Thread.current[:nolongernecessary]
       if self.state == :stopped
@@ -288,10 +300,14 @@ class Wee
 
     def state=(newState)
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
+      if newState == :stopped
+        continue_thread(@__wee_main)
+      end  
       self.search @__wee_search_positions_original
       @__wee_state = newState
       handler = @__wee_handler.new @__wee_handlerargs
       handler.inform_state newState
+      newState
     end
 
   public
@@ -421,6 +437,7 @@ class Wee
     # Start the workflow execution
     def start()
       return nil if self.state == :running
+      @__wee_main = Thread.current
       __wee_control_flow
     end
 
