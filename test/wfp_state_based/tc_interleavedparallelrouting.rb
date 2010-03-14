@@ -3,22 +3,21 @@ $:.unshift File.join(File.dirname(__FILE__),'..', '..','lib')
 require 'test/unit'
 require 'TestWorkflow'
 # implemented as a combination of the Cancelling Structured Partial Join and the Exclusive Choice Pattern
-class TestInterleavedParallelRouting < Test::Unit::TestCase
+class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
   def setup
     $message = ""
     $released = ""
-    $wf = TestWorkflow.new
+    @wf = TestWorkflow.new
   end
   def teardown
-    $wf.stop
+    @wf.stop
     $message = ""
     $released = ""
-    $wf_thread.join if defined?($wf_thread)
   end
 
 
   def test_interleaved
-    $wf.description do
+    @wf.description do
       parallel do
         parallel_branch do
           critical(:section1) do
@@ -35,8 +34,8 @@ class TestInterleavedParallelRouting < Test::Unit::TestCase
         end
       end
     end
-    $wf.search false
-    $wf_thread = Thread.new { $wf_result = $wf.start };
+    @wf.search false
+    @wf.start
     sleep(0.2)
     assert($message.include?("Handle call: position=[a1]"), "Pos a1 should be called by now, see message=[#{$message}]");
     assert(!$message.include?("Handle call: position=[a2]"), "Pos a2 should not be called by now, see message=[#{$message}]");

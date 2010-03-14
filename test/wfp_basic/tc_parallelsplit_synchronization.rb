@@ -1,22 +1,20 @@
 require 'test/unit'
 require ::File.dirname(__FILE__) + '/../TestWorkflow'
 
-class TestParallel < Test::Unit::TestCase
+class TestWFPParallel < Test::Unit::TestCase
   def setup
     $message = ""
     $released = ""
-    $wf = TestWorkflow.new
+    @wf = TestWorkflow.new
   end
   def teardown
-    $wf.stop
+    @wf.stop
     $message = ""
     $released = ""
-    $wf_thread.join if defined?($wf_thread)
   end
 
-
   def test_parallel_split
-    $wf.description do
+    @wf.description do
       parallel :wait do
         parallel_branch do
           activity :a1_1, :call, :endpoint1
@@ -27,8 +25,8 @@ class TestParallel < Test::Unit::TestCase
       end
       activity :a2, :call, :endpoint1
     end
-    $wf.search false
-    $wf_thread = Thread.new { $wf_result = $wf.start };
+    @wf.search false
+    @wf.start
     $released +="release a1_1";
     sleep(0.02)
     assert($message.include?("Activity a1_1 done"), "pos a1_1 not properly ended, see $message=#{$message}");

@@ -1,22 +1,21 @@
 require 'test/unit'
 require ::File.dirname(__FILE__) + '/../TestWorkflow'
 
-class TestMultiChoice < Test::Unit::TestCase
+class TestWFPMultiChoice < Test::Unit::TestCase
   def setup
     $message = ""
     $released = ""
-    $wf = TestWorkflow.new
+    @wf = TestWorkflow.new
   end
   def teardown
-    $wf.stop
+    @wf.stop
     $message = ""
     $released = ""
-    $wf_thread.join if defined?($wf_thread)
   end
 
 
   def test_multichoice_chained
-    $wf.description do
+    @wf.description do
       context :x => 1
       choose do
         alternative(@x == 1) do
@@ -28,8 +27,8 @@ class TestMultiChoice < Test::Unit::TestCase
       end
       activity :a2, :call, :endpoint1
     end
-    $wf.search false
-    $wf_thread = Thread.new { $wf_result = $wf.start };
+    @wf.search false
+    @wf.start
     sleep(0.02)
     assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");
     assert(!$message.include?("Handle call: position=[a1_2]"), "Pos a1_2 should not have been called by now, see message=[#{$message}]");
@@ -45,7 +44,7 @@ class TestMultiChoice < Test::Unit::TestCase
     assert($message.include?("Activity a2 done"), "pos a2 not properly ended, see $message=#{$message}");
   end
   def test_multichoice_parallel
-    $wf.description do
+    @wf.description do
       context :x => 1
       parallel do
         choose do
@@ -63,8 +62,8 @@ class TestMultiChoice < Test::Unit::TestCase
       end
       activity :a2, :call, :endpoint1
     end
-    $wf.search false
-    $wf_thread = Thread.new { $wf_result = $wf.start };
+    @wf.search false
+    @wf.start
     sleep(0.02)
     assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a1_2]"), "Pos a1_2 should be called by now, see message=[#{$message}]");

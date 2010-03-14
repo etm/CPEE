@@ -1,22 +1,20 @@
 require 'test/unit'
 require ::File.dirname(__FILE__) + '/../TestWorkflow'
 # only variant Cancelling Structured Partial Join is implemented, but that's the coolest one 8)
-class TestCancellingStructuredPartialJoin < Test::Unit::TestCase
+class TestWFPCancellingStructuredPartialJoin < Test::Unit::TestCase
   def setup
     $message = ""
     $released = ""
-    $wf = TestWorkflow.new
+    @wf = TestWorkflow.new
   end
   def teardown
-    $wf.stop
+    @wf.stop
     $message = ""
     $released = ""
-    $wf_thread.join if defined?($wf_thread)
   end
 
-
   def test_cancelling_structured_partial_join
-    $wf.description do
+    @wf.description do
       parallel :wait => 3 do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -36,8 +34,8 @@ class TestCancellingStructuredPartialJoin < Test::Unit::TestCase
       end
       activity :a_6, :call, :endpoint1
     end
-    $wf.search false
-    $wf_thread = Thread.new { $wf_result = $wf.start}
+    @wf.search false
+    @wf.start
     sleep(0.1)
     assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
@@ -52,5 +50,6 @@ class TestCancellingStructuredPartialJoin < Test::Unit::TestCase
     assert($message.include?("Activity a_3 done"), "pos a_1 not properly ended, see $message=#{$message}")
     assert($message.include?("Activity a_5 done"), "pos a_1 not properly ended, see $message=#{$message}")
     assert($message.include?("Handle call: position=[a_6] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_6 was not called, see message=[#{$message}]");
-    assert($message.include?("Handler: Recieved no_longer_necessary signal, deciding if stopping"), "no_longer_necessary signal was not detected, see $message=#{$message}")  end
+    assert($message.include?("Handler: Recieved no_longer_necessary signal, deciding if stopping"), "no_longer_necessary signal was not detected, see $message=#{$message}")
+  end
 end

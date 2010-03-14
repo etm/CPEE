@@ -2,22 +2,20 @@ require 'test/unit'
 require ::File.dirname(__FILE__) + '/../TestWorkflow'
 
 # only variant Cancelling Discriminator is implemented, but that's the coolest one 8)
-class TestStructuredDiscriminator < Test::Unit::TestCase
+class TestWFPStructuredDiscriminator < Test::Unit::TestCase
   def setup
     $message = ""
     $released = ""
-    $wf = TestWorkflow.new
+    @wf = TestWorkflow.new
   end
   def teardown
-    $wf.stop
+    @wf.stop
     $message = ""
     $released = ""
-    $wf_thread.join if defined?($wf_thread)
   end
 
-
   def test_cancelling_discriminator
-    $wf.description do
+    @wf.description do
       parallel :wait => 1 do
         parallel_branch do
           activity :a_1_1, :call, :endpoint1
@@ -28,8 +26,8 @@ class TestStructuredDiscriminator < Test::Unit::TestCase
       end
       activity :a_2, :call, :endpoint1
     end
-    $wf.search false
-    $wf_thread = Thread.new { $wf_result = $wf.start };
+    @wf.search false
+    @wf.start
     sleep(0.02)
     assert($message.include?("Handle call: position=[a_1_1]"), "Pos a_1_1 should be called by now, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a_1_2]"), "Pos a_1_2 should not have been called by now, see message=[#{$message}]");

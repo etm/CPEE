@@ -5,17 +5,16 @@ class TestParallel < Test::Unit::TestCase
   def setup
     $message = ""
     $released = ""
-    $wf = TestWorkflow.new
+    @wf = TestWorkflow.new
   end
   def teardown
-    $wf.stop
+    @wf.stop
     $message = ""
     $released = ""
-    $wf_thread.join if defined?($wf_thread)
   end
   def test_parallel_simple
-    $wf.search false
-    $wf.description do
+    @wf.search false
+    @wf.description do
       parallel do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -28,7 +27,7 @@ class TestParallel < Test::Unit::TestCase
         end
       end
     end
-    $wf_thread = Thread.new { $wf_result = $wf.start}
+    @wf.start
     sleep(0.1)
     assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
@@ -42,8 +41,8 @@ class TestParallel < Test::Unit::TestCase
     assert($message.include?("Activity a_3 done"), "pos a_3 not properly ended, see $message=#{$message}");
   end
   def test_parallel_wait
-    $wf.search false
-    $wf.description do
+    @wf.search false
+    @wf.description do
       parallel :wait do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -54,7 +53,7 @@ class TestParallel < Test::Unit::TestCase
       end
       activity :a_3, :call, :endpoint1
     end
-    $wf_thread = Thread.new { $wf_result = $wf.start}
+    @wf.start
     sleep(0.1)
     assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
@@ -68,8 +67,8 @@ class TestParallel < Test::Unit::TestCase
     assert($message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was not called, see message=[#{$message}]");
   end
   def test_parallel_nowait
-    $wf.search false
-    $wf.description do
+    @wf.search false
+    @wf.description do
       parallel :wait => 1 do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -80,7 +79,7 @@ class TestParallel < Test::Unit::TestCase
       end
       activity :a_3, :call, :endpoint1
     end
-    $wf_thread = Thread.new { $wf_result = $wf.start}
+    @wf.start
     sleep(0.1)
     assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
@@ -90,8 +89,8 @@ class TestParallel < Test::Unit::TestCase
     assert($message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was not called, see message=[#{$message}]");
   end
   def test_parallel_no_longer_necessary
-    $wf.search false
-    $wf.description do
+    @wf.search false
+    @wf.description do
       parallel :wait => 1 do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -103,7 +102,7 @@ class TestParallel < Test::Unit::TestCase
       end
       activity :a_3, :call, :endpoint1
     end
-    $wf_thread = Thread.new { $wf_result = $wf.start}
+    @wf.start
     sleep(0.1)
     assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
@@ -117,8 +116,8 @@ class TestParallel < Test::Unit::TestCase
     assert(!$message.include?("Handle call: position=[a_2_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2_2 was not called, see message=[#{$message}]");
   end
   def test_parallel_wait_partial
-    $wf.search false
-    $wf.description do
+    @wf.search false
+    @wf.description do
       parallel :wait => 3 do
         parallel_branch do
           activity :a_1, :call, :endpoint1
@@ -138,7 +137,7 @@ class TestParallel < Test::Unit::TestCase
       end
       activity :a_6, :call, :endpoint1
     end
-    $wf_thread = Thread.new { $wf_result = $wf.start}
+    @wf.start
     sleep(0.1)
     assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
@@ -163,8 +162,8 @@ class TestParallel < Test::Unit::TestCase
     # |-|- :a_2_2
     # |-|- :a_2_3
     # |- => :a_3
-    $wf.search false
-    $wf.description do
+    @wf.search false
+    @wf.description do
       parallel :wait do
         parallel_branch do activity :a_1, :call, :endpoint1 end
         parallel_branch do
@@ -183,7 +182,7 @@ class TestParallel < Test::Unit::TestCase
       end
       activity :a_3, :call, :endpoint1
     end
-    $wf_thread = Thread.new { $wf_result = $wf.start}
+    @wf.start
     sleep(0.1)
     assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a_2_1_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2_1_1 was not called, see message=[#{$message}]");

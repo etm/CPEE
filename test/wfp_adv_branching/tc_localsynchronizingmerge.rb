@@ -1,22 +1,20 @@
 require 'test/unit'
 require ::File.dirname(__FILE__) + '/../TestWorkflow'
 
-class TestLocalSynchronizingMerge < Test::Unit::TestCase
+class TestWFPLocalSynchronizingMerge < Test::Unit::TestCase
   def setup
     $message = ""
     $released = ""
-    $wf = TestWorkflow.new
+    @wf = TestWorkflow.new
   end
   def teardown
-    $wf.stop
+    @wf.stop
     $message = ""
     $released = ""
-    $wf_thread.join if defined?($wf_thread)
   end
 
-
   def test_localsyncmerge
-    $wf.description do
+    @wf.description do
       parallel :wait do
         parallel_branch do
           activity :a1_1, :call, :endpoint1
@@ -36,8 +34,8 @@ class TestLocalSynchronizingMerge < Test::Unit::TestCase
       end
       activity :a3, :call, :endpoint1
     end
-    $wf.search false
-    $wf_thread = Thread.new { $wf_result = $wf.start };
+    @wf.search false
+    @wf.start
     sleep(0.02)
     assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a2_2]"), "Pos a2_2 should be called by now, see message=[#{$message}]");
@@ -47,5 +45,4 @@ class TestLocalSynchronizingMerge < Test::Unit::TestCase
     assert($message.include?("Activity a1_1 done"), "pos a1_1 not properly ended, see $message=#{$message}");
     assert($message.include?("Handle call: position=[a3]"), "Pos a3 should be called by now, see message=[#{$message}]");
   end
-
 end

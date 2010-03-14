@@ -1,22 +1,19 @@
 require 'test/unit'
 require ::File.dirname(__FILE__) + '/../TestWorkflow'
 # unknown/not implemented
-class TestMultiMerge < Test::Unit::TestCase
+class TestWFPMultiMerge < Test::Unit::TestCase
   def setup
     $message = ""
     $released = ""
-    $wf = TestWorkflow.new
+    @wf = TestWorkflow.new
   end
   def teardown
-    $wf.stop
+    @wf.stop
     $message = ""
     $released = ""
-    $wf_thread.join if defined?($wf_thread)
   end
-
 
   def test_multimerge
     # unknown
   end
-    
 end

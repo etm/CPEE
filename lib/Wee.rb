@@ -445,10 +445,8 @@ class Wee
     def start()
       return nil if self.state == :running
       @__wee_main = Thread.new do
-        Thread.stop
         __wee_control_flow
       end
-      @__wee_main.run
     end
 
 end

@@ -1,22 +1,20 @@
 require 'test/unit'
 require ::File.dirname(__FILE__) + '/../TestWorkflow'
 # implemented as a combination of the Cancelling Structured Partial Join and the Exclusive Choice Pattern
-class TestDeferredChoice < Test::Unit::TestCase
+class TestWFPDeferredChoice < Test::Unit::TestCase
   def setup
     $message = ""
     $released = ""
-    $wf = TestWorkflow.new
+    @wf = TestWorkflow.new
   end
   def teardown
-    $wf.stop
+    @wf.stop
     $message = ""
     $released = ""
-    $wf_thread.join if defined?($wf_thread)
   end
 
-
   def test_sequence
-    $wf.description do
+    @wf.description do
       parallel :wait=>1 do
         parallel_branch do
           activity :a1_1, :call, :endpoint1 do
@@ -38,8 +36,8 @@ class TestDeferredChoice < Test::Unit::TestCase
         end
       end
     end
-    $wf.search false
-    $wf_thread = Thread.new { $wf_result = $wf.start };
+    @wf.search false
+    @wf.start
     sleep(0.02)
     assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a1_2]"), "Pos a1_2 should be called by now, see message=[#{$message}]");
