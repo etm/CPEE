@@ -305,11 +305,14 @@ class Wee
 
     def state=(newState)
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
-      if newState == :stopped
-        continue_thread(@__wee_main)
-      end  
       self.search @__wee_search_positions_original
       @__wee_state = newState
+      if newState == :stopped
+        continue_thread(@__wee_main)
+        if @__wee_main
+          @__wee_main.join 
+        end
+      end
       handler = @__wee_handler.new @__wee_handlerargs
       handler.inform_state newState
       newState
@@ -428,7 +431,6 @@ class Wee
             self.state = :running
             instance_eval(&blk)
             self.state = :finished if self.state == :running
-            [self.state, self.positions, self.context]
           end
         end
         blk  
@@ -442,8 +444,11 @@ class Wee
     # Start the workflow execution
     def start()
       return nil if self.state == :running
-      @__wee_main = Thread.current
-      __wee_control_flow
+      @__wee_main = Thread.new do
+        Thread.stop
+        __wee_control_flow
+      end
+      @__wee_main.run
     end
 
 end
