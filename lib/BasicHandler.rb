@@ -6,30 +6,24 @@ class BasicHandler < Wee::HandlerWrapperBase
   def initialize(args)
     @expand_params = true
     @__basichandler_stopped = false
-    @__basichandler_finished = false
+    @__basichandler_continue = nil
     @__basichandler_returnValue = nil
     $LOG = Logger.new(STDOUT) unless defined?($LOG)
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
-  def handle_call(position, passthrough, endpoint, parameters)
+  def handle_call(position, continue, passthrough, endpoint, parameters)
     $LOG.debug('BasicHandler.handle_call'){ "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"}
     pp "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
     Thread.new do
       sleep(0.6)
       return if @__basichandler_stopped
-      @__basichandler_finished = true
+      @__basichandler_continue.continue
       @__basichandler_returnValue = 'Handler_Dummy_Result'
     end
   end
  
-  # returns true if the last handled call has finished processing, or the
-  # call runs independent (asynchronous call) 
-  def finished_call
-    return @__basichandler_finished
-  end
-  
   # returns the result of the last handled call
   def return_value
     @__basichandler_finished ? @__basichandler_returnValue : nil

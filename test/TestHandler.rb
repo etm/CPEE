@@ -27,7 +27,7 @@ class TestHandler < Wee::HandlerWrapperBase
         Thread.pass
       end
       @__myhandler_returnValue = 'Handler_Dummy_Result'
-      @__myhandler_continue.wakeup
+      @__myhandler_continue.continue
     }
   end
  

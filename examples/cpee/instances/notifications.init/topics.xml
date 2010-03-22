@@ -12,7 +12,7 @@
   </topic>
   <topic id='properties/state'>
     <event>change</event>
-    <vote>change_to_running</vote>
+    <vote>running</vote>
   </topic>
   <topic id='properties/context-variables'>
     <event>change</event>

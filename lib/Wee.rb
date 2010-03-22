@@ -1,7 +1,7 @@
 require 'thread'
 
 class Wee
-  class CHash < Hash
+  class CHash < Hash# {{{
     def initialize(bndg)
       @bndg = bndg
     end  
@@ -17,8 +17,8 @@ class Wee
       end
       res
     end
-  end
-  class Position
+  end# }}}
+  class Position# {{{
     attr_reader :position
     attr_accessor :detail, :passthrough
     def initialize(position, detail=:at, passthrough=nil) # :at or :after
@@ -26,8 +26,8 @@ class Wee
       @detail = detail
       @passthrough = passthrough
     end
-  end
-  class HandlerWrapperBase
+  end# }}}
+  class HandlerWrapperBase# {{{
     def activity_handle(position, continue, passthrough, endpoint, parameters); end
     def activity_result_value; end
 
@@ -42,9 +42,23 @@ class Wee
     def inform_syntax_error(err); end
     def inform_context_change(changed); end
     def inform_state(newstate); end
-  end  
+  end  # }}}
+  class Continue# {{{
+    def initialize
+      @thread = Thread.new{Thread.stop}
+    end  
+    def waiting?
+      @thread.alive?
+    end  
+    def continue
+      @thread.wakeup 
+    end
+    def wait
+      @thread.join
+    end
+  end  # }}}
 
-  def initialize(*handlerargs)
+  def initialize(*handlerargs)# {{{
     @__wee_search_positions = @__wee_search_positions_original = {}
     @__wee_search = false
     @__wee_positions = Array.new
@@ -61,46 +75,45 @@ class Wee
     
     @__wee_handlerargs = handlerargs
     @__wee_state = :ready
-  end
+  end# }}}
 
-  def self::search(wee_search)
+  def self::search(wee_search)# {{{
     define_method :initialize_search do 
       self.search wee_search
     end
-  end
+  end# }}}
 
-  def self::endpoint(endpoints)
+  def self::endpoint(endpoints)# {{{
     @@__wee_new_endpoints ||= {}
     @@__wee_new_endpoints.merge! endpoints
     define_method :initialize_endpoints do
       self.endpoint @@__wee_new_endpoints
     end
-  end
+  end# }}}
 
-  def self::context(variables)
+  def self::context(variables)# {{{
     @@__wee_new_context_variables ||= []
     @@__wee_new_context_variables << variables
     define_method :initialize_context do
       @@__wee_new_context_variables.each { |item| self.context item }
     end
-  end
+  end# }}}
 
-  def self::handler(aClassname, *args)
+  def self::handler(aClassname, *args)# {{{
     define_method :initialize_handler do 
       self.handler = aClassname
       self.handlerargs = args
     end
-  end
+  end# }}}
 
-  def self::control(flow, &block)
+  def self::control(flow, &block)# {{{
     @@__wee_control_block = block
     define_method :__wee_control_flow do
       self.state = :running
       instance_eval(&(@@__wee_control_block))
       self.state = :finished if self.state == :running
-      [self.state, self.positions, self.context]
     end
-  end
+  end# }}}
 
   def self::flow; end
 
@@ -149,7 +162,7 @@ class Wee
     # Parallel DSL-Construct
     # Defines Workflow paths that can be executed parallel.
     # May contain multiple branches (parallel_branch)
-    def parallel(type=:wait)
+    def parallel(type=:wait)# {{{
       return if self.state == :stopped || Thread.current[:nolongernecessary]
 
       mythreads = Array.new
@@ -170,53 +183,53 @@ class Wee
         finished_threads_count = wait_count if self.state == :stopped
       end
       if self.state == :stopped
-        mythreads.each { |thread| continue_thread(thread) if thread.alive? }
+        mythreads.each { |thread| trigger_continue(thread) if thread.alive? }
       else  
         mythreads.each do |thread| 
           if thread.alive? 
             thread[:nolongernecessary] = true
-            continue_thread(thread)
+            trigger_continue(thread)
           end  
         end
       end  
-    end
+    end# }}}
 
     # Defines a branch of a parallel-Construct
-    def parallel_branch
+    def parallel_branch# {{{
       return if self.state == :stopped || Thread.current[:nolongernecessary]
       @__wee_threads << Thread.new do
         Thread.current[:branch_search] = @__wee_search
         yield
       end
-    end
+    end# }}}
 
     # Choose DSL-Construct
     # Defines a choice in the Workflow path.
     # May contain multiple execution alternatives
-    def choose
+    def choose# {{{
       return if self.state == :stopped || Thread.current[:nolongernecessary]
       Thread.current[:alternative_executed] ||= []
       Thread.current[:alternative_executed] << false
       yield
       Thread.current[:alternative_executed].pop
       nil
-    end
+    end# }}}
 
     # Defines a possible choice of a choose-Construct
     # Block is executed if condition == true or
     # searchmode is active (to find the starting position)
-    def alternative(condition)
+    def alternative(condition)# {{{
       return if self.state == :stopped || Thread.current[:nolongernecessary]
       yield if is_in_search_mode || condition
       Thread.current[:alternative_executed][-1] = true if condition
-    end
-    def otherwise
+    end# }}}
+    def otherwise# {{{
       return if self.state == :stopped || Thread.current[:nolongernecessary]
       yield if is_in_search_mode || !Thread.current[:alternative_executed].last
-    end
+    end# }}}
 
     # Defines a critical block (=Mutex)
-    def critical(id)
+    def critical(id)# {{{
       @__wee_critical ||= Mutex.new
       semaphore = nil
       @__wee_critical.synchronize do
@@ -227,10 +240,10 @@ class Wee
       semaphore.synchronize do
         yield
       end
-    end
+    end# }}}
 
     # Defines a Cycle (loop/iteration)
-    def cycle(condition)
+    def cycle(condition)# {{{
       raise "condition must be a string to evaluate" unless condition.is_a?(String)
       return if self.state == :stopped || Thread.current[:nolongernecessary]
       yield if is_in_search_mode
@@ -238,16 +251,16 @@ class Wee
       while eval(condition)
         yield
       end
-    end
+    end# }}}
     
   private
-    def continue_thread(thread)
-      if thread && thread.alive? && thread[:continue] && thread[:continue].alive?
-        thread[:continue].wakeup
+    def trigger_continue(thread)# {{{
+      if thread && thread.alive? && thread[:continue] && thread[:continue].waiting?
+        thread[:continue].continue
       end  
-    end  
+    end  # }}}
 
-    def is_in_search_mode(position = nil)
+    def is_in_search_mode(position = nil)# {{{
       # set semaphore to avoid conflicts if @__wee_search is changed by another thread
       Mutex.new.synchronize do
         branch = Thread.current
@@ -259,7 +272,7 @@ class Wee
         end
         return branch[:branch_search] || @__wee_search # is activity part of a branch and in search mode?
       end
-    end
+    end# }}}
     def perform_external_call(position, passthrough, handler, endpoint, *parameters)
       params = { }
       wp = Wee::Position.new(position, :at, nil)
@@ -275,10 +288,10 @@ class Wee
         end
       end
       # handshake call and wait until it finished
-      continue = Thread.new{Thread.stop}
+      continue = Continue.new
       Thread.current[:continue] = continue
       handler.handle_call position, continue, passthrough, endpoint, params
-      continue.join unless Thread.current[:nolongernecessary] || self.state == :stopped
+      continue.wait unless Thread.current[:nolongernecessary] || self.state == :stopped
        
       handler.no_longer_necessary if Thread.current[:nolongernecessary]
       if self.state == :stopped
@@ -289,7 +302,7 @@ class Wee
       end  
       Thread.current[:nolongernecessary] || self.state == :stopped ? nil : handler.return_value
     end
-    def refreshcontext(handler)
+    def refreshcontext(handler)# {{{
       changed = []
       @__wee_context.each do |varname, value|
         if @__wee_context[varname] != instance_variable_get("@#{varname}".to_sym)
@@ -298,17 +311,17 @@ class Wee
         end  
       end
       handler.inform_context_change(changed) unless changed.empty?
-    end
-    def get_matching_search_position(position)
+    end# }}}
+    def get_matching_search_position(position)# {{{
       @__wee_search_positions[position]
-    end
+    end# }}}
 
-    def state=(newState)
+    def state=(newState)# {{{
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
       self.search @__wee_search_positions_original
       @__wee_state = newState
       if newState == :stopped
-        continue_thread(@__wee_main)
+        trigger_continue(@__wee_main)
         if @__wee_main
           @__wee_main.join 
         end
@@ -316,15 +329,15 @@ class Wee
       handler = @__wee_handler.new @__wee_handlerargs
       handler.inform_state newState
       newState
-    end
+    end# }}}
 
   public
-    def positions
+    def positions# {{{
       @__wee_positions
-    end
+    end# }}}
 
     # set the Handler
-    def handler=(new_wee_handler)
+    def handler=(new_wee_handler)# {{{
       superclass = new_wee_handler
       while superclass
         check_ok = true if superclass == Wee::HandlerWrapperBase
@@ -332,26 +345,26 @@ class Wee
       end
       raise "Handler is not inhereted from HandlerWrapperBase" unless check_ok
       @__wee_handler = new_wee_handler
-    end
+    end# }}}
 
     # Get/Set the handler arguments
-    def handlerargs=(args)
+    def handlerargs=(args)# {{{
       if args.class == Array
         @__wee_handlerargs = args
       end
       nil
-    end
-    def handlerargs
+    end# }}}
+    def handlerargs# {{{
       @__wee_handlerargs
-    end
+    end# }}}
 
     # Get the state of execution (ready|running|stopped|finished)
-    def state
+    def state# {{{
       @__wee_state
-    end
+    end# }}}
 
     # Set search positions
-    def search(new_wee_search)
+    def search(new_wee_search)# {{{
       @__wee_search_positions = {}
       @__wee_search_positions_original = []
 
@@ -369,14 +382,14 @@ class Wee
         @__wee_search_positions_original.each { |search_position| @__wee_search_positions[search_position.position] = search_position } if @__wee_search_positions_original.is_a?(Array)
       end
       @__wee_search = @__wee_search_original
-    end
+    end# }}}
     # Get search positions
-    def search_positions
+    def search_positions# {{{
       return @__wee_search_positions_original
-    end
+    end# }}}
 
     # get/set/clean context
-    def context(new_context = nil)
+    def context(new_context = nil)# {{{
       if new_context.nil?
         @__wee_context ? @__wee_context : CHash.new(self)
       else  
@@ -391,10 +404,10 @@ class Wee
           end
         end
       end  
-    end
+    end# }}}
 
     # get/set/clean endpoints
-    def endpoints(new_endpoints = nil)
+    def endpoints(new_endpoints = nil)# {{{
       if new_endpoints.nil?
         @__wee_endpoints ? @__wee_endpoints : Hash.new
       else
@@ -404,13 +417,13 @@ class Wee
           end
         end
       end
-    end
-    def endpoint(e)
+    end# }}}
+    def endpoint(e)# {{{
       self.endpoints e
-    end
+    end# }}}
 
     # get/set workflow description
-    def description(code = nil,&blk)
+    def description(code = nil,&blk)# {{{
       if code.nil? && !block_given?
         @__wee_wfsource
       else
@@ -435,18 +448,18 @@ class Wee
         end
         blk  
       end
-    end
+    end# }}}
 
     # Stop the workflow execution
-    def stop()
+    def stop# {{{
       self.state = :stopped
-    end
+    end# }}}
     # Start the workflow execution
-    def start()
+    def start# {{{
       return nil if self.state == :running
       @__wee_main = Thread.new do
         __wee_control_flow
       end
-    end
+    end# }}}
 
 end
