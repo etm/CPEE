@@ -111,7 +111,6 @@ class Handler < Wee::HandlerWrapperBase
     end
   end
 
-
   def vote_sync_before(activity)
     $controller[@instance].vote("properties/running/syncing_before", :activity => activity)
   end

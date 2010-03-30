@@ -53,6 +53,10 @@ class Controller
             @events["#{t.attributes['id']}/#{e}"] ||= {}
             @events["#{t.attributes['id']}/#{e}"][key] = url
           end
+          t.find('n:vote').each do |e|
+            @votes["#{t.attributes['id']}/#{e}"] ||= {}
+            @votes["#{t.attributes['id']}/#{e}"][key] = url
+          end
         end
       end
     end
@@ -73,14 +77,14 @@ class Controller
     end
   end
 
-  def notify(type,what,content={})
-    item = type == :event ? @events[what] : @votes[what]
+  def notify(what,content={})
+    item = @events[what]
     if item
       item.each do |key,url|
         topic        = ::File::dirname(what)
         event        = ::File::basename(what)
         notification = []
-        cid          = -1
+        uid          = -1
         fp           = ''
 
         content.each do |k,v|
@@ -93,7 +97,34 @@ class Controller
           Riddl::Parameter::Simple.new("topic",topic),
           Riddl::Parameter::Simple.new("event",event),
           Riddl::Parameter::Simple.new("notification",notification.join('; ')),
-          Riddl::Parameter::Simple.new("consumer-id",cid),
+          Riddl::Parameter::Simple.new("message-uid",uid),
+          Riddl::Parameter::Simple.new("fingerprint-with-consumer-secret",fp)
+        ]
+      end
+    end
+  end
+  
+  def vote(what,content={})
+    item = @votes[what]
+    if item
+      item.each do |key,url|
+        topic        = ::File::dirname(what)
+        vote         = ::File::basename(what)
+        notification = []
+        uid          = -1
+        fp           = ''
+
+        content.each do |k,v|
+          notification << "#{k}: #{v.inspect}" 
+        end
+
+        client = Riddl::Client.new(url)
+        client.post [
+          Riddl::Parameter::Simple.new("key",key),
+          Riddl::Parameter::Simple.new("topic",topic),
+          Riddl::Parameter::Simple.new("vote",vote),
+          Riddl::Parameter::Simple.new("notification",notification.join('; ')),
+          Riddl::Parameter::Simple.new("message-uid",uid),
           Riddl::Parameter::Simple.new("fingerprint-with-consumer-secret",fp)
         ]
       end
