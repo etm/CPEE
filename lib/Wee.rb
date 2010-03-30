@@ -42,6 +42,10 @@ class Wee
     def inform_syntax_error(err); end
     def inform_context_change(changed); end
     def inform_state(newstate); end
+    
+    def vote_start; end
+    def vote_sync_before(position); end
+    def vote_sync_after(position); end
   end  # }}}
   class Continue# {{{
     def initialize
@@ -132,13 +136,16 @@ class Wee
       begin
         case type
           when :manipulate
+            handler.vote_sync_before position
             if block_given?
               handler.inform_activity_manipulate position
               yield
             end  
             refreshcontext handler
             handler.inform_activity_done position
+            handler.vote_sync_after position
           when :call
+            handler.vote_sync_before position
             passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
             ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
             if block_given? && @__wee_state != :stopped && !Thread.current[:nolongernecessary]
@@ -147,6 +154,7 @@ class Wee
             end
             refreshcontext handler
             handler.inform_activity_done position
+            handler.vote_sync_after position
         else
           raise "Invalid activity type #{type}. Only :manipulate or :call allowed"
         end
@@ -457,6 +465,7 @@ class Wee
     # Start the workflow execution
     def start# {{{
       return nil if self.state == :running
+      handler.vote_start
       @__wee_main = Thread.new do
         __wee_control_flow
       end
