@@ -28,7 +28,7 @@ class Wee
     end
   end# }}}
   class HandlerWrapperBase# {{{
-    def activity_handle(position, continue, passthrough, endpoint, parameters); end
+    def activity_handle(id, continue, passthrough, endpoint, parameters); end
     def activity_result_value; end
 
     def activity_stop; end
@@ -43,9 +43,8 @@ class Wee
     def inform_context_change(changed); end
     def inform_state(newstate); end
     
-    def vote_start; end
-    def vote_sync_before(position); end
-    def vote_sync_after(position); end
+    def vote_sync_before(activity); end
+    def vote_sync_after(activity); end
   end  # }}}
   class Continue# {{{
     def initialize
@@ -465,7 +464,6 @@ class Wee
     # Start the workflow execution
     def start# {{{
       return nil if self.state == :running
-      handler.vote_start
       @__wee_main = Thread.new do
         __wee_control_flow
       end

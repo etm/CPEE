@@ -13,7 +13,7 @@ class BasicHandler < Wee::HandlerWrapperBase
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
-  def handle_call(position, continue, passthrough, endpoint, parameters)
+  def handle_call(id, continue, passthrough, endpoint, parameters)
     $LOG.debug('BasicHandler.handle_call'){ "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"}
     pp "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
     Thread.new do
