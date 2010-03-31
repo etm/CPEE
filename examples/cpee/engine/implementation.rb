@@ -6,12 +6,16 @@ Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.e
 end
 
 class Callback #{{{
-  def initialize(handler)
+  def initialize(handler,info,method=:callback)
+    @info = info
     @handler = handler
+    @method = method.class == Symbol ? method : :callback
   end
 
+  attr_reader :info
+
   def callback(result)
-    @handler.callback(result)
+    @handler.send @method, result
   end
 end #}}}
 
@@ -19,10 +23,23 @@ class ExCallback < Riddl::Implementation #{{{
   def response
     id = @r[0]  
     callback = @r[2]
-    p id
-    p callback
     $controller[id.to_i].callbacks[callback].callback(@p)
     $controller[id.to_i].callbacks.delete(callback)
+  end
+end #}}}
+
+class Callbacks < Riddl::Implementation #{{{
+  def response
+    Riddl::Parameter::Complex.new("info","text/xml") do
+      cb = XML::Smart::string("<?xml-stylesheet href='/xsls/callbacks.xsl' type='text/xsl'?><callbacks details='#{@a[0]}'/>")
+      if @a[0] == :production
+        id = @r[0]
+        $controller[id].callbacks.each do |k,v|
+          cb.root.att("callback",{"id" => k},v)
+        end  
+      end
+      cb.to_s
+    end  
   end
 end #}}}
 
@@ -70,7 +87,7 @@ class Info < Riddl::Implementation #{{{
         <info instance='#{@r[0]}'>
           <notifications/>
           <properties/>
-          <callbacks>0</callbacks>
+          <callbacks/>
         </info>
       END
       i.to_s

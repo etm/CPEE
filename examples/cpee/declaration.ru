@@ -11,6 +11,7 @@ require 'engine/implementation'
 
 use Rack::ShowStatus
 $0 = "dist-wee2"
+mode = :debug # :production
 
 run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
   accessible_description true
@@ -34,13 +35,14 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
         properties     = Riddl::Utils::Properties::file(instance + 'properties.xml')
         schema, strans = ::File.exists?(instance + 'properties.schema.active') ? [a_schema,a_strans] : [i_schema,i_strans]
 
-        use Riddl::Utils::Properties::implementation(properties, schema, strans, PropertiesHandler, r[:match].count)
+        use Riddl::Utils::Properties::implementation(properties, schema, strans, PropertiesHandler, r[:match].count, mode)
       end
       on resource 'notifications' do |r|
         ndir = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/notifications/'
-        use Riddl::Utils::Notifications::Producer::implementation(ndir,xsls, NotificationsHandler)
+        use Riddl::Utils::Notifications::Producer::implementation(ndir,xsls, NotificationsHandler, mode)
       end
       on resource 'callbacks' do
+        run Callbacks, mode if get
         on resource do
           run ExCallback if put
         end  

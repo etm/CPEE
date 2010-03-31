@@ -33,7 +33,7 @@ class Handler < Wee::HandlerWrapperBase
     @__basichandler_finished = true
     @__basichandler_returnValue = ''
     if result.find{ |r| r.class == Riddl::Header && r.name == "WEE_CALLBACK" && r.value == "true" }
-      $controller[@instance].callbacks[callback] = Callback.new(self)
+      $controller[@instance].callbacks[callback] = Callback.new(self,:callback)
       @__basichandler_finished = false
       return
     end

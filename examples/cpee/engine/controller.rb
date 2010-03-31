@@ -2,6 +2,7 @@ require ::File.dirname(__FILE__) + '/empty_workflow'
 require 'xml/smart'
 
 class Controller
+
   def initialize(id)
     @directory = ::File.dirname(__FILE__) + "/../instances/#{id}/"
     @events = {}
