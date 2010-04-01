@@ -15,6 +15,7 @@ mode = :debug # :production
 
 run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
   accessible_description true
+  cross_site_xhr true
 
   a_schema, a_strans = Riddl::Utils::Properties::schema(::File.dirname(__FILE__) + '/instances/properties.schema.active')
   i_schema, i_strans = Riddl::Utils::Properties::schema(::File.dirname(__FILE__) + '/instances/properties.schema.inactive')

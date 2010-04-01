@@ -1,0 +1,29 @@
+body {
+  background-color:#FFFFFF;
+  margin:0;
+  padding:0;
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 0.75em;
+  color: #000000;
+}
+
+/* Browser Bug, set textarea explicitly */
+textarea, input, select, button {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 1em;
+}
+
+a:link    { color:#425d73; text-decoration:none; }
+a:visited { color:#425d73; text-decoration:none; }
+a:hover   { color:#000000; text-decoration:underline; }
+a:active  { color:#000000; text-decoration:underline; }
+
+#instance_table {
+  width: 100%;  
+}
+#instance_table td:nth-child(1) { width: 8em; padding-right: 1em; }
+#instance_table td:nth-child(3) { width: 18em; padding-left: 1em; }
+#instance_table input { width: 100% }
+#instance_table button[name=testset]  { width: 100%;  }
+#instance_table button[name=base]     { width: 100%;  }
+#instance_table button[name=instance] { width: 100%;  }

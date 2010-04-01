@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CPEE Cockpit</title>
+    <link rel="stylesheet" href="index.css" type="text/css"/>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="cors.js"></script>
+  </head>
+  <body>
+    <h1>CPEE Instance</h1>
+
+    <table id="instance_table">
+    <tr>
+      <td>Base Url:</td>
+      <td><input name="base-url" type="text" value="http://tango.pri.lan:9298"/></td>
+      <td><button name="base">create new instance</button></td>
+    </tr>
+    <tr>
+      <td>Instance Url:</td>
+      <td><input name="instance-url" type="text" value=""></td>
+      <td><button name="instance">fetch information from instance</button></td>
+    </tr>
+    <tr>
+      <td>Testsets:</td>
+      <td>
+        <select name="testset-names"/>
+      </td>  
+      <td><button name="testset">load testset into instance</button></td>
+    </tr>
+    </table>
+  
+    <h1>Endpoints</h1>
+    <h1>Context Variables</h1>
+    <h1>Description</h1>
+    <h1>Positions</h1>
+    <h1>State</h1>
+  </body>
+</html>

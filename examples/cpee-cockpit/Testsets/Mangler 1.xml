@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<testset>
+  <positions/>
+  <context-variables>
+    <x>_begin</x>
+  </context-variables>
+  <endpoints>
+    <timeout>http://www.pri.univie.ac.at/~mangler/timeout.php</timeout>
+  </endpoints>
+  <description xmlns="http://cpee.org/ns/description/1.0">
+    <call id="a1_1" endpoint="timeout">
+      <parameter name="method">post</parameter>
+      <parameter name="parameters">
+        <parameter name="timeout">2</parameter>
+        <parameter name="timeout">3</parameter>
+      </parameter>
+      <manipulate output="result">  @x += result.inspect
+  @x += result.inspect</manipulate>  
+    </call>  
+    <parallel wait="2">
+      <parallel_branch>
+        <call id="a2_1_1" endpoint="timeout">
+          <parameter name="method">post</parameter>
+          <parameter name="parameters">
+            <parameter name="timeout">2</parameter>
+          </parameter>
+        </call>  
+      </parallel_branch>
+      <parallel_branch>
+        <call id="a2_2_1" endpoint="timeout">
+          <parameter name="method">post</parameter>
+          <parameter name="parameters">
+            <parameter name="timeout">2</parameter>
+          </parameter>
+        </call>  
+      </parallel_branch>
+    </parallel>  
+    <manipulate id="a3">  @x += '_end'</manipulate>  
+    <choose>
+      <alternative condition="@x != nil">
+        <call id="a4a" endpoint="timeout">
+          <parameter name="method">post</parameter>
+          <parameter name="parameters">
+            <parameter name="timeout">2</parameter>
+          </parameter>
+        </call>  
+      </alternative>
+      <otherwise>
+        <call id="a4b" endpoint="timeout">
+          <parameter name="method">post</parameter>
+          <parameter name="parameters">
+            <parameter name="timeout">2</parameter>
+          </parameter>
+        </call>  
+      </otherwise>
+    </choose>
+  </description>
+</testset>
