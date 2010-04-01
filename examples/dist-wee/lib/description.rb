@@ -5,8 +5,8 @@ class DescriptionGET < Riddl::Implementation
     pp "DescriptionGET, r0=#{@r[0]}"
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
-    pp "Description: #{wf.wf_description}"
-    Riddl::Parameter::Simple.new("description",wf.wf_description)
+    pp "Description: #{wf.description}"
+    Riddl::Parameter::Simple.new("description",wf.description)
   end
 end
 
@@ -17,6 +17,6 @@ class DescriptionPUT < Riddl::Implementation
     description = @p[0].value
     wf = $controller[instance_id]
     pp "description will be set to #{description}"
-    wf.wf_description= description
+    wf.description description
   end
 end
