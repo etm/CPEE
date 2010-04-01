@@ -30,13 +30,16 @@ class MonitoringHandler < Wee::HandlerWrapperBase
     @__myhandler_continue = continue
     Thread.new do
     #  do_the_riddle position, passthrough, endpoint, parameters
+      p parameters[:timeout]
       do_the_sim position, passthrough, endpoint, parameters[:timeout]
       @__myhandler_continue.continue
     end
   end
 
   def do_the_sim(position, passthrough, endpoint, parameters)
-    to_wait = parameters ? parameters[-1].to_i : 5
+    to_wait = parameters ? parameters.to_i : 5
+    p "====="
+    p "Wating for #{to_wait} times, parameters[-1]=#{parameters[-1].to_i}"
     to_wait.times() {
       sleep 1 unless @__myhandler_stopped
     }

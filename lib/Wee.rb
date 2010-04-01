@@ -54,7 +54,7 @@ class Wee
       @thread.alive?
     end  
     def continue
-      @thread.wakeup 
+      @thread.wakeup if @thread.alive?
     end
     def wait
       @thread.join

@@ -4,7 +4,6 @@ class EndpointsGET < Riddl::Implementation
   include MarkUSModule
 
   def response
-    pp "EndpointsGET, r0=#{@r[0]}"
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
     Riddl::Parameter::Complex.new("eps","text/html") do
@@ -19,7 +18,6 @@ end
 class EndpointsPOST < Riddl::Implementation
   
   def response
-    pp "EndpointsPOST, r0=#{@r[0]}, p0=#{@p[0].value}, p1=#{@p[1].value}"
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
     wf.endpoint @p[0].value.to_sym => @p[1].value
@@ -30,14 +28,12 @@ end
 class EndpointsDELETE < Riddl::Implementation
 
   def response
-    pp "EndpointsDELTE, r0=#{@r[0]}, p0=#{@p[0].value}"
     @status = 405
   end
 end
 
 class EndpointGET < Riddl::Implementation
   def response
-    pp "EndpointGET, r0=#{@r[0]}, r3=#{@r[3]}"
     ep_id = @r[3].to_sym
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
@@ -50,7 +46,6 @@ class EndpointGET < Riddl::Implementation
 end
 class EndpointPUT < Riddl::Implementation
   def response
-    pp "EndpointPUT, r0=#{@r[0]}, r3=#{@r[3]}, p0=#{@p[0]}"
     ep_id = @r[3].to_sym
     ep_value = @p[0].value
     instance_id = @r[0].to_i

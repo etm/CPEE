@@ -4,7 +4,6 @@ class ContextGET < Riddl::Implementation
   include MarkUSModule
 
   def response
-    pp "ContextGET, r0=#{@r[0]}"
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
     Riddl::Parameter::Complex.new("cvs","text/html") do
@@ -19,7 +18,6 @@ end
 class ContextPOST < Riddl::Implementation
   
   def response
-    pp "ContextPOST, r0=#{@r[0]}, p0=#{@p[0].value}, p1=#{@p[1].value}"
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
     wf.context @p[0].value => @p[1].value
@@ -30,14 +28,12 @@ end
 class ContextDELETE < Riddl::Implementation
 
   def response
-    pp "ContextDELTE, r0=#{@r[0]}, p0=#{@p[0].value}"
     @status = 405
   end
 end
 
 class ContextVarGET < Riddl::Implementation
   def response
-    pp "ContextVarGET, r0=#{@r[0]}, r3=#{@r[3]}"
     contextvar_id = @r[3].to_sym
     instance_id = @r[0].to_i
     wf = $controller[instance_id]
@@ -50,7 +46,6 @@ class ContextVarGET < Riddl::Implementation
 end
 class ContextVarPUT < Riddl::Implementation
   def response
-    pp "ContextVarPUT, r0=#{@r[0]}, r3=#{@r[3]}, p0=#{@p[0]}"
     contextvar_id = @r[3].to_sym
     contextvar_value = @p[0].value
     instance_id = @r[0].to_i
