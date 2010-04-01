@@ -19,6 +19,11 @@
       <xi:include href="rngs/instance-info.rng"/>
     </parameter>
   </message>
+  <message name="callbacks">
+    <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="rngs/callbacks.rng"/>
+    </parameter>
+  </message>
   <message name="xsl">
     <parameter name="xsl" mimetype="application/xml"/>
   </message>
@@ -35,6 +40,7 @@
       <get in="*" out="instance-info"/>
       <delete in="*"/>
       <resource relative="callbacks">
+        <get in="*" out="callbacks"/>
         <resource>
           <put in="*"/>
         </resource>

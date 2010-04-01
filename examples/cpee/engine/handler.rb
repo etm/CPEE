@@ -8,8 +8,8 @@ class Handler < Wee::HandlerWrapperBase
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
-  def handle_call(position, passthrough, endpoint, parameters)
-    $controller[@instance].notify("monitoring/activity_call", :activity => position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
+  def handle_call(id, passthrough, endpoint, parameters)
+    $controller[@instance].notify("monitoring/activity_call", :activity => id, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
     begin
 
     client = Riddl::Client.new(endpoint,::File.dirname(__FILE__) + '/endpoint.xml')
@@ -33,7 +33,7 @@ class Handler < Wee::HandlerWrapperBase
     @__basichandler_finished = true
     @__basichandler_returnValue = ''
     if result.find{ |r| r.class == Riddl::Header && r.name == "WEE_CALLBACK" && r.value == "true" }
-      $controller[@instance].callbacks[callback] = Callback.new(self)
+      $controller[@instance].callbacks[callback] = Callback.new(self,:callback)
       @__basichandler_finished = false
       return
     end
@@ -109,5 +109,12 @@ class Handler < Wee::HandlerWrapperBase
       $controller[@instance].serialize!
       $controller[@instance].notify("properties/state/change", :state => newstate)
     end
+  end
+
+  def vote_sync_before(activity)
+    $controller[@instance].vote("properties/running/syncing_before", :activity => activity)
+  end
+  def vote_sync_after(activity)
+    $controller[@instance].vote("properties/running/syncing_after", :activity => activity)
   end
 end

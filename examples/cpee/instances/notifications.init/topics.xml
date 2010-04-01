@@ -4,7 +4,8 @@
     <event>activity_failed</event>
     <event>activity_manipulating</event>
     <event>activity_done</event>
-    <vote>syncing</vote>
+    <vote>syncing_before</vote>
+    <vote>syncing_after</vote>
   </topic>
   <topic id='properties/description'>
     <event>change</event>
@@ -12,7 +13,7 @@
   </topic>
   <topic id='properties/state'>
     <event>change</event>
-    <vote>change_to_running</vote>
+    <vote>running</vote>
   </topic>
   <topic id='properties/context-variables'>
     <event>change</event>
