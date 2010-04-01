@@ -98,7 +98,6 @@ class Wee
       self.state = :running
       instance_eval(&(@@__wee_control_block))
       self.state = :finished if self.state == :running
-      [self.state, self.positions, self.context]
     end
   end
 
@@ -125,6 +124,7 @@ class Wee
             end  
             refreshcontext handler
             handler.inform_activity_done position
+            @__wee_positions << wp
           when :call
             passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
             ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
