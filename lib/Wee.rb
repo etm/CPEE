@@ -54,7 +54,7 @@ class Wee
       @thread.alive?
     end  
     def continue
-      @thread.wakeup 
+      @thread.wakeup if @thread.alive?
     end
     def wait
       @thread.join
@@ -297,17 +297,17 @@ class Wee
       # handshake call and wait until it finished
       continue = Continue.new
       Thread.current[:continue] = continue
-      handler.handle_call position, continue, passthrough, endpoint, params
+      handler.activity_handle position, continue, passthrough, endpoint, params
       continue.wait unless Thread.current[:nolongernecessary] || self.state == :stopped
        
-      handler.no_longer_necessary if Thread.current[:nolongernecessary]
+      handler.activity_no_longer_necessary if Thread.current[:nolongernecessary]
       if self.state == :stopped
-        handler.stop_call
-        wp.passthrough = handler.passthrough
+        handler.activity_stop
+        wp.passthrough = handler.activity_passthrough_value
       else
         @__wee_positions.delete wp
       end  
-      Thread.current[:nolongernecessary] || self.state == :stopped ? nil : handler.return_value
+      Thread.current[:nolongernecessary] || self.state == :stopped ? nil : handler.activity_result_value
     end
     def refreshcontext(handler)# {{{
       changed = []

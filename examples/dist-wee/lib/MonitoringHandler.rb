@@ -8,8 +8,8 @@ class MonitoringHandler < Wee::HandlerWrapperBase
     p "MonitoringHandler.initialize: url = #{url.inspect}"
     @urls = url.is_a?(String) ? url.split(',') : url[0].split(',')
 
+    @__myhandler_continue = nil
     @__myhandler_stopped = false
-    @__myhandler_finished = false
     @__myhandler_returnValue = nil
   end
 
@@ -25,21 +25,24 @@ class MonitoringHandler < Wee::HandlerWrapperBase
   end
 
   # executes a Riddle-call to the given endpoint with the given parameters.
-  def handle_call(position, passthrough, endpoint, parameters)
-    log "handle_call", "Handle call: position=[#{position}]; passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
-
+  def activity_handle(position, continue, passthrough, endpoint, parameters)
+    log "activity_handle", "Handle call: position=[#{position}]; passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
+    @__myhandler_continue = continue
     Thread.new do
     #  do_the_riddle position, passthrough, endpoint, parameters
+      p parameters[:timeout]
       do_the_sim position, passthrough, endpoint, parameters[:timeout]
+      @__myhandler_continue.continue
     end
   end
 
   def do_the_sim(position, passthrough, endpoint, parameters)
-    to_wait = parameters ? parameters[-1].to_i : 5
+    to_wait = parameters ? parameters.to_i : 5
+    p "====="
+    p "Wating for #{to_wait} times, parameters[-1]=#{parameters[-1].to_i}"
     to_wait.times() {
       sleep 1 unless @__myhandler_stopped
     }
-    @__myhandler_finished = true
     @__myhandler_returnValue = "dummy_value"
   end
 
@@ -70,53 +73,48 @@ class MonitoringHandler < Wee::HandlerWrapperBase
         sleep 1
       end
     end
-    @__myhandler_finished = true
     @__myhandler_returnValue = "dummy_value"
   end
 
 
-  # returns true if the last handled call has finished processing, or the
-  # call runs independent (asynchronous call)
-  def finished_call
-    return @__myhandler_finished
-  end
 
   # returns the result of the last handled call
-  def return_value
-    @__myhandler_finished ? @__myhandler_returnValue : nil
+  def activity_result_value
+    @__myhandler_returnValue
   end
   # Called if the WS-Call should be interrupted. The decision how to deal
   # with this situation is given to the handler. To provide the possibility
   # of a continue the Handler will be asked for a passthrough
-  def stop_call
+  def activity_stop
     log "stop_call", "Recieved stop signal, aborting on next possibility"
     @__myhandler_stopped = true
   end
   # is called from Wee after stop_call to ask for a passthrough-value that may give
   # information about how to continue the call. This passthrough-value is given
-  # to handle_call if the workflow is configured to do so.
-  def passthrough
+  # to activity_handle if the workflow is configured to do so.
+  def activity_passthrough_value
     nil
   end
 
-  # Called if the execution of the actual handle_call is not necessary anymore
+  # Called if the execution of the actual activity_handle is not necessary anymore
   # It is definit that the call will not be continued.
   # At this stage, this is only the case if parallel branches are not needed
   # anymore to continue the workflow
-  def no_longer_necessary
+  def activity_no_longer_necessary
     log "stop_call", "Recieved no_longer_necessary signal, aborting on next possibility"
     @__myhandler_stopped = true
   end
   # Is called if a Activity is executed correctly
-  def inform_activity_done(activity, context)
+  def inform_activity_done(activity)
     log "inform_activity_done", "Activity #{activity} done"
   end
   # Is called if a Activity is executed with an error
-  def inform_activity_failed(activity, context, err)
+  def inform_activity_failed(activity, err)
     log "inform_activity_failed", "Activity #{activity} failed with error #{err}"
     raise(err)
   end
-  def inform_workflow_state(newstate)
+  def inform_state(newstate)
     log "inform_workflow_state", "State changed to #{newstate}"
   end
+
 end

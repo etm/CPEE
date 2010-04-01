@@ -1,0 +1,11 @@
+clobber=
+clobber_package=Remove package products
+gem=Build the gem file wee-1.0.0.gem
+package=Build all the packages
+pkg=
+pkg/wee-1.0.0=
+pkg/wee-1.0.0.gem=
+pkg/wee-1.0.0.tgz=
+pkg/wee-1.0.0.zip=
+repackage=Force a rebuild of the package files
+test=Run tests

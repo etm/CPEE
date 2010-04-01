@@ -9,14 +9,14 @@ class TestHandler < Wee::HandlerWrapperBase
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
-  def handle_call(position, continue, passthrough, endpoint,parameters)
+  def activity_handle(position, continue, passthrough, endpoint,parameters)
     @__myhandler_continue = continue
     $message += "Handle call: position=[#{position}] passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]. Waiting for release\n"
     t = Thread.new() {
       released = false
       until(released) do
         if @__myhandler_stopped
-          $message += "handle_call: : Received stop signal, process is stoppable =>aborting!\n"
+          $message += "activity_handle: : Received stop signal, process is stoppable =>aborting!\n"
           return
         end
         if($released.include?("release #{position.to_s}"))
@@ -32,28 +32,28 @@ class TestHandler < Wee::HandlerWrapperBase
   end
  
   # returns the result of the last handled call
-  def return_value
+  def activity_result_value
     @__myhandler_returnValue
   end
   # Called if the WS-Call should be interrupted. The decision how to deal
   # with this situation is given to the handler. To provide the possibility
   # of a continue the Handler will be asked for a passthrough
-  def stop_call()
+  def activity_stop
     $message += "Handler: Recieved stop signal, deciding if stopping\n"
     @__myhandler_stopped = true
   end
   # is called from Wee after stop_call to ask for a passthrough-value that may give
   # information about how to continue the call. This passthrough-value is given
-  # to handle_call if the workflow is configured to do so.
-  def passthrough
+  # to activity_handle if the workflow is configured to do so.
+  def activity_passthrough_value
     return nil
   end
 
-  # Called if the execution of the actual handle_call is not necessary anymore
+  # Called if the execution of the actual activity_handle is not necessary anymore
   # It is definit that the call will not be continued.
   # At this stage, this is only the case if parallel branches are not needed
   # anymore to continue the workflow
-  def no_longer_necessary
+  def activity_no_longer_necessary
     $message += "Handler: Recieved no_longer_necessary signal, deciding if stopping\n"
     @__myhandler_stopped = true
   end
