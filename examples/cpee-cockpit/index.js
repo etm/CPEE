@@ -47,94 +47,94 @@ function load_testset() {
     success: function(res){ 
       var testset = res; 
   
-      //$.cors({
-      //  type: "GET", 
-      //  url: url + "/properties/values/context-variables/",
-      //  success: function(res){
-      //    var rcount = 0;
-      //    var values = $("values > *",res);
-      //    var length = values.length;
-      //    values.each(function(){
-      //      var name = this.nodeName;
-      //      $.cors({
-      //        type: "DELETE", 
-      //        url: url + "/properties/values/context-variables/" + name,
-      //        success: function(){
-      //          rcount += 1;
-      //          if (rcount == length)
-      //            load_testset_cvs(url,testset);
-      //        },
-      //        failure: report_failure
-      //      });  
-      //    });
-      //    if (length == 0)
-      //      load_testset_cvs(url,testset);
-      //  },
-      //  failure: report_failure
-      //});  
-      //
-      //$.cors({
-      //  type: "GET", 
-      //  url: url + "/properties/values/endpoints/",
-      //  success: function(res){
-      //    var rcount = 0;
-      //    var values = $("values > *",res);
-      //    var length = values.length;
-      //    values.each(function(){
-      //      var name = this.nodeName;
-      //      $.cors({
-      //        type: "DELETE", 
-      //        url: url + "/properties/values/endpoints/" + name,
-      //        success: function(){
-      //          rcount += 1;
-      //          if (rcount == length)
-      //            load_testset_eps(url,testset);
-      //        },
-      //        failure: report_failure
-      //      });  
-      //    });
-      //    if (length == 0)
-      //      load_testset_eps(url,testset);
-      //  },
-      //  failure: report_failure
-      //});
+      $.cors({
+        type: "GET", 
+        url: url + "/properties/values/context-variables/",
+        success: function(res){
+          var rcount = 0;
+          var values = $("values > *",res);
+          var length = values.length;
+          values.each(function(){
+            var name = this.nodeName;
+            $.cors({
+              type: "DELETE", 
+              url: url + "/properties/values/context-variables/" + name,
+              success: function(){
+                rcount += 1;
+                if (rcount == length)
+                  load_testset_cvs(url,testset);
+              },
+              failure: report_failure
+            });  
+          });
+          if (length == 0)
+            load_testset_cvs(url,testset);
+        },
+        failure: report_failure
+      });  
+      
+      $.cors({
+        type: "GET", 
+        url: url + "/properties/values/endpoints/",
+        success: function(res){
+          var rcount = 0;
+          var values = $("values > *",res);
+          var length = values.length;
+          values.each(function(){
+            var name = this.nodeName;
+            $.cors({
+              type: "DELETE", 
+              url: url + "/properties/values/endpoints/" + name,
+              success: function(){
+                rcount += 1;
+                if (rcount == length)
+                  load_testset_eps(url,testset);
+              },
+              failure: report_failure
+            });  
+          });
+          if (length == 0)
+            load_testset_eps(url,testset);
+        },
+        failure: report_failure
+      });
 
-      //$.cors({
-      //  type: "GET", 
-      //  url: url + "/properties/values/transformation/",
-      //  success: function(res){
-      //    var values = $("not-existing",res);
-      //    var type = "GET";
-      //    if (values.length > 0) {
-      //      $.ajax({ 
-      //        url: "Testsets.xsl",
-      //        dataType: "text",
-      //        success: function(res){ 
-      //          $.cors({
-      //            type: "POST", 
-      //            url: url + "/properties/values/",
-      //            data: ({key: "transformation", value: res}),
-      //            failure: report_failure
-      //          });
-      //          }  
-      //      });
-      //    } else {
-      //      $.ajax({ 
-      //        url: "Testsets.xsl",
-      //        dataType: "text",
-      //        success: function(res){ 
-      //          $.cors({
-      //            type: "PUT", 
-      //            url: url + "/properties/values/transformation",
-      //            data: ({value: res}),
-      //            failure: report_failure
-      //          });
-      //          }  
-      //      });
-      //    }
-      //  },  
-      //  failure: report_failure
-      //});
+      $.cors({
+        type: "GET", 
+        url: url + "/properties/values/transformation/",
+        success: function(res){
+          var values = $("not-existing",res);
+          var type = "GET";
+          if (values.length > 0) {
+            $.ajax({ 
+              url: "Testsets.xsl",
+              dataType: "text",
+              success: function(res){ 
+                $.cors({
+                  type: "POST", 
+                  url: url + "/properties/values/",
+                  data: ({key: "transformation", value: res}),
+                  failure: report_failure
+                });
+                }  
+            });
+          } else {
+            $.ajax({ 
+              url: "Testsets.xsl",
+              dataType: "text",
+              success: function(res){ 
+                $.cors({
+                  type: "PUT", 
+                  url: url + "/properties/values/transformation",
+                  data: ({value: res}),
+                  failure: report_failure
+                });
+                }  
+            });
+          }
+        },  
+        failure: report_failure
+      });
       
       $("testset > description",testset).each(function(){
         var name = this.nodeName;
