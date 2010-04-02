@@ -119,7 +119,7 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
         else
           trans = XML::Smart::string(trans.children.empty? ? trans.to_s : trans.children.first.dump)
           desc  = XML::Smart::string(desc.children.empty? ? desc.to_s : desc.children.first.dump)
-          dsl.text = desc.transform_with()
+          dsl.text = desc.transform_with(trans)
         end
       end
     end  
