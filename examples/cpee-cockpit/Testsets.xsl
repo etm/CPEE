@@ -1,5 +1,5 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
-  <xsl:output method="text" indent="no"/>
+  <xsl:output method="text"/>
   <xsl:strip-space elements="*"/>
   <xsl:variable name="myspacemultiplier">2</xsl:variable>
 
