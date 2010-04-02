@@ -6,7 +6,7 @@ jQuery.extend({
     processData: true,
   },
 
-  cors: function( origSettings ) {
+  cors: function(origSettings) {
     try {
       var s = jQuery.extend(true, {}, jQuery.corsSettings, origSettings);
       var req = new XMLHttpRequest();
@@ -29,7 +29,7 @@ jQuery.extend({
         if (req.readyState === 4) {
           if(req.status === 200) {
             if (s.success)
-              s.success(req);
+              s.success(jQuery.httpData(req, s.dataType, s));
           } else {
             if (s.failure)
               s.failure(type + " to " + s.url + " failed");
@@ -42,4 +42,20 @@ jQuery.extend({
       alert("You have to use Firefox, sorry.");
     }
   }
+
 });
+
+$.fn.serializeXML = function () {
+    var out = '';
+    if (typeof XMLSerializer == 'function') {
+        var xs = new XMLSerializer();
+        this.each(function() {
+            out += xs.serializeToString(this);
+        });
+    } else if (this[0] && this[0].xml != 'undefined') {
+        this.each(function() {
+            out += this.xml;
+        });
+    }
+    return out;
+};

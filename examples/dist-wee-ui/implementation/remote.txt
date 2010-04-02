@@ -1,1 +1,1 @@
-http://localhost:9295/
+http://sumatra.pri.univie.ac.at:9295/
