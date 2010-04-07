@@ -1,6 +1,6 @@
 body {
   background-color:#FFFFFF;
-  margin:0;
+  margin:1em;
   padding:0;
   font-family: Verdana, Helvetica, sans-serif;
   font-size: 0.75em;
@@ -18,12 +18,55 @@ a:visited { color:#425d73; text-decoration:none; }
 a:hover   { color:#000000; text-decoration:underline; }
 a:active  { color:#000000; text-decoration:underline; }
 
-#instance_table {
-  width: 100%;  
+div.section {
+  padding:1em;
+  border: 1pt solid ButtonShadow;
+  border-radius: 1em;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  margin-top:1em;
 }
-#instance_table td:nth-child(1) { width: 8em; padding-right: 1em; }
-#instance_table td:nth-child(3) { width: 18em; padding-left: 1em; }
-#instance_table input { width: 100% }
-#instance_table button[name=testset]  { width: 100%;  }
-#instance_table button[name=base]     { width: 100%;  }
-#instance_table button[name=instance] { width: 100%;  }
+div.section:nth-child(1) { margin-top: 1em; }
+
+h1 {
+  font-size: 1.4em;
+  margin-top: 0em;
+  padding-top:0em;
+}  
+
+#instance {
+  width: 100%;
+  border-collapse:collapse;
+  border-spacing:0px;
+  border:0px none;
+  margin:0px;
+  padding:0px;
+}
+#instance td:nth-child(1) { width: 8em; padding-right: 1em; }
+#instance td:nth-child(3) { width: 18em; padding-left: 1em; }
+#instance input { width: 100% }
+#instance button[name=testset]  { width: 100%;  }
+#instance button[name=base]     { width: 100%;  }
+#instance button[name=instance] { width: 100%;  }
+
+#endpoints {
+  border-collapse:collapse;
+  border-spacing:0px;
+  border:0px none;
+  margin:0px;
+  padding:0px;
+}
+
+#context-variables {
+  border-collapse:collapse;
+  border-spacing:0px;
+  border:0px none;
+  margin:0px;
+  padding:0px;
+}
+
+#description { 
+  font-family: monospace; 
+  font-size:1.3em;
+}
+
