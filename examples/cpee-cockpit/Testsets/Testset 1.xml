@@ -3,6 +3,7 @@
   <positions/>
   <context-variables>
     <x>_begin</x>
+    <bla>_begin</bla>
   </context-variables>
   <endpoints>
     <timeout>http://www.pri.univie.ac.at/~mangler/timeout.php</timeout>

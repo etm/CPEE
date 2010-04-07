@@ -1,3 +1,7 @@
+var finished;
+var soll;
+var running = false;
+
 $(document).ready(function() {
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(load_instance);
@@ -15,7 +19,7 @@ $(document).ready(function() {
   });
 });
 
-function create_instance() {
+function create_instance() {// {{{
   var name = prompt("Instance name?");
   if (name != null) {
     if (name.match(/\S/)) {
@@ -34,13 +38,92 @@ function create_instance() {
       alert("An instance name is necessary!");
     }
   }  
-}
+}// }}}
 
-function load_instance() {
-  alert("Hello world1!");
-}
+function load_instance() {// {{{
+  var url = $("input[name=instance-url]").val();
 
-function load_testset() {
+  $.cors({
+    type: "GET", 
+    url: url + "/properties/values/context-variables/",
+    success: function(res){
+      var ctv = $("#context-variables");
+      ctv.empty();
+      var values = $("values > *",res);
+      values.each(function(){
+        ctv.append("<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>");
+      });
+    }
+  });      
+
+  $.cors({
+    type: "GET", 
+    url: url + "/properties/values/endpoints/",
+    success: function(res){
+      var ctv = $("#endpoints");
+      ctv.empty();
+      var values = $("values > *",res);
+      values.each(function(){
+        ctv.append("<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>");
+      });
+    }
+  });
+
+  $.cors({
+    type: "GET",
+    dataType: "text",
+    url: url + "/properties/values/dsl/",
+    success: function(res){
+      var ctv = $("#description");
+      ctv.empty();
+      
+      res = res.replace(/\t/g,'  ');
+      res = res.replace(/\r/g,'');
+
+      var m;
+      while (m = res.match(/^ +|^(?!<div style=)|^\z/m)) {
+        m = m[0];
+        var tm = (m.length + 2) * 0.6 + 2 * 0.6;
+        res = res.replace(/^ +|^(?!<div style=)|^\z/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + "&#160;".repeat(m.length));
+      }
+      res = res.replace(/  /g," &#160;");
+      res = res.replace(/\n\z/g,"\n<div>&#160;");
+      res = res.replace(/\n|\z/g,"</div>\n");
+      
+      ctv.append(res);
+    }
+  });
+
+  $.cors({
+    type: "GET", 
+    url: url + "/properties/values/positions/",
+    success: function(res){
+      var ctv = $("#positions");
+      ctv.empty();
+      var values = $("values > *",res);
+      values.each(function(){
+        ctv.append("<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>");
+      });
+    }
+  });
+
+  $.cors({
+    type: "GET", 
+    url: url + "/properties/values/state/",
+    dataType: "text",
+    success: function(res){
+      var ctv = $("#state");
+      ctv.empty();
+      ctv.append(res);
+    }
+  });
+}// }}}
+
+function load_testset() {// {{{
+  if (running) return;
+  running  = true;
+  finished = 0;
+  soll = 4;
   var url = $("input[name=instance-url]").val();
   $.ajax({ 
     url: "Testsets/" + $('select[name=testset-names]').val() + ".xml",
@@ -114,6 +197,7 @@ function load_testset() {
                   type: "POST", 
                   url: url + "/properties/values/",
                   data: ({key: "transformation", value: res}),
+                  success: function() { finished_load_testset(++finished); },
                   failure: report_failure
                 });
                 }  
@@ -127,6 +211,7 @@ function load_testset() {
                   type: "PUT", 
                   url: url + "/properties/values/transformation",
                   data: ({value: res}),
+                  success: function() { finished_load_testset(++finished); },
                   failure: report_failure
                 });
                 }  
@@ -143,38 +228,50 @@ function load_testset() {
           type: "PUT", 
           url: url + "/properties/values/description",
           data: ({value: val}),
+          success: function() { finished_load_testset(++finished); },
           failure: report_failure
         });
       });
     }
   });
-  
-}
+  running  = false;
+}// }}}
 
-function load_testset_cvs(url,testset) {
-  $("testset > context-variables > *",testset).each(function(){
+function finished_load_testset(num) {// {{{
+  if (num == soll)
+    load_instance();
+}// }}}
+
+function load_testset_cvs(url,testset) {// {{{
+  var temp = $("testset > context-variables > *",testset);
+  soll += temp.length - 1;
+  temp.each(function(){
     var name = this.nodeName;
     var val = $(this).text();
     $.cors({
       type: "POST", 
       url: url + "/properties/values/context-variables/",
       data: ({key:  name, value: val}),
+      success: function(){ finished_load_testset(++finished); },
       failure: report_failure
     });  
   });
-}
+}// }}}
 
-function load_testset_eps(url,testset) {
-  $("testset > endpoints > *",testset).each(function(){
+function load_testset_eps(url,testset) {// {{{
+  var temp = $("testset > endpoints > *",testset);
+  soll += temp.length - 1;
+  temp.each(function(){
     var name = this.nodeName;
     var val = $(this).text();
     $.cors({
       type: "POST", 
       url: url + "/properties/values/endpoints/",
       data: ({key:  name, value: val}),
+      success: function(){ finished_load_testset(++finished); },
       failure: report_failure
     });  
   });
-}
+}// }}}
 
 function report_failure(){}
