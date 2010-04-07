@@ -4,7 +4,9 @@
       <param name="pattern">\c*</param>
     </data>
   </name>
-  <dsl type="content" modifiable="false" mutable="false"/>
+  <dsl type="value" modifiable="false" mutable="false">
+    <text/>
+  </dsl>
   <description type="content" modifiable="false" mutable="false"/>
   <positions type="list" modifiable="false" mutable="false"/>
   <optional>
