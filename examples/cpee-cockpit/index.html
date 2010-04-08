@@ -44,95 +44,101 @@
       <table id="context-variables"></table>
     </div>  
 
-    <div class="section hidden">
-      <h1>Description</h1>
-      <div id="description"></div>
-    </div>  
+    <table class="tab hidden">
+      <tr>
+        <td class="tabactive" id="tabdsl" onclick="tab_click('dsl','graph')"><h1>Description</h1></td>
+        <td class="tabinactive" id="tabgraph" onclick="tab_click('graph','dsl')"><h1>Graph</h1></td>
+        <td class="tabbehind"></td>
+      </tr>  
+      <tr>
+        <td class="tabbelow" colspan="3">
+          <div id="areadsl"></div>
+          <div id="areagraph" class="inactivearea">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0">
+              <defs>
+                <symbol id="call"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="stand"/>
+                  <text class="normal" transform='translate(15,21)'>c</text>
 
-    <div class="section hidden">
-      <h1>Graph</h1>
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0">
-        <defs>
-          <symbol id="call"><!-- {{{ -->
-            <circle cx="15" cy="15" r="14" class="stand"/>
-            <text class="normal" transform='translate(15,21)'>c</text>
+                </symbol><!-- }}} -->
+                <symbol id="manipulate"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="stand"/>
+                  <text class="normal" transform='translate(15,21)'>m</text>
+                </symbol><!-- }}} -->
+                <symbol id="callmanipulate"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="stand"/>
+                  <text class="normal" transform='translate(15,21)'>c</text>
 
-          </symbol><!-- }}} -->
-          <symbol id="manipulate"><!-- {{{ -->
-            <circle cx="15" cy="15" r="14" class="stand"/>
-            <text class="normal" transform='translate(15,21)'>m</text>
-          </symbol><!-- }}} -->
-          <symbol id="callmanipulate"><!-- {{{ -->
-            <circle cx="15" cy="15" r="14" class="stand"/>
-            <text class="normal" transform='translate(15,21)'>c</text>
+                  <circle cx="28" cy="28" r="9" class="stand"/>
+                  <text class="small" transform='translate(28,32)'>m</text>
+                </symbol><!-- }}} -->
+                <symbol id="choose"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="stand"/>
+                  <text class="normal" transform='translate(15,21)'>σ</text>
+                </symbol><!-- }}} -->
+                <symbol id="alternative"><!-- {{{ -->
 
-            <circle cx="28" cy="28" r="9" class="stand"/>
-            <text class="small" transform='translate(28,32)'>m</text>
-          </symbol><!-- }}} -->
-          <symbol id="choose"><!-- {{{ -->
-            <circle cx="15" cy="15" r="14" class="stand"/>
-            <text class="normal" transform='translate(15,21)'>σ</text>
-          </symbol><!-- }}} -->
-          <symbol id="alternative"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="standwithout"/>
+                  <text class="normal" transform='translate(15,21)'>{܅}</text>
+                </symbol><!-- }}} -->
+                <symbol id="otherwise"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="standwithout"/>
+                  <text class="normal" transform='translate(15,21)'>{⁎}</text>
+                </symbol><!-- }}} -->
+                <symbol id="parallel"><!-- {{{ -->
 
-            <circle cx="15" cy="15" r="14" class="standwithout"/>
-            <text class="normal" transform='translate(15,21)'>{܅}</text>
-          </symbol><!-- }}} -->
-          <symbol id="otherwise"><!-- {{{ -->
-            <circle cx="15" cy="15" r="14" class="standwithout"/>
-            <text class="normal" transform='translate(15,21)'>{⁎}</text>
-          </symbol><!-- }}} -->
-          <symbol id="parallel"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="stand"/>
+                  <text class="normal" transform='translate(15,21)'>||</text>
+                </symbol><!-- }}} -->
+                <symbol id="parallel_branch"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="stand"/>
+                  <text class="normal" transform='translate(15,21)'>|</text>
+                </symbol><!-- }}} -->
+                <symbol id="critical"><!-- {{{ -->
 
-            <circle cx="15" cy="15" r="14" class="stand"/>
-            <text class="normal" transform='translate(15,21)'>||</text>
-          </symbol><!-- }}} -->
-          <symbol id="parallel_branch"><!-- {{{ -->
-            <circle cx="15" cy="15" r="14" class="stand"/>
-            <text class="normal" transform='translate(15,21)'>|</text>
-          </symbol><!-- }}} -->
-          <symbol id="critical"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="stand"/>
+                  <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
+                </symbol><!-- }}} -->
+                <symbol id="cycle"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="stand"/>
+                  <text class="normallarge" transform='translate(15,23)'>↺</text>
+                </symbol><!-- }}} -->
+                <symbol id="empty"><!-- {{{ -->
 
-            <circle cx="15" cy="15" r="14" class="stand"/>
-            <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
-          </symbol><!-- }}} -->
-          <symbol id="cycle"><!-- {{{ -->
-            <circle cx="15" cy="15" r="14" class="stand"/>
-            <text class="normallarge" transform='translate(15,23)'>↺</text>
-          </symbol><!-- }}} -->
-          <symbol id="empty"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="3" class="stand"/>
+                </symbol><!-- }}} -->
+                <symbol id="end"><!-- {{{ -->
+                  <circle cx="15" cy="15" r="14" class="stand"/>
+                  <circle cx="15" cy="15" r="11" class="stand"/>
+                  <text class="normal" transform='translate(15,21)'>Ω</text>
+                </symbol><!-- }}} -->
+                <g id="arrowMarker">
 
-            <circle cx="15" cy="15" r="3" class="stand"/>
-          </symbol><!-- }}} -->
-          <symbol id="end"><!-- {{{ -->
-            <circle cx="15" cy="15" r="14" class="stand"/>
-            <circle cx="15" cy="15" r="11" class="stand"/>
-            <text class="normal" transform='translate(15,21)'>Ω</text>
-          </symbol><!-- }}} -->
-          <g id="arrowMarker">
+                  <!-- {{{ -->
+                  <g stroke="black" stroke-width="0.3">
+                    <line x1="3" y1="-2" x2="0" y2="0"/>
+                    <line x1="3" y1="+2" x2="0" y2="0"/>
+                  </g>
+                </g>
+                <marker id="startMarker" markerWidth="48" markerHeight="24" viewBox="-4 -4 25 5" orient="auto" refX="3" refY="0" markerUnits="strokeWidth">
+                  <g>
+                    <use xlink:href="#arrowMarker" transform="rotate(180)" stroke-width="1" stroke="black"/>
 
-            <!-- {{{ -->
-            <g stroke="black" stroke-width="0.3">
-              <line x1="3" y1="-2" x2="0" y2="0"/>
-              <line x1="3" y1="+2" x2="0" y2="0"/>
-            </g>
-          </g>
-          <marker id="startMarker" markerWidth="48" markerHeight="24" viewBox="-4 -4 25 5" orient="auto" refX="3" refY="0" markerUnits="strokeWidth">
-            <g>
-              <use xlink:href="#arrowMarker" transform="rotate(180)" stroke-width="1" stroke="black"/>
+                  </g>
+                <!-- }}} -->
+                </marker> 
+              </defs>
+              <g id="canvas">
+                <g id="blocks"/>
+                <g id="lines"/>
+                <g id="symbols"/>
+              </g>
 
-            </g>
-          <!-- }}} -->
-          </marker> 
-        </defs>
-        <g id="graph">
-          <g id="blocks"/>
-          <g id="lines"/>
-          <g id="symbols"/>
-        </g>
-
-      </svg>
-    </div>
+            </svg>
+          </div>  
+        </td>
+      </tr>  
+    </table>  
 
     <div class="section hidden">
       <h1>Positions</h1>

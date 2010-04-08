@@ -23,7 +23,7 @@ span.active {
   color: #ff0000;
 }
 
-use.active {
+svg use.active circle {
   fill: #ff0000;
   fill-opacity:1;
 }  
@@ -36,12 +36,86 @@ div.section {
   -webkit-border-radius: 1em;
   margin-top:1em;
 }
-div.section:nth-child(1) { margin-top: 1em; }
+
+table.tab {
+  margin-top:1em;
+  width: 100%;
+  border-spacing:0px;
+  border:0px none;
+  padding:0px;
+}
+table.tab .inactivearea { display: none; }
+
+#tabdsl { cursor:pointer; }
+#tabgraph { cursor: pointer; }
+
+td.tabactive {
+  padding:0.2em 1em;
+  border: 1pt solid ButtonShadow;
+  border-bottom: 0 none;
+  border-radius: 1em;
+  border-bottom-left-radius: 0em;
+  border-bottom-right-radius: 0em;
+  -moz-border-radius: 1em;
+  -moz-border-radius-bottomleft: 0em;
+  -moz-border-radius-bottomright: 0em;
+  -webkit-border-radius: 1em;
+  -webkit-border-bottom-left-radius: 0em;
+  -webkit-border-bottom-right-radius: 0em;
+}
+td.tabactive h1 { margin-top: 0em; margin-bottom: 0em; padding-top: 0em; padding-bottom: 0em; }
+
+td.tabinactive {
+  padding:0.2em 1em;
+  border: 1pt solid ButtonShadow;
+  border-radius: 1em;
+  border-bottom-left-radius: 0em;
+  border-bottom-right-radius: 0em;
+  -moz-border-radius: 1em;
+  -moz-border-radius-bottomleft: 0em;
+  -moz-border-radius-bottomright: 0em;
+  -webkit-border-radius: 1em;
+  -webkit-border-bottom-left-radius: 0em;
+  -webkit-border-bottom-right-radius: 0em;
+}
+td.tabinactive h1 { margin-top: 0em; margin-bottom: 0em; padding-top: 0em; padding-bottom: 0em; }
+
+td.tabbehind {
+  padding:0.2em 1em;
+  border-bottom: 1pt solid ButtonShadow;
+  border-radius: 1em;
+  border-bottom-left-radius: 0em;
+  border-bottom-right-radius: 0em;
+  -moz-border-radius: 1em;
+  -moz-border-radius-bottomleft: 0em;
+  -moz-border-radius-bottomright: 0em;
+  -webkit-border-radius: 1em;
+  -webkit-border-bottom-left-radius: 0em;
+  -webkit-border-bottom-right-radius: 0em;
+  width:100%;
+}
+
+td.tabbelow {
+  padding:1em;
+  border-bottom: 1pt solid ButtonShadow;
+  border-left: 1pt solid ButtonShadow;
+  border-right: 1pt solid ButtonShadow;
+  border-radius: 1em;
+  border-top-left-radius: 0em;
+  border-top-right-radius: 0em;
+  -moz-border-radius: 1em;
+  -moz-border-radius-topleft: 0em;
+  -moz-border-radius-topright: 0em;
+  -webkit-border-radius: 1em;
+  -webkit-border-top-left-radius: 0em;
+  -webkit-border-top-right-radius: 0em;
+}
+
 
 h1 {
   font-size: 1.4em;
   margin-top: 0em;
-  padding-top:0em;
+  padding-top: 0em;
 }  
 
 #instance {
@@ -75,7 +149,7 @@ h1 {
   padding:0px;
 }
 
-#description { 
+#dsl { 
   font-family: monospace; 
   font-size:1.3em;
 }
@@ -88,6 +162,7 @@ svg {
   fill: #DDDDDD;
   fill-opacity:1;
 }
+
 svg line.ourline {
   z-index: 4;
   stroke-opacity: 0.9; 

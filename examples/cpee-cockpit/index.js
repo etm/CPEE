@@ -107,7 +107,7 @@ function monitor_instance() {// {{{
     }
   });
 
-  if (save_state == "ready" || save_state == "stopped") {
+  if (save_state != "running" && save_state != "finished") {
     $.cors({
       type: "GET",
       dataType: "text",
@@ -115,7 +115,7 @@ function monitor_instance() {// {{{
       success: function(res){
         if (res != save_dsl) {
           save_dsl = res;
-          var ctv = $("#description");
+          var ctv = $("#areadsl");
           ctv.empty();
           
           res = res.replace(/\t/g,'  ');
@@ -138,7 +138,7 @@ function monitor_instance() {// {{{
             type: "GET",
             url: url + "/properties/values/description/",
             success: function(res){
-              g = new WFGraph(res, $("#graph").get(0));
+              g = new WFGraph(res, $("#canvas").get(0));
               g.generateGraph();
             }
           });
@@ -153,12 +153,12 @@ function monitor_instance() {// {{{
     success: function(res){
       var values = $("values > *",res);
       var temp = "";
-      $('span.activities').removeClass("active");
-      //$('use.activities').removeClass("active");
+      $('span.active').removeClass("active");
+      $("svg use.active").each(function(a,b){b.setAttribute("class","activities");});
       values.each(function(){
         temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>\"" + $(this).text() + "\"</td></tr>";
         $('#activity_' + this.nodeName).addClass("active");
-        //$('#graph_' + this.nodeName).addClass("active");
+        $('#graph_' + this.nodeName).each(function(a,b){b.setAttribute("class","active activities");});
       });
 
       if (temp != save_pos) {
@@ -357,5 +357,14 @@ function load_testset_eps(url,testset) {// {{{
     });  
   });
 }// }}}
+
+function tab_click(active,inactive) {
+  $(".inactivearea").removeClass("inactivearea");
+  $(".tabactive").removeClass("tabactive");
+  $(".tabinactive").removeClass("tabinactive");
+  $("#area" + inactive).addClass("inactivearea");
+  $("#tab" + active).addClass("tabactive");
+  $("#tab" + inactive).addClass("tabinactive");
+}
 
 function report_failure(){}
