@@ -241,3 +241,9 @@ svg text.small {
   stroke:none;
   font-family:Arial;
 }
+ 
+#arrow { 
+ stroke: #000000;
+ stroke-width: 2;
+ fill: #000000;
+}

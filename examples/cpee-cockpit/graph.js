@@ -109,7 +109,7 @@ function WFGraph (xml, container) {
     // {{{
     var attrs = { 'x1': start['col']*column_width, 'y1': start['line']*row_height-15,
                   'x2': end['col']*column_width, 'y2': end['line']*row_height-15,
-                  'class': 'ourline', 'marker-end': 'url(#startMarker)' };
+                  'class': 'ourline', 'marker-end': 'url(#arrow)' };
     var line = document.createElementNS(svgNS, "line");
     for(var attr in attrs)
       line.setAttribute(attr, attrs[attr]);
