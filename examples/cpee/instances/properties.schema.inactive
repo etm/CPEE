@@ -1,8 +1,6 @@
 <properties xmlns="http://riddl.org/ns/common-patterns/properties/1.0">
   <name type="value" modifiable="false" mutable="false">
-    <data type="string">
-      <param name="pattern">\c*</param>
-    </data>
+    <text/>
   </name>
   <dsl type="value" modifiable="false" mutable="false">
     <text/>

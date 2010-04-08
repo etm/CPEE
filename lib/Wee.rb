@@ -145,7 +145,7 @@ class Wee
             handler.vote_sync_after position
           when :call
             handler.vote_sync_before position
-            passthrough = get_matching_search_position(position) ? get_matching_search_position(position).passthrough : nil
+            passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
             ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
             if block_given? && @__wee_state != :stopped && !Thread.current[:nolongernecessary]
               handler.inform_activity_manipulate position
@@ -271,8 +271,8 @@ class Wee
       # set semaphore to avoid conflicts if @__wee_search is changed by another thread
       Mutex.new.synchronize do
         branch = Thread.current
-        if position && get_matching_search_position(position) # matching searchpos => start execution from here
-          searchpos = get_matching_search_position(position)
+        if position && @__wee_search_positions[position] # matching searchpos => start execution from here
+          searchpos = @__wee_search_positions[position]
           branch[:branch_search] = false
           @__wee_search = false
           return searchpos.detail == :after
@@ -319,9 +319,6 @@ class Wee
       end
       handler.inform_context_change(changed) unless changed.empty?
     end# }}}
-    def get_matching_search_position(position)# {{{
-      @__wee_search_positions[position]
-    end# }}}
 
     def state=(newState)# {{{
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
@@ -329,7 +326,7 @@ class Wee
       @__wee_state = newState
       if newState == :stopped
         trigger_continue(@__wee_main)
-        if @__wee_main
+        if @__wee_main && @__wee_main != Thread.current
           @__wee_main.join 
         end
       end

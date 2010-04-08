@@ -146,10 +146,6 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
     end  
   end
 
-  def read
-    id = ::File::basename(::File::dirname(@properties))
-  end
-
   def create; sync; end
   def update; sync; end
   def delete; sync; end

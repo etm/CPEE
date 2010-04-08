@@ -2,17 +2,17 @@ class Handler < Wee::HandlerWrapperBase
   def initialize(arguments)
     @instance = arguments[0].to_i
     @__basichandler_stopped = false
-    @__basichandler_finished = false
+    @__basichandler_continue = nil
     @__basichandler_returnValue = nil
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
-  # can be executed asynchron, see finished_call & return_value
-  def activity_handle(id, passthrough, endpoint, parameters)
+  def activity_handle(id, continue, passthrough, endpoint, parameters)
+    $controller[@instance].position
     $controller[@instance].notify("monitoring/activity_call", :activity => id, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
-    begin
+    @__basichandler_continue = continue    
 
-    client = Riddl::Client.new(endpoint,::File.dirname(__FILE__) + '/endpoint.xml')
+    client = Riddl::Client.new(endpoint)
 
     params = []
     callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
@@ -26,42 +26,30 @@ class Handler < Wee::HandlerWrapperBase
     params << Riddl::Header.new("WEE_CALLBACK",callback)
 
     type = parameters[:method] || 'post'
-    status, result = client.request type => params
+    status, result, headers = client.request type => params
 
     raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
 
-    @__basichandler_finished = true
     @__basichandler_returnValue = ''
-    if result.find{ |r| r.class == Riddl::Header && r.name == "WEE_CALLBACK" && r.value == "true" }
+    if headers["WEE_CALLBACK"] && headers["WEE_CALLBACK"] == true
       $controller[@instance].callbacks[callback] = Callback.new(self,:callback)
-      @__basichandler_finished = false
       return
     end
 
-    result.each do |r|
-      if r.class == Riddl::Parameter::Complex
-        @__basichandler_finished = true
-        @__basichandler_returnValue = result
-      end
-    end
-    
-    rescue => e
-      p e
-      puts e.backtrace
-
-    end
+    @__basichandler_returnValue = result
+    @__basichandler_continue.continue
   end
 
   def callback(result)
     @__basichandler_returnValue = result
-    @__basichandler_finished = true
+    @__basichandler_continue.continue
   end
  
-  
   # returns the result of the last handled call
   def activity_result_value
-    @__basichandler_finished ? @__basichandler_returnValue : nil
+    @__basichandler_returnValue
   end
+
   # Called if the WS-Call should be interrupted. The decision how to deal
   # with this situation is given to the handler. To provide the possibility
   # of a continue the Handler will be asked for a passthrough
@@ -84,6 +72,7 @@ class Handler < Wee::HandlerWrapperBase
   end
 
   def inform_activity_done(activity)
+    $controller[@instance].position
     $controller[@instance].notify("monitoring/activity_done", :activity => activity)
   end
   def inform_activity_manipulate(activity)

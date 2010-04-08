@@ -25,8 +25,19 @@ class Controller
 
   def stop
     @instance.stop
-    @thread.join
+    @thread.join if @thread && @thread.alive?
     @thread = nil 
+  end
+
+  def position
+    XML::Smart::modify(@directory + 'properties.xml') do |doc|
+      doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+      pos = doc.find("/p:properties/p:positions").first
+      pos.children.delete_all!
+      @instance.positions.each do |p|
+        pos.add("#{p.position}","#{p.passthrough}")
+      end
+    end
   end
 
   def serialize!
