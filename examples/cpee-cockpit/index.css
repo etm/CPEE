@@ -171,7 +171,8 @@ svg line.ourline {
   fill: none;
 }
 svg rect.block {
-  stroke-dasharray: 9, 3, 5;
+  stroke-width: 1; 
+  stroke-dasharray: 3,5;
   stroke: #000000;
   fill: none;
 }

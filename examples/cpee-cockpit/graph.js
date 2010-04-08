@@ -146,7 +146,7 @@ function WFGraph (xml, container) {
   }
   var drawBlock = function(p1, p2) {
       var block = document.createElementNS(svgNS, "rect");
-      var attrs = {'x':(p1['col'])*column_width-20, 'y':(p1['line'])*row_height-35, 'width':(p2['col']-p1['col']+1)*column_width, 'height':(p2['line']-p1['line'])*row_height, 'class':'block', 'rx':'5', 'ry':'5'}; 
+      var attrs = {'x':(p1['col'])*column_width-20, 'y':(p1['line'])*row_height-35, 'width':(p2['col']-p1['col']+1)*column_width, 'height':(p2['line']-p1['line'])*row_height, 'class':'block', 'rx':'20', 'ry':'20' }; 
       for(var attr in attrs)
         block.setAttribute(attr, attrs[attr]);
       blocks.appendChild(block);
