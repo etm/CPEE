@@ -1,6 +1,10 @@
-var finished;
-var soll;
 var running = false;
+var save_state;
+var save_dsl;
+var save_desc;
+var save_eps;
+var save_pos;
+var save_cvs;
 
 $(document).ready(function() {
   $("button[name=base]").click(create_instance);
@@ -39,20 +43,48 @@ function create_instance() {// {{{
     }
   }  
 }// }}}
-
+  
 function load_instance() {// {{{
   var url = $("input[name=instance-url]").val();
+  $.cors({
+    type: "GET", 
+    url: url + "/properties/schema/",
+    success: function(res){
+      $(".hidden").removeClass("hidden");
+      $("input[name=instance-url]").attr("readonly","readonly");
+      $("button[name=instance]").attr("disabled","disabled");
+      $("input[name=base-url]").attr("readonly","readonly");
+      $("button[name=base]").attr("disabled","disabled");
+      setTimeout('monitor_instance();finished_monitor_instance();', 0);
+    },
+    failure: function() {
+      alert("This ain't no CPEE instance");
+    }  
+  });      
+}// }}}
+
+function monitor_instance() {// {{{
+  var url = $("input[name=instance-url]").val();
+
+  if (save_state == "finished")
+    return;
 
   $.cors({
     type: "GET", 
     url: url + "/properties/values/context-variables/",
     success: function(res){
-      var ctv = $("#context-variables");
-      ctv.empty();
       var values = $("values > *",res);
+      var temp = "";
       values.each(function(){
-        ctv.append("<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>");
+        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>";
       });
+
+      if (temp != save_cvs) {
+        save_cvs = temp;
+        var ctv = $("#context-variables");
+        ctv.empty();
+        ctv.append(temp);
+      }  
     }
   });      
 
@@ -60,50 +92,81 @@ function load_instance() {// {{{
     type: "GET", 
     url: url + "/properties/values/endpoints/",
     success: function(res){
-      var ctv = $("#endpoints");
-      ctv.empty();
       var values = $("values > *",res);
+      var temp = "";
       values.each(function(){
-        ctv.append("<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>");
+        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>";
       });
+
+      if (temp != save_eps) {
+        save_eps = temp;
+        var ctv = $("#endpoints");
+        ctv.empty();
+        ctv.append(temp);
+      }  
     }
   });
 
-  $.cors({
-    type: "GET",
-    dataType: "text",
-    url: url + "/properties/values/dsl/",
-    success: function(res){
-      var ctv = $("#description");
-      ctv.empty();
-      
-      res = res.replace(/\t/g,'  ');
-      res = res.replace(/\r/g,'');
+  if (save_state == "ready" || save_state == "stopped") {
+    $.cors({
+      type: "GET",
+      dataType: "text",
+      url: url + "/properties/values/dsl/",
+      success: function(res){
+        if (res != save_dsl) {
+          save_dsl = res;
+          var ctv = $("#description");
+          ctv.empty();
+          
+          res = res.replace(/\t/g,'  ');
+          res = res.replace(/\r/g,'');
 
-      var m;
-      while (m = res.match(/^ +|^(?!<div style=)|^\z/m)) {
-        m = m[0];
-        var tm = (m.length + 2) * 0.6 + 2 * 0.6;
-        res = res.replace(/^ +|^(?!<div style=)|^\z/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + "&#160;".repeat(m.length));
+          res = res.replace(/activity\s+:([\w_]+)/g,"<span class='activities' id=\"activity_$1\">activity :$1</span>");
+
+          var m;
+          while (m = res.match(/^ +|^(?!<div style=)|^\z/m)) {
+            m = m[0];
+            var tm = (m.length + 2) * 0.6 + 2 * 0.6;
+            res = res.replace(/^ +|^(?!<div style=)|^\z/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + "&#160;".repeat(m.length));
+          }
+          res = res.replace(/  /g," &#160;");
+          res = res.replace(/\n\z/g,"\n<div>&#160;");
+          res = res.replace(/\n|\z/g,"</div>\n");
+          
+          ctv.append(res);
+          $.cors({
+            type: "GET",
+            url: url + "/properties/values/description/",
+            success: function(res){
+              g = new WFGraph(res, $("#graph").get(0));
+              g.generateGraph();
+            }
+          });
+        }
       }
-      res = res.replace(/  /g," &#160;");
-      res = res.replace(/\n\z/g,"\n<div>&#160;");
-      res = res.replace(/\n|\z/g,"</div>\n");
-      
-      ctv.append(res);
-    }
-  });
+    });
+  }  
 
   $.cors({
     type: "GET", 
     url: url + "/properties/values/positions/",
     success: function(res){
-      var ctv = $("#positions");
-      ctv.empty();
       var values = $("values > *",res);
+      var temp = "";
+      $('span.activities').removeClass("active");
+      //$('use.activities').removeClass("active");
       values.each(function(){
-        ctv.append("<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>");
+        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>\"" + $(this).text() + "\"</td></tr>";
+        $('#activity_' + this.nodeName).addClass("active");
+        //$('#graph_' + this.nodeName).addClass("active");
       });
+
+      if (temp != save_pos) {
+        save_pos = temp;
+        var ctv = $("#positions");
+        ctv.empty();
+        ctv.append(temp);
+      }  
     }
   });
 
@@ -112,20 +175,56 @@ function load_instance() {// {{{
     url: url + "/properties/values/state/",
     dataType: "text",
     success: function(res){
-      var ctv = $("#state");
-      ctv.empty();
-      ctv.append(res);
+      if (res != save_state) {
+        save_state = res;
+        var ctv = $("#state");
+        ctv.empty();
+
+        var but = "";
+        if (res == "ready" || res == "stopped") {
+          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>Start</button></td>";
+        }
+        if (res == "running") {
+          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>Stop</button></td>";
+        }
+
+        ctv.append("<tr><td>" + res + "</td>" + but + "</tr>");
+      }  
     }
+  });
+}// }}}
+
+function finished_monitor_instance() {// {{{
+  if (save_state != "finished")
+    setTimeout('monitor_instance();finished_monitor_instance();', 1000);
+}// }}}
+
+function start_instance() {// {{{
+  var url = $("input[name=instance-url]").val();
+  $.cors({
+    type: "PUT", 
+    url: url + "/properties/values/state",
+    data: ({value: "running"}),
+    failure: report_failure
+  });
+}// }}}
+
+function stop_instance() {// {{{
+  var url = $("input[name=instance-url]").val();
+  $.cors({
+    type: "PUT", 
+    url: url + "/properties/values/state",
+    data: ({value: "stopped"}),
+    failure: report_failure
   });
 }// }}}
 
 function load_testset() {// {{{
   if (running) return;
   running  = true;
-  finished = 0;
-  soll = 4;
   var url = $("input[name=instance-url]").val();
   $.ajax({ 
+    cache: false,
     url: "Testsets/" + $('select[name=testset-names]').val() + ".xml",
     success: function(res){ 
       var testset = res; 
@@ -187,88 +286,73 @@ function load_testset() {// {{{
         url: url + "/properties/values/transformation/",
         success: function(res){
           var values = $("not-existing",res);
-          var type = "GET";
-          if (values.length > 0) {
-            $.ajax({ 
-              url: "Testsets.xsl",
-              dataType: "text",
-              success: function(res){ 
-                $.cors({
-                  type: "POST", 
-                  url: url + "/properties/values/",
-                  data: ({key: "transformation", value: res}),
-                  success: function() { finished_load_testset(++finished); },
-                  failure: report_failure
-                });
-                }  
-            });
-          } else {
-            $.ajax({ 
-              url: "Testsets.xsl",
-              dataType: "text",
-              success: function(res){ 
-                $.cors({
-                  type: "PUT", 
-                  url: url + "/properties/values/transformation",
-                  data: ({value: res}),
-                  success: function() { finished_load_testset(++finished); },
-                  failure: report_failure
-                });
-                }  
-            });
-          }
+          try {
+          $("testset > transformation > *",testset).each(function(){
+            var val = $(this).serializeXML();
+            if (values.length > 0) {
+              $.cors({
+                type: "POST", 
+                url: url + "/properties/values/",
+                data: ({key: "transformation", value: val}),
+                success: function() { load_testset_des(url,testset); },
+                failure: report_failure
+              });
+            } else {
+              $.cors({
+                type: "PUT", 
+                url: url + "/properties/values/transformation",
+                data: ({value: val}),
+                success: function() { load_testset_des(url,testset); },
+                failure: report_failure
+              });
+            }
+          });
+          } catch(e) {
+            console.log(e.toString());
+          }  
         },  
         failure: report_failure
       });
       
-      $("testset > description",testset).each(function(){
-        var name = this.nodeName;
-        var val = $(this).serializeXML();
-        $.cors({
-          type: "PUT", 
-          url: url + "/properties/values/description",
-          data: ({value: val}),
-          success: function() { finished_load_testset(++finished); },
-          failure: report_failure
-        });
-      });
     }
   });
   running  = false;
 }// }}}
-
-function finished_load_testset(num) {// {{{
-  if (num == soll)
-    load_instance();
-}// }}}
+          
+function load_testset_des(url,testset) {// {{{
+  $("testset > description",testset).each(function(){
+    var name = this.nodeName;
+    var val = $(this).serializeXML();
+    $.cors({
+      type: "PUT", 
+      url: url + "/properties/values/description",
+      data: ({value: val}),
+      failure: report_failure
+    });
+  });
+} // }}}
 
 function load_testset_cvs(url,testset) {// {{{
-  var temp = $("testset > context-variables > *",testset);
-  soll += temp.length - 1;
-  temp.each(function(){
+  $("testset > context-variables > *",testset).each(function(){
     var name = this.nodeName;
     var val = $(this).text();
     $.cors({
       type: "POST", 
       url: url + "/properties/values/context-variables/",
       data: ({key:  name, value: val}),
-      success: function(){ finished_load_testset(++finished); },
       failure: report_failure
     });  
   });
 }// }}}
 
 function load_testset_eps(url,testset) {// {{{
-  var temp = $("testset > endpoints > *",testset);
-  soll += temp.length - 1;
-  temp.each(function(){
+  $("testset > endpoints > *",testset).each(function(){
     var name = this.nodeName;
     var val = $(this).text();
     $.cors({
       type: "POST", 
       url: url + "/properties/values/endpoints/",
       data: ({key:  name, value: val}),
-      success: function(){ finished_load_testset(++finished); },
       failure: report_failure
     });  
   });

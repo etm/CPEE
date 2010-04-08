@@ -18,6 +18,16 @@ a:visited { color:#425d73; text-decoration:none; }
 a:hover   { color:#000000; text-decoration:underline; }
 a:active  { color:#000000; text-decoration:underline; }
 
+span.active {
+  font-weight: bold;
+  color: #ff0000;
+}
+
+use.active {
+  fill: #ff0000;
+  fill-opacity:1;
+}  
+
 div.section {
   padding:1em;
   border: 1pt solid ButtonShadow;
@@ -43,7 +53,7 @@ h1 {
   padding:0px;
 }
 #instance td:nth-child(1) { width: 8em; padding-right: 1em; }
-#instance td:nth-child(3) { width: 18em; padding-left: 1em; }
+#instance td:nth-child(3) { width: 16em; padding-left: 1em; }
 #instance input { width: 100% }
 #instance button[name=testset]  { width: 100%;  }
 #instance button[name=base]     { width: 100%;  }
@@ -70,3 +80,89 @@ h1 {
   font-size:1.3em;
 }
 
+.hidden {
+  display: none;
+}
+
+svg {
+  fill: #DDDDDD;
+  fill-opacity:1;
+}
+svg line.ourline {
+  z-index: 4;
+  stroke-opacity: 0.9; 
+  stroke:#000000;
+  stroke-width: 2; 
+  fill: none;
+}
+svg rect.block {
+  stroke-dasharray: 9, 3, 5;
+  stroke: #000000;
+  fill: none;
+}
+svg symbol {
+  z-index: 5;
+}
+svg .stand {
+  fill:#ffffff;
+  fill-opacity:1;
+  stroke:#000000;
+  stroke-width:2.06896567;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
+svg .standwithout {
+  fill:#ffffff;
+  fill-opacity:1;
+}
+svg text.normal {
+  font-size:20px;
+  font-style:normal;
+  font-variant:normal;
+  font-weight:bold;
+  font-stretch:normal;
+  text-align:center;
+  line-height:125%;
+  writing-mode:lr-tb;
+  text-anchor:middle;
+  color:#000000;
+  fill:#000000;
+  fill-opacity:1;
+  stroke:none;
+  font-family:Arial;
+}
+svg text.normallarge {
+  font-size:25px;
+  font-style:normal;
+  font-variant:normal;
+  font-weight:bold;
+  font-stretch:normal;
+  text-align:center;
+  line-height:125%;
+  writing-mode:lr-tb;
+  text-anchor:middle;
+  color:#000000;
+  fill:#000000;
+  fill-opacity:1;
+  stroke:none;
+  font-family:Arial;
+}
+svg text.small {
+  font-size:14px;
+  font-style:normal;
+  font-variant:normal;
+  font-weight:bold;
+  font-stretch:normal;
+  text-align:center;
+  line-height:125%;
+  writing-mode:lr-tb;
+  text-anchor:middle;
+  color:#000000;
+  fill:#000000;
+  fill-opacity:1;
+  stroke:none;
+  font-family:Arial;
+}
