@@ -57,6 +57,21 @@
       <xsl:text>end</xsl:text>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
+    <xsl:if test="name()='cycle'">
+      <xsl:text>cycle "</xsl:text>
+      <xsl:value-of select="@condition"/>
+      <xsl:text>" do</xsl:text>
+      <xsl:call-template name="print-newline"/>
+      <xsl:apply-templates>
+        <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+      </xsl:apply-templates>
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>end</xsl:text>
+      <xsl:call-template name="print-newline"/>
+    </xsl:if>
     <xsl:if test="name()='choose'">
       <xsl:text>choose do</xsl:text>
       <xsl:call-template name="print-newline"/>
@@ -78,9 +93,9 @@
       <xsl:with-param name="i">1</xsl:with-param>
       <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
     </xsl:call-template>
-    <xsl:text>alternative("</xsl:text>
+    <xsl:text>alternative "</xsl:text>
     <xsl:value-of select="@condition"/>
-    <xsl:text>") do</xsl:text>
+    <xsl:text>" do</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
       <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
@@ -118,7 +133,17 @@
       <xsl:with-param name="i">1</xsl:with-param>
       <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
     </xsl:call-template>
-    <xsl:text>parallel_branch do</xsl:text>
+    <xsl:text>parallel_branch</xsl:text>
+    <xsl:if test="@pass">
+      <xsl:text> </xsl:text>
+      <xsl:value-of select="@pass"/>
+    </xsl:if>
+    <xsl:text> do</xsl:text>
+    <xsl:if test="@local">
+      <xsl:text> |</xsl:text>
+      <xsl:value-of select="@local"/>
+      <xsl:text>|</xsl:text>
+    </xsl:if>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
       <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
@@ -153,9 +178,7 @@
     <xsl:text> { :</xsl:text>
     <xsl:value-of select="@name"/>
     <xsl:text> => </xsl:text>
-    <xsl:text>"</xsl:text>
     <xsl:value-of select="text()"/>
-    <xsl:text>"</xsl:text>
     <xsl:text> }</xsl:text>
     <xsl:choose>  
       <xsl:when test=". = ../*[last()]">

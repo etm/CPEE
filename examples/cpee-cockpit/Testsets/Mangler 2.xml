@@ -2,58 +2,54 @@
 <testset>
   <positions/>
   <context-variables>
-    <x>_begin</x>
-    <bla>_begin</bla>
+    <persons>3</persons>
+    <card>Visa_12345</card>
+    <airline/>
+    <hotels type="literal">[]</hotels>
+    <from>Vienna</from>
+    <to>Prague</to>
+    <costs>0</costs>
   </context-variables>
   <endpoints>
-    <timeout>http://www.pri.univie.ac.at/~mangler/timeout.php</timeout>
+    <bookAir>http://www.pri.univie.ac.at/~mangler/timeout.php</bookAir>
+    <bookHotel>http://www.pri.univie.ac.at/~mangler/timeout.php</bookHotel>
+    <approve>http://www.pri.univie.ac.at/~mangler/timeout.php</approve>
   </endpoints>
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="a1_1" endpoint="timeout">
+    <call id="a1" endpoint="bookAir">
       <parameter name="method">post</parameter>
       <parameter name="parameters">
-        <parameter name="timeout">2</parameter>
-        <parameter name="timeout">3</parameter>
+        <parameter name="from">@from</parameter>
+        <parameter name="to">@to</parameter>
+        <parameter name="persons">@persons</parameter>
       </parameter>
-      <manipulate output="result">  @x += result.inspect
-  @x += result.inspect</manipulate>  
-    </call>  
-    <parallel wait="2">
-      <parallel_branch>
-        <call id="a2_1_1" endpoint="timeout">
-          <parameter name="method">post</parameter>
-          <parameter name="parameters">
-            <parameter name="timeout">2</parameter>
-          </parameter>
-        </call>  
-      </parallel_branch>
-      <parallel_branch>
-        <call id="a2_2_1" endpoint="timeout">
-          <parameter name="method">post</parameter>
-          <parameter name="parameters">
-            <parameter name="timeout">2</parameter>
-          </parameter>
-        </call>  
-      </parallel_branch>
+      <manipulate output="result">  @airline = result['id']
+  @costs += result['costs']</manipulate>
+    </call>
+    <parallel>
+      <cycle condition="@persons > 0">
+        <parallel_branch pass="@persons" local="p">
+          <call id="a2_#{p}" endpoint="bookHotel">
+            <parameter name="method">post</parameter>
+            <parameter name="parameters">
+              <parameter name="to">@to</parameter>
+            </parameter>
+            <manipulate output="result">        @hotel &lt;&lt; result['id']
+        @costs += result['costs']</manipulate>
+          </call>
+        </parallel_branch>
+        <manipulate id="a3">      @persons -= 1</manipulate>  
+      </cycle>  
     </parallel>  
-    <manipulate id="a3">  @x += '_end'</manipulate>  
     <choose>
-      <alternative condition="@x != nil">
-        <call id="a4a" endpoint="timeout">
+      <alternative condition="@costs > 10000">
+        <call id="a4" endpoint="approve">
           <parameter name="method">post</parameter>
           <parameter name="parameters">
-            <parameter name="timeout">2</parameter>
+            <parameter name="costs">@costs</parameter>
           </parameter>
         </call>  
       </alternative>
-      <otherwise>
-        <call id="a4b" endpoint="timeout">
-          <parameter name="method">post</parameter>
-          <parameter name="parameters">
-            <parameter name="timeout">2</parameter>
-          </parameter>
-        </call>  
-      </otherwise>
     </choose>
   </description>
   <transformation>
@@ -116,6 +112,21 @@
           <xsl:text>end</xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
+        <xsl:if test="name()='cycle'">
+          <xsl:text>cycle "</xsl:text>
+          <xsl:value-of select="@condition"/>
+          <xsl:text>" do</xsl:text>
+          <xsl:call-template name="print-newline"/>
+          <xsl:apply-templates>
+            <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:apply-templates>
+          <xsl:call-template name="print-space">
+            <xsl:with-param name="i">1</xsl:with-param>
+            <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:call-template>
+          <xsl:text>end</xsl:text>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
         <xsl:if test="name()='choose'">
           <xsl:text>choose do</xsl:text>
           <xsl:call-template name="print-newline"/>
@@ -137,9 +148,9 @@
           <xsl:with-param name="i">1</xsl:with-param>
           <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
         </xsl:call-template>
-        <xsl:text>alternative("</xsl:text>
+        <xsl:text>alternative "</xsl:text>
         <xsl:value-of select="@condition"/>
-        <xsl:text>") do</xsl:text>
+        <xsl:text>" do</xsl:text>
         <xsl:call-template name="print-newline"/>
         <xsl:apply-templates>
           <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
@@ -177,7 +188,17 @@
           <xsl:with-param name="i">1</xsl:with-param>
           <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
         </xsl:call-template>
-        <xsl:text>parallel_branch do</xsl:text>
+        <xsl:text>parallel_branch</xsl:text>
+        <xsl:if test="@pass">
+          <xsl:text> </xsl:text>
+          <xsl:value-of select="@pass"/>
+        </xsl:if>
+        <xsl:text> do</xsl:text>
+        <xsl:if test="@local">
+          <xsl:text> |</xsl:text>
+          <xsl:value-of select="@local"/>
+          <xsl:text>|</xsl:text>
+        </xsl:if>
         <xsl:call-template name="print-newline"/>
         <xsl:apply-templates>
           <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
@@ -212,9 +233,7 @@
         <xsl:text> { :</xsl:text>
         <xsl:value-of select="@name"/>
         <xsl:text> => </xsl:text>
-        <xsl:text>"</xsl:text>
         <xsl:value-of select="text()"/>
-        <xsl:text>"</xsl:text>
         <xsl:text> }</xsl:text>
         <xsl:choose>  
           <xsl:when test=". = ../*[last()]">
@@ -270,7 +289,7 @@
       </xsl:template>
       <xsl:template name="print-newline">
         <xsl:text>
-</xsl:text>
+    </xsl:text>
       </xsl:template>
 
     </xsl:stylesheet>
