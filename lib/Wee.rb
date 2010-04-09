@@ -169,7 +169,7 @@ class Wee
     # Parallel DSL-Construct
     # Defines Workflow paths that can be executed parallel.
     # May contain multiple branches (parallel_branch)
-    def parallel(type=:wait)# {{{
+    def parallel(type=nil)# {{{
       return if self.state == :stopped || Thread.current[:nolongernecessary]
 
       mythreads = Array.new
@@ -181,7 +181,7 @@ class Wee
         yield
         mythreads = @__wee_threads.clone
       end
-      wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && type[:wait].is_a?(Integer)) ? wait_count = type[:wait] : mythreads.size
+      wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && type[:wait].is_a?(Integer)) ? type[:wait] : mythreads.size
       finished_threads_count = 0
       while (finished_threads_count < wait_count && finished_threads_count < mythreads.size)
         Thread.pass
