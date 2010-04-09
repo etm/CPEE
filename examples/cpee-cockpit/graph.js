@@ -54,13 +54,12 @@ function WFGraph (xml, container) {
         // Last childs of the elements connect to the sequence
         case 'critical':
         case 'choose':
-        //case 'parallel':
           drawSymbol(ap, child, false);
-          block = analyze(child, ap, 1);i
+          block = analyze(child, ap, 1);
           if(child.nodeName == "critical") drawBlock(ap, block['max_pos']);
           break;
-        case 'parallel_branch':
         case 'alternative':
+        case 'parallel_branch':
         case 'otherwise':
           drawSymbol(ap, child, false);
           block = analyze(child, ap, 0);
