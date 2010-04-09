@@ -46,6 +46,7 @@ function WFGraph (xml, container) {
         // Elements are only with root-node connected to the sequence
         case 'cycle':
         case 'parallel':
+        case 'parallel_branch':
           drawSymbol(ap, child, false);
           block = analyze(child, ap, 1);
           if(child.nodeName == "parallel") drawBlock(ap, block['max_pos']);
@@ -59,7 +60,6 @@ function WFGraph (xml, container) {
           if(child.nodeName == "critical") drawBlock(ap, block['max_pos']);
           break;
         case 'alternative':
-        case 'parallel_branch':
         case 'otherwise':
           drawSymbol(ap, child, false);
           block = analyze(child, ap, 0);
