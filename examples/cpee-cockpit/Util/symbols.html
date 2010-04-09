@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en" xml:lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+    <title>Workflow-graph</title>
+    <style type="text/css">
+      svg {
+        background-color: #DDDDDD;
+        fill: #DDDDDD;
+        fill-opacity:1;
+      }
+      svg .active {fill: red;}
+      svg .stand {
+        fill:#ffffff;
+        fill-opacity:1;
+        stroke:#000000;
+        stroke-width:2.06896567;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+        stroke-miterlimit:4;
+        stroke-opacity:1;
+        stroke-dasharray:none;
+      }
+      svg .standwithout {
+        fill:#ffffff;
+        fill-opacity:1;
+      }
+      svg text.normal {
+        font-size:20px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:125%;
+        writing-mode:lr-tb;
+        text-anchor:middle;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+      svg text.normallarge {
+        font-size:25px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:125%;
+        writing-mode:lr-tb;
+        text-anchor:middle;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+      svg text.small {
+        font-size:14px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:125%;
+        writing-mode:lr-tb;
+        text-anchor:middle;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+    </style>
+  </head>
+  <body>
+
+    <svg height="300" width="300" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <symbol id="call"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="stand"/>
+          <text class="normal" transform='translate(15,21)'>c</text>
+        </symbol><!-- }}} -->
+        <symbol id="manipulate"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="stand"/>
+          <text class="normal" transform='translate(15,21)'>m</text>
+        </symbol><!-- }}} -->
+        <symbol id="callmanipulate"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="stand"/>
+          <text class="normal" transform='translate(15,21)'>c</text>
+          <circle cx="28" cy="28" r="9" class="stand"/>
+          <text class="small" transform='translate(28,32)'>m</text>
+        </symbol><!-- }}} -->
+        <symbol id="choose"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="stand"/>
+          <text class="normal" transform='translate(15,21)'>σ</text>
+        </symbol><!-- }}} -->
+        <symbol id="alternative"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="standwithout"/>
+          <text class="normal" transform='translate(15,20)'>{܅}</text>
+        </symbol><!-- }}} -->
+        <symbol id="otherwise"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="standwithout"/>
+          <text class="normal" transform='translate(15,20)'>{⁎}</text>
+        </symbol><!-- }}} -->
+        <symbol id="parallel"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="stand"/>
+          <text class="normal" transform='translate(15,21)'>||</text>
+        </symbol><!-- }}} -->
+        <symbol id="parallel_branch"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="stand"/>
+          <text class="normal" transform='translate(15,21)'>|</text>
+        </symbol><!-- }}} -->
+        <symbol id="critical"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="stand"/>
+          <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
+        </symbol><!-- }}} -->
+        <symbol id="cycle"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="stand"/>
+          <text class="normallarge" transform='translate(15,23)'>↺</text>
+        </symbol><!-- }}} -->
+        <symbol id="end"><!-- {{{ -->
+          <circle cx="15" cy="15" r="14" class="stand"/> 
+          <circle cx="15" cy="15" r="11" class="stand"/>
+          <text class="normal" transform='translate(15,21)'>Ω</text>
+        </symbol><!-- }}} -->
+        <marker id="EndMarker" viewBox="0 0 10 10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="5" markerHeight="5" stroke="red" stroke-width="2" fill="red">
+          <path d="m 2 2 l 6 3 l -6 3 z"/>
+        </marker>
+      </defs>
+
+      <g> 
+        <use xlink:href="#call" transform="translate(0,0)"/>
+        <use xlink:href="#manipulate" transform="translate(40,0)"/>
+        <use xlink:href="#callmanipulate" transform="translate(80,0)"/>
+        <use xlink:href="#choose" transform="translate(0,40)"/>
+        <use xlink:href="#alternative" transform="translate(40,40)"/>
+        <use xlink:href="#otherwise" transform="translate(80,40)"/>
+        <use xlink:href="#parallel" transform="translate(0,80)"/>
+        <use xlink:href="#parallel_branch" transform="translate(40,80)"/>
+        <use xlink:href="#critical" transform="translate(0,120)"/>
+        <use xlink:href="#cycle" transform="translate(0,160)"/>
+        <use xlink:href="#end" transform="translate(0,200)"/>
+
+        <line x1="5" y1="240" x2="100" y2="280" stroke="black" stroke-width="3" marker-end="url(#EndMarker)"/>
+      </g>
+    </svg>
+
+  </body>
+<html>

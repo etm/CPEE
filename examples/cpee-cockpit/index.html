@@ -21,7 +21,7 @@
       </tr>
       <tr>
         <td>Instance Url:</td>
-        <td><input name="instance-url" type="text" value=""></td>
+        <td><input name="instance-url" type="text" value="http://tango.pri.lan:9298/1/"></td>
         <td><button name="instance">monitor instance</button></td>
       </tr>
       <tr>
@@ -59,7 +59,6 @@
                 <symbol id="call"><!-- {{{ -->
                   <circle cx="15" cy="15" r="14" class="stand"/>
                   <text class="normal" transform='translate(15,21)'>c</text>
-
                 </symbol><!-- }}} -->
                 <symbol id="manipulate"><!-- {{{ -->
                   <circle cx="15" cy="15" r="14" class="stand"/>
@@ -68,7 +67,6 @@
                 <symbol id="callmanipulate"><!-- {{{ -->
                   <circle cx="15" cy="15" r="14" class="stand"/>
                   <text class="normal" transform='translate(15,21)'>c</text>
-
                   <circle cx="28" cy="28" r="9" class="stand"/>
                   <text class="small" transform='translate(28,32)'>m</text>
                 </symbol><!-- }}} -->
@@ -77,16 +75,14 @@
                   <text class="normal" transform='translate(15,21)'>σ</text>
                 </symbol><!-- }}} -->
                 <symbol id="alternative"><!-- {{{ -->
-
                   <circle cx="15" cy="15" r="14" class="standwithout"/>
-                  <text class="normal" transform='translate(15,21)'>{܅}</text>
+                  <text class="normal" transform='translate(15,20)'>{܅}</text>
                 </symbol><!-- }}} -->
                 <symbol id="otherwise"><!-- {{{ -->
                   <circle cx="15" cy="15" r="14" class="standwithout"/>
-                  <text class="normal" transform='translate(15,21)'>{⁎}</text>
+                  <text class="normal" transform='translate(15,20)'>{⁎}</text>
                 </symbol><!-- }}} -->
                 <symbol id="parallel"><!-- {{{ -->
-
                   <circle cx="15" cy="15" r="14" class="stand"/>
                   <text class="normal" transform='translate(15,21)'>||</text>
                 </symbol><!-- }}} -->
@@ -95,7 +91,6 @@
                   <text class="normal" transform='translate(15,21)'>|</text>
                 </symbol><!-- }}} -->
                 <symbol id="critical"><!-- {{{ -->
-
                   <circle cx="15" cy="15" r="14" class="stand"/>
                   <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
                 </symbol><!-- }}} -->
@@ -103,37 +98,20 @@
                   <circle cx="15" cy="15" r="14" class="stand"/>
                   <text class="normallarge" transform='translate(15,23)'>↺</text>
                 </symbol><!-- }}} -->
-                <symbol id="empty"><!-- {{{ -->
-
-                  <circle cx="15" cy="15" r="3" class="stand"/>
-                </symbol><!-- }}} -->
                 <symbol id="end"><!-- {{{ -->
                   <circle cx="15" cy="15" r="14" class="stand"/>
                   <circle cx="15" cy="15" r="11" class="stand"/>
                   <text class="normal" transform='translate(15,21)'>Ω</text>
                 </symbol><!-- }}} -->
-                <g id="arrowMarker">
-
-                  <!-- {{{ -->
-                  <g stroke="black" stroke-width="0.3">
-                    <line x1="3" y1="-2" x2="0" y2="0"/>
-                    <line x1="3" y1="+2" x2="0" y2="0"/>
-                  </g>
-                </g>
-                <marker id="startMarker" markerWidth="48" markerHeight="24" viewBox="-4 -4 25 5" orient="auto" refX="3" refY="0" markerUnits="strokeWidth">
-                  <g>
-                    <use xlink:href="#arrowMarker" transform="rotate(180)" stroke-width="1" stroke="black"/>
-
-                  </g>
-                <!-- }}} -->
-                </marker> 
+                <marker id="arrow" viewBox="0 0 10 10" refX="24" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" markerHeight="4.5">
+                  <path d="m 2 2 l 6 3 l -6 3 z"/>
+                </marker>
               </defs>
               <g id="canvas">
                 <g id="blocks"/>
                 <g id="lines"/>
                 <g id="symbols"/>
               </g>
-
             </svg>
           </div>  
         </td>

@@ -171,7 +171,8 @@ svg line.ourline {
   fill: none;
 }
 svg rect.block {
-  stroke-dasharray: 9, 3, 5;
+  stroke-width: 1; 
+  stroke-dasharray: 3,5;
   stroke: #000000;
   fill: none;
 }
@@ -240,4 +241,10 @@ svg text.small {
   fill-opacity:1;
   stroke:none;
   font-family:Arial;
+}
+ 
+#arrow { 
+ stroke: #000000;
+ stroke-width: 2;
+ fill: #000000;
 }
