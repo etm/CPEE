@@ -40,6 +40,28 @@
         </parallel_branch>
         <manipulate id="a3">      @persons -= 1</manipulate>  
       </cycle>  
+      <cycle condition="@persons > 0">
+        <parallel_branch pass="@persons" local="p">
+          <call id="a2_#{p}" endpoint="bookHotel">
+            <parameter name="method">post</parameter>
+            <parameter name="parameters">
+              <parameter name="to">@to</parameter>
+            </parameter>
+            <manipulate output="result">        @hotel &lt;&lt; result['id']
+        @costs += result['costs']</manipulate>
+          </call>
+        </parallel_branch>
+        <parallel_branch pass="@persons" local="p">
+          <call id="a2_#{p}" endpoint="bookHotel">
+            <parameter name="method">post</parameter>
+            <parameter name="parameters">
+              <parameter name="to">@to</parameter>
+            </parameter>
+            <manipulate output="result">        @hotel &lt;&lt; result['id']
+        @costs += result['costs']</manipulate>
+          </call>
+        </parallel_branch>
+      </cycle>  
     </parallel>  
     <choose>
       <alternative condition="@costs > 10000">

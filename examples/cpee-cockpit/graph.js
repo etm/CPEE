@@ -35,6 +35,13 @@ function WFGraph (xml, container) {
 
     var xpath = "child::*[name() != 'parameter']";
     var childs = xml.evaluate(xpath, parent_element, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var pure_branch = true;
+    var pure_choose = true;
+    for(var i=0; i < childs.snapshotLength; i++) {
+      var child = childs.snapshotItem(i);
+      if (child.nodeName != 'parallel_branch') pure_branch = false;
+      if (child.nodeName != 'alternative' && child.nodeName != 'otherwise') pure_choose = false;
+    }  
     for(var i=0; i < childs.snapshotLength; i++) {
       var child = childs.snapshotItem(i);
       switch(child.nodeName) {
@@ -46,7 +53,6 @@ function WFGraph (xml, container) {
         // Elements are only with root-node connected to the sequence
         case 'cycle':
         case 'parallel':
-        case 'parallel_branch':
           drawSymbol(ap, child, false);
           block = analyze(child, ap, 1);
           if(child.nodeName == "parallel") drawBlock(ap, block['max_pos']);
@@ -61,35 +67,38 @@ function WFGraph (xml, container) {
           break;
         case 'alternative':
         case 'otherwise':
+        case 'parallel_branch':
           drawSymbol(ap, child, false);
-          block = analyze(child, ap, 0);
+          if (pure_branch || pure_choose) {
+            block = analyze(child, ap, 0);
+          } else {
+            block = analyze(child, ap, 1);
+            if(child.nodeName == "parallel") drawBlock(ap, block['max_pos']);
+            block['end_nodes'] = [copyPos(ap)]; // cycle-node is successor
+          }  
           break;
       }
       if(max_line < block['max_pos']['line']) max_line = block['max_pos']['line'];
       if(max_col < block['max_pos']['col']) max_col = block['max_pos']['col'];
-      switch(parent_element.nodeName) {
-        case 'cycle':
-          if(i == childs.snapshotLength -1) {
+      if(pure_branch || pure_choose) {
+        drawConnection(parent_position, ap);
+        ap['col'] = block['max_pos']['col']+1;
+        for(var j = 0; j < block['end_nodes'].length; j++)
+          end_nodes.push(block['end_nodes'][j]);
+      } else {   
+        if(parent_element.nodeName == 'parallel' && i == 0) {
+          drawConnection(parent_position, ap);
+        }  
+        if(parent_element.nodeName == 'cycle') {
+          if (i == childs.snapshotLength - 1) {
             for(var j = 0; j < block['end_nodes'].length; j++)
               drawConnection(block['end_nodes'][j], parent_position);
           }
-        case 'parallel_branch':
-        case 'alternative':
-        case 'otherwise':
-        case 'critical':
-        case 'description':
-          for(var j = 0; j < end_nodes.length; j++)
-            drawConnection(end_nodes[j], ap);
-          ap['line'] = block['max_pos']['line'];
-          end_nodes = block['end_nodes'];
-          break;
-        case 'choose':
-        case 'parallel':
-          drawConnection(parent_position, ap);
-          ap['col'] = block['max_pos']['col']+1;
-          for(var j = 0; j < block['end_nodes'].length; j++)
-            end_nodes.push(block['end_nodes'][j]);
-          break;
+        }  
+        for(var j = 0; j < end_nodes.length; j++)
+          drawConnection(end_nodes[j], ap);
+        ap['line'] = block['max_pos']['line'];
+        end_nodes = block['end_nodes'];
       }
     }
     if(parent_element.nodeName == "description") {

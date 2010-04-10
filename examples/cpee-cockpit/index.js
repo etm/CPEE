@@ -121,7 +121,7 @@ function monitor_instance() {// {{{
           res = res.replace(/\t/g,'  ');
           res = res.replace(/\r/g,'');
 
-          res = res.replace(/activity\s+:([\w_]+)/g,"<span class='activities' id=\"activity_$1\">activity :$1</span>");
+          res = res.replace(/^activity\s+:([\w_]+)/g,"<span class='activities' id=\"activity_$1\">activity :$1</span>");
 
           var m;
           while (m = res.match(/^ +|^(?!<div style=)|^\z/m)) {
