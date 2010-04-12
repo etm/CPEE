@@ -224,7 +224,6 @@ function load_testset() {// {{{
   if (running) return;
   running  = true;
   var url = $("input[name=instance-url]").val();
-  alert("Testsets/" + $('select[name=testset-names]').val() + ".xml");
   $.ajax({ 
     cache: false,
     dataType: 'xml',
@@ -232,8 +231,6 @@ function load_testset() {// {{{
     success: function(res){ 
       var testset = res; 
 
-      alert(res);
-  
       $.cors({
         type: "GET", 
         url: url + "/properties/values/context-variables/",
