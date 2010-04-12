@@ -12,6 +12,7 @@ $(document).ready(function() {
   $("button[name=testset]").click(load_testset);
   $.ajax({ 
     url: "Testsets.xml", 
+    dataType: 'xml',
     success: function(res){
       $('testset',res).each(function(){
         var ts = $(this).text();
@@ -223,11 +224,15 @@ function load_testset() {// {{{
   if (running) return;
   running  = true;
   var url = $("input[name=instance-url]").val();
+  alert("Testsets/" + $('select[name=testset-names]').val() + ".xml");
   $.ajax({ 
     cache: false,
+    dataType: 'xml',
     url: "Testsets/" + $('select[name=testset-names]').val() + ".xml",
     success: function(res){ 
       var testset = res; 
+
+      alert(res);
   
       $.cors({
         type: "GET", 
