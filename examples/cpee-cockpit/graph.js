@@ -9,8 +9,15 @@ function WFGraph (xml, container) {
   var symbols = document.getElementById("symbols"); 
   var blocks = document.getElementById("blocks"); 
 
-  this.generateGraph = function(format) {
+  var symclick= function(node) { alert('blerg'); };
+
+  this.generateGraph = function(s) {
     // {{{
+    if (typeof s == "undefined")
+      s = {};
+    if (s.symclick)
+      symclick = s.symclick;
+
     removeChilds(lines);
     removeChilds(symbols);
     removeChilds(blocks);
@@ -143,11 +150,12 @@ function WFGraph (xml, container) {
     var use = document.createElementNS(svgNS, "use");
     for(var attr in attrs)
       use.setAttribute(attr, attrs[attr]);
+    use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
+    use.onclick = function(){ symclick(node); };
     if((sym_name == "call") && (xml.evaluate("count(child::*[name() = 'manipulate'])", node, ns, XPathResult.ANY_TYPE, null).numberValue > 0)) 
       sym_name = "callmanipulate";
-    use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
     symbols.appendChild(use);
-  // }}} 
+  // }}}  
   }
 // {{{ 
   var copyPos = function(pos) {
