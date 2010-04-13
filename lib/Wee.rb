@@ -28,7 +28,9 @@ class Wee
     end
   end# }}}
   class HandlerWrapperBase# {{{
-    def activity_handle(id, continue, passthrough, endpoint, parameters); end
+    def initialize(handlerargs,activity=nil,continue=nil); end
+
+    def activity_handle(passthrough, endpoint, parameters); end
     def activity_result_value; end
 
     def activity_stop; end
@@ -36,15 +38,16 @@ class Wee
 
     def activity_no_longer_necessary; end
 
-    def inform_activity_done(activity); end
-    def inform_activity_manipulate(activity); end
-    def inform_activity_failed(activity, err); end
+    def inform_activity_done; end
+    def inform_activity_manipulate; end
+    def inform_activity_failed(err); end
+
     def inform_syntax_error(err); end
     def inform_context_change(changed); end
     def inform_state(newstate); end
     
-    def vote_sync_before(activity); end
-    def vote_sync_after(activity); end
+    def vote_sync_before; end
+    def vote_sync_after; end
   end  # }}}
   class Continue# {{{
     def initialize
@@ -130,36 +133,37 @@ class Wee
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters)
       return if self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
-      handler = @__wee_handler.new @__wee_handlerargs
+      Thread.current[:continue] = Continue.new
+      handler = @__wee_handler.new @__wee_handlerargs, position, Thread.current[:continue]
       @__wee_context_change = false
       begin
         case type
           when :manipulate
-            handler.vote_sync_before position
+            handler.vote_sync_before
             if block_given?
-              handler.inform_activity_manipulate position
+              handler.inform_activity_manipulate
               yield
             end  
             refreshcontext handler
-            handler.inform_activity_done position
-            handler.vote_sync_after position
+            handler.inform_activity_done
+            handler.vote_sync_after
           when :call
-            handler.vote_sync_before position
+            handler.vote_sync_before
             passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
             ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
             if block_given? && @__wee_state != :stopped && !Thread.current[:nolongernecessary]
-              handler.inform_activity_manipulate position
+              handler.inform_activity_manipulate
               yield ret_value
             end
             refreshcontext handler
-            handler.inform_activity_done position
-            handler.vote_sync_after position
+            handler.inform_activity_done
+            handler.vote_sync_after
         else
           raise "Invalid activity type #{type}. Only :manipulate or :call allowed"
         end
       rescue => err
         refreshcontext handler
-        handler.inform_activity_failed position, err
+        handler.inform_activity_failed err
         self.state = :stopped
       ensure
         @__wee_context_change = true
@@ -295,10 +299,8 @@ class Wee
         end
       end
       # handshake call and wait until it finished
-      continue = Continue.new
-      Thread.current[:continue] = continue
-      handler.activity_handle position, continue, passthrough, endpoint, params
-      continue.wait unless Thread.current[:nolongernecessary] || self.state == :stopped
+      handler.activity_handle Thread.current[:continue], passthrough, endpoint, params
+      Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.state == :stopped
        
       handler.activity_no_longer_necessary if Thread.current[:nolongernecessary]
       if self.state == :stopped
@@ -330,7 +332,7 @@ class Wee
           @__wee_main.join 
         end
       end
-      handler = @__wee_handler.new @__wee_handlerargs
+      handler = @__wee_handler.new @__wee_handlerargs, nil, nil
       handler.inform_state newState
       newState
     end# }}}
@@ -438,7 +440,7 @@ class Wee
               instance_eval(@__wee_wfsource)
             rescue SyntaxError => err
               self.state = :stopped
-              handler = @__wee_handler.new @__wee_handlerargs
+              handler = @__wee_handler.new @__wee_handlerargs, nil, nil
               handler.inform_syntax_error(err)
             end
           end

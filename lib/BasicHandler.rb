@@ -3,17 +3,17 @@ require 'pp'
 require ::File.dirname(__FILE__) + '/Wee'
 
 class BasicHandler < Wee::HandlerWrapperBase
-  def initialize(args)
-    @expand_params = true
+  def initialize(args,position,continue)
     @__basichandler_stopped = false
-    @__basichandler_continue = nil
+    @__basichandler_position = position
+    @__basichandler_continue = continue
     @__basichandler_returnValue = nil
     $LOG = Logger.new(STDOUT) unless defined?($LOG)
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
-  def activity_handle(id, continue, passthrough, endpoint, parameters)
+  def activity_handle(passthrough, endpoint, parameters)
     $LOG.debug('BasicHandler.activity_handle'){ "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"}
     pp "Handle call: passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters.inspect}]"
     Thread.new do
@@ -26,7 +26,7 @@ class BasicHandler < Wee::HandlerWrapperBase
  
   # returns the result of the last handled call
   def activity_result_value
-    @__basichandler_finished ? @__basichandler_returnValue : nil
+    @__basichandler_returnValue
   end
   # Called if the WS-Call should be interrupted. The decision how to deal
   # with this situation is given to the handler. To provide the possibility
@@ -51,16 +51,16 @@ class BasicHandler < Wee::HandlerWrapperBase
     @__basichandler_stopped = true
   end
   # Is called if a Activity is executed correctly
-  def inform_activity_done(activity)
+  def inform_activity_done
     $LOG.info('BasicHandler.inform_activity_done'){"Activity #{activity} done"}
   end
   # Is called before the results of a call are manipulated
-  def inform_activity_manipulate(activity)
+  def inform_activity_manipulate
     $LOG.info('BasicHandler.inform_activity_manipulate'){"Activity #{activity} manipulating"}
     raise(err)
   end
   # Is called if a Activity is executed with an error
-  def inform_activity_failed(activity, err)
+  def inform_activity_failed(err)
     $LOG.error('BasicHandler.inform_activity_failed'){"Activity #{activity} failed with error #{err}"}
     raise(err)
   end
