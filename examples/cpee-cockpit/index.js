@@ -24,6 +24,36 @@ $(document).ready(function() {
   });
 });
 
+function symclick(node) { // {{{
+  var attrs = {};
+  switch(node.nodeName) {
+    case 'call':
+      attrs = {'Id': node.getAttribute('id'), 'Endpoint': node.getAttribute('endpoint')};
+      break;
+    case 'manipulate':
+      attrs = {'Id': node.getAttribute('id'), 'Codeblock': node.textContent};
+      break;
+    case 'cycle':
+    case 'alternative':
+      attrs = {'Condition': node.getAttribute('condition')};
+      break;
+    case 'parallel':
+      attrs = {'Wait for number': node.getAttribute('condition')};
+      break;
+    case 'parallel_branch':
+    case 'choose':
+    case 'otherwise':
+  }
+  var table = $('#tabledetails');
+  table.empty();
+  for(var attr in attrs) {
+    var tr = $('<tr></tr>');
+    tr.append('<td>' + attr + ':&nbsp;</td>');
+    tr.append('<td>' + attrs[attr] + '</td>');
+    table.append(tr);
+  }
+} // }}}
+
 function create_instance() {// {{{
   var name = prompt("Instance name?");
   if (name != null) {
@@ -140,7 +170,9 @@ function monitor_instance() {// {{{
             url: url + "/properties/values/description/",
             success: function(res){
               g = new WFGraph(res, $("#canvas").get(0));
-              g.generateGraph();
+              g.generateGraph({
+               symclick: symclick
+              });
             }
           });
         }
@@ -360,13 +392,13 @@ function load_testset_eps(url,testset) {// {{{
   });
 }// }}}
 
-function tab_click(active,inactive) {
+function tab_click(active,inactive) { // {{{
   $(".inactivearea").removeClass("inactivearea");
   $(".tabactive").removeClass("tabactive");
   $(".tabinactive").removeClass("tabinactive");
   $("#area" + inactive).addClass("inactivearea");
   $("#tab" + active).addClass("tabactive");
   $("#tab" + inactive).addClass("tabinactive");
-}
+} // }}}
 
 function report_failure(){}

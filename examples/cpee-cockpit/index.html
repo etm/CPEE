@@ -21,7 +21,7 @@
       </tr>
       <tr>
         <td>Instance Url:</td>
-        <td><input name="instance-url" type="text" value="http://tango.pri.lan:9298/3/"></td>
+        <td><input name="instance-url" type="text" value="http://localhost:9298/2/"/></td>
         <td><button name="instance">monitor instance</button></td>
       </tr>
       <tr>
@@ -54,7 +54,7 @@
         <td class="tabbelow" colspan="3">
           <div id="areadsl"></div>
           <div id="areagraph" class="inactivearea">
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0" style="float:left">
               <defs>
                 <symbol id="call"><!-- {{{ -->
                   <circle cx="15" cy="15" r="14" class="stand"/>
@@ -113,6 +113,10 @@
                 <g id="symbols"/>
               </g>
             </svg>
+            <div>
+              <table id="tabledetails" border="1">
+              </table>
+            </div>
           </div>  
         </td>
       </tr>  

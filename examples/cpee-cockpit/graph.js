@@ -9,8 +9,15 @@ function WFGraph (xml, container) {
   var symbols = document.getElementById("symbols"); 
   var blocks = document.getElementById("blocks"); 
 
-  this.generateGraph = function(format) {
+  var symclick= function(node) { alert('blerg'); };
+
+  this.generateGraph = function(s) {
     // {{{
+    if (typeof s == "undefined")
+      s = {};
+    if (s.symclick)
+      symclick = s.symclick;
+
     removeChilds(lines);
     removeChilds(symbols);
     removeChilds(blocks);
@@ -111,7 +118,7 @@ function WFGraph (xml, container) {
         drawConnection(end_nodes[j], ap);
     }
     return {'end_nodes':end_nodes, 'max_pos':{'line': max_line, 'col':max_col}};
-    // }}}
+    // }}} 
   }
   var drawConnection = function(start, end) {
     // {{{
@@ -129,17 +136,26 @@ function WFGraph (xml, container) {
     var sym_name = node.nodeName;
     var attrs;
     if (id)
-      attrs = {'id': 'graph_' + node.getAttribute("id"), 'class': 'activities', 'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30};
+      attrs = {'id': 'graph_' + node.getAttribute("id"), 'class': 'activities', 'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30, 'title':'Id: '+node.getAttribute("id")};
     else  
       attrs = {'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30};
+    switch(node.nodeName) {
+      case 'cycle':
+      case 'alternative':
+      case 'parallel':
+        attrs['title'] = node.getAttribute("condition") != null ? 'Condition: ' + node.getAttribute("condition") : 'Condition: n.a.';
+        break;
+    }
+    
     var use = document.createElementNS(svgNS, "use");
     for(var attr in attrs)
       use.setAttribute(attr, attrs[attr]);
+    use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
+    use.onclick = function(){ symclick(node); };
     if((sym_name == "call") && (xml.evaluate("count(child::*[name() = 'manipulate'])", node, ns, XPathResult.ANY_TYPE, null).numberValue > 0)) 
       sym_name = "callmanipulate";
-    use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
     symbols.appendChild(use);
-  // }}} 
+  // }}}  
   }
 // {{{ 
   var copyPos = function(pos) {
