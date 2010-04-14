@@ -59,15 +59,15 @@ class Controller
       XML::Smart::open(sub) do |doc|
         key = ::File::basename(::File::dirname(sub))
         doc.namespaces = { 'n' => 'http://riddl.org/ns/common-patterns/notifications-producer/1.0' }
-        url = doc.find('string(/n:subscription/@url)')
+        url = doc.find('string(/n:subscription/@url)') 
         doc.find('/n:subscription/n:topic').each do |t|
           t.find('n:event').each do |e|
             @events["#{t.attributes['id']}/#{e}"] ||= {}
-            @events["#{t.attributes['id']}/#{e}"][key] = url
+            @events["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
           end
           t.find('n:vote').each do |e|
             @votes["#{t.attributes['id']}/#{e}"] ||= {}
-            @votes["#{t.attributes['id']}/#{e}"][key] = url
+            @votes["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
           end
         end
       end
@@ -93,6 +93,7 @@ class Controller
     item = @events[what]
     if item
       item.each do |key,url|
+        next unless url
         topic        = ::File::dirname(what)
         event        = ::File::basename(what)
         notification = []

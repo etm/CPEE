@@ -153,10 +153,20 @@ end #}}}
 
 class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase #{{{
   def sync
+    p @notifications
+    p @key
+    p @topics
+
+    p "-----"
+
     id = ::File::basename(::File::dirname(@notifications)).to_i
     $controller[id.to_i].unserialize!
     $controller[id.to_i].notify('properties/handlers/change')
   end
+            
+          def ws_open(socket); end
+          def ws_close; end
+          def ws_message(socket,data); end
 
   def create; sync; end
   def delete; sync; end
