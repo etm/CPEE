@@ -25,31 +25,55 @@ $(document).ready(function() {
 });
 
 function symclick(node) { // {{{
-  var attrs = {};
+  var params = function(child, level) {
+    var spaces = "";
+    for(var s = 0; s < level; s++) {spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";}
+    for(var j = 0; j < child.childNodes.length; j++) {
+      if(child.childNodes[j].nodeType == 1 && child.childNodes[j].nodeName == "parameter") {
+        attrs.push({'name': spaces + child.childNodes[j].getAttribute('name'),'value':child.childNodes[j].childNodes[0].nodeValue, 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'});
+        params(child.childNodes[j], level+1);
+      }
+    }
+  }
+  
+  var attrs = [];
+  var table = $('#tabledetails');
+  table.empty();
   switch(node.nodeName) {
     case 'call':
-      attrs = {'Id': node.getAttribute('id'), 'Endpoint': node.getAttribute('endpoint')};
+      attrs =[ 
+        {'name':'Id:','value':node.getAttribute('id'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        {'name':'Endpoint:','value':node.getAttribute('endpoint'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        ]
+        params(node, 0);
       break;
     case 'manipulate':
-      attrs = {'Id': node.getAttribute('id'), 'Codeblock': node.textContent};
+      attrs =[ 
+        {'name':'Id','value':node.getAttribute('id'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        {'name':'Codebock:','value':node.textContent, 'class-name':'tabledetailsdataname', 'class-value':'dsl'}, 
+        ]
       break;
     case 'cycle':
     case 'alternative':
-      attrs = {'Condition': node.getAttribute('condition')};
+      attrs =[ 
+        {'name':'Conditon:','value':node.getAttribute('condition'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        ]
       break;
     case 'parallel':
-      attrs = {'Wait for number': node.getAttribute('condition')};
+      attrs =[ 
+        {'name':'Wait:','value':node.getAttribute('wait'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        ]
       break;
     case 'parallel_branch':
     case 'choose':
     case 'otherwise':
+      return;
   }
-  var table = $('#tabledetails');
-  table.empty();
-  for(var attr in attrs) {
+  table.append('<tr><td colspan="2" class="tabledetailsheader"> Element: '+node.nodeName+'</td></tr>');
+  for(var i=0; i<attrs.length;i++) {
     var tr = $('<tr></tr>');
-    tr.append('<td>' + attr + ':&nbsp;</td>');
-    tr.append('<td>' + attrs[attr] + '</td>');
+    tr.append('<td class="'+attrs[i]['class-name']+'">' + attrs[i]['name'] + '</td>');
+    tr.append('<td class="'+attrs[i]['class-value']+'">' + (attrs[i]['value'] == null ? "not given" : attrs[i]['value']) + '</td>');
     table.append(tr);
   }
 } // }}}
