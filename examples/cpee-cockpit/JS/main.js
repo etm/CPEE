@@ -1,4 +1,5 @@
 var running = false;
+var subscription;
 var save_state;
 var save_dsl;
 var save_desc;
@@ -110,7 +111,33 @@ function load_instance() {// {{{
       $("button[name=instance]").attr("disabled","disabled");
       $("input[name=base-url]").attr("readonly","readonly");
       $("button[name=base]").attr("disabled","disabled");
-      setTimeout('monitor_instance();finished_monitor_instance();', 0);
+
+      $.cors({
+        type: "POST", 
+        url: url + "/notifications/subscriptions/",
+        data: (
+          'topic'  + '=' + 'running' + '&' +
+          'events' + '=' + 'activity_calling,activity_manipulating,activity_done,activity_failed' + '&' +
+          'topic'  + '=' + 'properties/description' + '&' +
+          'events' + '=' + 'change' + '&' +
+          'topic'  + '=' + 'properties/state' + '&' +
+          'events' + '=' + 'change' + '&' +
+          'topic'  + '=' + 'properties/context-variables' + '&' +
+          'events' + '=' + 'change' + '&' +
+          'topic'  + '=' + 'properties/endpoints' + '&' +
+          'events' + '=' + 'change' + '&' +
+          'topic'  + '=' + 'properties/handlers' + '&' +
+          'events' + '=' + 'change'),
+        success: function(res){
+          res = res.unserialize();
+          $.each(res,function(a,b){
+            if (b[0] == 'key')
+              subscription = b[1];
+          });
+        }
+      });
+      monitor_instance();
+      //setTimeout('monitor_instance();finished_monitor_instance();', 0);
     },
     failure: function() {
       alert("This ain't no CPEE instance");
