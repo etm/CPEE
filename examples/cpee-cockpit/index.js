@@ -42,26 +42,26 @@ function symclick(node) { // {{{
   switch(node.nodeName) {
     case 'call':
       attrs =[ 
-        {'name':'Id:','value':node.getAttribute('id'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
-        {'name':'Endpoint:','value':node.getAttribute('endpoint'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        {'name':'id','value':node.getAttribute('id'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        {'name':'endpoint','value':node.getAttribute('endpoint'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
         ]
         params(node, 0);
       break;
     case 'manipulate':
       attrs =[ 
-        {'name':'Id','value':node.getAttribute('id'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
-        {'name':'Codebock:','value':node.textContent, 'class-name':'tabledetailsdataname', 'class-value':'dsl'}, 
+        {'name':'id','value':node.getAttribute('id'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        {'name':'code-block','value':node.textContent, 'class-name':'tabledetailsdataname', 'class-value':'dsl'}, 
         ]
       break;
     case 'cycle':
     case 'alternative':
       attrs =[ 
-        {'name':'Conditon:','value':node.getAttribute('condition'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        {'name':'conditon','value':node.getAttribute('condition'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
         ]
       break;
     case 'parallel':
       attrs =[ 
-        {'name':'Wait:','value':node.getAttribute('wait'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        {'name':'wait','value':node.getAttribute('wait'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
         ]
       break;
     case 'parallel_branch':
