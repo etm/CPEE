@@ -23,11 +23,34 @@ span.active {
   color: #ff0000;
 }
 
-svg use.active circle {
-  fill: #ff0000;
-  fill-opacity:1;
-}  
+table.tabledetails {
+  font-size: 1.2em;
+  border: 1pt solid ButtonShadow;
+  border-color: #8b8b8b;
+  border-spacing:0px;
+  border-radius: 1em;
+  border-bottom-left-radius: 0em;
+  border-bottom-right-radius: 0em;
+  -moz-border-radius: 0.7em;
+  -webkit-border-radius: 0.7em;
+  background: #cdcbcb;
+  padding-top: 0.2em;
+}
+table.tabledetails tr:nth-child(even) {background: #ffffff;}
 
+td.tabledetailsheader {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+td.tabledetailsdataname {
+  font-weight: bold;
+}
+
+td.tabledetailsdatavalue {
+}
+  
 div.section {
   padding:1em;
   border: 1pt solid ButtonShadow;
@@ -161,7 +184,14 @@ h1 {
 svg {
   fill: #DDDDDD;
   fill-opacity:1;
+  float: left;
+  margin-right: 5em;
 }
+
+svg use.active circle {
+  fill: #ff0000;
+  fill-opacity:1;
+}  
 
 svg line.ourline {
   z-index: 4;
