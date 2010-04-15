@@ -15,21 +15,21 @@ class Controller
 
   attr_reader :callbacks
 
-  def start
+  def start# {{{
     Thread.abort_on_exception = true
     @thread = Thread.new do
       Thread.current.abort_on_exception = true
       @instance.start
     end
-  end
+  end# }}}
 
-  def stop
+  def stop# {{{
     @instance.stop
     @thread.join if @thread && @thread.alive?
     @thread = nil 
-  end
+  end# }}}
 
-  def position
+  def position# {{{
     XML::Smart::modify(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
       pos = doc.find("/p:properties/p:positions").first
@@ -38,9 +38,9 @@ class Controller
         pos.add("#{p.position}","#{p.passthrough}")
       end
     end
-  end
+  end# }}}
 
-  def serialize!
+  def serialize!# {{{
     XML::Smart::modify(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
       
@@ -53,8 +53,8 @@ class Controller
       node = doc.find("/p:properties/p:state").first
       node.text = @instance.state
     end 
-  end
-  def unserialize!
+  end# }}}
+  def unserialize!# {{{
     Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
       XML::Smart::open(sub) do |doc|
         key = ::File::basename(::File::dirname(sub))
@@ -63,11 +63,23 @@ class Controller
         doc.find('/n:subscription/n:topic').each do |t|
           t.find('n:event').each do |e|
             @events["#{t.attributes['id']}/#{e}"] ||= {}
-            @events["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
+            if @events["#{t.attributes['id']}/#{e}"].has_key?(key)
+              unless url == "" # has maybe already a websocket in key, so don't overwrite it
+                @events["#{t.attributes['id']}/#{e}"][key] = url
+              end  
+            else
+              @events["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
+            end  
           end
           t.find('n:vote').each do |e|
             @votes["#{t.attributes['id']}/#{e}"] ||= {}
-            @votes["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
+            if @votes["#{t.attributes['id']}/#{e}"].has_key?(key)
+              unless url == "" # has maybe already a websocket in key, so don't overwrite it
+                @votes["#{t.attributes['id']}/#{e}"][key] = url
+              end  
+            else  
+              @votes["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
+            end  
           end
         end
       end
@@ -87,13 +99,12 @@ class Controller
 
       @instance.description doc.find("string(/p:properties/p:dsl)")
     end
-  end
+  end# }}}
 
   def notify(what,content={})
     item = @events[what]
     if item
       item.each do |key,url|
-        next unless url
         topic        = ::File::dirname(what)
         event        = ::File::basename(what)
         notification = []
@@ -104,19 +115,31 @@ class Controller
           notification << "#{k}: #{v.inspect}" 
         end
 
-        client = Riddl::Client.new(url)
-        client.post [
-          Riddl::Parameter::Simple.new("key",key),
-          Riddl::Parameter::Simple.new("topic",topic),
-          Riddl::Parameter::Simple.new("event",event),
-          Riddl::Parameter::Simple.new("notification",notification.join('; ')),
-          Riddl::Parameter::Simple.new("message-uid",uid),
-          Riddl::Parameter::Simple.new("fingerprint-with-consumer-secret",fp)
-        ]
+        if url.class == String
+          client = Riddl::Client.new(url)
+          client.post [
+            Riddl::Parameter::Simple.new("key",key),
+            Riddl::Parameter::Simple.new("topic",topic),
+            Riddl::Parameter::Simple.new("event",event),
+            Riddl::Parameter::Simple.new("notification",notification.join('; ')),
+            Riddl::Parameter::Simple.new("message-uid",uid),
+            Riddl::Parameter::Simple.new("fingerprint-with-consumer-secret",fp)
+          ]
+        elsif url.class == Riddl::Utils::Notifications::Producer::WS
+          e = XML::Smart::string("<event/>")
+          e.root.add("key",key)
+          e.root.add("topic",topic)
+          e.root.add("event",event)
+          e.root.add("notification",notification.join('; '))
+          e.root.add("message-uid",uid)
+          e.root.add("fingerprint-with-consumer-secret",fp)
+          url.send(e.to_s)
+        end  
+
       end
     end
   end
-  
+
   def vote(what,content={})
     item = @votes[what]
     if item
@@ -143,4 +166,21 @@ class Controller
       end
     end
   end
+  
+  def add_ws(key,socket)# {{{
+    @events.each do |a|
+      if a[1].has_key?(key)
+        a[1][key] = socket
+      end  
+    end
+  end# }}}
+
+  def del_ws(key)# {{{
+    @events.each do |a|
+      if a[1].has_key?(key)
+        a[1][key] = nil
+      end  
+    end
+  end# }}}
+  
 end

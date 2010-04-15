@@ -10,7 +10,7 @@ class DefaultHandler < Wee::HandlerWrapperBase
   # executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, endpoint, parameters)
     $controller[@instance].position
-    $controller[@instance].notify("monitoring/activity_call", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
+    $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
 
     client = Riddl::Client.new(endpoint)
 
@@ -73,13 +73,13 @@ class DefaultHandler < Wee::HandlerWrapperBase
 
   def inform_activity_done
     $controller[@instance].position
-    $controller[@instance].notify("monitoring/activity_done", :activity => @handler_position)
+    $controller[@instance].notify("running/activity_done", :activity => @handler_position)
   end
   def inform_activity_manipulate
-    $controller[@instance].notify("monitoring/activity_manipulate", :activity => @handler_position)
+    $controller[@instance].notify("running/activity_manipulating", :activity => @handler_position)
   end
   def inform_activity_failed(err)
-    $controller[@instance].notify("monitoring/activity_failed", :activity => @handler_position, :message => err.message)
+    $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :message => err.message)
   end
   def inform_syntax_error(err)
     $controller[@instance].notify("properties/description/error", :message => err.message)

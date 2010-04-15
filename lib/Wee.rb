@@ -162,6 +162,8 @@ class Wee
           raise "Invalid activity type #{type}. Only :manipulate or :call allowed"
         end
       rescue => err
+        p err
+        puts err.backtrace
         refreshcontext handler
         handler.inform_activity_failed err
         self.state = :stopped
@@ -299,7 +301,7 @@ class Wee
         end
       end
       # handshake call and wait until it finished
-      handler.activity_handle Thread.current[:continue], passthrough, endpoint, params
+      handler.activity_handle passthrough, endpoint, params
       Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.state == :stopped
        
       handler.activity_no_longer_necessary if Thread.current[:nolongernecessary]

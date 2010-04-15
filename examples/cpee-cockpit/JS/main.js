@@ -9,7 +9,7 @@ var save_cvs;
 
 $(document).ready(function() {
   $("button[name=base]").click(create_instance);
-  $("button[name=instance]").click(load_instance);
+  $("button[name=instance]").click(monitor_instance);
   $("button[name=testset]").click(load_testset);
   $.ajax({ 
     url: "Testsets.xml", 
@@ -24,60 +24,6 @@ $(document).ready(function() {
     }
   });
 });
-
-function symclick(node) { // {{{
-  var params = function(child, level) {
-    var spaces = "";
-    for(var s = 0; s < level; s++) {spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";}
-    for(var j = 0; j < child.childNodes.length; j++) {
-      if(child.childNodes[j].nodeType == 1 && child.childNodes[j].nodeName == "parameter") {
-        attrs.push({'name': spaces + child.childNodes[j].getAttribute('name'),'value':child.childNodes[j].childNodes[0].nodeValue, 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'});
-        params(child.childNodes[j], level+1);
-      }
-    }
-  }
-  
-  var attrs = [];
-  var table = $('#tabledetails');
-  table.empty();
-  switch(node.nodeName) {
-    case 'call':
-      attrs =[ 
-        {'name':'id','value':node.getAttribute('id'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
-        {'name':'endpoint','value':node.getAttribute('endpoint'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
-        ]
-        params(node, 0);
-      break;
-    case 'manipulate':
-      attrs =[ 
-        {'name':'id','value':node.getAttribute('id'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
-        {'name':'code-block','value':node.textContent, 'class-name':'tabledetailsdataname', 'class-value':'dsl'}, 
-        ]
-      break;
-    case 'cycle':
-    case 'alternative':
-      attrs =[ 
-        {'name':'conditon','value':node.getAttribute('condition'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
-        ]
-      break;
-    case 'parallel':
-      attrs =[ 
-        {'name':'wait','value':node.getAttribute('wait'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
-        ]
-      break;
-    case 'parallel_branch':
-    case 'choose':
-    case 'otherwise':
-      return;
-  }
-  table.append('<tr><td colspan="2" class="tabledetailsheader"> Element: '+node.nodeName+'</td></tr>');
-  for(var i=0; i<attrs.length;i++) {
-    var tr = $('<tr></tr>');
-    tr.append('<td class="'+attrs[i]['class-name']+'">' + attrs[i]['name'] + '</td>');
-    tr.append('<td class="'+attrs[i]['class-value']+'">' + (attrs[i]['value'] == null ? "not given" : attrs[i]['value']) + '</td>');
-    table.append(tr);
-  }
-} // }}}
 
 function create_instance() {// {{{
   var name = prompt("Instance name?");
@@ -100,7 +46,7 @@ function create_instance() {// {{{
   }  
 }// }}}
   
-function load_instance() {// {{{
+function monitor_instance() {// {{{
   var url = $("input[name=instance-url]").val();
   $.cors({
     type: "GET", 
@@ -117,7 +63,7 @@ function load_instance() {// {{{
         url: url + "/notifications/subscriptions/",
         data: (
           'topic'  + '=' + 'running' + '&' +
-          'events' + '=' + 'activity_calling,activity_manipulating,activity_done,activity_failed' + '&' +
+          'events' + '=' + 'activity_calling,activity_manipulating' + '&' +
           'topic'  + '=' + 'properties/description' + '&' +
           'events' + '=' + 'change' + '&' +
           'topic'  + '=' + 'properties/state' + '&' +
@@ -134,10 +80,43 @@ function load_instance() {// {{{
             if (b[0] == 'key')
               subscription = b[1];
           });
+
+          ws = new WebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
+          ws.onopen = function() {
+            // console.log("opened websocket");
+          };
+          ws.onmessage = function(e) {
+            var topic = $('event > topic',e.data.parseXML());
+            switch($(topic[0]).text()) {
+              case 'properties/context-variables':
+                monitor_instance_cvs();
+                break;
+              case 'properties/description':
+                monitor_instance_dsl();
+                break;
+              case 'properties/endpoints':
+                monitor_instance_eps();
+                break;
+              case 'properties/state':
+                monitor_instance_state();
+                break;
+              case 'running':
+                monitor_instance_pos();
+                break;
+            }
+            // console.log("reloaded: " + $(topic[0]).text());
+          };
+          ws.onclose = function() {
+            // console.log("closed websocket. server down i assume.");
+          };
         }
       });
-      monitor_instance();
-      //setTimeout('monitor_instance();finished_monitor_instance();', 0);
+
+      monitor_instance_cvs();
+      monitor_instance_eps();
+      monitor_instance_dsl();
+      monitor_instance_pos();
+      monitor_instance_state();
     },
     failure: function() {
       alert("This ain't no CPEE instance");
@@ -145,12 +124,8 @@ function load_instance() {// {{{
   });      
 }// }}}
 
-function monitor_instance() {// {{{
+function monitor_instance_cvs() {// {{{
   var url = $("input[name=instance-url]").val();
-
-  if (save_state == "finished")
-    return;
-
   $.cors({
     type: "GET", 
     url: url + "/properties/values/context-variables/",
@@ -169,7 +144,10 @@ function monitor_instance() {// {{{
       }  
     }
   });      
+}// }}}
 
+function monitor_instance_eps() {// {{{
+  var url = $("input[name=instance-url]").val();
   $.cors({
     type: "GET", 
     url: url + "/properties/values/endpoints/",
@@ -188,49 +166,53 @@ function monitor_instance() {// {{{
       }  
     }
   });
+}// }}}
 
-  if (save_state != "running" && save_state != "finished") {
-    $.cors({
-      type: "GET",
-      dataType: "text",
-      url: url + "/properties/values/dsl/",
-      success: function(res){
-        if (res != save_dsl) {
-          save_dsl = res;
-          var ctv = $("#areadsl");
-          ctv.empty();
-          
-          res = res.replace(/\t/g,'  ');
-          res = res.replace(/\r/g,'');
+function monitor_instance_dsl() {// {{{
+  var url = $("input[name=instance-url]").val();
+  $.cors({
+    type: "GET",
+    dataType: "text",
+    url: url + "/properties/values/dsl/",
+    success: function(res){
+      if (res != save_dsl) {
+        save_dsl = res;
+        var ctv = $("#areadsl");
+        ctv.empty();
+        
+        res = res.replace(/\t/g,'  ');
+        res = res.replace(/\r/g,'');
 
-          res = res.replace(/^activity\s+:([\w_]+)/g,"<span class='activities' id=\"activity_$1\">activity :$1</span>");
+        res = res.replace(/activity\s+:([\w_]+)/g,"<span class='activities' id=\"activity_$1\">activity :$1</span>");
 
-          var m;
-          while (m = res.match(/^ +|^(?!<div style=)|^\z/m)) {
-            m = m[0];
-            var tm = (m.length + 2) * 0.6 + 2 * 0.6;
-            res = res.replace(/^ +|^(?!<div style=)|^\z/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + "&#160;".repeat(m.length));
-          }
-          res = res.replace(/  /g," &#160;");
-          res = res.replace(/\n\z/g,"\n<div>&#160;");
-          res = res.replace(/\n|\z/g,"</div>\n");
-          
-          ctv.append(res);
-          $.cors({
-            type: "GET",
-            url: url + "/properties/values/description/",
-            success: function(res){
-              g = new WFGraph(res, $("#canvas").get(0));
-              g.generateGraph({
-               symclick: symclick
-              });
-            }
-          });
+        var m;
+        while (m = res.match(/^ +|^(?!<div style=)|^\z/m)) {
+          m = m[0];
+          var tm = (m.length + 2) * 0.6 + 2 * 0.6;
+          res = res.replace(/^ +|^(?!<div style=)|^\z/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + "&#160;".repeat(m.length));
         }
+        res = res.replace(/  /g," &#160;");
+        res = res.replace(/\n\z/g,"\n<div>&#160;");
+        res = res.replace(/\n|\z/g,"</div>\n");
+        
+        ctv.append(res);
+        $.cors({
+          type: "GET",
+          url: url + "/properties/values/description/",
+          success: function(res){
+            g = new WFGraph(res, $("#canvas").get(0));
+            g.generateGraph({
+             symclick: sym_click
+            });
+          }
+        });
       }
-    });
-  }  
+    }
+  });
+}// }}}
 
+function monitor_instance_pos() {// {{{
+  var url = $("input[name=instance-url]").val();
   $.cors({
     type: "GET", 
     url: url + "/properties/values/positions/",
@@ -250,10 +232,13 @@ function monitor_instance() {// {{{
         var ctv = $("#positions");
         ctv.empty();
         ctv.append(temp);
-      }  
+       }  
     }
   });
+}// }}}
 
+function monitor_instance_state() {// {{{
+  var url = $("input[name=instance-url]").val();
   $.cors({
     type: "GET", 
     url: url + "/properties/values/state/",
@@ -261,6 +246,10 @@ function monitor_instance() {// {{{
     success: function(res){
       if (res != save_state) {
         save_state = res;
+
+        if (res == 'finished')
+          monitor_instance_pos();
+
         var ctv = $("#state");
         ctv.empty();
 
@@ -276,11 +265,6 @@ function monitor_instance() {// {{{
       }  
     }
   });
-}// }}}
-
-function finished_monitor_instance() {// {{{
-  if (save_state != "finished")
-    setTimeout('monitor_instance();finished_monitor_instance();', 1000);
 }// }}}
 
 function start_instance() {// {{{
@@ -371,7 +355,6 @@ function load_testset() {// {{{
         url: url + "/properties/values/transformation/",
         success: function(res){
           var values = $("not-existing",res);
-          try {
           $("testset > transformation > *",testset).each(function(){
             var val = $(this).serializeXML();
             if (values.length > 0) {
@@ -392,9 +375,6 @@ function load_testset() {// {{{
               });
             }
           });
-          } catch(e) {
-            console.log(e.toString());
-          }  
         },  
         failure: report_failure
       });
@@ -450,6 +430,60 @@ function tab_click(active,inactive) { // {{{
   $("#area" + inactive).addClass("inactivearea");
   $("#tab" + active).addClass("tabactive");
   $("#tab" + inactive).addClass("tabinactive");
+} // }}}
+
+function sym_click(node) { // {{{
+  var params = function(child, level) {
+    var spaces = "";
+    for(var s = 0; s < level; s++) {spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";}
+    for(var j = 0; j < child.childNodes.length; j++) {
+      if(child.childNodes[j].nodeType == 1 && child.childNodes[j].nodeName == "parameter") {
+        attrs.push({'name': spaces + child.childNodes[j].getAttribute('name'),'value':child.childNodes[j].childNodes[0].nodeValue, 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'});
+        params(child.childNodes[j], level+1);
+      }
+    }
+  }
+  
+  var attrs = [];
+  var table = $('#tabledetails');
+  table.empty();
+  switch(node.nodeName) {
+    case 'call':
+      attrs =[ 
+        {'name':'id','value':node.getAttribute('id'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        {'name':'endpoint','value':node.getAttribute('endpoint'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        ]
+        params(node, 0);
+      break;
+    case 'manipulate':
+      attrs =[ 
+        {'name':'id','value':node.getAttribute('id'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        {'name':'code-block','value':node.textContent, 'class-name':'tabledetailsdataname', 'class-value':'dsl'}, 
+        ]
+      break;
+    case 'cycle':
+    case 'alternative':
+      attrs =[ 
+        {'name':'conditon','value':node.getAttribute('condition'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        ]
+      break;
+    case 'parallel':
+      attrs =[ 
+        {'name':'wait','value':node.getAttribute('wait'), 'class-name':'tabledetailsdataname', 'class-value':'tabledetailsdatavalue'}, 
+        ]
+      break;
+    case 'parallel_branch':
+    case 'choose':
+    case 'otherwise':
+      return;
+  }
+  table.append('<tr><td colspan="2" class="tabledetailsheader"> Element: '+node.nodeName+'</td></tr>');
+  for(var i=0; i<attrs.length;i++) {
+    var tr = $('<tr></tr>');
+    tr.append('<td class="'+attrs[i]['class-name']+'">' + attrs[i]['name'] + '</td>');
+    tr.append('<td class="'+attrs[i]['class-value']+'">' + (attrs[i]['value'] == null ? "not given" : attrs[i]['value']) + '</td>');
+    table.append(tr);
+  }
 } // }}}
 
 function report_failure(){}

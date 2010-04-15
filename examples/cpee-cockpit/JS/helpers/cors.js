@@ -13,6 +13,8 @@ jQuery.extend({
       var type = s.type.toUpperCase();
       var rquery = /\?/;
 
+      s.url = s.url.replace(/\/+/g,'/').replace(/(^[a-zA-Z]+:)/,"$1/");
+
       if (s.data && s.processData && typeof s.data !== "string") {
         s.data = jQuery.param(s.data, s.traditional);
       }

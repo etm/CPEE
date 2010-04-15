@@ -143,6 +143,10 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
         $controller[id.to_i].notify('properties/description/change')
       when 'endpoints'
         $controller[id.to_i].notify('properties/endpoints/change')
+      when 'context-variables'
+        $controller[id.to_i].notify('properties/context-variables/change')
+      else
+        nil
     end  
   end
 
@@ -153,20 +157,20 @@ end #}}}
 
 class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase #{{{
   def sync
-    p @notifications
-    p @key
-    p @topics
-
-    p "-----"
-
     id = ::File::basename(::File::dirname(@notifications)).to_i
     $controller[id.to_i].unserialize!
     $controller[id.to_i].notify('properties/handlers/change')
   end
             
-          def ws_open(socket); end
-          def ws_close; end
-          def ws_message(socket,data); end
+  def ws_open(socket)
+    id = ::File::basename(::File::dirname(@notifications)).to_i
+    $controller[id.to_i].add_ws(@key,socket)
+  end
+  def ws_close
+    id = ::File::basename(::File::dirname(@notifications)).to_i
+    $controller[id.to_i].del_ws(@key)
+  end
+  def ws_message(socket,data); end
 
   def create; sync; end
   def delete; sync; end
