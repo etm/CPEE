@@ -9,10 +9,9 @@ function WFGraph (xml, container) {
   var symbols = document.getElementById("symbols"); 
   var blocks = document.getElementById("blocks"); 
 
-  var symclick= function(node) { alert('blerg'); };
+  var symclick= function(node) { };
 
-  this.generateGraph = function(s) {
-    // {{{
+  this.generateGraph = function(s) { // {{{
     if (typeof s == "undefined")
       s = {};
     if (s.symclick)
@@ -29,10 +28,10 @@ function WFGraph (xml, container) {
     var height = (block['max_pos']['line'])*row_height;
     container.parentNode.setAttribute("height", height);
     container.parentNode.setAttribute("width", width);
-    // }}} 
-  }
-  var analyze = function(parent_element, parent_position, column_shift) {
-    // {{{
+    container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
+  } // }}} 
+
+  var analyze = function(parent_element, parent_position, column_shift) { // {{{
     var ap = (parent_position == null) ? {'line':0,'col':0} : copyPos(parent_position); ap['col']+=column_shift; ap['line']++;// AP = actual position
     var max_col = ap['col'];
     var max_line = ap['line'];
@@ -118,10 +117,9 @@ function WFGraph (xml, container) {
         drawConnection(end_nodes[j], ap);
     }
     return {'end_nodes':end_nodes, 'max_pos':{'line': max_line, 'col':max_col}};
-    // }}} 
-  }
-  var drawConnection = function(start, end) {
-    // {{{
+  } // }}} 
+
+  var drawConnection = function(start, end) { // {{{
     var attrs = { 'x1': start['col']*column_width, 'y1': start['line']*row_height-15,
                   'x2': end['col']*column_width, 'y2': end['line']*row_height-15,
                   'class': 'ourline', 'marker-end': 'url(#arrow)' };
@@ -129,51 +127,57 @@ function WFGraph (xml, container) {
     for(var attr in attrs)
       line.setAttribute(attr, attrs[attr]);
     lines.appendChild(line);
-    //  }}}
-  }
-  var drawSymbol = function (xy, node, id) {
-   // {{{
+  } //  }}}
+
+  var drawSymbol = function (xy, node, id) { // {{{
     var sym_name = node.nodeName;
+    if((sym_name == "call") && (xml.evaluate("count(child::*[name() = 'manipulate'])", node, ns, XPathResult.ANY_TYPE, null).numberValue > 0)) 
+      sym_name = "callmanipulate";
+
+    var use = document.createElementNS(svgNS, "use");
+    use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
+
     var attrs;
-    if (id)
-      attrs = {'id': 'graph_' + node.getAttribute("id"), 'class': 'activities', 'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30, 'title':'Id: '+node.getAttribute("id")};
-    else  
+    if (id) {
+      attrs = {'id': 'graph_' + node.getAttribute("id"), 'class': 'activities', 'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30};
+      var title = document.createElementNS(svgNS, "title");
+      title.appendChild(document.createTextNode(node.getAttribute('id')));
+      use.appendChild(title);
+    }  else {
       attrs = {'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30};
+    }  
     switch(node.nodeName) {
       case 'cycle':
       case 'alternative':
-      case 'parallel':
-        attrs['title'] = node.getAttribute("condition") != null ? 'Condition: ' + node.getAttribute("condition") : 'Condition: n.a.';
+        var title = document.createElementNS(svgNS, "title");
+        title.appendChild(document.createTextNode(node.getAttribute('condition')));
+        use.appendChild(title);
+        break;
+      case 'parallel':  
         break;
     }
-    
-    var use = document.createElementNS(svgNS, "use");
     for(var attr in attrs)
       use.setAttribute(attr, attrs[attr]);
-    use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
+
     use.onclick = function(){ symclick(node); };
-    if((sym_name == "call") && (xml.evaluate("count(child::*[name() = 'manipulate'])", node, ns, XPathResult.ANY_TYPE, null).numberValue > 0)) 
-      sym_name = "callmanipulate";
     symbols.appendChild(use);
-  // }}}  
-  }
-// {{{ 
-  var copyPos = function(pos) {
+  } // }}}
+
+  var copyPos = function(pos) {// {{{ 
     return {'line': pos['line'], 'col':pos['col']};
-  }
-  var ns = function() {
+  }// }}}
+  var ns = function() {// {{{
     return 'http://cpee.org/ns/description/1.0'
-  }
-  var removeChilds = function(node) {
+  }// }}}
+  var removeChilds = function(node) {// {{{
     while(node.childNodes[0])
       node.removeChild(node.childNodes[0]);
-  }
-  var drawBlock = function(p1, p2) {
+  }// }}}
+  var drawBlock = function(p1, p2) {// {{{
       var block = document.createElementNS(svgNS, "rect");
       var attrs = {'x':(p1['col'])*column_width-20, 'y':(p1['line'])*row_height-35, 'width':(p2['col']-p1['col']+1)*column_width, 'height':(p2['line']-p1['line'])*row_height, 'class':'block', 'rx':'20', 'ry':'20' }; 
       for(var attr in attrs)
         block.setAttribute(attr, attrs[attr]);
       blocks.appendChild(block);
-  }
-// }}}
+  }// }}}
 }

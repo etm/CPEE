@@ -18,39 +18,31 @@ a:visited { color:#425d73; text-decoration:none; }
 a:hover   { color:#000000; text-decoration:underline; }
 a:active  { color:#000000; text-decoration:underline; }
 
+h1 {
+  font-size: 1.4em;
+  margin-top: 0em;
+  padding-top: 0em;
+}  
+
 span.active {
   font-weight: bold;
   color: #ff0000;
 }
 
-table.tabledetails {
-  font-size: 1.2em;
-  border: 1pt solid ButtonShadow;
-  border-color: #8b8b8b;
+table.layout {
+  width: 100%;
   border-spacing:0px;
-  border-radius: 1em;
-  border-bottom-left-radius: 0em;
-  border-bottom-right-radius: 0em;
-  -moz-border-radius: 0.7em;
-  -webkit-border-radius: 0.7em;
-  background: #cdcbcb;
-  padding-top: 0.2em;
+  border:0px none;
+  padding:0px;
+  margin:0px;
 }
-table.tabledetails tr:nth-child(even) {background: #ffffff;}
+table.layout td.fixed { white-space:nowrap; }
+table.layout td.long { width:100%; }
+table.layout td.top { vertical-align: top; }
 
-td.tabledetailsheader {
-  text-align: center;
-  font-weight: bold;
-  font-size: 1.2em;
-}
+#tabledetails tr:nth-child(odd) { background-color: Menu; color: MenuText; }
+#tabledetails td { vertical-align: top; }
 
-td.tabledetailsdataname {
-  font-weight: bold;
-}
-
-td.tabledetailsdatavalue {
-}
-  
 div.section {
   padding:1em;
   border: 1pt solid ButtonShadow;
@@ -62,10 +54,6 @@ div.section {
 
 table.tab {
   margin-top:1em;
-  width: 100%;
-  border-spacing:0px;
-  border:0px none;
-  padding:0px;
 }
 
 table.tab .tab {
@@ -112,7 +100,6 @@ td.tabbehind {
   -webkit-border-radius: 1em;
   -webkit-border-bottom-left-radius: 0em;
   -webkit-border-bottom-right-radius: 0em;
-  width:100%;
 }
 
 td.tabbelow {
@@ -133,35 +120,12 @@ td.tabbelow {
 
 #arealog { height: 20em; overflow:auto; }
 
-#tablelog {
-  width: 100%;
-  border-spacing:0px;
-  border:0px none;
-  padding:0px;
-}
-#tablelog td.fixed { white-space:nowrap; }
-#tablelog td.long { width:100%; }
 #tablelog td { vertical-align: top; }
 #tablelog tr:nth-child(odd) { background-color: Menu; color: MenuText; }
 
-
-h1 {
-  font-size: 1.4em;
-  margin-top: 0em;
-  padding-top: 0em;
-}  
-
-#instance {
-  width: 100%;
-  border-collapse:collapse;
-  border-spacing:0px;
-  border:0px none;
-  margin:0px;
-  padding:0px;
-}
 #instance td:nth-child(1) { width: 8em; padding-right: 1em; }
 #instance td:nth-child(3) { width: 16em; padding-left: 1em; }
-#instance input { width: 100% }
+#instance input                 { width: 100%;  }
 #instance button[name=testset]  { width: 100%;  }
 #instance button[name=base]     { width: 100%;  }
 #instance button[name=instance] { width: 100%;  }
@@ -194,9 +158,14 @@ h1 {
 svg {
   fill: #DDDDDD;
   fill-opacity:1;
-  float: left;
-  margin-right: 5em;
+  display:inline;
+  margin:0px;
+  padding:0px;
+  margin-top: -1em;
+  margin-left: -0.5em;
 }
+
+svg .clickable { cursor: pointer; }
 
 svg use.active circle {
   fill: #ff0000;
@@ -204,7 +173,6 @@ svg use.active circle {
 }  
 
 svg line.ourline {
-  z-index: 4;
   stroke-opacity: 0.9; 
   stroke:#000000;
   stroke-width: 2; 
@@ -215,9 +183,6 @@ svg rect.block {
   stroke-dasharray: 3,5;
   stroke: #000000;
   fill: none;
-}
-svg symbol {
-  z-index: 5;
 }
 svg .stand {
   fill:#ffffff;

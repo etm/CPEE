@@ -20,7 +20,7 @@
   <body>
     <div class="section">
       <h1>CPEE Instance</h1>
-      <table id="instance">
+      <table id="instance" class='layout'>
       <tr>
         <td>Base Url:</td>
         <td><input name="base-url" type="text" value="http://tango.pri.lan:9298"/></td>
@@ -51,83 +51,89 @@
       <table id="context-variables"></table>
     </div>  
 
-    <table class="tab hidden">
+    <table class="tab hidden layout">
       <tr>
-        <td class="tab"             id="tabdsl"   onclick="tab_click('dsl')"><h1>Description</h1></td>
-        <td class="tab inactivetab" id="tabgraph" onclick="tab_click('graph')"><h1>Graph</h1></td>
+        <td class="tab"             id="tabgraph" onclick="tab_click('graph')"><h1>Graph</h1></td>
+        <td class="tab inactivetab" id="tabdsl"   onclick="tab_click('dsl')"><h1>Description</h1></td>
         <td class="tab inactivetab" id="tablog"   onclick="tab_click('log')"><h1>Log</h1></td>
-        <td class="tabbehind"></td>
+        <td class="tabbehind long"></td>
       </tr>  
       <tr>
         <td class="tabbelow" colspan="4">
           <div id="areadsl"></div>
           <div id="areagraph" class="inactivearea">
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0"> 
-              <defs>
-                <symbol id="call"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="stand"/>
-                  <text class="normal" transform='translate(15,21)'>c</text>
-                </symbol><!-- }}} -->
-                <symbol id="manipulate"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="stand"/>
-                  <text class="normal" transform='translate(15,21)'>m</text>
-                </symbol><!-- }}} -->
-                <symbol id="callmanipulate"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="stand"/>
-                  <text class="normal" transform='translate(15,21)'>c</text>
-                  <circle cx="28" cy="28" r="9" class="stand"/>
-                  <text class="small" transform='translate(28,32)'>m</text>
-                </symbol><!-- }}} -->
-                <symbol id="choose"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="stand"/>
-                  <text class="normal" transform='translate(15,21)'>σ</text>
-                </symbol><!-- }}} -->
-                <symbol id="alternative"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="standwithout"/>
-                  <text class="normal" transform='translate(15,20)'>{܅}</text>
-                </symbol><!-- }}} -->
-                <symbol id="otherwise"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="standwithout"/>
-                  <text class="normal" transform='translate(15,20)'>{⁎}</text>
-                </symbol><!-- }}} -->
-                <symbol id="parallel"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="stand"/>
-                  <text class="normal" transform='translate(15,21)'>||</text>
-                </symbol><!-- }}} -->
-                <symbol id="parallel_branch"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="stand"/>
-                  <text class="normal" transform='translate(15,21)'>|</text>
-                </symbol><!-- }}} -->
-                <symbol id="critical"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="stand"/>
-                  <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
-                </symbol><!-- }}} -->
-                <symbol id="cycle"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="stand"/>
-                  <text class="normallarge" transform='translate(15,23)'>↺</text>
-                </symbol><!-- }}} -->
-                <symbol id="end"><!-- {{{ -->
-                  <circle cx="15" cy="15" r="14" class="stand"/>
-                  <circle cx="15" cy="15" r="11" class="stand"/>
-                  <text class="normal" transform='translate(15,21)'>Ω</text>
-                </symbol><!-- }}} -->
-                <marker id="arrow" viewBox="0 0 10 10" refX="24" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" markerHeight="4.5">
-                  <path d="m 2 2 l 6 3 l -6 3 z"/>
-                </marker>
-              </defs>
-              <g id="canvas">
-                <g id="blocks"/>
-                <g id="lines"/>
-                <g id="symbols"/>
-              </g>
-            </svg>
-            <div>
-              <table id="tabledetails" class="tabledetails">
-              </table>
-            </div>
+            <table class='layout'>
+            <tr>
+              <td>
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0"> 
+                  <defs>
+                    <symbol id="call" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"/>
+                      <text class="normal" transform='translate(15,21)'>c</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="manipulate" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"/>
+                      <text class="normal" transform='translate(15,21)'>m</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="callmanipulate" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"/>
+                      <text class="normal" transform='translate(15,21)'>c</text>
+                      <circle cx="28" cy="28" r="9" class="stand"/>
+                      <text class="small" transform='translate(28,32)'>m</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="choose" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"/>
+                      <text class="normal" transform='translate(15,21)'>σ</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="alternative" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="standwithout"/>
+                      <text class="normal" transform='translate(15,20)'>{܅}</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="otherwise" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="standwithout"/>
+                      <text class="normal" transform='translate(15,20)'>{⁎}</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="parallel" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"/>
+                      <text class="normal" transform='translate(15,21)'>||</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="parallel_branch" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"/>
+                      <text class="normal" transform='translate(15,21)'>|</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="critical" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"/>
+                      <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="cycle" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"/>
+                      <text class="normallarge" transform='translate(15,23)'>↺</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="end"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"/>
+                      <circle cx="15" cy="15" r="11" class="stand"/>
+                      <text class="normal" transform='translate(15,21)'>Ω</text>
+                    </symbol><!-- }}} -->
+                    <marker id="arrow" viewBox="0 0 10 10" refX="24" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" markerHeight="4.5">
+                      <path d="m 2 2 l 6 3 l -6 3 z"/>
+                    </marker>
+                  </defs>
+                  <g id="canvas">
+                    <g id="blocks"/>
+                    <g id="lines"/>
+                    <g id="symbols"/>
+                  </g>
+                </svg>
+              </td>    
+              <td class='top'>
+                <table id="tabledetails" class="layout">
+                </table>
+              </td>  
+            </tr>  
+            </table>
           </div>  
           <div id="arealog" class="inactivearea">
-            <table id="tablelog">
+            <table id="tablelog" class="layout">
             </table>
           </div>
         </td>
