@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<testset>
+  <positions/>
+  <context-variables>
+    <string>'some string is here'</string>
+    <number>4711</number>
+    <boolean>true</boolean>
+    <class_date>Date.new("2001-12-24")</class_date>
+    <pattern_context>'this-is-a-pattern'</pattern_context>
+    <some_context/>
+    <some_prop_context/>
+    <an_other_context/>
+    <one_more_context/>
+  </context-vraibales>
+  <endpoints>
+    <wo_pattern>&quot;http://no_patterns-needed.org/service&quot;</wo_pattern>
+    <with_pattern>&quot;http://here-is-a-pattern-used.org/#{@pattern_context}/some-uri-parts&quot;</with_pattern>
+  </endpoints>
+  <description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <cycle>
+      <condition test="wo_pattern" comparator="&lt;" fix-value="5"/>
+      <parallel type="nowait">
+        <branch>
+          <call id="call_01" endpoint="wo_pattern">
+            <parameter name="service-operation">so_1</parameter>
+            <parameter name="state-controlflow">execute</parameter>
+            <constraint xpath="//some_property" comparator="==" fix-value="Time.new('20:15')"/>
+            <constraint xpath="/some_group/some_other_property" comparator="!=" variable="one_more_context"/>
+            <constraint xpath="//some_group/#{@string}" comparator="!=" variable="wo_pattern"/>
+            <constraint xpath="//some_group/#{@string}" comparator="!=" variable="some_context"/>
+            <input name="in_context" variable="string"/>
+            <input name="in_fix_num" fix-value="5"/>
+            <input name="in_fix_string" fix-value="&quot;some input&quot;"/>
+            <input name="in_one_more" variable="one_more_context"/>
+            <input name="in_call" variable="class_date.day()"/>
+            <output name="properties" variable="some_prop_context"/>
+            <output name="out1" variable="one_more_context"/> 
+            <output name="out" variable="one_more_context"/>
+            <output name="out" variable="one_more_context"/>
+            <output name="out2" variable="one_more_context"/>
+            <output name="out2" variable="with_pattern"/>
+            <output name="out2" variable="one_more_context"/>
+            <output name="out5" variable="one_more_context"/>
+          </call>
+        </branch>
+        <branch>
+          <critical id="crit_01">
+            <call id="call_02" endpoint="with_pattern">
+              <parameter name="method">get</parameter>
+              <input name="xml" message-parameter="xml_context" transformation-uri="transformation_service">
+                <copy xsl-name="some-variable" variable="some_context"/>
+                <copy xsl-name="some-context" variable="wo_pattern"/>
+                <xsl:template match="/">
+                  <xsl:apply-templates select="//items"/> 
+                </xsl:template>
+                <xsl:template match="//items">
+                  <xsl:element name="entry">
+                    <xsl:value-of select="text"/>
+                  </xsl:element>
+                </xsl:template>
+              </input>
+              <output name="out" message-parameter="message_out_02"  transformation-uri="transformation_service">
+                <xsl:template match="/">
+                  <xsl:apply-templates select="//results"/> 
+                </xsl:template>
+                <xsl:template match="//results">
+                  <xsl:element name="result">
+                    <xsl:value-of select="text"/>
+                  </xsl:element>
+                </xsl:template>
+              </output>
+              <output name="out" message-parameter="message_out_0333"/> 
+              <output message-parameter="message_out_03" variable="one_more_context"/>
+              <output name="out" message-parameter="message_out"/>
+              <output message-parameter="message_out_04" fix-value="false"/>
+            </call>
+          </critical>
+        </branch>
+      </parallel>
+      <manipulate id="man_01"> 
+        <instruction target="one_more_context" operator="+=" variable="some_context"/> 
+        <instruction target="some_context" operator="-=" variable="wo_pattern"/>
+        <instruction target="with_pattern" operator="+=" variable="some_context" transformation-uri="transformation_service">
+          <xsl:template match="/">
+            <xsl:apply-templates select="//results"/> 
+          </xsl:template>
+          <xsl:template match="//results">
+            <xsl:element name="result">
+              <xsl:value-of select="text"/>
+            </xsl:element>
+          </xsl:template>
+        </instruction>
+        <instruction target="some_context" operator="some_operation" fix-value="@some_context.some_method(@some_context)"/>
+      </manipulate>
+    </cycle>
+    <choose>
+      <alternative>
+        <group connector="and">
+          <condition test="some_context" comparator="&gt;=" fix-value="5"/>
+          <group connector="or">
+            <condition test="an_other_context" comparator="==" variable="some_context"/>
+            <condition test="an_other_context" comparator="substring" fix-value="Date.new(@class_date)"/>
+          </group>
+        </group>
+        <manipulate id="man_03">
+          <instruction target="some_context" operator="+=" variable="an_other_context"/> 
+        </manipulate>
+      </alternative>
+      <otherwise>
+        <manipulate id="man_04"> 
+          <instruction target="some_context" operator="+=" variable="an_other_context"/> 
+        </manipulate>
+      </otherwise>
+    </choose>
+  </description>
+</testset>
