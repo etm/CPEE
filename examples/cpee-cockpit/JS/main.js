@@ -7,7 +7,7 @@ var save_eps;
 var save_pos;
 var save_cvs;
 
-$(document).ready(function() {
+$(document).ready(function() {// {{{
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(monitor_instance);
   $("button[name=testset]").click(load_testset);
@@ -23,7 +23,7 @@ $(document).ready(function() {
       });
     }
   });
-});
+});// }}}
 
 function create_instance() {// {{{
   var name = prompt("Instance name?");
@@ -63,9 +63,9 @@ function monitor_instance() {// {{{
         url: url + "/notifications/subscriptions/",
         data: (
           'topic'  + '=' + 'running' + '&' +
-          'events' + '=' + 'activity_calling,activity_manipulating' + '&' +
+          'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
           'topic'  + '=' + 'properties/description' + '&' +
-          'events' + '=' + 'change' + '&' +
+          'events' + '=' + 'change,error' + '&' +
           'topic'  + '=' + 'properties/state' + '&' +
           'events' + '=' + 'change' + '&' +
           'topic'  + '=' + 'properties/context-variables' + '&' +
@@ -80,13 +80,15 @@ function monitor_instance() {// {{{
             if (b[0] == 'key')
               subscription = b[1];
           });
+          append_to_log("websocket", "id", subscription);
 
           ws = new WebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
           ws.onopen = function() {
-            // console.log("opened websocket");
+            append_to_log("websocket", "opened", "");
           };
           ws.onmessage = function(e) {
-            var topic = $('event > topic',e.data.parseXML());
+            data = e.data.parseXML();
+            var topic = $('event > topic',data);
             switch($(topic[0]).text()) {
               case 'properties/context-variables':
                 monitor_instance_cvs();
@@ -104,10 +106,10 @@ function monitor_instance() {// {{{
                 monitor_instance_pos();
                 break;
             }
-            // console.log("reloaded: " + $(topic[0]).text());
+            append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
           };
           ws.onclose = function() {
-            // console.log("closed websocket. server down i assume.");
+            append_to_log("websocket", "closed", "server down i assume.");
           };
         }
       });
@@ -423,13 +425,19 @@ function load_testset_eps(url,testset) {// {{{
   });
 }// }}}
 
-function tab_click(active,inactive) { // {{{
+function tab_click(active) { // {{{
+  var tabs = [];
+  $("td.tab").each(function(){
+    tabs.push($(this).attr('id').replace(/tab/,''));
+  });  
   $(".inactivearea").removeClass("inactivearea");
-  $(".tabactive").removeClass("tabactive");
-  $(".tabinactive").removeClass("tabinactive");
-  $("#area" + inactive).addClass("inactivearea");
-  $("#tab" + active).addClass("tabactive");
-  $("#tab" + inactive).addClass("tabinactive");
+  $(".inactivetab").removeClass("inactivetab");
+  $.each(tabs,function(a,b){
+    if (b != active) {
+      $("#tab" + b).addClass("inactivetab");
+      $("#area" + b).addClass("inactivearea");
+    }  
+  });
 } // }}}
 
 function sym_click(node) { // {{{
@@ -485,5 +493,10 @@ function sym_click(node) { // {{{
     table.append(tr);
   }
 } // }}}
+
+function append_to_log(what,type,message) {
+  var d = new Date();
+  $("#tablelog").append("<tr><td class='fixed'>" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "</td><td>&#160;-&#160;</td><td class='fixed'>" +  what + "</td><td>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
+}  
 
 function report_failure(){}

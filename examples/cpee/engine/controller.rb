@@ -154,15 +154,18 @@ class Controller
           notification << "#{k}: #{v.inspect}" 
         end
 
-        client = Riddl::Client.new(url)
-        client.post [
-          Riddl::Parameter::Simple.new("key",key),
-          Riddl::Parameter::Simple.new("topic",topic),
-          Riddl::Parameter::Simple.new("vote",vote),
-          Riddl::Parameter::Simple.new("notification",notification.join('; ')),
-          Riddl::Parameter::Simple.new("message-uid",uid),
-          Riddl::Parameter::Simple.new("fingerprint-with-consumer-secret",fp)
-        ]
+        if url.class == String
+          client = Riddl::Client.new(url)
+          client.post [
+            Riddl::Parameter::Simple.new("key",key),
+            Riddl::Parameter::Simple.new("topic",topic),
+            Riddl::Parameter::Simple.new("vote",vote),
+            Riddl::Parameter::Simple.new("notification",notification.join('; ')),
+            Riddl::Parameter::Simple.new("message-uid",uid),
+            Riddl::Parameter::Simple.new("fingerprint-with-consumer-secret",fp)
+          ]
+        elsif url.class == Riddl::Utils::Notifications::Producer::WS
+        end
       end
     end
   end

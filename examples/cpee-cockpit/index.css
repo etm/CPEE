@@ -67,12 +67,9 @@ table.tab {
   border:0px none;
   padding:0px;
 }
-table.tab .inactivearea { display: none; }
 
-#tabdsl { cursor:pointer; }
-#tabgraph { cursor: pointer; }
-
-td.tabactive {
+table.tab .tab {
+  cursor: pointer;
   padding:0.2em 1em;
   border: 1pt solid ButtonShadow;
   border-bottom: 0 none;
@@ -86,9 +83,10 @@ td.tabactive {
   -webkit-border-bottom-left-radius: 0em;
   -webkit-border-bottom-right-radius: 0em;
 }
-td.tabactive h1 { margin-top: 0em; margin-bottom: 0em; padding-top: 0em; padding-bottom: 0em; }
+table.tab .tab h1 { margin-top: 0em; margin-bottom: 0em; padding-top: 0em; padding-bottom: 0em; }
 
-td.tabinactive {
+table.tab .inactivearea { display: none; }
+table.tab .inactivetab {
   padding:0.2em 1em;
   border: 1pt solid ButtonShadow;
   border-radius: 1em;
@@ -101,7 +99,6 @@ td.tabinactive {
   -webkit-border-bottom-left-radius: 0em;
   -webkit-border-bottom-right-radius: 0em;
 }
-td.tabinactive h1 { margin-top: 0em; margin-bottom: 0em; padding-top: 0em; padding-bottom: 0em; }
 
 td.tabbehind {
   padding:0.2em 1em;
@@ -133,6 +130,19 @@ td.tabbelow {
   -webkit-border-top-left-radius: 0em;
   -webkit-border-top-right-radius: 0em;
 }
+
+#arealog { height: 20em; overflow:auto; }
+
+#tablelog {
+  width: 100%;
+  border-spacing:0px;
+  border:0px none;
+  padding:0px;
+}
+#tablelog td.fixed { white-space:nowrap; }
+#tablelog td.long { width:100%; }
+#tablelog td { vertical-align: top; }
+#tablelog tr:nth-child(odd) { background-color: Menu; color: MenuText; }
 
 
 h1 {
