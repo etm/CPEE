@@ -101,75 +101,52 @@ class Controller
     end
   end# }}}
 
-  def notify(what,content={})
+  def notify(what,content={})# {{{
     item = @events[what]
     if item
       item.each do |key,url|
-        topic        = ::File::dirname(what)
-        event        = ::File::basename(what)
-        notification = []
-        uid          = -1
-        fp           = ''
-
-        content.each do |k,v|
-          notification << "#{k}: #{v.inspect}" 
-        end
+        ev = build_event(key,what,content)
 
         if url.class == String
           client = Riddl::Client.new(url)
-          client.post [
-            Riddl::Parameter::Simple.new("key",key),
-            Riddl::Parameter::Simple.new("topic",topic),
-            Riddl::Parameter::Simple.new("event",event),
-            Riddl::Parameter::Simple.new("notification",notification.join('; ')),
-            Riddl::Parameter::Simple.new("message-uid",uid),
-            Riddl::Parameter::Simple.new("fingerprint-with-consumer-secret",fp)
-          ]
+          client.post ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)}
         elsif url.class == Riddl::Utils::Notifications::Producer::WS
           e = XML::Smart::string("<event/>")
-          e.root.add("key",key)
-          e.root.add("topic",topic)
-          e.root.add("event",event)
-          e.root.add("notification",notification.join('; '))
-          e.root.add("message-uid",uid)
-          e.root.add("fingerprint-with-consumer-secret",fp)
+          ev.each do |k,v|
+            e.root.add(k,v)
+          end
           url.send(e.to_s)
         end  
 
       end
     end
-  end
+  end# }}}
 
-  def vote(what,content={})
+  def call_vote(continue,what,content={})
     item = @votes[what]
     if item
       item.each do |key,url|
-        topic        = ::File::dirname(what)
-        vote         = ::File::basename(what)
-        notification = []
-        uid          = -1
-        fp           = ''
-
-        content.each do |k,v|
-          notification << "#{k}: #{v.inspect}" 
-        end
+        ev = build_event(key,what,content)
 
         if url.class == String
           client = Riddl::Client.new(url)
-          client.post [
-            Riddl::Parameter::Simple.new("key",key),
-            Riddl::Parameter::Simple.new("topic",topic),
-            Riddl::Parameter::Simple.new("vote",vote),
-            Riddl::Parameter::Simple.new("notification",notification.join('; ')),
-            Riddl::Parameter::Simple.new("message-uid",uid),
-            Riddl::Parameter::Simple.new("fingerprint-with-consumer-secret",fp)
-          ]
+          callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+          params = ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)}
+          params << Riddl::Header.new("CPEE-Callback",callback)
+          status, result, headers = client.post params
+
+          if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
+            continue = Continue.new
+            @callbacks[callback] = Callback.new("vote",continue,self,:vote_callback)
+            return
+          end
+
         elsif url.class == Riddl::Utils::Notifications::Producer::WS
         end
       end
     end
   end
-  
+
   def add_ws(key,socket)# {{{
     @events.each do |a|
       if a[1].has_key?(key)
@@ -185,5 +162,22 @@ class Controller
       end  
     end
   end# }}}
-  
+
+private
+
+  def build_event(key,what,content)# {{{
+    res = []
+    res << ['key'  , key]
+    res << ['topic', ::File::dirname(what)]
+    res << ['event', ::File::basename(what)]
+    noty = []
+    content.each do |k,v|
+      noty << "#{k}: #{v.inspect}" 
+    end
+    res << ['notification', noty.join('; ')]
+    res << ['uid'         , Digest::MD5.hexdigest(Kernel::rand().to_s)]
+    res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
+  end# }}}
+
+  def vote_callback(result,continue)
 end

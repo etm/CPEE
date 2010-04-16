@@ -6,8 +6,9 @@ Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.e
 end
 
 class Callback #{{{
-  def initialize(handler,info,method=:callback)
+  def initialize(info,handler,method=:callback,*context)
     @info = info
+    @context = context
     @handler = handler
     @method = method.class == Symbol ? method : :callback
   end
@@ -15,7 +16,7 @@ class Callback #{{{
   attr_reader :info
 
   def callback(result)
-    @handler.send @method, result
+    @handler.send @method, result, *@context
   end
 end #}}}
 
@@ -32,10 +33,10 @@ class Callbacks < Riddl::Implementation #{{{
   def response
     Riddl::Parameter::Complex.new("info","text/xml") do
       cb = XML::Smart::string("<?xml-stylesheet href='/xsls/callbacks.xsl' type='text/xsl'?><callbacks details='#{@a[0]}'/>")
-      if @a[0] == :production
+      if @a[0] == :debug
         id = @r[0]
         $controller[id].callbacks.each do |k,v|
-          cb.root.att("callback",{"id" => k},v)
+          cb.root.att("callback",{"id" => k},v.info)
         end  
       end
       cb.to_s
