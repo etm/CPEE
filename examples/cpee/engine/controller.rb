@@ -180,4 +180,5 @@ private
   end# }}}
 
   def vote_callback(result,continue)
+  end
 end
