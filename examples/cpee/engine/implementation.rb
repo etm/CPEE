@@ -6,7 +6,8 @@ Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.e
 end
 
 class Callback #{{{
-  def initialize(info,handler,method=:callback,*context)
+  def initialize(instance,info,handler,method,*context)
+    @instance = instance
     @info = info
     @context = context
     @handler = handler
@@ -16,6 +17,7 @@ class Callback #{{{
   attr_reader :info
 
   def callback(result)
+    $controller[@instance].callbacks.delete_if{|k,v|v==self}
     @handler.send @method, result, *@context
   end
 end #}}}

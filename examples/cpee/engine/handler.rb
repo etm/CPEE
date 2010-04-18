@@ -32,7 +32,7 @@ class DefaultHandler < Wee::HandlerWrapperBase
 
     @handler_returnValue = ''
     if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
-      $controller[@instance].callbacks[callback] = Callback.new("",self,:callback)
+      $controller[@instance].callbacks[callback] = Callback.new(@instance,"",self,:callback)
       return
     end
 
@@ -40,7 +40,7 @@ class DefaultHandler < Wee::HandlerWrapperBase
     @handler_continue.continue
   end
 
-  def callback(result,context)
+  def callback(result)
     @handler_returnValue = result
     @handler_continue.continue
   end

@@ -7,6 +7,7 @@ class Controller
     @directory = ::File.dirname(__FILE__) + "/../instances/#{id}/"
     @events = {}
     @votes = {}
+    @votes_results = {}
     @callbacks = {}
     @instance = EmptyWorkflow.new(id)
     self.unserialize!
@@ -137,11 +138,16 @@ class Controller
 
           if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
             continue = Continue.new
-            @callbacks[callback] = Callback.new("vote",continue,self,:vote_callback)
-            return
+            @callbacks[callback] = Callback.new("vote",self,:vote_callback,continue)
+            @votes_results[callback] = nil
+            continue.wait
+          else
+            @votes_results[callback] = (result[0] && result[0].value == 'true')
           end
-
+            
+          return callback
         elsif url.class == Riddl::Utils::Notifications::Producer::WS
+
         end
       end
     end
@@ -162,6 +168,15 @@ class Controller
       end  
     end
   end# }}}
+  
+  def vote_result(callback)
+    @votes_results.delete(callback)
+  end
+
+  def vote_callback(result,continue)
+    continue.continue
+    @votes_results[callback] = (result[0] && result[0].value == 'true')
+  end
 
 private
 
@@ -179,5 +194,4 @@ private
     res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
   end# }}}
 
-  def vote_callback(result,continue)
 end

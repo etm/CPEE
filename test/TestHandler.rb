@@ -1,17 +1,17 @@
 require ::File.dirname(__FILE__) + '/../lib/Wee'
 
 class TestHandler < Wee::HandlerWrapperBase
-  def initialize(args)
+  def initialize(args,position,continue)
     @__myhandler_stopped = false
-    @__myhandler_continue = nil
+    @__myhandler_position = position
+    @__myhandler_continue = continue
     @__myhandler_returnValue = nil
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
-  def activity_handle(position, continue, passthrough, endpoint,parameters)
-    @__myhandler_continue = continue
-    $message += "Handle call: position=[#{position}] passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]. Waiting for release\n"
+  def activity_handle(passthrough, endpoint,parameters)
+    $message += "Handle call: position=[#{@__myhandler_position}] passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]. Waiting for release\n"
     t = Thread.new() {
       released = false
       until(released) do
@@ -19,10 +19,10 @@ class TestHandler < Wee::HandlerWrapperBase
           $message += "activity_handle: : Received stop signal, process is stoppable =>aborting!\n"
           return
         end
-        if($released.include?("release #{position.to_s}"))
+        if($released.include?("release #{@__myhandler_position.to_s}"))
           released = true
-          $released["release #{position.to_s}"]=""
-          $message += "Handler: Released: #{position}\n"
+          $released["release #{@__myhandler_position.to_s}"]=""
+          $message += "Handler: Released: #{@__myhandler_position}\n"
         end
         Thread.pass
       end
@@ -58,12 +58,12 @@ class TestHandler < Wee::HandlerWrapperBase
     @__myhandler_stopped = true
   end
   # Is called if a Activity is executed correctly
-  def inform_activity_done(activity)
-    $message += "Activity #{activity} done\n"
+  def inform_activity_done
+    $message += "Activity #{@__myhandler_position} done\n"
   end
   # Is called if a Activity is executed with an error
-  def inform_activity_failed(activity, err)
-    $message += "Activity #{activity} failed with error #{err}\n"
+  def inform_activity_failed(err)
+    $message += "Activity #{@__myhandler_position} failed with error #{err}\n"
     raise(err)
   end
   def inform_workflow_state(newstate)
