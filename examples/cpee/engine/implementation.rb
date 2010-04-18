@@ -6,15 +6,16 @@ Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.e
 end
 
 class Callback #{{{
-  def initialize(instance,info,handler,method,*context)
+  def initialize(instance,info,handler,method,protocol,*context)
     @instance = instance
     @info = info
     @context = context
     @handler = handler
+    @protocol = protocol
     @method = method.class == Symbol ? method : :callback
   end
 
-  attr_reader :info
+  attr_reader :info, :protocol
 
   def callback(result)
     $controller[@instance].callbacks.delete_if{|k,v|v==self}
@@ -38,7 +39,7 @@ class Callbacks < Riddl::Implementation #{{{
       if @a[0] == :debug
         id = @r[0]
         $controller[id].callbacks.each do |k,v|
-          cb.root.att("callback",{"id" => k},v.info)
+          cb.root.att("callback",{"id" => k},"#{v.protocol.to_s}: #{v.info}")
         end  
       end
       cb.to_s
@@ -173,7 +174,18 @@ class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase 
     id = ::File::basename(::File::dirname(@notifications)).to_i
     $controller[id.to_i].del_ws(@key)
   end
-  def ws_message(socket,data); end
+  def ws_message(socket,data)
+    id = ::File::basename(::File::dirname(@notifications)).to_i
+    begin
+      doc = XML::Smart::string(data)
+      callback = doc.find("string(/vote/@id)")
+      result = doc.find("string(/vote)")
+      $controller[id.to_i].callbacks[callback].callback(result == 'true' ? true : false)
+      $controller[id.to_i].callbacks.delete(callback)
+    rescue
+      puts "Invalid message over websocket"
+    end
+  end
 
   def create; sync; end
   def delete; sync; end

@@ -1,5 +1,6 @@
 var running = false;
 var subscription;
+var voting;
 var save_state;
 var save_dsl;
 var save_desc;
@@ -63,6 +64,33 @@ function monitor_instance() {// {{{
         url: url + "/notifications/subscriptions/",
         data: (
           'topic'  + '=' + 'running' + '&' +
+          'votes' + '=' + 'syncing_after'),
+        success: function(res){
+          res = res.unserialize();
+          $.each(res,function(a,b){
+            if (b[0] == 'key')
+              voting = b[1];
+          });
+          append_to_log("voting", "id", voting);
+
+          ws = new WebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
+          ws.onopen = function() {
+            append_to_log("voting", "opened", "");
+          };
+          ws.onmessage = function(e) {
+            append_to_log("vote", $('vote > topic',data).text() + "/" + $('vote > vote',data).text(), $('vote > notification',data).text());
+          };
+          ws.onclose = function() {
+            append_to_log("voting", "closed", "server down i assume.");
+          };
+        }
+      });
+
+      $.cors({
+        type: "POST", 
+        url: url + "/notifications/subscriptions/",
+        data: (
+          'topic'  + '=' + 'running' + '&' +
           'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
           'topic'  + '=' + 'properties/description' + '&' +
           'events' + '=' + 'change,error' + '&' +
@@ -80,11 +108,11 @@ function monitor_instance() {// {{{
             if (b[0] == 'key')
               subscription = b[1];
           });
-          append_to_log("websocket", "id", subscription);
+          append_to_log("monitoring", "id", subscription);
 
           ws = new WebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
           ws.onopen = function() {
-            append_to_log("websocket", "opened", "");
+            append_to_log("monitoring", "opened", "");
           };
           ws.onmessage = function(e) {
             data = e.data.parseXML();
@@ -109,7 +137,7 @@ function monitor_instance() {// {{{
             append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
           };
           ws.onclose = function() {
-            append_to_log("websocket", "closed", "server down i assume.");
+            append_to_log("monitoring", "closed", "server down i assume.");
           };
         }
       });

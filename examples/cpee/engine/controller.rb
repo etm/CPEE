@@ -8,6 +8,7 @@ class Controller
     @events = {}
     @votes = {}
     @votes_results = {}
+    @votes_ws_callbacks = {}
     @callbacks = {}
     @instance = EmptyWorkflow.new(id)
     self.unserialize!
@@ -106,7 +107,7 @@ class Controller
     item = @events[what]
     if item
       item.each do |key,url|
-        ev = build_event(key,what,content)
+        ev = build_event(key,what,content,'event')
 
         if url.class == String
           client = Riddl::Client.new(url)
@@ -127,18 +128,18 @@ class Controller
     item = @votes[what]
     if item
       item.each do |key,url|
-        ev = build_event(key,what,content)
+        vo = build_notification(key,what,content,'vote')
 
         if url.class == String
           client = Riddl::Client.new(url)
           callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
-          params = ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)}
+          params = vo.map{|k,v|Riddl::Parameter::Simple.new(k,v)}
           params << Riddl::Header.new("CPEE-Callback",callback)
           status, result, headers = client.post params
 
           if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
             continue = Continue.new
-            @callbacks[callback] = Callback.new("vote",self,:vote_callback,continue)
+            @callbacks[callback] = Callback.new("vote",self,:vote_callback,:http,continue)
             @votes_results[callback] = nil
             continue.wait
           else
@@ -147,7 +148,16 @@ class Controller
             
           return callback
         elsif url.class == Riddl::Utils::Notifications::Producer::WS
-
+          continue = Continue.new
+          @callbacks[callback] = Callback.new("vote",self,:vote_callback,:ws,continue)
+          @votes_results[callback] = nil
+          e = XML::Smart::string("<vote/>")
+          ev.each do |k,v|
+            e.root.add(k,v)
+          end
+          e.root.add("CPEE-Callback",callback)
+          url.send(e.to_s)
+          continue.wait
         end
       end
     end
@@ -180,11 +190,11 @@ class Controller
 
 private
 
-  def build_event(key,what,content)# {{{
+  def build_notification(key,what,content,type)# {{{
     res = []
     res << ['key'  , key]
     res << ['topic', ::File::dirname(what)]
-    res << ['event', ::File::basename(what)]
+    res << [type, ::File::basename(what)]
     noty = []
     content.each do |k,v|
       noty << "#{k}: #{v.inspect}" 
@@ -192,5 +202,6 @@ private
     res << ['notification', noty.join('; ')]
     res << ['uid'         , Digest::MD5.hexdigest(Kernel::rand().to_s)]
     res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
+    # TODO add secret to fp
   end# }}}
 end
