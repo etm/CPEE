@@ -457,8 +457,9 @@ function tab_click(active) { // {{{
   });
 } // }}}
 
+// orig. version
+/*
 function sym_click(node) { // {{{
-  var attrs = [];
   var table = $('#tabledetails');
   table.empty();
   table.append('<tr><td class="top">Element:<td><td class="long">' + node.nodeName + '</td></tr>');
@@ -482,6 +483,84 @@ function sym_click(node) { // {{{
       table.append('<tr><td>Wait:<td><td class="long">' + wait + '</td></tr>');
       break;
   }
+} // }}}
+*/
+
+function sym_click(node, shifting, classes) { // {{{
+  var table = $('#tabledetails');
+  var shift_string = "";
+  var show_childs = {};
+  var row = $('<tr/>');
+  row.addClass(classes); 
+  var sym = $('<button>-</button>');
+  (typeof classes == "undefined") ? classes = Math.random().toString().replace(".", "") : classes = classes + " " + Math.random().toString().replace(".", "");
+  for(var i = 0; i < shifting; i++) { shift_string = shift_string + "<td/>"; }
+  if(typeof shifting == "undefined" || shifting == 0) { 
+    shifting = 0; 
+    table.empty(); 
+    row.append('<td class="top"><b>Element:</b></td><td class="long" colspan="0">' + node.nodeName + '</td>');
+  } else {
+    sym.click(function() {
+      classes = classes.replace(" ", ".");
+      if(classes.charAt(0) != '.') classes = '.'+classes; 
+      if($(this).text() == '-') {
+        $(classes).hide();
+        $(this).text('+');
+      } else {
+        $(this).text('-');
+        $(classes).show();
+        $(classes).each(function() { $('> td > button', this).each(function() {$(this).text("-");$(this).click();});});
+      }
+    });
+    var temp = $('<td/>');
+    temp.append(sym);
+    row.append(shift_string);
+    row.append(temp);
+    row.append('<td class="long" colspan="0"><b>' + node.nodeName + '</b></td>');
+  }
+  
+  table.append(row);
+  for(var i = 0; i < node.attributes.length; i++) {
+    row = $('<tr/>');
+    row.addClass(classes);
+    row.append(shift_string+'<td/><td>'+node.attributes[i].name.charAt(0).toUpperCase() + node.attributes[i].name.slice(1)+':</td><td class="long" colspan="0">'+node.attributes[i].value+'</td>');
+    table.append(row);
+  }
+  row = $('<tr>');
+  row.addClass(classes);
+  switch(node.nodeName) {
+    case 'parameter':
+      if($('>*', node).size() == 0)
+        row.append(shift_string+'<td/><td>Value:</td><td class="long" colspan="0">' + $(node).text() + '</td>');
+      show_childs = {'parameter':true};
+    case 'call':
+      show_childs = {'parameter':true, 'manipulate':true, 'input':true, 'output':true, 'group':true, 'condition':true};
+      break;
+    case 'manipulate':
+      if($.trim($(node).text()) != "")
+        row.append(shift_string+'<td/><td>Code:</td><td class="long" colspan="0">' + format_code($(node).text(),true) + '</td>');
+      show_childs = {'instruction':true};
+      break;
+    case 'cycle':
+    case 'alternative':
+      show_childs = {'group':true, 'condition':true};
+      break;
+    case 'parallel':
+      if($(node).attr('wait') == null)
+        row.append(shift_string+'<td/><td>Wait:</td><td class="long" colspan="0">Wait for all bracnhes</td>');
+      break;
+    case 'group':
+    case 'condition':
+      show_childs = {'group':true, 'condition':true};
+      break;
+
+  }
+  table.append(row);
+  $('>*', node).each( function () { 
+    if(show_childs[this.nodeName])
+      sym_click(this, shifting+1, classes);
+  });
+  sym.click();
 } // }}}
 
 function format_code(res,skim) {// {{{

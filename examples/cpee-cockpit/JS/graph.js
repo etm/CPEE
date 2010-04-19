@@ -83,6 +83,9 @@ function WFGraph (xml, container) {
             block['end_nodes'] = [copyPos(ap)]; // cycle-node is successor
           }  
           break;
+        default: 
+          // for elements not part of the controlflow - only an intermediated solution - needs to be solved diferently in the end
+          block = {'max_pos':{'line': ap['line'], 'col': ap['col']}, 'end_nodes': [copyPos(ap)]};
       }
       if(max_line < block['max_pos']['line']) max_line = block['max_pos']['line'];
       if(max_col < block['max_pos']['col']) max_col = block['max_pos']['col'];
