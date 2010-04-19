@@ -45,7 +45,7 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
       on resource 'callbacks' do
         run Callbacks, mode if get
         on resource do
-          run ExCallback if put
+          run ExCallback if get || put || post || delete
         end  
       end  
     end  

@@ -59,32 +59,32 @@ function monitor_instance() {// {{{
       $("input[name=base-url]").attr("readonly","readonly");
       $("button[name=base]").attr("disabled","disabled");
 
-      $.cors({
-        type: "POST", 
-        url: url + "/notifications/subscriptions/",
-        data: (
-          'topic'  + '=' + 'running' + '&' +
-          'votes' + '=' + 'syncing_after'),
-        success: function(res){
-          res = res.unserialize();
-          $.each(res,function(a,b){
-            if (b[0] == 'key')
-              voting = b[1];
-          });
-          append_to_log("voting", "id", voting);
+      //$.cors({
+      //  type: "POST", 
+      //  url: url + "/notifications/subscriptions/",
+      //  data: (
+      //    'topic'  + '=' + 'running' + '&' +
+      //    'votes' + '=' + 'syncing_after'),
+      //  success: function(res){
+      //    res = res.unserialize();
+      //    $.each(res,function(a,b){
+      //      if (b[0] == 'key')
+      //        voting = b[1];
+      //    });
+      //    append_to_log("voting", "id", voting);
 
-          ws = new WebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
-          ws.onopen = function() {
-            append_to_log("voting", "opened", "");
-          };
-          ws.onmessage = function(e) {
-            append_to_log("vote", $('vote > topic',data).text() + "/" + $('vote > vote',data).text(), $('vote > notification',data).text());
-          };
-          ws.onclose = function() {
-            append_to_log("voting", "closed", "server down i assume.");
-          };
-        }
-      });
+      //    ws = new WebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + voting + "/ws/");
+      //    ws.onopen = function() {
+      //      append_to_log("voting", "opened", "");
+      //    };
+      //    ws.onmessage = function(e) {
+      //      data = e.data.parseXML();
+      //    };
+      //    ws.onclose = function() {
+      //      append_to_log("voting", "closed", "server down i assume.");
+      //    };
+      //  }
+      //});
 
       $.cors({
         type: "POST", 
@@ -92,6 +92,8 @@ function monitor_instance() {// {{{
         data: (
           'topic'  + '=' + 'running' + '&' +
           'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
+          'topic'  + '=' + 'running' + '&' +
+          'votes'  + '=' + 'syncing_after' + '&' +
           'topic'  + '=' + 'properties/description' + '&' +
           'events' + '=' + 'change,error' + '&' +
           'topic'  + '=' + 'properties/state' + '&' +
@@ -116,25 +118,29 @@ function monitor_instance() {// {{{
           };
           ws.onmessage = function(e) {
             data = e.data.parseXML();
-            var topic = $('event > topic',data);
-            switch($(topic[0]).text()) {
-              case 'properties/context-variables':
-                monitor_instance_cvs();
-                break;
-              case 'properties/description':
-                monitor_instance_dsl();
-                break;
-              case 'properties/endpoints':
-                monitor_instance_eps();
-                break;
-              case 'properties/state':
-                monitor_instance_state();
-                break;
-              case 'running':
-                monitor_instance_pos();
-                break;
-            }
-            append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
+            if ($('event > topic',data).length > 0) {
+              switch($('event > topic',data).text()) {
+                case 'properties/context-variables':
+                  monitor_instance_cvs();
+                  break;
+                case 'properties/description':
+                  monitor_instance_dsl();
+                  break;
+                case 'properties/endpoints':
+                  monitor_instance_eps();
+                  break;
+                case 'properties/state':
+                  monitor_instance_state();
+                  break;
+                case 'running':
+                  monitor_instance_pos();
+                  break;
+              }
+              append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
+            }  
+            if ($('vote > topic',data).length > 0) {
+              append_to_log("vote", $('vote > topic',data).text() + "/" + $('vote > vote',data).text(), $('vote > notification',data).text());
+            }  
           };
           ws.onclose = function() {
             append_to_log("monitoring", "closed", "server down i assume.");
@@ -239,14 +245,14 @@ function monitor_instance_pos() {// {{{
       $('span.active').removeClass("active");
       $("svg use.active").each(function(a,b){b.setAttribute("class","activities");});
       values.each(function(){
-        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>\"" + $(this).text() + "\"</td></tr>";
+        temp += "<tr><td>Position:</td><td>" + this.nodeName  + "</td><td>⇒</td><td>(\"" + $(this).text() + "\")</td></tr>";
         $('#activity_' + this.nodeName).addClass("active");
         $('#graph_' + this.nodeName).each(function(a,b){b.setAttribute("class","active activities");});
       });
 
       if (temp != save_pos) {
         save_pos = temp;
-        var ctv = $("#positions");
+        var ctv = $("#state");
         ctv.empty();
         ctv.append(temp);
        }  
@@ -267,18 +273,18 @@ function monitor_instance_state() {// {{{
         if (res == 'finished')
           monitor_instance_pos();
 
-        var ctv = $("#state");
+        var ctv = $("#positions");
         ctv.empty();
 
         var but = "";
         if (res == "ready" || res == "stopped") {
-          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>Start</button></td>";
+          but = "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>Start</button></td>";
         }
         if (res == "running") {
-          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>Stop</button></td>";
+          but = "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>Stop</button></td>";
         }
 
-        ctv.append("<tr><td>" + res + "</td>" + but + "</tr>");
+        ctv.append("<tr><td>State:</td><td>" + res + "</td><td>⇒</td>" + but + "</tr>");
       }  
     }
   });

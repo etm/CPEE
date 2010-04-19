@@ -8,7 +8,6 @@ class Controller
     @events = {}
     @votes = {}
     @votes_results = {}
-    @votes_ws_callbacks = {}
     @callbacks = {}
     @instance = EmptyWorkflow.new(id)
     self.unserialize!
@@ -27,6 +26,7 @@ class Controller
 
   def stop# {{{
     @instance.stop
+    @callbacks.each{|c| c.callback(nil)}
     @thread.join if @thread && @thread.alive?
     @thread = nil 
   end# }}}
@@ -86,6 +86,7 @@ class Controller
         end
       end
     end
+
     XML::Smart::open(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
 
@@ -107,7 +108,7 @@ class Controller
     item = @events[what]
     if item
       item.each do |key,url|
-        ev = build_event(key,what,content,'event')
+        ev = build_notification(key,what,content,'event')
 
         if url.class == String
           client = Riddl::Client.new(url)
@@ -124,7 +125,7 @@ class Controller
     end
   end# }}}
 
-  def call_vote(continue,what,content={})
+  def call_vote(what,content={})
     item = @votes[what]
     if item
       item.each do |key,url|
@@ -138,21 +139,20 @@ class Controller
           status, result, headers = client.post params
 
           if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
-            continue = Continue.new
-            @callbacks[callback] = Callback.new("vote",self,:vote_callback,:http,continue)
+            continue = Wee::Continue.new
+            @callbacks[callback] = Callback.new("vote #{vo['notification']}",self,:vote_callback,:http,continue,callback)
             @votes_results[callback] = nil
             continue.wait
           else
             @votes_results[callback] = (result[0] && result[0].value == 'true')
           end
-            
-          return callback
         elsif url.class == Riddl::Utils::Notifications::Producer::WS
-          continue = Continue.new
-          @callbacks[callback] = Callback.new("vote",self,:vote_callback,:ws,continue)
+          continue = Wee::Continue.new
+          callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+          @callbacks[callback] = Callback.new("vote #{vo.find{|a,b| a == 'notification'}[1]}",self,:vote_callback,:ws,continue,callback)
           @votes_results[callback] = nil
           e = XML::Smart::string("<vote/>")
-          ev.each do |k,v|
+          vo.each do |k,v|
             e.root.add(k,v)
           end
           e.root.add("CPEE-Callback",callback)
@@ -169,6 +169,11 @@ class Controller
         a[1][key] = socket
       end  
     end
+    @votes.each do |a|
+      if a[1].has_key?(key)
+        a[1][key] = socket
+      end  
+    end
   end# }}}
 
   def del_ws(key)# {{{
@@ -177,13 +182,19 @@ class Controller
         a[1][key] = nil
       end  
     end
+    @votes.each do |a|
+      if a[1].has_key?(key)
+        a[1][key] = nil
+      end
+    end
+
   end# }}}
   
   def vote_result(callback)
     @votes_results.delete(callback)
   end
 
-  def vote_callback(result,continue)
+  def vote_callback(result,continue,callback)
     continue.continue
     @votes_results[callback] = (result[0] && result[0].value == 'true')
   end

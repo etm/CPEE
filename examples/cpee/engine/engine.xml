@@ -42,7 +42,10 @@
       <resource relative="callbacks">
         <get in="*" out="callbacks"/>
         <resource>
+          <get in="*"/>
           <put in="*"/>
+          <post in="*"/>
+          <delete in="*"/>
         </resource>
       </resource>
     </resource>

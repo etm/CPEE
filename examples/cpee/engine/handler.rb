@@ -32,7 +32,7 @@ class DefaultHandler < Wee::HandlerWrapperBase
 
     @handler_returnValue = ''
     if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
-      $controller[@instance].callbacks[callback] = Callback.new(@instance,"",self,:callback,:http)
+      $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,:http)
       return
     end
 
@@ -96,11 +96,11 @@ class DefaultHandler < Wee::HandlerWrapperBase
   end
 
   def vote_sync_after
-    voteid = $controller[@instance].call_vote("properties/running/syncing_after", :activity => @handler_position)
+    voteid = $controller[@instance].call_vote("running/syncing_after", :activity => @handler_position)
     $controller[@instance].vote_result(voteid)
   end
   def vote_sync_before
-    voteid = $controller[@instance].call_vote("properties/running/syncing_before", :activity => @handler_position)
+    voteid = $controller[@instance].call_vote("running/syncing_before", :activity => @handler_position)
     $controller[@instance].vote_result(voteid)
   end
 end

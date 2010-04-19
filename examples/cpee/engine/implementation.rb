@@ -6,8 +6,7 @@ Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.e
 end
 
 class Callback #{{{
-  def initialize(instance,info,handler,method,protocol,*context)
-    @instance = instance
+  def initialize(info,handler,method,protocol,*context)
     @info = info
     @context = context
     @handler = handler
@@ -18,7 +17,6 @@ class Callback #{{{
   attr_reader :info, :protocol
 
   def callback(result)
-    $controller[@instance].callbacks.delete_if{|k,v|v==self}
     @handler.send @method, result, *@context
   end
 end #}}}
@@ -34,12 +32,16 @@ end #}}}
 
 class Callbacks < Riddl::Implementation #{{{
   def response
+    unless File.exists?("instances/#{@r[0]}")
+      @status = 400
+      return
+    end
     Riddl::Parameter::Complex.new("info","text/xml") do
       cb = XML::Smart::string("<?xml-stylesheet href='/xsls/callbacks.xsl' type='text/xsl'?><callbacks details='#{@a[0]}'/>")
       if @a[0] == :debug
         id = @r[0]
-        $controller[id].callbacks.each do |k,v|
-          cb.root.att("callback",{"id" => k},"#{v.protocol.to_s}: #{v.info}")
+        $controller[id.to_i].callbacks.each do |k,v|
+          cb.root.add("callback",{"id" => k},"[#{v.protocol.to_s}] #{v.info}")
         end  
       end
       cb.to_s
