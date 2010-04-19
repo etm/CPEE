@@ -45,7 +45,7 @@ class TestWorkflowControl < Test::Unit::TestCase
     sleep(0.1)
     assert($message.include?("Activity a_test_1_1 done"), "pos a_test_1_1 not properly ended, see $message=#{$message}")
     assert($message.include?("Handle call: position=[a_test_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_test_1_2 was not called, see message=[#{$message}]")
-    @wf.stop
+    @wf.stop.join
     assert(@wf.state == :stopped, "Stopped workflow has wrong state, #{@wf.state} instead of :stopped")
     assert(@wf.positions.is_a?(Array), "@wf.positions has wrong type, should be an array, it is: #{@wf.positions.inspect}")
     assert(@wf.positions[0].position == :a_test_1_2, "Stop-position has wrong value: #{@wf.positions[0].position} instead of :a_test_2_1")

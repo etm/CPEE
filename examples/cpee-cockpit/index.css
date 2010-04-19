@@ -172,6 +172,11 @@ svg use.active circle {
   fill-opacity:1;
 }  
 
+svg use.vote circle {
+  fill: #00ff00;
+  fill-opacity:1;
+}  
+
 svg line.ourline {
   stroke-opacity: 0.9; 
   stroke:#000000;

@@ -59,33 +59,6 @@ function monitor_instance() {// {{{
       $("input[name=base-url]").attr("readonly","readonly");
       $("button[name=base]").attr("disabled","disabled");
 
-      //$.cors({
-      //  type: "POST", 
-      //  url: url + "/notifications/subscriptions/",
-      //  data: (
-      //    'topic'  + '=' + 'running' + '&' +
-      //    'votes' + '=' + 'syncing_after'),
-      //  success: function(res){
-      //    res = res.unserialize();
-      //    $.each(res,function(a,b){
-      //      if (b[0] == 'key')
-      //        voting = b[1];
-      //    });
-      //    append_to_log("voting", "id", voting);
-
-      //    ws = new WebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + voting + "/ws/");
-      //    ws.onopen = function() {
-      //      append_to_log("voting", "opened", "");
-      //    };
-      //    ws.onmessage = function(e) {
-      //      data = e.data.parseXML();
-      //    };
-      //    ws.onclose = function() {
-      //      append_to_log("voting", "closed", "server down i assume.");
-      //    };
-      //  }
-      //});
-
       $.cors({
         type: "POST", 
         url: url + "/notifications/subscriptions/",
@@ -137,9 +110,11 @@ function monitor_instance() {// {{{
                   break;
               }
               append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
-            }  
+            }
             if ($('vote > topic',data).length > 0) {
-              append_to_log("vote", $('vote > topic',data).text() + "/" + $('vote > vote',data).text(), $('vote > notification',data).text());
+              var notification = $('vote > notification',data).text();
+              append_to_log("vote", $('vote > topic',data).text() + "/" + $('vote > vote',data).text(), notification);
+              monitor_instance_vote(notification);
             }  
           };
           ws.onclose = function() {
@@ -260,6 +235,27 @@ function monitor_instance_pos() {// {{{
   });
 }// }}}
 
+function monitor_instance_vote(notification) {// {{{
+  try {
+  var parts = notification.split(';');
+  var activity;
+  var callback;
+  $.each(parts,function(i,p){
+    var ma;
+    if (ma = p.match(/activity: :([a-zA-Z-0-9_]+)/))
+      activity = ma[1];
+    if (ma = p.match(/callback: "([a-zA-Z-0-9_]+)"/))
+      callback = ma[1];
+  });
+  var ctv = $("#votes");
+  ctv.append("<tr id='vote_to_continue_" + activity + "'><td>Position:</td><td>" + activity + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");vote_continue(\"" + activity + "\",\"" + callback + "\");'>vote to continue</button></td></tr>");
+  $('#activity_' + activity).addClass("vote");
+  $('#graph_' + activity).each(function(a,b){b.setAttribute("class","vote activities");});
+  } catch(e) {
+    console.log(e.toString());
+  }  
+}// }}}
+
 function monitor_instance_state() {// {{{
   var url = $("input[name=instance-url]").val();
   $.cors({
@@ -278,13 +274,13 @@ function monitor_instance_state() {// {{{
 
         var but = "";
         if (res == "ready" || res == "stopped") {
-          but = "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>Start</button></td>";
+          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
         }
         if (res == "running") {
-          but = "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>Stop</button></td>";
+          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
         }
 
-        ctv.append("<tr><td>State:</td><td>" + res + "</td><td>⇒</td>" + but + "</tr>");
+        ctv.append("<tr><td>State:</td><td>" + res + "</td>" + but + "</tr>");
       }  
     }
   });
@@ -513,6 +509,19 @@ function format_code(res,skim) {// {{{
 function append_to_log(what,type,message) {
   var d = new Date();
   $("#tablelog").append("<tr><td class='fixed'>" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "</td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  what + "</td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
-}  
+}
+
+function vote_continue(activity,callback) {
+  var url = $("input[name=instance-url]").val();
+  $.cors({
+    type: "PUT", 
+    url: url + "/callbacks/" + callback,
+    data: ({continue: "true"}),
+    failure: report_failure
+  });
+  $('#activity_' + activity).removeClass("vote");
+  $('#graph_' + activity).each(function(a,b){b.setAttribute("class","activities");});
+  $('#vote_to_continue_' + activity).remove();
+}
 
 function report_failure(){}

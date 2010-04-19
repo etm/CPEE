@@ -19,7 +19,7 @@ class TestState < Test::Unit::TestCase
   end
   def test_check_stop_state
     @wf.start
-    @wf.stop
+    @wf.stop.join
     assert(@wf.state == :stopped, "state is not set to :stopped after workflow being stopped, it is #{@wf.state}")
   end
 end
