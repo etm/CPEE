@@ -1,5 +1,8 @@
 require ::File.dirname(__FILE__) + '/empty_workflow'
 require 'xml/smart'
+require 'yaml'
+
+class Object; def to_yaml_style; :inline; end; end
 
 class Controller
 
@@ -51,7 +54,7 @@ class Controller
       node = doc.find("/p:properties/p:context-variables").first
       node.children.delete_all!
       @instance.context.each do |k,v|
-        node.add(k.to_s,v.to_s)
+        node.add(k.to_s,YAML::dump(v).sub(/^--- /,''))
       end
 
       node = doc.find("/p:properties/p:state").first
@@ -94,7 +97,7 @@ class Controller
 
       @instance.context.clear
       doc.find("/p:properties/p:context-variables/p:*").each do |e|
-        @instance.context e.name.to_s.to_sym => e.text
+        @instance.context e.name.to_s.to_sym => YAML::load(e.text) rescue nil
       end
 
       @instance.endpoints.clear
@@ -127,7 +130,7 @@ class Controller
     end
   end# }}}
 
-  def call_vote(what,content={})
+  def call_vote(what,content={})# {{{
     item = @votes[what]
     if item
       item.each do |key,url|
@@ -162,7 +165,16 @@ class Controller
         end
       end
     end
-  end
+  end# }}}
+
+  def vote_result(callback)# {{{
+    @votes_results.delete(callback)
+  end# }}}
+
+  def vote_callback(result,continue,callback)# {{{
+    continue.continue
+    @votes_results[callback] = (result && result[0] && result[0].value == 'true')
+  end# }}}
 
   def add_ws(key,socket)# {{{
     @events.each do |a|
@@ -191,15 +203,6 @@ class Controller
 
   end# }}}
   
-  def vote_result(callback)
-    @votes_results.delete(callback)
-  end
-
-  def vote_callback(result,continue,callback)
-    continue.continue
-    @votes_results[callback] = (result && result[0] && result[0].value == 'true')
-  end
-
 private
 
   def build_notification(key,what,content,type)# {{{

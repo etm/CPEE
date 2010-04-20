@@ -57,12 +57,12 @@ function WFGraph (xml, container) {
           block = {'max_pos':{'line': ap['line']+1, 'col': ap['col']}, 'end_nodes': [copyPos(ap)]};
           break;
         // Elements are only with root-node connected to the sequence
-        case 'cycle':
+        case 'loop':
         case 'parallel':
           drawSymbol(ap, child, false);
           block = analyze(child, ap, 1);
           if(child.nodeName == "parallel") drawBlock(ap, block['max_pos']);
-          block['end_nodes'] = [copyPos(ap)]; // cycle-node is successor
+          block['end_nodes'] = [copyPos(ap)]; // loop-node is successor
           break;
         // Last childs of the elements connect to the sequence
         case 'critical':
@@ -80,7 +80,7 @@ function WFGraph (xml, container) {
           } else {
             block = analyze(child, ap, 1);
             if(child.nodeName == "parallel") drawBlock(ap, block['max_pos']);
-            block['end_nodes'] = [copyPos(ap)]; // cycle-node is successor
+            block['end_nodes'] = [copyPos(ap)]; // loop-node is successor
           }  
           break;
         default: 
@@ -98,7 +98,7 @@ function WFGraph (xml, container) {
         if(parent_element.nodeName == 'parallel' && i == 0) {
           drawConnection(parent_position, ap);
         }  
-        if(parent_element.nodeName == 'cycle') {
+        if(parent_element.nodeName == 'loop') {
           if (i == childs.snapshotLength - 1) {
             for(var j = 0; j < block['end_nodes'].length; j++)
               drawConnection(block['end_nodes'][j], parent_position);
@@ -150,7 +150,7 @@ function WFGraph (xml, container) {
       attrs = {'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30};
     }  
     switch(node.nodeName) {
-      case 'cycle':
+      case 'loop':
       case 'alternative':
         var title = document.createElementNS(svgNS, "title");
         title.appendChild(document.createTextNode(node.getAttribute('condition')));

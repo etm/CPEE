@@ -28,7 +28,7 @@
         <call id="a2_2_1" endpoint="timeout">
           <parameter name="method">post</parameter>
           <parameter name="parameters">
-            <parameter name="timeout">10</parameter>
+            <parameter name="timeout">2</parameter>
           </parameter>
         </call>  
       </parallel_branch>

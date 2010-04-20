@@ -210,11 +210,11 @@ class Wee
     end# }}}
 
     # Defines a branch of a parallel-Construct
-    def parallel_branch# {{{
+    def parallel_branch(*vars)# {{{
       return if self.state == :stopping || Thread.current[:nolongernecessary]
-      @__wee_threads << Thread.new do
+      @__wee_threads << Thread.new(*vars) do |*local|
         Thread.current[:branch_search] = @__wee_search
-        yield
+        yield(*local)
       end
     end# }}}
 
@@ -258,16 +258,28 @@ class Wee
     end# }}}
 
     # Defines a Cycle (loop/iteration)
-    def cycle(condition)# {{{
-      raise "condition must be a string to evaluate" unless condition.is_a?(String)
+    def loop(condition)# {{{
+      unless condition.is_a?(Array) && condition[0].is_a?(Proc) && [:pre_test,:post_test].include?(condition[1])
+        raise "condition must be called pre_test{} or post_test{}"
+      end
       return if self.state == :stopping || Thread.current[:nolongernecessary]
       yield if is_in_search_mode
       return if is_in_search_mode
-      while eval(condition)
-        yield
+      case condition[1]
+        when :pre_test
+          yield while condition[0].call
+        when :post_test
+          begin; yield; end while condition[0].call
       end
     end# }}}
-    
+
+    def pre_test(&blk)
+      [blk, :pre_test]
+    end
+    def post_test(&blk)
+      [blk, :post_test]
+    end
+
   private
     def trigger_continue(thread)# {{{
       if thread && thread.alive? && thread[:continue] && thread[:continue].waiting?

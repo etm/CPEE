@@ -458,7 +458,6 @@ function tab_click(active) { // {{{
 } // }}}
 
 // orig. version
-/*
 function sym_click(node) { // {{{
   var table = $('#tabledetails');
   table.empty();
@@ -474,7 +473,7 @@ function sym_click(node) { // {{{
       table.append('<tr><td>ID:<td><td class="long">' + $(node).attr('id') + '</td></tr>');
       table.append('<tr><td>Manipulate:<td><td class="long">' + format_code($(node).text(),true) + '</td></tr>');
       break;
-    case 'cycle':
+    case 'loop':
     case 'alternative':
       table.append('<tr><td>Condition:<td><td class="long">' + $(node).attr('condition') + '</td></tr>');
       break;
@@ -484,8 +483,8 @@ function sym_click(node) { // {{{
       break;
   }
 } // }}}
-*/
 
+/*
 function sym_click(node, shifting, classes) { // {{{
   var table = $('#tabledetails');
   var shift_string = "";
@@ -541,7 +540,7 @@ function sym_click(node, shifting, classes) { // {{{
         row.append(shift_string+'<td/><td>Code:</td><td class="long" colspan="0">' + format_code($(node).text(),true) + '</td>');
       show_childs = {'instruction':true};
       break;
-    case 'cycle':
+    case 'loop':
     case 'alternative':
       show_childs = {'group':true, 'condition':true};
       break;
@@ -562,6 +561,7 @@ function sym_click(node, shifting, classes) { // {{{
   });
   sym.click();
 } // }}}
+*/
 
 function format_code(res,skim) {// {{{
   res = res.replace(/\t/g,'  ');

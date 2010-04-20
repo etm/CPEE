@@ -20,9 +20,12 @@
       <running putable="true"/>
     </ready>  
     <running>
-      <stopped putable="true"/>
+      <stopping putable="true"/>
       <finished putable="false"/>
     </running>
+    <stopping>
+      <stopped putable="false"/>
+    </stopping>
     <stopped>
       <running putable="true"/>
     </stopped>  

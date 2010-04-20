@@ -19,7 +19,7 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
       activity :a1, :manipulate do
         @x = 0
       end
-      cycle("@x < 3") do
+      loop pre_test{@x < 3} do
         activity :a2, :call, :endpoint1 do
           @x += 1
         end
@@ -45,7 +45,7 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
       activity :a1, :manipulate do
         @x = 0
       end
-      cycle("@x < 3") do
+      loop pre_test{@x < 3} do
         activity :a2_1, :call, :endpoint1
         activity :a2_2, :manipulate do
           @x += 1
@@ -72,7 +72,7 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
       activity :a1, :manipulate do
         @x = 0
       end
-      cycle("@x < 3") do
+      loop pre_test{@x < 3} do
         activity :a2_1, :call, :endpoint1
         activity :a2_2, :manipulate do
           @x += 1
