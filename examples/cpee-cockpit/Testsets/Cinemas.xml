@@ -2,55 +2,49 @@
 <testset>
   <positions/>
   <context-variables>
-    <string>'some string is here'</string>
-    <number>4711</number>
-    <boolean>true</boolean>
-    <class_date>Date.new("2001-12-24")</class_date>
-    <pattern_context>'this-is-a-pattern'</pattern_context>
-    <some_context/>
-    <some_prop_context/>
-    <an_other_context/>
-    <one_more_context/>
+    <prefdate/>
+    <number_of_persons/>
+    <pref_time/>
+    <title/>
+    <hall/>
+    <movie_title/>
+    <res_id/>
+    <start_time/>
+    <pop_quant/>
+    <pop_order_num/>
+    <pop_price/>
   </context-variables>
   <endpoints>
-    <wo_pattern>&quot;http://no_patterns-needed.org/service&quot;</wo_pattern>
-    <with_pattern>&quot;http://here-is-a-pattern-used.org/#{@pattern_context}/some-uri-parts&quot;</with_pattern>
-    <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <cinemas>http://localhost:9290/groups/Cinemas/Arthous</cinemas>
+    <transformationservice>http://localhost:9290/transformation</transformationservice>
+    <selectionservice>http://localhost/selection.php</selectionservice>
+    <selectedcinema>balbla</selectedcinema>
   </endpoints>
   <description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <call id="a1_1" endpoint="timeout" http-method="post">
-      <input name="timeout" fix-value="10"/>
+    <call id="book_movie" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
+      <assign-endpoint id="selectedcinema" use="bla"/>
+      <input name="date" variable="prefdate"/>
+      <input name="number_of_persons" variable="number_of_persons"/>
+      <input name="preferred_time" variable="pref_time"/>
+      <input name="title" variable="title"/>
+      <output name="hall" variable="hall"/>
+      <output name="movie_title" variable="movie_title"/>
+      <output name="reservation_id" variable="res_id"/>
+      <output name="starting_time" variable="start_time"/>
     </call>
-    <parallel wait="2">
-      <parallel_branch>
-        <call id="a2_1" endpoint="timeout" http-method="post">
-          <input name="timeout" fix-value="10"/>
-        </call>
-      </parallel_branch>
-      <parallel_branch>
-        <call id="a2_2" endpoint="timeout" http-method="post">
-          <input name="timeout" fix-value="10"/>
-        </call>
-      </parallel_branch>
-    </parallel>
-    <manipulate id="a3">
-      <instruction target="number" operator="=" fix-value="3"/>
-    </manipulate>
+    <call id="book_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
+      <input name="quantity" variable="pop_quant"/>
+      <input name="reservation_id" variable="res_id"/>
+      <output name="order_number" variable="pop_order_num"/>
+      <output name="price" variable="pop_price"/>
+    </call>
     <choose>
       <alternative>
-        <group connector="and"> 
-          <condition test="number" comparator="==" fix-value="3"/>
-          <condition test="string" comparator="contains" fix-value="&apos;test&apos;"/>
-        </group>
-        <call id="a4a" endpoint="timeout" http-method="post">
-          <input name="timeout" fix-value="10"/>
+        <condition test="pop_price" comparator=">" fix-value="10"/>
+        <call id="unbook_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
+          <input name="order_number" variable="pop_order_num"/>
         </call>
       </alternative>
-      <otherwise>
-        <call id="a4b" endpoint="timeout" http-method="post">
-          <input name="timeout" fix-value="10"/>
-        </call>
-      </otherwise>
     </choose>
   </description>
   <transformation>
@@ -581,18 +575,14 @@
           <xsl:text>'</xsl:text>
         </xsl:if>
         <xsl:if test="string(@service-operation)">
-          <xsl:text>, &#xa;</xsl:text>
-          <xsl:call-template name="prefix-whitespaces"/>
-          <xsl:text>    :service => {:operation => '</xsl:text>
+          <xsl:text>, :service => {:operation => '</xsl:text>
           <xsl:value-of select="@service-operation"/>
           <xsl:text>', :controlflow => '</xsl:text>
           <xsl:value-of select="@state-controlflow"/>
           <xsl:text>'}</xsl:text>
         </xsl:if>
         <xsl:if test="string(@group-by)">
-          <xsl:text>, &#xa;</xsl:text>
-          <xsl:call-template name="prefix-whitespaces"/>
-          <xsl:text>    :group => {:group_selector => '</xsl:text>
+          <xsl:text>, :group => {:group_selector => '</xsl:text>
           <xsl:value-of select="@group-by"/>
           <xsl:text>', :uri_selector => </xsl:text>
           <xsl:value-of select="child::flow:resource-id/@xpath"/>
@@ -601,9 +591,7 @@
           <xsl:text>}</xsl:text>
         </xsl:if>
         <xsl:if test="child::flow:constraint">
-          <xsl:text>, </xsl:text>
-          <xsl:call-template name="prefix-whitespaces"/>
-          <xsl:text>    :constraint => {</xsl:text>
+          <xsl:text>, :constraint => {</xsl:text>
           <xsl:apply-templates select="child::flow:constraint"/>
           <xsl:text>}</xsl:text>
         </xsl:if>
