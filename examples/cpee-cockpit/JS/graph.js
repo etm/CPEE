@@ -37,9 +37,15 @@ function WFGraph (xml, container) {
     var max_line = ap['line'];
     var block = null;
     var end_nodes = [];
+    var cf_elements = ['call', 'manipulate', 'parallel', 'parallel_branch', 'choose', 'alternative', 'otherwise', 'critical', 'cycle'];
     if(parent_position != null && parent_element.nodeName != "parallel" &&  parent_element.nodeName != "choose") end_nodes.push(parent_position);
 
-    var xpath = "child::*[name() != 'parameter']";
+    var xpath = "child::*[";
+    for(var i = 0; i < cf_elements.length; i++) {
+      xpath = xpath + "(name() = '"+cf_elements[i]+"')";
+      if (i != cf_elements.length-1) xpath = xpath + " or "; 
+    }
+    xpath = xpath + "]";
     var childs = xml.evaluate(xpath, parent_element, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     var pure_branch = true;
     var pure_choose = true;
@@ -83,9 +89,6 @@ function WFGraph (xml, container) {
             block['end_nodes'] = [copyPos(ap)]; // cycle-node is successor
           }  
           break;
-        default: 
-          // for elements not part of the controlflow - only an intermediated solution - needs to be solved diferently in the end
-          block = {'max_pos':{'line': ap['line'], 'col': ap['col']}, 'end_nodes': [copyPos(ap)]};
       }
       if(max_line < block['max_pos']['line']) max_line = block['max_pos']['line'];
       if(max_col < block['max_pos']['col']) max_col = block['max_pos']['col'];
