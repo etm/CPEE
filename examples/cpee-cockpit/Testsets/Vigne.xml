@@ -15,47 +15,123 @@
   <endpoints>
     <wo_pattern>&quot;http://no_patterns-needed.org/service&quot;</wo_pattern>
     <with_pattern>&quot;http://here-is-a-pattern-used.org/#{@pattern_context}/some-uri-parts&quot;</with_pattern>
-    <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>
   <description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <call id="a1_1" endpoint="timeout" http-method="post">
-      <input name="timeout" fix-value="10"/>
-    </call>
-    <parallel wait="2">
-      <parallel_branch>
-        <call id="a2_1" endpoint="timeout" http-method="post">
-          <input name="timeout" fix-value="10"/>
-        </call>
-      </parallel_branch>
-      <parallel_branch>
-        <call id="a2_2" endpoint="timeout" http-method="post">
-          <input name="timeout" fix-value="10"/>
-        </call>
-      </parallel_branch>
-    </parallel>
-    <manipulate id="a3">
-      <instruction target="number" operator="=" fix-value="3"/>
-    </manipulate>
+    <loop>
+      <condition test="wo_pattern" comparator="&lt;" fix-value="5"/>
+      <parallel type="nowait">
+        <parallel_branch>
+          <call id="call_01" endpoint="wo_pattern">
+            <parameter name="service-operation">so_1</parameter>
+            <parameter name="state-controlflow">execute</parameter>
+            <parameter name="constraint">
+              <parameter name="constraint1">
+                <parameter name="xpath">//some_property</parameter>
+                <parameter name="comparator">==</parameter>
+                <parameter name="fix-value">Time.new('20:15')</parameter>
+              </parameter>
+              <parameter name="constraint2">
+                <parameter name="xpath">//some_group/{@string}</parameter>
+                <parameter name="comparator">!=</parameter>
+                <parameter name="variable">wo_patern</parameter>
+              </parameter>
+              <parameter name="constraint3">
+                <parameter name="xpath">/some_group/some_other_property</parameter>
+                <parameter name="comparator">!=</parameter>
+                <parameter name="variable">one_more_context</parameter>
+              </parameter>
+            </parameter>
+            <!-- wenn kein context oder endpouint dann fix-value -->
+            <input name="in_context" variable="string"/>
+            <input name="in_fix_num" fix-value="5"/>
+            <input name="in_fix_string" fix-value="&quot;some input&quot;"/>
+            <input name="in_one_more" variable="one_more_context"/>
+            <input name="in_call" variable="class_date"/>
+            <output name="properties" variable="some_prop_context"/>
+            <output name="out1" variable="one_more_context"/> 
+            <output name="out" variable="one_more_context"/>
+            <output name="out" variable="one_more_context"/>
+            <output name="out2" variable="one_more_context"/>
+            <output name="out2" variable="with_pattern"/>
+            <output name="out2" variable="one_more_context"/>
+            <output name="out5" variable="one_more_context"/>
+          </call>
+        </parallel_branch>
+        <parallel_branch>
+          <critical id="crit_01">
+            <call id="call_02" endpoint="with_pattern">
+              <parameter name="method">get</parameter>
+              <input name="xml" message-parameter="xml_context" transformation-uri="transformation_service">
+                <copy xsl-name="some-variable" variable="some_context"/>
+                <copy xsl-name="some-context" variable="wo_pattern"/>
+                <xsl:template match="/">
+                  <xsl:apply-templates select="//items"/> 
+                </xsl:template>
+                <xsl:template match="//items">
+                  <xsl:element name="entry">
+                    <xsl:value-of select="text"/>
+                  </xsl:element>
+                </xsl:template>
+              </input>
+              <output name="out" message-parameter="message_out_02"  transformation-uri="transformation_service">
+                <xsl:template match="/">
+                  <xsl:apply-templates select="//results"/> 
+                </xsl:template>
+                <xsl:template match="//results">
+                  <xsl:element name="result">
+                    <xsl:value-of select="text"/>
+                  </xsl:element>
+                </xsl:template>
+              </output>
+              <output name="out" message-parameter="message_out_0333"/> 
+              <output message-parameter="message_out_03" variable="one_more_context"/>
+              <output name="out" message-parameter="message_out"/>
+              <output message-parameter="message_out_04" fix-value="false"/>
+            </call>
+          </critical>
+        </parallel_branch>
+      </parallel>
+      <manipulate id="man_01"> 
+        <instruction target="one_more_context" operator="+=" variable="some_context"/> 
+        <instruction target="some_context" operator="-=" variable="wo_pattern"/>
+        <instruction target="with_pattern" operator="+=" variable="some_context" transformation-uri="transformation_service">
+          <xsl:template match="/">
+            <xsl:apply-templates select="//results"/> 
+          </xsl:template>
+          <xsl:template match="//results">
+            <xsl:element name="result">
+              <xsl:value-of select="text"/>
+            </xsl:element>
+          </xsl:template>
+        </instruction>
+        <instruction target="some_context" operator="some_operation" fix-value="@some_context.some_method(@some_context)"/>
+      </manipulate>
+    </loop>
     <choose>
       <alternative>
-        <group connector="and"> 
-          <condition test="number" comparator="==" fix-value="3"/>
-          <condition test="string" comparator="contains" fix-value="&apos;test&apos;"/>
+        <group connector="and">
+          <condition test="some_context" comparator="&gt;=" fix-value="5"/>
+          <group connector="or">
+            <condition test="an_other_context" comparator="==" variable="some_context"/>
+            <condition test="an_other_context" comparator="substring" fix-value="Date.new(@class_date)"/>
+          </group>
         </group>
-        <call id="a4a" endpoint="timeout" http-method="post">
-          <input name="timeout" fix-value="10"/>
-        </call>
+        <manipulate id="man_03">
+          <instruction target="some_context" operator="+=" variable="an_other_context"/> 
+        </manipulate>
       </alternative>
       <otherwise>
-        <call id="a4b" endpoint="timeout" http-method="post">
-          <input name="timeout" fix-value="10"/>
-        </call>
+        <manipulate id="man_04"> 
+          <instruction target="some_context" operator="+=" variable="an_other_context"/> 
+        </manipulate>
       </otherwise>
     </choose>
   </description>
   <transformation>
     <!-- {{{ -->
-    <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:flow="http://rescue.org/ns/controlflow/0.2">
+    <xsl:stylesheet version="1.0"
+      xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+      xmlns:flow="http://rescue.org/ns/controlflow/0.2">
 
       <xsl:output method="text"/>
     <!-- XML-To-String -->
@@ -400,8 +476,7 @@
             <xsl:text>"]</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>@</xsl:text>
-            <xsl:value-of select="$var"/>
+            <xsl:text>@</xsl:text><xsl:value-of select="$var"/>
           </xsl:otherwise>
         </xsl:choose>
         <!-- }}}} -->
@@ -434,7 +509,6 @@
       <xsl:template name="input">
         <!-- {{{ -->
         <xsl:param name="input" select="child::flow:input"/>
-        <xsl:text>&#xa;</xsl:text>
         <xsl:for-each select="$input">
           <xsl:variable name="id" select="generate-id()"/>
           <xsl:choose>
@@ -446,18 +520,6 @@
               <xsl:text>var_</xsl:text>
               <xsl:value-of select="$id"/>
               <xsl:text> = nil&#xa;</xsl:text>
-
-              <xsl:text>xsl_</xsl:text>
-              <xsl:value-of select="$id"/>
-              <xsl:text> = </xsl:text>
-              <xsl:text>&lt;&lt;-XSLT&#xa;</xsl:text>
-              <xsl:apply-templates select="child::flow:copy"/>
-              <xsl:call-template name="prefix-whitespaces"/>
-              <xsl:call-template name="xml-to-string">
-                <xsl:with-param name="node-set" select="child::xsl:*"/>
-              </xsl:call-template>
-              <xsl:text>&#xa;XSLT&#xa;</xsl:text>
-
               <xsl:call-template name="prefix-whitespaces"/>
               <xsl:text>activity :transform_input_</xsl:text>
               <xsl:value-of select="@name"/>
@@ -478,9 +540,14 @@
                   <xsl:call-template name="resolve-message-parameter"/>
                 </xsl:when>
               </xsl:choose>
-              <xsl:text>, :xsl => </xsl:text>
-              <xsl:text>xsl_</xsl:text>
-              <xsl:value-of select="$id"/>
+              <xsl:text>, :xsl => &#xa;&lt;&lt;XSLT&#xa;</xsl:text>
+                <xsl:apply-templates select="child::flow:copy"/>
+                <xsl:call-template name="prefix-whitespaces"/>
+                <xsl:call-template name="xml-to-string">
+                  <xsl:with-param name="node-set" select="child::xsl:*"/>
+                </xsl:call-template>
+                <xsl:text>&#xa;XSLT&#xa;</xsl:text>
+                <xsl:call-template name="prefix-whitespaces"/>
               <xsl:text>}</xsl:text>
               <xsl:text> do |result|&#xa;</xsl:text>
                 <xsl:call-template name="prefix-whitespaces"/>
@@ -563,7 +630,6 @@
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
         <xsl:text>parallel do</xsl:text>
-        <xsl:call-template name="prefix-whitespaces"/>
         <xsl:call-template name="input"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
@@ -574,25 +640,21 @@
         <xsl:value-of select="@id"/>
         <xsl:text>, :call, :</xsl:text>
         <xsl:value-of select="@endpoint"/>
-        <xsl:text>, { :input => input</xsl:text>
+        <xsl:text>, :input => input </xsl:text>
         <xsl:if test="string(@http-method)">
-          <xsl:text>,  :http_method => '</xsl:text>
+          <xsl:text>, :http-method => '</xsl:text>
           <xsl:value-of select="@http-method"/>
           <xsl:text>'</xsl:text>
         </xsl:if>
         <xsl:if test="string(@service-operation)">
-          <xsl:text>, &#xa;</xsl:text>
-          <xsl:call-template name="prefix-whitespaces"/>
-          <xsl:text>    :service => {:operation => '</xsl:text>
+          <xsl:text>, :service => {:operation => '</xsl:text>
           <xsl:value-of select="@service-operation"/>
           <xsl:text>', :controlflow => '</xsl:text>
           <xsl:value-of select="@state-controlflow"/>
           <xsl:text>'}</xsl:text>
         </xsl:if>
         <xsl:if test="string(@group-by)">
-          <xsl:text>, &#xa;</xsl:text>
-          <xsl:call-template name="prefix-whitespaces"/>
-          <xsl:text>    :group => {:group_selector => '</xsl:text>
+          <xsl:text>, :group => {:group_selector => '</xsl:text>
           <xsl:value-of select="@group-by"/>
           <xsl:text>', :uri_selector => </xsl:text>
           <xsl:value-of select="child::flow:resource-id/@xpath"/>
@@ -601,13 +663,11 @@
           <xsl:text>}</xsl:text>
         </xsl:if>
         <xsl:if test="child::flow:constraint">
-          <xsl:text>, </xsl:text>
-          <xsl:call-template name="prefix-whitespaces"/>
-          <xsl:text>    :constraint => {</xsl:text>
+          <xsl:text>, :constraint => {</xsl:text>
           <xsl:apply-templates select="child::flow:constraint"/>
           <xsl:text>}</xsl:text>
         </xsl:if>
-        <xsl:text>}</xsl:text>
+        <xsl:call-template name="prefix-whitespaces"/>
         <xsl:text> do |result|</xsl:text>
         <xsl:apply-templates select="child::flow:output">
           <xsl:with-param name="mode" select="'assign'"/>
@@ -675,22 +735,9 @@
             </xsl:choose>
           </xsl:when>
           <xsl:when test="($mode = 'transform') and (child::xsl:*)">
-            <xsl:variable name="id" select="generate-id()"/>
             <xsl:text>&#xa;</xsl:text>
             <xsl:call-template name="prefix-whitespaces"/>
             <xsl:text>parallel_branch do&#xa;</xsl:text>
-
-            <xsl:text>xsl_</xsl:text>
-            <xsl:value-of select="$id"/>
-            <xsl:text> = </xsl:text>
-            <xsl:text>&lt;&lt;-XSLT&#xa;</xsl:text>
-            <xsl:apply-templates select="child::flow:copy"/>
-            <xsl:call-template name="prefix-whitespaces"/>
-            <xsl:call-template name="xml-to-string">
-              <xsl:with-param name="node-set" select="child::xsl:*"/>
-            </xsl:call-template>
-            <xsl:text>&#xa;XSLT&#xa;</xsl:text>
-
             <xsl:call-template name="prefix-whitespaces"/>
             <xsl:text>activity :transform_output_</xsl:text>
             <xsl:value-of select="@name"/>
@@ -711,9 +758,14 @@
                 <xsl:call-template name="resolve-message-parameter"/>
               </xsl:when>
             </xsl:choose>
-            <xsl:text>, :xsl => </xsl:text>
-            <xsl:text>xsl_</xsl:text>
-            <xsl:value-of select="$id"/>
+            <xsl:text>, :xsl => &#xa;&lt;&lt;XSLT&#xa;</xsl:text>
+              <xsl:apply-templates select="child::flow:copy"/>
+              <xsl:call-template name="prefix-whitespaces"/>
+              <xsl:call-template name="xml-to-string">
+                <xsl:with-param name="node-set" select="child::xsl:*"/>
+              </xsl:call-template>
+              <xsl:text>&#xa;XSLT&#xa;</xsl:text>
+              <xsl:call-template name="prefix-whitespaces"/>
             <xsl:text>}</xsl:text>
             <xsl:text> do |result|&#xa;</xsl:text>
               <xsl:call-template name="prefix-whitespaces"/>
@@ -870,7 +922,6 @@
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>  </xsl:text>
         <xsl:apply-templates name="child::flow:instruction">
           <xsl:with-param name="mode" select="'transform'"/>
         </xsl:apply-templates>
@@ -906,12 +957,9 @@
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>parallel </xsl:text>
-        <xsl:if test="string(@wait)">
-          <xsl:text>:wait => </xsl:text>
-          <xsl:value-of select="@wait"/>
-        </xsl:if>
-        <xsl:text> do</xsl:text>
+        <xsl:text>parallel (:</xsl:text>
+        <xsl:value-of select="@type"/>
+        <xsl:text>) do</xsl:text>
         <xsl:apply-templates select="child::flow:*"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
@@ -935,10 +983,10 @@
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>loop(</xsl:text>
+        <xsl:text>loop pre_test{</xsl:text>
         <xsl:apply-templates select="child::flow:group"/>
         <xsl:apply-templates select="child::flow:condition"/>
-        <xsl:text>) do </xsl:text>
+        <xsl:text>} do </xsl:text>
         <xsl:text>&#xa;</xsl:text>
         <xsl:apply-templates select="child::flow:*[(name() != 'group') and (name() != 'condition')]"/>
         <xsl:text>&#xa;</xsl:text>
@@ -964,10 +1012,10 @@
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>alternative("</xsl:text>
+        <xsl:text>alternative(</xsl:text>
         <xsl:apply-templates select="child::flow:group"/>
         <xsl:apply-templates select="child::flow:condition"/>
-        <xsl:text>") do </xsl:text>
+        <xsl:text>) do </xsl:text>
         <xsl:apply-templates select="child::flow:*[(name() != 'group') and (name() != 'condition')]"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
@@ -1055,7 +1103,8 @@
         </xsl:for-each>
          <!-- }}} -->
       </xsl:template>
-    </xsl:stylesheet>
+
+    </xsl:stylesheet>  
     <!-- }}} -->
   </transformation>
 </testset>

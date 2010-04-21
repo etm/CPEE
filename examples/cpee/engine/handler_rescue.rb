@@ -11,9 +11,24 @@ class RescueHandler < Wee::HandlerWrapperBase
   def activity_handle(passthrough, endpoint, parameters)
     $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
+  
+    cpee_instance = "http://localhost:9298/#{@instance}/"
+    injection_service = "http://localhost:9290/inject/"
 
-    client = Riddl::Client.new(endpoint)
-
+    puts '='*80
+    pp "Endpoint: #{endpoint}"
+    pp "Position: #{@handler_position}"
+    pp "Instance-Uri: #{cpee_instance}"
+    pp "Injection-Service-Uri: #{injection_service}"
+    pp 'Parameters:'
+    pp parameters
+    puts '='*80
+    if parameters.key?(:service)
+      puts "== performing a call to the injection service"
+      sleep(30)
+    end
+=begin
+    client = Riddl::Client.new(endpoints)
     params = []
     callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
     (parameters[:parameters] || {}).each do |h|
@@ -23,20 +38,20 @@ class RescueHandler < Wee::HandlerWrapperBase
         end  
       end  
     end
-    params << Riddl::Header.new("WEE_CALLBACK",callback)
+    params << Riddl::Header.new("CPEE-Callback",callback)
 
     type = parameters[:method] || 'post'
     status, result, headers = client.request type => params
-
     raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
 
     @handler_returnValue = ''
-    if headers["WEE_CALLBACK"] && headers["WEE_CALLBACK"] == true
-      $controller[@instance].callbacks[callback] = Callback.new(self,:callback)
+    if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
+      $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,:http)
       return
     end
 
-    @handler_returnValue = result
+=end
+    @handler_returnValue = {:bla => 'blablablubli', :reservation_id => '4711', :price => 17}
     @handler_continue.continue
   end
 
@@ -82,6 +97,8 @@ class RescueHandler < Wee::HandlerWrapperBase
     $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :message => err.message)
   end
   def inform_syntax_error(err)
+    puts err.message
+    puts err.backtrace
     $controller[@instance].notify("properties/description/error", :message => err.message)
   end
   def inform_context_change(changed)
@@ -95,10 +112,12 @@ class RescueHandler < Wee::HandlerWrapperBase
     end
   end
 
-  def vote_sync_before
-    $controller[@instance].vote("properties/running/syncing_before", :activity => @handler_position)
-  end
   def vote_sync_after
-    $controller[@instance].vote("properties/running/syncing_after", :activity => @handler_position)
+    voteid = $controller[@instance].call_vote("running/syncing_after", :activity => @handler_position)
+    $controller[@instance].vote_result(voteid)
+  end
+  def vote_sync_before
+    voteid = $controller[@instance].call_vote("running/syncing_before", :activity => @handler_position)
+    $controller[@instance].vote_result(voteid)
   end
 end

@@ -2,10 +2,10 @@
 <testset>
   <positions/>
   <context-variables>
-    <prefdate/>
-    <number_of_persons/>
-    <pref_time/>
-    <title/>
+    <prefdate>2010-06-20</prefdate>
+    <number_of_persons>4</number_of_persons>
+    <pref_time>20:15</pref_time>
+    <title>What ever</title>
     <hall/>
     <movie_title/>
     <res_id/>
@@ -15,13 +15,15 @@
     <pop_price/>
   </context-variables>
   <endpoints>
-    <cinemas>http://localhost:9290/groups/Cinemas/Arthous</cinemas>
+    <cinemas>Cinema/Arthouse</cinemas>
     <transformationservice>http://localhost:9290/transformation</transformationservice>
     <selectionservice>http://localhost/selection.php</selectionservice>
     <selectedcinema>balbla</selectedcinema>
+    <repository>http://localhost:9290/groups</repository>
   </endpoints>
   <description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <call id="book_movie" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
+      <repository variable="repository"/>
       <assign-endpoint id="selectedcinema" use="bla"/>
       <input name="date" variable="prefdate"/>
       <input name="number_of_persons" variable="number_of_persons"/>
@@ -33,6 +35,7 @@
       <output name="starting_time" variable="start_time"/>
     </call>
     <call id="book_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
+      <repository variable="repository"/>
       <input name="quantity" variable="pop_quant"/>
       <input name="reservation_id" variable="res_id"/>
       <output name="order_number" variable="pop_order_num"/>
@@ -42,6 +45,7 @@
       <alternative>
         <condition test="pop_price" comparator=">" fix-value="10"/>
         <call id="unbook_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
+          <repository variable="repository"/>
           <input name="order_number" variable="pop_order_num"/>
         </call>
       </alternative>
@@ -49,7 +53,9 @@
   </description>
   <transformation>
     <!-- {{{ -->
-    <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:flow="http://rescue.org/ns/controlflow/0.2">
+    <xsl:stylesheet version="1.0"
+      xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+      xmlns:flow="http://rescue.org/ns/controlflow/0.2">
 
       <xsl:output method="text"/>
     <!-- XML-To-String -->
@@ -394,8 +400,7 @@
             <xsl:text>"]</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>@</xsl:text>
-            <xsl:value-of select="$var"/>
+            <xsl:text>@</xsl:text><xsl:value-of select="$var"/>
           </xsl:otherwise>
         </xsl:choose>
         <!-- }}}} -->
@@ -428,7 +433,6 @@
       <xsl:template name="input">
         <!-- {{{ -->
         <xsl:param name="input" select="child::flow:input"/>
-        <xsl:text>&#xa;</xsl:text>
         <xsl:for-each select="$input">
           <xsl:variable name="id" select="generate-id()"/>
           <xsl:choose>
@@ -440,18 +444,6 @@
               <xsl:text>var_</xsl:text>
               <xsl:value-of select="$id"/>
               <xsl:text> = nil&#xa;</xsl:text>
-
-              <xsl:text>xsl_</xsl:text>
-              <xsl:value-of select="$id"/>
-              <xsl:text> = </xsl:text>
-              <xsl:text>&lt;&lt;-XSLT&#xa;</xsl:text>
-              <xsl:apply-templates select="child::flow:copy"/>
-              <xsl:call-template name="prefix-whitespaces"/>
-              <xsl:call-template name="xml-to-string">
-                <xsl:with-param name="node-set" select="child::xsl:*"/>
-              </xsl:call-template>
-              <xsl:text>&#xa;XSLT&#xa;</xsl:text>
-
               <xsl:call-template name="prefix-whitespaces"/>
               <xsl:text>activity :transform_input_</xsl:text>
               <xsl:value-of select="@name"/>
@@ -472,9 +464,14 @@
                   <xsl:call-template name="resolve-message-parameter"/>
                 </xsl:when>
               </xsl:choose>
-              <xsl:text>, :xsl => </xsl:text>
-              <xsl:text>xsl_</xsl:text>
-              <xsl:value-of select="$id"/>
+              <xsl:text>, :xsl => &#xa;&lt;&lt;XSLT&#xa;</xsl:text>
+                <xsl:apply-templates select="child::flow:copy"/>
+                <xsl:call-template name="prefix-whitespaces"/>
+                <xsl:call-template name="xml-to-string">
+                  <xsl:with-param name="node-set" select="child::xsl:*"/>
+                </xsl:call-template>
+                <xsl:text>&#xa;XSLT&#xa;</xsl:text>
+                <xsl:call-template name="prefix-whitespaces"/>
               <xsl:text>}</xsl:text>
               <xsl:text> do |result|&#xa;</xsl:text>
                 <xsl:call-template name="prefix-whitespaces"/>
@@ -557,7 +554,6 @@
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
         <xsl:text>parallel do</xsl:text>
-        <xsl:call-template name="prefix-whitespaces"/>
         <xsl:call-template name="input"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
@@ -568,9 +564,9 @@
         <xsl:value-of select="@id"/>
         <xsl:text>, :call, :</xsl:text>
         <xsl:value-of select="@endpoint"/>
-        <xsl:text>, { :input => input</xsl:text>
+        <xsl:text>, :input => input</xsl:text>
         <xsl:if test="string(@http-method)">
-          <xsl:text>,  :http_method => '</xsl:text>
+          <xsl:text>, :http-method => '</xsl:text>
           <xsl:value-of select="@http-method"/>
           <xsl:text>'</xsl:text>
         </xsl:if>
@@ -579,7 +575,12 @@
           <xsl:value-of select="@service-operation"/>
           <xsl:text>', :controlflow => '</xsl:text>
           <xsl:value-of select="@state-controlflow"/>
-          <xsl:text>'}</xsl:text>
+          <xsl:text>', :repository => </xsl:text>
+          <xsl:call-template name="resolve-variable">
+            <xsl:with-param name="var" select="child::flow:repository/@variable"/>
+            <xsl:with-param name="operation" select="'get'"/>
+          </xsl:call-template>
+          <xsl:text>}</xsl:text>
         </xsl:if>
         <xsl:if test="string(@group-by)">
           <xsl:text>, :group => {:group_selector => '</xsl:text>
@@ -595,7 +596,6 @@
           <xsl:apply-templates select="child::flow:constraint"/>
           <xsl:text>}</xsl:text>
         </xsl:if>
-        <xsl:text>}</xsl:text>
         <xsl:text> do |result|</xsl:text>
         <xsl:apply-templates select="child::flow:output">
           <xsl:with-param name="mode" select="'assign'"/>
@@ -663,22 +663,9 @@
             </xsl:choose>
           </xsl:when>
           <xsl:when test="($mode = 'transform') and (child::xsl:*)">
-            <xsl:variable name="id" select="generate-id()"/>
             <xsl:text>&#xa;</xsl:text>
             <xsl:call-template name="prefix-whitespaces"/>
             <xsl:text>parallel_branch do&#xa;</xsl:text>
-
-            <xsl:text>xsl_</xsl:text>
-            <xsl:value-of select="$id"/>
-            <xsl:text> = </xsl:text>
-            <xsl:text>&lt;&lt;-XSLT&#xa;</xsl:text>
-            <xsl:apply-templates select="child::flow:copy"/>
-            <xsl:call-template name="prefix-whitespaces"/>
-            <xsl:call-template name="xml-to-string">
-              <xsl:with-param name="node-set" select="child::xsl:*"/>
-            </xsl:call-template>
-            <xsl:text>&#xa;XSLT&#xa;</xsl:text>
-
             <xsl:call-template name="prefix-whitespaces"/>
             <xsl:text>activity :transform_output_</xsl:text>
             <xsl:value-of select="@name"/>
@@ -699,9 +686,14 @@
                 <xsl:call-template name="resolve-message-parameter"/>
               </xsl:when>
             </xsl:choose>
-            <xsl:text>, :xsl => </xsl:text>
-            <xsl:text>xsl_</xsl:text>
-            <xsl:value-of select="$id"/>
+            <xsl:text>, :xsl => &#xa;&lt;&lt;XSLT&#xa;</xsl:text>
+              <xsl:apply-templates select="child::flow:copy"/>
+              <xsl:call-template name="prefix-whitespaces"/>
+              <xsl:call-template name="xml-to-string">
+                <xsl:with-param name="node-set" select="child::xsl:*"/>
+              </xsl:call-template>
+              <xsl:text>&#xa;XSLT&#xa;</xsl:text>
+              <xsl:call-template name="prefix-whitespaces"/>
             <xsl:text>}</xsl:text>
             <xsl:text> do |result|&#xa;</xsl:text>
               <xsl:call-template name="prefix-whitespaces"/>
@@ -858,7 +850,6 @@
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>  </xsl:text>
         <xsl:apply-templates name="child::flow:instruction">
           <xsl:with-param name="mode" select="'transform'"/>
         </xsl:apply-templates>
@@ -894,12 +885,9 @@
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>parallel </xsl:text>
-        <xsl:if test="string(@wait)">
-          <xsl:text>:wait => </xsl:text>
-          <xsl:value-of select="@wait"/>
-        </xsl:if>
-        <xsl:text> do</xsl:text>
+        <xsl:text>parallel (:</xsl:text>
+        <xsl:value-of select="@type"/>
+        <xsl:text>) do</xsl:text>
         <xsl:apply-templates select="child::flow:*"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
@@ -923,10 +911,10 @@
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>loop(</xsl:text>
+        <xsl:text>loop pre_test{</xsl:text>
         <xsl:apply-templates select="child::flow:group"/>
         <xsl:apply-templates select="child::flow:condition"/>
-        <xsl:text>) do </xsl:text>
+        <xsl:text>} do </xsl:text>
         <xsl:text>&#xa;</xsl:text>
         <xsl:apply-templates select="child::flow:*[(name() != 'group') and (name() != 'condition')]"/>
         <xsl:text>&#xa;</xsl:text>
@@ -952,10 +940,10 @@
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>alternative("</xsl:text>
+        <xsl:text>alternative(</xsl:text>
         <xsl:apply-templates select="child::flow:group"/>
         <xsl:apply-templates select="child::flow:condition"/>
-        <xsl:text>") do </xsl:text>
+        <xsl:text>) do </xsl:text>
         <xsl:apply-templates select="child::flow:*[(name() != 'group') and (name() != 'condition')]"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
