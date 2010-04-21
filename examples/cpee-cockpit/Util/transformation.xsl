@@ -21,7 +21,16 @@
     </xsl:call-template>
     <xsl:if test="name()='call'">
       <xsl:text>activity :</xsl:text>
-      <xsl:value-of select="@id"/>
+      <xsl:choose>  
+        <xsl:when test="contains(@id,'#{')">
+          <xsl:text>"</xsl:text>
+          <xsl:value-of select="@id"/>
+          <xsl:text>"</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="@id"/>
+        </xsl:otherwise>
+      </xsl:choose>  
       <xsl:text>, :call, :</xsl:text>
       <xsl:value-of select="@endpoint"/>
       <xsl:apply-templates select="d:parameter"/>
@@ -32,7 +41,16 @@
     </xsl:if>
     <xsl:if test="name()='manipulate'">
       <xsl:text>activity :</xsl:text>
-      <xsl:value-of select="@id"/>
+      <xsl:choose>  
+        <xsl:when test="contains(@id,'#{')">
+          <xsl:text>"</xsl:text>
+          <xsl:value-of select="@id"/>
+          <xsl:text>"</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="@id"/>
+        </xsl:otherwise>
+      </xsl:choose>  
       <xsl:text>, :manipulate</xsl:text>
       <xsl:call-template name="print-content">
         <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
@@ -57,10 +75,19 @@
       <xsl:text>end</xsl:text>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
-    <xsl:if test="name()='cycle'">
-      <xsl:text>cycle "</xsl:text>
-      <xsl:value-of select="@condition"/>
-      <xsl:text>" do</xsl:text>
+    <xsl:if test="name()='loop'">
+      <xsl:text>loop </xsl:text>
+      <xsl:if test="@pre_test">
+        <xsl:text>pre_test{</xsl:text>
+        <xsl:value-of select="@pre_test"/>
+        <xsl:text>} </xsl:text>
+      </xsl:if>
+      <xsl:if test="@post_test">
+        <xsl:text>post_test{</xsl:text>
+        <xsl:value-of select="@post_test"/>
+        <xsl:text>} </xsl:text>
+      </xsl:if>
+      <xsl:text>do</xsl:text>
       <xsl:call-template name="print-newline"/>
       <xsl:apply-templates>
         <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
@@ -93,9 +120,9 @@
       <xsl:with-param name="i">1</xsl:with-param>
       <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
     </xsl:call-template>
-    <xsl:text>alternative "</xsl:text>
+    <xsl:text>alternative </xsl:text>
     <xsl:value-of select="@condition"/>
-    <xsl:text>" do</xsl:text>
+    <xsl:text> do</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
       <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>

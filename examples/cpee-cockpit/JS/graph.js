@@ -37,7 +37,7 @@ function WFGraph (xml, container) {
     var max_line = ap['line'];
     var block = null;
     var end_nodes = [];
-    var cf_elements = ['call', 'manipulate', 'parallel', 'parallel_branch', 'choose', 'alternative', 'otherwise', 'critical', 'cycle'];
+    var cf_elements = ['call', 'manipulate', 'parallel', 'parallel_branch', 'choose', 'alternative', 'otherwise', 'critical', 'loop'];
     if(parent_position != null && parent_element.nodeName != "parallel" &&  parent_element.nodeName != "choose") end_nodes.push(parent_position);
 
     var xpath = "child::*[";

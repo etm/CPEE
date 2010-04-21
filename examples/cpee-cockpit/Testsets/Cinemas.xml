@@ -919,11 +919,11 @@
         <!-- }}} -->
       </xsl:template>
       
-      <xsl:template match="//flow:cycle">
+      <xsl:template match="//flow:loop">
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>cycle(</xsl:text>
+        <xsl:text>loop(</xsl:text>
         <xsl:apply-templates select="child::flow:group"/>
         <xsl:apply-templates select="child::flow:condition"/>
         <xsl:text>) do </xsl:text>
