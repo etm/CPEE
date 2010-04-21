@@ -12,17 +12,6 @@ class DefaultHandler < Wee::HandlerWrapperBase
     $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
 
-    puts '='*50
-    puts "instance"
-    pp @instance
-    puts "endpoint"
-    pp endpoint
-    puts "parameters"
-    pp parameters
-    puts "passthrough"
-    pp passthrough
-    puts '='*50
-=begin
     client = Riddl::Client.new(endpoint)
 
     params = []
@@ -38,10 +27,6 @@ class DefaultHandler < Wee::HandlerWrapperBase
 
     type = parameters[:method] || 'post'
     status, result, headers = client.request type => params
-=end
-    status = 200
-    result = "dummy"
-    headers = Hash.new
     raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
 
     @handler_returnValue = ''
