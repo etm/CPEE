@@ -472,7 +472,6 @@ function tab_click(active) { // {{{
   });
 } // }}}
 
-// orig. version
 function sym_click(node) { // {{{
   var table = $('#tabledetails');
   table.empty();
@@ -499,7 +498,7 @@ function sym_click(node) { // {{{
   }
 } // }}}
 
-/*
+/* ralph version
 function sym_click(node, shifting, classes) { // {{{
   var table = $('#tabledetails');
   var shift_string = "";
@@ -600,12 +599,12 @@ function format_code(res,skim) {// {{{
   return res;
 }// }}}
 
-function append_to_log(what,type,message) {
+function append_to_log(what,type,message) {//{{{
   var d = new Date();
   $("#tablelog").append("<tr><td class='fixed'>" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "</td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  what + "</td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
-}
+}//}}}
 
-function vote_continue(activity,callback) {
+function vote_continue(activity,callback) {//{{{
   var url = $("input[name=instance-url]").val();
   $.cors({
     type: "PUT", 
@@ -616,9 +615,9 @@ function vote_continue(activity,callback) {
   $('#activity_' + activity).removeClass("vote");
   $('#graph_' + activity).each(function(a,b){b.setAttribute("class","activities");});
   $('#vote_to_continue_' + activity).remove();
-}
+}//}}}
 
-function vote_clean() {
+function vote_clean() {//{{{
   try {
   $('span.vote').removeClass("vote");
   $('svg use.vote').each(function(a,b){b.setAttribute("class","activities");});
@@ -626,6 +625,6 @@ function vote_clean() {
   } catch(e) {
     alert(e.toString());
   }
-}
+}//}}}
 
 function report_failure(){}
