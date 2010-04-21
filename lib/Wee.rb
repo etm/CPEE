@@ -28,7 +28,7 @@ class Wee
     end
   end# }}}
   class HandlerWrapperBase# {{{
-    def initialize(handlerargs,activity=nil,continue=nil); end
+    def initialize(args,activity=nil,continue=nil); end
 
     def activity_handle(passthrough, endpoint, parameters); end
     def activity_result_value; end
@@ -64,7 +64,7 @@ class Wee
     end
   end  # }}}
 
-  def initialize(*handlerargs)# {{{
+  def initialize(*args)# {{{
     @__wee_search_positions = @__wee_search_positions_original = {}
     @__wee_search = false
     @__wee_positions = Array.new
@@ -77,9 +77,9 @@ class Wee
     initialize_search if methods.include?('initialize_search')
     initialize_context if methods.include?('initialize_context')
     initialize_endpoints if methods.include?('initialize_endpoints')
-    initialize_handler if methods.include?('initialize_handler')
+    initialize_handlerwrapper if methods.include?('initialize_handlerwrapper')
     
-    @__wee_handlerargs = handlerargs
+    @__wee_handlerwrapper_args = args
     @__wee_state = :ready
   end# }}}
 
@@ -105,10 +105,10 @@ class Wee
     end
   end# }}}
 
-  def self::handler(aClassname, *args)# {{{
-    define_method :initialize_handler do 
-      self.handler = aClassname
-      self.handlerargs = args
+  def self::handlerwrapper(aClassname, *args)# {{{
+    define_method :initialize_handlerwrapper do 
+      self.handlerwrapper = aClassname
+      self.handlerwrapper_args = args
     end
   end# }}}
 
@@ -128,37 +128,37 @@ class Wee
     # position: a unique identifier within the wf-description (may be used by the search to identify a starting point
     # type:
     #   - :manipulate - just yield a given block
-    #   - :call - order the handler to perform a service call
+    #   - :call - order the handlerwrapper to perform a service call
     # endpoint: (only with :call) ep of the service
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters)
       return if self.state == :stopping || Thread.current[:nolongernecessary] || is_in_search_mode(position)
       Thread.current[:continue] = Continue.new
-      handler = @__wee_handler.new @__wee_handlerargs, position, Thread.current[:continue]
+      handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, Thread.current[:continue]
       @__wee_context_change = false
       begin
         case type
           when :manipulate
-            handler.vote_sync_before
+            handlerwrapper.vote_sync_before
             if block_given?
-              handler.inform_activity_manipulate
+              handlerwrapper.inform_activity_manipulate
               yield
             end  
-            refreshcontext handler
-            handler.inform_activity_done
-            handler.vote_sync_after
+            refreshcontext handlerwrapper
+            handlerwrapper.inform_activity_done
+            handlerwrapper.vote_sync_after
           when :call
-            handler.vote_sync_before
+            handlerwrapper.vote_sync_before
             passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
-            ret_value = perform_external_call position, passthrough, handler, @__wee_endpoints[endpoint], *parameters
+            ret_value = perform_external_call position, passthrough, handlerwrapper, @__wee_endpoints[endpoint], *parameters
             if block_given? && self.state != :stopping && !Thread.current[:nolongernecessary]
-              handler.inform_activity_manipulate
+              handlerwrapper.inform_activity_manipulate
               yield ret_value
-              refreshcontext handler
+              refreshcontext handlerwrapper
             end
             if self.state != :stopping && !Thread.current[:nolongernecessary]
-              handler.inform_activity_done
-              handler.vote_sync_after
+              handlerwrapper.inform_activity_done
+              handlerwrapper.vote_sync_after
             end
         else
           raise "Invalid activity type #{type}. Only :manipulate or :call allowed"
@@ -166,8 +166,8 @@ class Wee
       rescue => err
         p err
         puts err.backtrace
-        refreshcontext handler
-        handler.inform_activity_failed err
+        refreshcontext handlerwrapper
+        handlerwrapper.inform_activity_failed err
         self.state = :stopping
       ensure
         @__wee_context_change = true
@@ -300,7 +300,7 @@ class Wee
         return branch[:branch_search] || @__wee_search # is activity part of a branch and in search mode?
       end
     end# }}}
-    def perform_external_call(position, passthrough, handler, endpoint, *parameters)
+    def perform_external_call(position, passthrough, handlerwrapper, endpoint, *parameters)
       params = { }
       wp = Wee::Position.new(position, :at, nil)
       @__wee_positions << wp
@@ -315,19 +315,19 @@ class Wee
         end
       end
       # handshake call and wait until it finished
-      handler.activity_handle passthrough, endpoint, params
+      handlerwrapper.activity_handle passthrough, endpoint, params
       Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.state == :stopping
        
-      handler.activity_no_longer_necessary if Thread.current[:nolongernecessary]
+      handlerwrapper.activity_no_longer_necessary if Thread.current[:nolongernecessary]
       if self.state == :stopping
-        handler.activity_stop
-        wp.passthrough = handler.activity_passthrough_value
+        handlerwrapper.activity_stop
+        wp.passthrough = handlerwrapper.activity_passthrough_value
       else
         @__wee_positions.delete wp
       end  
-      Thread.current[:nolongernecessary] || self.state == :stopping ? nil : handler.activity_result_value
+      Thread.current[:nolongernecessary] || self.state == :stopping ? nil : handlerwrapper.activity_result_value
     end
-    def refreshcontext(handler)# {{{
+    def refreshcontext(handlerwrapper)# {{{
       changed = []
       @__wee_context.each do |varname, value|
         if @__wee_context[varname] != instance_variable_get("@#{varname}".to_sym)
@@ -335,22 +335,22 @@ class Wee
           @__wee_context[varname] = instance_variable_get("@#{varname}".to_sym)
         end  
       end
-      handler.inform_context_change(changed) unless changed.empty?
+      handlerwrapper.inform_context_change(changed) unless changed.empty?
     end# }}}
 
     def state=(newState)# {{{
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
       self.search @__wee_search_positions_original
-      handler = @__wee_handler.new @__wee_handlerargs, nil, nil
+      handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, nil, nil
       @__wee_state = newState
-      handler.inform_state @__wee_state
+      handlerwrapper.inform_state @__wee_state
       if newState == :stopping
         trigger_continue(@__wee_main)
         if @__wee_main && @__wee_main != Thread.current
           @__wee_main.join 
         end
         @__wee_state = :stopped
-        handler.inform_state @__wee_state
+        handlerwrapper.inform_state @__wee_state
       end
       @__wee_state
     end# }}}
@@ -360,26 +360,29 @@ class Wee
       @__wee_positions
     end# }}}
 
-    # set the Handler
-    def handler=(new_wee_handler)# {{{
-      superclass = new_wee_handler
+    # set the handlerwrapper
+    def handlerwrapper# {{{
+      @__wee_handlerwrapper
+    end# }}}
+    def handlerwrapper=(new_wee_handlerwrapper)# {{{
+      superclass = new_wee_handlerwrapper
       while superclass
         check_ok = true if superclass == Wee::HandlerWrapperBase
         superclass = superclass.superclass
       end
-      raise "Handler is not inhereted from HandlerWrapperBase" unless check_ok
-      @__wee_handler = new_wee_handler
+      raise "Handlerwrapper is not inherited from HandlerWrapperBase" unless check_ok
+      @__wee_handlerwrapper = new_wee_handlerwrapper
     end# }}}
 
-    # Get/Set the handler arguments
-    def handlerargs=(args)# {{{
+    # Get/Set the handlerwrapper arguments
+    def handlerwrapper_args=(args)# {{{
       if args.class == Array
-        @__wee_handlerargs = args
+        @__wee_handlerwrapper_args = args
       end
       nil
     end# }}}
-    def handlerargs# {{{
-      @__wee_handlerargs
+    def handlerwrapper_args# {{{
+      @__wee_handlerwrapper_args
     end# }}}
 
     # Get the state of execution (ready|running|stopping|finished)
@@ -458,8 +461,8 @@ class Wee
               instance_eval(@__wee_wfsource)
             rescue SyntaxError => err
               self.state = :stopping
-              handler = @__wee_handler.new @__wee_handlerargs, nil, nil
-              handler.inform_syntax_error(err)
+              handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, nil, nil
+              handlerwrapper.inform_syntax_error(err)
             end
           end
         end

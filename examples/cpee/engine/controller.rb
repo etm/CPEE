@@ -6,13 +6,13 @@ class Object; def to_yaml_style; :inline; end; end
 
 class Controller
 
-  def initialize(id)
+  def initialize(id,url)
     @directory = ::File.dirname(__FILE__) + "/../instances/#{id}/"
     @events = {}
     @votes = {}
     @votes_results = {}
     @callbacks = {}
-    @instance = EmptyWorkflow.new(id)
+    @instance = EmptyWorkflow.new(id,url)
     self.unserialize!
     @thread = nil
   end
@@ -92,6 +92,7 @@ class Controller
       end
     end
 
+    hw = nil
     XML::Smart::open(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
 
@@ -104,8 +105,27 @@ class Controller
       doc.find("/p:properties/p:endpoints/p:*").each do |e|
         @instance.endpoint e.name.to_s.to_sym => e.text
       end
+      
+      begin
+        hw = eval(doc.find("string(/p:properties/p:handlerwrapper)"))
+        @instance.handlerwrapper = hw
+      rescue => e  
+        @instance.handlerwrapper = DefaultHandlerWrapper
+      end  
+
+      doc.find("/p:properties/p:endpoints/p:*").each do |e|
+        @instance.endpoint e.name.to_s.to_sym => e.text
+      end
 
       @instance.description doc.find("string(/p:properties/p:dsl)")
+    end
+
+    if hw != @instance.handlerwrapper
+      XML::Smart::modify(@directory + 'properties.xml') do |doc|
+        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        node = doc.find("/p:properties/p:handlerwrapper").first
+        node.text = @instance.handlerwrapper.to_s
+      end 
     end
   end# }}}
 

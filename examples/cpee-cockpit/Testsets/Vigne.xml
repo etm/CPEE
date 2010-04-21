@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <testset>
   <positions/>
+  <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
     <string>'some string is here'</string>
     <number>4711</number>

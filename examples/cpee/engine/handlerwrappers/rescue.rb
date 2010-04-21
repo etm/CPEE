@@ -1,4 +1,4 @@
-class DefaultHandler < Wee::HandlerWrapperBase
+class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def initialize(arguments,position,continue)
     @instance = arguments[0].to_i
     @handler_stopped = false
@@ -11,9 +11,24 @@ class DefaultHandler < Wee::HandlerWrapperBase
   def activity_handle(passthrough, endpoint, parameters)
     $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
+  
+    cpee_instance = "http://localhost:9298/#{@instance}/"
+    injection_service = "http://localhost:9290/inject/"
 
-    client = Riddl::Client.new(endpoint)
-
+    puts '='*80
+    pp "Endpoint: #{endpoint}"
+    pp "Position: #{@handler_position}"
+    pp "Instance-Uri: #{cpee_instance}"
+    pp "Injection-Service-Uri: #{injection_service}"
+    pp 'Parameters:'
+    pp parameters
+    puts '='*80
+    if parameters.key?(:service)
+      puts "== performing a call to the injection service"
+      sleep(30)
+    end
+=begin
+    client = Riddl::Client.new(endpoints)
     params = []
     callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
     (parameters[:parameters] || {}).each do |h|
@@ -35,7 +50,8 @@ class DefaultHandler < Wee::HandlerWrapperBase
       return
     end
 
-    @handler_returnValue = result
+=end
+    @handler_returnValue = {:bla => 'blablablubli', :reservation_id => '4711', :price => 17}
     @handler_continue.continue
   end
 

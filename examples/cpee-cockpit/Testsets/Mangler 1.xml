@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <testset>
   <positions/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <context-variables>
     <x>_begin</x>
   </context-variables>

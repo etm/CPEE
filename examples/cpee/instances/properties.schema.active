@@ -2,11 +2,11 @@
   <name type="value" modifiable="false" mutable="false">
     <text/>
   </name>
-  <handler type="value" modifiable="false" mutable="false">
+  <handlerwrapper type="value" modifiable="false" mutable="false">
     <data type="string">
       <param name="pattern">[A-Z][a-zA-Z]*</param>
     </data>  
-  </handler>
+  </handlerwrapper>
   <dsl type="value" modifiable="false" mutable="false">
     <text/>
   </dsl>

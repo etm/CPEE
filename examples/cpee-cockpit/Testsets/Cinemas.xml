@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <testset>
   <positions/>
+  <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
     <prefdate>2010-06-20</prefdate>
     <number_of_persons>4</number_of_persons>

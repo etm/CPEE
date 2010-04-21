@@ -398,6 +398,12 @@ function load_testset() {// {{{
         failure: report_failure
       });
       
+      $.cors({
+        type: "PUT", 
+        url: url + "/properties/values/handlerwrapper",
+        success: function() { load_testset_hw(url,testset); },
+        failure: report_failure
+      });
     }
   });
   running  = false;
@@ -410,6 +416,18 @@ function load_testset_des(url,testset) {// {{{
     $.cors({
       type: "PUT", 
       url: url + "/properties/values/description",
+      data: ({value: val}),
+      failure: report_failure
+    });
+  });
+} // }}}
+
+function load_testset_hw(url,testset) {// {{{
+  $("testset > handlerwrapper",testset).each(function(){
+    var val = $(this).text();
+    $.cors({
+      type: "PUT", 
+      url: url + "/properties/values/handlerwrapper",
       data: ({value: val}),
       failure: report_failure
     });

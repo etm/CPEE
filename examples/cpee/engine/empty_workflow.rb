@@ -1,9 +1,10 @@
 require ::File.dirname(__FILE__) + '/../../../lib/Wee'
-require ::File.dirname(__FILE__) + '/handler_rescue'
-
+Dir[::File.dirname(__FILE__) + "/handlerwrappers/*"].each do |h|
+  require h
+end  
 
 class EmptyWorkflow < Wee
-  handler RescueHandler
+  handlerwrapper DefaultHandlerWrapper
 
   control flow do
     # control flow will be set externally
