@@ -2,7 +2,7 @@ require ::File.dirname(__FILE__) + '/controller'
 
 $controller = {}
 Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.each do |id|
-  $controller[id.to_i] = Controller.new(id)
+  $controller[id.to_i] = Controller.new(id,$url)
 end
 
 class Callback #{{{
@@ -64,6 +64,7 @@ end #}}}
 
 class NewInstance < Riddl::Implementation #{{{
   def response
+    url = @a[0]
     name = @p[0].value
     id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e)).to_i}.sort.last
     id = (id.nil? ? 1 : id  + 1)
@@ -75,7 +76,7 @@ class NewInstance < Riddl::Implementation #{{{
       doc.find("/p:properties/p:name",{'p'=>'http://riddl.org/ns/common-patterns/properties/1.0'}).first.text = name
     end
 
-    $controller[id.to_i] = Controller.new(id)
+    $controller[id.to_i] = Controller.new(id,url)
 
     Riddl::Parameter::Simple.new("id", id)
   end
@@ -145,6 +146,8 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
       $controller[id.to_i].unserialize!
     end
     case @property
+      when 'handlerwrapper'
+        $controller[id.to_i].notify('properties/description/handlerwrapper')
       when 'description'
         $controller[id.to_i].notify('properties/description/change')
       when 'endpoints'

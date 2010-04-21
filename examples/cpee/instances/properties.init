@@ -2,7 +2,7 @@
 <properties xmlns="http://riddl.org/ns/common-patterns/properties/1.0">
   <name/>
   <state>ready</state>
-  <handler>DefaultHandler</handler>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <positions/>
   <context-variables/>
   <endpoints/>

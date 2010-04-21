@@ -1,4 +1,4 @@
-class RescueHandler < Wee::HandlerWrapperBase
+class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def initialize(arguments,position,continue)
     @instance = arguments[0].to_i
     @handler_stopped = false

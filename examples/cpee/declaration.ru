@@ -1,4 +1,10 @@
 #\ -p 9298
+$url  = 'http://localhost:9298'
+$mode = :debug # :production
+$0 = "cpee"
+
+use Rack::ShowStatus
+
 require 'pp'
 require 'fileutils'
 require '../../../riddl/lib/ruby/server'
@@ -8,10 +14,6 @@ require '../../../riddl/lib/ruby/utils/properties'
 require '../../../riddl/lib/ruby/utils/fileserve'
 require '../../../riddl/lib/ruby/utils/declaration'
 require 'engine/implementation'
-
-use Rack::ShowStatus
-$0 = "dist-wee2"
-mode = :debug # :production
 
 run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
   accessible_description true
@@ -27,7 +29,7 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
   on resource do
     run Riddl::Utils::Declaration::Description, description_string if get 'riddl-description-request'
     run Instances if get '*'
-    run NewInstance if post 'instance-name'
+    run NewInstance, $url if post 'instance-name'
     on resource do
       run Info if get
       run DeleteInstance if delete
@@ -36,14 +38,14 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
         properties     = Riddl::Utils::Properties::file(instance + 'properties.xml')
         schema, strans = ::File.exists?(instance + 'properties.schema.active') ? [a_schema,a_strans] : [i_schema,i_strans]
 
-        use Riddl::Utils::Properties::implementation(properties, schema, strans, PropertiesHandler, r[:match].count, mode)
+        use Riddl::Utils::Properties::implementation(properties, schema, strans, PropertiesHandler, r[:match].count, $mode)
       end
       on resource 'notifications' do |r|
         ndir = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/notifications/'
-        use Riddl::Utils::Notifications::Producer::implementation(ndir,xsls, NotificationsHandler, mode)
+        use Riddl::Utils::Notifications::Producer::implementation(ndir,xsls, NotificationsHandler, $mode)
       end
       on resource 'callbacks' do
-        run Callbacks, mode if get
+        run Callbacks, $mode if get
         on resource do
           run ExCallback if get || put || post || delete
         end  

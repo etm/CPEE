@@ -1,6 +1,7 @@
-class DefaultHandler < Wee::HandlerWrapperBase
+class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   def initialize(arguments,position,continue)
     @instance = arguments[0].to_i
+    @url = arguments[1]
     @handler_stopped = false
     @handler_continue = continue
     @handler_position = position

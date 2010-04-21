@@ -21,6 +21,9 @@
   <topic id='properties/endpoints'>
     <event>change</event>
   </topic>
+  <topic id='properties/handlerwrapper'>
+    <event>change</event>
+  </topic>
   <topic id='properties/handlers'>
     <event>change</event>
   </topic>
