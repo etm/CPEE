@@ -30,7 +30,7 @@ class Controller
   def stop# {{{
     t = @instance.stop
     t.run
-    @callbacks.each{|k,c| c.callback(nil)}
+    @callbacks.delete_if{|k,c| c.callback(nil); true}
     t.join
     @thread.join if @thread && @thread.alive?
     @thread = nil 

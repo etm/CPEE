@@ -236,7 +236,6 @@ function monitor_instance_pos() {// {{{
 }// }}}
 
 function monitor_instance_vote(notification) {// {{{
-  try {
   var parts = notification.split(';');
   var activity;
   var callback;
@@ -251,9 +250,6 @@ function monitor_instance_vote(notification) {// {{{
   ctv.append("<tr id='vote_to_continue_" + activity + "'><td>Position:</td><td>" + activity + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");vote_continue(\"" + activity + "\",\"" + callback + "\");'>vote to continue</button></td></tr>");
   $('#activity_' + activity).addClass("vote");
   $('#graph_' + activity).each(function(a,b){b.setAttribute("class","vote activities");});
-  } catch(e) {
-    console.log(e.toString());
-  }  
 }// }}}
 
 function monitor_instance_state() {// {{{
@@ -275,6 +271,7 @@ function monitor_instance_state() {// {{{
         var but = "";
         if (res == "ready" || res == "stopped") {
           but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
+          vote_clean();
         }
         if (res == "running") {
           but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
@@ -301,7 +298,7 @@ function stop_instance() {// {{{
   $.cors({
     type: "PUT", 
     url: url + "/properties/values/state",
-    data: ({value: "stopped"}),
+    data: ({value: "stopping"}),
     failure: report_failure
   });
 }// }}}
@@ -619,6 +616,16 @@ function vote_continue(activity,callback) {
   $('#activity_' + activity).removeClass("vote");
   $('#graph_' + activity).each(function(a,b){b.setAttribute("class","activities");});
   $('#vote_to_continue_' + activity).remove();
+}
+
+function vote_clean() {
+  try {
+  $('span.vote').removeClass("vote");
+  $('svg use.vote').each(function(a,b){b.setAttribute("class","activities");});
+  $('#votes').empty();
+  } catch(e) {
+    alert(e.toString());
+  }
 }
 
 function report_failure(){}

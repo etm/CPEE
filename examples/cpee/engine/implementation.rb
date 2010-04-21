@@ -135,7 +135,7 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
       XML::Smart::open(@properties) do |doc|
         doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
         state = doc.find("string(/p:properties/p:state)")
-        if state == 'stopped'
+        if state == 'stopping'
           $controller[id.to_i].stop
         end
         if state == 'running'
