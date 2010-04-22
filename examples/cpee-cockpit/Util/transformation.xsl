@@ -20,38 +20,20 @@
       <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
     </xsl:call-template>
     <xsl:if test="name()='call'">
-      <xsl:text>activity :</xsl:text>
-      <xsl:choose>  
-        <xsl:when test="contains(@id,'#{')">
-          <xsl:text>"</xsl:text>
-          <xsl:value-of select="@id"/>
-          <xsl:text>"</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="@id"/>
-        </xsl:otherwise>
-      </xsl:choose>  
-      <xsl:text>, :call, :</xsl:text>
+      <xsl:text>activity [</xsl:text>
+      <xsl:value-of select="translate(@id,'_:',',')"/>
+      <xsl:text>], :call, :</xsl:text>
       <xsl:value-of select="@endpoint"/>
-      <xsl:apply-templates select="d:parameter"/>
+      <xsl:apply-templates select="d:parameters"/>
       <xsl:apply-templates select="d:manipulate" mode="part-of-call">
         <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
       </xsl:apply-templates>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='manipulate'">
-      <xsl:text>activity :</xsl:text>
-      <xsl:choose>  
-        <xsl:when test="contains(@id,'#{')">
-          <xsl:text>"</xsl:text>
-          <xsl:value-of select="@id"/>
-          <xsl:text>"</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="@id"/>
-        </xsl:otherwise>
-      </xsl:choose>  
-      <xsl:text>, :manipulate</xsl:text>
+      <xsl:text>activity [</xsl:text>
+      <xsl:value-of select="translate(@id,'_:',',')"/>
+      <xsl:text>], :manipulate</xsl:text>
       <xsl:call-template name="print-content">
         <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
       </xsl:call-template>
@@ -183,14 +165,18 @@
     <xsl:call-template name="print-newline"/>
   </xsl:template>
 
-  <xsl:template match="d:parameter">
+  <xsl:template match="d:parameters">
+    <xsl:apply-templates select="d:*" mode="parameter"/>
+  </xsl:template>
+    
+  <xsl:template match="d:*" mode="parameter">
     <xsl:text>, :</xsl:text>
-    <xsl:value-of select="@name"/>
+    <xsl:value-of select="name()"/>
     <xsl:text> => </xsl:text>
     <xsl:choose>  
       <xsl:when test="count(*) > 0">
         <xsl:text>[</xsl:text>
-        <xsl:apply-templates select="d:parameter" mode="sub-parameter"/>
+        <xsl:apply-templates select="d:*" mode="sub-parameter"/>
         <xsl:text>]</xsl:text>
       </xsl:when>
       <xsl:otherwise>
@@ -201,9 +187,9 @@
     </xsl:choose>  
   </xsl:template>
   
-  <xsl:template match="d:parameter" mode="sub-parameter">
+  <xsl:template match="d:*" mode="sub-parameter">
     <xsl:text> { :</xsl:text>
-    <xsl:value-of select="@name"/>
+    <xsl:value-of select="name()"/>
     <xsl:text> => </xsl:text>
     <xsl:value-of select="text()"/>
     <xsl:text> }</xsl:text>

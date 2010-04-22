@@ -132,10 +132,19 @@ class Wee
     # endpoint: (only with :call) ep of the service
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters)
+      if position.is_a?(Array) && position.find{|p| !p.is_a?(Fixnum)}
+        position = a.join('_')
+      else
+        raise "position has to be an Array of one or more Integers"
+      end  
+
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
       Thread.current[:continue] = Continue.new
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, Thread.current[:continue]
       @__wee_context_change = false
+
+      wp = Wee::Position.new(position, :at, nil)
+      @__wee_positions << wp
       begin
         case type
           when :manipulate
@@ -150,7 +159,7 @@ class Wee
           when :call
             handlerwrapper.vote_sync_before
             passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
-            ret_value = perform_external_call position, passthrough, handlerwrapper, @__wee_endpoints[endpoint], *parameters
+            ret_value = perform_external_call wp, passthrough, handlerwrapper, @__wee_endpoints[endpoint], *parameters
             if block_given? && self.state != :stopping && self.state != :stopped && !Thread.current[:nolongernecessary]
               handlerwrapper.inform_activity_manipulate
               yield ret_value
@@ -163,6 +172,9 @@ class Wee
         else
           raise "Invalid activity type #{type}. Only :manipulate or :call allowed"
         end
+        if self.state != :stopping && self.state != :stopped
+          @__wee_positions.delete wp
+        end  
       rescue => err
         refreshcontext handlerwrapper
         handlerwrapper.inform_activity_failed err
@@ -271,12 +283,12 @@ class Wee
       end
     end# }}}
 
-    def pre_test(&blk)
+    def pre_test(&blk)# {{{
       [blk, :pre_test]
-    end
-    def post_test(&blk)
+    end# }}}
+    def post_test(&blk)# {{{
       [blk, :post_test]
-    end
+    end# }}}
 
   private
     def trigger_continue(thread)# {{{
@@ -298,10 +310,8 @@ class Wee
         return branch[:branch_search] || @__wee_search # is activity part of a branch and in search mode?
       end
     end# }}}
-    def perform_external_call(position, passthrough, handlerwrapper, endpoint, *parameters)
+    def perform_external_call(wp, passthrough, handlerwrapper, endpoint, *parameters)
       params = { }
-      wp = Wee::Position.new(position, :at, nil)
-      @__wee_positions << wp
       parameters.each do |p|
         if p.class == Hash && parameters.length == 1
           params = p
@@ -320,8 +330,6 @@ class Wee
       if self.state == :stopping || self.state == :stopped
         handlerwrapper.activity_stop
         wp.passthrough = handlerwrapper.activity_passthrough_value
-      else
-        @__wee_positions.delete wp
       end  
       Thread.current[:nolongernecessary] || (self.state == :stopping || self.state == :stopped) ? nil : handlerwrapper.activity_result_value
     end

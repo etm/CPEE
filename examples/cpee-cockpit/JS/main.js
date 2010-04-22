@@ -191,7 +191,7 @@ function monitor_instance_dsl() {// {{{
         var ctv = $("#areadsl");
         ctv.empty();
         res = format_code(res,false,true);
-        res = res.replace(/activity\s+:("?)([^",]+)("?)/g,"<span class='activities' id=\"activity_$2\">activity :$1$2$3</span>");
+        res = res.replace(/activity\s+\[([^\]]+)\]/g,"<span class='activities' id=\"activity_$1\">activity [$1]</span>");
 
         ctv.append(res);
         $.cors({
@@ -578,7 +578,7 @@ function sym_click(node, shifting, classes) { // {{{
 */
 
 //function format_visual(what,state,class) {
-function format_visual() {
+function format_visual_add() {
   $('.activities').each(function(a,b){ 
     var id = b.getAttribute("id").replace(/#\{[^}]*\}/g,'[a-zA-Z0-9_]*');
     var class = b.getAttribute("class");

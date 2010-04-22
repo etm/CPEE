@@ -23,25 +23,14 @@
       <parallel type="nowait">
         <parallel_branch>
           <call id="call_01" endpoint="wo_pattern">
-            <parameter name="service-operation">so_1</parameter>
-            <parameter name="state-controlflow">execute</parameter>
-            <parameter name="constraint">
-              <parameter name="constraint1">
-                <parameter name="xpath">//some_property</parameter>
-                <parameter name="comparator">==</parameter>
-                <parameter name="fix-value">Time.new('20:15')</parameter>
-              </parameter>
-              <parameter name="constraint2">
-                <parameter name="xpath">//some_group/{@string}</parameter>
-                <parameter name="comparator">!=</parameter>
-                <parameter name="variable">wo_patern</parameter>
-              </parameter>
-              <parameter name="constraint3">
-                <parameter name="xpath">/some_group/some_other_property</parameter>
-                <parameter name="comparator">!=</parameter>
-                <parameter name="variable">one_more_context</parameter>
-              </parameter>
-            </parameter>
+            <parameters>
+              <service-operation>so_1</parameter>
+              <state-controlflow>execute</parameter>
+              <constraint>
+                <constraint xpath="
+                <constraint xpath="
+                <constraint xpath="
+              </constraint>  
             <!-- wenn kein context oder endpouint dann fix-value -->
             <input name="in_context" variable="string"/>
             <input name="in_fix_num" fix-value="5"/>

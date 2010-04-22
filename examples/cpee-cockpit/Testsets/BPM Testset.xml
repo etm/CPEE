@@ -17,38 +17,44 @@
     <approve>http://www.pri.univie.ac.at/~mangler/services/approval.php</approve>
   </endpoints>
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="a1" endpoint="bookAir">
-      <parameter name="method">post</parameter>
-      <parameter name="parameters">
-        <parameter name="from">@from</parameter>
-        <parameter name="to">@to</parameter>
-        <parameter name="persons">@persons</parameter>
-      </parameter>
+    <call id="1" endpoint="bookAir">
+      <parameters>
+        <method>post</method>
+        <parameters>
+          <from>@from</from>
+          <to>@to</to>
+          <persons>@persons</persons>
+        </parameters>
+      </parameters>
       <manipulate output="result">  @airline = result.value('id')
   @costs += result.value('costs').to_f</manipulate>
     </call>
     <parallel>
       <loop pre_test="@persons > 0">
         <parallel_branch pass="@persons" local="p">
-          <call id="a2_#{p}" endpoint="bookHotel">
-            <parameter name="method">post</parameter>
-            <parameter name="parameters">
-              <parameter name="to">@to</parameter>
-            </parameter>
+          <call id="2_p" endpoint="bookHotel">
+            <parameters>
+              <method>post</method>
+              <parameters>
+                <to>@to</to>
+              </parameters>
+            </parameters>
             <manipulate output="result">        @hotels &lt;&lt; result.value('id')
         @costs += result.value('costs').to_f</manipulate>
           </call>
         </parallel_branch>
-        <manipulate id="a3">      @persons -= 1</manipulate>  
+        <manipulate id="3">      @persons -= 1</manipulate>  
       </loop>  
     </parallel>  
     <choose>
       <alternative condition="@costs > 700">
-        <call id="a4" endpoint="approve">
-          <parameter name="method">post</parameter>
-          <parameter name="parameters">
-            <parameter name="costs">@costs</parameter>
-          </parameter>
+        <call id="4" endpoint="approve">
+          <parameters>
+            <method>post</method>
+            <parameters>
+              <costs>@costs</costs>
+            </parameters>
+          </parameters>
         </call>  
       </alternative>
     </choose>
@@ -76,38 +82,20 @@
           <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
         </xsl:call-template>
         <xsl:if test="name()='call'">
-          <xsl:text>activity :</xsl:text>
-          <xsl:choose>  
-            <xsl:when test="contains(@id,'#{')">
-              <xsl:text>"</xsl:text>
-              <xsl:value-of select="@id"/>
-              <xsl:text>"</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="@id"/>
-            </xsl:otherwise>
-          </xsl:choose>  
-          <xsl:text>, :call, :</xsl:text>
+          <xsl:text>activity [</xsl:text>
+          <xsl:value-of select="translate(@id,'_:',',')"/>
+          <xsl:text>], :call, :</xsl:text>
           <xsl:value-of select="@endpoint"/>
-          <xsl:apply-templates select="d:parameter"/>
+          <xsl:apply-templates select="d:parameters"/>
           <xsl:apply-templates select="d:manipulate" mode="part-of-call">
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
           </xsl:apply-templates>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
         <xsl:if test="name()='manipulate'">
-          <xsl:text>activity :</xsl:text>
-          <xsl:choose>  
-            <xsl:when test="contains(@id,'#{')">
-              <xsl:text>"</xsl:text>
-              <xsl:value-of select="@id"/>
-              <xsl:text>"</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="@id"/>
-            </xsl:otherwise>
-          </xsl:choose>  
-          <xsl:text>, :manipulate</xsl:text>
+          <xsl:text>activity [</xsl:text>
+          <xsl:value-of select="translate(@id,'_:',',')"/>
+          <xsl:text>], :manipulate</xsl:text>
           <xsl:call-template name="print-content">
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
           </xsl:call-template>
@@ -239,14 +227,18 @@
         <xsl:call-template name="print-newline"/>
       </xsl:template>
 
-      <xsl:template match="d:parameter">
+      <xsl:template match="d:parameters">
+        <xsl:apply-templates select="d:*" mode="parameter"/>
+      </xsl:template>
+        
+      <xsl:template match="d:*" mode="parameter">
         <xsl:text>, :</xsl:text>
-        <xsl:value-of select="@name"/>
+        <xsl:value-of select="name()"/>
         <xsl:text> => </xsl:text>
         <xsl:choose>  
           <xsl:when test="count(*) > 0">
             <xsl:text>[</xsl:text>
-            <xsl:apply-templates select="d:parameter" mode="sub-parameter"/>
+            <xsl:apply-templates select="d:*" mode="sub-parameter"/>
             <xsl:text>]</xsl:text>
           </xsl:when>
           <xsl:otherwise>
@@ -257,9 +249,9 @@
         </xsl:choose>  
       </xsl:template>
       
-      <xsl:template match="d:parameter" mode="sub-parameter">
+      <xsl:template match="d:*" mode="sub-parameter">
         <xsl:text> { :</xsl:text>
-        <xsl:value-of select="@name"/>
+        <xsl:value-of select="name()"/>
         <xsl:text> => </xsl:text>
         <xsl:value-of select="text()"/>
         <xsl:text> }</xsl:text>
