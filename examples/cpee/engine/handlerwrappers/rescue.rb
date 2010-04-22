@@ -1,6 +1,7 @@
 class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def initialize(arguments,position,continue)
     @instance = arguments[0].to_i
+    @url = arguments[1]
     @handler_stopped = false
     @handler_continue = continue
     @handler_position = position
@@ -12,7 +13,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
   
-    cpee_instance = "http://localhost:9298/#{@instance}/"
+    cpee_instance = "#{@url}/#{@instance}/"
     injection_service = "http://localhost:9290/inject/"
 
     puts '='*80
