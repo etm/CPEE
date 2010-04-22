@@ -22,9 +22,9 @@
     <selectedcinema>balbla</selectedcinema>
     <repository>http://localhost:9290/groups</repository>
   </endpoints>
-  <description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:flow="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <call id="book_movie" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
-      <repository variable="repository"/>
+      <repository endpoint="repository"/>
       <assign-endpoint id="selectedcinema" use="bla"/>
       <input name="date" variable="prefdate"/>
       <input name="number_of_persons" variable="number_of_persons"/>
@@ -36,7 +36,7 @@
       <output name="starting_time" variable="start_time"/>
     </call>
     <call id="book_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
-      <repository variable="repository"/>
+      <repository endpoint="repository"/>
       <input name="quantity" variable="pop_quant"/>
       <input name="reservation_id" variable="res_id"/>
       <output name="order_number" variable="pop_order_num"/>
@@ -46,7 +46,7 @@
       <alternative>
         <condition test="pop_price" comparator=">" fix-value="10"/>
         <call id="unbook_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
-          <repository variable="repository"/>
+          <repository endpoint="repository"/>
           <input name="order_number" variable="pop_order_num"/>
         </call>
       </alternative>
@@ -576,12 +576,9 @@
           <xsl:value-of select="@service-operation"/>
           <xsl:text>', :controlflow => '</xsl:text>
           <xsl:value-of select="@state-controlflow"/>
-          <xsl:text>', :repository => </xsl:text>
-          <xsl:call-template name="resolve-variable">
-            <xsl:with-param name="var" select="child::flow:repository/@variable"/>
-            <xsl:with-param name="operation" select="'get'"/>
-          </xsl:call-template>
-          <xsl:text>}</xsl:text>
+          <xsl:text>', :repository => endpoints[:</xsl:text>
+          <xsl:value-of select="child::flow:repository/@endpoint"/>
+          <xsl:text>]}</xsl:text>
         </xsl:if>
         <xsl:if test="string(@group-by)">
           <xsl:text>, :group => {:group_selector => '</xsl:text>
@@ -659,7 +656,7 @@
                 </xsl:choose>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:text>") # ERROR during assignment of output</xsl:text>
+                <xsl:text># ERROR during assignment of output</xsl:text>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
