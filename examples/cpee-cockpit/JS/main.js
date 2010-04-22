@@ -190,8 +190,8 @@ function monitor_instance_dsl() {// {{{
         save_dsl = res;
         var ctv = $("#areadsl");
         ctv.empty();
-        res = format_code(res,false);
-        res = res.replace(/activity\s+:([\w_]+)/g,"<span class='activities' id=\"activity_$1\">activity :$1</span>");
+        res = format_code(res,false,true);
+        res = res.replace(/activity\s+:("?)([^",]+)("?)/g,"<span class='activities' id=\"activity_$2\">activity :$1$2$3</span>");
 
         ctv.append(res);
         $.cors({
@@ -241,9 +241,9 @@ function monitor_instance_vote(notification) {// {{{
   var callback;
   $.each(parts,function(i,p){
     var ma;
-    if (ma = p.match(/activity: :([a-zA-Z-0-9_]+)/))
+    if (ma = p.match(/activity: :([^,]+)/))
       activity = ma[1];
-    if (ma = p.match(/callback: "([a-zA-Z-0-9_]+)"/))
+    if (ma = p.match(/callback: "([^,]+)"/))
       callback = ma[1];
   });
   var ctv = $("#votes");
@@ -481,11 +481,11 @@ function sym_click(node) { // {{{
       table.append('<tr><td>ID:<td><td class="long">' + $(node).attr('id') + '</td></tr>');
       table.append('<tr><td>Endpoint:<td><td class="long">' + $(node).attr('endpoint') + '</td></tr>');
       if ($('manipulate',node).text())
-        table.append('<tr><td>Manipulate:<td><td class="long">' + format_code($('manipulate',node).text(),true) + '</td></tr>');
+        table.append('<tr><td>Manipulate:<td><td class="long">' + format_code($('manipulate',node).text(),true,false) + '</td></tr>');
       break;
     case 'manipulate':
       table.append('<tr><td>ID:<td><td class="long">' + $(node).attr('id') + '</td></tr>');
-      table.append('<tr><td>Manipulate:<td><td class="long">' + format_code($(node).text(),true) + '</td></tr>');
+      table.append('<tr><td>Manipulate:<td><td class="long">' + format_code($(node).text(),true,false) + '</td></tr>');
       break;
     case 'loop':
     case 'alternative':
@@ -551,7 +551,7 @@ function sym_click(node, shifting, classes) { // {{{
       break;
     case 'manipulate':
       if($.trim($(node).text()) != "")
-        row.append(shift_string+'<td/><td>Code:</td><td class="long" colspan="0">' + format_code($(node).text(),true) + '</td>');
+        row.append(shift_string+'<td/><td>Code:</td><td class="long" colspan="0">' + format_code($(node).text(),true,false) + '</td>');
       show_childs = {'instruction':true};
       break;
     case 'loop':
@@ -577,9 +577,19 @@ function sym_click(node, shifting, classes) { // {{{
 } // }}}
 */
 
-function format_code(res,skim) {// {{{
+//function format_visual(what,state,class) {
+function format_visual() {
+  $('.activities').each(function(a,b){ 
+    var id = b.getAttribute("id").replace(/#\{[^}]*\}/g,'[a-zA-Z0-9_]*');
+    var class = b.getAttribute("class");
+    console.log(id);
+  });
+}
+
+function format_code(res,skim,lnums) {// {{{
   res = res.replace(/\t/g,'  ');
   res = res.replace(/\r/g,'');
+  res = res.replace(/\n\s*$/m,'');
 
   if (skim) {
     var l = res.match(/^ */);
@@ -588,10 +598,13 @@ function format_code(res,skim) {// {{{
   }
 
   var m;
+  var l = 1;
   while (m = res.match(/^ +|^(?!<div style=)|^\z/m)) {
     m = m[0];
-    var tm = (m.length + 2) * 0.6 + 2 * 0.6;
-    res = res.replace(/^ +|^(?!<div style=)|^\z/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + "&#160;".repeat(m.length));
+    var tm = (m.length + 2) * 0.6 + 2 * 0.6 + 4 * 0.6;
+    var ln = (lnums ? $.sprintf("%03d",l) + ':&#160;' : '');
+    res = res.replace(/^ +|^(?!<div style=)|^\z/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + ln + "&#160;".repeat(m.length));
+    l++;
   }
   res = res.replace(/  /g," &#160;");
   res = res.replace(/\n\z/g,"\n<div>&#160;");

@@ -28,6 +28,10 @@ span.active {
   font-weight: bold;
   color: #ff0000;
 }
+span.vote {
+  font-weight: bold;
+  color: #00ff00;
+}
 
 table.layout {
   width: 100%;
@@ -171,7 +175,6 @@ svg use.active circle {
   fill: #ff0000;
   fill-opacity:1;
 }  
-
 svg use.vote circle {
   fill: #00ff00;
   fill-opacity:1;
