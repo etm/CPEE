@@ -28,7 +28,7 @@ class Wee
     end
   end# }}}
   class HandlerWrapperBase# {{{
-    def initialize(args,activity=nil,continue=nil); end
+    def initialize(args,position=nil,lay=nil,continue=nil); end
 
     def activity_handle(passthrough, endpoint, parameters); end
     def activity_result_value; end
@@ -131,20 +131,25 @@ class Wee
     #   - :call - order the handlerwrapper to perform a service call
     # endpoint: (only with :call) ep of the service
     # parameters: (only with :call) service parameters
-    def activity(position, type, endpoint=nil, *parameters)
-      if position.is_a?(Array) && position.find{|p| !p.is_a?(Fixnum)}
-        position = a.join('_')
-      else
-        raise "position has to be an Array of one or more Integers"
-      end  
+    def activity(position, lay, type, endpoint=nil, *parameters)
+      if (position.is_a?(String) || position.is_a?(Symbol)) &&  position.to_s =~ /^[a-zA-Z][a-zA-Z0-9_]+$/ && (lay.is_a?(String) || lay.is_a?(Symbol) || lay.nil?)
+        position = position.to_s
+        lay = lay.to_s if lay.is_a?(Symbol)
+      else  
+        self.state = :stopping
+        handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
+        handlerwrapper.inform_syntax_error(Exception.new("position (#{position}) and lay (#{lay}) not valid IDs (in the XML sense)"))
+      end
 
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
+
       Thread.current[:continue] = Continue.new
-      handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, Thread.current[:continue]
+      handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, lay, Thread.current[:continue]
       @__wee_context_change = false
 
       wp = Wee::Position.new(position, :at, nil)
       @__wee_positions << wp
+
       begin
         case type
           when :manipulate
@@ -347,7 +352,7 @@ class Wee
     def state=(newState)# {{{
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
       self.search @__wee_search_positions_original
-      handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, nil, nil
+      handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
       @__wee_state = newState
       handlerwrapper.inform_state @__wee_state
       if newState == :stopping
@@ -467,7 +472,7 @@ class Wee
               instance_eval(@__wee_wfsource)
             rescue SyntaxError => err
               self.state = :stopping
-              handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, nil, nil
+              handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
               handlerwrapper.inform_syntax_error(err)
             end
           end

@@ -1,17 +1,18 @@
 class DefaultHandlerWrapper < Wee::HandlerWrapperBase
-  def initialize(arguments,position,continue)
+  def initialize(arguments,position,lay,continue)
     @instance = arguments[0].to_i
     @url = arguments[1]
     @handler_stopped = false
     @handler_continue = continue
     @handler_position = position
+    @handler_lay = lay
     @handler_returnValue = nil
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, endpoint, parameters)
     $controller[@instance].position
-    $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
+    $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
 
     client = Riddl::Client.new(endpoint)
 
@@ -32,7 +33,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
     @handler_returnValue = ''
     if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
-      $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,:http)
+      $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
       return
     end
 
@@ -73,13 +74,13 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
   def inform_activity_done
     $controller[@instance].position
-    $controller[@instance].notify("running/activity_done", :activity => @handler_position)
+    $controller[@instance].notify("running/activity_done", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_manipulate
-    $controller[@instance].notify("running/activity_manipulating", :activity => @handler_position)
+    $controller[@instance].notify("running/activity_manipulating", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_failed(err)
-    $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :message => err.message)
+    $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
   end
   def inform_syntax_error(err)
     puts err.message
@@ -98,11 +99,11 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def vote_sync_after
-    voteid = $controller[@instance].call_vote("running/syncing_after", :activity => @handler_position)
+    voteid = $controller[@instance].call_vote("running/syncing_after", :activity => @handler_position, :lay => @handler_lay)
     $controller[@instance].vote_result(voteid)
   end
   def vote_sync_before
-    voteid = $controller[@instance].call_vote("running/syncing_before", :activity => @handler_position)
+    voteid = $controller[@instance].call_vote("running/syncing_before", :activity => @handler_position, :lay => @handler_lay)
     $controller[@instance].vote_result(voteid)
   end
 end

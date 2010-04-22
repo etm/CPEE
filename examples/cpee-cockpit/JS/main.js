@@ -190,8 +190,13 @@ function monitor_instance_dsl() {// {{{
         save_dsl = res;
         var ctv = $("#areadsl");
         ctv.empty();
+
         res = format_code(res,false,true);
-        res = res.replace(/activity\s+\[([^\]]+)\]/g,"<span class='activities' id=\"activity_$1\">activity [$1]</span>");
+        var m;
+        while (m = res.match(/activity\s+\[([^\]]+)\](?!<\/span)/)) {
+          m = m[1];
+          res = res.replace(/activity\s+\[([^\]]+)\](?!<\/span)/,"<span class='activities' id=\"activity-" + m.replace(/,/,'_') + "\">activity [" + m + "]</span>");
+        }
 
         ctv.append(res);
         $.cors({
@@ -220,9 +225,10 @@ function monitor_instance_pos() {// {{{
       $('span.active').removeClass("active");
       $("svg use.active").each(function(a,b){b.setAttribute("class","activities");});
       values.each(function(){
-        temp += "<tr><td>Position:</td><td>" + this.nodeName  + "</td><td>⇒</td><td>(\"" + $(this).text() + "\")</td></tr>";
-        $('#activity_' + this.nodeName).addClass("active");
-        $('#graph_' + this.nodeName).each(function(a,b){b.setAttribute("class","active activities");});
+        var pos = this.nodeName.replace(/activity-/,'');
+        temp += "<tr><td>Position:</td><td>" + pos  + "</td><td>⇒</td><td>(\"" + $(this).text() + "\")</td></tr>";
+        $('#activity-' + pos).addClass("active");
+        $('#graph-' + pos).each(function(a,b){b.setAttribute("class","active activities");});
       });
 
       if (temp != save_pos) {
@@ -241,15 +247,15 @@ function monitor_instance_vote(notification) {// {{{
   var callback;
   $.each(parts,function(i,p){
     var ma;
-    if (ma = p.match(/activity: :([^,]+)/))
+    if (ma = p.match(/activity: "([^,]+)"/))
       activity = ma[1];
     if (ma = p.match(/callback: "([^,]+)"/))
       callback = ma[1];
   });
   var ctv = $("#votes");
-  ctv.append("<tr id='vote_to_continue_" + activity + "'><td>Position:</td><td>" + activity + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");vote_continue(\"" + activity + "\",\"" + callback + "\");'>vote to continue</button></td></tr>");
-  $('#activity_' + activity).addClass("vote");
-  $('#graph_' + activity).each(function(a,b){b.setAttribute("class","vote activities");});
+  ctv.append("<tr id='vote_to_continue_" + activity + "'><td>Vote:</td><td>" + activity + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");vote_continue(\"" + activity + "\",\"" + callback + "\");'>vote to continue</button></td></tr>");
+  $('#activity-' + activity).addClass("vote");
+  $('#graph-' + activity).each(function(a,b){b.setAttribute("class","vote activities");});
 }// }}}
 
 function monitor_instance_state() {// {{{
@@ -498,85 +504,6 @@ function sym_click(node) { // {{{
   }
 } // }}}
 
-/* ralph version
-function sym_click(node, shifting, classes) { // {{{
-  var table = $('#tabledetails');
-  var shift_string = "";
-  var show_childs = {};
-  var row = $('<tr/>');
-  row.addClass(classes); 
-  var sym = $('<button>-</button>');
-  (typeof classes == "undefined") ? classes = Math.random().toString().replace(".", "") : classes = classes + " " + Math.random().toString().replace(".", "");
-  for(var i = 0; i < shifting; i++) { shift_string = shift_string + "<td/>"; }
-  if(typeof shifting == "undefined" || shifting == 0) { 
-    shifting = 0; 
-    table.empty(); 
-    row.append('<td class="top"><b>Element:</b></td><td class="long" colspan="0">' + node.nodeName + '</td>');
-  } else {
-    sym.click(function() {
-      classes = classes.replace(" ", ".");
-      if(classes.charAt(0) != '.') classes = '.'+classes; 
-      if($(this).text() == '-') {
-        $(classes).hide();
-        $(this).text('+');
-      } else {
-        $(this).text('-');
-        $(classes).show();
-        $(classes).each(function() { $('> td > button', this).each(function() {$(this).text("-");$(this).click();});});
-      }
-    });
-    var temp = $('<td/>');
-    temp.append(sym);
-    row.append(shift_string);
-    row.append(temp);
-    row.append('<td class="long" colspan="0"><b>' + node.nodeName + '</b></td>');
-  }
-  
-  table.append(row);
-  for(var i = 0; i < node.attributes.length; i++) {
-    row = $('<tr/>');
-    row.addClass(classes);
-    row.append(shift_string+'<td/><td>'+node.attributes[i].name.charAt(0).toUpperCase() + node.attributes[i].name.slice(1)+':</td><td class="long" colspan="0">'+node.attributes[i].value+'</td>');
-    table.append(row);
-  }
-  row = $('<tr>');
-  row.addClass(classes);
-  switch(node.nodeName) {
-    case 'parameter':
-      if($('>*', node).size() == 0)
-        row.append(shift_string+'<td/><td>Value:</td><td class="long" colspan="0">' + $(node).text() + '</td>');
-      show_childs = {'parameter':true};
-    case 'call':
-      show_childs = {'parameter':true, 'manipulate':true, 'input':true, 'output':true, 'group':true, 'condition':true};
-      break;
-    case 'manipulate':
-      if($.trim($(node).text()) != "")
-        row.append(shift_string+'<td/><td>Code:</td><td class="long" colspan="0">' + format_code($(node).text(),true,false) + '</td>');
-      show_childs = {'instruction':true};
-      break;
-    case 'loop':
-    case 'alternative':
-      show_childs = {'group':true, 'condition':true};
-      break;
-    case 'parallel':
-      if($(node).attr('wait') == null)
-        row.append(shift_string+'<td/><td>Wait:</td><td class="long" colspan="0">Wait for all bracnhes</td>');
-      break;
-    case 'group':
-    case 'condition':
-      show_childs = {'group':true, 'condition':true};
-      break;
-
-  }
-  table.append(row);
-  $('>*', node).each( function () { 
-    if(show_childs[this.nodeName])
-      sym_click(this, shifting+1, classes);
-  });
-  sym.click();
-} // }}}
-*/
-
 //function format_visual(what,state,class) {
 function format_visual_add() {
   $('.activities').each(function(a,b){ 
@@ -591,24 +518,26 @@ function format_code(res,skim,lnums) {// {{{
   res = res.replace(/\r/g,'');
   res = res.replace(/\n\s*$/m,'');
 
-  if (skim) {
-    var l = res.match(/^ */);
-    l = l[0].length;
-    res = res.replace(new RegExp("^ {" + l + "}",'mg'),'');
-  }
+  if (!res.match(/^\s*$/m)) {
+    if (skim) {
+      var l = res.match(/^ */);
+      l = l[0].length;
+      res = res.replace(new RegExp("^ {" + l + "}",'mg'),'');
+    }
 
-  var m;
-  var l = 1;
-  while (m = res.match(/^ +|^(?!<div style=)|^\z/m)) {
-    m = m[0];
-    var tm = (m.length + 2) * 0.6 + 2 * 0.6 + 4 * 0.6;
-    var ln = (lnums ? $.sprintf("%03d",l) + ':&#160;' : '');
-    res = res.replace(/^ +|^(?!<div style=)|^\z/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + ln + "&#160;".repeat(m.length));
-    l++;
-  }
-  res = res.replace(/  /g," &#160;");
-  res = res.replace(/\n\z/g,"\n<div>&#160;");
-  res = res.replace(/\n|\z/g,"</div>\n");
+    var m;
+    var l = 1;
+    while (m = res.match(/^ +|^(?!<div style=)|^\z/m)) {
+      m = m[0];
+      var tm = (m.length + 2) * 0.6 + 2 * 0.6 + 4 * 0.6;
+      var ln = (lnums ? $.sprintf("%03d",l) + ':&#160;' : '');
+      res = res.replace(/^ +|^(?!<div style=)|^\z/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + ln + "&#160;".repeat(m.length));
+      l++;
+    }
+    res = res.replace(/  /g," &#160;");
+    res = res.replace(/\n\z/g,"\n<div>&#160;");
+    res = res.replace(/\n|\z/g,"</div>\n");
+  }  
   return res;
 }// }}}
 
@@ -625,8 +554,8 @@ function vote_continue(activity,callback) {//{{{
     data: ({continue: "true"}),
     failure: report_failure
   });
-  $('#activity_' + activity).removeClass("vote");
-  $('#graph_' + activity).each(function(a,b){b.setAttribute("class","activities");});
+  $('#activity-' + activity).removeClass("vote");
+  $('#graph-' + activity).each(function(a,b){b.setAttribute("class","activities");});
   $('#vote_to_continue_' + activity).remove();
 }//}}}
 

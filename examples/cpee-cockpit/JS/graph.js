@@ -145,7 +145,7 @@ function WFGraph (xml, container) {
 
     var attrs;
     if (id) {
-      attrs = {'id': 'graph_' + node.getAttribute("id"), 'class': 'activities', 'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30};
+      attrs = {'id': 'graph-' + node.getAttribute("id"), 'class': 'activities', 'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30};
       var title = document.createElementNS(svgNS, "title");
       title.appendChild(document.createTextNode(node.getAttribute('id')));
       use.appendChild(title);

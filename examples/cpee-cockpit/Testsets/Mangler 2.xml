@@ -17,7 +17,7 @@
     <approve>http://www.pri.univie.ac.at/~mangler/services/approval.php</approve>
   </endpoints>
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="1" endpoint="bookAir">
+    <call id="a1" endpoint="bookAir">
       <parameters>
         <method>post</method>
         <parameters>
@@ -32,7 +32,7 @@
     <parallel>
       <loop pre_test="@persons > 0">
         <parallel_branch pass="@persons" local="p">
-          <call id="2_p" endpoint="bookHotel">
+          <call id="a2" lay="#{p}" endpoint="bookHotel">
             <parameters>
               <method>post</method>
               <parameters>
@@ -43,11 +43,11 @@
         @costs += result.value('costs').to_f</manipulate>
           </call>
         </parallel_branch>
-        <manipulate id="3">      @persons -= 1</manipulate>  
+        <manipulate id="a3">      @persons -= 1</manipulate>  
       </loop>  
       <loop pre_test="@persons > 0">
         <parallel_branch pass="@persons" local="p">
-          <call id="4_p" endpoint="bookHotel">
+          <call id="a4" lay="#{p}" endpoint="bookHotel">
             <parameters>
               <method>post</method>
               <parameters>
@@ -59,7 +59,7 @@
           </call>
         </parallel_branch>
         <parallel_branch pass="@persons" local="p">
-          <call id="5_p" endpoint="bookHotel">
+          <call id="a5" lay="#{p}" endpoint="bookHotel">
             <parameters>
               <method>post</method>
               <parameters>
@@ -70,12 +70,12 @@
         @costs += result.value('costs').to_f</manipulate>
           </call>
         </parallel_branch>
-        <manipulate id="6">      @persons -= 1</manipulate>  
+        <manipulate id="a6">      @persons -= 1</manipulate>  
       </loop>  
     </parallel>  
     <choose>
       <alternative condition="@costs > 700">
-        <call id="7" endpoint="approve">
+        <call id="a7" endpoint="approve">
           <parameters>
             <method>post</method>
             <parameters>
@@ -108,10 +108,23 @@
           <xsl:with-param name="i">1</xsl:with-param>
           <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
         </xsl:call-template>
+        <xsl:if test="name()='call' or name()='manipulate'">
+          <xsl:text>activity :</xsl:text>
+          <xsl:value-of select="@id"/>
+          <xsl:text>, </xsl:text>
+          <xsl:choose>  
+            <xsl:when test="@lay">
+              <xsl:text>"</xsl:text>
+              <xsl:value-of select="@lay"/>
+              <xsl:text>"</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>nil</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:if>
         <xsl:if test="name()='call'">
-          <xsl:text>activity [</xsl:text>
-          <xsl:value-of select="translate(@id,'_:',',')"/>
-          <xsl:text>], :call, :</xsl:text>
+          <xsl:text>, :call, :</xsl:text>
           <xsl:value-of select="@endpoint"/>
           <xsl:apply-templates select="d:parameters"/>
           <xsl:apply-templates select="d:manipulate" mode="part-of-call">
@@ -120,9 +133,7 @@
           <xsl:call-template name="print-newline"/>
         </xsl:if>
         <xsl:if test="name()='manipulate'">
-          <xsl:text>activity [</xsl:text>
-          <xsl:value-of select="translate(@id,'_:',',')"/>
-          <xsl:text>], :manipulate</xsl:text>
+          <xsl:text>, :manipulate</xsl:text>
           <xsl:call-template name="print-content">
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
           </xsl:call-template>
