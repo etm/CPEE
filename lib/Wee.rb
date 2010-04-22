@@ -44,7 +44,8 @@ class Wee
 
     def inform_syntax_error(err); end
     def inform_context_change(changed); end
-    def inform_state(newstate); end
+    def inform_position_change(newstate); end
+    def inform_state_change(newstate); end
     
     def vote_sync_before; end
     def vote_sync_after; end
@@ -151,16 +152,14 @@ class Wee
       @__wee_positions << wp
 
       begin
+        handlerwrapper.vote_sync_before
         case type
           when :manipulate
-            handlerwrapper.vote_sync_before
             if block_given?
               handlerwrapper.inform_activity_manipulate
               yield
             end  
             refreshcontext handlerwrapper
-            handlerwrapper.inform_activity_done
-            handlerwrapper.vote_sync_after
           when :call
             handlerwrapper.vote_sync_before
             passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
@@ -170,15 +169,14 @@ class Wee
               yield ret_value
               refreshcontext handlerwrapper
             end
-            if self.state != :stopping && self.state != :stopped && !Thread.current[:nolongernecessary]
-              handlerwrapper.inform_activity_done
-              handlerwrapper.vote_sync_after
-            end
-        else
-          raise "Invalid activity type #{type}. Only :manipulate or :call allowed"
+        end
+        if self.state != :stopping && self.state != :stopped && !Thread.current[:nolongernecessary]
+          handlerwrapper.inform_activity_done
+          handlerwrapper.vote_sync_after
         end
         if self.state != :stopping && self.state != :stopped
           @__wee_positions.delete wp
+          handlerwrapper.inform_position_change
         end  
       rescue => err
         refreshcontext handlerwrapper
@@ -354,14 +352,14 @@ class Wee
       self.search @__wee_search_positions_original
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
       @__wee_state = newState
-      handlerwrapper.inform_state @__wee_state
+      handlerwrapper.inform_state_change @__wee_state
       if newState == :stopping
         trigger_continue(@__wee_main)
         if @__wee_main && @__wee_main != Thread.current
           @__wee_main.join 
         end
         @__wee_state = :stopped
-        handlerwrapper.inform_state @__wee_state
+        handlerwrapper.inform_state_change @__wee_state
       end
       @__wee_state
     end# }}}

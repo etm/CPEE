@@ -1,5 +1,5 @@
 class DefaultHandlerWrapper < Wee::HandlerWrapperBase
-  def initialize(arguments,position,lay,continue)
+  def initialize(arguments,position=nil,lay=nil,continue=nil)
     @instance = arguments[0].to_i
     @url = arguments[1]
     @handler_stopped = false
@@ -73,7 +73,6 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def inform_activity_done
-    $controller[@instance].position
     $controller[@instance].notify("running/activity_done", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_manipulate
@@ -91,7 +90,10 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].serialize!
     $controller[@instance].notify("properties/context-variables/change", :changed => changed)
   end
-  def inform_state(newstate)
+  def inform_position_change
+    $controller[@instance].position
+  end
+  def inform_state_change(newstate)
     if $controller[@instance]
       $controller[@instance].serialize!
       $controller[@instance].notify("properties/state/change", :state => newstate)

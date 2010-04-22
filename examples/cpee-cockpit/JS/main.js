@@ -106,7 +106,7 @@ function monitor_instance() {// {{{
                   monitor_instance_state();
                   break;
                 case 'running':
-                  monitor_instance_pos();
+                  monitor_instance_pos_change($('event > notification',data).text(),$('event > event',data).text());
                   break;
               }
               append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
@@ -114,7 +114,7 @@ function monitor_instance() {// {{{
             if ($('vote > topic',data).length > 0) {
               var notification = $('vote > notification',data).text();
               append_to_log("vote", $('vote > topic',data).text() + "/" + $('vote > vote',data).text(), notification);
-              monitor_instance_vote(notification);
+              monitor_instance_vote_add(notification);
             }  
           };
           ws.onclose = function() {
@@ -192,11 +192,7 @@ function monitor_instance_dsl() {// {{{
         ctv.empty();
 
         res = format_code(res,false,true);
-        var m;
-        while (m = res.match(/activity\s+\[([^\]]+)\](?!<\/span)/)) {
-          m = m[1];
-          res = res.replace(/activity\s+\[([^\]]+)\](?!<\/span)/,"<span class='activities' id=\"activity-" + m.replace(/,/,'_') + "\">activity [" + m + "]</span>");
-        }
+        res = res.replace(/activity\s+:([A-Za-z][a-zA-Z0-9_]+)/g,"<span class='activities' id=\"activity-$1\">activity :$1</span>");
 
         ctv.append(res);
         $.cors({
@@ -214,50 +210,6 @@ function monitor_instance_dsl() {// {{{
   });
 }// }}}
 
-function monitor_instance_pos() {// {{{
-  var url = $("input[name=instance-url]").val();
-  $.cors({
-    type: "GET", 
-    url: url + "/properties/values/positions/",
-    success: function(res){
-      var values = $("values > *",res);
-      var temp = "";
-      $('span.active').removeClass("active");
-      $("svg use.active").each(function(a,b){b.setAttribute("class","activities");});
-      values.each(function(){
-        var pos = this.nodeName.replace(/activity-/,'');
-        temp += "<tr><td>Position:</td><td>" + pos  + "</td><td>⇒</td><td>(\"" + $(this).text() + "\")</td></tr>";
-        $('#activity-' + pos).addClass("active");
-        $('#graph-' + pos).each(function(a,b){b.setAttribute("class","active activities");});
-      });
-
-      if (temp != save_pos) {
-        save_pos = temp;
-        var ctv = $("#state");
-        ctv.empty();
-        ctv.append(temp);
-       }  
-    }
-  });
-}// }}}
-
-function monitor_instance_vote(notification) {// {{{
-  var parts = notification.split(';');
-  var activity;
-  var callback;
-  $.each(parts,function(i,p){
-    var ma;
-    if (ma = p.match(/activity: "([^,]+)"/))
-      activity = ma[1];
-    if (ma = p.match(/callback: "([^,]+)"/))
-      callback = ma[1];
-  });
-  var ctv = $("#votes");
-  ctv.append("<tr id='vote_to_continue_" + activity + "'><td>Vote:</td><td>" + activity + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");vote_continue(\"" + activity + "\",\"" + callback + "\");'>vote to continue</button></td></tr>");
-  $('#activity-' + activity).addClass("vote");
-  $('#graph-' + activity).each(function(a,b){b.setAttribute("class","vote activities");});
-}// }}}
-
 function monitor_instance_state() {// {{{
   var url = $("input[name=instance-url]").val();
   $.cors({
@@ -271,7 +223,8 @@ function monitor_instance_state() {// {{{
         if (res == 'finished')
           monitor_instance_pos();
 
-        var ctv = $("#positions");
+        var ctv = $("#state");
+        console.log(ctv);
         ctv.empty();
 
         var but = "";
@@ -288,6 +241,91 @@ function monitor_instance_state() {// {{{
     }
   });
 }// }}}
+
+function monitor_instance_pos() {// {{{
+  var url = $("input[name=instance-url]").val();
+  $.cors({
+    type: "GET", 
+    url: url + "/properties/values/positions/",
+    success: function(res){
+      var values = $("values > *",res);
+      var temp = "";
+      $('span.active').removeClass("active");
+      $("svg use.active").each(function(a,b){b.setAttribute("class","activities");});
+      values.each(function(){
+        var pos = this.nodeName;
+        temp += "<tr><td>Position:</td><td>" + pos  + "</td><td>⇒</td><td>(\"" + $(this).text() + "\")</td></tr>";
+        $('#activity-' + pos).addClass("active");
+        $('#graph-' + pos).each(function(a,b){b.setAttribute("class","active activities");});
+      });
+
+      if (temp != save_pos) {
+        save_pos = temp;
+        var ctv = $("#state");
+        ctv.empty();
+        ctv.append(temp);
+       }  
+    }
+  });
+}// }}}
+
+function monitor_instance_pos_change(notification,event) {// {{{
+  var parts = notification.split(';');
+  var activity;
+  var callback;
+  $.each(parts,function(i,p){
+    var ma;
+    if (ma = p.match(/activity: "([^,]+)"/))
+      activity = ma[1];
+    if (ma = p.match(/lay: "([^,]+)"/))
+      lay = ma[1];
+  });
+  if (event == "activity_calling")
+    format_visual_add(activity,"active")
+  if (event == "activity_done")
+    format_visual_remove(activity,"active")
+}// }}}
+
+function monitor_instance_vote_add(notification) {// {{{
+  var parts = notification.split(';');
+  var activity;
+  var lay = null;
+  var callback;
+  $.each(parts,function(i,p){
+    var ma;
+    if (ma = p.match(/activity: "([^,]+)"/))
+      activity = ma[1];
+    if (ma = p.match(/lay: "([^,]+)"/))
+      lay = ma[1];
+    if (ma = p.match(/callback: "([^,]+)"/))
+      callback = ma[1];
+  });
+  var ctv = $("#votes");
+  ctv.append("<tr id='vote_to_continue_" + activity + "'><td>Activity:</td><td>" + activity + (lay ? ", " + lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + activity + "\",\"" + callback + "\");'>vote to continue</button></td></tr>");
+  format_visual_add(activity,"vote")
+}// }}}
+
+function monitor_instance_vote_remove(activity,callback) {//{{{
+  var url = $("input[name=instance-url]").val();
+  $.cors({
+    type: "PUT", 
+    url: url + "/callbacks/" + callback,
+    data: ({continue: "true"}),
+    failure: report_failure
+  });
+  format_visual_remove(activity,"vote");
+  $('#vote_to_continue_' + activity).remove();
+}//}}}
+
+function vote_clean() {//{{{
+  try {
+  $('span.vote').removeClass("vote");
+  $('svg use.vote').each(function(a,b){b.setAttribute("class","activities");});
+  $('#votes').empty();
+  } catch(e) {
+    alert(e.toString());
+  }
+}//}}}
 
 function start_instance() {// {{{
   var url = $("input[name=instance-url]").val();
@@ -504,12 +542,24 @@ function sym_click(node) { // {{{
   }
 } // }}}
 
-//function format_visual(what,state,class) {
-function format_visual_add() {
-  $('.activities').each(function(a,b){ 
-    var id = b.getAttribute("id").replace(/#\{[^}]*\}/g,'[a-zA-Z0-9_]*');
-    var class = b.getAttribute("class");
-    console.log(id);
+function format_visual_add(what,class) {
+  $.each(["graph","activity"],function(i,t){
+    $('#' + t + '-' + what).each(function(a,b){ 
+      var c = b.getAttribute("class").split(" ");
+      c.push(class);
+      b.setAttribute("class",c.join(" "));
+    });
+  });
+}
+
+function format_visual_remove(what,class) {
+  $.each(["graph","activity"],function(i,t){
+    $('#' + t + '-' + what).each(function(a,b){ 
+      var c = b.getAttribute("class").split(" ");
+      if ($.inArray(class,c) != -1)
+        c.splice($.inArray(class,c),1);
+      b.setAttribute("class",c.join(" "));
+    });
   });
 }
 
@@ -544,29 +594,6 @@ function format_code(res,skim,lnums) {// {{{
 function append_to_log(what,type,message) {//{{{
   var d = new Date();
   $("#tablelog").append("<tr><td class='fixed'>" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "</td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  what + "</td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
-}//}}}
-
-function vote_continue(activity,callback) {//{{{
-  var url = $("input[name=instance-url]").val();
-  $.cors({
-    type: "PUT", 
-    url: url + "/callbacks/" + callback,
-    data: ({continue: "true"}),
-    failure: report_failure
-  });
-  $('#activity-' + activity).removeClass("vote");
-  $('#graph-' + activity).each(function(a,b){b.setAttribute("class","activities");});
-  $('#vote_to_continue_' + activity).remove();
-}//}}}
-
-function vote_clean() {//{{{
-  try {
-  $('span.vote').removeClass("vote");
-  $('svg use.vote').each(function(a,b){b.setAttribute("class","activities");});
-  $('#votes').empty();
-  } catch(e) {
-    alert(e.toString());
-  }
 }//}}}
 
 function report_failure(){}
