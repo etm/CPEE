@@ -1,6 +1,7 @@
 class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def initialize(arguments,position,continue)
     @instance = arguments[0].to_i
+    @url = arguments[1]
     @handler_stopped = false
     @handler_continue = continue
     @handler_position = position
@@ -12,8 +13,8 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
   
-    cpee_instance = "http://localhost:9298/#{@instance}/"
-    injection_service = "http://localhost:9290/inject/"
+    cpee_instance = "#{@url}/#{@instance}/"
+    injection_service = "http://localhost:9290/injection/"
 
     puts '='*80
     pp "Endpoint: #{endpoint}"
@@ -25,32 +26,15 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     puts '='*80
     if parameters.key?(:service)
       puts "== performing a call to the injection service"
-      sleep(30)
+      status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
+                                                                    Riddl::Parameter::Simple.new("cpee", cpee_instance),
+                                                                    Riddl::Parameter::Simple.new("rescue", parameters[:service][:repository])];
+      raise "Injection at #{injection_service} failed with status: #{status}" if status != 200
+      raise "Injection in progress" if status == 200
+    else
+      sleep(10)
+      @status = 200
     end
-=begin
-    client = Riddl::Client.new(endpoints)
-    params = []
-    callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
-    (parameters[:parameters] || {}).each do |h|
-      if h.class == Hash
-        h.each do |k,v|
-          params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
-        end  
-      end  
-    end
-    params << Riddl::Header.new("CPEE-Callback",callback)
-
-    type = parameters[:method] || 'post'
-    status, result, headers = client.request type => params
-    raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
-
-    @handler_returnValue = ''
-    if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
-      $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,:http)
-      return
-    end
-
-=end
     @handler_returnValue = {:bla => 'blablablubli', :reservation_id => '4711', :price => 17}
     @handler_continue.continue
   end

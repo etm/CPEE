@@ -17,106 +17,51 @@
     <wo_pattern>&quot;http://no_patterns-needed.org/service&quot;</wo_pattern>
     <with_pattern>&quot;http://here-is-a-pattern-used.org/#{@pattern_context}/some-uri-parts&quot;</with_pattern>
   </endpoints>
-  <description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <loop>
-      <condition test="wo_pattern" comparator="&lt;" fix-value="5"/>
-      <parallel type="nowait">
-        <parallel_branch>
-          <call id="call_01" endpoint="wo_pattern">
-            <parameters>
-              <service-operation>so_1</parameter>
-              <state-controlflow>execute</parameter>
-              <constraint>
-                <constraint xpath="
-                <constraint xpath="
-                <constraint xpath="
-              </constraint>  
-            <!-- wenn kein context oder endpouint dann fix-value -->
-            <input name="in_context" variable="string"/>
-            <input name="in_fix_num" fix-value="5"/>
-            <input name="in_fix_string" fix-value="&quot;some input&quot;"/>
-            <input name="in_one_more" variable="one_more_context"/>
-            <input name="in_call" variable="class_date"/>
-            <output name="properties" variable="some_prop_context"/>
-            <output name="out1" variable="one_more_context"/> 
-            <output name="out" variable="one_more_context"/>
-            <output name="out" variable="one_more_context"/>
-            <output name="out2" variable="one_more_context"/>
-            <output name="out2" variable="with_pattern"/>
-            <output name="out2" variable="one_more_context"/>
-            <output name="out5" variable="one_more_context"/>
-          </call>
-        </parallel_branch>
-        <parallel_branch>
-          <critical id="crit_01">
-            <call id="call_02" endpoint="with_pattern">
-              <parameter name="method">get</parameter>
-              <input name="xml" message-parameter="xml_context" transformation-uri="transformation_service">
-                <copy xsl-name="some-variable" variable="some_context"/>
-                <copy xsl-name="some-context" variable="wo_pattern"/>
-                <xsl:template match="/">
-                  <xsl:apply-templates select="//items"/> 
-                </xsl:template>
-                <xsl:template match="//items">
-                  <xsl:element name="entry">
-                    <xsl:value-of select="text"/>
-                  </xsl:element>
-                </xsl:template>
-              </input>
-              <output name="out" message-parameter="message_out_02"  transformation-uri="transformation_service">
-                <xsl:template match="/">
-                  <xsl:apply-templates select="//results"/> 
-                </xsl:template>
-                <xsl:template match="//results">
-                  <xsl:element name="result">
-                    <xsl:value-of select="text"/>
-                  </xsl:element>
-                </xsl:template>
-              </output>
-              <output name="out" message-parameter="message_out_0333"/> 
-              <output message-parameter="message_out_03" variable="one_more_context"/>
-              <output name="out" message-parameter="message_out"/>
-              <output message-parameter="message_out_04" fix-value="false"/>
-            </call>
-          </critical>
-        </parallel_branch>
-      </parallel>
-      <manipulate id="man_01"> 
-        <instruction target="one_more_context" operator="+=" variable="some_context"/> 
-        <instruction target="some_context" operator="-=" variable="wo_pattern"/>
-        <instruction target="with_pattern" operator="+=" variable="some_context" transformation-uri="transformation_service">
-          <xsl:template match="/">
-            <xsl:apply-templates select="//results"/> 
-          </xsl:template>
-          <xsl:template match="//results">
-            <xsl:element name="result">
-              <xsl:value-of select="text"/>
-            </xsl:element>
-          </xsl:template>
-        </instruction>
-        <instruction target="some_context" operator="some_operation" fix-value="@some_context.some_method(@some_context)"/>
-      </manipulate>
-    </loop>
-    <choose>
-      <alternative>
-        <group connector="and">
-          <condition test="some_context" comparator="&gt;=" fix-value="5"/>
-          <group connector="or">
-            <condition test="an_other_context" comparator="==" variable="some_context"/>
-            <condition test="an_other_context" comparator="substring" fix-value="Date.new(@class_date)"/>
-          </group>
-        </group>
-        <manipulate id="man_03">
-          <instruction target="some_context" operator="+=" variable="an_other_context"/> 
-        </manipulate>
-      </alternative>
-      <otherwise>
-        <manipulate id="man_04"> 
-          <instruction target="some_context" operator="+=" variable="an_other_context"/> 
-        </manipulate>
-      </otherwise>
-    </choose>
-  </description>
+<description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <call id="book_movie" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
+    <repository endpoint="repository"/>
+    <assign-endpoint id="selectedcinema" use="bla"/>
+    <input name="date" variable="prefdate"/>
+    <input name="number_of_persons" variable="number_of_persons"/>
+    <input name="preferred_time" variable="pref_time"/>
+    <input name="title" variable="title"/>
+    <output name="hall" variable="hall"/>
+
+    <output name="movie_title" variable="movie_title"/>
+    <output name="reservation_id" variable="res_id"/>
+    <output name="starting_time" variable="start_time"/>
+  </call>
+  <flow:call xmlns:flow="http://rescue.org/ns/controlflow/0.2" id="book_movie__call_find" endpoint="resource_scope" service-operation="search" state-controlflow="execute">
+    <flow:repository endpoint="http://localhost:9290/groups"/>
+  </flow:call>
+  <flow:call xmlns:flow="http://rescue.org/ns/controlflow/0.2" id="book_movie__perform_select" endpoint="selector_service" http-method="get" http-status="200" group-by="//show">
+    <flow:resource-id xpath="//show/cinema_uri" endpoint="selected_cinema"/>
+
+    <flow:input message="list_shows"/>
+    <flow:output message="selected_show"/>
+  </flow:call>
+  <flow:call xmlns:flow="http://rescue.org/ns/controlflow/0.2" id="book_movie__call_book" endpoint="selected_cinema" service-operation="book" state-controlflow="execute">
+    <flow:repository endpoint="http://localhost:9290/groups"/>
+  </flow:call>
+  <call id="book_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
+    <repository endpoint="repository"/>
+    <input name="quantity" variable="pop_quant"/>
+
+    <input name="reservation_id" variable="res_id"/>
+    <output name="order_number" variable="pop_order_num"/>
+    <output name="price" variable="pop_price"/>
+  </call>
+  <choose>
+    <alternative>
+      <condition test="pop_price" comparator="&gt;" fix-value="10"/>
+      <call id="unbook_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
+        <repository endpoint="repository"/>
+
+        <input name="order_number" variable="pop_order_num"/>
+      </call>
+    </alternative>
+  </choose>
+</description>
   <transformation>
     <!-- {{{ -->
     <xsl:stylesheet version="1.0"
