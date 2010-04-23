@@ -169,6 +169,13 @@ svg {
   margin-left: -0.5em;
 }
 
+svg rect.injected {
+  stroke-width: 1; 
+  stroke-dasharray: 3,5;
+  stroke: Menu;
+  fill: Menu;
+  fill-opacity: 0.4;
+}
 svg .clickable { cursor: pointer; }
 
 svg use.active circle {
