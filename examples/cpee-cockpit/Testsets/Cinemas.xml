@@ -35,6 +35,56 @@
       <output name="reservation_id" variable="res_id"/>
       <output name="starting_time" variable="start_time"/>
     </call>
+    <injected id="book_movie">
+      <interface>
+        <repository endpoint="repository"/>
+        <assign-endpoint id="selectedcinema" use="bla"/>
+        <input name="date" variable="prefdate"/>
+        <input name="number_of_persons" variable="number_of_persons"/>
+        <input name="preferred_time" variable="pref_time"/>
+        <input name="title" variable="title"/>
+        <output name="hall" variable="hall"/>
+        <output name="movie_title" variable="movie_title"/>
+        <output name="reservation_id" variable="res_id"/>
+        <output name="starting_time" variable="start_time"/>
+      </interface>
+      <call id="book_movie_1" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+      <injected id="book_movie_1">
+        <interface>
+          <repository endpoint="repository"/>
+          <assign-endpoint id="selectedcinema" use="bla"/>
+          <input name="date" variable="prefdate"/>
+          <input name="number_of_persons" variable="number_of_persons"/>
+          <input name="preferred_time" variable="pref_time"/>
+          <input name="title" variable="title"/>
+          <output name="hall" variable="hall"/>
+          <output name="movie_title" variable="movie_title"/>
+          <output name="reservation_id" variable="res_id"/>
+          <output name="starting_time" variable="start_time"/>
+        </interface>
+        <parallel>
+          <parallel_branch>
+        <call id="book_movie_1_1" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+          </parallel_branch>
+          <parallel_branch>
+        <call id="book_movie_1_2" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+          </parallel_branch>
+          <parallel_branch>
+        <call id="book_movie_1_3" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+          </parallel_branch>
+        </parallel>
+      </injected>
+      <call id="book_movie_2" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+      <choose>
+        <alternative>
+          <condition test="res_id" comparator=">" fix-value="17"/>
+          <call id="book_movie_3" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+        </alternative>
+        <otherwise>
+          <call id="book_movie_4" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+        </otherwise>
+      </choose>
+    </injected>
     <call id="book_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
       <repository endpoint="repository"/>
       <input name="quantity" variable="pop_quant"/>
@@ -516,6 +566,18 @@
         <!-- }}} --> 
       </xsl:template>
 
+      <xsl:template match="//flow:injected">
+        <!-- {{{ -->
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text># ========== Code is injected from activity: </xsl:text>
+        <xsl:value-of select="@id"/>
+        <xsl:text> ==========</xsl:text>
+        <xsl:apply-templates select="child::flow:*[name() != 'interface']"/>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text># ========================================</xsl:text>
+        <!-- }}} -->
+      </xsl:template>
+
       <xsl:template match="//flow:constraint">
         <!-- {{{ --> 
         <xsl:text>:</xsl:text>
@@ -563,7 +625,7 @@
         <xsl:call-template name="prefix-whitespaces"/>
         <xsl:text>activity :</xsl:text>
         <xsl:value-of select="@id"/>
-        <xsl:text>, :call, :</xsl:text>
+        <xsl:text>, nil, :call, :</xsl:text>
         <xsl:value-of select="@endpoint"/>
         <xsl:text>, :input => input</xsl:text>
         <xsl:if test="string(@http-method)">
@@ -872,7 +934,7 @@
         <xsl:text>critical(:</xsl:text>
         <xsl:value-of select="@id"/>
         <xsl:text>) do </xsl:text>
-        <xsl:apply-templates select="child::flow:*[(name() != 'endpoint') and (name() != 'context')]"/>
+        <xsl:apply-templates select="child::flow:*"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
         <xsl:text>end</xsl:text>
