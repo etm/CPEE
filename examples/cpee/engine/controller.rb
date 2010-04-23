@@ -227,14 +227,10 @@ private
 
   def build_notification(key,what,content,type)# {{{
     res = []
-    res << ['key'  , key]
-    res << ['topic', ::File::dirname(what)]
-    res << [type, ::File::basename(what)]
-    noty = []
-    content.each do |k,v|
-      noty << "#{k}: #{v.inspect}" 
-    end
-    res << ['notification', noty.join('; ')]
+    res << ['key'         , key]
+    res << ['topic'       , ::File::dirname(what)]
+    res << [type          , ::File::basename(what)]
+    res << ['notification', content.to_yaml.sub('--- ','')]
     res << ['uid'         , Digest::MD5.hexdigest(Kernel::rand().to_s)]
     res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
     # TODO add secret to fp

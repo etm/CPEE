@@ -20,17 +20,17 @@
           <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
         </xsl:call-template>
         <xsl:if test="name()='call' or name()='manipulate'">
-          <xsl:text>activity :</xsl:text>
-          <xsl:value-of select="@id"/>
-          <xsl:text>, </xsl:text>
           <xsl:choose>  
             <xsl:when test="@lay">
-              <xsl:text>"</xsl:text>
+              <xsl:text>activity [:</xsl:text>
+              <xsl:value-of select="@id"/>
+              <xsl:text>,</xsl:text>
               <xsl:value-of select="@lay"/>
-              <xsl:text>"</xsl:text>
+              <xsl:text>]</xsl:text>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:text>nil</xsl:text>
+              <xsl:text>activity :</xsl:text>
+              <xsl:value-of select="@id"/>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:if>

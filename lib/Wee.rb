@@ -132,16 +132,8 @@ class Wee
     #   - :call - order the handlerwrapper to perform a service call
     # endpoint: (only with :call) ep of the service
     # parameters: (only with :call) service parameters
-    def activity(position, lay, type, endpoint=nil, *parameters)
-      if (position.is_a?(String) || position.is_a?(Symbol)) &&  position.to_s =~ /^[a-zA-Z][a-zA-Z0-9_]+$/ && (lay.is_a?(String) || lay.is_a?(Symbol) || lay.nil?)
-        position = position.to_s
-        lay = lay.to_s if lay.is_a?(Symbol)
-      else  
-        self.state = :stopping
-        handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
-        handlerwrapper.inform_syntax_error(Exception.new("position (#{position}) and lay (#{lay}) not valid IDs (in the XML sense)"))
-      end
-
+    def activity(position, type, endpoint=nil, *parameters)
+      position, lay = position_test position
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
 
       Thread.current[:continue] = Continue.new
@@ -299,6 +291,26 @@ class Wee
         thread[:continue].continue
       end  
     end  # }}}
+
+    def position_test(position)
+      pos = false
+      if position.is_a?(Symbol) && position.to_s =~ /[a-zA-Z][a-zA-Z0-9_]*/
+        pos = true
+        lay = nil
+      end   
+      if position.is_a?(Array) && position.length != 0 && position[0].is_a?(Symbol) && position[0].to_s =~ /[a-zA-Z][a-zA-Z0-9_]*/
+        pos = true
+        lay = position[1..-1]
+        position = position[0]
+      end  
+      if pos
+        [position, lay]
+      else   
+        self.state = :stopping
+        handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
+        handlerwrapper.inform_syntax_error(Exception.new("position (#{position}) and lay (#{lay.inspect}) not valid"))
+      end
+    end
 
     def is_in_search_mode(position = nil)# {{{
       # set semaphore to avoid conflicts if @__wee_search is changed by another thread

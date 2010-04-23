@@ -224,7 +224,6 @@ function monitor_instance_state() {// {{{
           monitor_instance_pos();
 
         var ctv = $("#state");
-        console.log(ctv);
         ctv.empty();
 
         var but = "";
@@ -310,7 +309,7 @@ function monitor_instance_vote_remove(activity,callback) {//{{{
   $.cors({
     type: "PUT", 
     url: url + "/callbacks/" + callback,
-    data: ({continue: "true"}),
+    data: ({'continue': 'true'}),
     failure: report_failure
   });
   format_visual_remove(activity,"vote");
