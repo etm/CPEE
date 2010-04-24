@@ -1,10 +1,11 @@
 class RescueHandlerWrapper < Wee::HandlerWrapperBase
-  def initialize(arguments,position,continue)
+  def initialize(arguments,position=nil,lay=nil,continue=nil)
     @instance = arguments[0].to_i
     @url = arguments[1]
     @handler_stopped = false
     @handler_continue = continue
     @handler_position = position
+    @handler_lay = lay
     @handler_returnValue = nil
   end
 

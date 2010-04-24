@@ -48,7 +48,9 @@
         <output name="reservation_id" variable="res_id"/>
         <output name="starting_time" variable="start_time"/>
       </interface>
-      <call id="book_movie_1" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+      <call id="book_movie_1" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
+        <repository endpoint="repository"/>
+      </call>
       <injected id="book_movie_1">
         <interface>
           <repository endpoint="repository"/>
@@ -64,24 +66,36 @@
         </interface>
         <parallel>
           <parallel_branch>
-        <call id="book_movie_1_1" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+        <call id="book_movie_1_1" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
+        <repository endpoint="repository"/>
+      </call>
           </parallel_branch>
           <parallel_branch>
-        <call id="book_movie_1_2" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+        <call id="book_movie_1_2" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
+        <repository endpoint="repository"/>
+      </call>
           </parallel_branch>
           <parallel_branch>
-        <call id="book_movie_1_3" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+        <call id="book_movie_1_3" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
+        <repository endpoint="repository"/>
+      </call>
           </parallel_branch>
         </parallel>
       </injected>
-      <call id="book_movie_2" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+      <call id="book_movie_2" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
+        <repository endpoint="repository"/>
+      </call>
       <choose>
         <alternative>
           <condition test="res_id" comparator=">" fix-value="17"/>
-          <call id="book_movie_3" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+          <call id="book_movie_3" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
+        <repository endpoint="repository"/>
+      </call>
         </alternative>
         <otherwise>
-          <call id="book_movie_4" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute"/>
+          <call id="book_movie_4" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
+        <repository endpoint="repository"/>
+      </call>
         </otherwise>
       </choose>
     </injected>
@@ -625,7 +639,7 @@
         <xsl:call-template name="prefix-whitespaces"/>
         <xsl:text>activity :</xsl:text>
         <xsl:value-of select="@id"/>
-        <xsl:text>, nil, :call, :</xsl:text>
+        <xsl:text>, :call, :</xsl:text>
         <xsl:value-of select="@endpoint"/>
         <xsl:text>, :input => input</xsl:text>
         <xsl:if test="string(@http-method)">
