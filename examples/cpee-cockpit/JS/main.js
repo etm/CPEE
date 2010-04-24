@@ -563,11 +563,13 @@ function format_visual_remove(what,class) {
 }
 
 function format_code(res,skim,lnums) {// {{{
+ try {
   res = res.replace(/\t/g,'  ');
   res = res.replace(/\r/g,'');
-  res = res.replace(/\n\s*$/m,'');
+  res = res.replace(/\s*$/gm,'');
+  res = res.replace(/^(\s*\n)*/m,'');
 
-  if (!res.match(/^\s*$/m)) {
+  if (res.match(/\S/)) {
     if (skim) {
       var l = res.match(/^ */);
       l = l[0].length;
@@ -586,6 +588,9 @@ function format_code(res,skim,lnums) {// {{{
     res = res.replace(/  /g," &#160;");
     res = res.replace(/\n\z/g,"\n<div>&#160;");
     res = res.replace(/\n|\z/g,"</div>\n");
+  }  
+  } catch(e) {
+    alert(e.toString());
   }  
   return res;
 }// }}}
