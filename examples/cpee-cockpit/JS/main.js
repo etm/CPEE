@@ -31,7 +31,7 @@ function create_instance() {// {{{
   if (name != null) {
     if (name.match(/\S/)) {
       var base = $("input[name=base-url]").val();
-      $.cors({
+      $.ajax({
         type: "POST", 
         url: base,
         dataType: "text",
@@ -49,7 +49,7 @@ function create_instance() {// {{{
   
 function monitor_instance() {// {{{
   var url = $("input[name=instance-url]").val();
-  $.cors({
+  $.ajax({
     type: "GET", 
     url: url + "/properties/schema/",
     success: function(res){
@@ -59,7 +59,7 @@ function monitor_instance() {// {{{
       $("input[name=base-url]").attr("readonly","readonly");
       $("button[name=base]").attr("disabled","disabled");
 
-      $.cors({
+      $.ajax({
         type: "POST", 
         url: url + "/notifications/subscriptions/",
         data: (
@@ -137,7 +137,7 @@ function monitor_instance() {// {{{
 
 function monitor_instance_cvs() {// {{{
   var url = $("input[name=instance-url]").val();
-  $.cors({
+  $.ajax({
     type: "GET", 
     url: url + "/properties/values/context-variables/",
     success: function(res){
@@ -159,7 +159,7 @@ function monitor_instance_cvs() {// {{{
 
 function monitor_instance_eps() {// {{{
   var url = $("input[name=instance-url]").val();
-  $.cors({
+  $.ajax({
     type: "GET", 
     url: url + "/properties/values/endpoints/",
     success: function(res){
@@ -181,7 +181,7 @@ function monitor_instance_eps() {// {{{
 
 function monitor_instance_dsl() {// {{{
   var url = $("input[name=instance-url]").val();
-  $.cors({
+  $.ajax({
     type: "GET",
     dataType: "text",
     url: url + "/properties/values/dsl/",
@@ -195,7 +195,7 @@ function monitor_instance_dsl() {// {{{
         res = res.replace(/activity\s+:([A-Za-z][a-zA-Z0-9_]+)/g,"<span class='activities' id=\"activity-$1\">activity :$1</span>");
 
         ctv.append(res);
-        $.cors({
+        $.ajax({
           type: "GET",
           url: url + "/properties/values/description/",
           success: function(res){
@@ -212,7 +212,7 @@ function monitor_instance_dsl() {// {{{
 
 function monitor_instance_state() {// {{{
   var url = $("input[name=instance-url]").val();
-  $.cors({
+  $.ajax({
     type: "GET", 
     url: url + "/properties/values/state/",
     dataType: "text",
@@ -243,7 +243,7 @@ function monitor_instance_state() {// {{{
 
 function monitor_instance_pos() {// {{{
   var url = $("input[name=instance-url]").val();
-  $.cors({
+  $.ajax({
     type: "GET", 
     url: url + "/properties/values/positions/",
     success: function(res){
@@ -260,7 +260,7 @@ function monitor_instance_pos() {// {{{
 
       if (temp != save_pos) {
         save_pos = temp;
-        var ctv = $("#state");
+        var ctv = $("#position");
         ctv.empty();
         ctv.append(temp);
        }  
@@ -306,7 +306,7 @@ function monitor_instance_vote_add(notification) {// {{{
 
 function monitor_instance_vote_remove(activity,callback) {//{{{
   var url = $("input[name=instance-url]").val();
-  $.cors({
+  $.ajax({
     type: "PUT", 
     url: url + "/callbacks/" + callback,
     data: ({'continue': 'true'}),
@@ -328,7 +328,7 @@ function vote_clean() {//{{{
 
 function start_instance() {// {{{
   var url = $("input[name=instance-url]").val();
-  $.cors({
+  $.ajax({
     type: "PUT", 
     url: url + "/properties/values/state",
     data: ({value: "running"}),
@@ -338,7 +338,7 @@ function start_instance() {// {{{
 
 function stop_instance() {// {{{
   var url = $("input[name=instance-url]").val();
-  $.cors({
+  $.ajax({
     type: "PUT", 
     url: url + "/properties/values/state",
     data: ({value: "stopping"}),
@@ -357,7 +357,7 @@ function load_testset() {// {{{
     success: function(res){ 
       var testset = res; 
 
-      $.cors({
+      $.ajax({
         type: "GET", 
         url: url + "/properties/values/context-variables/",
         success: function(res){
@@ -366,7 +366,7 @@ function load_testset() {// {{{
           var length = values.length;
           values.each(function(){
             var name = this.nodeName;
-            $.cors({
+            $.ajax({
               type: "DELETE", 
               url: url + "/properties/values/context-variables/" + name,
               success: function(){
@@ -383,7 +383,7 @@ function load_testset() {// {{{
         failure: report_failure
       });  
       
-      $.cors({
+      $.ajax({
         type: "GET", 
         url: url + "/properties/values/endpoints/",
         success: function(res){
@@ -392,7 +392,7 @@ function load_testset() {// {{{
           var length = values.length;
           values.each(function(){
             var name = this.nodeName;
-            $.cors({
+            $.ajax({
               type: "DELETE", 
               url: url + "/properties/values/endpoints/" + name,
               success: function(){
@@ -409,7 +409,7 @@ function load_testset() {// {{{
         failure: report_failure
       });
 
-      $.cors({
+      $.ajax({
         type: "GET", 
         url: url + "/properties/values/transformation/",
         success: function(res){
@@ -417,7 +417,7 @@ function load_testset() {// {{{
           $("testset > transformation > *",testset).each(function(){
             var val = $(this).serializeXML();
             if (values.length > 0) {
-              $.cors({
+              $.ajax({
                 type: "POST", 
                 url: url + "/properties/values/",
                 data: ({key: "transformation", value: val}),
@@ -425,7 +425,7 @@ function load_testset() {// {{{
                 failure: report_failure
               });
             } else {
-              $.cors({
+              $.ajax({
                 type: "PUT", 
                 url: url + "/properties/values/transformation",
                 data: ({value: val}),
@@ -438,7 +438,7 @@ function load_testset() {// {{{
         failure: report_failure
       });
       
-      $.cors({
+      $.ajax({
         type: "PUT", 
         url: url + "/properties/values/handlerwrapper",
         success: function() { load_testset_hw(url,testset); },
@@ -453,7 +453,7 @@ function load_testset_des(url,testset) {// {{{
   $("testset > description",testset).each(function(){
     var name = this.nodeName;
     var val = $(this).serializeXML();
-    $.cors({
+    $.ajax({
       type: "PUT", 
       url: url + "/properties/values/description",
       data: ({value: val}),
@@ -465,7 +465,7 @@ function load_testset_des(url,testset) {// {{{
 function load_testset_hw(url,testset) {// {{{
   $("testset > handlerwrapper",testset).each(function(){
     var val = $(this).text();
-    $.cors({
+    $.ajax({
       type: "PUT", 
       url: url + "/properties/values/handlerwrapper",
       data: ({value: val}),
@@ -478,7 +478,7 @@ function load_testset_cvs(url,testset) {// {{{
   $("testset > context-variables > *",testset).each(function(){
     var name = this.nodeName;
     var val = $(this).text();
-    $.cors({
+    $.ajax({
       type: "POST", 
       url: url + "/properties/values/context-variables/",
       data: ({key:  name, value: val}),
@@ -491,7 +491,7 @@ function load_testset_eps(url,testset) {// {{{
   $("testset > endpoints > *",testset).each(function(){
     var name = this.nodeName;
     var val = $(this).text();
-    $.cors({
+    $.ajax({
       type: "POST", 
       url: url + "/properties/values/endpoints/",
       data: ({key:  name, value: val}),
