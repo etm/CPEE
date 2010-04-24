@@ -126,7 +126,6 @@ function monitor_instance() {// {{{
       monitor_instance_cvs();
       monitor_instance_eps();
       monitor_instance_dsl();
-      monitor_instance_pos();
       monitor_instance_state();
     },
     failure: function() {
@@ -193,6 +192,7 @@ function monitor_instance_dsl() {// {{{
 
         res = format_code(res,false,true);
         res = res.replace(/activity\s+:([A-Za-z][a-zA-Z0-9_]+)/g,"<span class='activities' id=\"activity-$1\">activity :$1</span>");
+        res = res.replace(/activity\s+\[:([A-Za-z][a-zA-Z0-9_]+)([^\]]*\])/g,"<span class='activities' id=\"activity-$1\">activity [:$1$2</span>");
 
         ctv.append(res);
         $.ajax({
@@ -203,6 +203,7 @@ function monitor_instance_dsl() {// {{{
             g.generateGraph({
              symclick: sym_click
             });
+            monitor_instance_pos();
           }
         });
       }
@@ -248,64 +249,30 @@ function monitor_instance_pos() {// {{{
     url: url + "/properties/values/positions/",
     success: function(res){
       var values = $("values > *",res);
-      var temp = "";
       $('span.active').removeClass("active");
       $("svg use.active").each(function(a,b){b.setAttribute("class","activities");});
       values.each(function(){
         var pos = this.nodeName;
-        temp += "<tr><td>Position:</td><td>" + pos  + "</td><td>⇒</td><td>(\"" + $(this).text() + "\")</td></tr>";
         $('#activity-' + pos).addClass("active");
         $('#graph-' + pos).each(function(a,b){b.setAttribute("class","active activities");});
       });
-
-      if (temp != save_pos) {
-        save_pos = temp;
-        var ctv = $("#position");
-        ctv.empty();
-        ctv.append(temp);
-       }  
     }
   });
 }// }}}
 
 function monitor_instance_pos_change(notification,event) {// {{{
   var parts = YAML.eval(notification);
-  console.log(parts);
-
-//  var parts = notification.split(';');
-//  var activity;
-//  var callback;
-//
-//  $.each(parts,function(i,p){
-//    var ma;
-//    if (ma = p.match(/activity: "([^,]+)"/))
-//      activity = ma[1];
-//    if (ma = p.match(/lay: "([^,]+)"/))
-//      lay = ma[1];
-//  });
-//  if (event == "activity_calling")
-//    format_visual_add(activity,"active")
-//  if (event == "activity_done")
-//    format_visual_remove(activity,"active")
-}// }}}
+  if (event == "activity_calling")
+    format_visual_add(parts.activity,"active")
+  if (event == "activity_done")
+    format_visual_remove(parts.activity,"active")
+} // }}}
 
 function monitor_instance_vote_add(notification) {// {{{
-  var parts = notification.split(';');
-  var activity;
-  var lay = null;
-  var callback;
-  $.each(parts,function(i,p){
-    var ma;
-    if (ma = p.match(/activity: "([^,]+)"/))
-      activity = ma[1];
-    if (ma = p.match(/lay: "([^,]+)"/))
-      lay = ma[1];
-    if (ma = p.match(/callback: "([^,]+)"/))
-      callback = ma[1];
-  });
+  var parts = YAML.eval(notification);
   var ctv = $("#votes");
-  ctv.append("<tr id='vote_to_continue_" + activity + "'><td>Activity:</td><td>" + activity + (lay ? ", " + lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + activity + "\",\"" + callback + "\");'>vote to continue</button></td></tr>");
-  format_visual_add(activity,"vote")
+  ctv.append("<tr id='vote_to_continue_" + parts.activity + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\");'>vote to continue</button></td></tr>");
+  format_visual_add(parts.activity,"vote")
 }// }}}
 
 function monitor_instance_vote_remove(activity,callback) {//{{{
