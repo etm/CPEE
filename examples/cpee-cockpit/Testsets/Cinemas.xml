@@ -959,9 +959,13 @@
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>parallel (:</xsl:text>
-        <xsl:value-of select="@type"/>
-        <xsl:text>) do</xsl:text>
+        <xsl:text>parallel </xsl:text>
+        <xsl:if test="string(@wait)">
+          <xsl:text>(:</xsl:text>
+          <xsl:value-of select="@wait"/>
+          <xsl:text>) </xsl:text>
+        </xsl:if>
+        <xsl:text>do</xsl:text>
         <xsl:apply-templates select="child::flow:*"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>

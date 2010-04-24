@@ -3,65 +3,23 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <string>'some string is here'</string>
     <number>4711</number>
-    <boolean>true</boolean>
-    <class_date>Date.new("2001-12-24")</class_date>
-    <pattern_context>'this-is-a-pattern'</pattern_context>
-    <some_context/>
-    <some_prop_context/>
-    <an_other_context/>
-    <one_more_context/>
   </context-variables>
   <endpoints>
-    <wo_pattern>&quot;http://no_patterns-needed.org/service&quot;</wo_pattern>
-    <with_pattern>&quot;http://here-is-a-pattern-used.org/#{@pattern_context}/some-uri-parts&quot;</with_pattern>
+    <services>Wee</services>
+    <repository>http://localhost:9290/groups</repository>
   </endpoints>
-<description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <call id="book_movie" endpoint="cinemas" service-operation="search_and_book" state-controlflow="execute">
-    <repository endpoint="repository"/>
-    <assign-endpoint id="selectedcinema" use="bla"/>
-    <input name="date" variable="prefdate"/>
-    <input name="number_of_persons" variable="number_of_persons"/>
-    <input name="preferred_time" variable="pref_time"/>
-    <input name="title" variable="title"/>
-    <output name="hall" variable="hall"/>
-
-    <output name="movie_title" variable="movie_title"/>
-    <output name="reservation_id" variable="res_id"/>
-    <output name="starting_time" variable="start_time"/>
-  </call>
-  <flow:call xmlns:flow="http://rescue.org/ns/controlflow/0.2" id="book_movie__call_find" endpoint="resource_scope" service-operation="search" state-controlflow="execute">
-    <flow:repository endpoint="http://localhost:9290/groups"/>
-  </flow:call>
-  <flow:call xmlns:flow="http://rescue.org/ns/controlflow/0.2" id="book_movie__perform_select" endpoint="selector_service" http-method="get" http-status="200" group-by="//show">
-    <flow:resource-id xpath="//show/cinema_uri" endpoint="selected_cinema"/>
-
-    <flow:input message="list_shows"/>
-    <flow:output message="selected_show"/>
-  </flow:call>
-  <flow:call xmlns:flow="http://rescue.org/ns/controlflow/0.2" id="book_movie__call_book" endpoint="selected_cinema" service-operation="book" state-controlflow="execute">
-    <flow:repository endpoint="http://localhost:9290/groups"/>
-  </flow:call>
-  <call id="book_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
-    <repository endpoint="repository"/>
-    <input name="quantity" variable="pop_quant"/>
-
-    <input name="reservation_id" variable="res_id"/>
-    <output name="order_number" variable="pop_order_num"/>
-    <output name="price" variable="pop_price"/>
-  </call>
-  <choose>
-    <alternative>
-      <condition test="pop_price" comparator="&gt;" fix-value="10"/>
-      <call id="unbook_popcorn" endpoint="selectedcinema" service-operation="order_popcorn" state-controlflow="execute">
-        <repository endpoint="repository"/>
-
-        <input name="order_number" variable="pop_order_num"/>
-      </call>
-    </alternative>
-  </choose>
-</description>
+  <description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <call id="a01" endpoint="services" service-operation="op1" state-controlflow="execute">
+      <repository endpoint="repository"/>
+    </call>
+    <call id="a02" endpoint="services" service-operation="op2" state-controlflow="execute">
+      <repository endpoint="repository"/>
+    </call>
+    <call id="a03" endpoint="services" service-operation="op3" state-controlflow="execute">
+      <repository endpoint="repository"/>
+    </call>
+  </description>
   <transformation>
     <!-- {{{ -->
     <xsl:stylesheet version="1.0"
@@ -526,6 +484,18 @@
         <!-- }}} --> 
       </xsl:template>
 
+      <xsl:template match="//flow:injected">
+        <!-- {{{ -->
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text># ========== Code is injected from activity: </xsl:text>
+        <xsl:value-of select="@id"/>
+        <xsl:text> ==========</xsl:text>
+        <xsl:apply-templates select="child::flow:*[name() != 'interface']"/>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text># ========================================</xsl:text>
+        <!-- }}} -->
+      </xsl:template>
+
       <xsl:template match="//flow:constraint">
         <!-- {{{ --> 
         <xsl:text>:</xsl:text>
@@ -575,7 +545,7 @@
         <xsl:value-of select="@id"/>
         <xsl:text>, :call, :</xsl:text>
         <xsl:value-of select="@endpoint"/>
-        <xsl:text>, :input => input </xsl:text>
+        <xsl:text>, :input => input</xsl:text>
         <xsl:if test="string(@http-method)">
           <xsl:text>, :http-method => '</xsl:text>
           <xsl:value-of select="@http-method"/>
@@ -586,7 +556,9 @@
           <xsl:value-of select="@service-operation"/>
           <xsl:text>', :controlflow => '</xsl:text>
           <xsl:value-of select="@state-controlflow"/>
-          <xsl:text>'}</xsl:text>
+          <xsl:text>', :repository => endpoints[:</xsl:text>
+          <xsl:value-of select="child::flow:repository/@endpoint"/>
+          <xsl:text>]}</xsl:text>
         </xsl:if>
         <xsl:if test="string(@group-by)">
           <xsl:text>, :group => {:group_selector => '</xsl:text>
@@ -602,7 +574,6 @@
           <xsl:apply-templates select="child::flow:constraint"/>
           <xsl:text>}</xsl:text>
         </xsl:if>
-        <xsl:call-template name="prefix-whitespaces"/>
         <xsl:text> do |result|</xsl:text>
         <xsl:apply-templates select="child::flow:output">
           <xsl:with-param name="mode" select="'assign'"/>
@@ -665,7 +636,7 @@
                 </xsl:choose>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:text>") # ERROR during assignment of output</xsl:text>
+                <xsl:text># ERROR during assignment of output</xsl:text>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -881,7 +852,7 @@
         <xsl:text>critical(:</xsl:text>
         <xsl:value-of select="@id"/>
         <xsl:text>) do </xsl:text>
-        <xsl:apply-templates select="child::flow:*[(name() != 'endpoint') and (name() != 'context')]"/>
+        <xsl:apply-templates select="child::flow:*"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
         <xsl:text>end</xsl:text>
@@ -892,9 +863,13 @@
         <!-- {{{ -->
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>parallel (:</xsl:text>
-        <xsl:value-of select="@type"/>
-        <xsl:text>) do</xsl:text>
+        <xsl:text>parallel </xsl:text>
+        <xsl:if test="string(@wait)">
+          <xsl:text>(:</xsl:text>
+          <xsl:value-of select="@wait"/>
+          <xsl:text>) </xsl:text>
+        </xsl:if>
+        <xsl:text>do</xsl:text>
         <xsl:apply-templates select="child::flow:*"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
@@ -1038,8 +1013,7 @@
         </xsl:for-each>
          <!-- }}} -->
       </xsl:template>
-
-    </xsl:stylesheet>  
+    </xsl:stylesheet>
     <!-- }}} -->
   </transformation>
 </testset>

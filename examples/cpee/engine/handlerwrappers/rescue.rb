@@ -28,8 +28,9 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     if parameters.key?(:service)
       puts "== performing a call to the injection service"
       status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
-                                                                    Riddl::Parameter::Simple.new("cpee", cpee_instance),
-                                                                    Riddl::Parameter::Simple.new("rescue", parameters[:service][:repository])];
+                                                                Riddl::Parameter::Simple.new("cpee", cpee_instance),
+                                                                Riddl::Parameter::Simple.new("rescue", parameters[:service][:repository])];
+      puts "== injection done"
       raise "Injection at #{injection_service} failed with status: #{status}" if status != 200
       raise "Injection in progress" if status == 200
     else
