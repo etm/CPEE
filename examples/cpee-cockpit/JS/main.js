@@ -269,20 +269,24 @@ function monitor_instance_pos() {// {{{
 }// }}}
 
 function monitor_instance_pos_change(notification,event) {// {{{
-  var parts = notification.split(';');
-  var activity;
-  var callback;
-  $.each(parts,function(i,p){
-    var ma;
-    if (ma = p.match(/activity: "([^,]+)"/))
-      activity = ma[1];
-    if (ma = p.match(/lay: "([^,]+)"/))
-      lay = ma[1];
-  });
-  if (event == "activity_calling")
-    format_visual_add(activity,"active")
-  if (event == "activity_done")
-    format_visual_remove(activity,"active")
+  var parts = YAML.eval(notification);
+  console.log(parts);
+
+//  var parts = notification.split(';');
+//  var activity;
+//  var callback;
+//
+//  $.each(parts,function(i,p){
+//    var ma;
+//    if (ma = p.match(/activity: "([^,]+)"/))
+//      activity = ma[1];
+//    if (ma = p.match(/lay: "([^,]+)"/))
+//      lay = ma[1];
+//  });
+//  if (event == "activity_calling")
+//    format_visual_add(activity,"active")
+//  if (event == "activity_done")
+//    format_visual_remove(activity,"active")
 }// }}}
 
 function monitor_instance_vote_add(notification) {// {{{
