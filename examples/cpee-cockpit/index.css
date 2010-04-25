@@ -231,6 +231,38 @@ svg text.normal {
   stroke:none;
   font-family:Arial;
 }
+
+svg text.super {
+  font-size:11px;
+  font-style:normal;
+  font-variant:normal;
+  font-weight:bold;
+  font-stretch:normal;
+  text-align:center;
+  line-height:100%;
+  writing-mode:lr-tb;
+  text-anchor:left;
+  color:#000000;
+  fill:#000000;
+  fill-opacity:1;
+  stroke:none;
+  font-family:Arial;
+}
+svg tspan.active {
+  fill:#ff0000;
+  display: none;
+}
+svg tspan.vote {
+  fill:#73d216;
+  display: none;
+}
+svg tspan.colon {
+  display: none;
+}
+svg tspan.necessary {
+  display: inline;
+}
+
 svg text.normallarge {
   font-size:25px;
   font-style:normal;

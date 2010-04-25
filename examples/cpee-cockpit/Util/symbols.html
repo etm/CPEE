@@ -42,6 +42,36 @@
         stroke:none;
         font-family:Arial;
       }
+      svg text.super {
+        font-size:11px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:100%;
+        writing-mode:lr-tb;
+        text-anchor:left;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+      svg tspan.active {
+        fill:#ff0000;
+        display: none;
+      }
+      svg tspan.vote {
+        fill:#73d216;
+        display: none;
+      }
+      svg tspan.colon {
+        display: none;
+      }
+      svg tspan.necessary {
+        display: inline;
+      }
       svg text.normallarge {
         font-size:25px;
         font-style:normal;
@@ -80,53 +110,56 @@
 
     <svg height="300" width="300" version="1.1" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <symbol id="call"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="stand"/>
-          <text class="normal" transform='translate(15,21)'>c</text>
-        </symbol><!-- }}} -->
-        <symbol id="manipulate"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="stand"/>
-          <text class="normal" transform='translate(15,21)'>m</text>
-        </symbol><!-- }}} -->
-        <symbol id="callmanipulate"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="stand"/>
-          <text class="normal" transform='translate(15,21)'>c</text>
-          <circle cx="28" cy="28" r="9" class="stand"/>
-          <text class="small" transform='translate(28,32)'>m</text>
-        </symbol><!-- }}} -->
-        <symbol id="choose"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="stand"/>
-          <text class="normal" transform='translate(15,21)'>σ</text>
-        </symbol><!-- }}} -->
-        <symbol id="alternative"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="standwithout"/>
-          <text class="normal" transform='translate(15,20)'>{܅}</text>
-        </symbol><!-- }}} -->
-        <symbol id="otherwise"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="standwithout"/>
-          <text class="normal" transform='translate(15,20)'>{⁎}</text>
-        </symbol><!-- }}} -->
-        <symbol id="parallel"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="stand"/>
-          <text class="normal" transform='translate(15,21)'>||</text>
-        </symbol><!-- }}} -->
-        <symbol id="parallel_branch"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="stand"/>
-          <text class="normal" transform='translate(15,21)'>|</text>
-        </symbol><!-- }}} -->
-        <symbol id="critical"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="stand"/>
-          <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
-        </symbol><!-- }}} -->
-        <symbol id="loop"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="stand"/>
-          <text class="normallarge" transform='translate(15,23)'>↺</text>
-        </symbol><!-- }}} -->
-        <symbol id="end"><!-- {{{ -->
-          <circle cx="15" cy="15" r="14" class="stand"/> 
-          <circle cx="15" cy="15" r="11" class="stand"/>
-          <text class="normal" transform='translate(15,21)'>Ω</text>
-        </symbol><!-- }}} -->
+                    <symbol id="call" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"></circle>
+                      <text class="normal" transform='translate(15,21)'>c</text>
+                      <text class="super" transform='translate(28.4,8.4)'><tspan class="active">1</tspan><tspan class="colon">,</tspan><tspan class="vote necessary">2</tspan></text>
+                    </symbol><!-- }}} -->
+                    <symbol id="manipulate" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"></circle>
+                      <text class="normal" transform='translate(15,21)'>m</text>
+                      <text class="super" transform='translate(28.4,8.4)'><tspan class="active">1</tspan><tspan class="colon">,</tspan><tspan class="vote necessary">2</tspan></text>
+                    </symbol><!-- }}} -->
+                    <symbol id="callmanipulate" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"></circle>
+                      <text class="normal" transform='translate(15,21)'>c</text>
+                      <circle cx="28" cy="28" r="9" class="stand"></circle>
+                      <text class="small" transform='translate(28,32)'>m</text>
+                      <text class="super" transform='translate(28.4,8.4)'><tspan class="active">1</tspan><tspan class="colon">,</tspan><tspan class="vote necessary">2</tspan></text>
+                    </symbol><!-- }}} -->
+                    <symbol id="choose" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"></circle>
+                      <text class="normal" transform='translate(15,21)'>σ</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="alternative" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="standwithout"></circle>
+                      <text class="normal" transform='translate(15,20)'>{܅}</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="otherwise" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="standwithout"></circle>
+                      <text class="normal" transform='translate(15,20)'>{⁎}</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="parallel" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"></circle>
+                      <text class="normal" transform='translate(15,21)'>||</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="parallel_branch" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"></circle>
+                      <text class="normal" transform='translate(15,21)'>|</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="critical" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"></circle>
+                      <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="loop" class="clickable"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"></circle>
+                      <text class="normallarge" transform='translate(15,23)'>↺</text>
+                    </symbol><!-- }}} -->
+                    <symbol id="end"><!-- {{{ -->
+                      <circle cx="15" cy="15" r="14" class="stand"></circle>
+                      <circle cx="15" cy="15" r="11" class="stand"></circle>
+                      <text class="normal" transform='translate(15,21)'>Ω</text>
+                    </symbol><!-- }}} -->
         <marker id="EndMarker" viewBox="0 0 10 10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="5" markerHeight="5" stroke="red" stroke-width="2" fill="red">
           <path d="m 2 2 l 6 3 l -6 3 z"/>
         </marker>

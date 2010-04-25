@@ -1,12 +1,11 @@
 var running = false;
 var subscription;
-var voting;
 var save_state;
 var save_dsl;
-var save_desc;
 var save_eps;
-var save_pos;
 var save_cvs;
+var node_state = {};
+
 
 $(document).ready(function() {// {{{
   $("button[name=base]").click(create_instance);
@@ -513,25 +512,27 @@ function sym_click(node) { // {{{
 } // }}}
 
 function format_visual_add(what,class) {
-  $.each(["graph","activity"],function(i,t){
-    $('#' + t + '-' + what).each(function(a,b){ 
-      var c = b.getAttribute("class").split(" ");
-      c.push(class);
-      b.setAttribute("class",c.join(" "));
-    });
-  });
+  if (node_state[what] == undefined)
+    node_state[what] = [];
+  node_state[what].push(class);
+  format_visual_set(what);
+
 }
 
 function format_visual_remove(what,class) {
+  c = node_state[what];
+  if ($.inArray(class,c) != -1)
+    c.splice($.inArray(class,c),1);
+  format_visual_set(what);
+}
+  
+function format_visual_set(what) {
   $.each(["graph","activity"],function(i,t){
     $('#' + t + '-' + what).each(function(a,b){ 
-      var c = b.getAttribute("class").split(" ");
-      if ($.inArray(class,c) != -1)
-        c.splice($.inArray(class,c),1);
-      b.setAttribute("class",c.join(" "));
+      b.setAttribute("class",node_state[what].join(" "));
     });
   });
-}
+}  
 
 function format_code(res,skim,lnums) {// {{{
  try {
