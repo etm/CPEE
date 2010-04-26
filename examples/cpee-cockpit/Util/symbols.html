@@ -113,7 +113,6 @@
                     <symbol id="call" class="clickable"><!-- {{{ -->
                       <circle cx="15" cy="15" r="14" class="stand"></circle>
                       <text class="normal" transform='translate(15,21)'>c</text>
-                      <text class="super" transform='translate(28.4,8.4)'><tspan class="active">1</tspan><tspan class="colon">,</tspan><tspan class="vote necessary">2</tspan></text>
                     </symbol><!-- }}} -->
                     <symbol id="manipulate" class="clickable"><!-- {{{ -->
                       <circle cx="15" cy="15" r="14" class="stand"></circle>
@@ -166,7 +165,10 @@
       </defs>
 
       <g> 
-        <use xlink:href="#call" transform="translate(0,0)"/>
+        <g transform="translate(0,0)">
+          <use xlink:href="#call"/>
+          <text class='super' transform='translate(28.4,8.4)'><tspan class='active necessary'>1</tspan><tspan class="colon necessary">,</tspan><tspan class="vote necessary">1</tspan></text>
+        </g>
         <use xlink:href="#manipulate" transform="translate(40,0)"/>
         <use xlink:href="#callmanipulate" transform="translate(80,0)"/>
         <use xlink:href="#choose" transform="translate(0,40)"/>

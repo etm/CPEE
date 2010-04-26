@@ -147,18 +147,38 @@ function WFGraph (xml, container) {
     if((sym_name == "call") && (xml.evaluate("count(child::*[name() = 'manipulate'])", node, ns, XPathResult.ANY_TYPE, null).numberValue > 0)) 
       sym_name = "callmanipulate";
 
+    var g = document.createElementNS(svgNS, "g");
+        g.setAttribute('transform', 'translate(' + String(xy['col']*column_width-15) + ',' + String(xy['line']*row_height-30) + ')');
+        g.setAttribute('id', 'node-' + node.getAttribute("id"));
+
     var use = document.createElementNS(svgNS, "use");
     use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
 
-    var attrs;
+    var attrs = {};
     if (id) {
-      attrs = {'id': 'graph-' + node.getAttribute("id"), 'class': 'activities', 'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30};
+      attrs = {'id': 'graph-' + node.getAttribute("id"), 'class': 'activities'};
       var title = document.createElementNS(svgNS, "title");
       title.appendChild(document.createTextNode(node.getAttribute('id')));
       use.appendChild(title);
-    }  else {
-      attrs = {'x': xy['col']*column_width-15, 'y':  xy['line']*row_height-30};
-    }  
+
+      var ts1 = document.createElementNS(svgNS, "tspan");
+          ts1.setAttribute('class', 'active');
+          ts1.appendChild(document.createTextNode('0'));
+      var ts2 = document.createElementNS(svgNS, "tspan");
+          ts2.setAttribute('class', 'colon');
+          ts2.appendChild(document.createTextNode(','));
+      var ts3 = document.createElementNS(svgNS, "tspan");
+          ts3.setAttribute('class', 'vote');
+          ts3.appendChild(document.createTextNode('0'));
+      var super = document.createElementNS(svgNS, "text");
+          super.setAttribute('class', 'super');
+          super.setAttribute('transform', 'translate(28.4,8.4)');
+          super.appendChild(ts1);
+          super.appendChild(ts2);
+          super.appendChild(ts3);
+       
+      g.appendChild(super);
+    }
     switch(node.nodeName) {
       case 'loop':
       case 'alternative':
@@ -173,7 +193,8 @@ function WFGraph (xml, container) {
       use.setAttribute(attr, attrs[attr]);
 
     use.onclick = function(){ symclick(node); };
-    symbols.appendChild(use);
+    g.appendChild(use);
+    symbols.appendChild(g);
   } // }}}
 
   var copyPos = function(pos) {// {{{ 

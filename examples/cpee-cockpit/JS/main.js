@@ -547,7 +547,6 @@ function format_visual_add(what,class) {
     node_state[what] = [];
   node_state[what].push(class);
   format_visual_set(what);
-
 }
 
 function format_visual_remove(what,class) {
@@ -558,6 +557,41 @@ function format_visual_remove(what,class) {
 }
   
 function format_visual_set(what) {
+  if (node_state[what] != undefined) {
+    var votes = jQuery.grep(node_state[what], function(n, i){ return (n == 'vote'); });
+        votes = votes.length;
+    var actives = jQuery.grep(node_state[what], function(n, i){ return (n == 'active'); });
+        actives = actives.length;
+    if (actives > 0 && votes > 0)
+      $('#node-' + what + ' .super .colon').each(function(a,b){
+        b.setAttribute('class','colon necessary');
+      });
+    else  
+      $('#node-' + what + ' .super .colon').each(function(a,b){
+        b.setAttribute('class','colon');
+      });
+    if (actives > 0)
+      $('#node-' + what + ' .super .active').each(function(a,b){
+        b.setAttribute('class','active necessary');
+        var txt = b.childNodes[0];
+        txt.nodeValue = actives;
+      });
+    else  
+      $('#node-' + what + ' .super .active').each(function(a,b){
+        b.setAttribute('class','active');
+      });
+    if (votes > 0)
+      $('#node-' + what + ' .super .vote').each(function(a,b){
+        b.setAttribute('class','vote necessary');
+        var txt = b.childNodes[0];
+        txt.nodeValue = votes;
+      });
+    else  
+      $('#node-' + what + ' .super .vote').each(function(a,b){
+        b.setAttribute('class','vote');
+      });
+  }  
+
   $.each(["graph","activity"],function(i,t){
     $('#' + t + '-' + what).each(function(a,b){ 
       if (node_state[what] != undefined)
@@ -568,6 +602,9 @@ function format_visual_set(what) {
       
 function format_visual_clear() {
   node_state = {};
+  $('.super .active').each(function(a,b){b.setAttribute("class","active");});
+  $('.super .vote').each(function(a,b){b.setAttribute("class","vote");});
+  $('.super .colon').each(function(a,b){b.setAttribute("class","colon");});
   $('.activities').each(function(a,b){b.setAttribute("class","activities");});
   $("#votes").empty();
 }
