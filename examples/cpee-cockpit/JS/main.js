@@ -523,6 +523,8 @@ function sym_click(node) { // {{{
   switch(node.nodeName) {
     case 'call':
       table.append('<tr><td>ID:<td><td class="long">' + $(node).attr('id') + '</td></tr>');
+      if ($(node).attr('lay'))
+        table.append('<tr><td>Lay:<td><td class="long">' + $(node).attr('lay') + '</td></tr>');
       table.append('<tr><td>Endpoint:<td><td class="long">' + $(node).attr('endpoint') + '</td></tr>');
       if ($('manipulate',node).text())
         table.append('<tr><td>Manipulate:<td><td class="long">' + format_code($('manipulate',node).text(),true,false) + '</td></tr>');
@@ -542,21 +544,21 @@ function sym_click(node) { // {{{
   }
 } // }}}
 
-function format_visual_add(what,class) {
+function format_visual_add(what,class) {//{{{
   if (node_state[what] == undefined)
     node_state[what] = [];
   node_state[what].push(class);
   format_visual_set(what);
-}
+}//}}}
 
-function format_visual_remove(what,class) {
+function format_visual_remove(what,class) {//{{{
   c = node_state[what];
   if ($.inArray(class,c) != -1)
     c.splice($.inArray(class,c),1);
   format_visual_set(what);
-}
+}//}}}
   
-function format_visual_set(what) {
+function format_visual_set(what) {//{{{
   if (node_state[what] != undefined) {
     var votes = jQuery.grep(node_state[what], function(n, i){ return (n == 'vote'); });
         votes = votes.length;
@@ -598,16 +600,16 @@ function format_visual_set(what) {
         b.setAttribute("class",'activities ' + node_state[what].join(" "));
     });
   });
-}
+}//}}}
       
-function format_visual_clear() {
+function format_visual_clear() {//{{{
   node_state = {};
   $('.super .active').each(function(a,b){b.setAttribute("class","active");});
   $('.super .vote').each(function(a,b){b.setAttribute("class","vote");});
   $('.super .colon').each(function(a,b){b.setAttribute("class","colon");});
   $('.activities').each(function(a,b){b.setAttribute("class","activities");});
   $("#votes").empty();
-}
+}//}}}
 
 function format_code(res,skim,lnums) {// {{{
  try {
