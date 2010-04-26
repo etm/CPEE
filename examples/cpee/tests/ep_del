@@ -1,8 +1,0 @@
-#!/usr/bin/ruby
-require '../../../../riddl/lib/ruby/client'
-
-srv = Riddl::Client.new("http://localhost:9298/")
-
-main = srv.resource("/1/properties/values/endpoints/timeouter")
-
-status, res = main.delete
