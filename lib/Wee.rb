@@ -133,7 +133,7 @@ class Wee
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters)# {{{
       position, lay = position_test position
-      return if self.state == :stopping || Thread.current[:nolongernecessary] || is_in_search_mode(position)
+      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
 
       Thread.current[:continue] = Continue.new
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, lay, Thread.current[:continue]
@@ -182,7 +182,7 @@ class Wee
     # Defines Workflow paths that can be executed parallel.
     # May contain multiple branches (parallel_branch)
     def parallel(type=nil)# {{{
-      return if self.state == :stopping || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
 
       Thread.current[:branches] = []
       Thread.current[:branch_event] = Thread.new{Thread.stop}
@@ -203,7 +203,7 @@ class Wee
         end  
       end
 
-      unless self.state == :stopping
+      unless self.state == :stopping || self.state == :stopped
         Thread.current[:branches].each do |thread| 
           if thread.alive? 
             thread[:nolongernecessary] = true
@@ -215,7 +215,7 @@ class Wee
 
     # Defines a branch of a parallel-Construct
     def parallel_branch(*vars)# {{{
-      return if self.state == :stopping || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
       parent_thread = Thread.current
       Thread.current[:branches] << Thread.new(*vars) do |*local|
         Thread.current[:branch_search] = @__wee_search
@@ -232,7 +232,7 @@ class Wee
     # Defines a choice in the Workflow path.
     # May contain multiple execution alternatives
     def choose# {{{
-      return if self.state == :stopping || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
       Thread.current[:alternative_executed] ||= []
       Thread.current[:alternative_executed] << false
       yield
@@ -244,12 +244,12 @@ class Wee
     # Block is executed if condition == true or
     # searchmode is active (to find the starting position)
     def alternative(condition)# {{{
-      return if self.state == :stopping || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
       yield if is_in_search_mode || condition
       Thread.current[:alternative_executed][-1] = true if condition
     end# }}}
     def otherwise# {{{
-      return if self.state == :stopping || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
       yield if is_in_search_mode || !Thread.current[:alternative_executed].last
     end# }}}
 
@@ -272,7 +272,7 @@ class Wee
       unless condition.is_a?(Array) && condition[0].is_a?(Proc) && [:pre_test,:post_test].include?(condition[1])
         raise "condition must be called pre_test{} or post_test{}"
       end
-      return if self.state == :stopping || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
       yield if is_in_search_mode
       return if is_in_search_mode
       case condition[1]
@@ -359,14 +359,14 @@ class Wee
       end
       # handshake call and wait until it finished
       handlerwrapper.activity_handle passthrough, endpoint, params
-      Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.state == :stopping
+      Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.state == :stopping || self.state == :stopped
        
       handlerwrapper.activity_no_longer_necessary if Thread.current[:nolongernecessary]
-      if self.state == :stopping
+      if self.state == :stopping || self.state == :stopped
         handlerwrapper.activity_stop
         wp.passthrough = handlerwrapper.activity_passthrough_value
       end  
-      Thread.current[:nolongernecessary] || (self.state == :stopping) ? nil : handlerwrapper.activity_result_value
+      Thread.current[:nolongernecessary] || (self.state == :stopping || self.state == :stopped) ? nil : handlerwrapper.activity_result_value
     end# }}}
     def refreshcontext(handlerwrapper)# {{{
       changed = []

@@ -74,14 +74,13 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def inform_activity_done
-    $controller[@instance].position
-    $controller[@instance].notify("running/activity_done", :activity => @handler_position)
+    $controller[@instance].notify("running/activity_done", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_manipulate
-    $controller[@instance].notify("running/activity_manipulating", :activity => @handler_position)
+    $controller[@instance].notify("running/activity_manipulating", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_failed(err)
-    $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :message => err.message)
+    $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
   end
   def inform_syntax_error(err)
     puts err.message
@@ -92,7 +91,10 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].serialize!
     $controller[@instance].notify("properties/context-variables/change", :changed => changed)
   end
-  def inform_state(newstate)
+  def inform_position_change
+    $controller[@instance].position
+  end
+  def inform_state_change(newstate)
     if $controller[@instance]
       $controller[@instance].serialize!
       $controller[@instance].notify("properties/state/change", :state => newstate)
@@ -100,11 +102,11 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def vote_sync_after
-    voteid = $controller[@instance].call_vote("running/syncing_after", :activity => @handler_position)
+    voteid = $controller[@instance].call_vote("running/syncing_after", :activity => @handler_position, :lay => @handler_lay)
     $controller[@instance].vote_result(voteid)
   end
   def vote_sync_before
-    voteid = $controller[@instance].call_vote("running/syncing_before", :activity => @handler_position)
+    voteid = $controller[@instance].call_vote("running/syncing_before", :activity => @handler_position, :lay => @handler_lay)
     $controller[@instance].vote_result(voteid)
   end
 end
