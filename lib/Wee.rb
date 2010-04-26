@@ -44,7 +44,7 @@ class Wee
 
     def inform_syntax_error(err); end
     def inform_context_change(changed); end
-    def inform_position_change(newstate); end
+    def inform_position_change; end
     def inform_state_change(newstate); end
     
     def vote_sync_before; end
@@ -203,7 +203,12 @@ class Wee
         finished_threads_count = wait_count if self.state == :stopping || self.state == :stopped
       end
       if self.state == :stopping || self.state == :stopped
-        mythreads.each { |thread| trigger_continue(thread) if thread.alive? }
+        mythreads.each { |thread| 
+          if thread.alive? 
+            trigger_continue(thread)
+            thread.join
+          end  
+        }
       else  
         mythreads.each do |thread| 
           if thread.alive? 

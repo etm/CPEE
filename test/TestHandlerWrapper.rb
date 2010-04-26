@@ -1,7 +1,7 @@
 require ::File.dirname(__FILE__) + '/../lib/Wee'
 
 class TestHandlerWrapper < Wee::HandlerWrapperBase
-  def initialize(args,position,continue)
+  def initialize(args,position=nil,lay=nil,continue=nil)
     @__myhandler_stopped = false
     @__myhandler_position = position
     @__myhandler_continue = continue
@@ -10,7 +10,7 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
-  def activity_handle(passthrough, endpoint,parameters)
+  def activity_handle(passthrough, endpoint, parameters)
     $message += "Handle call: position=[#{@__myhandler_position}] passthrough=[#{passthrough}], endpoint=[#{endpoint}], parameters=[#{parameters}]. Waiting for release\n"
     t = Thread.new() {
       released = false
@@ -66,7 +66,7 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
     $message += "Activity #{@__myhandler_position} failed with error #{err}\n"
     raise(err)
   end
-  def inform_workflow_state(newstate)
+  def inform_state_change(newstate)
     $message += "State changed to #{newstate}"
   end
 

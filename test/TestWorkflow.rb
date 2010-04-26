@@ -9,26 +9,26 @@ class TestWorkflow < Wee
   context :x => 'begin_'
   
   control flow do
-    activity [1], :call, :endpoint1 do |result|
+    activity :a1_1, :call, :endpoint1 do |result|
       @x += result
     end
     parallel :wait => 2 do
       parallel_branch do
-        activity [2,1], :call, :endpoint1
+        activity :a2_1_1, :call, :endpoint1
       end
       parallel_branch do
-        activity [2,2], :call, :endpoint1
+        activity :a2_2_1, :call, :endpoint1
       end
     end
-    activity [3], :manipulate do
+    activity :a3, :manipulate do
       @x += '_end'
     end
     choose do
-      alternative(@x != nil) do
-        activity [4,1], :call, :endpoint1
+      alternative @x != nil do
+        activity :a4a, :call, :endpoint1
       end
       otherwise do
-        activity [4,2], :call, :endpoint1
+        activity :a4b, :call, :endpoint1
       end
     end
   end

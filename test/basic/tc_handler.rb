@@ -15,14 +15,14 @@ class TestCaseHandler < Test::Unit::TestCase
 
   def test_handler
     assert_raise RuntimeError do
-      @wf.handler = String
+      @wf.handlerwrapper = String
     end
     assert_nothing_raised do
-      @wf.handler = TestHandler
+      @wf.handlerwrapper = TestHandlerWrapper
     end
   end
   def test_handlerargs
-    @wf.handlerargs =  ["1", "2"]
-    assert(@wf.handlerargs.is_a?(Array), "Handler arguments is not an array, it is a #{@wf.handlerargs.inspect}")
+    @wf.handlerwrapper_args =  ["1", "2"]
+    assert(@wf.handlerwrapper_args.is_a?(Array), "Handler arguments is not an array, it is a #{@wf.handlerwrapper_args.inspect}")
   end
 end

@@ -38,7 +38,7 @@ function create_instance() {// {{{
         success: function(res){
           $("input[name=instance-url]").val((base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://"));
         },  
-        failure: report_failure
+        error: report_failure
       });
     } else {
       alert("An instance name is necessary!");
@@ -127,7 +127,7 @@ function monitor_instance() {// {{{
       monitor_instance_dsl();
       monitor_instance_state();
     },
-    failure: function() {
+    error: function(a,b,c) {
       alert("This ain't no CPEE instance");
     }  
   });      
@@ -220,16 +220,15 @@ function monitor_instance_state() {// {{{
       if (res != save_state) {
         save_state = res;
 
-        if (res == 'finished')
-          monitor_instance_pos();
-
         var ctv = $("#state");
         ctv.empty();
 
         var but = "";
+        if (res == "stopped") {
+          monitor_instance_pos();
+        }  
         if (res == "ready" || res == "stopped") {
           but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
-          vote_clean();
         }
         if (res == "running") {
           but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
@@ -248,18 +247,18 @@ function monitor_instance_pos() {// {{{
     url: url + "/properties/values/positions/",
     success: function(res){
       var values = $("values > *",res);
-      $('span.active').removeClass("active");
-      $("svg use.active").each(function(a,b){b.setAttribute("class","activities");});
+      format_visual_clear();
       values.each(function(){
-        var pos = this.nodeName;
-        $('#activity-' + pos).addClass("active");
-        $('#graph-' + pos).each(function(a,b){b.setAttribute("class","active activities");});
+        var what = this.nodeName;
+        format_visual_add(what,"active");
+        format_visual_set(what);
       });
     }
   });
 }// }}}
 
 function monitor_instance_pos_change(notification,event) {// {{{
+  if (save_state == "stopping") return;
   var parts = YAML.eval(notification);
   if (event == "activity_calling")
     format_visual_add(parts.activity,"active")
@@ -268,6 +267,7 @@ function monitor_instance_pos_change(notification,event) {// {{{
 } // }}}
 
 function monitor_instance_vote_add(notification) {// {{{
+  if (save_state == "stopping") return;
   var parts = YAML.eval(notification);
   var ctv = $("#votes");
   ctv.append("<tr id='vote_to_continue_" + parts.activity + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\");'>vote to continue</button></td></tr>");
@@ -280,39 +280,31 @@ function monitor_instance_vote_remove(activity,callback) {//{{{
     type: "PUT", 
     url: url + "/callbacks/" + callback,
     data: ({'continue': 'true'}),
-    failure: report_failure
+    error: report_failure
   });
   format_visual_remove(activity,"vote");
   $('#vote_to_continue_' + activity).remove();
 }//}}}
 
-function vote_clean() {//{{{
-  try {
-  $('span.vote').removeClass("vote");
-  $('svg use.vote').each(function(a,b){b.setAttribute("class","activities");});
-  $('#votes').empty();
-  } catch(e) {
-    alert(e.toString());
-  }
-}//}}}
-
 function start_instance() {// {{{
   var url = $("input[name=instance-url]").val();
+  format_visual_clear();
   $.ajax({
     type: "PUT", 
     url: url + "/properties/values/state",
     data: ({value: "running"}),
-    failure: report_failure
+    error: report_failure
   });
 }// }}}
 
 function stop_instance() {// {{{
   var url = $("input[name=instance-url]").val();
+  format_visual_clear();
   $.ajax({
     type: "PUT", 
     url: url + "/properties/values/state",
     data: ({value: "stopping"}),
-    failure: report_failure
+    error: report_failure
   });
 }// }}}
 
@@ -344,13 +336,13 @@ function load_testset() {// {{{
                 if (rcount == length)
                   load_testset_cvs(url,testset);
               },
-              failure: report_failure
+              error: report_failure
             });  
           });
           if (length == 0)
             load_testset_cvs(url,testset);
         },
-        failure: report_failure
+        error: report_failure
       });  
       
       $.ajax({
@@ -370,13 +362,13 @@ function load_testset() {// {{{
                 if (rcount == length)
                   load_testset_eps(url,testset);
               },
-              failure: report_failure
+              error: report_failure
             });  
           });
           if (length == 0)
             load_testset_eps(url,testset);
         },
-        failure: report_failure
+        error: report_failure
       });
 
       $.ajax({
@@ -392,7 +384,7 @@ function load_testset() {// {{{
                 url: url + "/properties/values/",
                 data: ({key: "transformation", value: val}),
                 success: function() { load_testset_des(url,testset); },
-                failure: report_failure
+                error: report_failure
               });
             } else {
               $.ajax({
@@ -400,19 +392,19 @@ function load_testset() {// {{{
                 url: url + "/properties/values/transformation",
                 data: ({value: val}),
                 success: function() { load_testset_des(url,testset); },
-                failure: report_failure
+                error: report_failure
               });
             }
           });
         },  
-        failure: report_failure
+        error: report_failure
       });
       
       $.ajax({
         type: "PUT", 
         url: url + "/properties/values/handlerwrapper",
         success: function() { load_testset_hw(url,testset); },
-        failure: report_failure
+        error: report_failure
       });
     }
   });
@@ -427,7 +419,7 @@ function load_testset_des(url,testset) {// {{{
       type: "PUT", 
       url: url + "/properties/values/description",
       data: ({value: val}),
-      failure: report_failure
+      error: report_failure
     });
   });
 } // }}}
@@ -439,7 +431,7 @@ function load_testset_hw(url,testset) {// {{{
       type: "PUT", 
       url: url + "/properties/values/handlerwrapper",
       data: ({value: val}),
-      failure: report_failure
+      error: report_failure
     });
   });
 } // }}}
@@ -452,7 +444,7 @@ function load_testset_cvs(url,testset) {// {{{
       type: "POST", 
       url: url + "/properties/values/context-variables/",
       data: ({key:  name, value: val}),
-      failure: report_failure
+      error: report_failure
     });  
   });
 }// }}}
@@ -465,7 +457,7 @@ function load_testset_eps(url,testset) {// {{{
       type: "POST", 
       url: url + "/properties/values/endpoints/",
       data: ({key:  name, value: val}),
-      failure: report_failure
+      error: report_failure
     });  
   });
 }// }}}
@@ -529,10 +521,16 @@ function format_visual_remove(what,class) {
 function format_visual_set(what) {
   $.each(["graph","activity"],function(i,t){
     $('#' + t + '-' + what).each(function(a,b){ 
-      b.setAttribute("class",node_state[what].join(" "));
+      b.setAttribute("class",'activities ' + node_state[what].join(" "));
     });
   });
-}  
+}
+      
+function format_visual_clear() {
+  node_state = {};
+  $('.activities').each(function(a,b){b.setAttribute("class","activities");});
+  $("#votes").empty();
+}
 
 function format_code(res,skim,lnums) {// {{{
  try {
