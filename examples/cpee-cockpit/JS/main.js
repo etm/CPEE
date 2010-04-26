@@ -310,6 +310,7 @@ function stop_instance() {// {{{
 function load_testset() {// {{{
   if (running) return;
   running  = true;
+  save_dsl = null; // reload dsl and position under all circumstances
   var url = $("input[name=instance-url]").val();
   $.ajax({ 
     cache: false,
@@ -366,6 +367,32 @@ function load_testset() {// {{{
           });
           if (length == 0)
             load_testset_eps(url,testset);
+        },
+        error: report_failure
+      });
+      
+      $.ajax({
+        type: "GET", 
+        url: url + "/properties/values/positions/",
+        success: function(res){
+          var rcount = 0;
+          var values = $("values > *",res);
+          var length = values.length;
+          values.each(function(){
+            var name = this.nodeName;
+            $.ajax({
+              type: "DELETE", 
+              url: url + "/properties/values/positions/" + name,
+              success: function(){
+                rcount += 1;
+                if (rcount == length)
+                  load_testset_pos(url,testset);
+              },
+              error: report_failure
+            });  
+          });
+          if (length == 0)
+            load_testset_pos(url,testset);
         },
         error: report_failure
       });
@@ -455,6 +482,19 @@ function load_testset_eps(url,testset) {// {{{
     $.ajax({
       type: "POST", 
       url: url + "/properties/values/endpoints/",
+      data: ({key:  name, value: val}),
+      error: report_failure
+    });  
+  });
+}// }}}
+
+function load_testset_pos(url,testset) {// {{{
+  $("testset > positions > *",testset).each(function(){
+    var name = this.nodeName;
+    var val = $(this).text();
+    $.ajax({
+      type: "POST", 
+      url: url + "/properties/values/positions/",
       data: ({key:  name, value: val}),
       error: report_failure
     });  

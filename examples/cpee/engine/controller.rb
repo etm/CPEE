@@ -13,6 +13,7 @@ class Controller
     @votes_results = {}
     @callbacks = {}
     @instance = EmptyWorkflow.new(id,url)
+    @positions = []
     self.unserialize!
     @thread = nil
   end
@@ -23,6 +24,9 @@ class Controller
     Thread.abort_on_exception = true
     @thread = Thread.new do
       Thread.current.abort_on_exception = true
+      unless @positions.empty?
+        @instance.search(@positions)
+      end
       @instance.start
     end
   end# }}}
@@ -115,6 +119,11 @@ class Controller
 
       doc.find("/p:properties/p:endpoints/p:*").each do |e|
         @instance.endpoint e.name.to_s.to_sym => e.text
+      end
+    
+      @positions = []
+      doc.find("/p:properties/p:positions/p:*").each do |e|
+        @positions << ::Wee::Position.new(e.name.to_s.to_sym,:at,e.text)
       end
 
       @instance.description doc.find("string(/p:properties/p:dsl)")

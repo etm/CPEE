@@ -1,8 +1,9 @@
 <testsets>
-  <testset>Concurrent</testset>
   <testset>BPM Testset</testset>
   <testset>Mangler 1</testset>
   <testset>Mangler 2</testset>
+  <testset>Concurrent</testset>
+  <testset>Linear</testset>
   <testset>Vigne</testset>
   <testset>Cinemas</testset>
 </testsets>
