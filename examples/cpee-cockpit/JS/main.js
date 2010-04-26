@@ -269,7 +269,7 @@ function monitor_instance_vote_add(notification) {// {{{
   if (save_state == "stopping") return;
   var parts = YAML.eval(notification);
   var ctv = $("#votes");
-  ctv.append("<tr id='vote_to_continue_" + parts.activity + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\");'>vote to continue</button></td></tr>");
+  ctv.append("<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\");'>vote to continue</button></td></tr>");
   format_visual_add(parts.activity,"vote")
 }// }}}
 
@@ -282,7 +282,7 @@ function monitor_instance_vote_remove(activity,callback) {//{{{
     error: report_failure
   });
   format_visual_remove(activity,"vote");
-  $('#vote_to_continue_' + activity).remove();
+  $('#vote_to_continue-' + activity + '-' + callback).remove();
 }//}}}
 
 function start_instance() {// {{{

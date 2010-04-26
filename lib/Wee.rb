@@ -185,15 +185,22 @@ class Wee
       return if self.state == :stopping || Thread.current[:nolongernecessary]
 
       Thread.current[:branches] = []
+      Thread.current[:branch_event] = Thread.new{Thread.stop}
+      Thread.current[:mutex] = Mutex.new
       yield
 
       wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && type[:wait].is_a?(Integer)) ? type[:wait] : Thread.current[:branches].size
       finished_threads_count = 0
 
-      while finished_threads_count < wait_count && finished_threads_count < Thread.current[:branches].size && self.state != :stopping
-        Thread.pass
+      branch_count = true
+      while branch_count
         finished_threads_count = 0
         Thread.current[:branches].each { |thread| finished_threads_count+=1 unless thread.alive? }
+        if finished_threads_count < wait_count && finished_threads_count < Thread.current[:branches].size && self.state != :stopping
+          Thread.current[:branch_event].join
+        else  
+          branch_count = false
+        end  
       end
 
       unless self.state == :stopping
@@ -209,9 +216,15 @@ class Wee
     # Defines a branch of a parallel-Construct
     def parallel_branch(*vars)# {{{
       return if self.state == :stopping || Thread.current[:nolongernecessary]
+      parent_thread = Thread.current
       Thread.current[:branches] << Thread.new(*vars) do |*local|
         Thread.current[:branch_search] = @__wee_search
         yield(*local)
+        parent_thread[:mutex].synchronize do # enable the while in parallel() to operate without polling
+          pte = parent_thread[:branch_event]
+          parent_thread[:branch_event] = Thread.new{Thread.stop}
+          pte.run
+        end  
       end
     end# }}}
 
