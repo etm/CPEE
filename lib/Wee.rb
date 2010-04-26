@@ -70,7 +70,6 @@ class Wee
     @__wee_search = false
     @__wee_positions = Array.new
     @__wee_main = nil
-    @__wee_threads = Array.new
     @__wee_context ||= CHash.new(self)
     @__wee_context_change = true
     @__wee_endpoints ||= Hash.new
@@ -132,9 +131,9 @@ class Wee
     #   - :call - order the handlerwrapper to perform a service call
     # endpoint: (only with :call) ep of the service
     # parameters: (only with :call) service parameters
-    def activity(position, type, endpoint=nil, *parameters)
+    def activity(position, type, endpoint=nil, *parameters)# {{{
       position, lay = position_test position
-      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
+      return if self.state == :stopping || Thread.current[:nolongernecessary] || is_in_search_mode(position)
 
       Thread.current[:continue] = Continue.new
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, lay, Thread.current[:continue]
@@ -156,17 +155,17 @@ class Wee
             handlerwrapper.vote_sync_before
             passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
             ret_value = perform_external_call wp, passthrough, handlerwrapper, @__wee_endpoints[endpoint], *parameters
-            if block_given? && self.state != :stopping && self.state != :stopped && !Thread.current[:nolongernecessary]
+            if block_given? && self.state != :stopping && !Thread.current[:nolongernecessary]
               handlerwrapper.inform_activity_manipulate
               yield ret_value
               refreshcontext handlerwrapper
             end
         end
-        if self.state != :stopping && self.state != :stopped && !Thread.current[:nolongernecessary]
+        if self.state != :stopping && !Thread.current[:nolongernecessary]
           handlerwrapper.inform_activity_done
           handlerwrapper.vote_sync_after
         end
-        if self.state != :stopping && self.state != :stopped
+        if self.state != :stopping
           @__wee_positions.delete wp
           handlerwrapper.inform_position_change
         end  
@@ -177,43 +176,31 @@ class Wee
       ensure
         @__wee_context_change = true
       end
-    end
+    end# }}}
     
     # Parallel DSL-Construct
     # Defines Workflow paths that can be executed parallel.
     # May contain multiple branches (parallel_branch)
     def parallel(type=nil)# {{{
-      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || Thread.current[:nolongernecessary]
 
-      mythreads = Array.new
-      # Handle the yield block (= def of parallel branches) in a 
-      # Mutex to resolve conflicts (waiting for branches)
-      @__wee_mutex ||= Mutex.new
-      @__wee_mutex.synchronize do
-        @__wee_threads = Array.new
-        yield
-        mythreads = @__wee_threads.clone
-      end
-      wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && type[:wait].is_a?(Integer)) ? type[:wait] : mythreads.size
+      Thread.current[:branches] = []
+      yield
+
+      wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && type[:wait].is_a?(Integer)) ? type[:wait] : Thread.current[:branches].size
       finished_threads_count = 0
-      while (finished_threads_count < wait_count && finished_threads_count < mythreads.size)
+
+      while finished_threads_count < wait_count && finished_threads_count < Thread.current[:branches].size && self.state != :stopping
         Thread.pass
         finished_threads_count = 0
-        mythreads.each { |thread| finished_threads_count+=1 unless thread.alive? }
-        finished_threads_count = wait_count if self.state == :stopping || self.state == :stopped
+        Thread.current[:branches].each { |thread| finished_threads_count+=1 unless thread.alive? }
       end
-      if self.state == :stopping || self.state == :stopped
-        mythreads.each { |thread| 
-          if thread.alive? 
-            trigger_continue(thread)
-            thread.join
-          end  
-        }
-      else  
-        mythreads.each do |thread| 
+
+      unless self.state == :stopping
+        Thread.current[:branches].each do |thread| 
           if thread.alive? 
             thread[:nolongernecessary] = true
-            trigger_continue(thread)
+            recursive_continue(thread)
           end  
         end
       end  
@@ -221,8 +208,8 @@ class Wee
 
     # Defines a branch of a parallel-Construct
     def parallel_branch(*vars)# {{{
-      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
-      @__wee_threads << Thread.new(*vars) do |*local|
+      return if self.state == :stopping || Thread.current[:nolongernecessary]
+      Thread.current[:branches] << Thread.new(*vars) do |*local|
         Thread.current[:branch_search] = @__wee_search
         yield(*local)
       end
@@ -232,7 +219,7 @@ class Wee
     # Defines a choice in the Workflow path.
     # May contain multiple execution alternatives
     def choose# {{{
-      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || Thread.current[:nolongernecessary]
       Thread.current[:alternative_executed] ||= []
       Thread.current[:alternative_executed] << false
       yield
@@ -244,12 +231,12 @@ class Wee
     # Block is executed if condition == true or
     # searchmode is active (to find the starting position)
     def alternative(condition)# {{{
-      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || Thread.current[:nolongernecessary]
       yield if is_in_search_mode || condition
       Thread.current[:alternative_executed][-1] = true if condition
     end# }}}
     def otherwise# {{{
-      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || Thread.current[:nolongernecessary]
       yield if is_in_search_mode || !Thread.current[:alternative_executed].last
     end# }}}
 
@@ -272,14 +259,14 @@ class Wee
       unless condition.is_a?(Array) && condition[0].is_a?(Proc) && [:pre_test,:post_test].include?(condition[1])
         raise "condition must be called pre_test{} or post_test{}"
       end
-      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
+      return if self.state == :stopping || Thread.current[:nolongernecessary]
       yield if is_in_search_mode
       return if is_in_search_mode
       case condition[1]
         when :pre_test
-          yield while condition[0].call
+          yield while condition[0].call && self.state != :stopping
         when :post_test
-          begin; yield; end while condition[0].call
+          begin; yield; end while condition[0].call && self.state != :stopping
       end
     end# }}}
 
@@ -291,13 +278,28 @@ class Wee
     end# }}}
 
   private
-    def trigger_continue(thread)# {{{
+    def recursive_continue(thread)# {{{
       if thread && thread.alive? && thread[:continue] && thread[:continue].waiting?
         thread[:continue].continue
+      end
+      if thread[:branches]
+        thread[:branches].each do |b|
+          recursive_continue(b)
+        end
+      end  
+    end  # }}}
+    def recursive_join(thread)# {{{
+      if thread && thread.alive? && thread != Thread.current
+        thread.join
+      end
+      if thread[:branches]
+        thread[:branches].each do |b|
+          recursive_join(b)
+        end
       end  
     end  # }}}
 
-    def position_test(position)
+    def position_test(position)# {{{
       pos = false
       if position.is_a?(Symbol) && position.to_s =~ /[a-zA-Z][a-zA-Z0-9_]*/
         pos = true
@@ -315,7 +317,7 @@ class Wee
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
         handlerwrapper.inform_syntax_error(Exception.new("position (#{position}) and lay (#{lay.inspect}) not valid"))
       end
-    end
+    end# }}}
 
     def is_in_search_mode(position = nil)# {{{
       # set semaphore to avoid conflicts if @__wee_search is changed by another thread
@@ -330,7 +332,7 @@ class Wee
         return branch[:branch_search] || @__wee_search # is activity part of a branch and in search mode?
       end
     end# }}}
-    def perform_external_call(wp, passthrough, handlerwrapper, endpoint, *parameters)
+    def perform_external_call(wp, passthrough, handlerwrapper, endpoint, *parameters)# {{{
       params = { }
       parameters.each do |p|
         if p.class == Hash && parameters.length == 1
@@ -344,15 +346,15 @@ class Wee
       end
       # handshake call and wait until it finished
       handlerwrapper.activity_handle passthrough, endpoint, params
-      Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.state == :stopping || self.state == :stopped
+      Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.state == :stopping
        
       handlerwrapper.activity_no_longer_necessary if Thread.current[:nolongernecessary]
-      if self.state == :stopping || self.state == :stopped
+      if self.state == :stopping
         handlerwrapper.activity_stop
         wp.passthrough = handlerwrapper.activity_passthrough_value
       end  
-      Thread.current[:nolongernecessary] || (self.state == :stopping || self.state == :stopped) ? nil : handlerwrapper.activity_result_value
-    end
+      Thread.current[:nolongernecessary] || (self.state == :stopping) ? nil : handlerwrapper.activity_result_value
+    end# }}}
     def refreshcontext(handlerwrapper)# {{{
       changed = []
       @__wee_context.each do |varname, value|
@@ -371,10 +373,8 @@ class Wee
       @__wee_state = newState
       handlerwrapper.inform_state_change @__wee_state
       if newState == :stopping
-        trigger_continue(@__wee_main)
-        if @__wee_main && @__wee_main != Thread.current
-          @__wee_main.join 
-        end
+        recursive_continue(@__wee_main)
+        recursive_join(@__wee_main)
         @__wee_state = :stopped
         handlerwrapper.inform_state_change @__wee_state
       end

@@ -6,7 +6,6 @@ var save_eps;
 var save_cvs;
 var node_state = {};
 
-
 $(document).ready(function() {// {{{
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(monitor_instance);
@@ -521,7 +520,8 @@ function format_visual_remove(what,class) {
 function format_visual_set(what) {
   $.each(["graph","activity"],function(i,t){
     $('#' + t + '-' + what).each(function(a,b){ 
-      b.setAttribute("class",'activities ' + node_state[what].join(" "));
+      if (node_state[what] != undefined)
+        b.setAttribute("class",'activities ' + node_state[what].join(" "));
     });
   });
 }
