@@ -46,7 +46,7 @@ class Controller
       pos = doc.find("/p:properties/p:positions").first
       pos.children.delete_all!
       @instance.positions.each do |p|
-        pos.add("#{p.position}","#{p.passthrough}")
+        pos.add("#{p.position}",[p.detail,p.passthrough].compact.join(';'))
       end
     end
   end# }}}
@@ -123,7 +123,8 @@ class Controller
     
       @positions = []
       doc.find("/p:properties/p:positions/p:*").each do |e|
-        @positions << ::Wee::Position.new(e.name.to_s.to_sym,:at,e.text)
+        val = e.text.split(';')
+        @positions << ::Wee::Position.new(e.name.to_s.to_sym,val[0].to_sym,val[1])
       end
 
       @instance.description doc.find("string(/p:properties/p:dsl)")
