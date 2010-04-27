@@ -149,13 +149,14 @@ function WFGraph (xml, container) {
 
     var g = document.createElementNS(svgNS, "g");
         g.setAttribute('transform', 'translate(' + String(xy['col']*column_width-15) + ',' + String(xy['line']*row_height-30) + ')');
-        g.setAttribute('id', 'node-' + node.getAttribute("id"));
 
     var use = document.createElementNS(svgNS, "use");
     use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
 
     var attrs = {};
     if (id) {
+      g.setAttribute('id', 'node-' + node.getAttribute("id"));
+
       attrs = {'id': 'graph-' + node.getAttribute("id"), 'class': 'activities'};
       var title = document.createElementNS(svgNS, "title");
       title.appendChild(document.createTextNode(node.getAttribute('id')));
