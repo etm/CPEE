@@ -170,12 +170,8 @@ svg {
 }
 
 svg rect.injected {
-  stroke-width: 1; 
-  stroke-dasharray: 3,5;
-  stroke: Menu;
-  fill: Menu;
-  fill: red;
-  fill-opacity: 0.4;
+  fill: Highlight;
+  fill-opacity: 0.2;
 }
 svg .clickable { cursor: pointer; }
 

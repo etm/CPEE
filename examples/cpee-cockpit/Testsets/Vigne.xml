@@ -408,7 +408,9 @@
             <xsl:when test="string(@transformation-uri)">
               <xsl:text>&#xa;</xsl:text>
               <xsl:call-template name="prefix-whitespaces"/>
-              <xsl:text>parallel_branch do&#xa;</xsl:text>
+              <xsl:text>parallel_branch </xsl:text>
+              <xsl:text>do</xsl:text>
+              <xsl:text>&#xa;</xsl:text>
               <xsl:call-template name="prefix-whitespaces"/>
               <xsl:text>var_</xsl:text>
               <xsl:value-of select="$id"/>
@@ -547,7 +549,7 @@
         <xsl:value-of select="@endpoint"/>
         <xsl:text>, :input => input</xsl:text>
         <xsl:if test="string(@http-method)">
-          <xsl:text>, :http-method => '</xsl:text>
+          <xsl:text>, :http_method => '</xsl:text>
           <xsl:value-of select="@http-method"/>
           <xsl:text>'</xsl:text>
         </xsl:if>
@@ -881,7 +883,7 @@
         <!-- {{{ -->  
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
-        <xsl:text>parallel_branch do</xsl:text>
+        <xsl:text>parallel_branch do </xsl:text>
         <xsl:apply-templates select="child::flow:*[(name() != 'endpoint') and (name() != 'context')]"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="prefix-whitespaces"/>
