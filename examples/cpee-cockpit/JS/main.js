@@ -519,29 +519,49 @@ function tab_click(active) { // {{{
 function sym_click(node) { // {{{
   var table = $('#tabledetails');
   table.empty();
-  table.append('<tr><td class="top">Element:<td><td class="long">' + node.nodeName + '</td></tr>');
+  table.append('<tr><td><strong>Element:</strong></td><td class="long">' + node.nodeName + '</td></tr>');
   switch(node.nodeName) {
     case 'call':
-      table.append('<tr><td>ID:<td><td class="long">' + $(node).attr('id') + '</td></tr>');
+      table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
       if ($(node).attr('lay'))
-        table.append('<tr><td>Lay:<td><td class="long">' + $(node).attr('lay') + '</td></tr>');
-      table.append('<tr><td>Endpoint:<td><td class="long">' + $(node).attr('endpoint') + '</td></tr>');
+        table.append('<tr><td><strong>Lay:</strong></td><td class="long">' + $(node).attr('lay') + '</td></tr>');
+      table.append('<tr><td><strong>Endpoint:</strong></td><td class="long">' + $(node).attr('endpoint') + '</td></tr>');
       if ($('manipulate',node).text())
-        table.append('<tr><td>Manipulate:<td><td class="long">' + format_code($('manipulate',node).text(),true,false) + '</td></tr>');
+        table.append('<tr><td><strong>Manipulate:</strong></td><td class="long">' + format_code($('manipulate',node).text(),true,false) + '</td></tr>');
+      if ($('parameters',node).length > 0)
+        table.append('<tr><td><strong>Parameters:</strong></td><td class="long"></td></tr>');
+        table.append(sym_click_para($(node).children('parameters'),'&#160;&#160;&#160;&#160;'));
       break;
     case 'manipulate':
-      table.append('<tr><td>ID:<td><td class="long">' + $(node).attr('id') + '</td></tr>');
-      table.append('<tr><td>Manipulate:<td><td class="long">' + format_code($(node).text(),true,false) + '</td></tr>');
+      table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
+      table.append('<tr><td><strong>Manipulate:</strong></td><td class="long">' + format_code($(node).text(),true,false) + '</td></tr>');
       break;
     case 'loop':
     case 'alternative':
-      table.append('<tr><td>Condition:<td><td class="long">' + $(node).attr('condition') + '</td></tr>');
+      table.append('<tr><td><strong>Condition:</strong></td><td class="long">' + $(node).attr('condition') + '</td></tr>');
       break;
     case 'parallel':
       var wait = $(node).attr('condition') || 'Wait for all branches';
-      table.append('<tr><td>Wait:<td><td class="long">' + wait + '</td></tr>');
+      table.append('<tr><td><strong>Wait:</strong></td><td class="long">' + wait + '</td></tr>');
       break;
   }
+} // }}}
+
+function sym_click_para(node,ind) { // {{{
+  var out = '';
+  $(node).children().each(function(i,e){
+    if ($(e).children().length == 0) {
+      out += '<tr><td colspan="2">';
+      out += ind + e.nodeName + ' ⇒ ' + $(e).text().replace(/^\s+|\s+$/g,"");
+      out += '</td></tr>';
+    } else {
+      out += '<tr><td colspan="2">';
+      out += ind + e.nodeName + ':';
+      out += '</td></tr>';
+      out += sym_click_para(e,ind + '&#160;&#160;&#160;&#160;');
+    }  
+  });  
+  return out;
 } // }}}
 
 function format_visual_add(what,class) {//{{{

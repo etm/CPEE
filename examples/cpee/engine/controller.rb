@@ -21,9 +21,7 @@ class Controller
   attr_reader :callbacks
 
   def start# {{{
-    Thread.abort_on_exception = true
     @thread = Thread.new do
-      Thread.current.abort_on_exception = true
       unless @positions.empty?
         @instance.search(@positions)
       end

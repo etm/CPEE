@@ -220,6 +220,7 @@ class Wee
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
       branch_parent = Thread.current
       Thread.current[:branches] << Thread.new(*vars) do |*local|
+        Thread.current.abort_on_exception = true
         Thread.current[:branch_search] = @__wee_search
         Thread.current[:branch_status] = false
         if branch_parent[:alternative_executed] && branch_parent[:alternative_executed].length > 0
