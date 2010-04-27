@@ -132,11 +132,8 @@ class Wee
     # endpoint: (only with :call) ep of the service
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters)# {{{
-      #p "lulu"
-      #p "nudel #{position} #{lay} #{self.state} || #{Thread.current[:nolongernecessary]} || #{is_in_search_mode(position)}"
       position, lay = position_test position
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
-
 
       Thread.current[:continue] = Continue.new
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, lay, Thread.current[:continue]
@@ -518,7 +515,13 @@ class Wee
         (class << self; self; end).class_eval do
           define_method :__wee_control_flow do
             self.state = :running
-            instance_eval(&blk)
+            begin 
+              instance_eval(&blk)
+            rescue SyntaxError => err
+              self.state = :stopping
+              handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
+              handlerwrapper.inform_syntax_error(err)
+            end
             self.state = :finished if self.state == :running
           end
         end

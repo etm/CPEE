@@ -4,7 +4,6 @@ require ::File.dirname(__FILE__) + '/TestHandlerWrapper'
 class TestWorkflow < Wee
   handlerwrapper TestHandlerWrapper
 
-  search Wee::Position.new(:a1_1, :at)
   endpoint :endpoint1 => 'http://www.heise.de'
   context :x => 'begin_'
   
