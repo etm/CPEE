@@ -537,12 +537,23 @@ function sym_click(node) { // {{{
       table.append('<tr><td><strong>Manipulate:</strong></td><td class="long">' + format_code($(node).text(),true,false) + '</td></tr>');
       break;
     case 'loop':
+      if ($(node).attr('pre_test'))
+        table.append('<tr><td><strong>Pre-Test:</strong></td><td class="long">' + $(node).attr('pre_test') + '</td></tr>');
+      if ($(node).attr('post_test'))
+        table.append('<tr><td><strong>Post-Test:</strong></td><td class="long">' + $(node).attr('post_test') + '</td></tr>');
+      break;
     case 'alternative':
       table.append('<tr><td><strong>Condition:</strong></td><td class="long">' + $(node).attr('condition') + '</td></tr>');
       break;
     case 'parallel':
       var wait = $(node).attr('condition') || 'Wait for all branches';
       table.append('<tr><td><strong>Wait:</strong></td><td class="long">' + wait + '</td></tr>');
+      break;
+    case 'parallel_branch':
+      if ($(node).attr('pass'))
+        table.append('<tr><td><strong>Pass&#160;to&#160;branch:</strong></td><td class="long">' + $(node).attr('pass') + '</td></tr>');
+      if ($(node).attr('local'))
+        table.append('<tr><td><strong>Local&#160;scope:</strong></td><td class="long">' + $(node).attr('local') + '</td></tr>');
       break;
   }
 } // }}}
