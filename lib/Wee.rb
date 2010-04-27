@@ -194,7 +194,6 @@ class Wee
 
       wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && (type[:wait].is_a?(Integer)) ? type[:wait] : Thread.current[:branches].size)
       finished_threads_count = 0
-      p "wait_count: #{wait_count}"
 
       branch_count = true
       while branch_count
@@ -202,16 +201,13 @@ class Wee
         Thread.current[:branches].each do |thread| 
           finished_threads_count += 1 if thread[:branch_status] == true
         end  
-        p "finished_threads_count: #{finished_threads_count}"
         if finished_threads_count < wait_count && finished_threads_count < Thread.current[:branches].size && self.state != :stopping
           Thread.current[:branch_event].join
         else  
           branch_count = false
-        end  
+        end
       end
 
-      p "finally"
-      
       unless self.state == :stopping || self.state == :stopped
         Thread.current[:branches].each do |thread| 
           if thread.alive? 
@@ -225,17 +221,18 @@ class Wee
     # Defines a branch of a parallel-Construct
     def parallel_branch(*vars)# {{{
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
-      parent_thread = Thread.current
+      branch_parent = Thread.current
       Thread.current[:branches] << Thread.new(*vars) do |*local|
         Thread.current[:branch_search] = @__wee_search
         Thread.current[:branch_status] = false
-        p "here1"
+        if branch_parent[:alternative_executed] && branch_parent[:alternative_executed].length > 0
+          Thread.current[:alternative_executed] = [branch_parent[:alternative_executed].last]
+        end
         yield(*local)
-        p "here2"
         Thread.current[:branch_status] = true
-        parent_thread[:mutex].synchronize do # enable the while in parallel() to operate without polling
-          pte = parent_thread[:branch_event]
-          parent_thread[:branch_event] = Thread.new{Thread.stop}
+        branch_parent[:mutex].synchronize do # enable the while in parallel() to operate without polling
+          pte = branch_parent[:branch_event]
+          branch_parent[:branch_event] = Thread.new{Thread.stop}
           pte.run
         end
       end
@@ -258,11 +255,8 @@ class Wee
     # searchmode is active (to find the starting position)
     def alternative(condition)# {{{
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
-      p "here3"
       yield if is_in_search_mode || condition
-      p Thread.current.keys
       Thread.current[:alternative_executed][-1] = true if condition
-      p "here4"
     end# }}}
     def otherwise# {{{
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
