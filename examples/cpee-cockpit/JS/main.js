@@ -311,6 +311,8 @@ function load_testset() {// {{{
   if (running) return;
   running  = true;
   save_dsl = null; // reload dsl and position under all circumstances
+  var table = $('#tabledetails');
+  table.empty();
   var url = $("input[name=instance-url]").val();
   $.ajax({ 
     cache: false,
