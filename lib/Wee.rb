@@ -132,8 +132,11 @@ class Wee
     # endpoint: (only with :call) ep of the service
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters)# {{{
+      #p "lulu"
+      #p "nudel #{position} #{lay} #{self.state} || #{Thread.current[:nolongernecessary]} || #{is_in_search_mode(position)}"
       position, lay = position_test position
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
+
 
       Thread.current[:continue] = Continue.new
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, lay, Thread.current[:continue]
@@ -189,13 +192,17 @@ class Wee
       Thread.current[:mutex] = Mutex.new
       yield
 
-      wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && type[:wait].is_a?(Integer)) ? type[:wait] : Thread.current[:branches].size
+      wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && (type[:wait].is_a?(Integer)) ? type[:wait] : Thread.current[:branches].size)
       finished_threads_count = 0
+      p "wait_count: #{wait_count}"
 
       branch_count = true
       while branch_count
         finished_threads_count = 0
-        Thread.current[:branches].each { |thread| finished_threads_count+=1 unless thread.alive? }
+        Thread.current[:branches].each do |thread| 
+          finished_threads_count += 1 if thread[:branch_status] == true
+        end  
+        p "finished_threads_count: #{finished_threads_count}"
         if finished_threads_count < wait_count && finished_threads_count < Thread.current[:branches].size && self.state != :stopping
           Thread.current[:branch_event].join
         else  
@@ -203,6 +210,8 @@ class Wee
         end  
       end
 
+      p "finally"
+      
       unless self.state == :stopping || self.state == :stopped
         Thread.current[:branches].each do |thread| 
           if thread.alive? 
@@ -219,12 +228,16 @@ class Wee
       parent_thread = Thread.current
       Thread.current[:branches] << Thread.new(*vars) do |*local|
         Thread.current[:branch_search] = @__wee_search
+        Thread.current[:branch_status] = false
+        p "here1"
         yield(*local)
+        p "here2"
+        Thread.current[:branch_status] = true
         parent_thread[:mutex].synchronize do # enable the while in parallel() to operate without polling
           pte = parent_thread[:branch_event]
           parent_thread[:branch_event] = Thread.new{Thread.stop}
           pte.run
-        end  
+        end
       end
     end# }}}
 
@@ -245,8 +258,11 @@ class Wee
     # searchmode is active (to find the starting position)
     def alternative(condition)# {{{
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]
+      p "here3"
       yield if is_in_search_mode || condition
+      p Thread.current.keys
       Thread.current[:alternative_executed][-1] = true if condition
+      p "here4"
     end# }}}
     def otherwise# {{{
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary]

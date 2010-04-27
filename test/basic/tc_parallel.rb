@@ -55,6 +55,7 @@ class TestParallel < Test::Unit::TestCase
     end
     @wf.start
     sleep(0.1)
+
     assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
     assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
     $released +="release a_1";
@@ -62,7 +63,7 @@ class TestParallel < Test::Unit::TestCase
     assert($message.include?("Activity a_1 done"), "pos a_1 not properly ended, see $message=#{$message}");
     assert(!$message.include?("Activity a_3 done"), "pos a_3 finished to early, see $message=#{$message}");
     $released +="release a_2";
-    sleep(0.1)
+    sleep(0.2)
     assert($message.include?("Activity a_2 done"), "pos a_2 not properly ended, see $message=#{$message}");
     assert($message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was not called, see message=[#{$message}]");
   end

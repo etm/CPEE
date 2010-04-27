@@ -66,8 +66,13 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
     $message += "Activity #{@__myhandler_position} failed with error #{err}\n"
     raise(err)
   end
+  def inform_syntax_error(err)
+    $message += "Syntax messed with error #{err}\n"
+    raise(err)
+  end
+
   def inform_state_change(newstate)
-    $message += "State changed to #{newstate}"
+    $message += "\n#{'-'*40}\nState changed to #{newstate}\n"
   end
 
 end
