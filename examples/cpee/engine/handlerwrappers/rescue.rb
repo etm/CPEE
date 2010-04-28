@@ -7,21 +7,24 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     @handler_position = position
     @handler_lay = lay
     @handler_returnValue = nil
+  puts "ininit handler"
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, endpoint, parameters)
+  puts "bla"
     $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
   
     cpee_instance = "#{@url}/#{@instance}/"
-    injection_service = "http://localhost:9290/injection/"
+    injection_service = parameters[:service][:repository]+parameters[:service][:injection]
 
     puts '='*80
     pp "Endpoint: #{endpoint}"
     pp "Position: #{@handler_position}"
     pp "Instance-Uri: #{cpee_instance}"
     pp "Injection-Service-Uri: #{injection_service}"
+    pp "Resources-Service-Uri: #{parameters[:service][:repository]+parameters[:service][:resources]}"
     pp 'Parameters:'
     pp parameters
     puts '='*80
@@ -29,15 +32,35 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       puts "== performing a call to the injection service"
       status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
                                                                 Riddl::Parameter::Simple.new("cpee", cpee_instance),
-                                                                Riddl::Parameter::Simple.new("rescue", parameters[:service][:repository])];
+                                                                Riddl::Parameter::Simple.new("rescue", parameters['service']['respository']+parameters['service']['resources']+'/'+endpoint)]
       puts "== injection done with status: #{status}"
 #      raise "Injection at #{injection_service} failed with status: #{status}" if status != 200
 #      raise "Injection in progress" if status == 200
+      @handler_returnValue = '' 
     else
-      sleep(10)
-      @status = 200
+      client = Riddl::Client.new(endpoint)
+
+      params = []
+      callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+      (parameters[:parameters] || {}).each do |h|
+        if h.class == Hash
+          h.each do |k,v|
+            params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
+          end
+        end
+      end
+      params << Riddl::Header.new("CPEE-Callback",callback)
+
+      type = parameters[:method] || 'post'
+      status, result, headers = client.request type => params
+      raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
+
+      @handler_returnValue = ''
+      if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
+        $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
+        return
+      end
     end
-    @handler_returnValue = {:bla => 'blablablubli', :reservation_id => '4711', :price => 17}
     @handler_continue.continue
     puts "== handler execution finished"
   end
