@@ -5,5 +5,6 @@
   <testset>Concurrent</testset>
   <testset>Linear</testset>
   <testset>Vigne</testset>
+  <testset>Vigne 2</testset>
   <testset>Cinemas</testset>
 </testsets>

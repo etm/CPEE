@@ -5,10 +5,10 @@
   <context-variables>
     <number>4711</number>
   </context-variables>
-  <endpoints>
+  <endpoints><!--{{{-->
     <services>Wee</services>
     <repository>http://localhost:9290/groups</repository>
-  </endpoints>
+  </endpoints><!--}}}-->
   <description xmlns="http://rescue.org/ns/controlflow/0.2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <call id="a01" endpoint="services" service-operation="op1" state-controlflow="execute">
       <repository endpoint="repository"/>
