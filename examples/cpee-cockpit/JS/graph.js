@@ -29,6 +29,7 @@ function WFGraph (xml, container) {
     container.parentNode.setAttribute("height", height);
     container.parentNode.setAttribute("width", width);
     container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
+    container.parentNode.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
   } // }}} 
 
   var analyze = function(parent_element, parent_position, column_shift) { // {{{
