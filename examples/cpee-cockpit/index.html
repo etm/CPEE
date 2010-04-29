@@ -54,7 +54,7 @@
 
     <table class="tab hidden layout">
       <tr>
-        <td class="tab"             id="tabgraph" onclick="tab_click('graph')"><h1>Graph</h1></td>
+        <td class="tab"             id="tabgraph" onclick="tab_click('graph')"><h1><table><tr><td>Graph</td><td><embed style='position:inline' width="14" height="14" src="JS/helpers/clippy.swf?v5" name="clippy" quality="high" allowscriptaccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=url_box_clippy&copied=&copyto=" bgcolor="#FFFFFF" wmode="opaque"/></td></tr></table></h1></td>
         <td class="tab inactivetab" id="tabdsl"   onclick="tab_click('dsl')"><h1>Description</h1></td>
         <td class="tab inactivetab" id="tablog"   onclick="tab_click('log')"><h1>Log</h1></td>
         <td class="tabbehind long"></td>
@@ -65,6 +65,7 @@
             <table class='layout'>
             <tr>
               <td>
+                <div id='url_box_clippy'>
                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0"> 
                   <defs>
                     <symbol id="call" class="clickable"><!-- {{{ -->
@@ -124,6 +125,7 @@
                     <g id="symbols"></g>
                   </g>
                 </svg>
+                </div>
               </td>    
               <td class='top'>
                 <table id="tabledetails" class="layout">
