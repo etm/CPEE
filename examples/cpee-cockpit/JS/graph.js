@@ -20,7 +20,6 @@ function WFGraph (xml, container) {
     removeChilds(lines);
     removeChilds(symbols);
     removeChilds(blocks);
-    //var start = xml.evaluate("//description", xml.documentElement, ns, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     var start = xml.documentElement;
 
     var block = analyze(start, null, 1);
@@ -29,7 +28,6 @@ function WFGraph (xml, container) {
     container.parentNode.setAttribute("height", height);
     container.parentNode.setAttribute("width", width);
     container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
-    container.parentNode.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
   } // }}} 
 
   var analyze = function(parent_element, parent_position, column_shift) { // {{{
