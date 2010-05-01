@@ -11,30 +11,26 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, endpoint, parameters)
+    puts '==Hanelder-started=='*5
     $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
   
     cpee_instance = "#{@url}/#{@instance}/"
-    pp parameters.inspect
-    injection_service = parameters[:service][1][:repository]+parameters[:service][3][:injection]
-    resources = parameters[:service][1][:repository]+parameters[:service][2][:resources]
 
-    puts '='*80
     pp "Endpoint: #{endpoint}"
-    pp "Rescource: #{resources}"
     pp "Position: #{@handler_position}"
     pp "Instance-Uri: #{cpee_instance}"
-    pp "Injection-Service-Uri: #{injection_service}"
-    pp "Resources-Service-Uri: #{resources}"
     pp 'Parameters:'
     pp parameters.inspect
-    puts '='*80
     if parameters.key?(:service)
+      injection_service = parameters[:service][1][:repository]+parameters[:service][3][:injection]
+      resources = parameters[:service][1][:repository]+parameters[:service][2][:resources]
+    pp "Injection-Service-Uri: #{injection_service}"
+    pp "Resources-Service-Uri: #{resources}"
       puts "== performing a call to the injection service"
       status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
                                                                 Riddl::Parameter::Simple.new("cpee", cpee_instance),
                                                                 Riddl::Parameter::Simple.new("rescue", resources)]
-      puts "== injection done with status: #{status}"
 #      raise "Injection at #{injection_service} failed with status: #{status}" if status != 200
 #      raise "Injection in progress" if status == 200
       @handler_returnValue = '' 
@@ -63,7 +59,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       end
     end
     @handler_continue.continue
-    puts "== handler execution finished"
+    puts '==Handler finished=='*5
   end
 
   def callback(result)

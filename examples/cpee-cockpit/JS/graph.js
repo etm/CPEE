@@ -75,7 +75,7 @@ function WFGraph (xml, container) {
         case 'choose':
           drawSymbol(ap, child, false);
           block = analyze(child, ap, 1);
-          if(child.nodeName == "critical" || child.nodeName == "injected") drawBlock(ap, block['max_pos']);
+          if(child.nodeName == "critical") drawBlock(ap, block['max_pos']);
           break;
         case 'injected':
           drawSymbol(ap, child, false);
@@ -143,8 +143,10 @@ function WFGraph (xml, container) {
 
   var drawSymbol = function (xy, node, id) { // {{{
     var sym_name = node.nodeName;
-    if((sym_name == "call") && (xml.evaluate("count(child::*[name() = 'manipulate'])", node, ns, XPathResult.ANY_TYPE, null).numberValue > 0)) 
+    if((sym_name == "call") && $("> manipulate", node).length > 0) 
       sym_name = "callmanipulate";
+    if((sym_name == "call") && $("> parameters > service", node).length == 1) 
+      sym_name = "callinject";
 
     var g = document.createElementNS(svgNS, "g");
         g.setAttribute('transform', 'translate(' + String(xy['col']*column_width-15) + ',' + String(xy['line']*row_height-30) + ')');
