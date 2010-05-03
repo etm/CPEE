@@ -1,0 +1,36 @@
+<properties xmlns="http://riddl.org/ns/common-patterns/properties/1.0">
+  <name type="value" modifiable="false" mutable="false">
+    <text/>
+  </name>
+  <handlerwrapper type="value" modifiable="false" mutable="false">
+    <data type="string">
+      <param name="pattern">[A-Z][a-zA-Z]*</param>
+    </data>  
+  </handlerwrapper>
+  <dsl type="value" modifiable="false" mutable="false">
+    <text/>
+  </dsl>
+  <description type="content" modifiable="false" mutable="false"/>
+  <positions type="list" modifiable="false" mutable="false"/>
+  <optional>
+    <transformation type="content" modifiable="false" mutable="false"/>
+  </optional>  
+  <state type="state" modifiable="false">
+    <ready>
+      <running putable="true"/>
+    </ready>  
+    <running>
+      <stopping putable="true"/>
+      <finished putable="false"/>
+    </running>
+    <stopping>
+      <stopped putable="false"/>
+    </stopping>
+    <stopped>
+      <running putable="true"/>
+    </stopped>  
+    <finished/>
+  </state>  
+  <context-variables type="map" modifiable="false" mutable="false"/>
+  <endpoints type="map" modifiable="false" mutable="false"/>
+</properties>
