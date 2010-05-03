@@ -457,10 +457,6 @@ class Wee
       end
       @__wee_search = @__wee_search_original
     end# }}}
-    # Get search positions
-    def search_positions# {{{
-      return @__wee_search_positions_original
-    end# }}}
 
     # get/set/clean context
     def context(new_context = nil)# {{{
