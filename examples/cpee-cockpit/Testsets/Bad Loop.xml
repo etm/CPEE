@@ -12,22 +12,6 @@
     <parallel>
       <parallel_branch>
         <loop pre_test='@feedback'>
-          <call id="design" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>4</timeout>
-              </parameters>
-            </parameters><!--}}}-->
-          </call>  
-          <call id="validate" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>2</timeout>
-              </parameters>
-            </parameters><!--}}}-->
-          </call>  
           <call id="publish" endpoint="timeout">
               <parameters><!--{{{-->
               <method>post</method>
@@ -69,23 +53,35 @@
                 <timeout>4</timeout>
               </parameters>
             </parameters><!--}}}-->
-          </call>  
-          <call id="fab" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>4</timeout>
-              </parameters>
-            </parameters><!--}}}-->
           </call>
-          <call id="evaluate" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>4</timeout>
-              </parameters>
-            </parameters><!--}}}-->
-          </call>
+          <parallel>
+            <choose>
+              <parallel_branch>
+                <alternative condition="@x != nil">
+                  <call id="a4_1" endpoint="timeout">
+                    <parameters><!--{{{-->
+                      <method>post</method>
+                      <parameters>
+                        <timeout>4</timeout>
+                      </parameters>
+                    </parameters><!--}}}-->
+                  </call>  
+                </alternative>
+              </parallel_branch>
+              <parallel_branch>
+                <alternative condition="@x.nil?">
+                  <call id="a4_2" endpoint="timeout">
+                    <parameters><!--{{{-->
+                      <method>post</method>
+                      <parameters>
+                        <timeout>10</timeout>
+                      </parameters>
+                    </parameters><!--}}}-->
+                  </call>  
+                </alternative>
+              </parallel_branch>
+            </choose>
+          </parallel>
         </loop>  
       </parallel_branch>
     </parallel>  

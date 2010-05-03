@@ -90,7 +90,6 @@ function WFGraph (xml, container) {
             block = analyze(child, ap, 0);
           } else {
             block = analyze(child, ap, 1);
-            if(child.nodeName == "parallel") drawBlock(ap, block['max_pos']);
             block['end_nodes'] = [copyPos(ap)]; // loop-node is successor
           }  
           break;
@@ -114,7 +113,7 @@ function WFGraph (xml, container) {
         }
         for(var j = 0; j < end_nodes.length; j++)
           if(end_nodes[j]['line'] !=  ap['line'])
-          drawConnection(end_nodes[j], ap);
+            drawConnection(end_nodes[j], ap);
         ap['line'] = block['max_pos']['line'];
         end_nodes = block['end_nodes'];
       }
