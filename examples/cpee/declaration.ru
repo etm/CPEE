@@ -21,6 +21,7 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
 
   a_schema, a_strans = Riddl::Utils::Properties::schema(::File.dirname(__FILE__) + '/instances/properties.schema.active')
   i_schema, i_strans = Riddl::Utils::Properties::schema(::File.dirname(__FILE__) + '/instances/properties.schema.inactive')
+  f_schema, f_strans = Riddl::Utils::Properties::schema(::File.dirname(__FILE__) + '/instances/properties.schema.finished')
   xsls = {
     :overview => '/xsls/overview.xsl',
     :subscriptions => '/xsls/subscriptions.xsl'
@@ -36,8 +37,11 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
       on resource 'properties' do |r|
         instance       = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/'
         properties     = Riddl::Utils::Properties::file(instance + 'properties.xml')
-        schema, strans = ::File.exists?(instance + 'properties.schema.active') ? [a_schema,a_strans] : [i_schema,i_strans]
-
+        schema, strans = case $controller[r[:r][0].to_i].state
+          when :ready, :stopped: [i_schema,i_strans]
+          when :running, :stopping: [a_schema,a_strans]
+          when :finished: [f_schema,f_strans]
+        end
         use Riddl::Utils::Properties::implementation(properties, schema, strans, PropertiesHandler, r[:match].count, $mode)
       end
       on resource 'notifications' do |r|

@@ -43,6 +43,7 @@ class Controller
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
       pos = doc.find("/p:properties/p:positions").first
       pos.children.delete_all!
+      @positions = @instance.positions
       @instance.positions.each do |p|
         pos.add("#{p.position}",[p.detail,p.passthrough].compact.join(';'))
       end
@@ -229,8 +230,12 @@ class Controller
       end
     end
 
-  end# }}}
-  
+   end# }}}
+
+  def state
+    @instance.state
+  end  
+
 private
 
   def build_notification(key,what,content,type)# {{{
