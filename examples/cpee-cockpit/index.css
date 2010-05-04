@@ -185,7 +185,7 @@ svg use.vote circle {
 }  
 
 svg line.ourline, svg path.ourline {
-  stroke-opacity: 0.9; 
+  stroke-opacity:1; 
   stroke:#000000;
   stroke-width: 2; 
   fill: none;
