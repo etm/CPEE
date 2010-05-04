@@ -26,7 +26,7 @@
           <message_in>@input</message_in>
         </parameters>
       </parameters><!--}}}-->
-      <maniputlate otuput="result">
+      <manipulate otuput="result">
         @input-=1
       </manipulate>
       <outputs>

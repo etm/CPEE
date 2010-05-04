@@ -171,7 +171,7 @@ svg {
 
 svg rect.injected {
   fill: Highlight;
-  fill-opacity: 0.2;
+  fill-opacity: 0.5;
 }
 svg .clickable { cursor: pointer; }
 

@@ -86,6 +86,7 @@ function WFGraph (xml, container) {
           drawSymbol(ap, child, false);
           block = analyze(child, {'line': ap['line']-1, 'col': ap['col']}, 1);
           drawBlock( {'line': ap['line']-1, 'col': ap['col']+1}, block['max_pos'], 'injected');
+          end_nodes = [];
           break;
         case 'alternative':
         case 'otherwise':
