@@ -26,9 +26,12 @@
           <message_in>@input</message_in>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate output="result">
-        @output = result[:message_out]
+      <maniputlate otuput="result">
+        @input-=1
       </manipulate>
+      <outputs>
+        <output variable="output" name="message_out"/>
+      </outputs>
     </call>  
   </description>
   <transformation>

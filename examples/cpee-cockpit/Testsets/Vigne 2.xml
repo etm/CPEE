@@ -70,9 +70,186 @@
             </parameters>
           </parameters><!--}}}-->
         </call>  
+        <injected>
+        <call id="a4_2" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+        <call id="a4_3" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+        <injected>
+        <call id="a4_2" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+        <call id="a4_3" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+        <call id="a4_2" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+        <call id="a4_3" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+        </injected>
+        </injected>
+        <call id="a4_4" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+      </alternative>
+      <alternative condition="@x != nil">
+        <call id="a4_3" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+        <call id="a4_4" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+      </alternative>
+      <alternative condition="@x != nil">
+        <call id="a4_1" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+        <call id="a4_2" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+        <call id="a4_3" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
+        <call id="a4_4" endpoint="services">
+          <parameters><!--{{{-->
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>  
       </alternative>
       <otherwise>
-        <call id="a4_2" endpoint="timeout">
+        <call id="a4_5" endpoint="timeout">
           <parameters><!--{{{-->
             <method>post</method>
             <parameters>

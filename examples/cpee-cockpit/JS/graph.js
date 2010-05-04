@@ -8,26 +8,27 @@ function WFGraph (xml, container) {
   var lines = document.getElementById("lines");
   var symbols = document.getElementById("symbols"); 
   var blocks = document.getElementById("blocks"); 
-
   var symclick= function(node) { };
 
   this.generateGraph = function(s) { // {{{
-    if (typeof s == "undefined")
-      s = {};
-    if (s.symclick)
-      symclick = s.symclick;
+    try {
+      if (typeof s == "undefined")
+        s = {};
+      if (s.symclick)
+        symclick = s.symclick;
 
-    removeChilds(lines);
-    removeChilds(symbols);
-    removeChilds(blocks);
-    var start = xml.documentElement;
+      removeChilds(lines);
+      removeChilds(symbols);
+      removeChilds(blocks);
+      var start = xml.documentElement;
 
-    var block = analyze(start, null, 1);
-    var width = (block['max_pos']['col']+1)*column_width;
-    var height = (block['max_pos']['line'])*row_height;
-    container.parentNode.setAttribute("height", height);
-    container.parentNode.setAttribute("width", width);
-    container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
+      var block = analyze(start, null, 1);
+      var width = (block['max_pos']['col']+1)*column_width;
+      var height = (block['max_pos']['line'])*row_height;
+      container.parentNode.setAttribute("height", height);
+      container.parentNode.setAttribute("width", width);
+      container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
+    } catch(e) {console.log(e.line + ": " + e.message);}
   } // }}} 
 
   var analyze = function(parent_element, parent_position, column_shift) { // {{{
@@ -53,7 +54,11 @@ function WFGraph (xml, container) {
       var child = childs.snapshotItem(i);
       if (child.nodeName != 'parallel_branch') pure_branch = false;
       if (child.nodeName != 'alternative' && child.nodeName != 'otherwise') pure_choose = false;
-    }  
+    }
+    if(pure_choose)
+      console.log(pure_choose + " " + parent_element.nodeName + parent_element.getAttribute("id"));
+    if(pure_branch)
+      console.log(pure_branch + " " + parent_element.nodeName + parent_element.getAttribute("id"));
     for(var i=0; i < childs.snapshotLength; i++) {
       var child = childs.snapshotItem(i);
       switch(child.nodeName) {
@@ -79,14 +84,14 @@ function WFGraph (xml, container) {
           break;
         case 'injected':
           drawSymbol(ap, child, false);
-          block = analyze(child, ap, 0);
-          drawBlock(ap, block['max_pos'], 'injected');
+          block = analyze(child, {'line': ap['line']-1, 'col': ap['col']}, 1);
+          drawBlock( {'line': ap['line']-1, 'col': ap['col']+1}, block['max_pos'], 'injected');
           break;
         case 'alternative':
         case 'otherwise':
         case 'parallel_branch':
           drawSymbol(ap, child, false);
-          if (pure_branch || pure_choose) {
+          if ((pure_branch  && parent_element.nodeName != 'choose') || pure_choose) {
             block = analyze(child, ap, 0);
           } else {
             block = analyze(child, ap, 1);
@@ -97,23 +102,23 @@ function WFGraph (xml, container) {
       if(max_line < block['max_pos']['line']) max_line = block['max_pos']['line'];
       if(max_col < block['max_pos']['col']) max_col = block['max_pos']['col'];
       if(pure_branch || pure_choose) {
-        drawConnection(parent_position, ap);
+        drawConnection(parent_position, ap, block['max_pos']['line']);
         ap['col'] = block['max_pos']['col']+1;
         for(var j = 0; j < block['end_nodes'].length; j++)
           end_nodes.push(block['end_nodes'][j]);
       } else {   
         if(parent_element.nodeName == 'parallel' && i == 0) {
-          drawConnection(parent_position, ap);
-        }  
+          drawConnection(parent_position, ap, block['max_pos']['line']);
+        } 
         if(parent_element.nodeName == 'loop') {
           if (i == childs.snapshotLength - 1) {
             for(var j = 0; j < block['end_nodes'].length; j++)
-              drawConnection(block['end_nodes'][j], parent_position);
+              drawConnection(block['end_nodes'][j], parent_position, block['max_pos']['line'], block['end_nodes'].length);
           }
         }
-        for(var j = 0; j < end_nodes.length; j++)
-          if(end_nodes[j]['line'] !=  ap['line'])
-            drawConnection(end_nodes[j], ap);
+        for(var j = 0; j < end_nodes.length; j++) {
+          drawConnection(end_nodes[j], ap, block['max_pos']['line']);
+        }
         ap['line'] = block['max_pos']['line'];
         end_nodes = block['end_nodes'];
       }
@@ -125,18 +130,50 @@ function WFGraph (xml, container) {
       end.setAttribute("x", (column_shift)*column_width-15);
       symbols.insertBefore(end, symbols.lastChild);
       for(var j = 0; j < end_nodes.length; j++)
-        drawConnection(end_nodes[j], ap);
+        drawConnection(end_nodes[j], ap, block['max_pos']['line']);
     }
     return {'end_nodes':end_nodes, 'max_pos':{'line': max_line, 'col':max_col}};
   } // }}} 
 
-  var drawConnection = function(start, end) { // {{{
-    var attrs = { 'x1': start['col']*column_width, 'y1': start['line']*row_height-15,
-                  'x2': end['col']*column_width, 'y2': end['line']*row_height-15,
-                  'class': 'ourline', 'marker-end': 'url(#arrow)' };
-    var line = document.createElementNS(svgNS, "line");
+  var drawConnection = function(start, end, max_line, num_lines) { // {{{
+    var attrs = {'class': 'ourline', 'marker-end': 'url(#arrow)' };
+    var line = document.createElementNS(svgNS, "path");
     for(var attr in attrs)
       line.setAttribute(attr, attrs[attr]);
+    if (end['line']-start['line'] == 0 || end['col']-start['col'] == 0) {
+      line.setAttribute("d", "M " + String(start['col']*column_width) + "," + String(start['line']*row_height-15) +" "+
+                                    String(end['col']*column_width) + "," + String(end['line']*row_height-15)
+      );
+    } else if (end['line']-start['line'] > 0) {
+      if (end['col']-start['col'] > 0) {
+        line.setAttribute("d", "M " + String(start['col']*column_width) + "," + String(start['line']*row_height-15) +" "+
+                                      String(start['col']*column_width+25) + "," + String((end['line']-1)*row_height) +" "+
+                                      String(end['col']*column_width) + "," + String((end['line']-1)*row_height) +" "+
+                                      String(end['col']*column_width) + "," + String(end['line']*row_height-15)
+        );
+      } else {  
+        line.setAttribute("d", "M " + String(start['col']*column_width) + "," + String(start['line']*row_height-15) +" "+
+                                      String(start['col']*column_width) + "," + String(end['line']*row_height-25) +" "+
+                                      String(end['col']*column_width+25) + "," + String(end['line']*row_height-25) +" "+
+                                      String(end['col']*column_width) + "," + String(end['line']*row_height-15)
+        );
+      }     
+    } else if(end['line']-start['line'] < 0) {
+      if (num_lines > 1) {
+        line.setAttribute("d", "M " + String(start['col']*column_width) + "," + String(start['line']*row_height-15) +" "+
+                                      String(start['col']*column_width) + "," + String((max_line-1)*row_height+5) +" "+
+                                      String(end['col']*column_width+20) + "," + String((max_line-1)*row_height+5) +" "+
+                                      String(end['col']*column_width+20) + "," + String(end['line']*row_height+25)+" "+
+                                      String(end['col']*column_width) + "," + String(end['line']*row_height-15)
+        );
+      } else {
+        line.setAttribute("d", "M " + String(start['col']*column_width) + "," + String(start['line']*row_height-15) +" "+
+                                      String(end['col']*column_width+20) + "," + String(start['line']*row_height-15) +" "+
+                                      String(end['col']*column_width+20) + "," + String(end['line']*row_height+25)+" "+
+                                      String(end['col']*column_width) + "," + String(end['line']*row_height-15)
+        );
+      }  
+    }
     lines.appendChild(line);
   } //  }}}
 
@@ -144,7 +181,7 @@ function WFGraph (xml, container) {
     var sym_name = node.nodeName;
     if((sym_name == "call") && $("> parameters > service", node).length == 1) 
       sym_name = "callinject";
-    if((sym_name == "call") && $("> manipulate", node).length > 0) 
+    if((sym_name == "call") && (($("> manipulate", node).length > 0) || ($("> outputs", node).length > 0))) 
       sym_name = "callmanipulate";
 
     var g = document.createElementNS(svgNS, "g");
