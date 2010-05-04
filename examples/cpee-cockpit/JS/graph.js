@@ -55,10 +55,6 @@ function WFGraph (xml, container) {
       if (child.nodeName != 'parallel_branch') pure_branch = false;
       if (child.nodeName != 'alternative' && child.nodeName != 'otherwise') pure_choose = false;
     }
-    if(pure_choose)
-      console.log(pure_choose + " " + parent_element.nodeName + parent_element.getAttribute("id"));
-    if(pure_branch)
-      console.log(pure_branch + " " + parent_element.nodeName + parent_element.getAttribute("id"));
     for(var i=0; i < childs.snapshotLength; i++) {
       var child = childs.snapshotItem(i);
       switch(child.nodeName) {
