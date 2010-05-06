@@ -27,11 +27,9 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate otuput="result">
+        <output variable="output" name="message_out"/>
         @input-=1
       </manipulate>
-      <outputs>
-        <output variable="output" name="message_out"/>
-      </outputs>
     </call>  
   </description>
   <transformation>
