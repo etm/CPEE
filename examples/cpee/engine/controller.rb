@@ -15,27 +15,21 @@ class Controller
     @instance = EmptyWorkflow.new(id,url)
     @positions = []
     self.unserialize!
-    @thread = nil
   end
 
   attr_reader :callbacks
 
   def start# {{{
-    @thread = Thread.new do
-      unless @positions.empty?
-        @instance.search(@positions)
-      end
-      @instance.start
+    unless @positions.empty?
+      @instance.search(@positions)
     end
+    @instance.start
   end# }}}
 
   def stop# {{{
     t = @instance.stop
     t.run
     @callbacks.delete_if{|k,c| c.callback(nil); true}
-    t.join
-    @thread.join if @thread && @thread.alive?
-    @thread = nil 
   end# }}}
 
   def position# {{{
