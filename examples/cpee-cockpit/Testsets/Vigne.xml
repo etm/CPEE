@@ -7,6 +7,7 @@
     <injection>/injection</injection>
     <resources>/groups</resources>
     <input>10</input>
+    <bla>10</bla>
     <output/>
   </context-variables>
   <endpoints>
@@ -23,11 +24,29 @@
           <injection>@injection</injection>
         </service>
         <parameters>
-          <message_in>@input</message_in>
+          <pi1>@input</pi1>
         </parameters>
       </parameters><!--}}}-->
       <manipulate otuput="result">
-        <output variable="output" name="message_out"/>
+        <output variable="output" name="po1"/>
+        @input-=1
+      </manipulate>
+    </call>  
+    <call id="a2" endpoint="services">
+      <parameters><!--{{{-->
+        <service>
+          <serviceoperation>"op2"</serviceoperation>
+          <repository>@rescue</repository>
+          <resources>@resources</resources>
+          <injection>@injection</injection>
+        </service>
+        <parameters>
+          <pi2>@input</pi2>
+          <pi1>@bla</pi1>
+        </parameters>
+      </parameters><!--}}}-->
+      <manipulate otuput="result">
+        <output variable="output" name="po2"/>
         @input-=1
       </manipulate>
     </call>  
