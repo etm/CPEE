@@ -31,9 +31,8 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
                                                                 Riddl::Parameter::Simple.new("cpee", cpee_instance),
                                                                 Riddl::Parameter::Simple.new("rescue", resources)]
-#      raise "Injection at #{injection_service} failed with status: #{status}" if status != 200
-#      raise "Injection in progress" if status == 200
-      @handler_returnValue = '' 
+      raise "Injection at #{injection_service} failed with status: #{status}" if status != 200
+      raise "Injection in progress" if status == 200
     else
       client = Riddl::Client.new(endpoint)
 
