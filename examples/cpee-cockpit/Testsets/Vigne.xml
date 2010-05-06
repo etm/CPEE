@@ -6,8 +6,8 @@
     <rescue>http://localhost:9290</rescue>
     <injection>/injection</injection>
     <resources>/groups</resources>
-    <input>10</input>
-    <bla>10</bla>
+    <input>4</input>
+    <bla>1</bla>
     <output/>
   </context-variables>
   <endpoints>
