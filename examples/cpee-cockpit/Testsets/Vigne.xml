@@ -12,7 +12,7 @@
   </context-variables>
   <endpoints>
     <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <services>Interface</services>
+    <services>Interface/Sub1</services>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="a1" endpoint="services">
@@ -27,9 +27,9 @@
           <pi1>@input</pi1>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate otuput="result">
-        <output variable="output" name="po1"/>
+      <manipulate output="result">
         @input-=1
+        <output variable="output" message-parameter="po1"/>
       </manipulate>
     </call>  
     <call id="a2" endpoint="services">
@@ -41,12 +41,11 @@
           <injection>@injection</injection>
         </service>
         <parameters>
-          <pi2>@input</pi2>
           <pi1>@bla</pi1>
+          <pi2>@input</pi2>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate otuput="result">
-        <output variable="output" name="po2"/>
+      <manipulate output="result">
         @input-=1
       </manipulate>
     </call>  
@@ -159,6 +158,7 @@
           <xsl:text>end</xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
+        <!-- RESCUE -->
         <xsl:if test="name()='injected'">
           <xsl:text># ========== Code was injected via :</xsl:text>
           <xsl:value-of select="@id"/>
@@ -171,6 +171,7 @@
           <xsl:text># ========== End of injected code ============ </xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
+        <!-- RESCUE -->
       </xsl:template>
       
       <xsl:template match="d:alternative">
@@ -289,7 +290,7 @@
 
       <xsl:template name="print-content">
         <xsl:param name="myspace"/>
-        <xsl:if test="text()">
+        <xsl:if test="text() or child::d:output"><!-- RESCUE: changed condition -->
           <xsl:text> do </xsl:text>
           <xsl:if test="@output">
             <xsl:text>|</xsl:text>
@@ -297,6 +298,11 @@
             <xsl:text>|</xsl:text>
           </xsl:if>
           <xsl:call-template name="print-newline"/>
+          <!-- RESCUE -->
+          <xsl:apply-templates select="d:output">
+            <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:apply-templates>
+          <!-- RESCUE -->
           <xsl:value-of select="text()"/>
           <xsl:call-template name="print-newline"/>
           <xsl:call-template name="print-space">
@@ -306,6 +312,21 @@
           <xsl:text>end</xsl:text>
         </xsl:if>
       </xsl:template>
+
+      <!-- RESCUE -->
+      <xsl:template match="d:output">
+        <xsl:param name="myspace"/>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">0</xsl:with-param>
+          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+        </xsl:call-template>
+        <xsl:text># Output </xsl:text>
+        <xsl:value-of select="@message-parameter"/>
+        <xsl:text> is stored into </xsl:text>
+        <xsl:value-of select="@variable"/>
+        <xsl:call-template name="print-newline"/>
+      </xsl:template>
+      <!-- RESCUE -->
 
       <xsl:template name="print-space">
         <xsl:param name="i"/>
