@@ -28,7 +28,7 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-        <output variable="output" message-parameter="po1"/>
+        <output variable="output" name="po1"/>
       </manipulate>
     </call>  
     <call id="a2" endpoint="services">
@@ -45,7 +45,7 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-        @input-=1
+        @bla = result[:po1]
       </manipulate>
     </call>  
   </description>
@@ -322,16 +322,23 @@
       <xsl:template match="d:output">
         <xsl:param name="myspace"/>
         <xsl:call-template name="print-space">
-          <xsl:with-param name="i">0</xsl:with-param>
+          <xsl:with-param name="i">-1</xsl:with-param>
           <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
         </xsl:call-template>
         <xsl:text>@</xsl:text>
         <xsl:value-of select="@variable"/>
-        <xsl:text> = </xsl:text>
+        <xsl:text> = Hash.new</xsl:text>
+        <xsl:call-template name="print-newline"/>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">-1</xsl:with-param>
+          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+        </xsl:call-template>
         <xsl:value-of select="parent::d:manipulate/@output"/>
-        <xsl:text>[:</xsl:text>
-        <xsl:value-of select="@message-parameter"/>
-        <xsl:text>]</xsl:text>
+        <xsl:text>.each { |k,v| @</xsl:text>
+        <xsl:value-of select="@variable"/>
+        <xsl:text>[k] = v[:</xsl:text>
+        <xsl:value-of select="@name"/>
+        <xsl:text>] }</xsl:text>
         <xsl:call-template name="print-newline"/>
       </xsl:template>
       <!-- RESCUE -->
