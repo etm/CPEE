@@ -6,13 +6,13 @@
     <rescue>http://localhost:9290</rescue>
     <injection>/injection</injection>
     <resources>/groups</resources>
-    <input>1</input>
-    <bla>10</bla>
+    <input>4</input>
+    <bla>1</bla>
     <output/>
   </context-variables>
   <endpoints>
     <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <services>Interface</services>
+    <services>Interface/Sub1</services>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="a1" endpoint="services">
@@ -27,7 +27,7 @@
           <pi1>@input</pi1>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate otuput="result">
+      <manipulate output="result">
         <output variable="output" name="po1"/>
       </manipulate>
     </call>  
@@ -40,13 +40,12 @@
           <injection>@injection</injection>
         </service>
         <parameters>
-          <pi2>@input</pi2>
           <pi1>@bla</pi1>
+          <pi2>@input</pi2>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate otuput="result">
-        <output variable="output" name="po2"/>
-        @input-=1
+      <manipulate output="result">
+        @bla = result[:po1]
       </manipulate>
     </call>  
   </description>
@@ -98,6 +97,12 @@
         </xsl:if>
         <xsl:if test="name()='manipulate'">
           <xsl:text>, :manipulate</xsl:text>
+          <!-- RESCUE: manipulate with context-variable as result object -->
+          <xsl:if test="@context">
+            <xsl:text>, nil,</xsl:text>
+            <xsl:value-of select="@context"/>
+          </xsl:if>
+          <!-- RESCUE -->
           <xsl:call-template name="print-content">
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
           </xsl:call-template>
@@ -158,9 +163,10 @@
           <xsl:text>end</xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
+        <!-- RESCUE -->
         <xsl:if test="name()='injected'">
-          <xsl:text># ========== Code was injected via :</xsl:text>
-          <xsl:value-of select="@id"/>
+          <xsl:text># ========== Code was injected via: </xsl:text>
+          <xsl:value-of select="@source"/>
           <xsl:text>==========</xsl:text>
           <xsl:call-template name="print-newline"/>
           <xsl:apply-templates>
@@ -170,6 +176,7 @@
           <xsl:text># ========== End of injected code ============ </xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
+        <!-- RESCUE -->
       </xsl:template>
       
       <xsl:template match="d:alternative">
@@ -288,7 +295,7 @@
 
       <xsl:template name="print-content">
         <xsl:param name="myspace"/>
-        <xsl:if test="text()">
+        <xsl:if test="text() or child::d:output"><!-- RESCUE: changed condition -->
           <xsl:text> do </xsl:text>
           <xsl:if test="@output">
             <xsl:text>|</xsl:text>
@@ -296,6 +303,11 @@
             <xsl:text>|</xsl:text>
           </xsl:if>
           <xsl:call-template name="print-newline"/>
+          <!-- RESCUE -->
+          <xsl:apply-templates select="d:output">
+            <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:apply-templates>
+          <!-- RESCUE -->
           <xsl:value-of select="text()"/>
           <xsl:call-template name="print-newline"/>
           <xsl:call-template name="print-space">
@@ -305,6 +317,31 @@
           <xsl:text>end</xsl:text>
         </xsl:if>
       </xsl:template>
+
+      <!-- RESCUE -->
+      <xsl:template match="d:output">
+        <xsl:param name="myspace"/>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">-1</xsl:with-param>
+          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+        </xsl:call-template>
+        <xsl:text>@</xsl:text>
+        <xsl:value-of select="@variable"/>
+        <xsl:text> = Hash.new</xsl:text>
+        <xsl:call-template name="print-newline"/>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">-1</xsl:with-param>
+          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+        </xsl:call-template>
+        <xsl:value-of select="parent::d:manipulate/@output"/>
+        <xsl:text>.each { |k,v| @</xsl:text>
+        <xsl:value-of select="@variable"/>
+        <xsl:text>[k] = v[:</xsl:text>
+        <xsl:value-of select="@name"/>
+        <xsl:text>] }</xsl:text>
+        <xsl:call-template name="print-newline"/>
+      </xsl:template>
+      <!-- RESCUE -->
 
       <xsl:template name="print-space">
         <xsl:param name="i"/>
