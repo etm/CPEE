@@ -1,4 +1,4 @@
-function WFGraph (xml, container) {
+function WFGraph(xml, start, container) {
   var row_height = 40;
   var column_width = 40;
   var svgNS = "http://www.w3.org/2000/svg";
@@ -11,24 +11,21 @@ function WFGraph (xml, container) {
   var symclick= function(node) { };
 
   this.generateGraph = function(s) { // {{{
-    try {
-      if (typeof s == "undefined")
-        s = {};
-      if (s.symclick)
-        symclick = s.symclick;
+    if (typeof s == "undefined")
+      s = {};
+    if (s.symclick)
+      symclick = s.symclick;
 
-      removeChilds(lines);
-      removeChilds(symbols);
-      removeChilds(blocks);
-      var start = xml.documentElement;
+    removeChilds(lines);
+    removeChilds(symbols);
+    removeChilds(blocks);
 
-      var block = analyze(start, null, 1);
-      var width = (block['max_pos']['col']+1)*column_width;
-      var height = (block['max_pos']['line'])*row_height;
-      container.parentNode.setAttribute("height", height);
-      container.parentNode.setAttribute("width", width);
-      container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
-    } catch(e) {console.log(e.line + ": " + e.message);}
+    var block = analyze(start, null, 1);
+    var width = (block['max_pos']['col']+1)*column_width;
+    var height = (block['max_pos']['line'])*row_height;
+    container.parentNode.setAttribute("height", height);
+    container.parentNode.setAttribute("width", width);
+    return width;
   } // }}} 
 
   var analyze = function(parent_element, parent_position, column_shift) { // {{{
@@ -106,7 +103,7 @@ function WFGraph (xml, container) {
       } else {   
         if(parent_element.nodeName == 'parallel' && i == 0) {
           drawConnection(parent_position, ap, block['max_pos']['line']);
-        } 
+        }
         if(parent_element.nodeName == 'loop') {
           if (i == childs.snapshotLength - 1) {
             for(var j = 0; j < block['end_nodes'].length; j++)

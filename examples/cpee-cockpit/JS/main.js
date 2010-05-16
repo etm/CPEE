@@ -197,10 +197,12 @@ function monitor_instance_dsl() {// {{{
           type: "GET",
           url: url + "/properties/values/description/",
           success: function(res){
-            g = new WFGraph(res, $("#canvas").get(0));
-            g.generateGraph({
-             symclick: sym_click
+            var container = $("#canvas").get(0);
+            var g = new WFGraph(res, res.documentElement, container);
+            var width = g.generateGraph({
+              symclick: sym_click
             });
+            container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
             monitor_instance_pos();
           }
         });

@@ -16,6 +16,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
     client = Riddl::Client.new(endpoint)
 
+    Thread.new { Thread.stop; puts "hallo" }
     params = []
     callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
     (parameters[:parameters] || {}).each do |h|
@@ -29,7 +30,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
     type = parameters[:method] || 'post'
     status, result, headers = client.request type => params
-    raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
+    raise "Could not #{parameters[:method] || 'post'} #{endpoint}" if status != 200
 
     @handler_returnValue = ''
     if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true

@@ -6,7 +6,7 @@
     <rescue>http://localhost:9290</rescue>
     <injection>/injection</injection>
     <resources>/groups</resources>
-    <input>10</input>
+    <input>1</input>
     <bla>10</bla>
     <output/>
   </context-variables>
@@ -29,7 +29,6 @@
       </parameters><!--}}}-->
       <manipulate otuput="result">
         <output variable="output" name="po1"/>
-        @input-=1
       </manipulate>
     </call>  
     <call id="a2" endpoint="services">

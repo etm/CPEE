@@ -231,6 +231,8 @@ class Wee
         branch_parent[:mutex].synchronize do # enable the while in parallel() to operate without polling
           pte = branch_parent[:branch_event]
           branch_parent[:branch_event] = Thread.new{Thread.stop}
+          p pte
+          p pte.alive?
           pte.run
         end
       end

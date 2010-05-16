@@ -1,4 +1,5 @@
 <testsets>
+  <testset>Thread Kill</testset>
   <testset>BPM Testset</testset>
   <testset>CEC Testset</testset>
   <testset>Mangler 1</testset>

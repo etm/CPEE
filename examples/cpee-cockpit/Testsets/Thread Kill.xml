@@ -1,0 +1,531 @@
+<?xml version="1.0"?>
+<testset>
+  <positions>
+    <a2__op2>after</a2__op2>
+  </positions>
+  <context-variables>
+    <injection>/injection</injection>
+    <input>9</input>
+    <bla>10</bla>
+    <a2__perform_op1__perform_op1__Interface__Sub1__Serv1__wait>5</a2__perform_op1__perform_op1__Interface__Sub1__Serv1__wait>
+    <a1__perform_op1__Interface__Sub1__Serv2__wait>5</a1__perform_op1__Interface__Sub1__Serv2__wait>
+    <a2__op2>false</a2__op2>
+    <a2__perform_op1__additional_op1>47</a2__perform_op1__additional_op1>
+    <a1__additional_op1>47</a1__additional_op1>
+    <a1__perform_op1__Interface__Sub1__Serv1__wait>5</a1__perform_op1__Interface__Sub1__Serv1__wait>
+    <output>false</output>
+    <a2__perform_op1__perform_op1__Interface__Sub1__Serv2__wait>5</a2__perform_op1__perform_op1__Interface__Sub1__Serv2__wait>
+    <a2__op2__Interface__Sub1__Serv1__wait>5</a2__op2__Interface__Sub1__Serv1__wait>
+    <rescue>http://localhost:9290</rescue>
+    <resources>/groups</resources>
+  </context-variables>
+  <endpoints>
+    <services>Interface</services>
+    <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <a1__perform_op1__Interface__Sub1__Serv1__ep>http://www.pri.univie.ac.at/~mangler/services/timeout.php</a1__perform_op1__Interface__Sub1__Serv1__ep>
+    <a1__perform_op1__Interface__Sub1__Serv2__ep>http://www.pri.univie.ac.at/~mangler/services/timeout.php</a1__perform_op1__Interface__Sub1__Serv2__ep>
+    <a2__resource_path/>
+    <a2__perform_op1__perform_op1__Interface__Sub1__Serv1__ep>http://www.pri.univie.ac.at/~mangler/services/timeout.php</a2__perform_op1__perform_op1__Interface__Sub1__Serv1__ep>
+    <a2__perform_op1__perform_op1__Interface__Sub1__Serv2__ep>http://www.pri.univie.ac.at/~mangler/services/timeout.php</a2__perform_op1__perform_op1__Interface__Sub1__Serv2__ep>
+    <a2__op2__Interface__Sub1__Serv1__ep>http://www.pri.univie.ac.at/~mangler/services/timeout.php</a2__op2__Interface__Sub1__Serv1__ep>
+    <a2__op2__Interface__Sub1__Serv2__ep>http://www.pri.univie.ac.at/~mangler/services/timeout.php</a2__op2__Interface__Sub1__Serv2__ep>
+  </endpoints>
+  <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
+  <transformation><!--{{{-->
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0" version="1.0">
+      <xsl:output method="text"/>
+      <xsl:strip-space elements="*"/>
+      <xsl:variable name="myspacemultiplier">2</xsl:variable>
+      <xsl:template match="/">
+        <xsl:apply-templates select="//d:description"/>
+      </xsl:template>
+      <xsl:template match="//d:description">
+        <xsl:apply-templates>
+          <xsl:with-param name="myspace">
+            <xsl:value-of select="-1*$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:apply-templates>
+      </xsl:template>
+      <xsl:template match="*">
+        <xsl:param name="myspace"/>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">1</xsl:with-param>
+          <xsl:with-param name="count">
+            <xsl:value-of select="$myspace+$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:call-template>
+        <xsl:if test="name()='call' or name()='manipulate'">
+          <xsl:choose>
+            <xsl:when test="@lay">
+              <xsl:text>activity [:</xsl:text>
+              <xsl:value-of select="@id"/>
+              <xsl:text>,</xsl:text>
+              <xsl:value-of select="@lay"/>
+              <xsl:text>]</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>activity :</xsl:text>
+              <xsl:value-of select="@id"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:if>
+        <xsl:if test="name()='call'">
+          <xsl:text>, :call, :</xsl:text>
+          <xsl:value-of select="@endpoint"/>
+          <xsl:apply-templates select="d:parameters"/>
+          <xsl:apply-templates select="d:manipulate" mode="part-of-call">
+            <xsl:with-param name="myspace">
+              <xsl:value-of select="$myspace"/>
+            </xsl:with-param>
+          </xsl:apply-templates>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
+        <xsl:if test="name()='manipulate'">
+          <xsl:text>, :manipulate</xsl:text>
+          <xsl:call-template name="print-content">
+            <xsl:with-param name="myspace">
+              <xsl:value-of select="$myspace"/>
+            </xsl:with-param>
+          </xsl:call-template>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
+        <xsl:if test="name()='parallel'">
+          <xsl:text>parallel</xsl:text>
+          <xsl:if test="@wait">
+            <xsl:text> :wait =&gt; </xsl:text>
+            <xsl:value-of select="@wait"/>
+          </xsl:if>
+          <xsl:text> do</xsl:text>
+          <xsl:call-template name="print-newline"/>
+          <xsl:apply-templates>
+            <xsl:with-param name="myspace">
+              <xsl:value-of select="$myspace+$myspacemultiplier"/>
+            </xsl:with-param>
+          </xsl:apply-templates>
+          <xsl:call-template name="print-space">
+            <xsl:with-param name="i">1</xsl:with-param>
+            <xsl:with-param name="count">
+              <xsl:value-of select="$myspace+$myspacemultiplier"/>
+            </xsl:with-param>
+          </xsl:call-template>
+          <xsl:text>end</xsl:text>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
+        <xsl:if test="name()='loop'">
+          <xsl:text>loop </xsl:text>
+          <xsl:if test="@pre_test">
+            <xsl:text>pre_test{</xsl:text>
+            <xsl:value-of select="@pre_test"/>
+            <xsl:text>} </xsl:text>
+          </xsl:if>
+          <xsl:if test="@post_test">
+            <xsl:text>post_test{</xsl:text>
+            <xsl:value-of select="@post_test"/>
+            <xsl:text>} </xsl:text>
+          </xsl:if>
+          <xsl:text>do</xsl:text>
+          <xsl:call-template name="print-newline"/>
+          <xsl:apply-templates>
+            <xsl:with-param name="myspace">
+              <xsl:value-of select="$myspace+$myspacemultiplier"/>
+            </xsl:with-param>
+          </xsl:apply-templates>
+          <xsl:call-template name="print-space">
+            <xsl:with-param name="i">1</xsl:with-param>
+            <xsl:with-param name="count">
+              <xsl:value-of select="$myspace+$myspacemultiplier"/>
+            </xsl:with-param>
+          </xsl:call-template>
+          <xsl:text>end</xsl:text>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
+        <xsl:if test="name()='choose'">
+          <xsl:text>choose do</xsl:text>
+          <xsl:call-template name="print-newline"/>
+          <xsl:apply-templates>
+            <xsl:with-param name="myspace">
+              <xsl:value-of select="$myspace+$myspacemultiplier"/>
+            </xsl:with-param>
+          </xsl:apply-templates>
+          <xsl:call-template name="print-space">
+            <xsl:with-param name="i">1</xsl:with-param>
+            <xsl:with-param name="count">
+              <xsl:value-of select="$myspace+$myspacemultiplier"/>
+            </xsl:with-param>
+          </xsl:call-template>
+          <xsl:text>end</xsl:text>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
+        <xsl:if test="name()='injected'">
+          <xsl:text># ========== Code was injected via :</xsl:text>
+          <xsl:value-of select="@id"/>
+          <xsl:text>==========</xsl:text>
+          <xsl:call-template name="print-newline"/>
+          <xsl:apply-templates>
+            <xsl:with-param name="myspace">
+              <xsl:value-of select="$myspace+$myspacemultiplier"/>
+            </xsl:with-param>
+          </xsl:apply-templates>
+          <xsl:call-template name="print-newline"/>
+          <xsl:text># ========== End of injected code ============ </xsl:text>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
+      </xsl:template>
+      <xsl:template match="d:alternative">
+        <xsl:param name="myspace"/>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">1</xsl:with-param>
+          <xsl:with-param name="count">
+            <xsl:value-of select="$myspace+$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:call-template>
+        <xsl:text>alternative </xsl:text>
+        <xsl:value-of select="@condition"/>
+        <xsl:text> do</xsl:text>
+        <xsl:call-template name="print-newline"/>
+        <xsl:apply-templates>
+          <xsl:with-param name="myspace">
+            <xsl:value-of select="$myspace+$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:apply-templates>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">1</xsl:with-param>
+          <xsl:with-param name="count">
+            <xsl:value-of select="$myspace+$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:call-template>
+        <xsl:text>end</xsl:text>
+        <xsl:call-template name="print-newline"/>
+      </xsl:template>
+      <xsl:template match="d:otherwise">
+        <xsl:param name="myspace"/>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">1</xsl:with-param>
+          <xsl:with-param name="count">
+            <xsl:value-of select="$myspace+$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:call-template>
+        <xsl:text>otherwise do</xsl:text>
+        <xsl:call-template name="print-newline"/>
+        <xsl:apply-templates>
+          <xsl:with-param name="myspace">
+            <xsl:value-of select="$myspace+$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:apply-templates>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">1</xsl:with-param>
+          <xsl:with-param name="count">
+            <xsl:value-of select="$myspace+$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:call-template>
+        <xsl:text>end</xsl:text>
+        <xsl:call-template name="print-newline"/>
+      </xsl:template>
+      <xsl:template match="d:parallel_branch">
+        <xsl:param name="myspace"/>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">1</xsl:with-param>
+          <xsl:with-param name="count">
+            <xsl:value-of select="$myspace+$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:call-template>
+        <xsl:text>parallel_branch</xsl:text>
+        <xsl:if test="@pass">
+          <xsl:text> </xsl:text>
+          <xsl:value-of select="@pass"/>
+        </xsl:if>
+        <xsl:text> do</xsl:text>
+        <xsl:if test="@local">
+          <xsl:text> |</xsl:text>
+          <xsl:value-of select="@local"/>
+          <xsl:text>|</xsl:text>
+        </xsl:if>
+        <xsl:call-template name="print-newline"/>
+        <xsl:apply-templates>
+          <xsl:with-param name="myspace">
+            <xsl:value-of select="$myspace+$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:apply-templates>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">1</xsl:with-param>
+          <xsl:with-param name="count">
+            <xsl:value-of select="$myspace+$myspacemultiplier"/>
+          </xsl:with-param>
+        </xsl:call-template>
+        <xsl:text>end</xsl:text>
+        <xsl:call-template name="print-newline"/>
+      </xsl:template>
+      <xsl:template match="d:parameters">
+        <xsl:apply-templates select="d:*" mode="parameter"/>
+      </xsl:template>
+      <xsl:template match="d:*" mode="parameter">
+        <xsl:text>, :</xsl:text>
+        <xsl:value-of select="name()"/>
+        <xsl:text> =&gt; </xsl:text>
+        <xsl:choose>
+          <xsl:when test="count(*) &gt; 0">
+            <xsl:text>[</xsl:text>
+            <xsl:apply-templates select="d:*" mode="sub-parameter"/>
+            <xsl:text>]</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>"</xsl:text>
+            <xsl:value-of select="text()"/>
+            <xsl:text>"</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:template>
+      <xsl:template match="d:*" mode="sub-parameter">
+        <xsl:text> { :</xsl:text>
+        <xsl:value-of select="name()"/>
+        <xsl:text> =&gt; </xsl:text>
+        <xsl:value-of select="text()"/>
+        <xsl:text> }</xsl:text>
+        <xsl:choose>
+          <xsl:when test=". = ../*[last()]">
+            <xsl:text> </xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>,</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:template>
+      <xsl:template match="d:manipulate" mode="part-of-call">
+        <xsl:param name="myspace"/>
+        <xsl:call-template name="print-content">
+          <xsl:with-param name="myspace">
+            <xsl:value-of select="$myspace"/>
+          </xsl:with-param>
+        </xsl:call-template>
+      </xsl:template>
+      <xsl:template name="print-content">
+        <xsl:param name="myspace"/>
+        <xsl:if test="text()">
+          <xsl:text> do </xsl:text>
+          <xsl:if test="@output">
+            <xsl:text>|</xsl:text>
+            <xsl:value-of select="@output"/>
+            <xsl:text>|</xsl:text>
+          </xsl:if>
+          <xsl:call-template name="print-newline"/>
+          <xsl:value-of select="text()"/>
+          <xsl:call-template name="print-newline"/>
+          <xsl:call-template name="print-space">
+            <xsl:with-param name="i">1</xsl:with-param>
+            <xsl:with-param name="count">
+              <xsl:value-of select="$myspace+$myspacemultiplier"/>
+            </xsl:with-param>
+          </xsl:call-template>
+          <xsl:text>end</xsl:text>
+        </xsl:if>
+      </xsl:template>
+      <xsl:template name="print-space">
+        <xsl:param name="i"/>
+        <xsl:param name="count"/>
+        <xsl:if test="$i &lt;= $count">
+          <xsl:text> </xsl:text>
+          <xsl:call-template name="print-space">
+            <xsl:with-param name="i">
+              <xsl:value-of select="$i + 1"/>
+            </xsl:with-param>
+            <xsl:with-param name="count">
+              <xsl:value-of select="$count"/>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:template>
+      <xsl:template name="print-newline">
+        <xsl:text>
+</xsl:text>
+      </xsl:template>
+    </xsl:stylesheet>
+  </transformation><!--}}}-->
+  <description xmlns="http://cpee.org/ns/description/1.0">
+    <call id="a1" endpoint="services">
+      <parameters>
+        <!--{{{-->
+        <service>
+          <serviceoperation>"op1"</serviceoperation>
+          <repository>@rescue</repository>
+          <resources>@resources</resources>
+          <injection>@injection</injection>
+        </service>
+        <parameters>
+          <pi1>@input</pi1>
+        </parameters>
+      </parameters>
+      <!--}}}-->
+    </call>
+    <injected source="a1">
+      <call xmlns="http://cpee.org/ns/description/1.0" id="a1__perform_op1" endpoint="services">
+        <parameters>
+          <service>
+            <serviceoperation>"op1"</serviceoperation>
+            <repository>@rescue</repository>
+            <resources>@resources</resources>
+            <injection>@injection</injection>
+          </service>
+          <parameters>
+            <pi1>@input</pi1>
+            <add>@a1__additional_op1</add>
+          </parameters>
+        </parameters>
+      </call>
+      <injected source="a1__perform_op1">
+        <parallel>
+          <parallel_branch>
+            <call xmlns="http://cpee.org/ns/description/1.0" id="a1__perform_op1__Interface__Sub1__Serv1__s1_op1" endpoint="a1__perform_op1__Interface__Sub1__Serv1__ep">
+              <parameters>
+                <method>post</method>
+                <parameters>
+                  <timeout>@input</timeout>
+                </parameters>
+              </parameters>
+            </call>
+          </parallel_branch>
+          <parallel_branch>
+            <call xmlns="http://cpee.org/ns/description/1.0" id="a1__perform_op1__Interface__Sub1__Serv2__s2_op1" endpoint="a1__perform_op1__Interface__Sub1__Serv2__ep">
+              <parameters>
+                <method>post</method>
+                <parameters>
+                  <timeout>@a1__perform_op1__Interface__Sub1__Serv2__wait</timeout>
+                </parameters>
+              </parameters>
+            </call>
+            <call xmlns="http://cpee.org/ns/description/1.0" id="a1__perform_op1__Interface__Sub1__Serv2__s2_op1_ext" endpoint="a1__perform_op1__Interface__Sub1__Serv2__ep">
+              <parameters>
+                <method>post</method>
+                <parameters>
+                  <timeout>@input</timeout>
+                </parameters>
+              </parameters>
+            </call>
+          </parallel_branch>
+        </parallel>
+      </injected>
+    </injected>
+    <manipulate otuput="result" id="man_block_from_a1" output="@result_a1">
+      @input-=1
+    </manipulate>
+    <call id="a2" endpoint="services">
+      <parameters>
+        <!--{{{-->
+        <service>
+          <serviceoperation>"op2"</serviceoperation>
+          <repository>@rescue</repository>
+          <resources>@resources</resources>
+          <injection>@injection</injection>
+        </service>
+        <parameters>
+          <pi2>@input</pi2>
+          <pi1>@bla</pi1>
+        </parameters>
+      </parameters>
+      <!--}}}-->
+    </call>
+    <injected source="a2">
+      <call xmlns="http://cpee.org/ns/description/1.0" id="a2__perform_op1" endpoint="services">
+        <parameters>
+          <service>
+            <serviceoperation>"op1"</serviceoperation>
+            <repository>@rescue</repository>
+            <resources>@resources</resources>
+            <injection>@injection</injection>
+          </service>
+          <parameters>
+            <pi1>@input</pi1>
+            <add>@a2__additional_op1</add>
+          </parameters>
+        </parameters>
+      </call>
+      <injected source="a2__perform_op1">
+        <call xmlns="http://cpee.org/ns/description/1.0" id="a2__perform_op1__perform_op1" endpoint="services">
+          <parameters>
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <repository>@rescue</repository>
+              <resources>@resources</resources>
+              <injection>@injection</injection>
+            </service>
+            <parameters>
+              <pi1>@input</pi1>
+              <add>@a2__perform_op1__additional_op1</add>
+            </parameters>
+          </parameters>
+        </call>
+        <injected source="a2__perform_op1__perform_op1">
+          <parallel>
+            <parallel_branch>
+              <call xmlns="http://cpee.org/ns/description/1.0" id="a2__perform_op1__perform_op1__Interface__Sub1__Serv1__s1_op1" endpoint="a2__perform_op1__perform_op1__Interface__Sub1__Serv1__ep">
+                <parameters>
+                  <method>post</method>
+                  <parameters>
+                    <timeout>@input</timeout>
+                  </parameters>
+                </parameters>
+              </call>
+            </parallel_branch>
+            <parallel_branch>
+              <call xmlns="http://cpee.org/ns/description/1.0" id="a2__perform_op1__perform_op1__Interface__Sub1__Serv2__s2_op1" endpoint="a2__perform_op1__perform_op1__Interface__Sub1__Serv2__ep">
+                <parameters>
+                  <method>post</method>
+                  <parameters>
+                    <timeout>@a2__perform_op1__perform_op1__Interface__Sub1__Serv2__wait</timeout>
+                  </parameters>
+                </parameters>
+              </call>
+              <call xmlns="http://cpee.org/ns/description/1.0" id="a2__perform_op1__perform_op1__Interface__Sub1__Serv2__s2_op1_ext" endpoint="a2__perform_op1__perform_op1__Interface__Sub1__Serv2__ep">
+                <parameters>
+                  <method>post</method>
+                  <parameters>
+                    <timeout>@input</timeout>
+                  </parameters>
+                </parameters>
+              </call>
+            </parallel_branch>
+          </parallel>
+        </injected>
+      </injected>
+      <call xmlns="http://cpee.org/ns/description/1.0" id="a2__op2" endpoint="services">
+        <parameters>
+          <service>
+            <serviceoperation>"op2"</serviceoperation>
+            <repository>@rescue</repository>
+            <resources>@resources</resources>
+            <injection>@injection</injection>
+          </service>
+          <parameters>
+            <pi2>@input</pi2>
+          </parameters>
+        </parameters>
+      </call>
+      <injected source="a2__op2">
+        <parallel>
+          <parallel_branch>
+            <call xmlns="http://cpee.org/ns/description/1.0" id="a2__op2__Interface__Sub1__Serv1__s1_op2" endpoint="a2__op2__Interface__Sub1__Serv1__ep">
+              <parameters>
+                <method>post</method>
+                <parameters>
+                  <timeout>@input</timeout>
+                </parameters>
+              </parameters>
+            </call>
+          </parallel_branch>
+          <parallel_branch>
+            <call xmlns="http://cpee.org/ns/description/1.0" id="a2__op2__Interface__Sub1__Serv2__s2_op2" endpoint="a2__op2__Interface__Sub1__Serv2__ep">
+              <parameters>
+                <method>post</method>
+                <parameters>
+                  <timeout>@input</timeout>
+                </parameters>
+              </parameters>
+            </call>
+          </parallel_branch>
+        </parallel>
+      </injected>
+    </injected>
+    <manipulate otuput="result" id="man_block_from_a2" output="@result_a2">
+      @input-=1
+    </manipulate>
+  </description>
+</testset>
