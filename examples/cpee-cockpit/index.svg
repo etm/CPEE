@@ -1,10 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" onload='testset_svg()'> 
   <defs>
-    <style type="text/css"><![CDATA[
-      .hidden {
-        display: none;
-      }
-      
+    <!--{{{--><style type="text/css"><![CDATA[
       svg rect.injected {
         fill: Highlight;
         fill-opacity: 0.2;
@@ -19,7 +15,7 @@
         fill-opacity:1;
       }  
       
-      svg line.ourline {
+      svg path.ourline {
         stroke-opacity: 0.9; 
         stroke:#000000;
         stroke-width: 2; 
@@ -32,8 +28,6 @@
         fill: none;
       }
       svg circle.stand {
-        fill:#ffffff;
-        fill-opacity:1;
         stroke:#000000;
         stroke-width:2.06896567;
         stroke-linecap:round;
@@ -43,8 +37,6 @@
         stroke-dasharray:none;
       }
       svg circle.standwithout {
-        fill:#ffffff;
-        fill-opacity:1;
       }
       svg text.normal {
         font-size:20px;
@@ -132,8 +124,8 @@
        stroke-width: 2;
        fill: #000000;
       }
-    ]]></style>
-    <script type="text/javascript"> <![CDATA[
+    ]]></style><!--}}}-->
+    <!--{{{--><script type="text/javascript"><![CDATA[
       var running = false;
       var svgNS = "http://www.w3.org/2000/svg";
       var htmlNS = "http://www.w3.org/1999/xhtml";
@@ -149,27 +141,6 @@
         fn();
       };
 
-      function load_wfgraph() {
-        httpRequest = new XMLHttpRequest();
-        httpRequest.overrideMimeType('text/javascript');
-        httpRequest.onreadystatechange = function(){
-          if (httpRequest.readyState == 4) {
-            if (httpRequest.status == 200) {
-              try {
-                globalEval(httpRequest.responseText);
-                alert("hall1");
-              } catch(err) {
-                alert(err.description);
-              }
-            } else {
-              alert('There was a problem with loading graph.js.');
-            }
-          }
-        };
-        httpRequest.open('GET', 'JS/graph.js', true);
-        httpRequest.send(null);
-      }
-
       function testset_svg(){
         if (window.location.search.match(/^\?testset=/)) {
           var ts = window.location.search.replace(/^\?testset=/,'');
@@ -181,10 +152,22 @@
                 var canvas = document.getElementById("canvas");
                 var xml = httpRequest.responseXML;
                 var node = xml.evaluate("//x:description", xml.documentElement, cpeeResolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                load_wfgraph();
-                alert("hall2");
-                var wg = new WFGraph(xml, node, canvas);
-                wg.generateGraph();
+
+                httpRequest = new XMLHttpRequest();
+                httpRequest.overrideMimeType('text/javascript');
+                httpRequest.onreadystatechange = function(){
+                  if (httpRequest.readyState == 4) {
+                    if (httpRequest.status == 200) {
+                      globalEval(httpRequest.responseText);
+                      var wg = new WFGraph(xml, node, canvas);
+                      wg.generateGraph();
+                    } else {
+                      alert('There was a problem with loading graph.js.');
+                    }
+                  }
+                };
+                httpRequest.open('GET', 'JS/graph.js', true);
+                httpRequest.send(null);
               } else {
                 alert('There was a problem with loading the testset.');
               }
@@ -198,7 +181,7 @@
       function cpeeResolver(prefix){
         return 'http://cpee.org/ns/description/1.0';
       }  
-    ]]> </script>
+    ]]></script><!--}}}-->
     <symbol id="call" class="clickable"><!-- {{{ -->
       <circle cx="15" cy="15" r="14" class="stand"></circle>
       <text class="normal" transform='translate(15,21)'>c</text>
@@ -223,7 +206,7 @@
     </symbol><!-- }}} -->
     <symbol id="otherwise" class="clickable"><!-- {{{ -->
       <circle cx="15" cy="15" r="14" class="standwithout"></circle>
-      <text class="normal" transform='translate(15,25)'>{⁎}</text>
+      <text class="normal" transform='translate(15,20)'>{⁎}</text>
     </symbol><!-- }}} -->
     <symbol id="parallel" class="clickable"><!-- {{{ -->
       <circle cx="15" cy="15" r="14" class="stand"></circle>
@@ -239,7 +222,7 @@
     </symbol><!-- }}} -->
     <symbol id="loop" class="clickable"><!-- {{{ -->
       <circle cx="15" cy="15" r="14" class="stand"></circle>
-      <text class="normallarge" transform='translate(15,23)'>↺</text>
+      <text class="normallarge" transform='translate(15,24)'>↺</text>
     </symbol><!-- }}} -->
     <symbol id="end"><!-- {{{ -->
       <circle cx="15" cy="15" r="14" class="stand"></circle>

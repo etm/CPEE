@@ -1,4 +1,4 @@
-function WFGraph(xml, start, container) {
+var WFGraph = function(xml, start, container) {
   var row_height = 40;
   var column_width = 40;
   var svgNS = "http://www.w3.org/2000/svg";
@@ -122,6 +122,7 @@ function WFGraph(xml, start, container) {
       end.setAttributeNS(xlinkNS, "href", "#end");
       end.setAttribute("y", (max_line)*row_height-30);
       end.setAttribute("x", (column_shift)*column_width-15);
+      end.setAttribute("style", "fill: #ffffff; fill-opacity: 1");
       symbols.insertBefore(end, symbols.lastChild);
       for(var j = 0; j < end_nodes.length; j++)
         drawConnection(end_nodes[j], ap, block['max_pos']['line']);
@@ -173,9 +174,12 @@ function WFGraph(xml, start, container) {
 
   var drawSymbol = function (xy, node, id) { // {{{
     var sym_name = node.nodeName;
-    if((sym_name == "call") && $("> parameters > service", node).length == 1) 
+    var eps = xml.evaluate("parameters/service", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var em  = xml.evaluate("manipulate", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var eo  = xml.evaluate("outputs", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    if((sym_name == "call") && eps.length == 1)
       sym_name = "callinject";
-    if((sym_name == "call") && (($("> manipulate", node).length > 0) || ($("> outputs", node).length > 0))) 
+    if((sym_name == "call") && ((em.length > 0) || (eo.length > 0)))
       sym_name = "callmanipulate";
 
     var g = document.createElementNS(svgNS, "g");
@@ -183,6 +187,7 @@ function WFGraph(xml, start, container) {
 
     var use = document.createElementNS(svgNS, "use");
     use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
+    use.setAttribute("style", "fill: #ffffff; fill-opacity: 1");
 
     var attrs = {};
     if (id) {
@@ -248,4 +253,4 @@ function WFGraph(xml, start, container) {
         block.setAttribute(attr, attrs[attr]);
       blocks.appendChild(block);
   }// }}}
-}
+};
