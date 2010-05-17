@@ -34,7 +34,9 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       raise "Injection at #{injection_service} failed with status: #{status}" if status != 200
       raise "Injection in progress" if status == 200
     else
+      puts "== performing a call to service"
       client = Riddl::Client.new(endpoint)
+      pp client.inspect
 
       params = []
       callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
@@ -42,16 +44,19 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         if h.class == Hash
           h.each do |k,v|
             params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
+            puts "=== adding parameter: #{k} => #{v}"
           end
         end
       end
       params << Riddl::Header.new("CPEE-Callback",callback)
 
       type = parameters[:method] || 'post'
+      puts "=== Type: #{type}"
       status, result, headers = client.request type => params
       raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
 
-      @handler_returnValue = ''
+      pp result.inspect
+      @handler_returnValue = result 
       if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
         $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
         return

@@ -6,82 +6,31 @@
     <rescue>http://localhost:9290</rescue>
     <injection>/injection</injection>
     <resources>/groups</resources>
-    <prefdate>2010-06-20</prefdate>
-    <number_of_persons>4</number_of_persons>
-    <pref_time>20:15</pref_time>
-    <title>What ever</title>
-    <hall/>
-    <movie_title/>
-    <res_id/>
-    <start_time/>
-    <pop_quant/>
-    <pop_order_num/>
-    <pop_price/>
+    <title>Going Postal</title>
+    <date>2010-05-17</date>
+    <output/>
   </context-variables>
   <endpoints>
-    <cinemas>Cinema/Arthouse</cinemas>
-    <transformationservice>http://localhost:9290/transformation</transformationservice>
-    <selectionservice>http://localhost/selection.php</selectionservice>
-    <selectedcinema>balbla</selectedcinema>
+    <services>Cinemas</services>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="book_movie" endpoint="cinemas">
-      <parameters>
+    <call id="a1" endpoint="services">
+      <parameters><!--{{{-->
         <service>
-          <serviceoperation>"search_and_book"</serviceoperation>
+          <serviceoperation>"search"</serviceoperation>
           <repository>@rescue</repository>
           <resources>@resources</resources>
           <injection>@injection</injection>
         </service>
         <parameters>
-          <date>@prefdate</date>
-          <number_of_persons>@number_of_persons</number_of_persons>
-          <preferred_time>@pref_time</preferred_time>
           <title>@title</title>
+          <date>@date</date>
         </parameters>
-      </parameters>
-      <manipulate>
-        <output name="movie_title" variable="movie_title"/>
-        <output name="reservation_id" variable="res_id"/>
-        <output name="starting_time" variable="start_time"/>
-        <output name="hall" variable="hall"/>
+      </parameters><!--}}}-->
+      <manipulate output="result">
+        result.each {|r| puts r.inspect}
       </manipulate>
-    </call>
-    <call id="book_popcorn" endpoint="selectedcinema">
-      <parameters>
-        <service>
-          <serviceoperation>"search_and_book"</serviceoperation>
-          <repository>@rescue</repository>
-          <resources>@resources</resources>
-          <injection>@injection</injection>
-        </service>
-        <parameters>
-          <quantity>@pop_quant</quantity>
-          <reservation_id>@res_id</reservation_id>
-        </parameters>
-      </parameters>
-      <manipulate>
-        <output name="order_number" variable="pop_order_num"/>
-        <output name="price" variable="pop_price"/>
-      </manipulate>
-    </call>
-    <choose>
-      <alternative condition="@pop_price &lt; 10">
-        <call id="unbook_popcorn" endpoint="selectedcinema">
-          <parameters>
-            <service>
-              <serviceoperation>"search_and_book"</serviceoperation>
-              <repository>@rescue</repository>
-              <resources>@resources</resources>
-              <injection>@injection</injection>
-            </service>
-            <parameters>
-              <order_number>@pop_quant</order_number>
-            </parameters>
-          </parameters>
-        </call>
-      </alternative>
-    </choose>
+    </call>  
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
@@ -131,6 +80,12 @@
         </xsl:if>
         <xsl:if test="name()='manipulate'">
           <xsl:text>, :manipulate</xsl:text>
+          <!-- RESCUE: manipulate with context-variable as result object -->
+          <xsl:if test="@context">
+            <xsl:text>, nil,</xsl:text>
+            <xsl:value-of select="@context"/>
+          </xsl:if>
+          <!-- RESCUE -->
           <xsl:call-template name="print-content">
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
           </xsl:call-template>
@@ -191,9 +146,10 @@
           <xsl:text>end</xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
+        <!-- RESCUE -->
         <xsl:if test="name()='injected'">
-          <xsl:text># ========== Code was injected via :</xsl:text>
-          <xsl:value-of select="@id"/>
+          <xsl:text># ========== Code was injected via: </xsl:text>
+          <xsl:value-of select="@source"/>
           <xsl:text>==========</xsl:text>
           <xsl:call-template name="print-newline"/>
           <xsl:apply-templates>
@@ -203,6 +159,7 @@
           <xsl:text># ========== End of injected code ============ </xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
+        <!-- RESCUE -->
       </xsl:template>
       
       <xsl:template match="d:alternative">
@@ -321,7 +278,7 @@
 
       <xsl:template name="print-content">
         <xsl:param name="myspace"/>
-        <xsl:if test="text()">
+        <xsl:if test="text() or child::d:output"><!-- RESCUE: changed condition -->
           <xsl:text> do </xsl:text>
           <xsl:if test="@output">
             <xsl:text>|</xsl:text>
@@ -329,6 +286,11 @@
             <xsl:text>|</xsl:text>
           </xsl:if>
           <xsl:call-template name="print-newline"/>
+          <!-- RESCUE -->
+          <xsl:apply-templates select="d:output">
+            <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:apply-templates>
+          <!-- RESCUE -->
           <xsl:value-of select="text()"/>
           <xsl:call-template name="print-newline"/>
           <xsl:call-template name="print-space">
@@ -338,6 +300,31 @@
           <xsl:text>end</xsl:text>
         </xsl:if>
       </xsl:template>
+
+      <!-- RESCUE -->
+      <xsl:template match="d:output">
+        <xsl:param name="myspace"/>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">-1</xsl:with-param>
+          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+        </xsl:call-template>
+        <xsl:text>@</xsl:text>
+        <xsl:value-of select="@variable"/>
+        <xsl:text> = Hash.new</xsl:text>
+        <xsl:call-template name="print-newline"/>
+        <xsl:call-template name="print-space">
+          <xsl:with-param name="i">-1</xsl:with-param>
+          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+        </xsl:call-template>
+        <xsl:value-of select="parent::d:manipulate/@output"/>
+        <xsl:text>.each { |k,v| @</xsl:text>
+        <xsl:value-of select="@variable"/>
+        <xsl:text>[k] = v[:</xsl:text>
+        <xsl:value-of select="@name"/>
+        <xsl:text>] }</xsl:text>
+        <xsl:call-template name="print-newline"/>
+      </xsl:template>
+      <!-- RESCUE -->
 
       <xsl:template name="print-space">
         <xsl:param name="i"/>
