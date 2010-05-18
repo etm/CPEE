@@ -149,7 +149,6 @@ class Wee
             if block_given?
               handlerwrapper.inform_activity_manipulate
               yield(*parameters)
-              #yield
             end  
             refreshcontext handlerwrapper
           when :call
