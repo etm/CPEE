@@ -4,6 +4,7 @@
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <context-variables>
     <x>_begin</x>
+    <nasty>What a nasty bug</nasty>
   </context-variables>
   <endpoints>
     <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
@@ -14,6 +15,7 @@
         <method>post</method>
         <parameters>
           <timeout>4</timeout>
+          <bug>@nasty</bug>
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">  @x += "done"</manipulate>  

@@ -6,6 +6,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     @handler_continue = continue
     @handler_position = position
     @handler_lay = lay
+    #@handler_lay = (lay != nil ? lay : "'ralph rocks'")
     @handler_returnValue = nil
   end
 
@@ -13,6 +14,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def activity_handle(passthrough, endpoint, parameters)
     puts '==Hanelder-started=='*5
     $controller[@instance].position
+#    $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => "SuperDuperRalph")
     $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
   
     cpee_instance = "#{@url}/#{@instance}/"
@@ -21,7 +23,9 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     pp "Position: #{@handler_position}"
     pp "Instance-Uri: #{cpee_instance}"
     pp 'Parameters:'
-    pp parameters.inspect
+    pp parameters.to_yaml
+    pp 'Passthrough:'
+    pp passthrough.to_yaml
     if parameters.key?(:service)
       injection_service = parameters[:service][1][:repository]+parameters[:service][3][:injection]
       resources = parameters[:service][1][:repository]+parameters[:service][2][:resources]
@@ -31,15 +35,15 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
                                                                 Riddl::Parameter::Simple.new("cpee", cpee_instance),
                                                                 Riddl::Parameter::Simple.new("rescue", resources)]
-      raise "Injection at #{injection_service} failed with status: #{status}" if status != 200
-      raise "Injection in progress" if status == 200
+      raise "'Injection at #{injection_service} failed with status: #{status}'" if status != 200
+      raise "'Injection in progress'" if status == 200
     else
       puts "== performing a call to service"
       client = Riddl::Client.new(endpoint)
       pp client.inspect
 
       params = []
-      callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+#      callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
       (parameters[:parameters] || {}).each do |h|
         if h.class == Hash
           h.each do |k,v|
@@ -48,19 +52,29 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
           end
         end
       end
-      params << Riddl::Header.new("CPEE-Callback",callback)
+#      params << Riddl::Header.new("CPEE-Callback",callback)
 
       type = parameters[:method] || 'post'
       puts "=== Type: #{type}"
+      puts "== Performing call"
       status, result, headers = client.request type => params
+      puts "== Call finished with status: #{status}"
       raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
 
-      pp result.inspect
-      @handler_returnValue = result 
+#      res = Hash.new
+#      result.each do |r| 
+#        name = r.name != "" ? r.name : "void_#{rand(Time.now)}"
+#        res[name.to_sym] = (r.class == Riddl::Parameter::Complex) ? r.value.read : r.value
+#      end
+#      @handler_returnValue = res
+      @handler_returnValue = result
+      pp @handler_returnValue.inspect
+=begin      
       if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
         $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
         return
       end
+=end
     end
     @handler_continue.continue
     puts '==Handler finished=='*5
@@ -104,6 +118,8 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].notify("running/activity_manipulating", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_failed(err)
+    puts err.message
+    puts err.backtrace
     $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
   end
   def inform_syntax_error(err)

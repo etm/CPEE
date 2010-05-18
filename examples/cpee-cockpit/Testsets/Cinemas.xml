@@ -7,14 +7,19 @@
     <injection>/injection</injection>
     <resources>/groups</resources>
     <title>Going Postal</title>
+    <selected_title/>
     <date>2010-05-17</date>
     <output/>
+    <show_id/>
+    <starting_time/>
+    <uris/>
   </context-variables>
   <endpoints>
     <services>Cinemas</services>
+    <selected_cinema/>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="a1" endpoint="services">
+    <call id="search" endpoint="services">
       <parameters><!--{{{-->
         <service>
           <serviceoperation>"search"</serviceoperation>
@@ -28,9 +33,26 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-        result.each {|r| puts r.inspect}
+      xml = XML::Smart.string('&lt;list/&gt;')
+      result.each do |uri, list|
+        shows_list = XML::Smart.string(list[:list])
+        shows = shows_list.find("//show")
+        shows.each {|s| s.attributes['uri'] = uri.to_s}
+        xml.root.add(shows)
+      end
+      @output = xml.to_s
       </manipulate>
     </call>  
+    <manipulate id="select_by_random">
+      xml = XML::Smart.string(@output)
+      num = rand(xml.root.children.length)
+      show = xml.root.children[num]
+      @uris = show.attributes['uri']
+      endpoint :selected_cinema => show.attributes['uri']
+      @show_id = show.find("child::show_id").first.text
+      @starting_time = show.find("child::time").first.text
+      @selected_title = show.find("child::title").first.text
+    </manipulate>
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
@@ -319,7 +341,7 @@
         <xsl:value-of select="parent::d:manipulate/@output"/>
         <xsl:text>.each { |k,v| @</xsl:text>
         <xsl:value-of select="@variable"/>
-        <xsl:text>[k] = v[:</xsl:text>
+        <xsl:text>[k] = v[</xsl:text>
         <xsl:value-of select="@name"/>
         <xsl:text>] }</xsl:text>
         <xsl:call-template name="print-newline"/>
