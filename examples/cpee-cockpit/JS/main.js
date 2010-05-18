@@ -141,7 +141,14 @@ function monitor_instance_cvs() {// {{{
       var values = $("values > *",res);
       var temp = "";
       values.each(function(){
-        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>";
+        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td>";
+        var text = $(this).text();
+        console.log("LEngth of text: " + text.length);
+        if(text.length < 80) {
+          temp +="<td>" + $(this).text() + "</td></tr>";
+        } else {
+          temp +="<td><a href=\"" + url + "/properties/values/context-variables/"+this.nodeName+"\" target=\"_blank\" class=">Show value</a></td></tr>";
+        }
       });
 
       if (temp != save_cvs) {

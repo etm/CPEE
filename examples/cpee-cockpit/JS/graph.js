@@ -178,10 +178,10 @@ var WFGraph = function(xml, start, container) {
     var eps = xml.evaluate("child::*[name() = 'parameters']/*[name() = 'service']", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     var em  = xml.evaluate("child::*[name() = 'manipulate']", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     var eo  = xml.evaluate("child::*[name() = 'manipulate']/child:*[name() = 'output']", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-    if((sym_name == "call") && eps.snapshotLength == 1)
-      sym_name = "callinject";
     if((sym_name == "call") && ((em.snapshotLength > 0) || (eo.snapshotLength > 0)))
       sym_name = "callmanipulate";
+    if((sym_name == "call") && eps.snapshotLength == 1)
+      sym_name = "callinject";
 
     var g = document.createElementNS(svgNS, "g");
         g.setAttribute('transform', 'translate(' + String(xy['col']*column_width-15) + ',' + String(xy['line']*row_height-30) + ')');
