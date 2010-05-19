@@ -141,304 +141,308 @@ function monitor_instance_cvs() {// {{{
       var values = $("values > *",res);
       var temp = "";
       values.each(function(){
+      if($(this).text().length < 80) {
         temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>";
-      });
+      } else {
+        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td><a href=\"" + url + "/properties/values/context-variables/" + this.nodeName  +"\" target=\"_blank\">Show context</a></td></tr>";
+      }
+    });
 
-      if (temp != save_cvs) {
-        save_cvs = temp;
-        var ctv = $("#context-variables");
-        ctv.empty();
-        ctv.append(temp);
-      }  
-    }
-  });      
+    if (temp != save_cvs) {
+      save_cvs = temp;
+      var ctv = $("#context-variables");
+      ctv.empty();
+      ctv.append(temp);
+    }  
+  }
+});      
 }// }}}
 
 function monitor_instance_eps() {// {{{
-  var url = $("input[name=instance-url]").val();
-  $.ajax({
-    type: "GET", 
-    url: url + "/properties/values/endpoints/",
-    success: function(res){
-      var values = $("values > *",res);
-      var temp = "";
-      values.each(function(){
-        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>";
-      });
+var url = $("input[name=instance-url]").val();
+$.ajax({
+  type: "GET", 
+  url: url + "/properties/values/endpoints/",
+  success: function(res){
+    var values = $("values > *",res);
+    var temp = "";
+    values.each(function(){
+      temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>";
+    });
 
-      if (temp != save_eps) {
-        save_eps = temp;
-        var ctv = $("#endpoints");
-        ctv.empty();
-        ctv.append(temp);
-      }  
-    }
-  });
+    if (temp != save_eps) {
+      save_eps = temp;
+      var ctv = $("#endpoints");
+      ctv.empty();
+      ctv.append(temp);
+    }  
+  }
+});
 }// }}}
 
 function monitor_instance_dsl() {// {{{
-  var url = $("input[name=instance-url]").val();
-  $.ajax({
-    type: "GET",
-    dataType: "text",
-    url: url + "/properties/values/dsl/",
-    success: function(res){
-      if (res != save_dsl) {
-        save_dsl = res;
-        var ctv = $("#areadsl");
-        ctv.empty();
+var url = $("input[name=instance-url]").val();
+$.ajax({
+  type: "GET",
+  dataType: "text",
+  url: url + "/properties/values/dsl/",
+  success: function(res){
+    if (res != save_dsl) {
+      save_dsl = res;
+      var ctv = $("#areadsl");
+      ctv.empty();
 
-        res = format_code(res,false,true);
-        res = res.replace(/activity\s+:([A-Za-z][a-zA-Z0-9_]+)/g,"<span class='activities' id=\"activity-$1\">activity :$1</span>");
-        res = res.replace(/activity\s+\[:([A-Za-z][a-zA-Z0-9_]+)([^\]]*\])/g,"<span class='activities' id=\"activity-$1\">activity [:$1$2</span>");
+      res = format_code(res,false,true);
+      res = res.replace(/activity\s+:([A-Za-z][a-zA-Z0-9_]+)/g,"<span class='activities' id=\"activity-$1\">activity :$1</span>");
+      res = res.replace(/activity\s+\[:([A-Za-z][a-zA-Z0-9_]+)([^\]]*\])/g,"<span class='activities' id=\"activity-$1\">activity [:$1$2</span>");
 
-        ctv.append(res);
-        $.ajax({
-          type: "GET",
-          url: url + "/properties/values/description/",
-          success: function(res){
-            var container = $("#canvas").get(0);
-            var g = new WFGraph(res, res.documentElement, container);
-            var width = g.generateGraph({
-              symclick: sym_click
-            });
-            container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
-            monitor_instance_pos();
-          }
-        });
-      }
+      ctv.append(res);
+      $.ajax({
+        type: "GET",
+        url: url + "/properties/values/description/",
+        success: function(res){
+          var container = $("#canvas").get(0);
+          var g = new WFGraph(res, res.documentElement, container);
+          var width = g.generateGraph({
+            symclick: sym_click
+          });
+          container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
+          monitor_instance_pos();
+        }
+      });
     }
-  });
+  }
+});
 }// }}}
 
 function monitor_instance_state() {// {{{
-  var url = $("input[name=instance-url]").val();
-  $.ajax({
-    type: "GET", 
-    url: url + "/properties/values/state/",
-    dataType: "text",
-    success: function(res){
-      if (res != save_state) {
-        save_state = res;
+var url = $("input[name=instance-url]").val();
+$.ajax({
+  type: "GET", 
+  url: url + "/properties/values/state/",
+  dataType: "text",
+  success: function(res){
+    if (res != save_state) {
+      save_state = res;
 
-        var ctv = $("#state");
-        ctv.empty();
+      var ctv = $("#state");
+      ctv.empty();
 
-        var but = "";
-        if (res == "stopped") {
-          monitor_instance_pos();
-        }  
-        if (res == "ready" || res == "stopped") {
-          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
-        }
-        if (res == "running") {
-          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
-        }
-
-        ctv.append("<tr><td>State:</td><td>" + res + "</td>" + but + "</tr>");
+      var but = "";
+      if (res == "stopped") {
+        monitor_instance_pos();
       }  
-    }
-  });
+      if (res == "ready" || res == "stopped") {
+        but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
+      }
+      if (res == "running") {
+        but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
+      }
+
+      ctv.append("<tr><td>State:</td><td>" + res + "</td>" + but + "</tr>");
+    }  
+  }
+});
 }// }}}
 
 function monitor_instance_pos() {// {{{
-  var url = $("input[name=instance-url]").val();
-  $.ajax({
-    type: "GET", 
-    url: url + "/properties/values/positions/",
-    success: function(res){
-      var values = $("values > *",res);
-      format_visual_clear();
-      values.each(function(){
-        var what = this.nodeName;
-        format_visual_add(what,"active");
-        format_visual_set(what);
-      });
-    }
-  });
+var url = $("input[name=instance-url]").val();
+$.ajax({
+  type: "GET", 
+  url: url + "/properties/values/positions/",
+  success: function(res){
+    var values = $("values > *",res);
+    format_visual_clear();
+    values.each(function(){
+      var what = this.nodeName;
+      format_visual_add(what,"active");
+      format_visual_set(what);
+    });
+  }
+});
 }// }}}
 
 function monitor_instance_pos_change(notification,event) {// {{{
-  if (save_state == "stopping") return;
-  var parts = YAML.eval(notification);
-  if (event == "activity_calling")
-    format_visual_add(parts.activity,"active")
-  if (event == "activity_done")
-    format_visual_remove(parts.activity,"active")
+if (save_state == "stopping") return;
+var parts = YAML.eval(notification);
+if (event == "activity_calling")
+  format_visual_add(parts.activity,"active")
+if (event == "activity_done")
+  format_visual_remove(parts.activity,"active")
 } // }}}
 
 function monitor_instance_vote_add(notification) {// {{{
-  if (save_state == "stopping") return;
-  var parts = YAML.eval(notification);
-  var ctv = $("#votes");
-  ctv.append("<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\");'>vote to continue</button></td></tr>");
-  format_visual_add(parts.activity,"vote")
+if (save_state == "stopping") return;
+var parts = YAML.eval(notification);
+var ctv = $("#votes");
+ctv.append("<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\");'>vote to continue</button></td></tr>");
+format_visual_add(parts.activity,"vote")
 }// }}}
 
 function monitor_instance_vote_remove(activity,callback) {//{{{
-  var url = $("input[name=instance-url]").val();
-  $.ajax({
-    type: "PUT", 
-    url: url + "/callbacks/" + callback,
-    data: ({'continue': 'true'}),
-    error: report_failure
-  });
-  format_visual_remove(activity,"vote");
-  $('#vote_to_continue-' + activity + '-' + callback).remove();
+var url = $("input[name=instance-url]").val();
+$.ajax({
+  type: "PUT", 
+  url: url + "/callbacks/" + callback,
+  data: ({'continue': 'true'}),
+  error: report_failure
+});
+format_visual_remove(activity,"vote");
+$('#vote_to_continue-' + activity + '-' + callback).remove();
 }//}}}
 
 function start_instance() {// {{{
-  var url = $("input[name=instance-url]").val();
-  format_visual_clear();
-  $.ajax({
-    type: "PUT", 
-    url: url + "/properties/values/state",
-    data: ({value: "running"}),
-    error: report_failure
-  });
+var url = $("input[name=instance-url]").val();
+format_visual_clear();
+$.ajax({
+  type: "PUT", 
+  url: url + "/properties/values/state",
+  data: ({value: "running"}),
+  error: report_failure
+});
 }// }}}
 
 function stop_instance() {// {{{
-  var url = $("input[name=instance-url]").val();
-  format_visual_clear();
-  $.ajax({
-    type: "PUT", 
-    url: url + "/properties/values/state",
-    data: ({value: "stopping"}),
-    error: report_failure
-  });
+var url = $("input[name=instance-url]").val();
+format_visual_clear();
+$.ajax({
+  type: "PUT", 
+  url: url + "/properties/values/state",
+  data: ({value: "stopping"}),
+  error: report_failure
+});
 }// }}}
 
 function load_testset() {// {{{
-  if (running) return;
-  running  = true;
-  save_dsl = null; // reload dsl and position under all circumstances
-  var table = $('#tabledetails');
-  table.empty();
-  var url = $("input[name=instance-url]").val();
-  $.ajax({ 
-    cache: false,
-    dataType: 'xml',
-    url: "Testsets/" + $('select[name=testset-names]').val() + ".xml",
-    success: function(res){ 
-      var testset = res; 
+if (running) return;
+running  = true;
+save_dsl = null; // reload dsl and position under all circumstances
+var table = $('#tabledetails');
+table.empty();
+var url = $("input[name=instance-url]").val();
+$.ajax({ 
+  cache: false,
+  dataType: 'xml',
+  url: "Testsets/" + $('select[name=testset-names]').val() + ".xml",
+  success: function(res){ 
+    var testset = res; 
 
-      $.ajax({
-        type: "GET", 
-        url: url + "/properties/values/context-variables/",
-        success: function(res){
-          var rcount = 0;
-          var values = $("values > *",res);
-          var length = values.length;
-          values.each(function(){
-            var name = this.nodeName;
-            $.ajax({
-              type: "DELETE", 
-              url: url + "/properties/values/context-variables/" + name,
-              success: function(){
-                rcount += 1;
-                if (rcount == length)
-                  load_testset_cvs(url,testset);
-              },
-              error: report_failure
-            });  
-          });
-          if (length == 0)
-            load_testset_cvs(url,testset);
-        },
-        error: report_failure
-      });  
-      
-      $.ajax({
-        type: "GET", 
-        url: url + "/properties/values/endpoints/",
-        success: function(res){
-          var rcount = 0;
-          var values = $("values > *",res);
-          var length = values.length;
-          values.each(function(){
-            var name = this.nodeName;
-            $.ajax({
-              type: "DELETE", 
-              url: url + "/properties/values/endpoints/" + name,
-              success: function(){
-                rcount += 1;
-                if (rcount == length)
-                  load_testset_eps(url,testset);
-              },
-              error: report_failure
-            });  
-          });
-          if (length == 0)
-            load_testset_eps(url,testset);
-        },
-        error: report_failure
-      });
-      
-      $.ajax({
-        type: "GET", 
-        url: url + "/properties/values/positions/",
-        success: function(res){
-          var rcount = 0;
-          var values = $("values > *",res);
-          var length = values.length;
-          values.each(function(){
-            var name = this.nodeName;
-            $.ajax({
-              type: "DELETE", 
-              url: url + "/properties/values/positions/" + name,
-              success: function(){
-                rcount += 1;
-                if (rcount == length)
-                  load_testset_pos(url,testset);
-              },
-              error: report_failure
-            });  
-          });
-          if (length == 0)
-            load_testset_pos(url,testset);
-        },
-        error: report_failure
-      });
+    $.ajax({
+      type: "GET", 
+      url: url + "/properties/values/context-variables/",
+      success: function(res){
+        var rcount = 0;
+        var values = $("values > *",res);
+        var length = values.length;
+        values.each(function(){
+          var name = this.nodeName;
+          $.ajax({
+            type: "DELETE", 
+            url: url + "/properties/values/context-variables/" + name,
+            success: function(){
+              rcount += 1;
+              if (rcount == length)
+                load_testset_cvs(url,testset);
+            },
+            error: report_failure
+          });  
+        });
+        if (length == 0)
+          load_testset_cvs(url,testset);
+      },
+      error: report_failure
+    });  
+    
+    $.ajax({
+      type: "GET", 
+      url: url + "/properties/values/endpoints/",
+      success: function(res){
+        var rcount = 0;
+        var values = $("values > *",res);
+        var length = values.length;
+        values.each(function(){
+          var name = this.nodeName;
+          $.ajax({
+            type: "DELETE", 
+            url: url + "/properties/values/endpoints/" + name,
+            success: function(){
+              rcount += 1;
+              if (rcount == length)
+                load_testset_eps(url,testset);
+            },
+            error: report_failure
+          });  
+        });
+        if (length == 0)
+          load_testset_eps(url,testset);
+      },
+      error: report_failure
+    });
+    
+    $.ajax({
+      type: "GET", 
+      url: url + "/properties/values/positions/",
+      success: function(res){
+        var rcount = 0;
+        var values = $("values > *",res);
+        var length = values.length;
+        values.each(function(){
+          var name = this.nodeName;
+          $.ajax({
+            type: "DELETE", 
+            url: url + "/properties/values/positions/" + name,
+            success: function(){
+              rcount += 1;
+              if (rcount == length)
+                load_testset_pos(url,testset);
+            },
+            error: report_failure
+          });  
+        });
+        if (length == 0)
+          load_testset_pos(url,testset);
+      },
+      error: report_failure
+    });
 
-      $.ajax({
-        type: "GET", 
-        url: url + "/properties/values/transformation/",
-        success: function(res){
-          var values = $("not-existing",res);
-          $("testset > transformation > *",testset).each(function(){
-            var val = $(this).serializeXML();
-            if (values.length > 0) {
-              $.ajax({
-                type: "POST", 
-                url: url + "/properties/values/",
-                data: ({key: "transformation", value: val}),
-                success: function() { load_testset_des(url,testset); },
-                error: report_failure
-              });
-            } else {
-              $.ajax({
-                type: "PUT", 
-                url: url + "/properties/values/transformation",
-                data: ({value: val}),
-                success: function() { load_testset_des(url,testset); },
-                error: report_failure
-              });
-            }
-          });
-        },  
-        error: report_failure
-      });
-      
-      $.ajax({
-        type: "PUT", 
-        url: url + "/properties/values/handlerwrapper",
-        success: function() { load_testset_hw(url,testset); },
-        error: report_failure
-      });
-    }
-  });
-  running  = false;
+    $.ajax({
+      type: "GET", 
+      url: url + "/properties/values/transformation/",
+      success: function(res){
+        var values = $("not-existing",res);
+        $("testset > transformation > *",testset).each(function(){
+          var val = $(this).serializeXML();
+          if (values.length > 0) {
+            $.ajax({
+              type: "POST", 
+              url: url + "/properties/values/",
+              data: ({key: "transformation", value: val}),
+              success: function() { load_testset_des(url,testset); },
+              error: report_failure
+            });
+          } else {
+            $.ajax({
+              type: "PUT", 
+              url: url + "/properties/values/transformation",
+              data: ({value: val}),
+              success: function() { load_testset_des(url,testset); },
+              error: report_failure
+            });
+          }
+        });
+      },  
+      error: report_failure
+    });
+    
+    $.ajax({
+      type: "PUT", 
+      url: url + "/properties/values/handlerwrapper",
+      success: function() { load_testset_hw(url,testset); },
+      error: report_failure
+    });
+  }
+});
+running  = false;
 }// }}}
           
 function load_testset_des(url,testset) {// {{{
