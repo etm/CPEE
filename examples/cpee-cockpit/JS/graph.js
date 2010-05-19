@@ -174,12 +174,12 @@ var WFGraph = function(xml, start, container) {
 
   var drawSymbol = function (xy, node, id) { // {{{
     var sym_name = node.nodeName;
-    var eps = xml.evaluate("parameters/service", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-    var em  = xml.evaluate("manipulate", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-    var eo  = xml.evaluate("outputs", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-    if((sym_name == "call") && eps.length == 1)
+    var eps = xml.evaluate("d:parameters/d:service", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var em  = xml.evaluate("d:manipulate", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var eo  = xml.evaluate("d:outputs", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    if((sym_name == "call") && eps.snapshotLength == 1)
       sym_name = "callinject";
-    if((sym_name == "call") && ((em.length > 0) || (eo.length > 0)))
+    if((sym_name == "call") && ((em.snapshotLength > 0) || (eo.snapshotLength > 0)))
       sym_name = "callmanipulate";
 
     var g = document.createElementNS(svgNS, "g");
