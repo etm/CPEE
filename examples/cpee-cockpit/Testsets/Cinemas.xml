@@ -12,11 +12,11 @@
     <output/>
     <show_id/>
     <starting_time/>
+    <reservation_number/>
     <uris/>
   </context-variables>
   <endpoints>
-    <services>Cinemas</services>
-    <selected_cinema/>
+    <services>Cinemas/Dynamic</services>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="search" endpoint="services">
@@ -47,12 +47,28 @@
       xml = XML::Smart.string(@output)
       num = rand(xml.root.children.length)
       show = xml.root.children[num]
-      @uris = show.attributes['uri']
-      endpoint :selected_cinema => show.attributes['uri']
+      endpoint "selected_cinema" => show.attributes['uri']
+      @uris = endpoints[:selected_cinema]
       @show_id = show.find("child::show_id").first.text
       @starting_time = show.find("child::time").first.text
       @selected_title = show.find("child::title").first.text
     </manipulate>
+    <call id="book" endpoint="selected_cinema">
+      <parameters><!--{{{-->
+        <service>
+          <serviceoperation>"book"</serviceoperation>
+          <repository>@rescue</repository>
+          <resources>@resources</resources>
+          <injection>@injection</injection>
+        </service>
+        <parameters>
+          <show_id>@show_id</show_id>
+        </parameters>
+      </parameters><!--}}}-->
+      <manipulate output="result">
+        @reservation_number = result[:reservation_id]
+      </manipulate>
+    </call>  
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
