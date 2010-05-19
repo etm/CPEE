@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"> 
+  <defs>
+    <!--{{{--><style type="text/css"><![CDATA[
+      svg rect.injected {
+        fill: Highlight;
+        fill-opacity: 0.2;
+      }
+      
+      svg path.ourline {
+        stroke-opacity: 0.9; 
+        stroke:#000000;
+        stroke-width: 2; 
+        fill: none;
+      }
+      svg rect.block {
+        stroke-width: 1; 
+        stroke-dasharray: 3,5;
+        stroke: #000000;
+        fill: none;
+      }
+      svg circle.stand, svg rect.stand {
+        stroke:#000000;
+        stroke-width:2.06896567;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+        stroke-miterlimit:4;
+        stroke-opacity:1;
+        stroke-dasharray:none;
+      }
+      svg text.normal {
+        font-size:20px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:125%;
+        writing-mode:lr-tb;
+        text-anchor:middle;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+      
+      svg text.super {
+        font-size:11px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:100%;
+        writing-mode:lr-tb;
+        text-anchor:left;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+      svg tspan.active {
+        fill:#ff0000;
+        display: none;
+      }
+      svg tspan.vote {
+        fill:#73d216;
+        display: none;
+      }
+      svg tspan.colon {
+        display: none;
+      }
+      svg tspan.necessary {
+        display: inline;
+      }
+      
+      svg text.normallarge {
+        font-size:25px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:125%;
+        writing-mode:lr-tb;
+        text-anchor:middle;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+      svg text.small {
+        font-size:14px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:125%;
+        writing-mode:lr-tb;
+        text-anchor:middle;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+       
+      #arrow { 
+       stroke: #000000;
+       stroke-width: 2;
+       fill: #000000;
+      }
+    ]]></style><!--}}}-->
+    <symbol id="activity" class="clickable"><!-- {{{ -->
+      <rect x="1" y="1" width="28" height="28" class="stand"/>
+    </symbol><!-- }}} -->
+    <symbol id="activitymanipulate" class="clickable"><!-- {{{ -->
+      <rect x="1" y="1" width="28" height="28" class="stand"/>
+      <circle cx="28" cy="28" r="9" class="stand"/>
+      <text class="small" transform="translate(28, 32)">m</text>
+    </symbol><!-- }}} -->
+    <symbol id="call" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"/>
+      <text class="normal" transform="translate(15, 21)">c</text>
+    </symbol><!-- }}} -->
+    <symbol id="manipulate" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"/>
+      <text class="normal" transform="translate(15, 21)">m</text>
+    </symbol><!-- }}} -->
+    <symbol id="callmanipulate" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"/>
+      <text class="normal" transform="translate(15, 21)">c</text>
+      <circle cx="28" cy="28" r="9" class="stand"/>
+      <text class="small" transform="translate(28, 32)">m</text>
+    </symbol><!-- }}} -->
+    <symbol id="choose" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"/>
+      <text class="normal" transform="translate(15, 21)">σ</text>
+    </symbol><!-- }}} -->
+    <symbol id="alternative" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="standwithout"/>
+      <text class="normal" transform="translate(15, 20)">{..}</text>
+    </symbol><!-- }}} -->
+    <symbol id="otherwise" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="standwithout"/>
+      <text class="normal" transform="translate(15, 20)">{⁎}</text>
+    </symbol><!-- }}} -->
+    <symbol id="parallel" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"/>
+      <text class="normal" transform="translate(15, 21)">||</text>
+    </symbol><!-- }}} -->
+    <symbol id="parallel_branch" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"/>
+      <text class="normal" transform="translate(15, 21)">|</text>
+    </symbol><!-- }}} -->
+    <symbol id="critical" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"/>
+      <text class="normal" transform="translate(15, 21)">⚠</text>
+    </symbol><!-- }}} -->
+    <symbol id="loop" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"/>
+      <text class="normallarge" transform="translate(15, 24)">↺</text>
+    </symbol><!-- }}} -->
+    <symbol id="end"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"/>
+      <circle cx="15" cy="15" r="11" class="stand"/>
+      <text class="normal" transform="translate(15, 21)">Ω</text>
+    </symbol><!-- }}} -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="24" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" markerHeight="4.5">
+      <path d="m 2 2 l 6 3 l -6 3 z"/>
+    </marker>
+  </defs>
+
+  <g id="canvas">
+    <g transform="translate(0, 0)">
+      <text class="super" transform="translate(28.4, 8.4)"><tspan class="active necessary">0</tspan><tspan class="colon necessary">,</tspan><tspan class="vote necessary">0</tspan></text>
+      <use xlink:href="#call" style="fill: rgb(255, 255, 255); fill-opacity: 1;">
+        <title>a1</title>
+      </use>
+    </g>
+    <g transform="translate(45, 0)">
+      <text class="super" transform="translate(28.4, 8.4)"><tspan class="active necessary">0</tspan><tspan class="colon necessary">,</tspan><tspan class="vote necessary">0</tspan></text>
+      <use xlink:href="#manipulate" style="fill: rgb(255, 255, 255); fill-opacity: 1;">
+        <title>a2</title>
+      </use>
+    </g>
+    <g transform="translate(90, 0)">
+      <text class="super" transform="translate(28.4, 8.4)"><tspan class="active necessary">0</tspan><tspan class="colon necessary">,</tspan><tspan class="vote necessary">0</tspan></text>
+      <use xlink:href="#callmanipulate" style="fill: rgb(255, 255, 255); fill-opacity: 1;">
+        <title>a3</title>
+      </use>
+    </g>
+
+    <g transform="translate(0, 40)">
+      <text class="super" transform="translate(31.4, 8.4)"><tspan class="active necessary">0</tspan><tspan class="colon necessary">,</tspan><tspan class="vote necessary">0</tspan></text>
+      <use xlink:href="#activity" style="fill: rgb(255, 255, 255); fill-opacity: 1;">
+        <title>a</title>
+      </use>
+      <text class="normal" transform="translate(15, 21)">a</text>
+    </g>
+    <g transform="translate(50, 40)">
+      <text class="super" transform="translate(31.4, 8.4)"><tspan class="active necessary">0</tspan><tspan class="colon necessary">,</tspan><tspan class="vote necessary">0</tspan></text>
+      <use xlink:href="#activitymanipulate" style="fill: rgb(255, 255, 255); fill-opacity: 1;">
+        <title>b</title>
+      </use>
+      <text class="normal" transform="translate(15, 21)">b</text>
+    </g>
+
+
+    <use xlink:href="#choose" transform="translate(0,80)" style="fill: rgb(255, 255, 255); fill-opacity: 1;"/>
+    <use xlink:href="#alternative" transform="translate(40,80)" style="fill: rgb(255, 255, 255); fill-opacity: 1;"/>
+    <use xlink:href="#otherwise" transform="translate(80,80)" style="fill: rgb(255, 255, 255); fill-opacity: 1;"/>
+    <use xlink:href="#parallel" transform="translate(0,120)" style="fill: rgb(255, 255, 255); fill-opacity: 1;"/>
+    <use xlink:href="#parallel_branch" transform="translate(40,120)" style="fill: rgb(255, 255, 255); fill-opacity: 1;"/>
+    <use xlink:href="#critical" transform="translate(0,160)" style="fill: rgb(255, 255, 255); fill-opacity: 1;"/>
+    <use xlink:href="#loop" transform="translate(0,200)" style="fill: rgb(255, 255, 255); fill-opacity: 1;"/>
+    <use xlink:href="#end" transform="translate(0,240)" style="fill: rgb(255, 255, 255); fill-opacity: 1;"/>
+
+    <line x1="5" y1="280" x2="100" y2="320" stroke="black" stroke-width="3" marker-end="url(#arrow)"/>
+  </g>
+</svg>
