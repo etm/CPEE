@@ -181,6 +181,8 @@ var WFGraph = function(xml, start, container) {
       sym_name = "callinject";
     if((sym_name == "call") && ((em.snapshotLength > 0) || (eo.snapshotLength > 0)))
       sym_name = "callmanipulate";
+    if((sym_name == "call") && eps.snapshotLength == 1)
+      sym_name = "callinject";
 
     var g = document.createElementNS(svgNS, "g");
         g.setAttribute('transform', 'translate(' + String(xy['col']*column_width-15) + ',' + String(xy['line']*row_height-30) + ')');
