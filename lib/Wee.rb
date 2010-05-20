@@ -2,7 +2,6 @@ require 'thread'
 
 class Wee
   class WatchHash < Hash# {{{
-    # TODO remove instance variable
     def initialize(bndg)
       @bndg = bndg
     end  
@@ -74,7 +73,6 @@ class Wee
     @__wee_main = nil
     @__wee_context ||= WatchHash.new(self)
     @__wee_manipulate = true
-    @__wee_initialize = true
     @__wee_endpoints ||= WatchHash.new(self)
       
     initialize_search if methods.include?('initialize_search')
@@ -178,6 +176,8 @@ class Wee
           handlerwrapper.inform_position_change
         end  
       rescue => err
+        p err
+        puts err.backtrace
         refreshcontext handlerwrapper, temp_context
         refreshendpoints handlerwrapper, temp_endpoints
         handlerwrapper.inform_activity_failed err
@@ -386,23 +386,25 @@ class Wee
       Thread.current[:nolongernecessary] || (self.state == :stopping || self.state == :stopped) ? nil : handlerwrapper.activity_result_value
     end# }}}
     def refreshcontext(handlerwrapper,target)# {{{
-      changed = []
-      target.each do |varname, value|
-        if value != instance_variable_get("@#{varname}".to_sym)
+      changed = (target.keys - @__wee_context.keys) + (@__wee_context.keys - target.keys)
+      @__wee_context.each do |varname, value|
+        if value != instance_variable_get("@#{varname}".to_sym) && (instance_variable_get("@#{varname}".to_sym) != target[varname])
           changed << varname
           @__wee_context[varname] = instance_variable_get("@#{varname}".to_sym)
         end
+        if value != target[varname]
+          changed << varname
+        end
       end
+      changed.uniq!
       handlerwrapper.inform_context_change(changed) unless changed.empty?
     end# }}}
     def refreshendpoints(handlerwrapper,target)# {{{
-      changed = []
-      target.each do |varname, value|
-        if @__wee_endpoints[varname] != value
-          changed << varname
-          @__wee_endpoints[varname] = value
-        end  
+      changed = (target.keys - @__wee_endpoints.keys) + (@__wee_endpoints.keys - target.keys)
+      @__wee_endpoints.each do |varname, value|
+        changed << varname if target[varname] != value
       end
+      changed.uniq!
       handlerwrapper.inform_endpoints_change(changed) unless changed.empty?
     end# }}}
 
@@ -485,15 +487,9 @@ class Wee
         if new_context.is_a?(Hash) || new_context.is_a?(WatchHash)
           new_context.each do |name, value|
             self.instance_variable_set("@#{name}".to_sym,value)
-            # during manipulate (or call block) changing the context is not allowed, changes are only written to instance variables
-            @__wee_context[name.to_s.to_sym] = nil if @__wee_manipulate
-            if !@__wee_manipulate || @__wee_initialize 
-              @__wee_context[name.to_s.to_sym] = value
-            end
-            #if @__wee_manipulate == false
-            #  handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
-            #  handlerwrapper.inform_context_change([name])
-            #end
+            @__wee_context[name.to_s.to_sym] = value
+            # TODO signal when changed  outside manipulates
+            # OR do not allow to change outside manipulates
           end
         end
       end  
@@ -507,11 +503,8 @@ class Wee
         if new_endpoints.is_a?(Hash) || new_endpoints.is_a?(WatchHash)
           new_endpoints.each do |name,value|
             @__wee_endpoints["#{name}".to_sym] = value
-            # during manipulate (or call block) changing the context is not allowed, changes are only written to instance variables
-            #if @__wee_manipulate == false
-            #  handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
-            #  handlerwrapper.inform_endpoints_change([name])
-            #end  
+            # TODO signal when changed  outside manipulates
+            # OR do not allow to change outside manipulates
           end
         end
       end
