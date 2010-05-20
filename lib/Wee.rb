@@ -1,7 +1,8 @@
 require 'thread'
 
 class Wee
-  class CHash < Hash# {{{
+  class WatchHash < Hash# {{{
+    # TODO remove instance variable
     def initialize(bndg)
       @bndg = bndg
     end  
@@ -44,6 +45,7 @@ class Wee
 
     def inform_syntax_error(err); end
     def inform_context_change(changed); end
+    def inform_endpoints_change(changed); end
     def inform_position_change; end
     def inform_state_change(newstate); end
     
@@ -70,15 +72,17 @@ class Wee
     @__wee_search = false
     @__wee_positions = Array.new
     @__wee_main = nil
-    @__wee_context ||= CHash.new(self)
-    @__wee_context_change = true
-    @__wee_endpoints ||= Hash.new
+    @__wee_context ||= WatchHash.new(self)
+    @__wee_manipulate = true
+    @__wee_initialize = true
+    @__wee_endpoints ||= WatchHash.new(self)
       
     initialize_search if methods.include?('initialize_search')
     initialize_context if methods.include?('initialize_context')
     initialize_endpoints if methods.include?('initialize_endpoints')
     initialize_handlerwrapper if methods.include?('initialize_handlerwrapper')
     
+    @__wee_manipulate = false
     @__wee_handlerwrapper_args = args
     @__wee_state = :ready
   end# }}}
@@ -131,13 +135,15 @@ class Wee
     #   - :call - order the handlerwrapper to perform a service call
     # endpoint: (only with :call) ep of the service
     # parameters: (only with :call) service parameters
-    def activity(position, type, endpoint=nil, *parameters)# {{{
+    def activity(position, type, endpoint=nil, *parameters, &blk)# {{{
       position, lay = position_test position
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
 
       Thread.current[:continue] = Continue.new
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, lay, Thread.current[:continue]
-      @__wee_context_change = false
+      @__wee_manipulate     = true
+      temp_context   = @__wee_context.dup
+      temp_endpoints = @__wee_endpoints.dup
 
       wp = Wee::Position.new(position, :at, nil)
       @__wee_positions << wp
@@ -148,9 +154,10 @@ class Wee
           when :manipulate
             if block_given?
               handlerwrapper.inform_activity_manipulate
-              yield(*parameters)
+              yield *parameters
             end  
-            refreshcontext handlerwrapper
+            refreshcontext handlerwrapper, temp_context
+            refreshendpoints handlerwrapper, temp_endpoints
           when :call
             handlerwrapper.vote_sync_before
             passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
@@ -158,7 +165,8 @@ class Wee
             if block_given? && self.state != :stopping && !Thread.current[:nolongernecessary]
               handlerwrapper.inform_activity_manipulate
               yield ret_value
-              refreshcontext handlerwrapper
+              refreshcontext handlerwrapper, temp_context
+              refreshendpoints handlerwrapper, temp_endpoints
             end
         end
         if self.state != :stopping && !Thread.current[:nolongernecessary]
@@ -170,11 +178,12 @@ class Wee
           handlerwrapper.inform_position_change
         end  
       rescue => err
-        refreshcontext handlerwrapper
+        refreshcontext handlerwrapper, temp_context
+        refreshendpoints handlerwrapper, temp_endpoints
         handlerwrapper.inform_activity_failed err
         self.state = :stopping
       ensure
-        @__wee_context_change = true
+        @__wee_manipulate = false
       end
     end# }}}
     
@@ -231,8 +240,6 @@ class Wee
         branch_parent[:mutex].synchronize do # enable the while in parallel() to operate without polling
           pte = branch_parent[:branch_event]
           branch_parent[:branch_event] = Thread.new{Thread.stop}
-          p pte
-          p pte.alive?
           pte.run
         end
       end
@@ -378,15 +385,25 @@ class Wee
       end  
       Thread.current[:nolongernecessary] || (self.state == :stopping || self.state == :stopped) ? nil : handlerwrapper.activity_result_value
     end# }}}
-    def refreshcontext(handlerwrapper)# {{{
+    def refreshcontext(handlerwrapper,target)# {{{
       changed = []
-      @__wee_context.each do |varname, value|
-        if @__wee_context[varname] != instance_variable_get("@#{varname}".to_sym)
+      target.each do |varname, value|
+        if value != instance_variable_get("@#{varname}".to_sym)
           changed << varname
           @__wee_context[varname] = instance_variable_get("@#{varname}".to_sym)
-        end  
+        end
       end
       handlerwrapper.inform_context_change(changed) unless changed.empty?
+    end# }}}
+    def refreshendpoints(handlerwrapper,target)# {{{
+      changed = []
+      target.each do |varname, value|
+        if @__wee_endpoints[varname] != value
+          changed << varname
+          @__wee_endpoints[varname] = value
+        end  
+      end
+      handlerwrapper.inform_endpoints_change(changed) unless changed.empty?
     end# }}}
 
     def state=(newState)# {{{
@@ -463,16 +480,20 @@ class Wee
     # get/set/clean context
     def context(new_context = nil)# {{{
       if new_context.nil?
-        @__wee_context ? @__wee_context : CHash.new(self)
+        @__wee_context ? @__wee_context : WatchHash.new(self)
       else  
-        if new_context.is_a?(Hash) || new_context.is_a?(CHash)
+        if new_context.is_a?(Hash) || new_context.is_a?(WatchHash)
           new_context.each do |name, value|
-            if @__wee_context_change # during manipulate (or call block) changing the context is not allowed, changes are only written to instance variables
-              @__wee_context[name.to_s.to_sym] = value
-            else
-              @__wee_context[name.to_s.to_sym] = nil
-            end  
             self.instance_variable_set("@#{name}".to_sym,value)
+            # during manipulate (or call block) changing the context is not allowed, changes are only written to instance variables
+            @__wee_context[name.to_s.to_sym] = nil if @__wee_manipulate
+            if !@__wee_manipulate || @__wee_initialize 
+              @__wee_context[name.to_s.to_sym] = value
+            end
+            if @__wee_manipulate == false
+              handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
+              handlerwrapper.inform_context_change([name])
+            end
           end
         end
       end  
@@ -481,11 +502,16 @@ class Wee
     # get/set/clean endpoints
     def endpoints(new_endpoints = nil)# {{{
       if new_endpoints.nil?
-        @__wee_endpoints ? @__wee_endpoints : Hash.new
+        @__wee_endpoints ? @__wee_endpoints : WatchHash.new
       else
-        if new_endpoints.is_a?(Hash)
+        if new_endpoints.is_a?(Hash) || new_endpoints.is_a?(WatchHash)
           new_endpoints.each do |name,value|
             @__wee_endpoints["#{name}".to_sym] = value
+            # during manipulate (or call block) changing the context is not allowed, changes are only written to instance variables
+            if @__wee_manipulate == false
+              handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
+              handlerwrapper.inform_endpoints_change([name])
+            end  
           end
         end
       end

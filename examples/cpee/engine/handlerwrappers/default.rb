@@ -89,7 +89,11 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   end
   def inform_context_change(changed)
     $controller[@instance].serialize!
-    $controller[@instance].notify("properties/context-variables/change", :changed => changed)
+    $controller[@instance].notify("properties/context-variables/change", :activity => @handler_position, :lay => @handler_lay, :changed => changed)
+  end
+  def inform_endpoints_change(changed)
+    $controller[@instance].serialize!
+    $controller[@instance].notify("properties/endpoints/change", :activity => @handler_position, :lay => @handler_lay, :changed => changed)
   end
   def inform_position_change
     $controller[@instance].position

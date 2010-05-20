@@ -53,6 +53,12 @@ class Controller
       @instance.context.each do |k,v|
         node.add(k.to_s,YAML::dump(v).sub(/^--- /,''))
       end
+      
+      node = doc.find("/p:properties/p:endpoints").first
+      node.children.delete_all!
+      @instance.endpoints.each do |k,v|
+        node.add(k.to_s,v)
+      end
 
       node = doc.find("/p:properties/p:state").first
       node.text = @instance.state
