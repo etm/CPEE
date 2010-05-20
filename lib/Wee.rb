@@ -490,10 +490,10 @@ class Wee
             if !@__wee_manipulate || @__wee_initialize 
               @__wee_context[name.to_s.to_sym] = value
             end
-            if @__wee_manipulate == false
-              handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
-              handlerwrapper.inform_context_change([name])
-            end
+            #if @__wee_manipulate == false
+            #  handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
+            #  handlerwrapper.inform_context_change([name])
+            #end
           end
         end
       end  
@@ -508,10 +508,10 @@ class Wee
           new_endpoints.each do |name,value|
             @__wee_endpoints["#{name}".to_sym] = value
             # during manipulate (or call block) changing the context is not allowed, changes are only written to instance variables
-            if @__wee_manipulate == false
-              handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
-              handlerwrapper.inform_endpoints_change([name])
-            end  
+            #if @__wee_manipulate == false
+            #  handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
+            #  handlerwrapper.inform_endpoints_change([name])
+            #end  
           end
         end
       end
