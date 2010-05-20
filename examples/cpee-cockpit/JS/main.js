@@ -142,7 +142,7 @@ function monitor_instance_cvs() {// {{{
       var temp = "";
       values.each(function(){
       if($(this).text().length < 80) {
-        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>";
+        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + format_text($(this).text()) + "</td></tr>";
       } else {
         temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td><a href=\"" + url + "/properties/values/context-variables/" + this.nodeName  +"\" target=\"_blank\">Show context</a></td></tr>";
       }
@@ -652,6 +652,10 @@ function format_visual_clear() {//{{{
 
 function format_code(res,skim,lnums) {// {{{
  try {
+  res = res.replace(/&/g,'&amp;');
+  res = res.replace(/</g,'&lt;');
+  res = res.replace(/>/g,'&gt;');
+  res = res.replace(/\t/g,'  ');
   res = res.replace(/\t/g,'  ');
   res = res.replace(/\r/g,'');
   res = res.replace(/\s*$/gm,'');
@@ -680,6 +684,13 @@ function format_code(res,skim,lnums) {// {{{
   } catch(e) {
     alert(e.toString());
   }  
+  return res;
+}// }}}
+
+function format_text(res) {// {{{
+  res = res.replace(/&/g,'&amp;');
+  res = res.replace(/</g,'&lt;');
+  res = res.replace(/>/g,'&gt;');
   return res;
 }// }}}
 
