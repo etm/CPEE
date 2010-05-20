@@ -15,39 +15,11 @@
     <services>Interface/Sub1</services>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="a1" endpoint="services">
-      <parameters><!--{{{-->
-        <service>
-          <serviceoperation>"op1"</serviceoperation>
-          <repository>@rescue</repository>
-          <resources>@resources</resources>
-          <injection>@injection</injection>
-        </service>
-        <parameters>
-          <pi1>@input</pi1>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">
-        <output variable="output" name="po1"/>
-      </manipulate>
-    </call>  
-    <call id="a2" endpoint="services">
-      <parameters><!--{{{-->
-        <service>
-          <serviceoperation>"op2"</serviceoperation>
-          <repository>@rescue</repository>
-          <resources>@resources</resources>
-          <injection>@injection</injection>
-        </service>
-        <parameters>
-          <pi1>@bla</pi1>
-          <pi2>@input</pi2>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">
-        @bla = result[:po1]
-      </manipulate>
-    </call>  
+    <manipulate id="enpoints">
+      endpoint "a_new_one" => "new Endpoint"
+      endpoints[:services] = "services changed"
+      @bla = endpoints[:services]
+    </manipulate>
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">

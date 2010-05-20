@@ -118,8 +118,10 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].notify("running/activity_manipulating", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_failed(err)
-    puts err.message
-    puts err.backtrace
+    if(err.message != "Injection in progress")
+      puts err.message
+      puts err.backtrace
+    end
     $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
   end
   def inform_syntax_error(err)
@@ -130,6 +132,10 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def inform_context_change(changed)
     $controller[@instance].serialize!
     $controller[@instance].notify("properties/context-variables/change", :changed => changed)
+  end
+  def inform_endpoints_change(changed)
+    $controller[@instance].serialize!
+    $controller[@instance].notify("properties/endpoints/change", :activity => @handler_position, :lay => @handler_lay, :changed => changed)
   end
   def inform_position_change
     $controller[@instance].position

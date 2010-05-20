@@ -16,7 +16,7 @@
     <uris/>
   </context-variables>
   <endpoints>
-    <services>Cinemas/Dynamic</services>
+    <services>Cinemas</services>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="search" endpoint="services">
@@ -66,7 +66,7 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-        @reservation_number = result[:reservation_id]
+        @reservation_number =result[endpoints[:selected_cinema].to_sym][:reservation_id] 
       </manipulate>
     </call>  
   </description>
