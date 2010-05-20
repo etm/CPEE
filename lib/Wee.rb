@@ -8,13 +8,13 @@ class Wee
     end  
     def clear
       self.each do |k,v|
-        @bndg.send :remove_instance_variable, "@#{k}".to_sym
+        @bndg.send :remove_instance_variable, "@#{k}".to_sym rescue nil
       end
       super
     end
     def delete(key)
       if res = super(key)
-        @bndg.send :remove_instance_variable, "@#{k}".to_sym
+        @bndg.send :remove_instance_variable, "@#{k}".to_sym rescue nil
       end
       res
     end
