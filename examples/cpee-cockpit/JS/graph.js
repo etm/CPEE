@@ -142,14 +142,14 @@ var WFGraph = function(xml, start, container) {
     } else if (end['line']-start['line'] > 0) {
       if (end['col']-start['col'] > 0) {
         line.setAttribute("d", "M " + String(start['col']*column_width) + "," + String(start['line']*row_height-15) +" "+
-                                      String(start['col']*column_width+25) + "," + String((end['line']-1)*row_height) +" "+
+                                      String(start['col']*column_width+14) + "," + String((end['line']-1)*row_height) +" "+ // first turn of hotizontal-line going away from node
                                       String(end['col']*column_width) + "," + String((end['line']-1)*row_height) +" "+
                                       String(end['col']*column_width) + "," + String(end['line']*row_height-15)
         );
       } else {  
         line.setAttribute("d", "M " + String(start['col']*column_width) + "," + String(start['line']*row_height-15) +" "+
-                                      String(start['col']*column_width) + "," + String(end['line']*row_height-25) +" "+
-                                      String(end['col']*column_width+25) + "," + String(end['line']*row_height-25) +" "+
+                                      String(start['col']*column_width) + "," + String(end['line']*row_height-35) +" "+
+                                      String(end['col']*column_width+14) + "," + String(end['line']*row_height-35) +" "+ // last turn of horizontal-line going into the node
                                       String(end['col']*column_width) + "," + String(end['line']*row_height-15)
         );
       }     
