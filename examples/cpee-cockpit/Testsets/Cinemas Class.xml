@@ -15,6 +15,8 @@
   <endpoints>
     <services>http://localhost:9290/groups/CinemasClass</services>
     <injection>http://localhost:9290/injection</injection>
+    <!-- select>http://http://www.pri.univie.ac.at/~ralph/Testservices/Select.php</select -->
+    <select>http://localhost/Testservices/Select.php</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="a01" endpoint="services">
@@ -23,6 +25,9 @@
           <serviceoperation>"search_and_book"</serviceoperation>
           <injection>endpoints[:injection]</injection>
         </service>
+        <additional_endpoints>
+          <selector_service>"select"</selector_service>
+        </additional_endpoints>
         <parameters>
           <title>@title</title>
           <date>@date</date>
