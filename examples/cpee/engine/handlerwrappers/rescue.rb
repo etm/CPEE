@@ -6,15 +6,13 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     @handler_continue = continue
     @handler_position = position
     @handler_lay = lay
-    #@handler_lay = (lay != nil ? lay : "'ralph rocks'")
     @handler_returnValue = nil
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, endpoint, parameters)
-    puts '==Hanelder-started=='*5
+    puts '==Handler-started=='*5
     $controller[@instance].position
-#    $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => "SuperDuperRalph")
     $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
   
     cpee_instance = "#{@url}/#{@instance}/"
@@ -27,14 +25,12 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     pp 'Passthrough:'
     pp passthrough.to_yaml
     if parameters.key?(:service)
-      injection_service = parameters[:service][1][:repository]+parameters[:service][3][:injection]
-      resources = parameters[:service][1][:repository]+parameters[:service][2][:resources]
+      injection_service = parameters[:service][1][:injection]
     pp "Injection-Service-Uri: #{injection_service}"
-    pp "Resources-Service-Uri: #{resources}"
       puts "== performing a call to the injection service"
       status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
                                                                 Riddl::Parameter::Simple.new("cpee", cpee_instance),
-                                                                Riddl::Parameter::Simple.new("rescue", resources)]
+                                                                Riddl::Parameter::Simple.new("rescue", endpoint)]
       raise "'Injection at #{injection_service} failed with status: #{status}'" if status != 200
       raise "'Injection in progress'" if status == 200
     else
@@ -118,10 +114,8 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].notify("running/activity_manipulating", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_failed(err)
-    if(err.message != "Injection in progress")
-      puts err.message
-      puts err.backtrace
-    end
+    puts err.message
+    puts err.backtrace if not err.message.include? "Injection"
     $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
   end
   def inform_syntax_error(err)

@@ -3,9 +3,6 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <rescue>http://localhost:9290</rescue>
-    <injection>/injection</injection>
-    <resources>/groups</resources>
     <title>Going Postal</title>
     <selected_title/>
     <date>2010-05-17</date>
@@ -16,16 +13,15 @@
     <uris/>
   </context-variables>
   <endpoints>
-    <services>CinemasClass</services>
+    <services>http://localhost:9290/groups/CinemasClass</services>
+    <injection>http://localhost:9290/injection</injection>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="a01" endpoint="services">
       <parameters><!--{{{-->
         <service>
           <serviceoperation>"search_and_book"</serviceoperation>
-          <repository>@rescue</repository>
-          <resources>@resources</resources>
-          <injection>@injection</injection>
+          <injection>endpoints[:injection]</injection>
         </service>
         <parameters>
           <title>@title</title>
@@ -34,7 +30,7 @@
       </parameters><!--}}}-->
       <manipulate output="result">
         @reservation_number = result[:reservation_number]
-        @starting_time = result[:srating_time]
+        @starting_time = result[:starting_time]
       </manipulate>
     </call>  
   </description>

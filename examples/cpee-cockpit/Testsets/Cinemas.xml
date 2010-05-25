@@ -16,16 +16,14 @@
     <uris/>
   </context-variables>
   <endpoints>
-    <services>Cinemas</services>
+    <cinemas>http://localhost:9290/groups/Cinemas/Dynamic</cinemas>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="search" endpoint="services">
+    <call id="search" endpoint="cinemas">
       <parameters><!--{{{-->
         <service>
           <serviceoperation>"search"</serviceoperation>
-          <repository>@rescue</repository>
-          <resources>@resources</resources>
-          <injection>@injection</injection>
+          <injection>"http://localhost:9290/injection"</injection>
         </service>
         <parameters>
           <title>@title</title>
@@ -54,12 +52,10 @@
       @selected_title = show.find("child::title").first.text
     </manipulate>
     <call id="book" endpoint="selected_cinema">
-      <parameters><!--{{{-->
+      <parameters><!--{{{--> 
         <service>
           <serviceoperation>"book"</serviceoperation>
-          <repository>@rescue</repository>
-          <resources>@resources</resources>
-          <injection>@injection</injection>
+          <injection>"http://localhost:9290/injection"</injection>
         </service>
         <parameters>
           <show_id>@show_id</show_id>
