@@ -145,10 +145,10 @@ class Wee
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
 
       Thread.current[:continue] = Continue.new
-      handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, lay, Thread.current[:continue]
-      @__wee_manipulate     = true
-      temp_context   = @__wee_context.dup
-      temp_endpoints = @__wee_endpoints.dup
+      handlerwrapper    = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, lay, Thread.current[:continue]
+      @__wee_manipulate = true
+      temp_context      = Marshal.load(Marshal.dump(@__wee_context))
+      temp_endpoints    = Marshal.load(Marshal.dump(@__wee_endpoints))
 
       wp = Wee::Position.new(position, :at, nil)
       @__wee_positions << wp
