@@ -147,13 +147,13 @@ class Wee
       Thread.current[:continue] = Continue.new
       handlerwrapper    = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, lay, Thread.current[:continue]
       @__wee_manipulate = true
-      temp_context      = Marshal.load(Marshal.dump(@__wee_context))
-      temp_endpoints    = Marshal.load(Marshal.dump(@__wee_endpoints))
+      begin
+      temp_context   = WatchHash.new(self); @__wee_context.each{|k,v|temp_context[k]=Marshal.load(Marshal.dump(v))}
+      temp_endpoints = WatchHash.new(self); @__wee_endpoints.each{|k,v|temp_endpoints[k]=Marshal.load(Marshal.dump(v))}
 
       wp = Wee::Position.new(position, :at, nil)
       @__wee_positions << wp
 
-      begin
         handlerwrapper.vote_sync_before
         case type
           when :manipulate
