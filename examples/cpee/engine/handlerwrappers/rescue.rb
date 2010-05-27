@@ -24,30 +24,41 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     pp parameters.to_yaml
     pp 'Passthrough:'
     pp passthrough.to_yaml
-    if parameters.key?(:service)
+
+    if parameters.key?(:service) # {{{
       injection_service = parameters[:service][1][:injection]
-    pp "Injection-Service-Uri: #{injection_service}"
+      pp "Injection-Service-Uri: #{injection_service}"
       puts "== performing a call to the injection service"
       status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
                                                                 Riddl::Parameter::Simple.new("cpee", cpee_instance),
                                                                 Riddl::Parameter::Simple.new("rescue", endpoint)]
       raise "'Injection at #{injection_service} failed with status: #{status}'" if status != 200
-      raise "'Injection in progress'" if status == 200
-    else
+      raise "'Injection in progress'" if status == 200 # }}}
+    else # {{{
       puts "== performing a call to service"
       client = Riddl::Client.new(endpoint)
       pp client.inspect
 
       params = []
 #      callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+      if parameters.key?(:group)
+        (parameters[:group] || {}).each do |h|
+          if h.class == Hash
+            h.each do |k,v|
+              params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
+              puts "=== adding parameter for grouping: #{k} => #{v}"
+            end
+          end
+        end
+      end
       (parameters[:parameters] || {}).each do |h|
         if h.class == Hash
           h.each do |k,v|
             params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
-            puts "=== adding parameter: #{k} => #{v}"
+            puts "=== adding parameter: #{k}"
           end
         end
-      end
+      end #}}}
 #      params << Riddl::Header.new("CPEE-Callback",callback)
 
       type = parameters[:method] || 'post'
