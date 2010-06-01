@@ -28,6 +28,15 @@
     <parameter name="xsl" mimetype="application/xml"/>
   </message>
 
+  <message name="message">
+    <parameter name="type" type="integer"/>
+    <parameter name="message" type="string"/>
+    <optional>
+      <parameter name="details" mimetype="text/xml"/>
+      <parameter name="details" mimetype="text/yaml"/>
+    </optional>  
+  </message>
+
   <resource>
     <get in="*" out="list-of-workflow-instances"/>
     <post in="instance-name" out="instance-id"/>
@@ -42,10 +51,22 @@
       <resource relative="callbacks">
         <get in="*" out="callbacks"/>
         <resource>
-          <get in="*"/>
           <put in="*"/>
-          <post in="*"/>
-          <delete in="*"/>
+        </resource>
+      </resource>
+    </resource>
+    <resource relative="notifications">
+      <resource relative="subscriptions">
+        <resource>
+          <resource relative="debug">
+            <put in="message"/>
+          </resource>
+          <resource relative="error">
+            <put in="message"/>
+          </resource>
+          <resource relative="info">
+            <put in="message"/>
+          </resource>
         </resource>
       </resource>
     </resource>
