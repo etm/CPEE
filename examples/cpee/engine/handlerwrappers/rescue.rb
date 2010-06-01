@@ -1,3 +1,14 @@
+class RescueHash < Hash
+  def value(key)
+    results = []
+    self.each do |k,v|
+      results << v.value(key) if v.class == RescueHash
+      results << v if k == key.to_sym
+    end
+    results.length != 1 ? results.flatten : results[0]
+  end
+end
+
 class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def initialize(arguments,position=nil,lay=nil,continue=nil)
     @instance = arguments[0].to_i

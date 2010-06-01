@@ -317,74 +317,6 @@
         </xsl:call-template>
 
 
-        <xsl:text> puts result.class</xsl:text>
-        <xsl:call-template name="print-newline"/>
-
-
-        <xsl:text>if </xsl:text>
-        <xsl:value-of select="parent::d:manipulate/@output"/>
-        <xsl:text>.class == Hash</xsl:text>
-        <xsl:call-template name="print-newline"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-3</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
-        <xsl:value-of select="parent::d:manipulate/@output"/>
-        <xsl:text>.each do |k,v|</xsl:text>
-        <xsl:call-template name="print-newline"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-5</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
-        <xsl:text>@</xsl:text>
-        <xsl:value-of select="@variable"/>
-        <xsl:text> = Hash.new</xsl:text>
-        <xsl:call-template name="print-newline"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-3</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
-        <xsl:text>@</xsl:text>
-        <xsl:value-of select="@variable"/>
-        <xsl:text>[k] = v.value('</xsl:text>
-        <xsl:value-of select="@name"/>
-        <xsl:text>') if v.class == Riddl::Parameter::Simple</xsl:text>
-        <xsl:call-template name="print-newline"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-5</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
-        <xsl:text>@</xsl:text>
-        <xsl:value-of select="@variable"/>
-        <xsl:text>[k] = v[:</xsl:text>
-        <xsl:value-of select="@name"/>
-        <xsl:text>] if v.class == Hash</xsl:text>
-        <xsl:call-template name="print-newline"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-3</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
-        <xsl:text>end</xsl:text>
-        <xsl:call-template name="print-newline"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-1</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
-        <xsl:text>end</xsl:text>
-        
-        <xsl:call-template name="print-newline"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-1</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
-        <xsl:text>if </xsl:text>
-        <xsl:value-of select="parent::d:manipulate/@output"/>
-        <xsl:text>.class == Riddl::HttpParser::Params</xsl:text>
-        <xsl:call-template name="print-newline"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-3</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
         <xsl:text>@</xsl:text>
         <xsl:value-of select="@variable"/>
         <xsl:text> = </xsl:text>
@@ -392,12 +324,6 @@
         <xsl:text>.value('</xsl:text>
         <xsl:value-of select="@name"/>
         <xsl:text>')</xsl:text>
-        <xsl:call-template name="print-newline"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-3</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
-        <xsl:text>end</xsl:text>
         
         <xsl:call-template name="print-newline"/>
       </xsl:template>
