@@ -26,5 +26,8 @@
   </topic>
   <topic id='properties/handlers'>
     <event>change</event>
+    <event>error</event>
+    <event>debug</event>
+    <event>info</event>
   </topic>
 </topics>
