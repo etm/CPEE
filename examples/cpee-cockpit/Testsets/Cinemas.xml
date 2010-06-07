@@ -3,66 +3,39 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <rescue>http://localhost:9290</rescue>
-    <injection>/injection</injection>
-    <resources>/groups</resources>
     <title>Going Postal</title>
-    <selected_title/>
     <date>2010-05-17</date>
-    <output/>
-    <show_id/>
+    <selected_title/>
     <starting_time/>
+    <hall/>
     <reservation_number/>
-    <uris/>
   </context-variables>
   <endpoints>
-    <cinemas>http://localhost:9290/groups/Cinemas</cinemas>
+    <services>http://localhost:9290/groups/CinemasClass</services>
+    <injection>http://localhost:9290/injection</injection>
+    <!-- select>http://http://www.pri.univie.ac.at/~ralph/Testservices/Select.php</select -->
+    <select>http://localhost:9290/select/random</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="search" endpoint="cinemas">
+    <call id="a01" endpoint="services">
       <parameters><!--{{{-->
         <service>
-          <serviceoperation>"search"</serviceoperation>
-          <injection>"http://localhost:9290/injection"</injection>
+          <serviceoperation>"search_and_book"</serviceoperation>
+          <injection>endpoints[:injection]</injection>
         </service>
+        <additional_endpoints>
+          <selector_service>"select"</selector_service>
+        </additional_endpoints>
         <parameters>
           <title>@title</title>
           <date>@date</date>
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-      xml = XML::Smart.string('&lt;list/&gt;')
-      result.each do |uri, list|
-        shows_list = XML::Smart.string(list[:list])
-        shows = shows_list.find("//show")
-        shows.each {|s| s.attributes['uri'] = uri.to_s}
-        xml.root.add(shows)
-      end
-      @output = xml.to_s
-      </manipulate>
-    </call>  
-    <manipulate id="select_by_random">
-      xml = XML::Smart.string(@output)
-      num = rand(xml.root.children.length)
-      show = xml.root.children[num]
-      endpoint "selected_cinema" => show.attributes['uri']
-      @uris = endpoints[:selected_cinema]
-      @show_id = show.find("child::show_id").first.text
-      @starting_time = show.find("child::time").first.text
-      @selected_title = show.find("child::title").first.text
-    </manipulate>
-    <call id="book" endpoint="selected_cinema">
-      <parameters><!--{{{--> 
-        <service>
-          <serviceoperation>"book"</serviceoperation>
-          <injection>"http://localhost:9290/injection"</injection>
-        </service>
-        <parameters>
-          <show_id>@show_id</show_id>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">
-        @reservation_number =result[endpoints[:selected_cinema].to_sym][:reservation_id] 
+        @reservation_number = result[:reservation_id]
+        @starting_time = result[:starting_time]
+        @selected_title = result[:movie_title]
+        @hall = result[:hall]
       </manipulate>
     </call>  
   </description>
@@ -312,7 +285,7 @@
 
       <xsl:template name="print-content">
         <xsl:param name="myspace"/>
-        <xsl:if test="text() or child::d:output"><!-- RESCUE: changed condition -->
+        <xsl:if test="text()">
           <xsl:text> do </xsl:text>
           <xsl:if test="@output">
             <xsl:text>|</xsl:text>
@@ -320,11 +293,6 @@
             <xsl:text>|</xsl:text>
           </xsl:if>
           <xsl:call-template name="print-newline"/>
-          <!-- RESCUE -->
-          <xsl:apply-templates select="d:output">
-            <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-          </xsl:apply-templates>
-          <!-- RESCUE -->
           <xsl:value-of select="text()"/>
           <xsl:call-template name="print-newline"/>
           <xsl:call-template name="print-space">
@@ -334,31 +302,6 @@
           <xsl:text>end</xsl:text>
         </xsl:if>
       </xsl:template>
-
-      <!-- RESCUE -->
-      <xsl:template match="d:output">
-        <xsl:param name="myspace"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-1</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
-        <xsl:text>@</xsl:text>
-        <xsl:value-of select="@variable"/>
-        <xsl:text> = Hash.new</xsl:text>
-        <xsl:call-template name="print-newline"/>
-        <xsl:call-template name="print-space">
-          <xsl:with-param name="i">-1</xsl:with-param>
-          <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
-        </xsl:call-template>
-        <xsl:value-of select="parent::d:manipulate/@output"/>
-        <xsl:text>.each { |k,v| @</xsl:text>
-        <xsl:value-of select="@variable"/>
-        <xsl:text>[k] = v[</xsl:text>
-        <xsl:value-of select="@name"/>
-        <xsl:text>] }</xsl:text>
-        <xsl:call-template name="print-newline"/>
-      </xsl:template>
-      <!-- RESCUE -->
 
       <xsl:template name="print-space">
         <xsl:param name="i"/>

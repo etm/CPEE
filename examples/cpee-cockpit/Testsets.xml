@@ -8,7 +8,5 @@
   <testset>Bad Loop</testset>
   <testset>Linear</testset>
   <testset>Endpoints</testset>
-  <testset>Vigne</testset>
   <testset>Cinemas</testset>
-  <testset>Cinemas Class</testset>
 </testsets>
