@@ -25,7 +25,7 @@ $(document).ready(function() {// {{{
 });// }}}
 
 function create_instance() {// {{{
-  var name = prompt("Instance name?");
+  var name = prompt("Instance name?", "Enter name here");
   if (name != null) {
     if (name.match(/\S/)) {
       var base = $("input[name=base-url]").val();
