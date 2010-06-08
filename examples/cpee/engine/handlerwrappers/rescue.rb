@@ -9,6 +9,12 @@ class RescueHash < Hash
   end
 end
 
+module Kernel
+  def neq(comp)
+    self != copm
+  end
+end
+
 class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def initialize(arguments,position=nil,lay=nil,continue=nil)
     @instance = arguments[0].to_i

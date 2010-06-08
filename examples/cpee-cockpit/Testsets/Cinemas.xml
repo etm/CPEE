@@ -7,13 +7,14 @@
     <date>2010-05-17</date>
     <selected_title/>
     <starting_time/>
+    <zip>1010</zip>
+    <selected_city/>
     <hall/>
     <reservation_number/>
   </context-variables>
   <endpoints>
     <services>http://localhost:9290/groups/CinemasClass</services>
     <injection>http://localhost:9290/injection</injection>
-    <!-- select>http://http://www.pri.univie.ac.at/~ralph/Testservices/Select.php</select -->
     <select>http://localhost:9290/select/random</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
@@ -26,6 +27,18 @@
         <additional_endpoints>
           <selector_service>"select"</selector_service>
         </additional_endpoints>
+        <!-- properties>
+          <constraint>
+            <xpath>"//adress/city"</xpath>
+            <comparator>"=="</comparator>
+            <value>"Vienna"</value>
+          </constraint>
+          <constraint>
+            <xpath>"//adress/zip"</xpath>
+            <comparator>">="</comparator>
+            <value>@zip</value>
+          </constraint>
+        </properties-->
         <parameters>
           <title>@title</title>
           <date>@date</date>
@@ -36,6 +49,9 @@
         @starting_time = result[:starting_time]
         @selected_title = result[:movie_title]
         @hall = result[:hall]
+        properties[:call_book].each do |service|
+          @selected_city = service[:adress][:city]
+        end
       </manipulate>
     </call>  
   </description>
@@ -91,6 +107,10 @@
           <xsl:if test="@context">
             <xsl:text>, nil,</xsl:text>
             <xsl:value-of select="@context"/>
+          </xsl:if>
+          <xsl:if test="@properties">
+            <xsl:text>,</xsl:text>
+            <xsl:value-of select="@properties"/>
           </xsl:if>
           <!-- RESCUE -->
           <xsl:call-template name="print-content">
@@ -290,6 +310,9 @@
           <xsl:if test="@output">
             <xsl:text>|</xsl:text>
             <xsl:value-of select="@output"/>
+            <xsl:if test="@properties">
+              <xsl:text>, properties</xsl:text>
+            </xsl:if>
             <xsl:text>|</xsl:text>
           </xsl:if>
           <xsl:call-template name="print-newline"/>
