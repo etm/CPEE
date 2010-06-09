@@ -10,8 +10,8 @@ class RescueHash < Hash
 end
 
 module Kernel
-  def neq(comp)
-    self != copm
+  def neq(value)
+    self != value
   end
 end
 

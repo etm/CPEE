@@ -19,6 +19,8 @@
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="a01" endpoint="services">
+      <!--constraint xpath="adress/city" comparator="==" value="Vienna"/-->
+      <constraint xpath="adress/zip" comparator=">" variable="zip"/>
       <parameters><!--{{{-->
         <service>
           <serviceoperation>"search_and_book"</serviceoperation>
@@ -27,18 +29,6 @@
         <additional_endpoints>
           <selector_service>"select"</selector_service>
         </additional_endpoints>
-        <!-- properties>
-          <constraint>
-            <xpath>"//adress/city"</xpath>
-            <comparator>"=="</comparator>
-            <value>"Vienna"</value>
-          </constraint>
-          <constraint>
-            <xpath>"//adress/zip"</xpath>
-            <comparator>">="</comparator>
-            <value>@zip</value>
-          </constraint>
-        </properties-->
         <parameters>
           <title>@title</title>
           <date>@date</date>
@@ -49,9 +39,7 @@
         @starting_time = result[:starting_time]
         @selected_title = result[:movie_title]
         @hall = result[:hall]
-        properties[:call_book].each do |service|
-          @selected_city = service[:adress][:city]
-        end
+        @selected_city = properties.value(:perform_book)[0].value(:city)
       </manipulate>
     </call>  
   </description>
