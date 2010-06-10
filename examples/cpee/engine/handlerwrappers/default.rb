@@ -1,20 +1,21 @@
 class DefaultHandlerWrapper < Wee::HandlerWrapperBase
-  def initialize(arguments,position=nil,lay=nil,continue=nil)
+  def initialize(arguments,endpoint=nil,position=nil,lay=nil,continue=nil)
     @instance = arguments[0].to_i
     @url = arguments[1]
     @handler_stopped = false
     @handler_continue = continue
+    @handler_endpoint = endpoint
     @handler_position = position
     @handler_lay = lay
     @handler_returnValue = nil
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
-  def activity_handle(passthrough, endpoint, parameters)
+  def activity_handle(passthrough, parameters)
     $controller[@instance].position
-    $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
+    $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
 
-    client = Riddl::Client.new(endpoint)
+    client = Riddl::Client.new(@handler_endpoint)
 
     Thread.new { Thread.stop; puts "hallo" }
     params = []
@@ -30,7 +31,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
     type = parameters[:method] || 'post'
     status, result, headers = client.request type => params
-    raise "Could not #{parameters[:method] || 'post'} #{endpoint}" if status != 200
+    raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
 
     @handler_returnValue = ''
     if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
@@ -74,26 +75,26 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def inform_activity_done
-    $controller[@instance].notify("running/activity_done", :activity => @handler_position, :lay => @handler_lay)
+    $controller[@instance].notify("running/activity_done", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_manipulate
-    $controller[@instance].notify("running/activity_manipulating", :activity => @handler_position, :lay => @handler_lay)
+    $controller[@instance].notify("running/activity_manipulating", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_failed(err)
-    $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
+    $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
   end
   def inform_syntax_error(err)
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("properties/description/error", :message => err.message)
+    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message)
   end
   def inform_context_change(changed)
     $controller[@instance].serialize!
-    $controller[@instance].notify("properties/context-variables/change", :activity => @handler_position, :lay => @handler_lay, :changed => changed)
+    $controller[@instance].notify("properties/context-variables/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => changed)
   end
   def inform_endpoints_change(changed)
     $controller[@instance].serialize!
-    $controller[@instance].notify("properties/endpoints/change", :activity => @handler_position, :lay => @handler_lay, :changed => changed)
+    $controller[@instance].notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => changed)
   end
   def inform_position_change
     $controller[@instance].position
@@ -101,16 +102,16 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   def inform_state_change(newstate)
     if $controller[@instance]
       $controller[@instance].serialize!
-      $controller[@instance].notify("properties/state/change", :state => newstate)
+      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate)
     end
   end
 
   def vote_sync_after
-    voteid = $controller[@instance].call_vote("running/syncing_after", :activity => @handler_position, :lay => @handler_lay)
+    voteid = $controller[@instance].call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
     $controller[@instance].vote_result(voteid)
   end
   def vote_sync_before
-    voteid = $controller[@instance].call_vote("running/syncing_before", :activity => @handler_position, :lay => @handler_lay)
+    voteid = $controller[@instance].call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
     $controller[@instance].vote_result(voteid)
   end
 end
