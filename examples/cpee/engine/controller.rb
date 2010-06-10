@@ -116,10 +116,6 @@ class Controller
         @instance.handlerwrapper = DefaultHandlerWrapper
       end  
 
-      doc.find("/p:properties/p:endpoints/p:*").each do |e|
-        @instance.endpoint e.name.to_s.to_sym => e.text
-      end
-    
       @positions = []
       doc.find("/p:properties/p:positions/p:*").each do |e|
         val = e.text.split(';')
