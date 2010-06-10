@@ -7,20 +7,25 @@
     <date>2010-05-17</date>
     <selected_title/>
     <starting_time/>
-    <zip>1010</zip>
+    <zip>1100</zip>
     <selected_city/>
     <hall/>
     <reservation_number/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasClass</services>
+    <services>http://localhost:9290/groups/CinemasReal</services>
     <injection>http://localhost:9290/injection</injection>
     <select>http://localhost:9290/select/random</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="a01" endpoint="services">
-      <!--constraint xpath="adress/city" comparator="==" value="Vienna"/-->
-      <constraint xpath="adress/zip" comparator=">" variable="zip"/>
+      <constraints>
+        <group connector="or">
+          <constraint xpath="adress/city" comparator="==" value="Vienna"/>
+          <constraint xpath="adress/zip" comparator="&gt;" variable="zip"/>
+        </group>
+        <constraint xpath="adress/zip" comparator="&lt;" value="34567"/>
+      </constraints>
       <parameters><!--{{{-->
         <service>
           <serviceoperation>"search_and_book"</serviceoperation>
