@@ -1,3 +1,20 @@
+class RescueHash < Hash
+  def value(key)
+    results = []
+    self.each do |k,v|
+      results << v.value(key) if v.class == RescueHash
+      results << v if k == key.to_sym
+    end
+    results.length != 1 ? results.flatten : results[0]
+  end
+end
+
+module Kernel
+  def neq(value)
+    self != value
+  end
+end
+
 class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def initialize(arguments,position=nil,lay=nil,continue=nil)
     @instance = arguments[0].to_i
@@ -19,16 +36,12 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
 
     pp "Endpoint: #{endpoint}"
     pp "Position: #{@handler_position}"
-    pp "Instance-Uri: #{cpee_instance}"
     pp 'Parameters:'
     pp parameters.to_yaml
-    pp 'Passthrough:'
-    pp passthrough.to_yaml
 
     if parameters.key?(:service) # {{{
       injection_service = parameters[:service][1][:injection]
-      pp "Injection-Service-Uri: #{injection_service}"
-      puts "== performing a call to the injection service"
+      puts "== performing a call to the injection service (#{injection_service})"
       status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
                                                                 Riddl::Parameter::Simple.new("cpee", cpee_instance),
                                                                 Riddl::Parameter::Simple.new("rescue", endpoint)]
@@ -75,7 +88,6 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
 #      end
 #      @handler_returnValue = res
       @handler_returnValue = result
-      pp @handler_returnValue.inspect
 =begin      
       if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
         $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
@@ -126,7 +138,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
   def inform_activity_failed(err)
     puts err.message
-    puts err.backtrace if not err.message.include? "Injection"
+    #puts err.backtrace if not err.message.include? "Injection"
     $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
   end
   def inform_syntax_error(err)
