@@ -54,18 +54,18 @@
           <put in="*"/>
         </resource>
       </resource>
-    </resource>
-    <resource relative="notifications">
-      <resource relative="subscriptions">
-        <resource>
-          <resource relative="debug">
-            <put in="message"/>
-          </resource>
-          <resource relative="error">
-            <put in="message"/>
-          </resource>
-          <resource relative="info">
-            <put in="message"/>
+      <resource relative="notifications">
+        <resource relative="subscriptions">
+          <resource>
+            <resource relative="debug">
+              <put in="message"/>
+            </resource>
+            <resource relative="error">
+              <put in="message"/>
+            </resource>
+            <resource relative="info">
+              <put in="message"/>
+            </resource>
           </resource>
         </resource>
       </resource>

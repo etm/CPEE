@@ -145,14 +145,14 @@ class Wee
       return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
 
       Thread.current[:continue] = Continue.new
-      handlerwrapper    = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, position, lay, Thread.current[:continue]
-      @__wee_manipulate = true
       begin
-      temp_context   = WatchHash.new(self); @__wee_context.each{|k,v|temp_context[k]=Marshal.load(Marshal.dump(v))}
-      temp_endpoints = WatchHash.new(self); @__wee_endpoints.each{|k,v|temp_endpoints[k]=Marshal.load(Marshal.dump(v))}
+        handlerwrapper    = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
+        @__wee_manipulate = true
+        temp_context   = WatchHash.new(self); @__wee_context.each{|k,v|temp_context[k]=Marshal.load(Marshal.dump(v))}
+        temp_endpoints = WatchHash.new(self); @__wee_endpoints.each{|k,v|temp_endpoints[k]=Marshal.load(Marshal.dump(v))}
 
-      wp = Wee::Position.new(position, :at, nil)
-      @__wee_positions << wp
+        wp = Wee::Position.new(position, :at, nil)
+        @__wee_positions << wp
 
         handlerwrapper.vote_sync_before
         case type
@@ -166,7 +166,7 @@ class Wee
           when :call
             handlerwrapper.vote_sync_before
             passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
-            ret_value = perform_external_call wp, passthrough, handlerwrapper, @__wee_endpoints[endpoint], *parameters
+            ret_value = perform_external_call wp, passthrough, handlerwrapper, *parameters
             if block_given? && self.state != :stopping && !Thread.current[:nolongernecessary]
               handlerwrapper.inform_activity_manipulate
               yield ret_value
@@ -369,7 +369,7 @@ class Wee
         return branch[:branch_search] || @__wee_search # is activity part of a branch and in search mode?
       end
     end# }}}
-    def perform_external_call(wp, passthrough, handlerwrapper, endpoint, *parameters)# {{{
+    def perform_external_call(wp, passthrough, handlerwrapper, *parameters)# {{{
       params = { }
       parameters.each do |p|
         if p.class == Hash && parameters.length == 1
@@ -382,7 +382,7 @@ class Wee
         end
       end
       # handshake call and wait until it finished
-      handlerwrapper.activity_handle passthrough, endpoint, params
+      handlerwrapper.activity_handle passthrough, params
       Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.state == :stopping || self.state == :stopped
        
       handlerwrapper.activity_no_longer_necessary if Thread.current[:nolongernecessary]
