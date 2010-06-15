@@ -1,3 +1,5 @@
+require 'soap/wsdlDriver'
+
 class RescueHash < Hash
   def value(key)
     results = []
@@ -39,6 +41,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     pp 'Parameters:'
     pp parameters.to_yaml
 
+    params = []
     if parameters.key?(:service) # {{{
       injection_service = parameters[:service][1][:injection]
       puts "== performing a call to the injection service (#{injection_service})"
@@ -46,24 +49,23 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
                                                                 Riddl::Parameter::Simple.new("cpee", cpee_instance),
                                                                 Riddl::Parameter::Simple.new("rescue", endpoint)]
       raise "'Injection at #{injection_service} failed with status: #{status}'" if status != 200
-      raise "'Injection in progress'" if status == 200 # }}}
-    else # {{{
+      raise "'I njection in progress'" if status == 200
+    end # }}}
+    if parameters.key?(:group)# {{{
+      (parameters[:group] || {}).each do |h|
+        if h.class == Hash
+          h.each do |k,v|
+            params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
+            puts "=== adding parameter for grouping: #{k} => #{v}"
+          end
+        end
+      end
+    end# }}}
+    if parameters.key?(:method) #{{{
       puts "== performing a call to service"
       client = Riddl::Client.new(endpoint)
       pp client.inspect
 
-      params = []
-#      callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
-      if parameters.key?(:group)
-        (parameters[:group] || {}).each do |h|
-          if h.class == Hash
-            h.each do |k,v|
-              params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
-              puts "=== adding parameter for grouping: #{k} => #{v}"
-            end
-          end
-        end
-      end
       (parameters[:parameters] || {}).each do |h|
         if h.class == Hash
           h.each do |k,v|
@@ -71,30 +73,43 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
             puts "=== adding parameter: #{k}"
           end
         end
-      end #}}}
-#      params << Riddl::Header.new("CPEE-Callback",callback)
-
-      type = parameters[:method] || 'post'
+      end 
+      type = parameters[:method]
       puts "=== Type: #{type}"
       puts "== Performing call"
       status, result, headers = client.request type => params
       puts "== Call finished with status: #{status}"
       raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
 
-#      res = Hash.new
-#      result.each do |r| 
-#        name = r.name != "" ? r.name : "void_#{rand(Time.now)}"
-#        res[name.to_sym] = (r.class == Riddl::Parameter::Complex) ? r.value.read : r.value
-#      end
-#      @handler_returnValue = res
       @handler_returnValue = result
-=begin      
-      if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
-        $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
-        return
+    end# }}}
+    if  parameters.key?(:soap_operation)# {{{
+      puts "=============================== SOP: #{parameters[:soap_operation]}"
+      pp parameters[:parameters]
+      puts endpoint
+      client = Riddl::Client.new(endpoint)
+      status, resp = client.get [Riddl::Parameter::Simple.new("WSDL","",:query)]
+      raise "Endpoint #{endpoint} doesn't provide a WSDL" if status != 200
+      puts resp[0].value.read
+      wsdl = XML::Smart.string(resp[0].value.read)
+      msg = wsdl.find("//wsdl:portType/wsdl:operation[@name = '#{parameters[:soap_operation]}']/wsdl:input/@mesage", {"wsdl"=>"http://schemas.xmlsoap.org/wsdl/"}).first
+      envelope = XML::Smart.string("<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"/>")
+      enevelope.root.attributes['xmlns:ns1'] = wsdl.root.attributes['targetNamespace']
+      soap_params = enevelope.add("SAOP-ENV:body").add("ns1:#{parameters[:soap_operation]}")
+      parameters[:parameters].each do |k,v|
+        puts "==========SOPA:PARAM: #{k} #{v}"
+        soap_params.add(k,v)
       end
+      puts envelope.to_s
+      status, result = client.post [Riddl::Parameter::Complex.new("", "text/xml", envelope.to_s)]
+
+=begin # No more use      
+      driver = SOAP::WSDLDriverFactory.new(endpoint).create_rpc_driver
+      result = driver.send(parameters[:soap_operation], *parameters[:parameters].to_a)
+      pp result
 =end
-    end
+      @handler_returnValue = result
+    end# }}}
     @handler_continue.continue
     puts '==Handler finished=='*5
   end
