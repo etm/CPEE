@@ -3,12 +3,11 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <title>Going Postal</title>
-    <date>2010-05-17</date>
+    <title>Prince of Persia</title>
+    <date>2010-06-17</date>
     <selected_title/>
     <starting_time/>
-    <zip>1100</zip>
-    <selected_city/>
+    <selected_cinema/>
     <hall/>
     <reservation_number/>
   </context-variables>
@@ -19,13 +18,13 @@
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="a01" endpoint="services">
-      <constraints>
+      <!-- constraints>
         <group connector="or">
           <constraint xpath="adress/city" comparator="==" value="Vienna"/>
           <constraint xpath="adress/zip" comparator="&gt;" variable="zip"/>
         </group>
         <constraint xpath="adress/zip" comparator="&lt;" value="34567"/>
-      </constraints>
+      </constraints -->
       <parameters><!--{{{-->
         <service>
           <serviceoperation>"search_and_book"</serviceoperation>
@@ -41,10 +40,10 @@
       </parameters><!--}}}-->
       <manipulate output="result">
         @reservation_number = result[:reservation_id]
-        @starting_time = result[:starting_time]
+        @starting_time = result[:time]
         @selected_title = result[:movie_title]
         @hall = result[:hall]
-        @selected_city = properties.value(:perform_book)[0].value(:city)
+        @selected_cinema = CGI::unescapeHTML("#{properties.value(:perform_book)[0].value(:name)}\n#{properties.value(:perform_book)[0].value(:street)}\n#{properties.value(:perform_book)[0].value(:zip)} #{properties.value(:perform_book)[0].value(:city)}")
       </manipulate>
     </call>  
   </description>
