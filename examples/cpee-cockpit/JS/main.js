@@ -7,6 +7,7 @@ var save_cvs;
 var node_state = {};
 
 $(document).ready(function() {// {{{
+  $("div.section > h1").click(toggle_vis);
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(monitor_instance);
   $("button[name=testset]").click(load_testset);
@@ -23,6 +24,11 @@ $(document).ready(function() {// {{{
     }
   });
 });// }}}
+
+function toggle_vis() {
+  $(this).toggleClass('margin');
+  $("+ div",this).toggleClass('hidden');
+}
 
 function create_instance() {// {{{
   var name = prompt("Instance name?", "Enter name here");

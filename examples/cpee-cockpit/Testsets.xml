@@ -1,7 +1,6 @@
 <testsets>
-  <testset>Thread Kill</testset>
-  <testset>BPM Testset</testset>
-  <testset>CEC Testset</testset>
+  <testset>Coopis Testset</testset>
+  <testset>ICSOC Testset</testset>
   <testset>Mangler 1</testset>
   <testset>Mangler 2</testset>
   <testset>Concurrent</testset>

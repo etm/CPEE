@@ -5,7 +5,7 @@
     <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
       <head>
          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-         <title>List of Instances</title>
+         <title>CPEE - List of Instances</title>
       </head>
       <body>
         <h1>List of Instances</h1>

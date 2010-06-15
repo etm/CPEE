@@ -21,35 +21,41 @@
   <body>
     <div class="section">
       <h1>CPEE Instance</h1>
-      <table id="instance" class='layout'>
-      <tr>
-        <td>Base Url:</td>
-        <td><input name="base-url" type="text" value="http://localhost:9298"/></td>
-        <td><button name="base">create new instance</button></td>
-      </tr>
-      <tr>
-        <td>Instance Url:</td>
-        <td><input name="instance-url" type="text" value="http://localhost:9298/1/"/></td>
-        <td><button name="instance">monitor instance</button></td>
-      </tr>
-      <tr>
-        <td>Testsets:</td>
-        <td>
-          <select name="testset-names"></select>
-        </td>  
-        <td><button name="testset">load testset into instance</button></td>
-      </tr>
-      </table>
+      <div id="areainstance">
+        <table id="instance" class='layout'>
+        <tr>
+          <td>Base Url:</td>
+          <td><input name="base-url" type="text" value="http://localhost:9298"/></td>
+          <td><button name="base">create new instance</button></td>
+        </tr>
+        <tr>
+          <td>Instance Url:</td>
+          <td><input name="instance-url" type="text" value="http://localhost:9298/1/"/></td>
+          <td><button name="instance">monitor instance</button></td>
+        </tr>
+        <tr>
+          <td>Testsets:</td>
+          <td>
+            <select name="testset-names"></select>
+          </td>  
+          <td><button name="testset">load testset into instance</button></td>
+        </tr>
+        </table>
+      </div>  
     </div>  
   
     <div class="section hidden">
       <h1>Endpoints</h1>
-      <table id="endpoints"></table>
+      <div id="areaendpoints">
+        <table id="endpoints"></table>
+      </div>  
     </div>  
 
     <div class="section hidden">
       <h1>Context Variables</h1>
-      <table id="context-variables"></table>
+      <div id="areacontext">
+        <table id="context-variables"></table>
+      </div>
     </div>  
 
     <table class="tab hidden layout">
@@ -61,7 +67,7 @@
       </tr>  
       <tr>
         <td class="tabbelow" colspan="4">
-          <div id="areagraph">
+          <div id="areagraph" class="area">
             <table class='layout'>
             <tr>
               <td valign="top">
@@ -138,8 +144,8 @@
             </tr>  
             </table>
           </div>  
-          <div id="areadsl" class="inactivearea"></div>
-          <div id="arealog" class="inactivearea">
+          <div id="areadsl" class="area inactivearea"></div>
+          <div id="arealog" class="area inactivearea">
             <table id="tablelog" class="layout">
             </table>
           </div>
@@ -149,10 +155,12 @@
 
     <div class="section hidden">
       <h1>State &amp; Positions</h1>
-      <table>
-        <tbody id="state"></tbody>
-        <tbody id="votes"></tbody>
-      </table>
+      <div id="areaposition">
+        <table>
+          <tbody id="state"></tbody>
+          <tbody id="votes"></tbody>
+        </table>
+      </div>
     </div>  
   </body>
 </html>
