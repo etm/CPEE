@@ -97,7 +97,7 @@ table.tab .tab {
 }
 table.tab .tab h1 { margin-top: 0em; margin-bottom: 0em; padding-top: 0em; padding-bottom: 0em; }
 
-table.tab .area { max-height: 20.06em; overflow: auto; }
+table.tab .area { max-height: 23.5em; overflow: auto; }
 
 table.tab .inactivearea { display: none; }
 table.tab .inactivetab {
@@ -145,8 +145,6 @@ td.tabbelow {
   -webkit-border-top-right-radius: 0em;
 }
 
-#arealog { height: 20em; overflow:auto; }
-
 #tablelog td { vertical-align: top; }
 #tablelog tr:nth-child(odd) { background-color: Menu; color: MenuText; }
 
@@ -188,7 +186,7 @@ svg {
   display:inline;
   margin:0px;
   padding:0px;
-  margin-top: -0.9em;
+  margin-top: -0.4em;
   margin-left: -0.5em;
 }
 
