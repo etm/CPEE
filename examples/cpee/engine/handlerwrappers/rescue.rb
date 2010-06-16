@@ -1,4 +1,4 @@
-require 'soap/wsdlDriver'
+require 'cgi'
 
 class RescueHash < Hash
   def value(key)
@@ -18,25 +18,25 @@ module Kernel
 end
 
 class RescueHandlerWrapper < Wee::HandlerWrapperBase
-  def initialize(arguments,position=nil,lay=nil,continue=nil)
+  def initialize(arguments,endpoint=nil,position=nil,lay=nil,continue=nil)
     @instance = arguments[0].to_i
     @url = arguments[1]
     @handler_stopped = false
     @handler_continue = continue
     @handler_position = position
+    @handler_endpoint = endpoint
     @handler_lay = lay
     @handler_returnValue = nil
   end
 
   # executes a ws-call to the given endpoint with the given parameters. the call
-  def activity_handle(passthrough, endpoint, parameters)
+  def activity_handle(passthrough, parameters)
     puts '==Handler-started=='*5
     $controller[@instance].position
-    $controller[@instance].notify("running/activity_calling", :activity => @handler_position, :passthrough => passthrough, :endpoint => endpoint, :parameters => parameters)
-  
+    $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters) 
     cpee_instance = "#{@url}/#{@instance}/"
 
-    pp "Endpoint: #{endpoint}"
+    pp "Endpoint: #{@handler_endpoint}"
     pp "Position: #{@handler_position}"
     pp 'Parameters:'
     pp parameters.to_yaml
@@ -47,9 +47,9 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       puts "== performing a call to the injection service (#{injection_service})"
       status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
                                                                 Riddl::Parameter::Simple.new("cpee", cpee_instance),
-                                                                Riddl::Parameter::Simple.new("rescue", endpoint)]
+                                                                Riddl::Parameter::Simple.new("rescue", @handler_endpoint)]
       raise "'Injection at #{injection_service} failed with status: #{status}'" if status != 200
-      raise "'I njection in progress'" if status == 200
+      raise "'Injection in progress'" if status == 200
     end # }}}
     if parameters.key?(:group)# {{{
       (parameters[:group] || {}).each do |h|
@@ -63,8 +63,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     end# }}}
     if parameters.key?(:method) #{{{
       puts "== performing a call to service"
-      client = Riddl::Client.new(endpoint)
-      pp client.inspect
+      client = Riddl::Client.new(@handler_endpoint)
 
       (parameters[:parameters] || {}).each do |h|
         if h.class == Hash
@@ -79,38 +78,45 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       puts "== Performing call"
       status, result, headers = client.request type => params
       puts "== Call finished with status: #{status}"
-      raise "Could not #{parameters[:method] || 'post'} #{endpoint}"  if status != 200
-
+      raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
       @handler_returnValue = result
     end# }}}
     if  parameters.key?(:soap_operation)# {{{
-      puts "=============================== SOP: #{parameters[:soap_operation]}"
-      pp parameters[:parameters]
-      puts endpoint
-      client = Riddl::Client.new(endpoint)
-      status, resp = client.get [Riddl::Parameter::Simple.new("WSDL","",:query)]
-      raise "Endpoint #{endpoint} doesn't provide a WSDL" if status != 200
-      puts resp[0].value.read
-      wsdl = XML::Smart.string(resp[0].value.read)
-      msg = wsdl.find("//wsdl:portType/wsdl:operation[@name = '#{parameters[:soap_operation]}']/wsdl:input/@mesage", {"wsdl"=>"http://schemas.xmlsoap.org/wsdl/"}).first
-      envelope = XML::Smart.string("<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"/>")
-      enevelope.root.attributes['xmlns:ns1'] = wsdl.root.attributes['targetNamespace']
-      soap_params = enevelope.add("SAOP-ENV:body").add("ns1:#{parameters[:soap_operation]}")
-      parameters[:parameters].each do |k,v|
-        puts "==========SOPA:PARAM: #{k} #{v}"
-        soap_params.add(k,v)
+      # Bulding SAOP-Envelope {{{
+      wsdl_client = Riddl::Client.new(parameters[:wsdl].split('?')[0])
+      params = []
+      parameters[:wsdl].split('?')[1].split('&').each do |p|
+        params << Riddl::Parameter::Simple.new(p.split('=')[0], p.split('=')[1], :query)
       end
-      puts envelope.to_s
-      status, result = client.post [Riddl::Parameter::Complex.new("", "text/xml", envelope.to_s)]
-
-=begin # No more use      
-      driver = SOAP::WSDLDriverFactory.new(endpoint).create_rpc_driver
-      result = driver.send(parameters[:soap_operation], *parameters[:parameters].to_a)
-      pp result
-=end
+      status, resp = wsdl_client.get params
+      raise "Endpoint #{parameters[:wsdl]} doesn't provide a WSDL" if status != 200
+      wsdl = XML::Smart.string(resp[0].value.read)
+      msg = wsdl.find("//wsdl:portType/wsdl:operation[@name = '#{parameters[:soap_operation]}']/wsdl:input/@message", {"wsdl"=>"http://schemas.xmlsoap.org/wsdl/"}).first
+      envelope = XML::Smart.string("<Envelope/>")
+      ns1 = envelope.root.namespaces.add("ns1", wsdl.root.attributes['targetNamespace']) 
+      ns_soap = envelope.root.namespaces.add("soap", "http://schemas.xmlsoap.org/soap/envelope/")
+      body = envelope.root.add("Body")
+      soap_params = body.add("#{parameters[:soap_operation]}")
+      soap_params.namespace = ns1
+      parameters[:parameters].each do |hash|
+        hash.each do |k,v|
+          soap_params.add("#{k}","#{v}") # used #{} to get implicit escaping of XML
+        end
+      end #}}}
+      service = Riddl::Client.new(@handler_endpoint)
+      status, result = service.post [Riddl::Parameter::Complex.new("", "text/xml", envelope.to_s)]
+      out = XML::Smart.string(result[0].value.read)
+      raise "Error in SOAP-Request: \"#{out.find("//soap:Fault", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first.dump}\"" if out.find("//soap:Fault", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
+      if out.namespaces.find("http://schemas.xmlsoap.org/soap/envelope/")
+        result = out.find("//soap:Body", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
+        result.namespaces['soap'] = "http://schemas.xmlsoap.org/soap/envelope/"
+      else
+        result = out.find("//Body").first
+      end
       @handler_returnValue = result
-    end# }}}
+    end# }}} 
     @handler_continue.continue
+    puts "ReturnValue: #{@handler_returnValue.inspect}"
     puts '==Handler finished=='*5
   end
 
@@ -146,28 +152,26 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def inform_activity_done
-    $controller[@instance].notify("running/activity_done", :activity => @handler_position, :lay => @handler_lay)
+    $controller[@instance].notify("running/activity_done", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_manipulate
-    $controller[@instance].notify("running/activity_manipulating", :activity => @handler_position, :lay => @handler_lay)
+    $controller[@instance].notify("running/activity_manipulating", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_failed(err)
-    puts err.message
-    #puts err.backtrace if not err.message.include? "Injection"
-    $controller[@instance].notify("running/activity_failed", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
+    $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
   end
   def inform_syntax_error(err)
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("properties/description/error", :message => err.message)
+    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message)
   end
   def inform_context_change(changed)
     $controller[@instance].serialize!
-    $controller[@instance].notify("properties/context-variables/change", :changed => changed)
+    $controller[@instance].notify("properties/context-variables/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => changed)
   end
   def inform_endpoints_change(changed)
     $controller[@instance].serialize!
-    $controller[@instance].notify("properties/endpoints/change", :activity => @handler_position, :lay => @handler_lay, :changed => changed)
+    $controller[@instance].notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => changed)
   end
   def inform_position_change
     $controller[@instance].position
@@ -175,16 +179,16 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def inform_state_change(newstate)
     if $controller[@instance]
       $controller[@instance].serialize!
-      $controller[@instance].notify("properties/state/change", :state => newstate)
+      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate)
     end
   end
 
   def vote_sync_after
-    voteid = $controller[@instance].call_vote("running/syncing_after", :activity => @handler_position, :lay => @handler_lay)
+    voteid = $controller[@instance].call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
     $controller[@instance].vote_result(voteid)
   end
   def vote_sync_before
-    voteid = $controller[@instance].call_vote("running/syncing_before", :activity => @handler_position, :lay => @handler_lay)
+    voteid = $controller[@instance].call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
     $controller[@instance].vote_result(voteid)
   end
 end
