@@ -144,7 +144,7 @@ function monitor_instance_cvs() {// {{{
     type: "GET", 
     url: url + "/properties/values/context-variables/",
     success: function(res){
-      var values = $("values > *",res);
+      var values = $("value > *",res);
       var temp = "";
       values.each(function(){
       if($(this).text().length < 80) {
@@ -170,7 +170,7 @@ $.ajax({
   type: "GET", 
   url: url + "/properties/values/endpoints/",
   success: function(res){
-    var values = $("values > *",res);
+    var values = $("value > *",res);
     var temp = "";
     values.each(function(){
       temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>";
@@ -257,7 +257,7 @@ $.ajax({
   type: "GET", 
   url: url + "/properties/values/positions/",
   success: function(res){
-    var values = $("values > *",res);
+    var values = $("value > *",res);
     format_visual_clear();
     values.each(function(){
       var what = this.nodeName;
@@ -338,7 +338,7 @@ $.ajax({
       url: url + "/properties/values/context-variables/",
       success: function(res){
         var rcount = 0;
-        var values = $("values > *",res);
+        var values = $("value > *",res);
         var length = values.length;
         values.each(function(){
           var name = this.nodeName;
@@ -364,7 +364,7 @@ $.ajax({
       url: url + "/properties/values/endpoints/",
       success: function(res){
         var rcount = 0;
-        var values = $("values > *",res);
+        var values = $("value > *",res);
         var length = values.length;
         values.each(function(){
           var name = this.nodeName;
@@ -390,7 +390,7 @@ $.ajax({
       url: url + "/properties/values/positions/",
       success: function(res){
         var rcount = 0;
-        var values = $("values > *",res);
+        var values = $("value > *",res);
         var length = values.length;
         values.each(function(){
           var name = this.nodeName;
@@ -417,20 +417,29 @@ $.ajax({
       success: function(res){
         var values = $("not-existing",res);
         $("testset > transformation > *",testset).each(function(){
-          var val = $(this).serializeXML();
+          var val = "<content>" + $(this).serializeXML() + "</content>";
           if (values.length > 0) {
             $.ajax({
               type: "POST", 
               url: url + "/properties/values/",
-              data: ({key: "transformation", value: val}),
-              success: function() { load_testset_des(url,testset); },
+              data: ({property: "transformation"}),
+              success: function() { 
+                $.ajax({ 
+                  type: "PUT", 
+                  data: ({content: val}),
+                  url: url + "/properties/values/transformation",
+                  success: function() {
+                    load_testset_des(url,testset); 
+                  },  
+                });
+              },
               error: report_failure
             });
           } else {
             $.ajax({
               type: "PUT", 
               url: url + "/properties/values/transformation",
-              data: ({value: val}),
+              data: ({content: val}),
               success: function() { load_testset_des(url,testset); },
               error: report_failure
             });
@@ -453,12 +462,11 @@ running  = false;
           
 function load_testset_des(url,testset) {// {{{
   $("testset > description",testset).each(function(){
-    var name = this.nodeName;
-    var val = $(this).serializeXML();
+    var val = "<content>" + $(this).serializeXML() + "</content>";
     $.ajax({
       type: "PUT", 
       url: url + "/properties/values/description",
-      data: ({value: val}),
+      data: ({content: val}),
       error: report_failure
     });
   });
@@ -478,12 +486,11 @@ function load_testset_hw(url,testset) {// {{{
 
 function load_testset_cvs(url,testset) {// {{{
   $("testset > context-variables > *",testset).each(function(){
-    var name = this.nodeName;
-    var val = $(this).text();
+    var val = $(this).serializeXML();
     $.ajax({
       type: "POST", 
       url: url + "/properties/values/context-variables/",
-      data: ({key:  name, value: val}),
+      data: ({value: val}),
       error: report_failure
     });  
   });
@@ -491,12 +498,11 @@ function load_testset_cvs(url,testset) {// {{{
 
 function load_testset_eps(url,testset) {// {{{
   $("testset > endpoints > *",testset).each(function(){
-    var name = this.nodeName;
-    var val = $(this).text();
+    var val = $(this).serializeXML();
     $.ajax({
       type: "POST", 
       url: url + "/properties/values/endpoints/",
-      data: ({key:  name, value: val}),
+      data: ({value: val}),
       error: report_failure
     });  
   });
@@ -504,12 +510,11 @@ function load_testset_eps(url,testset) {// {{{
 
 function load_testset_pos(url,testset) {// {{{
   $("testset > positions > *",testset).each(function(){
-    var name = this.nodeName;
-    var val = $(this).text();
+    var val = $(this).serializeXML();
     $.ajax({
       type: "POST", 
       url: url + "/properties/values/positions/",
-      data: ({key:  name, value: val}),
+      data: ({value: val}),
       error: report_failure
     });  
   });
