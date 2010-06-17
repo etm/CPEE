@@ -1,19 +1,18 @@
 <properties xmlns="http://riddl.org/ns/common-patterns/properties/1.0">
-  <name type="value" modifiable="false" mutable="false">
+  <name type="simple" modifiable="false" mutable="false">
     <text/>
   </name>
-  <handlerwrapper type="value" modifiable="false" mutable="false">
+  <handlerwrapper type="simple" modifiable="false" mutable="false">
     <data type="string">
       <param name="pattern">[A-Z][a-zA-Z]*</param>
     </data>  
   </handlerwrapper>
-  <dsl type="value" modifiable="false" mutable="false">
+  <dsl type="simple" modifiable="false" mutable="false">
     <text/>
   </dsl>
-  <description type="content" modifiable="false" mutable="false"/>
-  <positions type="list" modifiable="false" mutable="true"/>
+  <description type="arbitrary" modifiable="false" mutable="false"/>
   <optional>
-    <transformation type="content" modifiable="false" mutable="false"/>
+    <transformation type="arbitrary" modifiable="false" mutable="false"/>
   </optional>  
   <state type="state" modifiable="true">
     <ready>
@@ -31,6 +30,24 @@
     </stopped>  
     <finished/>
   </state>  
-  <context-variables type="map" modifiable="false" mutable="true"/>
-  <endpoints type="map" modifiable="false" mutable="true"/>
+  <positions type="complex" modifiable="false" mutable="true">
+    <zeroOrMore>
+      <element>
+        <anyName/>
+        <data type="string">
+          <param name="pattern">(at|after)(;[A-Za-z0-9]+)?</param>
+        </data>  
+      </element>
+    </zeroOrMore>  
+  </positions>  
+  <context-variables type="complex" modifiable="false" mutable="true">
+    <zeroOrMore>
+      <element><anyName/><text/></element>
+    </zeroOrMore>  
+  </context-variables>  
+  <endpoints type="complex" modifiable="false" mutable="true">
+    <zeroOrMore>
+      <element><anyName/><text/></element>
+    </zeroOrMore>  
+  </endpoints>
 </properties>
