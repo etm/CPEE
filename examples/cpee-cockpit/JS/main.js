@@ -707,7 +707,7 @@ function format_text(res) {// {{{
 
 function append_to_log(what,type,message) {//{{{
   var d = new Date();
-  $("#tablelog").append("<tr><td class='fixed'>" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "</td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  what + "</td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
+  $("#tablelog").append("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">d</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  what + "</td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
 }//}}}
 
 function report_failure(){}
