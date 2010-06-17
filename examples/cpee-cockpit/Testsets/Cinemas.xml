@@ -12,7 +12,7 @@
     <reservation_number/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasReal</services>
+    <services>http://localhost:9290/groups/CinemasReal/REST</services>
     <injection>http://localhost:9290/injection</injection>
     <select>http://localhost:9290/select/random</select>
   </endpoints>  
