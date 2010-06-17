@@ -3,28 +3,29 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <title>Prince of Persia</title>
-    <date>2010-06-17</date>
+    <title>Robin Hood</title>
+    <date>2010-06-20</date>
     <selected_title/>
     <starting_time/>
     <selected_cinema/>
     <hall/>
+    <zip>1100</zip>
     <reservation_number/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasReal/REST</services>
+    <services>http://localhost:9290/groups/CinemasReal</services>
     <injection>http://localhost:9290/injection</injection>
     <select>http://localhost:9290/select/random</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="a01" endpoint="services">
-      <!-- constraints>
-        <group connector="or">
+      <constraints>
+        <group connector="and">
           <constraint xpath="adress/city" comparator="==" value="Vienna"/>
           <constraint xpath="adress/zip" comparator="&gt;" variable="zip"/>
         </group>
-        <constraint xpath="adress/zip" comparator="&lt;" value="34567"/>
-      </constraints -->
+        <constraint xpath="adress/zip" comparator="&lt;" value="1900"/>
+      </constraints>
       <parameters><!--{{{-->
         <service>
           <serviceoperation>"search_and_book"</serviceoperation>
