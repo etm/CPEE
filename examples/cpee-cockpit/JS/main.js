@@ -539,6 +539,7 @@ function sym_click(node) { // {{{
   var table = $('#tabledetails');
   table.empty();
   table.append('<tr><td><strong>Element:</strong></td><td class="long">' + node.nodeName + '</td></tr>');
+  console.log(node.nodeName);
   switch(node.nodeName) {
     case 'call':
       table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
@@ -574,9 +575,36 @@ function sym_click(node) { // {{{
       if ($(node).attr('local'))
         table.append('<tr><td><strong>Local&#160;scope:</strong></td><td class="long">' + $(node).attr('local') + '</td></tr>');
       break;
+    case 'injected':
+        table.append('<tr><td><strong>Injected by:</strong></td><td class="long">' + $(node).attr('source') + '</td></tr>');
+        table.append('<tr><td><strong>Resultobject:</strong></td><td class="long">' + $(node).attr('result') + '</td></tr>');
+        table.append('<tr><td><strong>Propertiesobject:</strong></td><td class="long">' + $(node).attr('properties') + '</td></tr>');
+        table.append(sym_click_constraint($(node).children('constraints'),'&#160;&#160;&#160;&#160;'));
+      break;
   }
 } // }}}
 
+function sym_click_constraint(node,ind) { // {{{
+  var out = '';
+  $(node).children().each(function(i,e){
+    if (e.nodeName == "group") {
+      out += '<tr><td colspan="2">';
+      out += ind + $(e).attr('connector')+'-group';
+      out += '</td></tr>';
+      out += sym_click_constraint(e,ind + '&#160;&#160;&#160;&#160;');
+    } else {
+      out += '<tr><td colspan="2">';
+      out += ind + 'Constraint ⇒ ' + $(e).attr('xpath') + ' ' + $(e).attr('comparator') + ' ';
+      if ($(e).attr('value')) {
+        out += $(e).attr('value');
+      } else {
+         out += '@'+$(e).attr('variable');
+      }
+      out += '</td></tr>';
+    }  
+  });  
+  return out;
+} // }}}
 function sym_click_para(node,ind) { // {{{
   var out = '';
   $(node).children().each(function(i,e){

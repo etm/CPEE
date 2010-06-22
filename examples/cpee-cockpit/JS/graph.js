@@ -79,7 +79,7 @@ var WFGraph = function(xml, start, container) {
         case 'injected':
           drawSymbol(ap, child, false);
           block = analyze(child, {'line': ap['line']-1, 'col': ap['col']}, 1);
-          drawBlock( {'line': ap['line']-1, 'col': ap['col']+1}, block['max_pos'], 'injected');
+          drawBlock( {'line': ap['line']-1, 'col': ap['col']+1}, block['max_pos'], 'injected', child);
           end_nodes = [];
           break;
         case 'alternative':
@@ -178,8 +178,6 @@ var WFGraph = function(xml, start, container) {
     var eps = xml.evaluate("d:parameters/d:service", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     var em  = xml.evaluate("d:manipulate", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     var eo  = xml.evaluate("d:outputs", node, ns, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-    if((sym_name == "call") && eps.snapshotLength == 1)
-      sym_name = "callinject";
     if((sym_name == "call") && ((em.snapshotLength > 0) || (eo.snapshotLength > 0)))
       sym_name = "callmanipulate";
     if((sym_name == "call") && eps.snapshotLength == 1)
@@ -188,9 +186,11 @@ var WFGraph = function(xml, start, container) {
     var g = document.createElementNS(svgNS, "g");
         g.setAttribute('transform', 'translate(' + String(xy['col']*column_width-15) + ',' + String(xy['line']*row_height-30) + ')');
 
+    if (node.getAttribute("generated")) {
+      sym_name = sym_name+"_gen";
+    }
     var use = document.createElementNS(svgNS, "use");
     use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
-    use.setAttribute("style", "fill: #ffffff; fill-opacity: 1");
 
     var attrs = {};
     if (id) {
@@ -247,13 +247,15 @@ var WFGraph = function(xml, start, container) {
     while(node.childNodes[0])
       node.removeChild(node.childNodes[0]);
   }// }}}
-  var drawBlock = function(p1, p2, css_class) {// {{{
+  var drawBlock = function(p1, p2, css_class, injected_node) {// {{{
       var block = document.createElementNS(svgNS, "rect");
       var attrs = {'x':(p1['col'])*column_width-20, 'y':(p1['line'])*row_height-35, 'width':(p2['col']-p1['col']+1)*column_width, 'height':(p2['line']-p1['line'])*row_height, 'class':'block', 'rx':'20', 'ry':'20' }; 
       if(typeof css_class == "string")
         attrs['class'] = css_class;
+      if (attrs['class'] == "injected")
+        block.onclick = function(){ symclick(injected_node); };
       for(var attr in attrs)
         block.setAttribute(attr, attrs[attr]);
-      blocks.appendChild(block);
+      blocks.insertBefore(block, blocks.firstChild);
   }// }}}
 };
