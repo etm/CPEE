@@ -29,6 +29,7 @@ var WFGraph = function(xml, start, container) {
   } // }}} 
 
   var analyze = function(parent_element, parent_position, column_shift) { // {{{
+    if (parent_element == null) { return {'max_pos':{'col':0,'line':0}}; } // happens when the cockpit is loaded but no description is set
     var ap = (parent_position == null) ? {'line':0,'col':0} : copyPos(parent_position); ap['col']+=column_shift; 
     if(parent_element.nodeName != "injected") ap['line']++;// AP = actual position
     var max_col = ap['col'];
