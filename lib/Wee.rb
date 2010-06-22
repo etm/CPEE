@@ -8,6 +8,12 @@ class String# {{{
 end# }}}
 
 class Wee
+  module Signal
+    class SkipManipulate < Exception; end
+    class StopSkipManipulate < Exception; end
+    class Proceed < Exception; end
+  end  
+
   class WatchHash < Hash# {{{
     def initialize(bndg)
       @bndg = bndg
@@ -174,6 +180,8 @@ class Wee
               refreshendpoints handlerwrapper, temp_endpoints
             end
         end
+        raise Signal::Proceed
+      rescue Signal::SkipManipulate, Signal::Proceed
         if self.state != :stopping && !Thread.current[:nolongernecessary]
           handlerwrapper.inform_activity_done
           handlerwrapper.vote_sync_after
@@ -181,9 +189,11 @@ class Wee
         if self.state != :stopping
           @__wee_positions.delete wp
           handlerwrapper.inform_position_change
-        end  
+        end
+      rescue Signal::StopSkipManipulate
+        self.state = :stopping
       rescue => err
-        p err
+        puts err.message
         puts err.backtrace
         refreshcontext handlerwrapper, temp_context
         refreshendpoints handlerwrapper, temp_endpoints
