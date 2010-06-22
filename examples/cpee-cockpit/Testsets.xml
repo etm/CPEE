@@ -8,4 +8,5 @@
   <testset>Linear</testset>
   <testset>Endpoints</testset>
   <testset>Cinemas</testset>
+  <testset>RESCUE</testset>
 </testsets>
