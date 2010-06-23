@@ -23,8 +23,8 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     @url = arguments[1]
     @handler_stopped = false
     @handler_continue = continue
-    @handler_position = position
     @handler_endpoint = endpoint
+    @handler_position = position
     @handler_lay = lay
     @handler_returnValue = nil
   end
@@ -203,11 +203,9 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def vote_sync_after
-    voteid = $controller[@instance].call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
-    $controller[@instance].vote_result(voteid)
+    $controller[@instance].call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
   end
   def vote_sync_before
-    voteid = $controller[@instance].call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
-    $controller[@instance].vote_result(voteid)
+    $controller[@instance].call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
   end
 end

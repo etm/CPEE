@@ -107,11 +107,9 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def vote_sync_after
-    voteid = $controller[@instance].call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
-    $controller[@instance].vote_result(voteid)
+    $controller[@instance].call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
   end
   def vote_sync_before
-    voteid = $controller[@instance].call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
-    $controller[@instance].vote_result(voteid)
+    $controller[@instance].call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
   end
 end
