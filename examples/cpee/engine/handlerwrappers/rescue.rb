@@ -43,13 +43,25 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
 
     params = []
     if parameters.key?(:service) # {{{
-      injection_service = parameters[:service][1][:injection]
-      puts "== performing a call to the injection service (#{injection_service})"
+      injection_handler = parameters[:service][1][:handler]
+      cpee = Riddl::Client.new(cpee_instance)
+      puts "Subscribe #{injection_handler} at URL #{cpee_instance}notifications/subscriptions"
+      status, resp = cpee.resource("notifications/subscriptions").post [
+        Riddl::Parameter::Simple.new("url", injection_handler),
+        Riddl::Parameter::Simple.new("topic", "running"),
+        Riddl::Parameter::Simple.new("votes", "syncing_after")
+      ]
+      raise "'Subscribtion of #{injection_handler} at #{cpee_instance} failed with status: #{status}'" if status != 200
+      puts "== performing a call to the injection service (#{injection_handler})"
+      raise Wee::Signal::SkipManipulate
+      @handler_returnValue = resp
+=begin      
       status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
                                                                 Riddl::Parameter::Simple.new("cpee", cpee_instance),
                                                                 Riddl::Parameter::Simple.new("rescue", @handler_endpoint)]
       raise "'Injection at #{injection_service} failed with status: #{status}'" if status != 200
       raise "'Injection in progress'" if status == 200
+=end
     end # }}}
     if parameters.key?(:group)# {{{
       (parameters[:group] || {}).each do |h|
@@ -74,12 +86,18 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
           end
         end
       end 
+      callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+      params << Riddl::Header.new("CPEE-Callback",callback)
       type = parameters[:method]
       puts "=== Type: #{type}"
       puts "== Performing call"
       status, result, headers = client.request type => params
       puts "== Call finished with status: #{status}"
       raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
+      if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
+        $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
+        return
+      end
       @handler_returnValue = result
     end# }}}
     if  parameters.key?(:soap_operation)# {{{
@@ -180,7 +198,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def inform_state_change(newstate)
     if $controller[@instance]
       $controller[@instance].serialize!
-      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate)
+      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate, :activity => @handler_position, :lay => @handler_lay, :endpoint => @handler_endpoint)
     end
   end
 
