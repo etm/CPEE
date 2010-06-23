@@ -65,6 +65,8 @@ class Controller
     end 
   end# }}}
   def unserialize!# {{{
+    @events.clear
+    @votes.clear
     Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
       XML::Smart::open(sub) do |doc|
         key = ::File::basename(::File::dirname(sub))
@@ -169,7 +171,6 @@ class Controller
           inum += 1 unless url.closed?
         end  
       end
-      puts "Inum: #{inum}"
 
       item.each do |key,url|
 
@@ -177,7 +178,6 @@ class Controller
           callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
           c['callback'] = callback
           vo = build_notification(k,what,c,'vote')
-          puts k
           if u.class == String
             client = Riddl::Client.new(u)
             params = vo.map{|k,v|Riddl::Parameter::Simple.new(k,v)}

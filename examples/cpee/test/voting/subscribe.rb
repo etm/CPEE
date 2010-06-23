@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 require 'rubygems'
-require '../../../../riddl/lib/ruby/client'
+require '../../../../../riddl/lib/ruby/client'
 require 'digest/md5'
 require 'yaml'
 
@@ -21,15 +21,28 @@ puts "Instance: #{instance}"
   ]
 end
 
-1.upto 3 do |i|
+key = nil
+ps = nil
+1.upto 4 do |i|
   res = srv.resource("/#{instance}/notifications/subscriptions/")
   status, response = res.post [ 
     Riddl::Parameter::Simple.new("url","http://www.pri.univie.ac.at/~mangler/services/voter.php"),
     Riddl::Parameter::Simple.new("topic","running"),
     Riddl::Parameter::Simple.new("votes","syncing_after"),
   ]
-  puts "Subscription #{i}: #{response[0].value}"
+  key = response.value('key')
+  ps = response.value('producer-secret')
+  puts "Subscription #{i}: #{key}"
 end
+
+muid = Digest::MD5.hexdigest(Kernel::rand().to_s)
+
+res = srv.resource("/#{instance}/notifications/subscriptions/#{key}")
+status, response = res.delete [
+    Riddl::Parameter::Simple.new("message-uid",muid),
+    Riddl::Parameter::Simple.new("fingerprint-with-producer-secret",Digest::MD5.hexdigest("#{muid}#{ps}"))
+]    
+p status
 
 res = srv.resource("/#{instance}/properties/values/state")
 status, response = res.put [
