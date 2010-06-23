@@ -64,38 +64,47 @@ class Controller
       node.text = @instance.state
     end 
   end# }}}
-  def unserialize!# {{{
-    @events.clear
-    @votes.clear
-    Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
-      XML::Smart::open(sub) do |doc|
-        key = ::File::basename(::File::dirname(sub))
-        doc.namespaces = { 'n' => 'http://riddl.org/ns/common-patterns/notifications-producer/1.0' }
-        url = doc.find('string(/n:subscription/@url)') 
-        doc.find('/n:subscription/n:topic').each do |t|
-          t.find('n:event').each do |e|
-            @events["#{t.attributes['id']}/#{e}"] ||= {}
-            if @events["#{t.attributes['id']}/#{e}"].has_key?(key)
-              unless url == "" # has maybe already a websocket in key, so don't overwrite it
-                @events["#{t.attributes['id']}/#{e}"][key] = url
+  def unserialize!(ev={})# {{{
+    if ev.has_key?(:del) 
+      @events.each do |eve,keys|
+        keys.delete_if{|key,val| key == ev[:del]}
+      end  
+      @votes.each do |eve,keys|
+        keys.delete_if{|key,val| key == ev[:del]}
+      end  
+    else
+
+      Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
+        XML::Smart::open(sub) do |doc|
+          key = ::File::basename(::File::dirname(sub))
+          doc.namespaces = { 'n' => 'http://riddl.org/ns/common-patterns/notifications-producer/1.0' }
+          url = doc.find('string(/n:subscription/@url)') 
+          doc.find('/n:subscription/n:topic').each do |t|
+            t.find('n:event').each do |e|
+              @events["#{t.attributes['id']}/#{e}"] ||= {}
+              if @events["#{t.attributes['id']}/#{e}"].has_key?(key)
+                unless url == "" # has maybe already a websocket in key, so don't overwrite it
+                  @events["#{t.attributes['id']}/#{e}"][key] = url
+                end  
+              else
+                @events["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
               end  
-            else
-              @events["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
-            end  
-          end
-          t.find('n:vote').each do |e|
-            @votes["#{t.attributes['id']}/#{e}"] ||= {}
-            if @votes["#{t.attributes['id']}/#{e}"].has_key?(key)
-              unless url == "" # has maybe already a websocket in key, so don't overwrite it
-                @votes["#{t.attributes['id']}/#{e}"][key] = url
+            end
+            t.find('n:vote').each do |e|
+              @votes["#{t.attributes['id']}/#{e}"] ||= {}
+              if @votes["#{t.attributes['id']}/#{e}"].has_key?(key)
+                unless url == "" # has maybe already a websocket in key, so don't overwrite it
+                  @votes["#{t.attributes['id']}/#{e}"][key] = url
+                end  
+              else  
+                @votes["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
               end  
-            else  
-              @votes["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
-            end  
+            end
           end
         end
       end
-    end
+
+    end  
 
     hw = nil
     XML::Smart::open(@directory + 'properties.xml') do |doc|
@@ -141,7 +150,6 @@ class Controller
     if item
       item.each do |key,url|
         ev = build_notification(key,what,content,'event')
-
         if url.class == String
           client = Riddl::Client.new(url)
           client.post ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)}
