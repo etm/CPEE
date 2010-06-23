@@ -30,7 +30,7 @@
       <parameters><!--{{{-->
         <service>
           <serviceoperation>"search_and_book"</serviceoperation>
-          <handler>endpoints[:injection_handler]</handler>
+          <injection_handler>endpoints[:injection_handler]</injection_handler>
         </service>
         <additional_endpoints>
           <selector_service>"select"</selector_service>

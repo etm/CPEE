@@ -43,7 +43,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
 
     params = []
     if parameters.key?(:service) # {{{
-      injection_handler = parameters[:service][1][:handler]
+      injection_handler = parameters[:service][1][:injection_handler]
       cpee = Riddl::Client.new(cpee_instance)
       puts "Subscribe #{injection_handler} at URL #{cpee_instance}notifications/subscriptions"
       status, resp = cpee.resource("notifications/subscriptions").post [
