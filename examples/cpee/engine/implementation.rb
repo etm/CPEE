@@ -166,12 +166,6 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
 end #}}}
 
 class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase #{{{
-  def sync
-    id = ::File::basename(::File::dirname(@notifications)).to_i
-    $controller[id.to_i].unserialize!
-    $controller[id.to_i].notify('properties/handlers/change')
-  end
-            
   def ws_open(socket)
     id = ::File::basename(::File::dirname(@notifications)).to_i
     $controller[id.to_i].add_ws(@key,socket)
@@ -193,7 +187,16 @@ class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase 
     end
   end
 
-  def create; sync; end
-  def delete; sync; end
-  def update; sync; end
+  def create
+    id = ::File::basename(::File::dirname(@notifications)).to_i
+    $controller[id.to_i].unserialize!
+    $controller[id.to_i].notify('properties/handlers/change')
+  end
+  def delete
+    id = ::File::basename(::File::dirname(@notifications)).to_i
+    $controller[id.to_i].unserialize!(:del => @key)
+    $controller[id.to_i].notify('properties/handlers/change')
+  end
+  def update
+  end
 end #}}}
