@@ -170,7 +170,6 @@ class Wee
             refreshcontext handlerwrapper, temp_context
             refreshendpoints handlerwrapper, temp_endpoints
           when :call
-            handlerwrapper.vote_sync_before
             passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
             ret_value = perform_external_call wp, passthrough, handlerwrapper, *parameters
             if block_given? && self.state != :stopping && !Thread.current[:nolongernecessary]

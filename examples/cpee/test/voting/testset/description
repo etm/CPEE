@@ -1,0 +1,11 @@
+<content>
+  activity :a1, :call, :timeout, :method => "post", :parameters => [ { :timeout => 2 } ] do |result|
+    @x += "a1,"
+  end
+  activity :a2, :call, :timeout, :method => "post", :parameters => [ { :timeout => 4 } ] do |result|
+    @x += "a2,"
+  end
+  activity :a3, :call, :timeout, :method => "post", :parameters => [ { :timeout => 4 } ] do |result|
+    @x += "a3,"
+  end
+</content>

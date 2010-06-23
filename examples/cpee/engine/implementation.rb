@@ -25,8 +25,10 @@ class ExCallback < Riddl::Implementation #{{{
   def response
     id = @r[0]  
     callback = @r[2]
-    $controller[id.to_i].callbacks[callback].callback(@p)
-    $controller[id.to_i].callbacks.delete(callback)
+    if $controller[id.to_i].callbacks.has_key?(callback) then
+      $controller[id.to_i].callbacks[callback].callback(@p)
+      $controller[id.to_i].callbacks.delete(callback)
+    end  
   end
 end #}}}
 
