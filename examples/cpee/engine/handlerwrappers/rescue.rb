@@ -43,25 +43,25 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
 
     params = []
     if parameters.key?(:service) # {{{
-      injection_handler = parameters[:service][1][:injection_handler]
+      injection_handler_uri = parameters[:service][1][:injection_handler]
+      puts "Subscribe #{injection_handler_uri} at URL #{cpee_instance}notifications/subscriptions for position #{@handler_position}"
+      # Giv postion to injection-handler
+      injection_handler = Riddl::Client.new(injection_handler_uri)
+      status, resp = injection_handler.post [Riddl::Parameter::Simple.new("position", @handler_position)] # here could be consumer, producer secrets
+      puts resp.inspect
+      res_id = resp.value('id')
+      raise "Subscription to injection-handler at #{injection_handler_uri}/#{res_id} failed with status #{status}" until status == 200
+      @handler_returnValue = resp.value('id')
+      # Subscribe Injection-Handler/{id} to syncing_after
       cpee = Riddl::Client.new(cpee_instance)
-      puts "Subscribe #{injection_handler} at URL #{cpee_instance}notifications/subscriptions"
       status, resp = cpee.resource("notifications/subscriptions").post [
-        Riddl::Parameter::Simple.new("url", injection_handler),
+        Riddl::Parameter::Simple.new("url", "#{injection_handler_uri}/#{res_id}"),
         Riddl::Parameter::Simple.new("topic", "running"),
         Riddl::Parameter::Simple.new("votes", "syncing_after")
       ]
-      raise "'Subscribtion of #{injection_handler} at #{cpee_instance} failed with status: #{status}'" if status != 200
-      puts "== performing a call to the injection service (#{injection_handler})"
+      raise "'Subscribtion of #{injection_handler_uri} at #{cpee_instance} failed with status: #{status}'" if status != 200
+      puts "== Finished: subscription at #{injection_handler_uri}/#{res_id} done"
       raise Wee::Signal::SkipManipulate
-      @handler_returnValue = resp
-=begin      
-      status, resp = Riddl::Client.new(injection_service).post [Riddl::Parameter::Simple.new("position", @handler_position),
-                                                                Riddl::Parameter::Simple.new("cpee", cpee_instance),
-                                                                Riddl::Parameter::Simple.new("rescue", @handler_endpoint)]
-      raise "'Injection at #{injection_service} failed with status: #{status}'" if status != 200
-      raise "'Injection in progress'" if status == 200
-=end
     end # }}}
     if parameters.key?(:group)# {{{
       (parameters[:group] || {}).each do |h|
