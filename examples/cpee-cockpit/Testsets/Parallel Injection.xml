@@ -3,50 +3,50 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <title>Robin Hood</title>
-    <date>2010-06-20</date>
-    <selected_title/>
-    <starting_time/>
-    <selected_cinema/>
-    <hall/>
-    <zip>1100</zip>
-    <reservation_number/>
+    <wait>3</wait>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasReal</services>
-    <injection>http://localhost:9290/injection</injection>
-    <select>http://localhost:9290/select/random</select>
+    <services>http://localhost:9290/groups/Interface</services>
+    <injection>http://localhost:9290/injection/handler</injection>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="a01" endpoint="services">
-      <constraints>
-        <group connector="and">
-          <constraint xpath="adress/city" comparator="==" value="Vienna"/>
-          <constraint xpath="adress/zip" comparator="&gt;" variable="zip"/>
-        </group>
-        <constraint xpath="adress/zip" comparator="&lt;" value="1900"/>
-      </constraints>
-      <parameters><!--{{{-->
-        <service>
-          <serviceoperation>"search_and_book"</serviceoperation>
-          <injection>endpoints[:injection]</injection>
-        </service>
-        <additional_endpoints>
-          <selector_service>"select"</selector_service>
-        </additional_endpoints>
-        <parameters>
-          <title>@title</title>
-          <date>@date</date>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">
-        @reservation_number = result[:reservation_id]
-        @starting_time = result[:time]
-        @selected_title = result[:movie_title]
-        @hall = result[:hall]
-        @selected_cinema = CGI::unescapeHTML("#{properties.value(:perform_book)[0].value(:name)}\n#{properties.value(:perform_book)[0].value(:street)}\n#{properties.value(:perform_book)[0].value(:zip)} #{properties.value(:perform_book)[0].value(:city)}")
-      </manipulate>
-    </call>  
+    <parallel>
+      <parallel_branch>
+        <call id="a01" endpoint="services">
+          <parameters><!--{{{--> 
+            <service>
+              <serviceoperation>"op1"</serviceoperation>
+              <injection_handler>endpoints[:injection]</injection_handler>
+            </service>
+            <parameters>
+              <op1>@wait</op1>
+            </parameters>
+          </parameters><!--}}}-->
+          <manipulate output="result">
+            @wait -= 1
+          </manipulate>
+        </call> 
+      </parallel_branch>
+      <parallel_branch>
+        <manipulate id="something">
+          @wait = 2
+        </manipulate>
+        <call id="a02" endpoint="services">
+          <parameters><!--{{{--> 
+            <service>
+              <serviceoperation>"op2"</serviceoperation>
+              <injection_handler>endpoints[:injection]</injection_handler>
+            </service>
+            <parameters>
+              <op2>@wait</op2>
+            </parameters>
+          </parameters><!--}}}-->
+          <manipulate output="result">
+            @wait -= 1
+          </manipulate>
+        </call> 
+      </parallel_branch>
+    </parallel>
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">

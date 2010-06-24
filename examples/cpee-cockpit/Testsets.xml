@@ -8,5 +8,5 @@
   <testset>Linear</testset>
   <testset>Endpoints</testset>
   <testset>Cinemas</testset>
-  <testset>RESCUE</testset>
+  <testset>Parallel Injection</testset>
 </testsets>
