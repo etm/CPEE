@@ -278,23 +278,23 @@ if (event == "activity_done")
 } // }}}
 
 function monitor_instance_vote_add(notification) {// {{{
-if (save_state == "stopping") return;
-var parts = YAML.eval(notification);
-var ctv = $("#votes");
-ctv.append("<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\");'>vote to continue</button></td></tr>");
-format_visual_add(parts.activity,"vote")
+  if (save_state == "stopping") return;
+  var parts = YAML.eval(notification);
+  var ctv = $("#votes");
+  ctv.append("<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>vote to continue</button><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"false\");'>vote to stop</button></td></td></tr>");
+  format_visual_add(parts.activity,"vote")
 }// }}}
 
-function monitor_instance_vote_remove(activity,callback) {//{{{
-var url = $("input[name=instance-url]").val();
-$.ajax({
-  type: "PUT", 
-  url: url + "/callbacks/" + callback,
-  data: ({'continue': 'true'}),
-  error: report_failure
-});
-format_visual_remove(activity,"vote");
-$('#vote_to_continue-' + activity + '-' + callback).remove();
+function monitor_instance_vote_remove(activity,callback,value) {//{{{
+  var url = $("input[name=instance-url]").val();
+  $.ajax({
+    type: "PUT", 
+    url: url + "/callbacks/" + callback,
+    data: ({'continue': value}),
+    error: report_failure
+  });
+  format_visual_remove(activity,"vote");
+  $('#vote_to_continue-' + activity + '-' + callback).remove();
 }//}}}
 
 function start_instance() {// {{{
