@@ -29,7 +29,7 @@
       </parallel_branch>
       <parallel_branch>
         <manipulate id="something">
-          @wait = 2
+          @wait += 1
         </manipulate>
         <call id="a02" endpoint="services">
           <parameters><!--{{{--> 
