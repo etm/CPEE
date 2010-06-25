@@ -43,6 +43,10 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
 
     params = []
     if parameters.key?(:service) # {{{
+# Just fir testing
+raise Wee::Signal::SkipManipulate unless parameters[:service].length != 0
+# Just fir testing
+
       injection_handler_uri = parameters[:service][1][:injection_handler]
       puts "Subscribe #{injection_handler_uri} at URL #{cpee_instance}notifications/subscriptions for position #{@handler_position}"
       # Giv postion to injection-handler
