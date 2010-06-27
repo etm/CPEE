@@ -9,5 +9,6 @@
   <testset>Endpoints</testset>
   <testset>Cinemas</testset>
   <testset>Parallel Injection</testset>
+  <testset>Loop Injection</testset>
   <testset>Wrong Positions</testset>
 </testsets>

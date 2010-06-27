@@ -39,7 +39,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     pp "Endpoint: #{@handler_endpoint}"
     pp "Position: #{@handler_position}"
     pp 'Parameters:'
-    pp parameters.to_yaml
+#    pp parameters.to_yaml
 
     params = []
     if parameters.key?(:service) # {{{
@@ -49,22 +49,21 @@ raise Wee::Signal::SkipManipulate unless parameters[:service].length != 0
 
       injection_handler_uri = parameters[:service][1][:injection_handler]
       puts "Subscribe #{injection_handler_uri} at URL #{cpee_instance}notifications/subscriptions for position #{@handler_position}"
-      # Giv postion to injection-handler
-      injection_handler = Riddl::Client.new(injection_handler_uri)
-      status, resp = injection_handler.post [Riddl::Parameter::Simple.new("position", @handler_position)] # here could be consumer, producer secrets
-      puts resp.inspect
-      res_id = resp.value('id')
-      raise "Subscription to injection-handler at #{injection_handler_uri}/#{res_id} failed with status #{status}" until status == 200
-      @handler_returnValue = resp.value('id')
-      # Subscribe Injection-Handler/{id} to syncing_after
+      # Subscribe Injection-Handler to syncing_after
       cpee = Riddl::Client.new(cpee_instance)
       status, resp = cpee.resource("notifications/subscriptions").post [
-        Riddl::Parameter::Simple.new("url", "#{injection_handler_uri}/#{res_id}"),
+        Riddl::Parameter::Simple.new("url", "#{injection_handler_uri}"),
         Riddl::Parameter::Simple.new("topic", "running"),
         Riddl::Parameter::Simple.new("votes", "syncing_after")
       ]
-      raise "'Subscribtion of #{injection_handler_uri} at #{cpee_instance} failed with status: #{status}'" if status != 200
-      puts "== Finished: subscription at #{injection_handler_uri}/#{res_id} done"
+      raise "Subscribtion of #{injection_handler_uri} at #{cpee_instance} failed with status: #{status}" unless status == 200
+      # Give postion to injection-handler
+      puts resp.inspect
+      @handler_returnValue = resp.value('key')
+      injection_handler = Riddl::Client.new(injection_handler_uri)
+      status, resp = injection_handler.post [Riddl::Parameter::Simple.new("notification-key", resp.value('key'))] # here could be consumer, producer secrets
+      raise "Subscription to injection-handler at #{injection_handler_uri} failed with status #{status}" unless status == 200
+      puts "== Finished: subscription at #{injection_handler_uri} done"
       raise Wee::Signal::SkipManipulate
     end # }}}
     if parameters.key?(:group)# {{{
