@@ -50,17 +50,13 @@ class Wee
     end
 
     def method_missing(name,*args)
-      temp = nil
       if args.empty? && @__wee_values.has_key?(name)
         @__wee_values[name] 
         #TODO mark dirty
-      elsif @__wee_values.keys.find{|f| temp = f.to_s; temp == name.to_s[0..(temp.length-1)] }
-        op = name.to_s[temp.length..-1]
-        case op
-          when "=":
-            @__wee_what << temp.to_sym
-            @__wee_values[temp.to_sym] = args[0]
-        end    
+      elsif name.to_s[-1..-1] == "="
+        temp = name.to_s[0..-2]
+        @__wee_what << temp.to_sym
+        @__wee_values[temp.to_sym] = args[0]
       else
         super
       end
