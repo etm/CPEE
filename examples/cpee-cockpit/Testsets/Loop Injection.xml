@@ -14,7 +14,7 @@
   <description xmlns="http://cpee.org/ns/description/1.0">
     <manipulate id="placeholder">
     </manipulate>
-    <loop post_test="@outer != 0">
+    <loop post_test="context.outer != 0">
       <call id="a01" endpoint="services">
         <parameters>
           <service>
@@ -26,10 +26,10 @@
           </parameters>
         </parameters>
         <manipulate output="result">
-          @count += 1
+          context.count += 1
         </manipulate>
       </call> 
-      <loop pre_test="@inner != 0">
+      <loop pre_test="context.inner != 0">
         <call id="a02" endpoint="services">
           <parameters>
             <service>
@@ -41,15 +41,15 @@
             </parameters>
           </parameters>
           <manipulate output="result">
-            @count += 1
+            context.count += 1
           </manipulate>
         </call> 
         <manipulate id="reduce_inner">
-          @inner -= 1
+          context.inner -= 1
         </manipulate>
       </loop>
       <manipulate id="reduce_outer">
-        @outer -= 1
+        context.outer -= 1
       </manipulate>
     </loop>
   </description>

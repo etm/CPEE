@@ -16,15 +16,15 @@
           <parameters><!--{{{--> 
             <service/>
             <parameters>
-              <op1>@wait</op1>
+              <op1>context.wait</op1>
             </parameters>
           </parameters><!--}}}-->
           <manipulate output="result">
-            @wait -= 1
+            context.wait -= 1
           </manipulate>
         </call> 
         <manipulate id="b1_a02">
-          @wait += 1
+          context.wait += 1
         </manipulate>
         <parallel>
           <parallel_branch>
@@ -32,26 +32,26 @@
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>@wait</op1>
+                  <op1>context.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                @wait -= 1
+                context.wait -= 1
               </manipulate>
             </call> 
             <call id="b1_a04" endpoint="services">
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>@wait</op1>
+                  <op1>context.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                @wait -= 1
+                context.wait -= 1
               </manipulate>
             </call> 
             <manipulate id="b1_a05">
-              @wait += 1
+              context.wait += 1
             </manipulate>
           </parallel_branch>
           <parallel_branch>
@@ -59,25 +59,25 @@
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>@wait</op1>
+                  <op1>context.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                @wait -= 1
+                context.wait -= 1
               </manipulate>
             </call> 
             <manipulate id="b1_a07">
-              @wait += 1
+              context.wait += 1
             </manipulate>
             <call id="b1_a08" endpoint="services">
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>@wait</op1>
+                  <op1>context.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                @wait -= 1
+                context.wait -= 1
               </manipulate>
             </call> 
           </parallel_branch>
@@ -88,15 +88,15 @@
           <parameters><!--{{{--> 
             <service/>
             <parameters>
-              <op1>@wait</op1>
+              <op1>context.wait</op1>
             </parameters>
           </parameters><!--}}}-->
           <manipulate output="result">
-            @wait -= 1
+            context.wait -= 1
           </manipulate>
         </call> 
         <manipulate id="b2_a02">
-          @wait += 1
+          context.wait += 1
         </manipulate>
         <parallel>
           <parallel_branch>
@@ -104,26 +104,26 @@
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>@wait</op1>
+                  <op1>context.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                @wait -= 1
+                context.wait -= 1
               </manipulate>
             </call> 
             <call id="b2_a04" endpoint="services">
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>@wait</op1>
+                  <op1>context.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                @wait -= 1
+                context.wait -= 1
               </manipulate>
             </call> 
             <manipulate id="b2_a05">
-              @wait += 1
+              context.wait += 1
             </manipulate>
           </parallel_branch>
           <parallel_branch>
@@ -131,25 +131,25 @@
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>@wait</op1>
+                  <op1>context.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                @wait -= 1
+                context.wait -= 1
               </manipulate>
             </call> 
             <manipulate id="b2_a07">
-              @wait += 1
+              context.wait += 1
             </manipulate>
             <call id="b2_a08" endpoint="services">
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>@wait</op1>
+                  <op1>context.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                @wait -= 1
+                context.wait -= 1
               </manipulate>
             </call> 
           </parallel_branch>

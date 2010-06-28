@@ -19,17 +19,17 @@
               <injection_handler>endpoints[:injection]</injection_handler>
             </service>
             <parameters>
-              <op1>@wait</op1>
+              <op1>context.wait</op1>
             </parameters>
           </parameters><!--}}}-->
           <manipulate output="result">
-            @wait -= 1
+            context.wait -= 1
           </manipulate>
         </call> 
       </parallel_branch>
       <parallel_branch>
         <manipulate id="something">
-          @wait += 1
+          context.wait += 1
         </manipulate>
         <call id="a02" endpoint="services">
           <parameters><!--{{{--> 
@@ -38,11 +38,11 @@
               <injection_handler>endpoints[:injection]</injection_handler>
             </service>
             <parameters>
-              <op2>@wait</op2>
+              <op2>context.wait</op2>
             </parameters>
           </parameters><!--}}}-->
           <manipulate output="result">
-            @wait -= 1
+            context.wait -= 1
           </manipulate>
         </call> 
       </parallel_branch>

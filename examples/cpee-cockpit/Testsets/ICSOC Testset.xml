@@ -11,7 +11,7 @@
   <description xmlns="http://cpee.org/ns/description/1.0">
     <parallel>
       <parallel_branch>
-        <loop pre_test='@feedback'>
+        <loop pre_test='context.feedback'>
           <call id="design" endpoint="timeout">
               <parameters><!--{{{-->
               <method>post</method>
@@ -39,7 +39,7 @@
         </loop>
       </parallel_branch>
       <parallel_branch>
-        <loop pre_test='@feedback'>
+        <loop pre_test='context.feedback'>
           <call id="prepare" endpoint="timeout">
               <parameters><!--{{{-->
               <method>post</method>

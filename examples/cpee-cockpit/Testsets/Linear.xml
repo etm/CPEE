@@ -18,7 +18,7 @@
           <timeout>2</timeout>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate output="result">  @x += "a1,"</manipulate>  
+      <manipulate output="result">  context.x += "a1,"</manipulate>  
     </call>  
     <call id="a2" endpoint="timeout">
       <parameters><!--{{{-->
@@ -27,7 +27,7 @@
           <timeout>4</timeout>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate output="result">  @x += "a2,"</manipulate>  
+      <manipulate output="result">  context.x += "a2,"</manipulate>  
     </call>  
     <call id="a3" endpoint="timeout">
       <parameters><!--{{{-->
@@ -36,7 +36,7 @@
           <timeout>4</timeout>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate output="result">  @x += "a3,"</manipulate>  
+      <manipulate output="result">  context.x += "a3,"</manipulate>  
     </call>  
   </description>
   <transformation>

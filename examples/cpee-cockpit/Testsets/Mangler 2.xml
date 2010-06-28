@@ -21,65 +21,65 @@
       <parameters>
         <method>post</method>
         <parameters>
-          <from>@from</from>
-          <to>@to</to>
-          <persons>@persons</persons>
+          <from>context.from</from>
+          <to>context.to</to>
+          <persons>context.persons</persons>
         </parameters>
       </parameters>
-      <manipulate output="result">  @airline = result.value('id')
-  @costs += result.value('costs').to_f</manipulate>
+      <manipulate output="result">  context.airline = result.value('id')
+  context.costs += result.value('costs').to_f</manipulate>
     </call>
     <parallel>
-      <loop pre_test="@persons > 0">
-        <parallel_branch pass="@persons" local="p">
+      <loop pre_test="context.persons > 0">
+        <parallel_branch pass="context.persons" local="p">
           <call id="a2" lay="p" endpoint="bookHotel">
             <parameters>
               <method>post</method>
               <parameters>
-                <to>@to</to>
+                <to>context.to</to>
               </parameters>
             </parameters>
-            <manipulate output="result">        @hotels &lt;&lt; result.value('id')
-        @costs += result.value('costs').to_f</manipulate>
+            <manipulate output="result">        context.hotels &lt;&lt; result.value('id')
+        context.costs += result.value('costs').to_f</manipulate>
           </call>
         </parallel_branch>
-        <manipulate id="a3">      @persons -= 1</manipulate>  
+        <manipulate id="a3">      context.persons -= 1</manipulate>  
       </loop>  
-      <loop pre_test="@persons > 0">
-        <parallel_branch pass="@persons" local="p">
+      <loop pre_test="context.persons > 0">
+        <parallel_branch pass="context.persons" local="p">
           <call id="a4" lay="p" endpoint="bookHotel">
             <parameters>
               <method>post</method>
               <parameters>
-                <to>@to</to>
+                <to>context.to</to>
               </parameters>
             </parameters>
-            <manipulate output="result">        @hotels &lt;&lt; result.value('id')
-        @costs += result.value('costs').to_f</manipulate>
+            <manipulate output="result">        context.hotels &lt;&lt; result.value('id')
+        context.costs += result.value('costs').to_f</manipulate>
           </call>
         </parallel_branch>
-        <parallel_branch pass="@persons" local="p">
+        <parallel_branch pass="context.persons" local="p">
           <call id="a5" lay="p" endpoint="bookHotel">
             <parameters>
               <method>post</method>
               <parameters>
-                <to>@to</to>
+                <to>context.to</to>
               </parameters>
             </parameters>
-            <manipulate output="result">        @hotels &lt;&lt; result.value('id')
-        @costs += result.value('costs').to_f</manipulate>
+            <manipulate output="result">        context.hotels &lt;&lt; result.value('id')
+        context.costs += result.value('costs').to_f</manipulate>
           </call>
         </parallel_branch>
-        <manipulate id="a6">      @persons -= 1</manipulate>  
+        <manipulate id="a6">      context.persons -= 1</manipulate>  
       </loop>  
     </parallel>  
     <choose>
-      <alternative condition="@costs > 700">
+      <alternative condition="context.costs > 700">
         <call id="a7" endpoint="approve">
           <parameters>
             <method>post</method>
             <parameters>
-              <costs>@costs</costs>
+              <costs>context.costs</costs>
             </parameters>
           </parameters>
         </call>  

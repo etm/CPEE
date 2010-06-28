@@ -50,13 +50,13 @@ class Controller
       
       node = doc.find("/p:properties/p:context-variables").first
       node.children.delete_all!
-      @instance.context.each do |k,v|
+      @instance.raw_context.each do |k,v|
         node.add(k.to_s,YAML::dump(v).sub(/^--- /,''))
       end
       
       node = doc.find("/p:properties/p:endpoints").first
       node.children.delete_all!
-      @instance.endpoints.each do |k,v|
+      @instance.raw_endpoints.each do |k,v|
         node.add(k.to_s,v)
       end
 
@@ -110,14 +110,14 @@ class Controller
     XML::Smart::open(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
 
-      @instance.context.clear
+      @instance.raw_context.clear
       doc.find("/p:properties/p:context-variables/p:*").each do |e|
-        @instance.context e.name.to_s.to_sym => YAML::load(e.text) rescue nil
+        @instance.raw_context[e.name.to_s.to_sym] = YAML::load(e.text) rescue nil
       end
 
-      @instance.endpoints.clear
+      @instance.raw_endpoints.clear
       doc.find("/p:properties/p:endpoints/p:*").each do |e|
-        @instance.endpoint e.name.to_s.to_sym => e.text
+        @instance.raw_endpoints[e.name.to_s.to_sym] = e.text
       end
       
       begin
