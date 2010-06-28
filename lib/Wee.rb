@@ -246,6 +246,7 @@ class Wee
       branch_parent = Thread.current
       Thread.current[:branches] << Thread.new(*vars) do |*local|
         Thread.current.abort_on_exception = true
+        Thread.current[:branch_search] = branch_parent[:branch_search] if branch_parent.key?(:branch_search)
         Thread.current[:branch_status] = false
         Thread.current[:branch_parent] = branch_parent
         if branch_parent[:alternative_executed] && branch_parent[:alternative_executed].length > 0
