@@ -19,7 +19,7 @@
         <parameters>
           <service>
             <serviceoperation>"loop"</serviceoperation>
-            <injection_handler>endpoints[:injection]</injection_handler>
+            <injection_handler>endpoints.injection</injection_handler>
           </service>
           <parameters>
             <op1>2</op1>
@@ -34,7 +34,7 @@
           <parameters>
             <service>
               <serviceoperation>"loop"</serviceoperation>
-              <injection_handler>endpoints[:injection]</injection_handler>
+              <injection_handler>endpoints.injection</injection_handler>
             </service>
             <parameters>
               <op1>2</op1>

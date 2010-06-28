@@ -13,9 +13,9 @@
   <description xmlns="http://cpee.org/ns/description/1.0">
     <manipulate id="enpoints">
       endpoint "a_new_one" => "new Endpoint"
-      endpoints[:ep1] = "services changed"
-      endpoint "copy_of_ep1" => endpoints[:ep1]
-      context.context_stores_endpoint = endpoints[:ep1]
+      endpoints.ep1 = "services changed"
+      endpoint "copy_of_ep1" => endpoints.ep1
+      context.context_stores_endpoint = endpoints.ep1
     </manipulate>
     <manipulate id="context">
       context "a_new_one" => "new Context"

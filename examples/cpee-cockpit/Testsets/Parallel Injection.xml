@@ -16,7 +16,7 @@
           <parameters><!--{{{--> 
             <service>
               <serviceoperation>"op1"</serviceoperation>
-              <injection_handler>endpoints[:injection]</injection_handler>
+              <injection_handler>endpoints.injection</injection_handler>
             </service>
             <parameters>
               <op1>context.wait</op1>
@@ -35,7 +35,7 @@
           <parameters><!--{{{--> 
             <service>
               <serviceoperation>"op2"</serviceoperation>
-              <injection_handler>endpoints[:injection]</injection_handler>
+              <injection_handler>endpoints.injection</injection_handler>
             </service>
             <parameters>
               <op2>context.wait</op2>

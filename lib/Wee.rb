@@ -549,7 +549,7 @@ class Wee
           blk = Proc.new do
             begin 
               instance_eval(@__wee_wfsource)
-            rescue SyntaxError => err
+            rescue => err
               self.state = :stopping
               handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
               handlerwrapper.inform_syntax_error(err)
@@ -561,7 +561,7 @@ class Wee
             self.state = :running
             begin 
               instance_eval(&blk)
-            rescue SyntaxError => err
+            rescue => err
               self.state = :stopping
               handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
               handlerwrapper.inform_syntax_error(err)
