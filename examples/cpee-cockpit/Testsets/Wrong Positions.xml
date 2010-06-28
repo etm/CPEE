@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <testset>
   <positions/>
-  <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <context-variables>
     <wait>3</wait>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/Interface</services>
+    <services>http://www.pri.univie.ac.at/~mangler/services/timeout.php</services>
     <injection>http://localhost:9290/injection/handler</injection>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">

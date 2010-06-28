@@ -80,8 +80,7 @@ class Wee
   end  # }}}
 
   def initialize(*args)# {{{
-    @__wee_search_positions = @__wee_search_positions_original = {}
-    @__wee_search = false
+    @__wee_search_positions = {}
     @__wee_positions = Array.new
     @__wee_main = nil
     @__wee_context ||= WatchHash.new(self)
@@ -148,7 +147,8 @@ class Wee
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters, &blk)# {{{
       position, lay = position_test position
-      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || is_in_search_mode(position)
+      sm = is_in_search_mode(position)
+      return if self.state == :stopping || self.state == :stopped || Thread.current[:nolongernecessary] || sm
 
       Thread.current[:continue] = Continue.new
       begin
@@ -246,8 +246,8 @@ class Wee
       branch_parent = Thread.current
       Thread.current[:branches] << Thread.new(*vars) do |*local|
         Thread.current.abort_on_exception = true
-        Thread.current[:branch_search] = @__wee_search
         Thread.current[:branch_status] = false
+        Thread.current[:branch_parent] = branch_parent
         if branch_parent[:alternative_executed] && branch_parent[:alternative_executed].length > 0
           Thread.current[:alternative_executed] = [branch_parent[:alternative_executed].last]
         end
@@ -366,17 +366,19 @@ class Wee
     end# }}}
 
     def is_in_search_mode(position = nil)# {{{
-      # set semaphore to avoid conflicts if @__wee_search is changed by another thread
-      Mutex.new.synchronize do
-        branch = Thread.current
-        if position && @__wee_search_positions[position] # matching searchpos => start execution from here
-          searchpos = @__wee_search_positions[position]
+      branch = Thread.current
+      return false if @__wee_search_positions.empty? || branch[:branch_search] == false
+
+      if position && @__wee_search_positions.include?(position) # matching searchpos => start execution from here
+        branch[:branch_search] = false
+        while branch.key?(:branch_parent)
+          branch = branch[:branch_parent]
           branch[:branch_search] = false
-          @__wee_search = false
-          return searchpos.detail == :after
         end
-        return branch[:branch_search] || @__wee_search # is activity part of a branch and in search mode?
-      end
+        @__wee_search_positions[position].detail == :after
+      else  
+        branch[:branch_search] = true
+      end  
     end# }}}
     def perform_external_call(wp, passthrough, handlerwrapper, *parameters)# {{{
       params = { }
@@ -426,7 +428,6 @@ class Wee
 
     def state=(newState)# {{{
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
-      self.search @__wee_search_positions_original
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
       @__wee_state = newState
       handlerwrapper.inform_state_change @__wee_state
@@ -475,24 +476,20 @@ class Wee
     end# }}}
 
     # Set search positions
-    def search(new_wee_search)# {{{
+    # set new_wee_search to a boolean (or anything else) to start the process from beginning (reset serach positions)
+    def search(new_wee_search=false)# {{{
       @__wee_search_positions = {}
-      @__wee_search_positions_original = []
 
       new_wee_search = [new_wee_search] if new_wee_search.is_a?(Position)
   
-      if(new_wee_search == false || new_wee_search.empty?)
-        @__wee_search_original = false
+      if !new_wee_search.is_a?(Array) || new_wee_search.empty?
+        false
       else  
-        @__wee_search_original = true
-        if new_wee_search.is_a?(Array)
-          @__wee_search_positions_original = new_wee_search
-        else
-          @__wee_search_positions_original = [new_wee_search]
-        end
-        @__wee_search_positions_original.each { |search_position| @__wee_search_positions[search_position.position] = search_position } if @__wee_search_positions_original.is_a?(Array)
+        new_wee_search.each do |search_position| 
+          @__wee_search_positions[search_position.position] = search_position
+        end  
+        true
       end
-      @__wee_search = @__wee_search_original
     end# }}}
 
     # get/set/clean context

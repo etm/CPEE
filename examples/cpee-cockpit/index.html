@@ -9,10 +9,16 @@
     <script type="text/javascript" src="JS/helpers/printf.js"></script>
     <script type="text/javascript" src="JS/helpers/strftime-min.js"></script>
     <script type="text/javascript" src="JS/helpers/yaml.js"></script>
+    <script type="text/javascript" src="JS/helpers/browserdetect.js"></script>
     <script type="text/javascript" src="JS/graph.js"></script>
     <script type="text/javascript" src="JS/main.js"></script>
   </head>
   <body>
+    <script type="text/javascript">
+      if (!(BrowserDetect.browser == "Mozilla" || BrowserDetect.browser == "Firefox") && !BrowserDetect.version == '3.9') {
+        alert("Download");
+      }  
+    </script>
     <div class="section">
       <h1>CPEE Instance</h1>
       <div id="areainstance">

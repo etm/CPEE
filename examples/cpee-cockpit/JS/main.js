@@ -539,7 +539,6 @@ function sym_click(node) { // {{{
   var table = $('#tabledetails');
   table.empty();
   table.append('<tr><td><strong>Element:</strong></td><td class="long">' + node.nodeName + '</td></tr>');
-  console.log(node.nodeName);
   switch(node.nodeName) {
     case 'call':
       table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
