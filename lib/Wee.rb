@@ -83,8 +83,8 @@ class Wee
     @__wee_search_positions = {}
     @__wee_positions = Array.new
     @__wee_main = nil
+    @__wee_main_mutex = Mutex.new
     @__wee_context ||= WatchHash.new(self)
-    @__wee_manipulate = true
     @__wee_endpoints ||= WatchHash.new(self)
       
     initialize_search if methods.include?('initialize_search')
@@ -92,7 +92,6 @@ class Wee
     initialize_endpoints if methods.include?('initialize_endpoints')
     initialize_handlerwrapper if methods.include?('initialize_handlerwrapper')
     
-    @__wee_manipulate = false
     @__wee_handlerwrapper_args = args
     @__wee_state = :ready
   end# }}}
@@ -153,9 +152,6 @@ class Wee
       Thread.current[:continue] = Continue.new
       begin
         handlerwrapper    = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
-        @__wee_manipulate = true
-        temp_context   = WatchHash.new(self); @__wee_context.each{|k,v|temp_context[k]=Marshal.load(Marshal.dump(v))}
-        temp_endpoints = WatchHash.new(self); @__wee_endpoints.each{|k,v|temp_endpoints[k]=Marshal.load(Marshal.dump(v))}
 
         wp = Wee::Position.new(position, :at, nil)
         @__wee_positions << wp
@@ -167,16 +163,12 @@ class Wee
               handlerwrapper.inform_activity_manipulate
               yield *parameters
             end  
-            refreshcontext handlerwrapper, temp_context
-            refreshendpoints handlerwrapper, temp_endpoints
           when :call
             passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
             ret_value = perform_external_call wp, passthrough, handlerwrapper, *parameters
             if block_given? && self.state != :stopping && !Thread.current[:nolongernecessary]
               handlerwrapper.inform_activity_manipulate
               yield ret_value
-              refreshcontext handlerwrapper, temp_context
-              refreshendpoints handlerwrapper, temp_endpoints
             end
         end
         raise Signal::Proceed
@@ -198,8 +190,6 @@ class Wee
         refreshendpoints handlerwrapper, temp_endpoints
         handlerwrapper.inform_activity_failed err
         self.state = :stopping
-      ensure
-        @__wee_manipulate = false
       end
     end# }}}
     
@@ -229,6 +219,7 @@ class Wee
           branch_count = false
         end
       end
+      Thread.current[:branch_run] = true if Thread.current[:branch_search] == false
 
       unless self.state == :stopping || self.state == :stopped
         Thread.current[:branches].each do |thread| 
@@ -246,7 +237,10 @@ class Wee
       branch_parent = Thread.current
       Thread.current[:branches] << Thread.new(*vars) do |*local|
         Thread.current.abort_on_exception = true
-        Thread.current[:branch_search] = branch_parent[:branch_search] if branch_parent.key?(:branch_search)
+        if branch_parent.key?(:branch_run)
+          Thread.current[:branch_search] = false
+          Thread.current[:branch_run] = true
+        end  
         Thread.current[:branch_status] = false
         Thread.current[:branch_parent] = branch_parent
         if branch_parent[:alternative_executed] && branch_parent[:alternative_executed].length > 0
@@ -371,8 +365,9 @@ class Wee
       return false if @__wee_search_positions.empty? || branch[:branch_search] == false
 
       if position && @__wee_search_positions.include?(position) # matching searchpos => start execution from here
-        branch[:branch_search] = false
-        while branch.key?(:branch_parent)
+        branch[:branch_search] = false # execute all activities in THIS branch (thread) after this point
+        branch[:branch_run] = true # new threads (branches) spawned by this branch (thread) should inherit that we no longer want to search
+        while branch.key?(:branch_parent) # also all parent branches should execute activities after this point, additional branches spawned by parent branches should still be in search mode
           branch = branch[:branch_parent]
           branch[:branch_search] = false
         end
@@ -403,28 +398,6 @@ class Wee
         wp.passthrough = handlerwrapper.activity_passthrough_value
       end  
       Thread.current[:nolongernecessary] || (self.state == :stopping || self.state == :stopped) ? nil : handlerwrapper.activity_result_value
-    end# }}}
-    def refreshcontext(handlerwrapper,target)# {{{
-      changed = (target.keys - @__wee_context.keys) + (@__wee_context.keys - target.keys)
-      @__wee_context.each do |varname, value|
-        if value != instance_variable_get("@#{varname}".to_sym) && (instance_variable_get("@#{varname}".to_sym) != target[varname])
-          changed << varname
-          @__wee_context[varname] = instance_variable_get("@#{varname}".to_sym)
-        end
-        if value != target[varname]
-          changed << varname
-        end
-      end
-      changed.uniq!
-      handlerwrapper.inform_context_change(changed) unless changed.empty?
-    end# }}}
-    def refreshendpoints(handlerwrapper,target)# {{{
-      changed = (target.keys - @__wee_endpoints.keys) + (@__wee_endpoints.keys - target.keys)
-      @__wee_endpoints.each do |varname, value|
-        changed << varname if target[varname] != value
-      end
-      changed.uniq!
-      handlerwrapper.inform_endpoints_change(changed) unless changed.empty?
     end# }}}
 
     def state=(newState)# {{{
