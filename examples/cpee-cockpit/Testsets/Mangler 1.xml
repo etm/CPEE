@@ -15,10 +15,10 @@
         <method>post</method>
         <parameters>
           <timeout>4</timeout>
-          <bug>@nasty</bug>
+          <bug>context.nasty</bug>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate output="result">  @x += "done"</manipulate>  
+      <manipulate output="result">  context.x += "done"</manipulate>  
     </call>  
     <parallel wait="2">
       <parallel_branch>
@@ -42,9 +42,9 @@
         </call>  
       </parallel_branch>
     </parallel>  
-    <manipulate id="a3">  @x += '_end'</manipulate>  
+    <manipulate id="a3">  context.x += '_end'</manipulate>  
     <choose>
-      <alternative condition="@x != nil">
+      <alternative condition="context.x != nil">
         <call id="a4_1" endpoint="timeout">
           <parameters><!--{{{-->
             <method>post</method>

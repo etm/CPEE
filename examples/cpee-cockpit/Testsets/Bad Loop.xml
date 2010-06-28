@@ -11,7 +11,7 @@
   <description xmlns="http://cpee.org/ns/description/1.0">
     <parallel>
       <parallel_branch>
-        <loop pre_test='@feedback'>
+        <loop pre_test='context.feedback'>
           <call id="publish" endpoint="timeout">
               <parameters><!--{{{-->
               <method>post</method>
@@ -21,7 +21,7 @@
             </parameters><!--}}}-->
           </call>  
           <choose>
-            <alternative condition="@x != nil">
+            <alternative condition="context.x != nil">
               <call id="a4_1" endpoint="timeout">
                 <parameters><!--{{{-->
                   <method>post</method>
@@ -43,7 +43,7 @@
             </otherwise>
           </choose>
           <choose>
-            <alternative condition="@x != nil">
+            <alternative condition="context.x != nil">
               <call id="a4_1" endpoint="timeout">
                 <parameters><!--{{{-->
                   <method>post</method>
@@ -75,7 +75,7 @@
         </call>  
       </parallel_branch>
       <parallel_branch>
-        <loop pre_test='@feedback'>
+        <loop pre_test='context.feedback'>
           <call id="prepare" endpoint="timeout">
               <parameters><!--{{{-->
               <method>post</method>
@@ -87,7 +87,7 @@
           <parallel>
             <choose>
               <parallel_branch>
-                <alternative condition="@x != nil">
+                <alternative condition="context.x != nil">
                   <call id="a4_1" endpoint="timeout">
                     <parameters><!--{{{-->
                       <method>post</method>
@@ -99,7 +99,7 @@
                 </alternative>
               </parallel_branch>
               <parallel_branch>
-                <alternative condition="@x.nil?">
+                <alternative condition="context.x.nil?">
                   <call id="a4_2" endpoint="timeout">
                     <parameters><!--{{{-->
                       <method>post</method>
@@ -113,7 +113,7 @@
             </choose>
             <choose>
               <parallel_branch>
-                <alternative condition="@x != nil">
+                <alternative condition="context.x != nil">
                   <call id="a4_1" endpoint="timeout">
                     <parameters><!--{{{-->
                       <method>post</method>
@@ -125,7 +125,7 @@
                 </alternative>
               </parallel_branch>
               <parallel_branch>
-                <alternative condition="@x.nil?">
+                <alternative condition="context.x.nil?">
                   <call id="a4_2" endpoint="timeout">
                     <parameters><!--{{{-->
                       <method>post</method>

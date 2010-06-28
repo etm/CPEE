@@ -14,23 +14,74 @@ class Wee
     class Proceed < Exception; end
   end  
 
-  class WatchHash < Hash# {{{
-    def initialize(bndg)
-      @bndg = bndg
-    end  
-    def clear
-      self.each do |k,v|
-        @bndg.send :remove_instance_variable, "@#{k}".to_sym rescue nil
-      end
-      super
+  class ManipulateRealization# {{{
+    def initialize(context,endpoints)
+      @__wee_context = context
+      @__wee_endpoints = endpoints
+      @changed_context = []
+      @changed_endpoints = []
     end
-    def delete(key)
-      if res = super(key)
-        @bndg.send :remove_instance_variable, "@#{k}".to_sym rescue nil
-      end
-      res
+
+    attr_reader :changed_context, :changed_endpoints
+
+    def context
+      ManipulateHash.new(@__wee_context,@changed_context)
+    end
+    def endpoints
+      ManipulateHash.new(@__wee_endpoints,@changed_endpoints)
     end
   end# }}}
+  class ManipulateHash# {{{
+    def initialize(values,what)
+      @__wee_values = values
+      @__wee_what = what
+    end
+
+    def delete(value)
+      if @__wee_values.has_key?(value)
+        @__wee_what << value
+        @__wee_values.delete(value)
+      end  
+    end
+
+    def clear
+      @__wee_what += @__wee_values.keys
+      @__wee_values.clear
+    end
+
+    def method_missing(name,*args)
+      temp = nil
+      if args.empty? && @__wee_values.has_key?(name)
+        @__wee_values[name] 
+        #TODO mark dirty
+      elsif @__wee_values.keys.find{|f| temp = f.to_s; temp == name.to_s[0..(temp.length-1)] }
+        op = name.to_s[temp.length..-1]
+        case op
+          when "=":
+            @__wee_what << temp.to_sym
+            @__wee_values[temp.to_sym] = args[0]
+        end    
+      else
+        super
+      end
+    end
+  end# }}}
+  class ReadHash# {{{
+    def initialize(values)
+      @__wee_values = values
+    end
+
+    def method_missing(name,*args)
+      temp = nil
+      if args.empty? && @__wee_values.has_key?(name)
+        @__wee_values[name] 
+        #TODO dont let user change stuff
+      else
+        super
+      end
+    end
+  end# }}}
+
   class Position# {{{
     attr_reader :position
     attr_accessor :detail, :passthrough
@@ -84,8 +135,8 @@ class Wee
     @__wee_positions = Array.new
     @__wee_main = nil
     @__wee_main_mutex = Mutex.new
-    @__wee_context ||= WatchHash.new(self)
-    @__wee_endpoints ||= WatchHash.new(self)
+    @__wee_context ||= Hash.new
+    @__wee_endpoints ||= Hash.new
       
     initialize_search if methods.include?('initialize_search')
     initialize_context if methods.include?('initialize_context')
@@ -102,19 +153,23 @@ class Wee
     end
   end# }}}
 
-  def self::endpoint(endpoints)# {{{
+  def self::endpoint(new_endpoints)# {{{
     @@__wee_new_endpoints ||= {}
     @@__wee_new_endpoints.merge! endpoints
     define_method :initialize_endpoints do
-      self.endpoint @@__wee_new_endpoints
+      @@__wee_new_endpoints.each do |name,value|
+        @__wee_endpoints[name.to_s.to_sym] = value
+      end
     end
   end# }}}
 
   def self::context(variables)# {{{
-    @@__wee_new_context_variables ||= []
-    @@__wee_new_context_variables << variables
+    @@__wee_new_context_variables ||= {}
+    @@__wee_new_context_variables.merge! endpoints
     define_method :initialize_context do
-      @@__wee_new_context_variables.each { |item| self.context item }
+      @@__wee_new_context_variables.each do |name,value|
+        @__wee_context[name.to_s.to_sym] = value
+      end
     end
   end# }}}
 
@@ -151,7 +206,7 @@ class Wee
 
       Thread.current[:continue] = Continue.new
       begin
-        handlerwrapper    = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
+        handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
 
         wp = Wee::Position.new(position, :at, nil)
         @__wee_positions << wp
@@ -161,14 +216,20 @@ class Wee
           when :manipulate
             if block_given?
               handlerwrapper.inform_activity_manipulate
-              yield *parameters
+              mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints)
+              mr.instance_exec(*parameters,&blk)
+              handlerwrapper.inform_context_change(mr.changed_context.uniq) if mr.changed_context.any?
+              handlerwrapper.inform_endpoints_change(mr.changed_endpoints.uniq) if mr.changed_endpoints.any?
             end  
           when :call
             passthrough = @__wee_search_positions[position] ? @__wee_search_positions[position].passthrough : nil
             ret_value = perform_external_call wp, passthrough, handlerwrapper, *parameters
             if block_given? && self.state != :stopping && !Thread.current[:nolongernecessary]
               handlerwrapper.inform_activity_manipulate
-              yield ret_value
+              mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints)
+              mr.instance_exec(ret_value,&blk)
+              handlerwrapper.inform_context_change(mr.changed_context.uniq) if mr.changed_context.any?
+              handlerwrapper.inform_endpoints_change(mr.changed_endpoints.uniq) if mr.changed_endpoints.any?
             end
         end
         raise Signal::Proceed
@@ -186,8 +247,6 @@ class Wee
       rescue => err
         puts err.message
         puts err.backtrace
-        refreshcontext handlerwrapper, temp_context
-        refreshendpoints handlerwrapper, temp_endpoints
         handlerwrapper.inform_activity_failed err
         self.state = :stopping
       end
@@ -466,38 +525,18 @@ class Wee
       end
     end# }}}
 
-    # get/set/clean context
-    def context(new_context = nil)# {{{
-      if new_context.nil?
-        @__wee_context ? @__wee_context : WatchHash.new(self)
-      else  
-        if new_context.is_a?(Hash) || new_context.is_a?(WatchHash)
-          new_context.each do |name, value|
-            self.instance_variable_set("@#{name}".to_sym,value)
-            @__wee_context[name.to_s.to_sym] = value
-            # TODO signal when changed  outside manipulates
-            # OR do not allow to change outside manipulates
-          end
-        end
-      end  
+    def context# {{{
+      ReadHash.new(@__wee_context)
     end# }}}
-
-    # get/set/clean endpoints
-    def endpoints(new_endpoints = nil)# {{{
-      if new_endpoints.nil?
-        @__wee_endpoints ? @__wee_endpoints : WatchHash.new
-      else
-        if new_endpoints.is_a?(Hash) || new_endpoints.is_a?(WatchHash)
-          new_endpoints.each do |name,value|
-            @__wee_endpoints["#{name}".to_sym] = value
-            # TODO signal when changed  outside manipulates
-            # OR do not allow to change outside manipulates
-          end
-        end
-      end
+    def endpoints# {{{
+      ReadHash.new(@__wee_endpoints)
     end# }}}
-    def endpoint(e)# {{{
-      self.endpoints e
+    
+    def raw_context# {{{
+      @__wee_context
+    end# }}}
+    def raw_endpoints# {{{
+      @__wee_endpoints
     end# }}}
 
     # get/set workflow description
