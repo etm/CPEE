@@ -278,7 +278,7 @@ if (event == "activity_done")
 } // }}}
 
 function monitor_instance_vote_add(notification) {// {{{
-  if (save_state == "stopping") return;
+//  if (save_state == "stopping") return;
   var parts = YAML.eval(notification);
   var ctv = $("#votes");
   ctv.append("<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>vote to continue</button><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"false\");'>vote to stop</button></td></td></tr>");
@@ -685,7 +685,7 @@ function format_visual_clear() {//{{{
   $('.super .vote').each(function(a,b){b.setAttribute("class","vote");});
   $('.super .colon').each(function(a,b){b.setAttribute("class","colon");});
   $('.activities').each(function(a,b){b.setAttribute("class","activities");});
-  $("#votes").empty();
+//  $("#votes").empty();
 }//}}}
 
 function format_code(res,skim,lnums) {// {{{
