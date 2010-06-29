@@ -144,7 +144,7 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
         end
       end
     else
-      $controller[id.to_i].unserialize!
+      $controller[id.to_i].unserialize_context!
     end
     case @property
       when 'handlerwrapper'
@@ -189,12 +189,12 @@ class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase 
 
   def create
     id = ::File::basename(::File::dirname(@notifications)).to_i
-    $controller[id.to_i].unserialize!
+    $controller[id.to_i].unserialize_event!
     $controller[id.to_i].notify('properties/handlers/change')
   end
   def delete
     id = ::File::basename(::File::dirname(@notifications)).to_i
-    $controller[id.to_i].unserialize!(:del => @key)
+    $controller[id.to_i].unserialize_event!(:del => @key)
     $controller[id.to_i].notify('properties/handlers/change')
   end
   def update

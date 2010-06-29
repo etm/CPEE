@@ -14,7 +14,8 @@ class Controller
     @callbacks = {}
     @instance = EmptyWorkflow.new(id,url)
     @positions = []
-    self.unserialize!
+    self.unserialize_event!
+    self.unserialize_context!
   end
 
   attr_reader :callbacks
@@ -64,7 +65,7 @@ class Controller
       node.text = @instance.state
     end 
   end# }}}
-  def unserialize!(ev={})# {{{
+  def unserialize_event!(ev={})# {{{
     if ev.has_key?(:del) 
       @events.each do |eve,keys|
         keys.delete_if{|key,val| key == ev[:del]}
@@ -105,7 +106,9 @@ class Controller
       end
 
     end  
+  end # }}} 
 
+  def unserialize_context!# {{{
     hw = nil
     XML::Smart::open(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }

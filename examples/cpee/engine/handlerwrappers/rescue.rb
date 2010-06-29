@@ -31,24 +31,17 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, parameters)
-    puts '==Handler-started=='*5
     $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters) 
     cpee_instance = "#{@url}/#{@instance}/"
 
-    pp "Endpoint: #{@handler_endpoint}"
-    pp "Position: #{@handler_position}"
-    pp 'Parameters:'
-#    pp parameters.to_yaml
-
     params = []
     if parameters.key?(:service) # {{{
 # Just fir testing
-raise Wee::Signal::SkipManipulate unless parameters[:service].length != 0
+#aise Wee::Signal::SkipManipulate unless parameters[:service].length != 0
 # Just fir testing
 
       injection_handler_uri = parameters[:service][1][:injection_handler]
-      puts "Subscribe #{injection_handler_uri} at URL #{cpee_instance}notifications/subscriptions for position #{@handler_position}"
       # Subscribe Injection-Handler to syncing_after
       cpee = Riddl::Client.new(cpee_instance)
       status, resp = cpee.resource("notifications/subscriptions").post [
@@ -58,12 +51,10 @@ raise Wee::Signal::SkipManipulate unless parameters[:service].length != 0
       ]
       raise "Subscribtion of #{injection_handler_uri} at #{cpee_instance} failed with status: #{status}" unless status == 200
       # Give postion to injection-handler
-      puts resp.inspect
       @handler_returnValue = resp.value('key')
       injection_handler = Riddl::Client.new(injection_handler_uri)
       status, resp = injection_handler.post [Riddl::Parameter::Simple.new("notification-key", resp.value('key'))] # here could be consumer, producer secrets
       raise "Subscription to injection-handler at #{injection_handler_uri} failed with status #{status}" unless status == 200
-      puts "== Finished: subscription at #{injection_handler_uri} done"
       raise Wee::Signal::SkipManipulate
     end # }}}
     if parameters.key?(:group)# {{{
@@ -71,13 +62,11 @@ raise Wee::Signal::SkipManipulate unless parameters[:service].length != 0
         if h.class == Hash
           h.each do |k,v|
             params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
-            puts "=== adding parameter for grouping: #{k} => #{v}"
           end
         end
       end
     end# }}}
     if parameters.key?(:method) #{{{
-      puts "== performing a call to service"
       client = Riddl::Client.new(@handler_endpoint)
 
       (parameters[:parameters] || {}).each do |h|
@@ -85,17 +74,13 @@ raise Wee::Signal::SkipManipulate unless parameters[:service].length != 0
           h.each do |k,v|
             params <<  Riddl::Parameter::Simple.new("#{k}","#{v}", :query) if parameters[:method].downcase == "get"
             params <<  Riddl::Parameter::Simple.new("#{k}","#{v}") if parameters[:method].downcase != "get"
-            puts "=== adding parameter: #{k}"
           end
         end
       end 
       callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
       params << Riddl::Header.new("CPEE-Callback",callback)
       type = parameters[:method]
-      puts "=== Type: #{type}"
-      puts "== Performing call"
       status, result, headers = client.request type => params
-      puts "== Call finished with status: #{status}"
       raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
       if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
         $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
@@ -138,8 +123,6 @@ raise Wee::Signal::SkipManipulate unless parameters[:service].length != 0
       @handler_returnValue = result
     end# }}} 
     @handler_continue.continue
-    puts "ReturnValue: #{@handler_returnValue.inspect}"
-    puts '==Handler finished=='*5
   end
 
   def callback(result)
@@ -200,7 +183,7 @@ raise Wee::Signal::SkipManipulate unless parameters[:service].length != 0
   end
   def inform_state_change(newstate)
     if $controller[@instance]
-      $controller[@instance].serialize!
+      $controller[@instance].serialize! if newstate != :running
       $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate, :activity => @handler_position, :lay => @handler_lay, :endpoint => @handler_endpoint)
     end
   end

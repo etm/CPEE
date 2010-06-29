@@ -51,14 +51,15 @@ class Wee
 
     def method_missing(name,*args)
       if args.empty? && @__wee_values.has_key?(name)
-        @__wee_values[name] 
         #TODO mark dirty
+        @__wee_values[name] 
       elsif name.to_s[-1..-1] == "="
         temp = name.to_s[0..-2]
         @__wee_what << temp.to_sym
         @__wee_values[temp.to_sym] = args[0]
+        nil
       else
-        super
+        nil
       end
     end
   end# }}}
@@ -73,7 +74,7 @@ class Wee
         @__wee_values[name] 
         #TODO dont let user change stuff
       else
-        super
+        nil
       end
     end
   end# }}}
@@ -459,7 +460,9 @@ class Wee
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
       @__wee_state = newState
+
       handlerwrapper.inform_state_change @__wee_state
+
       if newState == :stopping
         recursive_continue(@__wee_main)
         recursive_join(@__wee_main)
@@ -579,12 +582,7 @@ class Wee
     def start# {{{
       return nil if self.state == :running
       @__wee_main = Thread.new do
-        begin
-          __wee_control_flow
-        rescue => err
-          puts err.message
-          puts err.backtrace
-        end
+        __wee_control_flow
       end
     end# }}}
 
