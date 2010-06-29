@@ -575,7 +575,8 @@ function sym_click(node) { // {{{
         table.append('<tr><td><strong>Local&#160;scope:</strong></td><td class="long">' + $(node).attr('local') + '</td></tr>');
       break;
     case 'injected':
-        table.append('<tr><td><strong>Injected by:</strong></td><td class="long">' + $(node).attr('source') + '</td></tr>');
+        table.append('<tr><td><strong>Injected by node:</strong></td><td class="long">' + $(node).attr('source') + '</td></tr>');
+        table.append('<tr><td><strong>Injected operations :</strong></td><td class="long">' + $(node).attr('serviceoperation') + '</td></tr>');
         table.append('<tr><td><strong>Resultobject:</strong></td><td class="long">' + $(node).attr('result') + '</td></tr>');
         table.append('<tr><td><strong>Propertiesobject:</strong></td><td class="long">' + $(node).attr('properties') + '</td></tr>');
         table.append(sym_click_constraint($(node).children('constraints'),'&#160;&#160;&#160;&#160;'));
