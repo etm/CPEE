@@ -579,7 +579,12 @@ class Wee
     def start# {{{
       return nil if self.state == :running
       @__wee_main = Thread.new do
-        __wee_control_flow
+        begin
+          __wee_control_flow
+        rescue => err
+          puts err.message
+          puts err.backtrace
+        end
       end
     end# }}}
 
