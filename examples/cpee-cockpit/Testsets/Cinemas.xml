@@ -4,7 +4,7 @@
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
     <title>Robin Hood</title>
-    <date>2010-06-20</date>
+    <date>2010-07-02</date>
     <selected_title/>
     <starting_time/>
     <selected_cinema/>
@@ -42,7 +42,7 @@
       </parameters><!--}}}-->
       <manipulate output="result">
         context.reservation_number = result[:reservation_id]
-        context.starting_time = result[:time]
+        context.starting_time = result[:starting_time]
         context.selected_title = result[:movie_title]
         context.selected_date = result[:selected_date]
         context.hall = result[:hall]
@@ -268,9 +268,16 @@
             <xsl:text>]</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>"</xsl:text>
-            <xsl:value-of select="text()"/>
-            <xsl:text>"</xsl:text>
+            <xsl:choose>
+              <xsl:when test="@type = 'symbolic'">
+                <xsl:value-of select="text()"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>"</xsl:text>
+                <xsl:value-of select="text()"/>
+                <xsl:text>"</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>  
           </xsl:otherwise>
         </xsl:choose>  
       </xsl:template>

@@ -37,10 +37,6 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
 
     params = []
     if parameters.key?(:service) # {{{
-# Just fir testing
-#aise Wee::Signal::SkipManipulate unless parameters[:service].length != 0
-# Just fir testing
-
       injection_handler_uri = parameters[:service][1][:injection_handler]
       # Subscribe Injection-Handler to syncing_after
       cpee = Riddl::Client.new(cpee_instance)
