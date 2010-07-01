@@ -40,8 +40,10 @@ class Controller
       pos.children.delete_all!
       @positions = @instance.positions
       @instance.positions.each do |p|
+        p p.position
         pos.add("#{p.position}",[p.detail,p.passthrough].compact.join(';'))
       end
+      p "--------------"
     end
   end# }}}
 
