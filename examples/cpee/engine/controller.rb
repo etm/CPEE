@@ -151,18 +151,20 @@ class Controller
   def notify(what,content={})# {{{
     item = @events[what]
     if item
-      item.each do |key,url|
-        ev = build_notification(key,what,content,'event')
-        if url.class == String
-          client = Riddl::Client.new(url)
-          client.post ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)}
-        elsif url.class == Riddl::Utils::Notifications::Producer::WS
-          e = XML::Smart::string("<event/>")
-          ev.each do |k,v|
-            e.root.add(k,v)
-          end
-          url.send(e.to_s)
-        end  
+      item.each do |ke,ur|
+        Thread.new(ke,ur) do |key,url|
+          ev = build_notification(key,what,content,'event')
+          if url.class == String
+            client = Riddl::Client.new(url)
+            client.post ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)}
+          elsif url.class == Riddl::Utils::Notifications::Producer::WS
+            e = XML::Smart::string("<event/>")
+            ev.each do |k,v|
+              e.root.add(k,v)
+            end
+            url.send(e.to_s)
+          end  
+        end
 
       end
     end
