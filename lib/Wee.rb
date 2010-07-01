@@ -206,6 +206,7 @@ class Wee
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
 
         wp = Wee::Position.new(position, :at, nil)
+        @__wee_positions << wp
         handlerwrapper.inform_position_change
 
         handlerwrapper.vote_sync_before
