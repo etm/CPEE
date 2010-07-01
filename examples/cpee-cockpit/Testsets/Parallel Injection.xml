@@ -15,7 +15,7 @@
         <call id="a01" endpoint="services">
           <parameters><!--{{{--> 
             <service>
-              <serviceoperation>"op1"</serviceoperation>
+              <serviceoperation>"parallel"</serviceoperation>
               <injection_handler>endpoints.injection</injection_handler>
             </service>
             <parameters>
