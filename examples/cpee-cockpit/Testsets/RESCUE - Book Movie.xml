@@ -3,7 +3,7 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <title>Robin Hood</title>
+    <title>Dave</title>
     <date>2010-07-06</date>
     <selected_title/>
     <starting_time/>
@@ -41,12 +41,14 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-        context.reservation_number = result[:reservation_id]
-        context.starting_time = result[:starting_time]
-        context.selected_title = result[:movie_title]
-        context.selected_date = result[:selected_date]
-        context.hall = result[:hall]
-        context.selected_cinema = CGI::unescapeHTML("#{properties.value(:perform_book)[0].value(:name)}\n#{properties.value(:perform_book)[0].value(:street)}\n#{properties.value(:perform_book)[0].value(:zip)} #{properties.value(:perform_book)[0].value(:city)}")
+        if result.include?(:reservation_id) # must be changed to status/error-code when they are implemented
+          context.reservation_number = result[:reservation_id]
+          context.starting_time = result[:starting_time]
+          context.selected_title = result[:movie_title]
+          context.selected_date = result[:selected_date]
+          context.hall = result[:hall]
+          context.selected_cinema = CGI::unescapeHTML("#{properties.value(:perform_book)[0].value(:name)}\n#{properties.value(:perform_book)[0].value(:street)}\n#{properties.value(:perform_book)[0].value(:zip)} #{properties.value(:perform_book)[0].value(:city)}")
+        end
       </manipulate>
     </call>  
   </description>
