@@ -8,7 +8,7 @@
   <testset>Bad Loop</testset>
   <testset>Linear</testset>
   <testset>Endpoints</testset>
-  <testset>Cinemas</testset>
-  <testset>Parallel Injection</testset>
-  <testset>Loop Injection</testset>
+  <testset>RESCUE - Parallel Injection</testset>
+  <testset>RESCUE - Loop Injection</testset>
+  <testset>RESCUE - Book Movie</testset>
 </testsets>

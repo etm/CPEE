@@ -4,7 +4,7 @@
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
     <title>Robin Hood</title>
-    <date>2010-07-02</date>
+    <date>2010-07-06</date>
     <selected_title/>
     <starting_time/>
     <selected_cinema/>
@@ -169,7 +169,7 @@
           <xsl:call-template name="print-newline"/>
         </xsl:if>
         <!-- RESCUE -->
-        <xsl:if test="name()='injected'">
+        <xsl:if test="name()='group'">
           <xsl:text># ========== Code was injected via: </xsl:text>
           <xsl:value-of select="@source"/>
           <xsl:text>==========</xsl:text>

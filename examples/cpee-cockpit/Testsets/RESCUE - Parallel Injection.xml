@@ -167,7 +167,7 @@
           <xsl:call-template name="print-newline"/>
         </xsl:if>
         <!-- RESCUE -->
-        <xsl:if test="name()='injected'">
+        <xsl:if test="name()='group'">
           <xsl:text># ========== Code was injected via: </xsl:text>
           <xsl:value-of select="@source"/>
           <xsl:text>==========</xsl:text>

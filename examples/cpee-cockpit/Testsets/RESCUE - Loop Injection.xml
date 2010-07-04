@@ -15,7 +15,7 @@
   <description xmlns="http://cpee.org/ns/description/1.0">
     <manipulate id="placeholder">
     </manipulate>
-    <loop post_test="context.outer &gt; 0">
+    <!--loop post_test="context.outer &gt; 0">
       <call id="outer_call" endpoint="services">
         <parameters>
           <service>
@@ -29,7 +29,7 @@
         <manipulate output="result">
           context.count += 1
         </manipulate>
-      </call> 
+      </call --> 
       <loop pre_test="context.inner != 0">
         <parallel> 
           <parallel_branch>
@@ -80,11 +80,11 @@
           context.inner -= 1
         </manipulate>
       </loop>
-      <manipulate id="reduce_outer">
+      <!--manipulate id="reduce_outer">
         context.outer -= 1
         context.inner = 2
       </manipulate>
-    </loop>
+    </loop -->
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
@@ -205,7 +205,7 @@
           <xsl:call-template name="print-newline"/>
         </xsl:if>
         <!-- RESCUE -->
-        <xsl:if test="name()='injected'">
+        <xsl:if test="name()='group'">
           <xsl:text># ========== Code was injected via: </xsl:text>
           <xsl:value-of select="@source"/>
           <xsl:text>==========</xsl:text>
