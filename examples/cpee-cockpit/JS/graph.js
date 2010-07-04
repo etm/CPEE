@@ -31,12 +31,12 @@ var WFGraph = function(xml, start, container) {
   var analyze = function(parent_element, parent_position, column_shift) { // {{{
     if (parent_element == null) { return {'max_pos':{'col':0,'line':0}}; } // happens when the cockpit is loaded but no description is set
     var ap = (parent_position == null) ? {'line':0,'col':0} : copyPos(parent_position); ap['col']+=column_shift; 
-    if(parent_element.nodeName != "injected") ap['line']++;// AP = actual position
+    if(parent_element.nodeName != "group") ap['line']++;// AP = actual position
     var max_col = ap['col'];
     var max_line = ap['line'];
     var block = null;
     var end_nodes = [];
-    var cf_elements = ['call', 'manipulate', 'parallel', 'parallel_branch', 'choose', 'alternative', 'otherwise', 'critical', 'loop', 'injected'];
+    var cf_elements = ['call', 'manipulate', 'parallel', 'parallel_branch', 'choose', 'alternative', 'otherwise', 'critical', 'loop', 'group'];
     if(parent_position != null && parent_element.nodeName != "parallel" &&  parent_element.nodeName != "choose") end_nodes.push(parent_position);
 
     var xpath = "child::*[";
@@ -76,11 +76,17 @@ var WFGraph = function(xml, start, container) {
           block = analyze(child, ap, 1);
           if(child.nodeName == "critical") drawBlock(ap, block['max_pos']);
           break;
-        case 'injected':
+        case 'group':
           drawSymbol(ap, child, false);
-          block = analyze(child, {'line': ap['line']-1, 'col': ap['col']}, 1);
-          drawBlock( {'line': ap['line']-1, 'col': ap['col']+1}, block['max_pos'], 'injected', child);
-          end_nodes = [];
+          if (child.getAttribute('type') == 'injection') {
+            block = analyze(child, {'line': ap['line']-1, 'col': ap['col']}, 1);
+            drawBlock( {'line': ap['line']-1, 'col': ap['col']+1}, block['max_pos'], 'group', child);
+            end_nodes = [];
+          }
+          if (child.getAttribute('type') == 'loop') {
+            block = analyze(child, {'line': ap['line'], 'col': ap['col']}, 0);
+            drawBlock( {'line': ap['line'], 'col': ap['col']}, block['max_pos'], 'group', child);
+          }
           break;
         case 'alternative':
         case 'otherwise':
@@ -132,6 +138,7 @@ var WFGraph = function(xml, start, container) {
   } // }}} 
 
   var drawConnection = function(start, end, max_line, num_lines) { // {{{
+    if(((end['line']-start['line']) == 0) && ((end['col']-start['col']) == 0)) return; 
     var attrs = {'class': 'ourline', 'marker-end': 'url(#arrow)' };
     var line = document.createElementNS(svgNS, "path");
     for(var attr in attrs)
@@ -252,7 +259,7 @@ var WFGraph = function(xml, start, container) {
       var attrs = {'x':(p1['col'])*column_width-20, 'y':(p1['line'])*row_height-35, 'width':(p2['col']-p1['col']+1)*column_width, 'height':(p2['line']-p1['line'])*row_height, 'class':'block', 'rx':'20', 'ry':'20' }; 
       if(typeof css_class == "string")
         attrs['class'] = css_class;
-      if (attrs['class'] == "injected")
+      if (attrs['class'] == "group")
         block.onclick = function(){ symclick(injected_node); };
       for(var attr in attrs)
         block.setAttribute(attr, attrs[attr]);
