@@ -10,5 +10,6 @@
   <testset>Endpoints</testset>
   <testset>RESCUE - Parallel Injection</testset>
   <testset>RESCUE - Loop Injection</testset>
+  <testset>RESCUE - Loop-Parallel Injection</testset>
   <testset>RESCUE - Book Movie</testset>
 </testsets>

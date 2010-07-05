@@ -576,10 +576,10 @@ function sym_click(node) { // {{{
       break;
     case 'group':
         table.append('<tr><td><strong>Type:</strong></td><td class="long">' + $(node).attr('type') + '</td></tr>');
+        table.append('<tr><td><strong>Source:</strong></td><td class="long">' + $(node).attr('source') + '</td></tr>');
         if(node.getAttribute('type') == 'injection') {
           if ($(node).attr('result')) { table.append('<tr><td><strong>Level:</strong></td><td class="long">Class-Level</td></tr>'); }
           else { table.append('<tr><td><strong>Level:</strong></td><td class="long">Instance-Level</td></tr>'); }
-          table.append('<tr><td><strong>Source:</strong></td><td class="long">' + $(node).attr('source') + '</td></tr>');
           table.append('<tr><td><strong>Operation :</strong></td><td class="long">' + $(node).attr('serviceoperation') + '</td></tr>');
           if ($(node).attr('result')) table.append('<tr><td><strong>Result:</strong></td><td class="long">' + $(node).attr('result') + '</td></tr>');
           table.append('<tr><td><strong>Properties:</strong></td><td class="long">' + $(node).attr('properties') + '</td></tr>');

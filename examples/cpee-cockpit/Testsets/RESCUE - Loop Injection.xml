@@ -4,87 +4,70 @@
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
     <outer>2</outer>
-    <inner>2</inner>
+    <inner>1</inner>
     <count>0</count>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/Interface</services>
+    <services>http://localhost:9290/groups/Interface/Sub1</services>
     <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
     <injection>http://localhost:9290/injection/handler</injection>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <manipulate id="placeholder">
-    </manipulate>
-    <!--loop post_test="context.outer &gt; 0">
-      <call id="outer_call" endpoint="services">
-        <parameters>
-          <service>
-            <serviceoperation>"loop"</serviceoperation>
-            <injection_handler>endpoints.injection</injection_handler>
-          </service>
+    <loop post_test="context.outer &gt; 0">
+        <call id="outer" endpoint="timeout">
           <parameters>
-            <op1>2</op1>
+            <method>post</method>
+            <parameters>
+              <wait type="symbolic">context.count</wait>
+            </parameters>
           </parameters>
-        </parameters>
-        <manipulate output="result">
-          context.count += 1
-        </manipulate>
-      </call --> 
-      <loop pre_test="context.inner != 0">
-        <parallel> 
-          <parallel_branch>
-            <call id="inner_call_b1" endpoint="services">
-              <parameters>
-                <service>
-                  <serviceoperation>"loop"</serviceoperation>
-                  <injection_handler>endpoints.injection</injection_handler>
-                </service>
-                <parameters>
-                  <op1>2</op1>
-                </parameters>
-              </parameters>
-              <manipulate output="result">
-                context.count += 1
-              </manipulate>
-            </call> 
-          </parallel_branch>
-          <parallel_branch>
-            <call id="inner_call_b2_1" endpoint="services">
-              <parameters>
-                <service>
-                  <serviceoperation>"loop"</serviceoperation>
-                  <injection_handler>endpoints.injection</injection_handler>
-                </service>
-                <parameters>
-                  <op1>2</op1>
-                </parameters>
-              </parameters>
-              <manipulate output="result">
-                context.count += 1
-              </manipulate>
-            </call> 
-            <call id="inner_call_b2_2" endpoint="timeout" http-method="post">
-              <parameters>
-                <method>post</method>
-                <parameters>
-                  <timeout>4</timeout>
-                </parameters>
-              </parameters>
-              <manipulate output="result">
-                context.count += 1
-              </manipulate>
-            </call> 
-          </parallel_branch>
-        </parallel>
+        </call>
+      <loop pre_test="context.inner &gt; 0">
+        <call id="inner" endpoint="services">
+          <parameters>
+            <service>
+              <serviceoperation>"simple"</serviceoperation>
+              <injection_handler>endpoints.injection</injection_handler>
+            </service>
+            <parameters>
+              <wait type="symbolic">context.inner</wait>
+            </parameters>
+          </parameters>
+          <manipulate output="result">
+            result.value('simple_class_output').each { |value| context.count += value}
+          </manipulate>
+        </call> 
         <manipulate id="reduce_inner">
           context.inner -= 1
         </manipulate>
+        <call id="native" endpoint="timeout">
+          <parameters>
+            <method>post</method>
+            <parameters>
+              <wait type="symbolic">context.count</wait>
+            </parameters>
+          </parameters>
+        </call>
       </loop>
-      <!--manipulate id="reduce_outer">
+      <manipulate id="reduce_outer">
         context.outer -= 1
         context.inner = 2
       </manipulate>
-    </loop -->
+    </loop>
+    <call id="loop" endpoint="services">
+      <parameters>
+        <service>
+          <serviceoperation>"loop"</serviceoperation>
+          <injection_handler>endpoints.injection</injection_handler>
+        </service>
+        <parameters>
+          <wait type="symbolic">context.inner</wait>
+        </parameters>
+      </parameters>
+      <manipulate output="result">
+        result.value('counted_loop').each { |value| context.count += value}
+      </manipulate>
+    </call> 
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">

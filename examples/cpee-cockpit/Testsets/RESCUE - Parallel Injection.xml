@@ -4,6 +4,8 @@
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
     <wait>3</wait>
+    <complex_out/>
+    <parallel_out/>
   </context-variables>
   <endpoints>
     <services>http://localhost:9290/groups/Interface</services>
@@ -12,37 +14,32 @@
   <description xmlns="http://cpee.org/ns/description/1.0">
     <parallel>
       <parallel_branch>
-        <call id="a01" endpoint="services">
+        <call id="parallel" endpoint="services">
           <parameters><!--{{{--> 
             <service>
               <serviceoperation>"parallel"</serviceoperation>
               <injection_handler>endpoints.injection</injection_handler>
             </service>
             <parameters>
-              <op1>context.wait</op1>
+              <wait>context.wait</wait>
             </parameters>
           </parameters><!--}}}-->
           <manipulate output="result">
-            context.wait -= 1
+            context.parallel_out = result.value('parallel_parallel_output')
           </manipulate>
         </call> 
       </parallel_branch>
       <parallel_branch>
-        <manipulate id="something">
-          context.wait += 1
-        </manipulate>
-        <call id="a02" endpoint="services">
+        <call id="complex" endpoint="services">
           <parameters><!--{{{--> 
             <service>
-              <serviceoperation>"op2"</serviceoperation>
+              <serviceoperation>"complex"</serviceoperation>
               <injection_handler>endpoints.injection</injection_handler>
             </service>
-            <parameters>
-              <op2>context.wait</op2>
-            </parameters>
+            <parameters/>
           </parameters><!--}}}-->
           <manipulate output="result">
-            context.wait -= 1
+            context.complex_out = result.value('parallel_complex_output')
           </manipulate>
         </call> 
       </parallel_branch>
