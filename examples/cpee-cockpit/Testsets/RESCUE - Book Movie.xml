@@ -16,7 +16,7 @@
   <endpoints>
     <services>http://localhost:9290/groups/CinemasReal</services>
     <injection_handler>http://localhost:9290/injection/handler</injection_handler>
-    <select>http://localhost:9290/select/random</select>
+    <select>http://localhost:9290/select/user</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="a01" endpoint="services">

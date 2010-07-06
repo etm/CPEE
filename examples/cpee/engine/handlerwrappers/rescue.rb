@@ -61,6 +61,8 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
           end
         end
       end
+      params <<  Riddl::Parameter::Simple.new('instance', "#{$url}/#{@instance}")
+      params <<  Riddl::Parameter::Simple.new('activity', @Handler_position.to_s)
     end# }}}
     if parameters.key?(:method) #{{{
       client = Riddl::Client.new(@handler_endpoint)
@@ -68,8 +70,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       (parameters[:parameters] || {}).each do |h|
         if h.class == Hash
           h.each do |k,v|
-            params <<  Riddl::Parameter::Simple.new("#{k}","#{v}", :query) if parameters[:method].downcase == "get"
-            params <<  Riddl::Parameter::Simple.new("#{k}","#{v}") if parameters[:method].downcase != "get"
+            params <<  parameters[:method].downcase == "get" ? Riddl::Parameter::Simple.new("#{k}","#{v}", :query) : Riddl::Parameter::Simple.new("#{k}","#{v}")
           end
         end
       end 

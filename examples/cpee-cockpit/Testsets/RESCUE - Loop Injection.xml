@@ -8,7 +8,7 @@
     <count>0</count>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/Interface/Sub1</services>
+    <services>http://localhost:9290/groups/Interface</services>
     <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
     <injection>http://localhost:9290/injection/handler</injection>
   </endpoints>  
