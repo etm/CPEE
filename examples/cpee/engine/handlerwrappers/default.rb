@@ -34,7 +34,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
 
     @handler_returnValue = ''
-    if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
+    if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
       $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
       return
     end
