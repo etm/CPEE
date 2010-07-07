@@ -87,6 +87,9 @@
           <xsl:text>, :call, :</xsl:text>
           <xsl:value-of select="@endpoint"/>
           <xsl:apply-templates select="d:parameters"/>
+          <xsl:if test="@oid">
+            <xsl:text>, :'call-oid' => '</xsl:text><xsl:value-of select="@oid"/><xsl:text>'</xsl:text>
+          </xsl:if>          
           <xsl:apply-templates select="d:manipulate" mode="part-of-call">
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
           </xsl:apply-templates>

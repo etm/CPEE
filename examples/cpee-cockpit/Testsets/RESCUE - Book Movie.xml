@@ -3,7 +3,7 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <title>Shrek</title>
+    <title>Robin Hood</title>
     <date>2010-07-08</date>
     <selected_title/>
     <starting_time/>
@@ -14,7 +14,7 @@
     <reservation_number/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasReal</services>
+    <services>http://localhost:9290/groups/CinemasReal/Soap</services>
     <injection_handler>http://localhost:9290/injection/handler</injection_handler>
     <select>http://localhost:9290/select/user</select>
   </endpoints>  
@@ -27,7 +27,8 @@
         </group>
         <constraint xpath="adress/zip" comparator="&lt;" value="1900"/>
       </constraints>
-      <parameters><!--{{{-->
+      <parameters><!--{{{--> 
+        <info>true</info>
         <service>
           <serviceoperation>"search_and_book"</serviceoperation>
           <injection_handler>endpoints.injection_handler</injection_handler>
@@ -93,6 +94,12 @@
           <xsl:text>, :call, :</xsl:text>
           <xsl:value-of select="@endpoint"/>
           <xsl:apply-templates select="d:parameters"/>
+          <xsl:if test="@oid">
+            <xsl:text>, :'call-oid' => '</xsl:text><xsl:value-of select="@oid"/><xsl:text>'</xsl:text>
+          </xsl:if>
+          <xsl:if test="@templates">
+            <xsl:text>, :'templates' => '</xsl:text><xsl:value-of select="@templates"/><xsl:text>'</xsl:text>
+          </xsl:if>
           <xsl:apply-templates select="d:manipulate" mode="part-of-call">
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
           </xsl:apply-templates>

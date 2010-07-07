@@ -1,5 +1,3 @@
-require 'cgi'
-
 class RescueHash < Hash
   def value(key)
     results = []
@@ -36,6 +34,15 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     cpee_instance = "#{@url}/#{@instance}/"
 
     params = []
+    if parameters.key?(:info) && parameters[:info] == 'true' # {{{
+      parameters[:parameters] = Array.new if (parameters.include?(:parameters) == false) || parameters[:parameters].nil?
+      parameters[:parameters] << {'call-instance-uri' => cpee_instance}
+      parameters[:parameters] << {'call-activity' => @handler_position}
+      parameters[:parameters] << {'call-endpoint' => @handler_endpoint}
+      parameters[:parameters] << {'call-lay' => @handler_lay}
+      parameters[:parameters] << {'call-oid' => parameters[:'call-oid']} if parameters.include?(:'call-oid')
+    end # }}}
+    parameters[:parameters] << {'templates-uri' => parameters[:templates]} if parameters.include?(:templates)
     if parameters.key?(:service) # {{{
       injection_handler_uri = parameters[:service][1][:injection_handler]
       # Subscribe Injection-Handler to syncing_after
@@ -51,41 +58,30 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       injection_handler = Riddl::Client.new(injection_handler_uri)
       status, resp = injection_handler.post [Riddl::Parameter::Simple.new("notification-key", resp.value('key'))] # here could be consumer, producer secrets
       raise "Subscription to injection-handler at #{injection_handler_uri} failed with status #{status}" unless status == 200
-      raise Wee::Signal::SkipManipulate
-    end # }}}
-    if parameters.key?(:group)# {{{
-      (parameters[:group] || {}).each do |h|
-        if h.class == Hash
-          h.each do |k,v|
-            params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
-          end
-        end
-      end
-      params <<  Riddl::Parameter::Simple.new('instance', "#{$url}/#{@instance}")
-      params <<  Riddl::Parameter::Simple.new('activity', @Handler_position.to_s)
-    end# }}}
-    if parameters.key?(:method) #{{{
+      raise Wee::Signal::SkipManipulate # }}}
+    elsif parameters.key?(:method) #{{{
       client = Riddl::Client.new(@handler_endpoint)
 
+      type = parameters[:method]
       (parameters[:parameters] || {}).each do |h|
         if h.class == Hash
           h.each do |k,v|
-            params <<  parameters[:method].downcase == "get" ? Riddl::Parameter::Simple.new("#{k}","#{v}", :query) : Riddl::Parameter::Simple.new("#{k}","#{v}")
+            params <<  (parameters[:method].downcase == 'get' ? Riddl::Parameter::Simple.new("#{k}","#{v}", :query) : Riddl::Parameter::Simple.new("#{k}","#{v}"))
           end
         end
       end 
       callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
       params << Riddl::Header.new("CPEE-Callback",callback)
-      type = parameters[:method]
       status, result, headers = client.request type => params
-      raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
-      if headers["CPEE-Callback"] && headers["CPEE-Callback"] == true
+      p headers
+      raise "Could not perform http-#{type} on URI: #{@handler_endpoint} - Status: #{status}" unless status == 200
+      if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
         $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
+puts "----------------------------------------------------------- REGISTERED CALLBACK"        
         return
       end
-      @handler_returnValue = result
-    end# }}}
-    if  parameters.key?(:soap_operation)# {{{
+      @handler_returnValue = result# }}}
+    elsif parameters.key?(:soap_operation)# {{{
       # Bulding SAOP-Envelope {{{
       wsdl_client = Riddl::Client.new(parameters[:wsdl].split('?')[0])
       params = []
@@ -93,7 +89,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         params << Riddl::Parameter::Simple.new(p.split('=')[0], p.split('=')[1], :query)
       end
       status, resp = wsdl_client.get params
-      raise "Endpoint #{parameters[:wsdl]} doesn't provide a WSDL" if status != 200
+      raise "Endpoint #{parameters[:wsdl]} doesn't provide a WSDL" unless status == 200
       wsdl = XML::Smart.string(resp[0].value.read)
       msg = wsdl.find("//wsdl:portType/wsdl:operation[@name = '#{parameters[:soap_operation]}']/wsdl:input/@message", {"wsdl"=>"http://schemas.xmlsoap.org/wsdl/"}).first
       envelope = XML::Smart.string("<Envelope/>")
