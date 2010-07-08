@@ -210,9 +210,9 @@ svg {
   margin-left: -0.5em;
 }
 
-svg rect.injected {
+svg rect.group {
   fill: Highlight;
-  fill-opacity: 0.5;
+  fill-opacity: 0.2;
 }
 svg .clickable { cursor: pointer; }
 

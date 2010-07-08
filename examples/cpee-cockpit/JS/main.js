@@ -574,12 +574,20 @@ function sym_click(node) { // {{{
       if ($(node).attr('local'))
         table.append('<tr><td><strong>Local&#160;scope:</strong></td><td class="long">' + $(node).attr('local') + '</td></tr>');
       break;
-    case 'injected':
-        table.append('<tr><td><strong>Injected by node:</strong></td><td class="long">' + $(node).attr('source') + '</td></tr>');
-        table.append('<tr><td><strong>Injected operations :</strong></td><td class="long">' + $(node).attr('serviceoperation') + '</td></tr>');
-        table.append('<tr><td><strong>Resultobject:</strong></td><td class="long">' + $(node).attr('result') + '</td></tr>');
-        table.append('<tr><td><strong>Propertiesobject:</strong></td><td class="long">' + $(node).attr('properties') + '</td></tr>');
-        table.append(sym_click_constraint($(node).children('constraints'),'&#160;&#160;&#160;&#160;'));
+    case 'group':
+        table.append('<tr><td><strong>Type:</strong></td><td class="long">' + $(node).attr('type') + '</td></tr>');
+        table.append('<tr><td><strong>Source:</strong></td><td class="long">' + $(node).attr('source') + '</td></tr>');
+        if(node.getAttribute('type') == 'injection') {
+          if ($(node).attr('result')) { table.append('<tr><td><strong>Level:</strong></td><td class="long">Class-Level</td></tr>'); }
+          else { table.append('<tr><td><strong>Level:</strong></td><td class="long">Instance-Level</td></tr>'); }
+          table.append('<tr><td><strong>Operation :</strong></td><td class="long">' + $(node).attr('serviceoperation') + '</td></tr>');
+          if ($(node).attr('result')) table.append('<tr><td><strong>Result:</strong></td><td class="long">' + $(node).attr('result') + '</td></tr>');
+          table.append('<tr><td><strong>Properties:</strong></td><td class="long">' + $(node).attr('properties') + '</td></tr>');
+          table.append(sym_click_constraint($(node).children('constraints'),'&#160;&#160;&#160;&#160;'));
+        }
+        if(node.getAttribute('type') == 'loop') {
+          table.append('<tr><td><strong>Cycle:</strong></td><td class="long">' + $(node).attr('cycle') + '</td></tr>');
+        }
       break;
   }
 } // }}}

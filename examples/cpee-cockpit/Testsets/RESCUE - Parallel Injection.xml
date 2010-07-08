@@ -3,52 +3,47 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <title>Robin Hood</title>
-    <date>2010-07-02</date>
-    <selected_title/>
-    <starting_time/>
-    <selected_cinema/>
-    <selected_date/>
-    <hall/>
-    <zip>1100</zip>
-    <reservation_number/>
+    <wait>3</wait>
+    <complex_out/>
+    <parallel_out/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasReal</services>
-    <injection_handler>http://localhost:9290/injection/handler</injection_handler>
-    <select>http://localhost:9290/select/random</select>
+    <services>http://localhost:9290/groups/Interface</services>
+    <injection>http://localhost:9290/injection/handler</injection>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="a01" endpoint="services">
-      <constraints>
-        <group connector="and">
-          <constraint xpath="adress/city" comparator="==" value="Vienna"/>
-          <constraint xpath="adress/zip" comparator="&gt;" variable="zip"/>
-        </group>
-        <constraint xpath="adress/zip" comparator="&lt;" value="1900"/>
-      </constraints>
-      <parameters><!--{{{-->
-        <service>
-          <serviceoperation>"search_and_book"</serviceoperation>
-          <injection_handler>endpoints.injection_handler</injection_handler>
-        </service>
-        <additional_endpoints>
-          <selector_service>"select"</selector_service>
-        </additional_endpoints>
-        <parameters>
-          <title>context.title</title>
-          <date>context.date</date>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">
-        context.reservation_number = result[:reservation_id]
-        context.starting_time = result[:starting_time]
-        context.selected_title = result[:movie_title]
-        context.selected_date = result[:selected_date]
-        context.hall = result[:hall]
-        context.selected_cinema = CGI::unescapeHTML("#{properties.value(:perform_book)[0].value(:name)}\n#{properties.value(:perform_book)[0].value(:street)}\n#{properties.value(:perform_book)[0].value(:zip)} #{properties.value(:perform_book)[0].value(:city)}")
-      </manipulate>
-    </call>  
+    <parallel>
+      <parallel_branch>
+        <call id="parallel" endpoint="services">
+          <parameters><!--{{{--> 
+            <service>
+              <serviceoperation>"parallel"</serviceoperation>
+              <injection_handler>endpoints.injection</injection_handler>
+            </service>
+            <parameters>
+              <wait>context.wait</wait>
+            </parameters>
+          </parameters><!--}}}-->
+          <manipulate output="result">
+            context.parallel_out = result.value('parallel_parallel_output')
+          </manipulate>
+        </call> 
+      </parallel_branch>
+      <parallel_branch>
+        <call id="complex" endpoint="services">
+          <parameters><!--{{{--> 
+            <service>
+              <serviceoperation>"complex"</serviceoperation>
+              <injection_handler>endpoints.injection</injection_handler>
+            </service>
+            <parameters/>
+          </parameters><!--}}}-->
+          <manipulate output="result">
+            context.complex_out = result.value('parallel_complex_output')
+          </manipulate>
+        </call> 
+      </parallel_branch>
+    </parallel>
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
@@ -91,6 +86,9 @@
           <xsl:text>, :call, :</xsl:text>
           <xsl:value-of select="@endpoint"/>
           <xsl:apply-templates select="d:parameters"/>
+          <xsl:if test="@oid">
+            <xsl:text>, :'call-oid' => '</xsl:text><xsl:value-of select="@oid"/><xsl:text>'</xsl:text>
+          </xsl:if>
           <xsl:apply-templates select="d:manipulate" mode="part-of-call">
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
           </xsl:apply-templates>
@@ -169,7 +167,7 @@
           <xsl:call-template name="print-newline"/>
         </xsl:if>
         <!-- RESCUE -->
-        <xsl:if test="name()='injected'">
+        <xsl:if test="name()='group'">
           <xsl:text># ========== Code was injected via: </xsl:text>
           <xsl:value-of select="@source"/>
           <xsl:text>==========</xsl:text>
@@ -268,16 +266,9 @@
             <xsl:text>]</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:choose>
-              <xsl:when test="@type = 'symbolic'">
-                <xsl:value-of select="text()"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:text>"</xsl:text>
-                <xsl:value-of select="text()"/>
-                <xsl:text>"</xsl:text>
-              </xsl:otherwise>
-            </xsl:choose>  
+            <xsl:text>"</xsl:text>
+            <xsl:value-of select="text()"/>
+            <xsl:text>"</xsl:text>
           </xsl:otherwise>
         </xsl:choose>  
       </xsl:template>

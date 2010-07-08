@@ -3,56 +3,67 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <outer>2</outer>
-    <inner>2</inner>
-    <count>0</count>
+    <title>'Shrek'</title>
+    <date>2010-07-08</date>
+    <selected_title/>
+    <starting_time/>
+    <selected_cinema/>
+    <selected_date/>
+    <hall/>
+    <zip>1100</zip>
+    <city>'Vienna'</city>
+    <reservation_number/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/Interface</services>
-    <injection>http://localhost:9290/injection/handler</injection>
+    <services>http://localhost:9290/groups/CinemasReal</services>
+    <injection_handler>http://localhost:9290/injection/handler</injection_handler>
+    <select>http://localhost:9290/select/user</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <manipulate id="placeholder">
-    </manipulate>
-    <loop post_test="context.outer &gt; 0">
-      <call id="outer_call" endpoint="services">
-        <parameters>
-          <service>
-            <serviceoperation>"loop"</serviceoperation>
-            <injection_handler>endpoints.injection</injection_handler>
-          </service>
-          <parameters>
-            <op1>2</op1>
-          </parameters>
-        </parameters>
-        <manipulate output="result">
-          context.count += 1
-        </manipulate>
-      </call> 
-      <loop pre_test="context.inner != 0">
-        <call id="inner_call" endpoint="services">
-          <parameters>
-            <service>
-              <serviceoperation>"loop"</serviceoperation>
-              <injection_handler>endpoints.injection</injection_handler>
-            </service>
-            <parameters>
-              <op1>2</op1>
-            </parameters>
-          </parameters>
-          <manipulate output="result">
-            context.count += 1
-          </manipulate>
-        </call> 
-        <manipulate id="reduce_inner">
-          context.inner -= 1
-        </manipulate>
-      </loop>
-      <manipulate id="reduce_outer">
-        context.outer -= 1
-        context.inner = 2
+    <call id="collect_input" endpoint="select" templates="">
+      <parameters>
+        <method>post</method>
+        <info>true</info>
+      </parameters>
+      <manipulate>
+        context.title = result.value('title')
+        context.date = result.value('date')
+        context.city = result.city('city')
       </manipulate>
-    </loop>
+    </call>
+    <call id="a01" endpoint="services">
+      <constraints>
+        <!-- group connector="and">
+          <constraint xpath="adress/city" comparator="==" variable="city"/>
+          <constraint xpath="adress/zip" comparator="&gt;" variable="zip"/>
+        </group>
+        <constraint xpath="adress/zip" comparator="&lt;" value="1900"/ -->
+      </constraints>
+      <parameters><!--{{{--> 
+        <info>true</info>
+        <service>
+          <serviceoperation>"search_and_book"</serviceoperation>
+          <injection_handler>endpoints.injection_handler</injection_handler>
+        </service>
+        <additional_endpoints>
+          <selector_service>"select"</selector_service>
+        </additional_endpoints>
+        <parameters>
+          <title>context.title</title>
+          <date>context.date</date>
+        </parameters>
+      </parameters><!--}}}-->
+      <manipulate output="result">
+        if result.include?(:reservation_id) # must be changed to status/error-code when they are implemented
+          context.reservation_number = result[:reservation_id]
+          context.starting_time = result[:starting_time]
+          context.selected_title = result[:movie_title]
+          context.selected_date = result[:selected_date]
+          context.hall = result[:hall]
+          context.selected_cinema = CGI::unescapeHTML("#{properties.value(:perform_book)[0].value(:name)}\n#{properties.value(:perform_book)[0].value(:street)}\n#{properties.value(:perform_book)[0].value(:zip)} #{properties.value(:perform_book)[0].value(:city)}")
+        end
+      </manipulate>
+    </call>  
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
@@ -95,6 +106,12 @@
           <xsl:text>, :call, :</xsl:text>
           <xsl:value-of select="@endpoint"/>
           <xsl:apply-templates select="d:parameters"/>
+          <xsl:if test="@oid">
+            <xsl:text>, :'call-oid' => '</xsl:text><xsl:value-of select="@oid"/><xsl:text>'</xsl:text>
+          </xsl:if>
+          <xsl:if test="@templates">
+            <xsl:text>, :'templates' => '</xsl:text><xsl:value-of select="@templates"/><xsl:text>'</xsl:text>
+          </xsl:if>
           <xsl:apply-templates select="d:manipulate" mode="part-of-call">
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
           </xsl:apply-templates>
@@ -173,7 +190,7 @@
           <xsl:call-template name="print-newline"/>
         </xsl:if>
         <!-- RESCUE -->
-        <xsl:if test="name()='injected'">
+        <xsl:if test="name()='group'">
           <xsl:text># ========== Code was injected via: </xsl:text>
           <xsl:value-of select="@source"/>
           <xsl:text>==========</xsl:text>
@@ -272,9 +289,16 @@
             <xsl:text>]</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>"</xsl:text>
-            <xsl:value-of select="text()"/>
-            <xsl:text>"</xsl:text>
+            <xsl:choose>
+              <xsl:when test="@type = 'symbolic'">
+                <xsl:value-of select="text()"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>"</xsl:text>
+                <xsl:value-of select="text()"/>
+                <xsl:text>"</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>  
           </xsl:otherwise>
         </xsl:choose>  
       </xsl:template>
