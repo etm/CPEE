@@ -3,7 +3,7 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <title>Robin Hood</title>
+    <title>'Shrek'</title>
     <date>2010-07-08</date>
     <selected_title/>
     <starting_time/>
@@ -11,21 +11,33 @@
     <selected_date/>
     <hall/>
     <zip>1100</zip>
+    <city>'Vienna'</city>
     <reservation_number/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasReal/Soap</services>
+    <services>http://localhost:9290/groups/CinemasReal</services>
     <injection_handler>http://localhost:9290/injection/handler</injection_handler>
     <select>http://localhost:9290/select/user</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
+    <call id="collect_input" endpoint="select" templates="">
+      <parameters>
+        <method>post</method>
+        <info>true</info>
+      </parameters>
+      <manipulate>
+        context.title = result.value('title')
+        context.date = result.value('date')
+        context.city = result.city('city')
+      </manipulate>
+    </call>
     <call id="a01" endpoint="services">
       <constraints>
-        <group connector="and">
-          <constraint xpath="adress/city" comparator="==" value="Vienna"/>
+        <!-- group connector="and">
+          <constraint xpath="adress/city" comparator="==" variable="city"/>
           <constraint xpath="adress/zip" comparator="&gt;" variable="zip"/>
         </group>
-        <constraint xpath="adress/zip" comparator="&lt;" value="1900"/>
+        <constraint xpath="adress/zip" comparator="&lt;" value="1900"/ -->
       </constraints>
       <parameters><!--{{{--> 
         <info>true</info>
