@@ -43,6 +43,10 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     @handler_continue.continue
   end
 
+  def activity_result_status
+    Wee::Status.new(1, "everything okay")
+  end
+
   def callback(result)
     @handler_returnValue = result
     @handler_continue.continue

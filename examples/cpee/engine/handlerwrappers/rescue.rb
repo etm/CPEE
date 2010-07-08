@@ -146,6 +146,10 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def activity_no_longer_necessary
     @handler_stopped = true
   end
+  
+  def activity_result_status
+    Wee::Status.new(1, "everything okay")
+  end
 
   def inform_activity_done
     $controller[@instance].notify("running/activity_done", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)

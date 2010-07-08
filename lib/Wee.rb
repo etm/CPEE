@@ -41,6 +41,7 @@ class Wee
     def endpoints
       ManipulateHash.new(@__wee_endpoints,@changed_endpoints)
     end
+
   end# }}}
   class ManipulateHash# {{{
     def initialize(values,what)
@@ -74,6 +75,15 @@ class Wee
       end
     end
   end# }}}
+
+  class Status #{{{
+    def initialize(id,message)
+      @id        = id
+      @message   = message
+    end
+    attr_reader :id, :message
+  end #}}}
+  
   class ReadHash# {{{
     def initialize(values)
       @__wee_values = values
@@ -94,12 +104,15 @@ class Wee
     def initialize(args,position=nil,lay=nil,continue=nil); end
 
     def activity_handle(passthrough, endpoint, parameters); end
+
     def activity_result_value; end
+    def activity_result_status; end
 
     def activity_stop; end
     def activity_passthrough_value; end
 
     def activity_no_longer_necessary; end
+
 
     def inform_activity_done; end
     def inform_activity_manipulate; end
@@ -166,7 +179,7 @@ class Wee
   def self::handlerwrapper(aClassname, *args)# {{{
     define_method :initialize_handlerwrapper do 
       self.handlerwrapper = aClassname
-      self.handlerwrapper_args = args
+      self.handlerwrapper_args = args unless args.empty?
     end
   end# }}}
   def self::control(flow, &block)# {{{
@@ -218,7 +231,17 @@ class Wee
             if block_given?
               handlerwrapper.inform_activity_manipulate
               mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints)
-              mr.instance_exec(*parameters,&blk)
+              status = nil
+              parameters.delete_if do |p|
+                status = p if p.is_a?(Status)
+                p.is_a?(Status)  
+              end
+              case blk.arity
+                when 1: mr.instance_exec(parameters,&blk)
+                when 2: mr.instance_exec(parameters,status,&blk)
+                else
+                  mr.instance_eval(&blk)
+              end
               handlerwrapper.inform_context_change(mr.changed_context.uniq) if mr.changed_context.any?
               handlerwrapper.inform_endpoints_change(mr.changed_endpoints.uniq) if mr.changed_endpoints.any?
             end  
@@ -238,28 +261,34 @@ class Wee
             # handshake call and wait until it finished
             handlerwrapper.activity_handle passthrough, params
             Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.__wee_state == :stopping || self.__wee_state == :stopped
-             
+
             handlerwrapper.activity_no_longer_necessary if Thread.current[:nolongernecessary]
             if self.__wee_state == :stopping || self.__wee_state == :stopped
               handlerwrapper.activity_stop
               wp.passthrough = handlerwrapper.activity_passthrough_value
             end  
 
-            if block_given? && self.state != :stopping && !Thread.current[:nolongernecessary]
+            if block_given? && self.__wee_state != :stopping && !Thread.current[:nolongernecessary]
               handlerwrapper.inform_activity_manipulate
               mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints)
-              mr.instance_exec(handlerwrapper.activity_result_value,&blk)
+              status = handlerwrapper.activity_result_status
+              case blk.arity
+                when 1: mr.instance_exec(handlerwrapper.activity_result_value,&blk)
+                when 2: mr.instance_exec(handlerwrapper.activity_result_value,(status.is_a?(Status)?status:nil),&blk)
+                else
+                  mr.instance_eval(&blk)
+              end  
               handlerwrapper.inform_context_change(mr.changed_context.uniq) if mr.changed_context.any?
               handlerwrapper.inform_endpoints_change(mr.changed_endpoints.uniq) if mr.changed_endpoints.any?
             end
         end
         raise Signal::Proceed
       rescue Signal::SkipManipulate, Signal::Proceed
-        if self.state != :stopping && !Thread.current[:nolongernecessary]
+        if self.__wee_state != :stopping && !Thread.current[:nolongernecessary]
           handlerwrapper.inform_activity_done
           handlerwrapper.vote_sync_after
         end
-        if self.state != :stopping
+        if self.__wee_state != :stopping
           @__wee_positions.delete wp
           handlerwrapper.inform_position_change
         end
@@ -293,7 +322,7 @@ class Wee
         Thread.current[:branches].each do |thread| 
           finished_threads_count += 1 if thread[:branch_status] == true
         end  
-        if finished_threads_count < wait_count && finished_threads_count < Thread.current[:branches].size && self.state != :stopping
+        if finished_threads_count < wait_count && finished_threads_count < Thread.current[:branches].size && self.__wee_state != :stopping
           Thread.current[:branch_event].join
         else  
           branch_count = false
@@ -385,9 +414,9 @@ class Wee
       return if __wee_is_in_search_mode
       case condition[1]
         when :pre_test
-          yield while condition[0].call && self.state != :stopping
+          yield while condition[0].call && self.__wee_state != :stopping
         when :post_test
-          begin; yield; end while condition[0].call && self.state != :stopping
+          begin; yield; end while condition[0].call && self.__wee_state != :stopping
       end
     end# }}}
 
@@ -463,7 +492,9 @@ class Wee
         branch[:branch_search] = true
       end  
     end# }}}
-    def state=(newState)# {{{
+  
+  public
+    def __wee_state=(newState)# {{{
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
       @__wee_state = newState
@@ -569,7 +600,7 @@ public
   # Stop the workflow execution
   def stop# {{{
     Thread.new do
-      dslr.__wee_state = :stopping
+      @dslr.__wee_state = :stopping
     end  
   end# }}}
   # Start the workflow execution
