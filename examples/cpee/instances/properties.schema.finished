@@ -30,6 +30,16 @@
     </stopped>  
     <finished/>
   </state>  
+  <status type="complex" modifiable="false" mutable="false">
+    <optional>
+      <element name='id'>
+        <data type="integer"/>
+      </element>
+      <element name='message'>
+        <data type="string"/>
+      </element>
+    </optional>  
+  </status>  
   <positions type="complex" modifiable="false" mutable="false">
     <zeroOrMore>
       <element>

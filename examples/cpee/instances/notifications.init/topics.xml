@@ -15,6 +15,9 @@
     <event>change</event>
     <vote>running</vote>
   </topic>
+  <topic id='properties/status'>
+    <event>change</event>
+  </topic>
   <topic id='properties/context-variables'>
     <event>change</event>
   </topic>
