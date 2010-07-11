@@ -48,7 +48,7 @@ class Wee
       ManipulateHash.new(@__wee_endpoints,@changed_endpoints)
     end
     def status
-      @__wee_status = newstatus
+      @__wee_status
     end
   end# }}}
   class ManipulateHash# {{{
@@ -212,7 +212,7 @@ class Wee
       @__wee_handlerwrapper = HandlerWrapperBase
       @__wee_handlerwrapper_args = []
       @__wee_state = :ready
-      @__wee_status = Status.new(0,undefined)
+      @__wee_status = Status.new(0,"undefined")
     end
     attr_accessor :__wee_search_positions, :__wee_positions, :__wee_main, :__wee_context, :__wee_endpoints, :__wee_handlerwrapper, :__wee_handlerwrapper_args
     attr_reader :__wee_state, :__wee_status

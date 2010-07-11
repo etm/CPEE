@@ -27,7 +27,8 @@
         </parameters>
       </parameters>
       <manipulate output="result">  context.airline = result.value('id')
-  context.costs += result.value('costs').to_f</manipulate>
+  context.costs += result.value('costs').to_f
+  status.update 1, 'Hotel'</manipulate>
     </call>
     <parallel>
       <loop pre_test="context.persons > 0">

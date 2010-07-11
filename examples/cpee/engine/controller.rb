@@ -61,11 +61,10 @@ class Controller
         node.add(k.to_s,v)
       end
       
-      node = doc.find("/p:properties/p:endpoints").first
-      node.children.delete_all!
-      @instance.endpoints.each do |k,v|
-        node.add(k.to_s,v)
-      end
+      node = doc.find("/p:properties/p:status/p:id").first
+      node.text = @instance.status.id
+      node = doc.find("/p:properties/p:status/p:message").first
+      node.text = @instance.status.message
 
       node = doc.find("/p:properties/p:state").first
       node.text = @instance.state
