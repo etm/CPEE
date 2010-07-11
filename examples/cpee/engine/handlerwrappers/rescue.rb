@@ -42,7 +42,11 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       parameters[:parameters] << {'call-lay' => @handler_lay}
       parameters[:parameters] << {'call-oid' => parameters[:'call-oid']} if parameters.include?(:'call-oid')
     end # }}}
-    parameters[:parameters] << {'templates-uri' => parameters[:templates]} if parameters.include?(:templates)
+     if parameters.include?(:templates) # {{{
+      parameters[:parameters] << {'templates-uri' => parameters[:templates][0][:uri]}
+      parameters[:parameters] << {'template-name' => parameters[:templates][1][:name]}
+      parameters[:parameters] << {'template-lang' => parameters[:templates][2][:lang]}
+    end # }}}
     if parameters.key?(:service) # {{{
       injection_handler_uri = parameters[:service][1][:injection_handler]
       # Subscribe Injection-Handler to syncing_after
