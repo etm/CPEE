@@ -3,38 +3,43 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <title>'Shrek'</title>
-    <date>2010-07-08</date>
+    <title/>
+    <date/>
     <selected_title/>
     <starting_time/>
     <selected_cinema/>
     <selected_date/>
     <hall/>
     <zip>1100</zip>
-    <city>'Vienna'</city>
+    <city/>
     <reservation_number/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasReal</services>
+    <services>http://localhost:9290/groups/CinemasReal/REST/Apollo</services>
     <injection_handler>http://localhost:9290/injection/handler</injection_handler>
     <select>http://localhost:9290/select/user</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="collect_input" endpoint="select" templates="">
+    <call id="collect_input" endpoint="select">
       <parameters>
         <method>post</method>
         <info>true</info>
+        <templates>
+          <uri>'http://localhost/input-forms/cinemas.xsl'</uri>
+          <name>'Cinemas-Input'</name>
+          <lang>'en'</lang>
+        </templates>
       </parameters>
-      <manipulate>
+      <manipulate output="result">
         context.title = result.value('title')
         context.date = result.value('date')
-        context.city = result.city('city')
+        context.city = result.value('city')
       </manipulate>
     </call>
     <call id="a01" endpoint="services">
       <constraints>
-        <!-- group connector="and">
           <constraint xpath="adress/city" comparator="==" variable="city"/>
+        <!-- group connector="and">
           <constraint xpath="adress/zip" comparator="&gt;" variable="zip"/>
         </group>
         <constraint xpath="adress/zip" comparator="&lt;" value="1900"/ -->
@@ -109,9 +114,6 @@
           <xsl:if test="@oid">
             <xsl:text>, :'call-oid' => '</xsl:text><xsl:value-of select="@oid"/><xsl:text>'</xsl:text>
           </xsl:if>
-          <xsl:if test="@templates">
-            <xsl:text>, :'templates' => '</xsl:text><xsl:value-of select="@templates"/><xsl:text>'</xsl:text>
-          </xsl:if>
           <xsl:apply-templates select="d:manipulate" mode="part-of-call">
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
           </xsl:apply-templates>
@@ -123,10 +125,6 @@
           <xsl:if test="@context">
             <xsl:text>, nil,</xsl:text>
             <xsl:value-of select="@context"/>
-          </xsl:if>
-          <xsl:if test="@properties">
-            <xsl:text>,</xsl:text>
-            <xsl:value-of select="@properties"/>
           </xsl:if>
           <!-- RESCUE -->
           <xsl:call-template name="print-content">
