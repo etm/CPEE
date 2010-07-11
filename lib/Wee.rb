@@ -26,14 +26,20 @@ class Wee
   end  # }}}
 
   class ManipulateRealization# {{{
-    def initialize(context,endpoints)
+    def initialize(context,endpoints,status)
       @__wee_context = context
       @__wee_endpoints = endpoints
+      @__wee_status = status
+      @changed_status = status.id
       @changed_context = []
       @changed_endpoints = []
     end
 
     attr_reader :changed_context, :changed_endpoints
+
+    def changed_status
+      @changed_status != status.id
+    end
 
     def context
       ManipulateHash.new(@__wee_context,@changed_context)
@@ -41,7 +47,9 @@ class Wee
     def endpoints
       ManipulateHash.new(@__wee_endpoints,@changed_endpoints)
     end
-
+    def status
+      @__wee_status = newstatus
+    end
   end# }}}
   class ManipulateHash# {{{
     def initialize(values,what)
@@ -78,6 +86,10 @@ class Wee
 
   class Status #{{{
     def initialize(id,message)
+      @id        = id
+      @message   = message
+    end
+    def update(id,message)
       @id        = id
       @message   = message
     end
@@ -119,8 +131,7 @@ class Wee
     def inform_activity_failed(err); end
 
     def inform_syntax_error(err); end
-    def inform_context_change(changed); end
-    def inform_endpoints_change(changed); end
+    def inform_manipulate_change(changed); end
     def inform_position_change; end
     def inform_state_change(newstate); end
     
@@ -201,9 +212,10 @@ class Wee
       @__wee_handlerwrapper = HandlerWrapperBase
       @__wee_handlerwrapper_args = []
       @__wee_state = :ready
+      @__wee_status = Status.new(0,undefined)
     end
     attr_accessor :__wee_search_positions, :__wee_positions, :__wee_main, :__wee_context, :__wee_endpoints, :__wee_handlerwrapper, :__wee_handlerwrapper_args
-    attr_reader :__wee_state
+    attr_reader :__wee_state, :__wee_status
 
     # DSL-Construct for an atomic activity
     # position: a unique identifier within the wf-description (may be used by the search to identify a starting point
@@ -230,7 +242,7 @@ class Wee
           when :manipulate
             if block_given?
               handlerwrapper.inform_activity_manipulate
-              mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints)
+              mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints,@__wee_status)
               status = nil
               parameters.delete_if do |p|
                 status = p if p.is_a?(Status)
@@ -242,8 +254,11 @@ class Wee
                 else
                   mr.instance_eval(&blk)
               end
-              handlerwrapper.inform_context_change(mr.changed_context.uniq) if mr.changed_context.any?
-              handlerwrapper.inform_endpoints_change(mr.changed_endpoints.uniq) if mr.changed_endpoints.any?
+              handlerwrapper.inform_manipulate_change(
+                (mr.changed_status ? @__wee_status : nil), 
+                (mr.changed_context.any? ? mr.changed_context.uniq : nil),
+                (mr.changed_endpoints.any? ? mr.changed_endpoints.uniq : nil)
+              )
             end  
           when :call
             params = { }
@@ -270,7 +285,7 @@ class Wee
 
             if block_given? && self.__wee_state != :stopping && !Thread.current[:nolongernecessary]
               handlerwrapper.inform_activity_manipulate
-              mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints)
+              mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints,@__wee_status)
               status = handlerwrapper.activity_result_status
               case blk.arity
                 when 1: mr.instance_exec(handlerwrapper.activity_result_value,&blk)
@@ -278,8 +293,11 @@ class Wee
                 else
                   mr.instance_eval(&blk)
               end  
-              handlerwrapper.inform_context_change(mr.changed_context.uniq) if mr.changed_context.any?
-              handlerwrapper.inform_endpoints_change(mr.changed_endpoints.uniq) if mr.changed_endpoints.any?
+              handlerwrapper.inform_manipulate_change(
+                (mr.changed_status ? @__wee_status : nil), 
+                (mr.changed_context.any? ? mr.changed_context.uniq : nil),
+                (mr.changed_endpoints.any? ? mr.changed_endpoints.uniq : nil)
+              )
             end
         end
         raise Signal::Proceed
@@ -427,6 +445,9 @@ class Wee
       [blk, :post_test]
     end# }}}
 
+    def status# {{{
+      @__wee_status
+    end# }}}
     def context# {{{
       ReadHash.new(@__wee_context)
     end# }}}
@@ -568,6 +589,9 @@ public
   end# }}}
   def endpoints# {{{
     @dslr.__wee_endpoints
+  end# }}}
+  def status# {{{
+    @dslr.__wee_status
   end# }}}
 
   # get/set workflow description

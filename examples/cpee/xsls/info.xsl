@@ -13,7 +13,7 @@
           <xsl:for-each select="*">
             <li>
               <xsl:element name="a">
-                <xsl:attribute name="href"><xsl:value-of select="name()"/>/</xsl:attribute>
+                <xsl:attribute name="href">/<xsl:value-of select="../@instance"/>/<xsl:value-of select="name()"/>/</xsl:attribute>
                 <xsl:value-of select="name()"/>
               </xsl:element>
             </li>  
