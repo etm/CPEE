@@ -15,7 +15,7 @@
     <reservation_number/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasReal/REST/Apollo</services>
+    <services>http://localhost:9290/groups/CinemasReal/REST</services>
     <injection_handler>http://localhost:9290/injection/handler</injection_handler>
     <select>http://localhost:9290/select/user</select>
   </endpoints>  
@@ -31,9 +31,9 @@
         </templates>
       </parameters>
       <manipulate output="result">
-        context.title = result.value('title')
-        context.date = result.value('date')
-        context.city = result.value('city')
+        context.title = result[0].value('title')
+        context.date = result[0].value('date')
+        context.city = result[0].value('city')
       </manipulate>
     </call>
     <call id="a01" endpoint="services">
@@ -59,12 +59,13 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-        if result.include?(:reservation_id) # must be changed to status/error-code when they are implemented
-          context.reservation_number = result[:reservation_id]
-          context.starting_time = result[:starting_time]
-          context.selected_title = result[:movie_title]
-          context.selected_date = result[:selected_date]
-          context.hall = result[:hall]
+        if result[0].include?(:reservation_id) # must be changed to status/error-code when they are implemented
+          context.reservation_number = result[0].value(:reservation_id)
+          p context.reservation_number.class
+          context.starting_time = result[0].value(:starting_time)
+          context.selected_title = result[0].value(:movie_title)
+          context.selected_date = result[0].value(:selected_date)
+          context.hall = result[0].value(:hall)
           context.selected_cinema = CGI::unescapeHTML("#{properties.value(:perform_book)[0].value(:name)}\n#{properties.value(:perform_book)[0].value(:street)}\n#{properties.value(:perform_book)[0].value(:zip)} #{properties.value(:perform_book)[0].value(:city)}")
         end
       </manipulate>
@@ -331,9 +332,6 @@
           <xsl:if test="@output">
             <xsl:text>|</xsl:text>
             <xsl:value-of select="@output"/>
-            <xsl:if test="@properties">
-              <xsl:text>, properties</xsl:text>
-            </xsl:if>
             <xsl:text>|</xsl:text>
           </xsl:if>
           <xsl:call-template name="print-newline"/>

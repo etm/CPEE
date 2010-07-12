@@ -82,7 +82,8 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
         return
       end
-      @handler_returnValue = result# }}}
+      @handler_returnValue = [result, status]# }}}
+      p @handler_returnValue
     elsif parameters.key?(:soap_operation)# {{{
       # Bulding SAOP-Envelope {{{
       wsdl_client = Riddl::Client.new(parameters[:wsdl].split('?')[0])
@@ -91,7 +92,11 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         params << Riddl::Parameter::Simple.new(p.split('=')[0], p.split('=')[1], :query)
       end
       status, resp = wsdl_client.get params
-      raise "Endpoint #{parameters[:wsdl]} doesn't provide a WSDL" unless status == 200
+      unless status == 200
+        @handler_returnValue = [resp, status]
+        @handler_continue.continue
+        return
+      end
       wsdl = XML::Smart.string(resp[0].value.read)
       msg = wsdl.find("//wsdl:portType/wsdl:operation[@name = '#{parameters[:soap_operation]}']/wsdl:input/@message", {"wsdl"=>"http://schemas.xmlsoap.org/wsdl/"}).first
       envelope = XML::Smart.string("<Envelope/>")
@@ -104,24 +109,29 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         hash.each do |k,v|
           soap_params.add("#{k}","#{v}") # used #{} to get implicit escaping of XML
         end
-      end #}}}
+      end #}}} 
       service = Riddl::Client.new(@handler_endpoint)
       status, result = service.post [Riddl::Parameter::Complex.new("", "text/xml", envelope.to_s)]
       out = XML::Smart.string(result[0].value.read)
-      raise "Error in SOAP-Request: \"#{out.find("//soap:Fault", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first.dump}\"" if out.find("//soap:Fault", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
+      if out.find("//soap:Fault", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
+        @handler_returnValue = [out.find("//soap:Fault", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first, nil]
+        @handler_continue.continue
+        return
+      end
       if out.namespaces.find("http://schemas.xmlsoap.org/soap/envelope/")
         result = out.find("//soap:Body", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
         result.namespaces['soap'] = "http://schemas.xmlsoap.org/soap/envelope/"
       else
         result = out.find("//Body").first
       end
-      @handler_returnValue = result
-    end# }}} 
+      p result.class
+      @handler_returnValue = [result, nil]
+    end# }}}  
     @handler_continue.continue
   end
 
   def callback(result)
-    @handler_returnValue = result
+    @handler_returnValue = [result, nil]
     @handler_continue.continue
   end
  
