@@ -15,9 +15,9 @@
     <reservation_number/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasReal/REST</services>
+    <services>http://localhost:9290/groups/CinemasReal</services>
     <injection_handler>http://localhost:9290/injection/handler</injection_handler>
-    <select>http://localhost:9290/select/user</select>
+    <select>http://localhost:9290/select/pgwl</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="collect_input" endpoint="select">
@@ -61,7 +61,6 @@
       <manipulate output="result">
         if result[0].include?(:reservation_id) # must be changed to status/error-code when they are implemented
           context.reservation_number = result[0].value(:reservation_id)
-          p context.reservation_number.class
           context.starting_time = result[0].value(:starting_time)
           context.selected_title = result[0].value(:movie_title)
           context.selected_date = result[0].value(:selected_date)

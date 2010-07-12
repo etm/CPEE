@@ -83,7 +83,6 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         return
       end
       @handler_returnValue = [result, status]# }}}
-      p @handler_returnValue
     elsif parameters.key?(:soap_operation)# {{{
       # Bulding SAOP-Envelope {{{
       wsdl_client = Riddl::Client.new(parameters[:wsdl].split('?')[0])
@@ -124,7 +123,6 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       else
         result = out.find("//Body").first
       end
-      p result.class
       @handler_returnValue = [result, nil]
     end# }}}  
     @handler_continue.continue
