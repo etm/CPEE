@@ -27,10 +27,11 @@ h1 {
 
 td.switch h1:before {
   content: "⬇";
-  cursor: pointer;
+  color: MenuText;
 }  
 td.switch h1.margin:before {
   content: "➡";
+  color: MenuText;
   vertical-align:top;
 }  
 
@@ -50,10 +51,6 @@ td.switch h1.margin:before {
   left:0;
   right:0;
 }
-
-.fixedstatehollow {
-  height: 12.6em;
-}  
 
 span.active {
   font-weight: bold;
@@ -78,13 +75,13 @@ table.layout td.top { vertical-align: top; }
 #tabledetails tr:nth-child(odd) { background-color: Menu; color: MenuText; }
 #tabledetails td { vertical-align: top; }
 
-table.tab { margin-top:1em; }
-.fixedstate table.tab { margin-top:0; }
+table.tab { margin-bottom:1em; }
+.fixedstate table.tab { margin-bottom:0; }
 
 table.tab .tab {
   cursor: pointer;
   padding:0.2em 1em;
-  border: 1pt solid ButtonShadow;
+  border: 1pt solid Menu;
   border-bottom: 0 none;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
@@ -102,7 +99,7 @@ table.tab .tab h1 { white-space: nowrap; }
 table.tab .inactivearea { display: none; }
 table.tab .inactivetab {
   padding:0.2em 1em;
-  border: 1pt solid ButtonShadow;
+  border: 1pt solid Menu;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
   border-bottom-right-radius: 0em;
@@ -116,7 +113,7 @@ table.tab .inactivetab {
 
 table.tab td.tabbehind {
   padding:0.2em 1em;
-  border-bottom: 1pt solid ButtonShadow;
+  border-bottom: 1pt solid Menu;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
   border-bottom-right-radius: 0em;
@@ -130,9 +127,9 @@ table.tab td.tabbehind {
 
 table.tab td.tabbelow {
   padding:1em;
-  border-bottom: 1pt solid ButtonShadow;
-  border-left: 1pt solid ButtonShadow;
-  border-right: 1pt solid ButtonShadow;
+  border-bottom: 1pt solid Menu;
+  border-left: 1pt solid Menu;
+  border-right: 1pt solid Menu;
   border-radius: 1em;
   border-top-left-radius: 0em;
   border-top-right-radius: 0em;
@@ -145,15 +142,15 @@ table.tab td.tabbelow {
 }
 
 table.tab td.switch {
-  background-color: ButtonShadow;
+  background-color: Menu;
 }
 
 table.tab tr.border td {
   height:0.1em;
-  background-color: ButtonShadow;
-  border-left: 1pt solid ButtonShadow;
-  border-right: 1pt solid ButtonShadow;
-  border-bottom: 1pt solid ButtonShadow;
+  background-color: Menu;
+  border-left: 1pt solid Menu;
+  border-right: 1pt solid Menu;
+  border-bottom: 1pt solid Menu;
 }
 
 #tablelog { width:100%; }
@@ -241,7 +238,7 @@ svg .stand {
   stroke-dasharray:none;
 }
 svg .gen {
-  fill:ButtonShadow;
+  fill:Menu;
   fill-opacity:1;
   stroke-opacity:0.7;
   stroke:#000000;

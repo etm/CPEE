@@ -26,9 +26,13 @@ $(document).ready(function() {// {{{
 
 function toggle_vis_tab(moi) {
   var tab = moi.parentNode.parentNode;
+  var fix = tab.parentNode.parentNode;
   $('h1',moi).toggleClass('margin');
   $("tr.border",tab).toggleClass('hidden');
   $("tr.area",tab).toggleClass('hidden');
+  if ($(fix).attr('class').match(/fixedstate/)) {
+    $(".fixedstatehollow").height($(fix).height());
+  }  
 }
 
 function create_instance() {// {{{
@@ -59,7 +63,7 @@ function monitor_instance() {// {{{
     url: url + "/properties/schema/",
     success: function(res){
       $(".tab.hidden").removeClass("hidden");
-      $(".section.hidden").removeClass("hidden");
+      $(".fixedstatehollow").height($(".fixedstate").height());
       $("input[name=instance-url]").attr("readonly","readonly");
       $("button[name=instance]").attr("disabled","disabled");
       $("input[name=base-url]").attr("readonly","readonly");
