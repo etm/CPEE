@@ -17,7 +17,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
     client = Riddl::Client.new(@handler_endpoint)
 
-    Thread.new { Thread.stop; puts "hallo" }
+    Thread.new { Thread.stop; }
     params = []
     callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
     (parameters[:parameters] || {}).each do |h|
@@ -27,6 +27,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
         end  
       end  
     end
+    params << Riddl::Header.new("CPEE-Instance","#{$url}/#{@instance}")
     params << Riddl::Header.new("CPEE-Callback",callback)
 
     type = parameters[:method] || 'post'

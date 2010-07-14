@@ -7,7 +7,6 @@ var save_cvs;
 var node_state = {};
 
 $(document).ready(function() {// {{{
-  $("div.section > h1").click(toggle_vis);
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(monitor_instance);
   $("button[name=testset]").click(load_testset);
@@ -25,9 +24,11 @@ $(document).ready(function() {// {{{
   });
 });// }}}
 
-function toggle_vis() {
-  $(this).toggleClass('margin');
-  $("+ div",this).toggleClass('hidden');
+function toggle_vis_tab(moi) {
+  var tab = moi.parentNode.parentNode;
+  $('h1',moi).toggleClass('margin');
+  $("tr.border",tab).toggleClass('hidden');
+  $("tr.area",tab).toggleClass('hidden');
 }
 
 function create_instance() {// {{{
@@ -57,7 +58,8 @@ function monitor_instance() {// {{{
     type: "GET", 
     url: url + "/properties/schema/",
     success: function(res){
-      $(".hidden").removeClass("hidden");
+      $(".tab.hidden").removeClass("hidden");
+      $(".section.hidden").removeClass("hidden");
       $("input[name=instance-url]").attr("readonly","readonly");
       $("button[name=instance]").attr("disabled","disabled");
       $("input[name=base-url]").attr("readonly","readonly");
@@ -520,13 +522,16 @@ function load_testset_pos(url,testset) {// {{{
   });
 }// }}}
 
-function tab_click(active) { // {{{
+function tab_click(moi) { // {{{
+  var active = $(moi).attr('id').replace(/tab/,'');
+  var tab = moi.parentNode.parentNode;
   var tabs = [];
-  $("td.tab").each(function(){
-    tabs.push($(this).attr('id').replace(/tab/,''));
+  $("td.tab",tab).each(function(){
+    if (!$(this).attr('class').match(/switch/))
+      tabs.push($(this).attr('id').replace(/tab/,''));
   });  
-  $(".inactivearea").removeClass("inactivearea");
-  $(".inactivetab").removeClass("inactivetab");
+  $(".inactivearea",tab).removeClass("inactivearea");
+  $(".inactivetab",tab).removeClass("inactivetab");
   $.each(tabs,function(a,b){
     if (b != active) {
       $("#tab" + b).addClass("inactivetab");
