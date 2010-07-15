@@ -81,6 +81,7 @@ function check_subscription() { // {{{
       )
     });  
     subscription_state = 'less';
+    format_visual_vote_clear();
   }  
 }// }}}
 
@@ -293,20 +294,20 @@ $.ajax({
 }// }}}
 
 function monitor_instance_pos() {// {{{
-var url = $("input[name=instance-url]").val();
-$.ajax({
-  type: "GET", 
-  url: url + "/properties/values/positions/",
-  success: function(res){
-    var values = $("value > *",res);
-    format_visual_clear();
-    values.each(function(){
-      var what = this.nodeName;
-      format_visual_add(what,"active");
-      format_visual_set(what);
-    });
-  }
-});
+  var url = $("input[name=instance-url]").val();
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/positions/",
+    success: function(res){
+      var values = $("value > *",res);
+      format_visual_clear();
+      values.each(function(){
+        var what = this.nodeName;
+        format_visual_add(what,"active");
+        format_visual_set(what);
+      });
+    }
+  });
 }// }}}
 function monitor_instance_pos_change(notification,event) {// {{{
 if (save_state == "stopping") return;
@@ -318,10 +319,16 @@ if (event == "activity_done")
 } // }}}
 
 function monitor_instance_vote_add(notification) {// {{{
-//  if (save_state == "stopping") return;
   var parts = YAML.eval(notification);
   var ctv = $("#votes");
-  ctv.append("<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>vote to continue</button><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"false\");'>vote to stop</button></td></td></tr>");
+
+  var astr = "<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td>";
+  if ($("input[name=votecontinue]").is(':checked'))
+    astr += "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>vote to continue</button></td>";
+  if ($("input[name=votestop]").is(':checked'))
+    astr += "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"false\");'>vote to stop</button></td>";
+  astr += "</tr>";
+  ctv.append(astr);
   format_visual_add(parts.activity,"vote")
 }// }}}
 function monitor_instance_vote_remove(activity,callback,value) {//{{{
@@ -337,24 +344,24 @@ function monitor_instance_vote_remove(activity,callback,value) {//{{{
 }//}}}
 
 function start_instance() {// {{{
-var url = $("input[name=instance-url]").val();
-format_visual_clear();
-$.ajax({
-  type: "PUT", 
-  url: url + "/properties/values/state",
-  data: ({value: "running"}),
-  error: report_failure
-});
+  var url = $("input[name=instance-url]").val();
+  format_visual_clear();
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/state",
+    data: ({value: "running"}),
+    error: report_failure
+  });
 }// }}}
 function stop_instance() {// {{{
-var url = $("input[name=instance-url]").val();
-format_visual_clear();
-$.ajax({
-  type: "PUT", 
-  url: url + "/properties/values/state",
-  data: ({value: "stopping"}),
-  error: report_failure
-});
+  var url = $("input[name=instance-url]").val();
+  format_visual_clear();
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/state",
+    data: ({value: "stopping"}),
+    error: report_failure
+  });
 }// }}}
 
 function load_testset() {// {{{
@@ -736,7 +743,12 @@ function format_visual_clear() {//{{{
   $('.super .vote').each(function(a,b){b.setAttribute("class","vote");});
   $('.super .colon').each(function(a,b){b.setAttribute("class","colon");});
   $('.activities').each(function(a,b){b.setAttribute("class","activities");});
-//  $("#votes").empty();
+  $("#votes").empty();
+}//}}}
+function format_visual_vote_clear() {//{{{
+  node_state = {};
+  $('.super .vote').each(function(a,b){b.setAttribute("class","vote");});
+  $("#votes").empty();
 }//}}}
 
 function format_code(res,skim,lnums) {// {{{
