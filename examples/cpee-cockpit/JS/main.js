@@ -1,15 +1,44 @@
 var running = false;
 var subscription;
+var subscription_state = 'less';
 var save_state;
 var save_dsl;
 var save_eps;
 var save_cvs;
 var node_state = {};
+var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
+               'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
+               'topic'  + '=' + 'running' + '&' +
+               'votes'  + '=' + 'syncing_after' + '&' +
+               'topic'  + '=' + 'properties/description' + '&' +
+               'events' + '=' + 'change,error' + '&' +
+               'topic'  + '=' + 'properties/state' + '&' +
+               'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/context-variables' + '&' +
+               'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/endpoints' + '&' +
+               'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/handlers' + '&' +
+               'events' + '=' + 'change';// }}}
+var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
+               'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
+               'topic'  + '=' + 'properties/description' + '&' +
+               'events' + '=' + 'change,error' + '&' +
+               'topic'  + '=' + 'properties/state' + '&' +
+               'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/context-variables' + '&' +
+               'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/endpoints' + '&' +
+               'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/handlers' + '&' +
+               'events' + '=' + 'change';// }}}
 
 $(document).ready(function() {// {{{
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(monitor_instance);
   $("button[name=testset]").click(load_testset);
+  $("input[name=votecontinue]").click(check_subscription);
+  $("input[name=votestop]").click(check_subscription);
   $.ajax({ 
     url: "Testsets.xml", 
     dataType: 'xml',
@@ -24,16 +53,36 @@ $(document).ready(function() {// {{{
   });
 });// }}}
 
-function toggle_vis_tab(moi) {
-  var tab = moi.parentNode.parentNode;
-  var fix = tab.parentNode.parentNode;
-  $('h1',moi).toggleClass('margin');
-  $("tr.border",tab).toggleClass('hidden');
-  $("tr.area",tab).toggleClass('hidden');
-  if ($(fix).attr('class').match(/fixedstate/)) {
-    $(".fixedstatehollow").height($(fix).height());
+function check_subscription() { // {{{
+  var url = $("input[name=instance-url]").val();
+  var num = 0;
+  if ($("input[name=votecontinue]").is(':checked')) num += 1;
+  if ($("input[name=votestop]").is(':checked')) num += 1;
+  if (num > 0 && subscription_state == 'less') {
+    $.ajax({
+      type: "PUT", 
+      url: url + "/notifications/subscriptions/" + subscription,
+      data: (
+        'message-uid' + '=' + 'xxx' + '&' +
+        sub_more + '&' +
+        'fingerprint-with-producer-secret' + '=' + 'xxx'
+      )
+    });
+    subscription_state = 'more';
   }  
-}
+  if (num == 0 && subscription_state == 'more') {
+    $.ajax({
+      type: "PUT", 
+      url: url + "/notifications/subscriptions/" + subscription,
+      data: (
+        'message-uid' + '=' + 'xxx' + '&' +
+        sub_less + '&' +
+        'fingerprint-with-producer-secret' + '=' + 'xxx'
+      )
+    });  
+    subscription_state = 'less';
+  }  
+}// }}}
 
 function create_instance() {// {{{
   var name = prompt("Instance name?", "Enter name here");
@@ -72,21 +121,7 @@ function monitor_instance() {// {{{
       $.ajax({
         type: "POST", 
         url: url + "/notifications/subscriptions/",
-        data: (
-          'topic'  + '=' + 'running' + '&' +
-          'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
-          'topic'  + '=' + 'running' + '&' +
-          'votes'  + '=' + 'syncing_after' + '&' +
-          'topic'  + '=' + 'properties/description' + '&' +
-          'events' + '=' + 'change,error' + '&' +
-          'topic'  + '=' + 'properties/state' + '&' +
-          'events' + '=' + 'change' + '&' +
-          'topic'  + '=' + 'properties/context-variables' + '&' +
-          'events' + '=' + 'change' + '&' +
-          'topic'  + '=' + 'properties/endpoints' + '&' +
-          'events' + '=' + 'change' + '&' +
-          'topic'  + '=' + 'properties/handlers' + '&' +
-          'events' + '=' + 'change'),
+        data: sub_less,
         success: function(res){
           res = res.unserialize();
           $.each(res,function(a,b){
@@ -273,7 +308,6 @@ $.ajax({
   }
 });
 }// }}}
-
 function monitor_instance_pos_change(notification,event) {// {{{
 if (save_state == "stopping") return;
 var parts = YAML.eval(notification);
@@ -290,7 +324,6 @@ function monitor_instance_vote_add(notification) {// {{{
   ctv.append("<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>vote to continue</button><td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"false\");'>vote to stop</button></td></td></tr>");
   format_visual_add(parts.activity,"vote")
 }// }}}
-
 function monitor_instance_vote_remove(activity,callback,value) {//{{{
   var url = $("input[name=instance-url]").val();
   $.ajax({
@@ -313,7 +346,6 @@ $.ajax({
   error: report_failure
 });
 }// }}}
-
 function stop_instance() {// {{{
 var url = $("input[name=instance-url]").val();
 format_visual_clear();
@@ -465,7 +497,6 @@ $.ajax({
 });
 running  = false;
 }// }}}
-          
 function load_testset_des(url,testset) {// {{{
   $("testset > description",testset).each(function(){
     var val = "<content>" + $(this).serializeXML() + "</content>";
@@ -477,7 +508,6 @@ function load_testset_des(url,testset) {// {{{
     });
   });
 } // }}}
-
 function load_testset_hw(url,testset) {// {{{
   $("testset > handlerwrapper",testset).each(function(){
     var val = $(this).text();
@@ -489,7 +519,6 @@ function load_testset_hw(url,testset) {// {{{
     });
   });
 } // }}}
-
 function load_testset_cvs(url,testset) {// {{{
   $("testset > context-variables > *",testset).each(function(){
     var val = $(this).serializeXML();
@@ -501,7 +530,6 @@ function load_testset_cvs(url,testset) {// {{{
     });  
   });
 }// }}}
-
 function load_testset_eps(url,testset) {// {{{
   $("testset > endpoints > *",testset).each(function(){
     var val = $(this).serializeXML();
@@ -513,7 +541,6 @@ function load_testset_eps(url,testset) {// {{{
     });  
   });
 }// }}}
-
 function load_testset_pos(url,testset) {// {{{
   $("testset > positions > *",testset).each(function(){
     var val = $(this).serializeXML();
@@ -543,6 +570,16 @@ function tab_click(moi) { // {{{
     }  
   });
 } // }}}
+function toggle_vis_tab(moi) {// {{{
+  var tab = moi.parentNode.parentNode;
+  var fix = tab.parentNode.parentNode;
+  $('h1',moi).toggleClass('margin');
+  $("tr.border",tab).toggleClass('hidden');
+  $("tr.area",tab).toggleClass('hidden');
+  if ($(fix).attr('class').match(/fixedstate/)) {
+    $(".fixedstatehollow").height($(fix).height());
+  }  
+}// }}}
 
 function sym_click(node) { // {{{
   var table = $('#tabledetails');
@@ -600,7 +637,6 @@ function sym_click(node) { // {{{
       break;
   }
 } // }}}
-
 function sym_click_constraint(node,ind) { // {{{
   var out = '';
   $(node).children().each(function(i,e){
@@ -645,14 +681,12 @@ function format_visual_add(what,class) {//{{{
   node_state[what].push(class);
   format_visual_set(what);
 }//}}}
-
 function format_visual_remove(what,class) {//{{{
   c = node_state[what];
   if ($.inArray(class,c) != -1)
     c.splice($.inArray(class,c),1);
   format_visual_set(what);
 }//}}}
-  
 function format_visual_set(what) {//{{{
   if (node_state[what] != undefined) {
     var votes = jQuery.grep(node_state[what], function(n, i){ return (n == 'vote'); });
@@ -696,7 +730,6 @@ function format_visual_set(what) {//{{{
     });
   });
 }//}}}
-      
 function format_visual_clear() {//{{{
   node_state = {};
   $('.super .active').each(function(a,b){b.setAttribute("class","active");});
@@ -742,7 +775,6 @@ function format_code(res,skim,lnums) {// {{{
   }  
   return res;
 }// }}}
-
 function format_text(res) {// {{{
   res = res.replace(/&/g,'&amp;');
   res = res.replace(/</g,'&lt;');

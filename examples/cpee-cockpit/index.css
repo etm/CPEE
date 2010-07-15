@@ -27,11 +27,11 @@ h1 {
 
 td.switch h1:before {
   content: "⬇";
-  color: MenuText;
+  color: ButtonText;
 }  
 td.switch h1.margin:before {
   content: "➡";
-  color: MenuText;
+  color: ButtonText;
   vertical-align:top;
 }  
 
@@ -72,7 +72,7 @@ table.layout td.fixed { white-space:nowrap; }
 table.layout td.long { width:100%; }
 table.layout td.top { vertical-align: top; }
 
-#tabledetails tr:nth-child(odd) { background-color: Menu; color: MenuText; }
+#tabledetails tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
 #tabledetails td { vertical-align: top; }
 
 table.tab { margin-bottom:1em; }
@@ -81,7 +81,7 @@ table.tab { margin-bottom:1em; }
 table.tab .tab {
   cursor: pointer;
   padding:0.2em 1em;
-  border: 1pt solid Menu;
+  border: 1pt solid ButtonShadow;
   border-bottom: 0 none;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
@@ -99,7 +99,7 @@ table.tab .tab h1 { white-space: nowrap; }
 table.tab .inactivearea { display: none; }
 table.tab .inactivetab {
   padding:0.2em 1em;
-  border: 1pt solid Menu;
+  border: 1pt solid ButtonShadow;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
   border-bottom-right-radius: 0em;
@@ -113,7 +113,7 @@ table.tab .inactivetab {
 
 table.tab td.tabbehind {
   padding:0.2em 1em;
-  border-bottom: 1pt solid Menu;
+  border-bottom: 1pt solid ButtonShadow;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
   border-bottom-right-radius: 0em;
@@ -127,9 +127,9 @@ table.tab td.tabbehind {
 
 table.tab td.tabbelow {
   padding:1em;
-  border-bottom: 1pt solid Menu;
-  border-left: 1pt solid Menu;
-  border-right: 1pt solid Menu;
+  border-bottom: 1pt solid ButtonShadow;
+  border-left: 1pt solid ButtonShadow;
+  border-right: 1pt solid ButtonShadow;
   border-radius: 1em;
   border-top-left-radius: 0em;
   border-top-right-radius: 0em;
@@ -142,20 +142,20 @@ table.tab td.tabbelow {
 }
 
 table.tab td.switch {
-  background-color: Menu;
+  background-color: ButtonFace;
 }
 
 table.tab tr.border td {
   height:0.1em;
-  background-color: Menu;
-  border-left: 1pt solid Menu;
-  border-right: 1pt solid Menu;
-  border-bottom: 1pt solid Menu;
+  background-color: ButtonShadow;
+  border-left: 1pt solid ButtonShadow;
+  border-right: 1pt solid ButtonShadow;
+  border-bottom: 1pt solid ButtonShadow;
 }
 
 #tablelog { width:100%; }
 #tablelog td { vertical-align: top; }
-#tablelog tr:nth-child(odd) { background-color: Menu; color: MenuText; }
+#tablelog tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
 
 #instance td:nth-child(1) { width: 8em; padding-right: 1em; }
 #instance td:nth-child(3) { width: 16em; padding-left: 1em; }
@@ -238,7 +238,7 @@ svg .stand {
   stroke-dasharray:none;
 }
 svg .gen {
-  fill:Menu;
+  fill:ButtonFace;
   fill-opacity:1;
   stroke-opacity:0.7;
   stroke:#000000;
