@@ -11,10 +11,14 @@ class Controller
     @events = {}
     @votes = {}
     @votes_results = {}
+    @communication = {}
     @callbacks = {}
     @instance = EmptyWorkflow.new(id,url)
     @positions = []
-    self.unserialize_event!
+    Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
+      key = ::File::basename(::File::dirname(sub))
+      self.unserialize_event!(:cre,key)
+    end  
     self.unserialize_context!
   end
 
@@ -70,47 +74,70 @@ class Controller
       node.text = @instance.state
     end 
   end# }}}
-  def unserialize_event!(ev={})# {{{
-    if ev.has_key?(:del) 
-      @events.each do |eve,keys|
-        keys.delete_if{|key,val| key == ev[:del]}
-      end  
-      @votes.each do |eve,keys|
-        keys.delete_if{|key,val| key == ev[:del]}
-      end  
-    else
-
-      Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
-        XML::Smart::open(sub) do |doc|
-          key = ::File::basename(::File::dirname(sub))
+  def unserialize_event!(op,key)# {{{
+    case op
+      when :del
+        @communication.delete(key)
+        @events.each do |eve,keys|
+          keys.delete_if{|k,v| key == k}
+        end  
+        @votes.each do |eve,keys|
+          keys.delete_if do |k,v|
+            if key == k
+              @callbacks.each{|voteid,cb|cb.delete_if!(eve,k)}
+              true
+            end  
+          end
+        end  
+      when :upd 
+        if File.exists?(@directory + 'notifications/' + key + '/subscription.xml')
+          url = @communication[key]
+          evs = []
+          vos = []
+          @events.each { |e,v| evs << e }
+          @votes.each { |e,v| vos << e }
+          XML::Smart::open(@directory + 'notifications/' + key + '/subscription.xml') do |doc|
+            doc.namespaces = { 'n' => 'http://riddl.org/ns/common-patterns/notifications-producer/1.0' }
+            turl = doc.find('string(/n:subscription/@url)') 
+            url = turl == '' ? url : turl
+            @communication[key] = url
+            doc.find('/n:subscription/n:topic').each do |t|
+              t.find('n:event').each do |e|
+                @events["#{t.attributes['id']}/#{e}"] ||= {}
+                @events["#{t.attributes['id']}/#{e}"][key] = url
+                evs.delete("#{t.attributes['id']}/#{e}")
+              end
+              t.find('n:vote').each do |e|
+                @votes["#{t.attributes['id']}/#{e}"] ||= {}
+                @votes["#{t.attributes['id']}/#{e}"][key] = url
+                vos.delete("#{t.attributes['id']}/#{e}")
+              end
+            end
+          end
+          evs.each { |e| @votes[e].delete(key) }
+          vos.each do |e| 
+            @callbacks.each{|voteid,cb|cb.delete_if!(e,key)}
+            @votes[e].delete(key)
+          end  
+        end  
+      when :cre
+        XML::Smart::open(@directory + 'notifications/' + key + '/subscription.xml') do |doc|
           doc.namespaces = { 'n' => 'http://riddl.org/ns/common-patterns/notifications-producer/1.0' }
-          url = doc.find('string(/n:subscription/@url)') 
+          turl = doc.find('string(/n:subscription/@url)') 
+          url = turl == '' ? nil : turl
+          @communication[key] = url
           doc.find('/n:subscription/n:topic').each do |t|
             t.find('n:event').each do |e|
               @events["#{t.attributes['id']}/#{e}"] ||= {}
-              if @events["#{t.attributes['id']}/#{e}"].has_key?(key)
-                unless url == "" # has maybe already a websocket in key, so don't overwrite it
-                  @events["#{t.attributes['id']}/#{e}"][key] = url
-                end  
-              else
-                @events["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
-              end  
+              @events["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
             end
             t.find('n:vote').each do |e|
               @votes["#{t.attributes['id']}/#{e}"] ||= {}
-              if @votes["#{t.attributes['id']}/#{e}"].has_key?(key)
-                unless url == "" # has maybe already a websocket in key, so don't overwrite it
-                  @votes["#{t.attributes['id']}/#{e}"][key] = url
-                end  
-              else  
-                @votes["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
-              end  
+              @votes["#{t.attributes['id']}/#{e}"][key] = url
             end
           end
-        end
-      end
-
-    end  
+        end  
+    end    
   end # }}} 
 
   def unserialize_context!# {{{
@@ -198,27 +225,27 @@ class Controller
           vo = build_notification(k,what,c,'vote')
           if u.class == String
             client = Riddl::Client.new(u)
-            params = vo.map{|k,v|Riddl::Parameter::Simple.new(k,v)}
+            params = vo.map{|ke,vo|Riddl::Parameter::Simple.new(ke,vo)}
             params << Riddl::Header.new("CPEE-Callback",callback)
             status, result, headers = client.post params
 
             if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
-              @callbacks[callback] = Callback.new("vote #{vo.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, :http, continue, voteid, callback, inum)
+              @callbacks[callback] = Callback.new("vote #{vo.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :http, continue, voteid, callback, inum)
             else
               vote_callback(result,continue,voteid,callback, inum)
             end
           elsif u.class == Riddl::Utils::Notifications::Producer::WS
-            @callbacks[callback] = Callback.new("vote #{vo.find{|a,b| a == 'notification'}[1]}",self,:vote_callback,:ws,continue,voteid,callback,inum)
+            @callbacks[callback] = Callback.new("vote #{vo.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :ws, continue, voteid, callback, inum)
             e = XML::Smart::string("<vote/>")
-            vo.each do |k,v|
-              e.root.add(k,v)
+            vo.each do |ke,va|
+              e.root.add(ke,va)
             end
             u.send(e.to_s)
           end
         end
 
       end
-      continue.wait
+      continue.wait if item.length > 0
 
     end
     nil
@@ -226,7 +253,12 @@ class Controller
 
   def vote_callback(result,continue,voteid,callback,num)# {{{
     @callbacks.delete(callback)
-    @votes_results[voteid] << (result && result[0] && result[0].value == 'true')
+    if result == :DELETE
+      @votes_results[voteid] << true
+    else
+      @votes_results[voteid] << (result && result[0] && result[0].value == 'true')
+    end  
+
     if (num == @votes_results[voteid].length)
       stop if @votes_results[voteid].include?(false)
       @votes_results.delete(voteid)
@@ -235,6 +267,7 @@ class Controller
   end# }}}
 
   def add_ws(key,socket)# {{{
+    @communication[key] = socket
     @events.each do |a|
       if a[1].has_key?(key)
         a[1][key] = socket
@@ -248,6 +281,7 @@ class Controller
   end# }}}
 
   def del_ws(key)# {{{
+    @communication[key] = nil
     @events.each do |a|
       if a[1].has_key?(key)
         a[1][key] = nil
@@ -258,8 +292,7 @@ class Controller
         a[1][key] = nil
       end
     end
-
-   end# }}}
+  end# }}}
 
   def state
     @instance.state

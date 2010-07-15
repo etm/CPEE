@@ -6,8 +6,10 @@ Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.e
 end
 
 class Callback #{{{
-  def initialize(info,handler,method,protocol,*context)
+  def initialize(info,handler,method,event,key,protocol,*context)
     @info = info
+    @event = event
+    @key = key
     @context = context
     @handler = handler
     @protocol = protocol
@@ -15,6 +17,11 @@ class Callback #{{{
   end
 
   attr_reader :info, :protocol
+
+  def delete_if!(event,key)
+    @handler.send @method, :DELETE, *@context if @key == key && @event == event
+    nil
+  end
 
   def callback(result)
     @handler.send @method, result, *@context
@@ -189,14 +196,17 @@ class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase 
 
   def create
     id = ::File::basename(::File::dirname(@notifications)).to_i
-    $controller[id.to_i].unserialize_event!
+    $controller[id.to_i].unserialize_event!(:cre,@key)
     $controller[id.to_i].notify('properties/handlers/change')
   end
   def delete
     id = ::File::basename(::File::dirname(@notifications)).to_i
-    $controller[id.to_i].unserialize_event!(:del => @key)
+    $controller[id.to_i].unserialize_event!(:del,@key)
     $controller[id.to_i].notify('properties/handlers/change')
   end
   def update
+    id = ::File::basename(::File::dirname(@notifications)).to_i
+    $controller[id.to_i].unserialize_event!(:upd,@key)
+    $controller[id.to_i].notify('properties/handlers/change')
   end
 end #}}}

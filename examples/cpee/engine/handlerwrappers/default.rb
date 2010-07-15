@@ -36,7 +36,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
     @handler_returnValue = ''
     if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
-      $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,:http)
+      $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,nil,nil,:http)
       return
     end
 
