@@ -51,6 +51,14 @@ $(document).ready(function() {// {{{
       });
     }
   });
+  
+  var q = $.parseQuery();
+  if (q.monitor) {
+    $("input[name=instance-url]").val(q.monitor);
+    monitor_instance();
+    toggle_vis_tab($("#instance td.switch"));
+    toggle_vis_tab($("#execution td.switch"));
+  }
 });// }}}
 
 function check_subscription() { // {{{
@@ -112,7 +120,7 @@ function monitor_instance() {// {{{
     type: "GET", 
     url: url + "/properties/schema/",
     success: function(res){
-      $(".tab.hidden").removeClass("hidden");
+      $("table.tab.hidden").removeClass("hidden");
       $(".fixedstatehollow").height($(".fixedstate").height());
       $("input[name=instance-url]").attr("readonly","readonly");
       $("button[name=instance]").attr("disabled","disabled");
@@ -365,144 +373,144 @@ function stop_instance() {// {{{
 }// }}}
 
 function load_testset() {// {{{
-if (running) return;
-running  = true;
-save_dsl = null; // reload dsl and position under all circumstances
-var table = $('#tabledetails');
-table.empty();
-var url = $("input[name=instance-url]").val();
-$.ajax({ 
-  cache: false,
-  dataType: 'xml',
-  url: "Testsets/" + $('select[name=testset-names]').val() + ".xml",
-  success: function(res){ 
-    var testset = res; 
+  if (running) return;
+  running  = true;
+  save_dsl = null; // reload dsl and position under all circumstances
+  var table = $('#details');
+  table.empty();
+  var url = $("input[name=instance-url]").val();
+  $.ajax({ 
+    cache: false,
+    dataType: 'xml',
+    url: "Testsets/" + $('select[name=testset-names]').val() + ".xml",
+    success: function(res){ 
+      var testset = res; 
 
-    $.ajax({
-      type: "GET", 
-      url: url + "/properties/values/context-variables/",
-      success: function(res){
-        var rcount = 0;
-        var values = $("value > *",res);
-        var length = values.length;
-        values.each(function(){
-          var name = this.nodeName;
-          $.ajax({
-            type: "DELETE", 
-            url: url + "/properties/values/context-variables/" + name,
-            success: function(){
-              rcount += 1;
-              if (rcount == length)
-                load_testset_cvs(url,testset);
-            },
-            error: report_failure
-          });  
-        });
-        if (length == 0)
-          load_testset_cvs(url,testset);
-      },
-      error: report_failure
-    });  
-    
-    $.ajax({
-      type: "GET", 
-      url: url + "/properties/values/endpoints/",
-      success: function(res){
-        var rcount = 0;
-        var values = $("value > *",res);
-        var length = values.length;
-        values.each(function(){
-          var name = this.nodeName;
-          $.ajax({
-            type: "DELETE", 
-            url: url + "/properties/values/endpoints/" + name,
-            success: function(){
-              rcount += 1;
-              if (rcount == length)
-                load_testset_eps(url,testset);
-            },
-            error: report_failure
-          });  
-        });
-        if (length == 0)
-          load_testset_eps(url,testset);
-      },
-      error: report_failure
-    });
-    
-    $.ajax({
-      type: "GET", 
-      url: url + "/properties/values/positions/",
-      success: function(res){
-        var rcount = 0;
-        var values = $("value > *",res);
-        var length = values.length;
-        values.each(function(){
-          var name = this.nodeName;
-          $.ajax({
-            type: "DELETE", 
-            url: url + "/properties/values/positions/" + name,
-            success: function(){
-              rcount += 1;
-              if (rcount == length)
-                load_testset_pos(url,testset);
-            },
-            error: report_failure
-          });  
-        });
-        if (length == 0)
-          load_testset_pos(url,testset);
-      },
-      error: report_failure
-    });
-
-    $.ajax({
-      type: "GET", 
-      url: url + "/properties/values/transformation/",
-      success: function(res){
-        var values = $("not-existing",res);
-        $("testset > transformation > *",testset).each(function(){
-          var val = "<content>" + $(this).serializeXML() + "</content>";
-          if (values.length > 0) {
+      $.ajax({
+        type: "GET", 
+        url: url + "/properties/values/context-variables/",
+        success: function(res){
+          var rcount = 0;
+          var values = $("value > *",res);
+          var length = values.length;
+          values.each(function(){
+            var name = this.nodeName;
             $.ajax({
-              type: "POST", 
-              url: url + "/properties/values/",
-              data: ({property: "transformation"}),
-              success: function() { 
-                $.ajax({ 
-                  type: "PUT", 
-                  data: ({content: val}),
-                  url: url + "/properties/values/transformation",
-                  success: function() {
-                    load_testset_des(url,testset); 
-                  },  
-                });
+              type: "DELETE", 
+              url: url + "/properties/values/context-variables/" + name,
+              success: function(){
+                rcount += 1;
+                if (rcount == length)
+                  load_testset_cvs(url,testset);
               },
               error: report_failure
-            });
-          } else {
+            });  
+          });
+          if (length == 0)
+            load_testset_cvs(url,testset);
+        },
+        error: report_failure
+      });  
+      
+      $.ajax({
+        type: "GET", 
+        url: url + "/properties/values/endpoints/",
+        success: function(res){
+          var rcount = 0;
+          var values = $("value > *",res);
+          var length = values.length;
+          values.each(function(){
+            var name = this.nodeName;
             $.ajax({
-              type: "PUT", 
-              url: url + "/properties/values/transformation",
-              data: ({content: val}),
-              success: function() { load_testset_des(url,testset); },
+              type: "DELETE", 
+              url: url + "/properties/values/endpoints/" + name,
+              success: function(){
+                rcount += 1;
+                if (rcount == length)
+                  load_testset_eps(url,testset);
+              },
               error: report_failure
-            });
-          }
-        });
-      },  
-      error: report_failure
-    });
-    
-    $.ajax({
-      type: "PUT", 
-      url: url + "/properties/values/handlerwrapper",
-      success: function() { load_testset_hw(url,testset); },
-      error: report_failure
-    });
-  }
-});
-running  = false;
+            });  
+          });
+          if (length == 0)
+            load_testset_eps(url,testset);
+        },
+        error: report_failure
+      });
+      
+      $.ajax({
+        type: "GET", 
+        url: url + "/properties/values/positions/",
+        success: function(res){
+          var rcount = 0;
+          var values = $("value > *",res);
+          var length = values.length;
+          values.each(function(){
+            var name = this.nodeName;
+            $.ajax({
+              type: "DELETE", 
+              url: url + "/properties/values/positions/" + name,
+              success: function(){
+                rcount += 1;
+                if (rcount == length)
+                  load_testset_pos(url,testset);
+              },
+              error: report_failure
+            });  
+          });
+          if (length == 0)
+            load_testset_pos(url,testset);
+        },
+        error: report_failure
+      });
+
+      $.ajax({
+        type: "GET", 
+        url: url + "/properties/values/transformation/",
+        success: function(res){
+          var values = $("not-existing",res);
+          $("testset > transformation > *",testset).each(function(){
+            var val = "<content>" + $(this).serializeXML() + "</content>";
+            if (values.length > 0) {
+              $.ajax({
+                type: "POST", 
+                url: url + "/properties/values/",
+                data: ({property: "transformation"}),
+                success: function() { 
+                  $.ajax({ 
+                    type: "PUT", 
+                    data: ({content: val}),
+                    url: url + "/properties/values/transformation",
+                    success: function() {
+                      load_testset_des(url,testset); 
+                    },  
+                  });
+                },
+                error: report_failure
+              });
+            } else {
+              $.ajax({
+                type: "PUT", 
+                url: url + "/properties/values/transformation",
+                data: ({content: val}),
+                success: function() { load_testset_des(url,testset); },
+                error: report_failure
+              });
+            }
+          });
+        },  
+        error: report_failure
+      });
+      
+      $.ajax({
+        type: "PUT", 
+        url: url + "/properties/values/handlerwrapper",
+        success: function() { load_testset_hw(url,testset); },
+        error: report_failure
+      });
+    }
+  });
+  running  = false;
 }// }}}
 function load_testset_des(url,testset) {// {{{
   $("testset > description",testset).each(function(){
@@ -562,7 +570,7 @@ function load_testset_pos(url,testset) {// {{{
 
 function tab_click(moi) { // {{{
   var active = $(moi).attr('id').replace(/tab/,'');
-  var tab = moi.parentNode.parentNode;
+  var tab = $(moi).parent().parent();
   var tabs = [];
   $("td.tab",tab).each(function(){
     if (!$(this).attr('class').match(/switch/))
@@ -578,18 +586,18 @@ function tab_click(moi) { // {{{
   });
 } // }}}
 function toggle_vis_tab(moi) {// {{{
-  var tab = moi.parentNode.parentNode;
-  var fix = tab.parentNode.parentNode;
+  var tab = $(moi).parent().parent();
+  var fix = $(fix).parent().parent();
   $('h1',moi).toggleClass('margin');
   $("tr.border",tab).toggleClass('hidden');
   $("tr.area",tab).toggleClass('hidden');
-  if ($(fix).attr('class').match(/fixedstate/)) {
+  if ($(fix).attr('class') && $(fix).attr('class').match(/fixedstate/)) {
     $(".fixedstatehollow").height($(fix).height());
   }  
 }// }}}
 
 function sym_click(node) { // {{{
-  var table = $('#tabledetails');
+  var table = $('#details');
   table.empty();
   table.append('<tr><td><strong>Element:</strong></td><td class="long">' + node.nodeName + '</td></tr>');
   switch(node.nodeName) {
@@ -796,7 +804,7 @@ function format_text(res) {// {{{
 
 function append_to_log(what,type,message) {//{{{
   var d = new Date();
-  $("#tablelog").append("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
+  $("#log").append("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
 }//}}}
 
 function report_failure(){}
