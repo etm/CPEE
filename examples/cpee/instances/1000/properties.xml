@@ -8,10 +8,10 @@
     <message>undefined</message>
   </status>
   <positions>
-    <manipulate_from_inner_1_1__simple_operation>at</manipulate_from_inner_1_1__simple_operation>
+    <inner_1_1__simple_operation xmlns="http://riddl.org/ns/common-patterns/properties/1.0">after</inner_1_1__simple_operation>
   </positions>
   <context-variables>
-    <result_inner_1_1>!map:RescueHash {:"http://localhost:9290/groups/Interface//Sub2/Serv1": !map:RescueHash {:simple_output: 2}, :"http://localhost:9290/groups/Interface//Sub1/Serv1": !map:RescueHash {:simple_output: 2}}
+    <result_inner_1_1>!map:RescueHash {}
 </result_inner_1_1>
     <outer>1
 </outer>
@@ -19,13 +19,13 @@
 </count>
     <inner>1
 </inner>
-    <properties_inner_1_1>!map:RescueHash {:simple_operation: !map:RescueHash {:"http://localhost:9290/groups/Interface//Sub2/Serv1": !map:RescueHash {:property_A: "71", :property_B: "74", :property_C: "11"}, :"http://localhost:9290/groups/Interface//Sub1/Serv1": !map:RescueHash {:property_A: "17", :property_B: "47", :property_C: "11"}}}
+    <properties_inner_1_1>!map:RescueHash {:simple_operation: !map:RescueHash {}}
 </properties_inner_1_1>
   </context-variables>
   <endpoints>
-    <injection>http://localhost:9290/injection/handler</injection>
     <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
     <services>http://localhost:9290/groups/Interface</services>
+    <injection>http://localhost:9290/injection/handler</injection>
   </endpoints>
   <dsl># ========== Code was injected via: inner==========
   activity :outer_0, :call, :timeout, :method =&gt; "post", :parameters =&gt; [ { :wait =&gt; context.count } ]
