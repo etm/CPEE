@@ -18,8 +18,13 @@ class Controller
     Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
       key = ::File::basename(::File::dirname(sub))
       self.unserialize_event!(:cre,key)
-    end  
-    self.unserialize_context!
+    end
+    unless self.unserialize_context! == 'stopped'
+      XML::Smart::modify(@directory + 'properties.xml') do |doc|
+        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        doc.find("/p:properties/p:state").first.text = 'stopped'
+      end
+    end
   end
 
   attr_reader :callbacks
@@ -140,10 +145,14 @@ class Controller
     end    
   end # }}} 
 
-  def unserialize_context!# {{{
+  def unserialize_context! # {{{
     hw = nil
+    state = nil
+
     XML::Smart::open(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+
+      state = doc.find("string(/p:properties/p:state)")
 
       @instance.context.clear
       doc.find("/p:properties/p:context-variables/p:*").each do |e|
@@ -178,6 +187,8 @@ class Controller
         node.text = @instance.handlerwrapper.to_s
       end 
     end
+
+    state
   end# }}}
 
   def notify(what,content={})# {{{
