@@ -34,6 +34,7 @@ var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change';// }}}
 
 $(document).ready(function() {// {{{
+  $("input[name=base-url]").val(location.protocol + "//" + location.host + ":9298/");
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(monitor_instance);
   $("button[name=testset]").click(load_testset);
