@@ -17,7 +17,6 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
     client = Riddl::Client.new(@handler_endpoint)
 
-    Thread.new { Thread.stop; }
     params = []
     callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
     (parameters[:parameters] || {}).each do |h|
