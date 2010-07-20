@@ -319,16 +319,16 @@ function monitor_instance_pos() {// {{{
   });
 }// }}}
 function monitor_instance_pos_change(notification,event) {// {{{
-if (save_state == "stopping") return;
-var parts = YAML.eval(notification);
-if (event == "activity_calling")
-  format_visual_add(parts.activity,"active")
-if (event == "activity_done")
-  format_visual_remove(parts.activity,"active")
+  if (save_state == "stopping") return;
+  var parts = JSON.parse(notification);
+  if (event == "activity_calling")
+    format_visual_add(parts.activity,"active")
+  if (event == "activity_done")
+    format_visual_remove(parts.activity,"active")
 } // }}}
 
 function monitor_instance_vote_add(notification) {// {{{
-  var parts = YAML.eval(notification);
+  var parts = JSON.parse(notification);
   var ctv = $("#votes");
 
   var astr = "<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td>";
@@ -805,6 +805,12 @@ function format_text(res) {// {{{
 
 function append_to_log(what,type,message) {//{{{
   var d = new Date();
+  message = message.replace(/,\"/g,', "');
+  message = message.replace(/,\{/g,', {');
+  message = message.replace(/,\[/g,', [');
+  message = message.replace(/:\"/g,': "');
+  message = message.replace(/:\{/g,': {');
+  message = message.replace(/:\[/g,': [');
   $("#log").append("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
 }//}}}
 

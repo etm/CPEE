@@ -1,8 +1,6 @@
 require ::File.dirname(__FILE__) + '/empty_workflow'
 require 'xml/smart'
-require 'yaml'
-
-class Object; def to_yaml_style; :inline; end; end
+require 'active_support'
 
 class Controller
 
@@ -61,7 +59,7 @@ class Controller
       node = doc.find("/p:properties/p:context-variables").first
       node.children.delete_all!
       @instance.context.each do |k,v|
-        node.add(k.to_s,YAML::dump(v).sub(/^--- /,''))
+        node.add(k.to_s,ActiveSupport::JSON::encode(v))
       end
       
       node = doc.find("/p:properties/p:endpoints").first
@@ -156,7 +154,7 @@ class Controller
 
       @instance.context.clear
       doc.find("/p:properties/p:context-variables/p:*").each do |e|
-        @instance.context[e.name.to_s.to_sym] = YAML::load(e.text) rescue nil
+        @instance.context[e.name.to_s.to_sym] = ActiveSupport::JSON::decode(e.text) rescue nil
       end
 
       @instance.endpoints.clear
@@ -316,7 +314,7 @@ private
     res << ['key'         , key]
     res << ['topic'       , ::File::dirname(what)]
     res << [type          , ::File::basename(what)]
-    res << ['notification', content.to_yaml.sub('--- ','')]
+    res << ['notification', ActiveSupport::JSON.encode(content)]
     res << ['uid'         , Digest::MD5.hexdigest(Kernel::rand().to_s)]
     res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
     # TODO add secret to fp
