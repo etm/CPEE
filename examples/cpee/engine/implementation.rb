@@ -77,7 +77,14 @@ class NewInstance < Riddl::Implementation #{{{
     name = @p[0].value
     id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e)).to_i}.sort.last
     id = (id.nil? ? 1 : id  + 1)
-    Dir.mkdir("instances/#{id}")
+    1.upto id do |i|
+      begin
+        Dir.mkdir("instances/#{i}")
+        id = i
+        break
+      rescue => details
+      end
+    end  
     FileUtils.cp('instances/properties.init',"instances/#{id}/properties.xml")
     FileUtils.cp_r('instances/notifications.init',"instances/#{id}/notifications")
     XML::Smart.modify("instances/#{id}/properties.xml") do |doc|

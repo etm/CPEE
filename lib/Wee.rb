@@ -334,8 +334,7 @@ class Wee
       wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && (type[:wait].is_a?(Integer)) ? type[:wait] : Thread.current[:branches].size)
       finished_threads_count = 0
 
-      branch_count = true
-      while branch_count
+      while true
         finished_threads_count = 0
         Thread.current[:branches].each do |thread| 
           finished_threads_count += 1 if thread[:branch_status] == true
@@ -343,9 +342,13 @@ class Wee
         if finished_threads_count < wait_count && finished_threads_count < Thread.current[:branches].size && self.__wee_state != :stopping
           Thread.current[:branch_event].join
         else  
-          branch_count = false
+          break
         end
       end
+      Thread.current[:mutex].synchronize do
+        Thread.current[:branch_event].run
+        Thread.current[:branch_event] = nil
+      end  
       Thread.current[:branch_run] = true if Thread.current[:branch_search] == false
 
       unless self.__wee_state == :stopping || self.__wee_state == :stopped
@@ -375,11 +378,13 @@ class Wee
         end
         yield(*local)
         Thread.current[:branch_status] = true
-        branch_parent[:mutex].synchronize do # enable the while in parallel() to operate without polling
+        branch_parent[:mutex].synchronize do
           pte = branch_parent[:branch_event]
-          branch_parent[:branch_event] = Thread.new{Thread.stop}
-          pte.run
-        end
+          unless pte.nil?
+            branch_parent[:branch_event] = Thread.new{Thread.stop}
+            pte.run
+          end  
+        end  
       end
     end# }}}
 

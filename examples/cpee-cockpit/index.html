@@ -8,19 +8,12 @@
     <script type="text/javascript" src="JS/helpers/util.js"></script>
     <script type="text/javascript" src="JS/helpers/printf.js"></script>
     <script type="text/javascript" src="JS/helpers/strftime-min.js"></script>
-    <script type="text/javascript" src="JS/helpers/yaml.js"></script>
-    <script type="text/javascript" src="JS/helpers/browserdetect.js"></script>
+    <script type="text/javascript" src="JS/helpers/parsequery.js"></script>
     <script type="text/javascript" src="JS/graph.js"></script>
     <script type="text/javascript" src="JS/main.js"></script>
   </head>
   <body>
-    <script type="text/javascript">
-      if (!(BrowserDetect.browser == "Mozilla" || BrowserDetect.browser == "Firefox") && !BrowserDetect.version == '3.9') {
-        alert("Download");
-      }  
-    </script>
-
-    <table class="tab layout">
+    <table id="instance" class="tab layout">
       <tr>
         <td class="tab switch" onclick="toggle_vis_tab(this)"><h1></h1></td>
         <td class="tab"><h1>CPEE Instance</h1></td>
@@ -30,7 +23,7 @@
       <tr class="area">
         <td class="tabbelow" colspan="3">
           <div id="areainstance" class='area'>
-            <table id="instance" class='layout'>
+            <table class='layout'>
             <tr>
               <td>Base Url:</td>
               <td><input name="base-url" type="text" value="http://localhost:9298"/></td>
@@ -178,7 +171,7 @@
                 </svg>
               </td>    
               <td class='top'>
-                <table id="tabledetails" class="layout">
+                <table id="details" class="layout">
                 </table>
               </td>  
             </tr>  
@@ -186,7 +179,7 @@
           </div>  
           <div id="areadsl" class="inactivearea"></div>
           <div id="arealog" class="inactivearea">
-            <table id="tablelog" class="layout">
+            <table id="log" class="layout">
             </table>
           </div>
         </td>

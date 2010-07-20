@@ -1,8 +1,6 @@
 require ::File.dirname(__FILE__) + '/empty_workflow'
 require 'xml/smart'
-require 'yaml'
-
-class Object; def to_yaml_style; :inline; end; end
+require 'active_support'
 
 class Controller
 
@@ -18,8 +16,13 @@ class Controller
     Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
       key = ::File::basename(::File::dirname(sub))
       self.unserialize_event!(:cre,key)
-    end  
-    self.unserialize_context!
+    end
+    unless self.unserialize_context! == 'stopped'
+      XML::Smart::modify(@directory + 'properties.xml') do |doc|
+        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        doc.find("/p:properties/p:state").first.text = 'stopped'
+      end
+    end
   end
 
   attr_reader :callbacks
@@ -56,7 +59,7 @@ class Controller
       node = doc.find("/p:properties/p:context-variables").first
       node.children.delete_all!
       @instance.context.each do |k,v|
-        node.add(k.to_s,YAML::dump(v).sub(/^--- /,''))
+        node.add(k.to_s,ActiveSupport::JSON::encode(v))
       end
       
       node = doc.find("/p:properties/p:endpoints").first
@@ -140,14 +143,18 @@ class Controller
     end    
   end # }}} 
 
-  def unserialize_context!# {{{
+  def unserialize_context! # {{{
     hw = nil
+    state = nil
+
     XML::Smart::open(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
 
+      state = doc.find("string(/p:properties/p:state)")
+
       @instance.context.clear
       doc.find("/p:properties/p:context-variables/p:*").each do |e|
-        @instance.context[e.name.to_s.to_sym] = YAML::load(e.text) rescue nil
+        @instance.context[e.name.to_s.to_sym] = ActiveSupport::JSON::decode(e.text) rescue nil
       end
 
       @instance.endpoints.clear
@@ -178,6 +185,8 @@ class Controller
         node.text = @instance.handlerwrapper.to_s
       end 
     end
+
+    state
   end# }}}
 
   def notify(what,content={})# {{{
@@ -305,7 +314,7 @@ private
     res << ['key'         , key]
     res << ['topic'       , ::File::dirname(what)]
     res << [type          , ::File::basename(what)]
-    res << ['notification', content.to_yaml.sub('--- ','')]
+    res << ['notification', ActiveSupport::JSON.encode(content)]
     res << ['uid'         , Digest::MD5.hexdigest(Kernel::rand().to_s)]
     res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
     # TODO add secret to fp

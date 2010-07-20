@@ -35,7 +35,13 @@ td.switch h1.margin:before {
   vertical-align:top;
 }  
 
-#areainstance   {                                }
+#areainstance                       {                                }
+#areainstance td:nth-child(1)       {  width: 8em; padding-right: 1em; }
+#areainstance td:nth-child(3)       { width: 16em; padding-left: 1em; }
+#areainstance input                 { width: 100%;  }
+#areainstance button[name=testset]  { width: 100%;  }
+#areainstance button[name=base]     { width: 100%;  }
+#areainstance button[name=instance] { width: 100%;  }
 #areacontext    {                                }
 #areaendpoints  {                                }
 #areaposition   { height: 7.2em; overflow: auto; }
@@ -72,8 +78,8 @@ table.layout td.fixed { white-space:nowrap; }
 table.layout td.long { width:100%; }
 table.layout td.top { vertical-align: top; }
 
-#tabledetails tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
-#tabledetails td { vertical-align: top; }
+#details tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
+#details td { vertical-align: top; }
 
 table.tab { margin-bottom:1em; }
 .fixedstate table.tab { margin-bottom:0; }
@@ -153,16 +159,9 @@ table.tab tr.border td {
   border-bottom: 1pt solid ButtonShadow;
 }
 
-#tablelog { width:100%; }
-#tablelog td { vertical-align: top; }
-#tablelog tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
-
-#instance td:nth-child(1) { width: 8em; padding-right: 1em; }
-#instance td:nth-child(3) { width: 16em; padding-left: 1em; }
-#instance input                 { width: 100%;  }
-#instance button[name=testset]  { width: 100%;  }
-#instance button[name=base]     { width: 100%;  }
-#instance button[name=instance] { width: 100%;  }
+#log { width:100%; }
+#log td { vertical-align: top; }
+#log tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
 
 #endpoints {
   border-collapse:collapse;
