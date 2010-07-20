@@ -17,13 +17,12 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
     client = Riddl::Client.new(@handler_endpoint)
 
-    Thread.new { Thread.stop; }
     params = []
     callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
     (parameters[:parameters] || {}).each do |h|
       if h.class == Hash
         h.each do |k,v|
-          params <<  Riddl::Parameter::Simple.new("#{k}","#{v}")
+          params <<  Riddl::Parameter::Simple.new("#{k}",ActiveSupport::JSON::encode(v))
         end  
       end  
     end

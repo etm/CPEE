@@ -31,7 +31,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def activity_handle(passthrough, parameters)
     $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters) 
-    cpee_instance = "#{@url}/#{@instance}/"
+    cpee_instance = "#{@url}/#{@instance}"
 
     params = []
     if parameters.key?(:info) && parameters[:info] == 'true' # {{{
@@ -60,12 +60,14 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       # Give postion to injection-handler
       @handler_returnValue = resp.value('key')
       injection_handler = Riddl::Client.new(injection_handler_uri)
-      status, resp = injection_handler.post [Riddl::Parameter::Simple.new("notification-key", resp.value('key'))] # here could be consumer, producer secrets
+      status, resp = injection_handler.post [
+        Riddl::Parameter::Simple.new("notification-key", resp.value('key')), 
+        Riddl::Parameter::Simple.new('activity', @handler_position), 
+        Riddl::Parameter::Simple.new('instance', cpee_instance)] # here could be consumer, producer secrets
       raise "Subscription to injection-handler at #{injection_handler_uri} failed with status #{status}" unless status == 200
       raise Wee::Signal::SkipManipulate # }}}
     elsif parameters.key?(:method) #{{{
       client = Riddl::Client.new(@handler_endpoint)
-
       type = parameters[:method]
       (parameters[:parameters] || {}).each do |h|
         if h.class == Hash
