@@ -386,7 +386,7 @@ function load_testset() {// {{{
     url: "Testsets/" + $('select[name=testset-names]').val() + ".xml",
     success: function(res){ 
       var testset = res; 
-
+      
       $.ajax({
         type: "GET", 
         url: url + "/properties/values/context-variables/",

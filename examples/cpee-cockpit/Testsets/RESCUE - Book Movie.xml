@@ -187,20 +187,12 @@
           <xsl:text>end</xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
-        <!-- RESCUE -->
         <xsl:if test="name()='group'">
-          <xsl:text># ========== Code was injected via: </xsl:text>
-          <xsl:value-of select="@source"/>
-          <xsl:text>==========</xsl:text>
-          <xsl:call-template name="print-newline"/>
           <xsl:apply-templates>
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
           </xsl:apply-templates>
           <xsl:call-template name="print-newline"/>
-          <xsl:text># ========== End of injected code ============ </xsl:text>
-          <xsl:call-template name="print-newline"/>
         </xsl:if>
-        <!-- RESCUE -->
       </xsl:template>
       
       <xsl:template match="d:alternative">
