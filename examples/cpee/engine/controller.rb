@@ -154,7 +154,7 @@ class Controller
 
       @instance.context.clear
       doc.find("/p:properties/p:context-variables/p:*").each do |e|
-        @instance.context[e.name.to_s.to_sym] = ActiveSupport::JSON::decode(e.text) rescue nil
+        @instance.context[e.name.to_s.to_sym] = ActiveSupport::JSON::decode_translate(e.text) rescue nil
       end
 
       @instance.endpoints.clear
@@ -191,9 +191,10 @@ class Controller
 
   def notify(what,content={})# {{{
     item = @events[what]
+    threads = []
     if item
       item.each do |ke,ur|
-        Thread.new(ke,ur) do |key,url|
+        threads << Thread.new(ke,ur) do |key,url|
           ev = build_notification(key,what,content,'event')
           if url.class == String
             client = Riddl::Client.new(url)
@@ -206,8 +207,8 @@ class Controller
             url.send(e.to_s)
           end  
         end
-
       end
+      threads.each{|t|t.join}
     end
   end# }}}
 
@@ -256,8 +257,9 @@ class Controller
       end
       continue.wait if item.length > 0
 
+      return !@votes_results.delete(voteid).include?(false)
     end
-    nil
+    true
   end# }}}
 
   def vote_callback(result,continue,voteid,callback,num)# {{{
@@ -267,10 +269,7 @@ class Controller
     else
       @votes_results[voteid] << (result && result[0] && result[0].value == 'true')
     end  
-
     if (num == @votes_results[voteid].length)
-      stop if @votes_results[voteid].include?(false)
-      @votes_results.delete(voteid)
       continue.continue
     end  
   end# }}}

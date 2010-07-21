@@ -1,11 +1,39 @@
 class RescueHash < Hash
+  def self::new_from_obj(obj)
+    RescueHash.new.merge(obj)
+  end
+
   def value(key)
     results = []
     self.each do |k,v|
       results << v.value(key) if v.class == RescueHash
-      results << v if k == key.to_sym
+      results << v if k == key
     end
     results.length != 1 ? results.flatten : results[0]
+  end
+
+  def to_json(options = nil) #:nodoc:
+    hash = as_json(options)
+
+    result = '{ "!map:RescueHash": {'
+    result << hash.map do |key, value|
+      "#{ActiveSupport::JSON.encode(key.to_s)}:#{ActiveSupport::JSON.encode(value, options)}"
+    end * ','
+    result << '}}'
+  end
+
+  def as_json(options = nil) #:nodoc:
+    if options
+      if attrs = options[:except]
+        except(*Array.wrap(attrs))
+      elsif attrs = options[:only]
+        slice(*Array.wrap(attrs))
+      else
+        self
+      end
+    else
+      self
+    end
   end
 end
 
@@ -49,19 +77,10 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     end # }}}
     if parameters.key?(:service) # {{{
       injection_handler_uri = parameters[:service][1][:injection_handler]
-      # Subscribe Injection-Handler to syncing_after
-      cpee = Riddl::Client.new(cpee_instance)
-      status, resp = cpee.resource("notifications/subscriptions").post [
-        Riddl::Parameter::Simple.new("url", "#{injection_handler_uri}"),
-        Riddl::Parameter::Simple.new("topic", "running"),
-        Riddl::Parameter::Simple.new("votes", "syncing_after")
-      ]
-      raise "Subscribtion of #{injection_handler_uri} at #{cpee_instance} failed with status: #{status}" unless status == 200
       # Give postion to injection-handler
-      @handler_returnValue = resp.value('key')
+      @handler_returnValue = nil 
       injection_handler = Riddl::Client.new(injection_handler_uri)
       status, resp = injection_handler.post [
-        Riddl::Parameter::Simple.new("notification-key", resp.value('key')), 
         Riddl::Parameter::Simple.new('activity', @handler_position), 
         Riddl::Parameter::Simple.new('instance', cpee_instance)] # here could be consumer, producer secrets
       raise "Subscription to injection-handler at #{injection_handler_uri} failed with status #{status}" unless status == 200
@@ -175,6 +194,8 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
   end
   def inform_syntax_error(err)
+    puts err.message
+    puts err.backtrace
     $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message)
   end
   def inform_manipulate_change(status,context,endpoints)

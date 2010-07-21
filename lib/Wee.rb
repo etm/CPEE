@@ -22,6 +22,7 @@ class Wee
   module Signal# {{{
     class SkipManipulate < Exception; end
     class StopSkipManipulate < Exception; end
+    class Stop < Exception; end
     class Proceed < Exception; end
   end  # }}}
 
@@ -230,6 +231,7 @@ class Wee
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary] || sm
 
       Thread.current[:continue] = Continue.new
+      p position
       begin
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
 
@@ -237,7 +239,7 @@ class Wee
         @__wee_positions << wp
         handlerwrapper.inform_position_change
 
-        handlerwrapper.vote_sync_before
+        raise Signal::Stop unless handlerwrapper.vote_sync_before
         case type
           when :manipulate
             if block_given?
@@ -278,7 +280,7 @@ class Wee
             Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.__wee_state == :stopping || self.__wee_state == :stopped
 
             handlerwrapper.activity_no_longer_necessary if Thread.current[:nolongernecessary]
-            if self.__wee_state == :stopping || self.__wee_state == :stopped
+            if self.__wee_state == :stopping
               handlerwrapper.activity_stop
               wp.passthrough = handlerwrapper.activity_passthrough_value
             end  
@@ -302,19 +304,21 @@ class Wee
         end
         raise Signal::Proceed
       rescue Signal::SkipManipulate, Signal::Proceed
-        if self.__wee_state != :stopping && !Thread.current[:nolongernecessary]
+        if wp.passthrough.nil?
           handlerwrapper.inform_activity_done
-          handlerwrapper.vote_sync_after
+          wp.detail = :after
+        end  
+        if self.__wee_state != :stopping && !Thread.current[:nolongernecessary]
+          vr = handlerwrapper.vote_sync_after
+          self.__wee_state = :stopping unless vr
         end
-        if self.__wee_state != :stopping
+        if self.__wee_state != :stopping && self.__wee_state != :stopped
           @__wee_positions.delete wp
           handlerwrapper.inform_position_change
         end
-      rescue Signal::StopSkipManipulate
+      rescue Signal::StopSkipManipulate, Signal::Stop
         self.__wee_state = :stopping
       rescue => err
-        puts err.message
-        puts err.backtrace
         handlerwrapper.inform_activity_failed err
         self.__wee_state = :stopping
       end
@@ -506,6 +510,10 @@ class Wee
       branch = Thread.current
       return false if @__wee_search_positions.empty? || branch[:branch_search] == false
 
+      p @__wee_search_positions
+      p position
+      p '-------'
+
       if position && @__wee_search_positions.include?(position) # matching searchpos => start execution from here
         branch[:branch_search] = false # execute all activities in THIS branch (thread) after this point
         branch[:branch_run] = true # new threads (branches) spawned by this branch (thread) should inherit that we no longer want to search
@@ -521,6 +529,7 @@ class Wee
   
   public
     def __wee_state=(newState)# {{{
+      return nil if newState == @__wee_state
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
       @__wee_state = newState
@@ -605,6 +614,7 @@ public
       @wfsource
     else
       @wfsource = code unless block_given?
+      puts @wfsource
       (class << self; self; end).class_eval do
         define_method :__wee_control_flow do
           @dslr.__wee_state = :running
@@ -629,12 +639,12 @@ public
   # Stop the workflow execution
   def stop# {{{
     Thread.new do
-      @dslr.__wee_state = :stopping
+        @dslr.__wee_state = :stopping
     end  
   end# }}}
   # Start the workflow execution
   def start# {{{
-    return nil if @dslr.__wee_state == :running
+    return nil if @dslr.__wee_state != :stopped && @dslr.__wee_state != :ready
     @dslr.__wee_main = Thread.new do
       __wee_control_flow
     end
