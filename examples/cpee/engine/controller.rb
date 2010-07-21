@@ -13,6 +13,7 @@ class Controller
     @callbacks = {}
     @instance = EmptyWorkflow.new(id,url)
     @positions = []
+    @thread = nil
     Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
       key = ::File::basename(::File::dirname(sub))
       self.unserialize_event!(:cre,key)
@@ -28,16 +29,18 @@ class Controller
   attr_reader :callbacks
 
   def start# {{{
+    @thread.join if !@thread.nil? && @thread.alive?
     unless @positions.empty?
       @instance.search(@positions)
     end
-    @instance.start
+    @thread = @instance.start
   end# }}}
 
   def stop# {{{
     t = @instance.stop
     t.run
     @callbacks.delete_if{|k,c| c.callback(nil); true}
+    @thread.join if !@thread.nil? && @thread.alive?
   end# }}}
 
   def position# {{{
@@ -191,10 +194,9 @@ class Controller
 
   def notify(what,content={})# {{{
     item = @events[what]
-    threads = []
     if item
       item.each do |ke,ur|
-        threads << Thread.new(ke,ur) do |key,url|
+        Thread.new(ke,ur) do |key,url|
           ev = build_notification(key,what,content,'event')
           if url.class == String
             client = Riddl::Client.new(url)
@@ -208,7 +210,6 @@ class Controller
           end  
         end
       end
-      threads.each{|t|t.join}
     end
   end# }}}
 

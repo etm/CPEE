@@ -226,12 +226,12 @@ class Wee
     # endpoint: (only with :call) ep of the service
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters, &blk)# {{{
+      p "------> #{position}"
       position, lay = __wee_position_test position
       sm = __wee_is_in_search_mode(position)
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary] || sm
 
       Thread.current[:continue] = Continue.new
-      p position
       begin
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
 
@@ -310,7 +310,11 @@ class Wee
         end  
         if self.__wee_state != :stopping && !Thread.current[:nolongernecessary]
           vr = handlerwrapper.vote_sync_after
-          self.__wee_state = :stopping unless vr
+          unless vr
+            puts "vote stopping"
+            self.__wee_state = :stopping
+            puts "vote stopped"
+          end  
         end
         if self.__wee_state != :stopping && self.__wee_state != :stopped
           @__wee_positions.delete wp
@@ -510,9 +514,8 @@ class Wee
       branch = Thread.current
       return false if @__wee_search_positions.empty? || branch[:branch_search] == false
 
-      p @__wee_search_positions
-      p position
-      p '-------'
+      puts  "*** #{@__wee_search_positions.inspect}"
+      puts  "*** #{position}"
 
       if position && @__wee_search_positions.include?(position) # matching searchpos => start execution from here
         branch[:branch_search] = false # execute all activities in THIS branch (thread) after this point
@@ -540,7 +543,9 @@ class Wee
         __wee_recursive_continue(@__wee_main)
         __wee_recursive_join(@__wee_main)
         @__wee_state = :stopped
+        p "stopped"
         handlerwrapper.inform_state_change @__wee_state
+        p "stoppeder"
       end
       @__wee_state
     end# }}}
@@ -613,33 +618,36 @@ public
     if code.nil? && !block_given?
       @wfsource
     else
+      r = rand()
+      p "insert #{r}"
       @wfsource = code unless block_given?
-      puts @wfsource
       (class << self; self; end).class_eval do
         define_method :__wee_control_flow do
           @dslr.__wee_state = :running
+          puts "yo #{r}"
           begin
             if block_given?
               @dslr.instance_eval(&blk)
             else
-              @dslr.instance_eval(@wfsource)
+              @dslr.instance_eval(code)
             end  
           rescue => err
             @dslr.__wee_state = :stopping
             handlerwrapper = @dslr.__wee_handlerwrapper.new @dslr.__wee_handlerwrapper_args
             handlerwrapper.inform_syntax_error(err)
           end
+          puts "yai #{r}"
           @dslr.__wee_state = :finished if @dslr.__wee_state == :running
         end
       end
-      blk  
+      block_given? ? blk : code
     end
   end# }}}
 
   # Stop the workflow execution
   def stop# {{{
     Thread.new do
-        @dslr.__wee_state = :stopping
+      @dslr.__wee_state = :stopping
     end  
   end# }}}
   # Start the workflow execution
