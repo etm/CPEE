@@ -171,7 +171,7 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
         $controller[id.to_i].notify('properties/context-variables/change')
       else
         nil
-    end  
+    end
   end
 
   def create; sync; end
@@ -251,4 +251,3 @@ module ActiveSupport # {{{
     end
   end
 end # }}}
-
