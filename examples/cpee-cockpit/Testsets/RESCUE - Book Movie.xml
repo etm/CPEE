@@ -59,13 +59,13 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-        if result[0].include?(:reservation_id) # must be changed to status/error-code when they are implemented
-          context.reservation_number = result[0].value(:reservation_id)
-          context.starting_time = result[0].value(:starting_time)
-          context.selected_title = result[0].value(:movie_title)
-          context.selected_date = result[0].value(:selected_date)
-          context.hall = result[0].value(:hall)
-          context.selected_cinema = CGI::unescapeHTML("#{properties.value(:perform_book)[0].value(:name)}\n#{properties.value(:perform_book)[0].value(:street)}\n#{properties.value(:perform_book)[0].value(:zip)} #{properties.value(:perform_book)[0].value(:city)}")
+        if result[0]['status'] == 200 
+          context.reservation_number = result[0].value('reservation_id')
+          context.starting_time = result[0].value('starting_time')
+          context.selected_title = result[0].value('movie_title')
+          context.selected_date = result[0].value('selected_date')
+          context.hall = result[0].value('hall')
+          context.selected_cinema = CGI::unescapeHTML("#{properties.value('perform_book')[0].value('name')}\n#{properties.value('perform_book')[0].value('street')}\n#{properties.value('perform_book')[0].value('zip')} #{properties.value('perform_book')[0].value('city')}")
         end
       </manipulate>
     </call>  

@@ -1,4 +1,6 @@
 <testsets>
+  <testset>RESCUE - Loop-Parallel Injection</testset>
+  <testset>RESCUE - Book Movie</testset>
   <testset>Wrong Positions</testset>
   <testset>Coopis Testset</testset>
   <testset>ICSOC Testset</testset>
@@ -8,8 +10,4 @@
   <testset>Bad Loop</testset>
   <testset>Linear</testset>
   <testset>Endpoints</testset>
-  <testset>RESCUE - Parallel Injection</testset>
-  <testset>RESCUE - Loop Injection</testset>
-  <testset>RESCUE - Loop-Parallel Injection</testset>
-  <testset>RESCUE - Book Movie</testset>
 </testsets>
