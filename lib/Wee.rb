@@ -306,6 +306,7 @@ class Wee
         if wp.passthrough.nil?
           handlerwrapper.inform_activity_done
           wp.detail = :after
+          handlerwrapper.inform_position_change
         end  
         if self.__wee_state != :stopping && !Thread.current[:nolongernecessary]
           vr = handlerwrapper.vote_sync_after
