@@ -4,7 +4,8 @@
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
     <outer>2</outer>
-    <inner>1</inner>
+    <middle>2</middle>
+    <inner>2</inner>
   </context-variables>
   <endpoints>
     <services>http://localhost:9290/groups/Interface</services>
@@ -14,23 +15,45 @@
     <loop post_test="context.outer &gt; 0">
       <parallel>
         <parallel_branch>
-          <loop post_test="context.inner &gt; 0">
-            <call id="branch_x" endpoint="services">
-              <parameters><!--{{{--> 
-                <service>
-                  <serviceoperation>"no_params"</serviceoperation>
-                  <injection_handler>endpoints.injection</injection_handler>
-                </service>
-              </parameters><!--}}}-->
-            </call> 
-            <manipulate id="reduce_inner">
-              context.inner -= 1
+          <loop post_test="context.middle &gt; 0">
+            <parallel>
+              <parallel_branch>
+                <manipulate id="m01"/>
+                  <call id="branch_x" endpoint="services">
+                    <parameters><!--{{{--> 
+                      <service>
+                        <serviceoperation>"no_params"</serviceoperation>
+                        <injection_handler>endpoints.injection</injection_handler>
+                      </service>
+                    </parameters><!--}}}-->
+                  </call> 
+              </parallel_branch>
+              <parallel_branch>
+                <manipulate id="m02"/>
+                <loop post_test="context.inner &gt; 0">
+                  <call id="branch_y" endpoint="services">
+                    <parameters><!--{{{--> 
+                      <service>
+                        <serviceoperation>"no_params"</serviceoperation>
+                        <injection_handler>endpoints.injection</injection_handler>
+                      </service>
+                    </parameters><!--}}}-->
+                  </call> 
+                  <manipulate id="reduce_inner">
+                    context.inner -= 1
+                  </manipulate>
+                </loop>
+              </parallel_branch>
+            </parallel>
+            <manipulate id="reduce_middle">
+              context.middle -= 1
+              context.inner = 2
             </manipulate>
           </loop>
         </parallel_branch>
         <parallel_branch>
-          <!-- manipulate id="make_it_work"/ -->
-          <call id="branch_b" endpoint="services">
+          <manipulate id="m03"/>
+          <call id="branch_z" endpoint="services">
             <parameters><!--{{{--> 
               <service>
                 <serviceoperation>"no_params"</serviceoperation>
@@ -43,6 +66,7 @@
       <manipulate id="reduce_outer">
         context.outer -= 1
         context.inner = 2
+        context.middle = 2
       </manipulate>
     </loop>
   </description>
