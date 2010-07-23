@@ -232,7 +232,6 @@ module ActiveSupport # {{{
           when Hash
             if obj.length == 1 && obj.keys.first =~ /!map:([A-Z][a-zA-Z0-9_]*)/
               newobj = eval($1)
-              p obj[obj.keys.first]
               res = newobj.new_from_obj(translate_json_objects(obj[obj.keys.first]))
             else
               res = Hash.new

@@ -24,6 +24,7 @@ class Wee
     class StopSkipManipulate < Exception; end
     class Stop < Exception; end
     class Proceed < Exception; end
+    class NoLongerNecessary < Exception; end
   end  # }}}
 
   class ManipulateRealization# {{{
@@ -227,14 +228,17 @@ class Wee
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters, &blk)# {{{
       position, lay = __wee_position_test position
-      sm = __wee_is_in_search_mode(position)
-      return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary] || sm
+      return if __wee_is_in_search_mode(position)
+      return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
 
       Thread.current[:continue] = Continue.new
       begin
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
-
+        if Thread.current[:branch_position]
+          @__wee_positions.delete Thread.current[:branch_position]
+        end  
         wp = Wee::Position.new(position, :at, nil)
+        Thread.current[:branch_position] = wp
         @__wee_positions << wp
         handlerwrapper.inform_position_change
 
@@ -260,6 +264,9 @@ class Wee
                 (mr.changed_context.any? ? mr.changed_context.uniq : nil),
                 (mr.changed_endpoints.any? ? mr.changed_endpoints.uniq : nil)
               )
+              handlerwrapper.inform_activity_done
+              wp.detail = :after
+              handlerwrapper.inform_position_change
             end  
           when :call
             params = { }
@@ -278,13 +285,16 @@ class Wee
             handlerwrapper.activity_handle passthrough, params
             Thread.current[:continue].wait unless Thread.current[:nolongernecessary] || self.__wee_state == :stopping || self.__wee_state == :stopped
 
-            handlerwrapper.activity_no_longer_necessary if Thread.current[:nolongernecessary]
+            if Thread.current[:nolongernecessary]
+              handlerwrapper.activity_no_longer_necessary 
+              raise Signal::NoLongerNecessary
+            end  
             if self.__wee_state == :stopping
               handlerwrapper.activity_stop
               wp.passthrough = handlerwrapper.activity_passthrough_value
             end  
 
-            if block_given? && self.__wee_state != :stopping && !Thread.current[:nolongernecessary]
+            if wp.passthrough.nil? && block_given?
               handlerwrapper.inform_activity_manipulate
               mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints,@__wee_status)
               status = handlerwrapper.activity_result_status
@@ -300,26 +310,21 @@ class Wee
                 (mr.changed_endpoints.any? ? mr.changed_endpoints.uniq : nil)
               )
             end
+            if wp.passthrough.nil?
+              handlerwrapper.inform_activity_done
+              wp.detail = :after
+              handlerwrapper.inform_position_change
+            end  
         end
         raise Signal::Proceed
       rescue Signal::SkipManipulate, Signal::Proceed
-        if wp.passthrough.nil?
-          handlerwrapper.inform_activity_done
-          wp.detail = :after
-          handlerwrapper.inform_position_change
-        end  
-        if self.__wee_state != :stopping && !Thread.current[:nolongernecessary]
-          vr = handlerwrapper.vote_sync_after
-          unless vr
-            puts "vote stopping"
-            self.__wee_state = :stopping
-            puts "vote stopped"
-          end  
+        if self.__wee_state != :stopping && !handlerwrapper.vote_sync_after
+          self.__wee_state = :stopping
         end
-        if self.__wee_state != :stopping && self.__wee_state != :stopped
-          @__wee_positions.delete wp
-          handlerwrapper.inform_position_change
-        end
+      rescue Signal::NoLongerNecessary
+        @__wee_positions.delete wp
+        Thread.current[:branch_position] = nil
+        handlerwrapper.inform_position_change
       rescue Signal::StopSkipManipulate, Signal::Stop
         self.__wee_state = :stopping
       rescue => err
@@ -393,6 +398,13 @@ class Wee
           unless pte.nil?
             branch_parent[:branch_event] = Thread.new{Thread.stop}
             pte.run if pte
+          end  
+        end  
+        if self.__wee_state != :stopping && self.__wee_state != :stopped
+          if Thread.current[:branch_position]
+            @__wee_positions.delete Thread.current[:branch_position]
+            handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
+            handlerwrapper.inform_position_change
           end  
         end  
       end
@@ -490,11 +502,9 @@ class Wee
       end  
     end  # }}}
     def __wee_recursive_join(thread)# {{{
-      p "#{thread}"
       if thread && thread.alive? && thread != Thread.current
         thread.join
       end
-      p "#{thread} joined"
       if thread[:branches]
         thread[:branches].each do |b|
           __wee_recursive_join(b)
