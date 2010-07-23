@@ -3,9 +3,9 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <outer>2</outer>
-    <middle>2</middle>
-    <inner>2</inner>
+    <outer>1</outer>
+    <middle>1</middle>
+    <inner>1</inner>
   </context-variables>
   <endpoints>
     <services>http://localhost:9290/groups/Interface</services>
@@ -47,7 +47,7 @@
             </parallel>
             <manipulate id="reduce_middle">
               context.middle -= 1
-              context.inner = 2
+              context.inner = 1
             </manipulate>
           </loop>
         </parallel_branch>
@@ -65,8 +65,8 @@
       </parallel>
       <manipulate id="reduce_outer">
         context.outer -= 1
-        context.inner = 2
-        context.middle = 2
+        context.inner = 1
+        context.middle = 1
       </manipulate>
     </loop>
   </description>
