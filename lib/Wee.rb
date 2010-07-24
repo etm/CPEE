@@ -234,7 +234,7 @@ class Wee
       Thread.current[:continue] = Continue.new
       begin
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
-        if Thread.current[:branch_parent][:branch_position]
+        if Thread.current[:branch_parent] && Thread.current[:branch_parent][:branch_position]
           @__wee_positions.delete Thread.current[:branch_parent][:branch_position]
           Thread.current[:branch_parent][:branch_position] = nil
         end  
