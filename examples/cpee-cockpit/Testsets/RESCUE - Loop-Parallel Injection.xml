@@ -4,8 +4,10 @@
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
     <outer>2</outer>
-    <middle>1</middle>
-    <inner>1</inner>
+    <middle>2</middle>
+    <inner>2</inner>
+    <cons_a>10</cons_a>
+    <cons_b>45</cons_b>
   </context-variables>
   <endpoints>
     <services>http://localhost:9290/groups/Interface</services>
@@ -18,27 +20,26 @@
           <loop post_test="context.middle &gt; 0">
             <parallel>
               <parallel_branch>
-                <manipulate id="m01">
-                  sleep 2
-                </manipulate>
-                <manipulate id="m012">
-                  sleep 2
-                </manipulate>
-                  <call id="branch_x" endpoint="services">
-                    <parameters><!--{{{--> 
-                      <service>
-                        <serviceoperation>"no_params"</serviceoperation>
-                        <injection_handler>endpoints.injection</injection_handler>
-                      </service>
-                    </parameters><!--}}}-->
-                  </call> 
+                <manipulate id="m01"/>
+                <call id="branch_x" endpoint="services">
+                  <constraints>
+                      <constraint xpath="property_B" comparator="&gt;" variable="cons_b"/>
+                  </constraints>
+                  <parameters><!--{{{--> 
+                    <service>
+                      <serviceoperation>"no_params"</serviceoperation>
+                      <injection_handler>endpoints.injection</injection_handler>
+                    </service>
+                  </parameters><!--}}}-->
+                </call> 
               </parallel_branch>
               <parallel_branch>
-                <manipulate id="m02">
-                  sleep 2
-                </manipulate>
+                <manipulate id="m02"/>
                 <loop post_test="context.inner &gt; 0">
                   <call id="branch_y" endpoint="services">
+                    <constraints>
+                        <constraint xpath="property_B" comparator="&gt;" variable="cons_b"/>
+                    </constraints>
                     <parameters><!--{{{--> 
                       <service>
                         <serviceoperation>"no_params"</serviceoperation>
@@ -47,6 +48,7 @@
                     </parameters><!--}}}-->
                   </call> 
                   <manipulate id="reduce_inner">
+                    context.cons_b += 5
                     context.inner -= 1
                   </manipulate>
                 </loop>
@@ -54,21 +56,16 @@
             </parallel>
             <manipulate id="reduce_middle">
               context.middle -= 1
-              context.inner = 1
+              context.inner = context.middle
             </manipulate>
           </loop>
         </parallel_branch>
         <parallel_branch>
-          <manipulate id="m03">
-                  sleep 2 
-                </manipulate>
-          <manipulate id="m032">
-                  sleep 2 
-                </manipulate>
-          <manipulate id="m033">
-                  sleep 2 
-                </manipulate>
+          <manipulate id="m03"/>
           <call id="branch_z" endpoint="services">
+            <constraints>
+                <constraint xpath="property_A" comparator="&gt;" variable="cons_a"/>
+            </constraints>
             <parameters><!--{{{--> 
               <service>
                 <serviceoperation>"no_params"</serviceoperation>
@@ -79,9 +76,10 @@
         </parallel_branch>
       </parallel>
       <manipulate id="reduce_outer">
+        context.cons_a += 50
         context.outer -= 1
-        context.inner = 1
-        context.middle = 1
+        context.inner = context.outer 
+        context.middle = context.outer
       </manipulate>
     </loop>
   </description>
