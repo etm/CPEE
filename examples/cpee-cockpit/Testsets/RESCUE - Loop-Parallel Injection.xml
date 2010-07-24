@@ -3,7 +3,7 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <context-variables>
-    <outer>1</outer>
+    <outer>2</outer>
     <middle>1</middle>
     <inner>1</inner>
   </context-variables>
@@ -18,7 +18,12 @@
           <loop post_test="context.middle &gt; 0">
             <parallel>
               <parallel_branch>
-                <manipulate id="m01"/>
+                <manipulate id="m01">
+                  sleep 2
+                </manipulate>
+                <manipulate id="m012">
+                  sleep 2
+                </manipulate>
                   <call id="branch_x" endpoint="services">
                     <parameters><!--{{{--> 
                       <service>
@@ -29,7 +34,9 @@
                   </call> 
               </parallel_branch>
               <parallel_branch>
-                <manipulate id="m02"/>
+                <manipulate id="m02">
+                  sleep 2
+                </manipulate>
                 <loop post_test="context.inner &gt; 0">
                   <call id="branch_y" endpoint="services">
                     <parameters><!--{{{--> 
@@ -52,7 +59,15 @@
           </loop>
         </parallel_branch>
         <parallel_branch>
-          <manipulate id="m03"/>
+          <manipulate id="m03">
+                  sleep 2 
+                </manipulate>
+          <manipulate id="m032">
+                  sleep 2 
+                </manipulate>
+          <manipulate id="m033">
+                  sleep 2 
+                </manipulate>
           <call id="branch_z" endpoint="services">
             <parameters><!--{{{--> 
               <service>
