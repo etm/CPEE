@@ -15,7 +15,7 @@
     <reservation_number/>
   </context-variables>
   <endpoints>
-    <services>http://localhost:9290/groups/CinemasReal</services>
+    <services>http://localhost:9290/groups/Cinemas</services>
     <injection_handler>http://localhost:9290/injection/handler</injection_handler>
     <select>http://localhost:9290/select/pgwl</select>
   </endpoints>  
