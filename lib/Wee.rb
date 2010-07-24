@@ -639,6 +639,7 @@ public
       @wfsource = code unless block_given?
       (class << self; self; end).class_eval do
         define_method :__wee_control_flow do
+          @dslr.__wee_positions.clear
           @dslr.__wee_state = :running
           begin
             if block_given?
@@ -651,7 +652,10 @@ public
             handlerwrapper = @dslr.__wee_handlerwrapper.new @dslr.__wee_handlerwrapper_args
             handlerwrapper.inform_syntax_error(err)
           end
-          @dslr.__wee_state = :finished if @dslr.__wee_state == :running
+          if @dslr.__wee_state == :running
+            @dslr.__wee_state = :finished 
+            @dslr.__wee_positions.clear
+          end  
         end
       end
       block_given? ? blk : code
