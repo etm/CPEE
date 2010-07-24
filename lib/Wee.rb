@@ -234,6 +234,10 @@ class Wee
       Thread.current[:continue] = Continue.new
       begin
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
+        if Thread.current[:branch_parent][:branch_position]
+          @__wee_positions.delete Thread.current[:branch_parent][:branch_position]
+          Thread.current[:branch_parent][:branch_position] = nil
+        end  
         if Thread.current[:branch_position]
           @__wee_positions.delete Thread.current[:branch_position]
         end  
@@ -241,6 +245,7 @@ class Wee
         Thread.current[:branch_position] = wp
         @__wee_positions << wp
         handlerwrapper.inform_position_change
+        pp "-------> #{position}"
 
         raise Signal::Stop unless handlerwrapper.vote_sync_before
         case type
@@ -562,6 +567,9 @@ class Wee
         __wee_recursive_continue(@__wee_main)
         __wee_recursive_join(@__wee_main)
         @__wee_state = :stopped
+        p "Wee Positions"
+        pp @__wee_positions
+        pp "-------"
         handlerwrapper.inform_state_change @__wee_state
       end
       @__wee_state
@@ -639,6 +647,8 @@ public
       @wfsource = code unless block_given?
       (class << self; self; end).class_eval do
         define_method :__wee_control_flow do
+          p "Wee Search Positions"
+          pp @dslr.__wee_search_positions
           @dslr.__wee_positions.clear
           @dslr.__wee_state = :running
           begin
