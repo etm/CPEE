@@ -85,6 +85,8 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].notify("running/activity_manipulating", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
   end
   def inform_activity_failed(err)
+    puts err.message
+    puts err.backtrace
     $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
   end
   def inform_syntax_error(err)

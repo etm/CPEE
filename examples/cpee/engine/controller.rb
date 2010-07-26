@@ -215,9 +215,9 @@ class Controller
 
   def call_vote(what,content={})# {{{
     voteid = Digest::MD5.hexdigest(rand(Time.now).to_s)
-    continue = Wee::Continue.new
     item = @votes[what]
-    if item
+    if item && item.length > 0
+      continue = Wee::Continue.new
       @votes_results[voteid] = []
       inum = 0
       item.each do |key,url|
@@ -256,11 +256,12 @@ class Controller
         end
 
       end
-      continue.wait if item.length > 0
+      continue.wait
 
-      return !@votes_results.delete(voteid).include?(false)
-    end
-    true
+      !@votes_results.delete(voteid).include?(false)
+    else  
+      true
+    end  
   end# }}}
 
   def vote_callback(result,continue,voteid,callback,num)# {{{

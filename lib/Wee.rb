@@ -159,7 +159,9 @@ class Wee
       @thread.alive?
     end  
     def continue
-      @thread.wakeup if @thread.alive?
+      if @thread.alive?
+        @thread.wakeup
+      end   
     end
     def wait
       @thread.join
@@ -245,7 +247,6 @@ class Wee
         Thread.current[:branch_position] = wp
         @__wee_positions << wp
         handlerwrapper.inform_position_change
-        pp "-------> #{position}"
 
         raise Signal::Stop unless handlerwrapper.vote_sync_before
         case type
@@ -335,6 +336,8 @@ class Wee
       rescue => err
         handlerwrapper.inform_activity_failed err
         self.__wee_state = :stopping
+      ensure  
+        Thread.current[:continue].continue
       end
     end# }}}
     
@@ -345,7 +348,7 @@ class Wee
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
 
       Thread.current[:branches] = []
-      Thread.current[:branch_event] = Thread.new{Thread.stop}
+      Thread.current[:branch_event] = Continue.new
       Thread.current[:mutex] = Mutex.new
       yield
 
@@ -358,14 +361,14 @@ class Wee
           finished_threads_count += 1 if thread[:branch_status] == true
         end  
         if finished_threads_count < wait_count && finished_threads_count < Thread.current[:branches].size && self.__wee_state != :stopping
-          Thread.current[:branch_event].join
+          Thread.current[:branch_event].wait
         else  
           break
         end
       end
       Thread.current[:mutex].synchronize do
         unless Thread.current[:branch_event].nil?
-          Thread.current[:branch_event].run
+          Thread.current[:branch_event].continue
           Thread.current[:branch_event] = nil
         end  
       end  
@@ -401,8 +404,8 @@ class Wee
         branch_parent[:mutex].synchronize do
           pte = branch_parent[:branch_event]
           unless pte.nil?
-            branch_parent[:branch_event] = Thread.new{Thread.stop}
-            pte.run if pte
+            branch_parent[:branch_event] = Continue.new
+            pte.continue if pte
           end  
         end  
         if self.__wee_state != :stopping && self.__wee_state != :stopped
@@ -492,10 +495,10 @@ class Wee
       if thread && thread.alive? && thread[:continue] && thread[:continue].waiting?
         thread[:continue].continue
       end
-      if thread && thread.alive? && thread[:branch_event] && thread[:branch_event].alive?
+      if thread && thread.alive? && thread[:branch_event] && thread[:branch_event].waiting?
         thread[:mutex].synchronize do
           unless thread[:branch_event].nil?
-            thread[:branch_event].run
+            thread[:branch_event].continue
             thread[:branch_event] = nil
           end  
         end  
@@ -567,9 +570,6 @@ class Wee
         __wee_recursive_continue(@__wee_main)
         __wee_recursive_join(@__wee_main)
         @__wee_state = :stopped
-        p "Wee Positions"
-        pp @__wee_positions
-        pp "-------"
         handlerwrapper.inform_state_change @__wee_state
       end
       @__wee_state
@@ -647,8 +647,6 @@ public
       @wfsource = code unless block_given?
       (class << self; self; end).class_eval do
         define_method :__wee_control_flow do
-          p "Wee Search Positions"
-          pp @dslr.__wee_search_positions
           @dslr.__wee_positions.clear
           @dslr.__wee_state = :running
           begin

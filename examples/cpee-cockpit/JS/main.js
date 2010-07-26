@@ -387,6 +387,21 @@ function load_testset() {// {{{
     success: function(res){ 
       var testset = res; 
       
+      //$.ajax({
+      //  type: "GET", 
+      //  url: url + "/notifications/subscriptions/",
+      //  success: function(res){
+      //    var rcount = 0;
+      //    var values = $("subscriptions > subscription[url]",res);
+      //    var vals = [];
+      //    values.each(function(){
+      //      vals.push($(this).attr(url));
+      //    });
+      //    load_testset_handlers(url,testset,vals);
+      //  },
+      //  error: report_failure
+      //});  
+
       $.ajax({
         type: "GET", 
         url: url + "/properties/values/context-variables/",
@@ -567,6 +582,13 @@ function load_testset_pos(url,testset) {// {{{
       error: report_failure
     });  
   });
+}// }}}
+function load_testset_handlers(url,testset,vals) {// {{{
+  //$("testset > handlers > *",testset).each(function(){
+  //  var sub = this;
+  //  // console.log('hallo');
+  //  console.log($(sub).attr('url'));
+  //});
 }// }}}
 
 function tab_click(moi) { // {{{
