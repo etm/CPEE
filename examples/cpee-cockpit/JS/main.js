@@ -587,7 +587,6 @@ function load_testset_handlers(url,testset,vals) {// {{{
   $("testset > handlers > *",testset).each(function(){
     var han = this;
     var suburl = $(han).attr('url');
-    console.log(vals);
     if ($.inArray(suburl,vals) == -1) {
       var inp = "url="+encodeURIComponent(suburl);
       $("*",han).each(function(){

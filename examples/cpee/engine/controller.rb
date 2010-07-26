@@ -261,7 +261,7 @@ class Controller
       !@votes_results.delete(voteid).include?(false)
     else  
       true
-    end  
+    end
   end# }}}
 
   def vote_callback(result,continue,voteid,callback,num)# {{{
