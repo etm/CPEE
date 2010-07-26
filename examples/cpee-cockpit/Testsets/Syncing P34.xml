@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <testset>
-  <positions><!--{{{-->
-    <a1>after</a1>
-  </positions><!--}}}-->
+  <positions/><!--{{{-->
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <context-variables><!--{{{-->
     <x>""</x>

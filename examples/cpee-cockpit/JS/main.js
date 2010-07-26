@@ -387,20 +387,20 @@ function load_testset() {// {{{
     success: function(res){ 
       var testset = res; 
       
-      //$.ajax({
-      //  type: "GET", 
-      //  url: url + "/notifications/subscriptions/",
-      //  success: function(res){
-      //    var rcount = 0;
-      //    var values = $("subscriptions > subscription[url]",res);
-      //    var vals = [];
-      //    values.each(function(){
-      //      vals.push($(this).attr(url));
-      //    });
-      //    load_testset_handlers(url,testset,vals);
-      //  },
-      //  error: report_failure
-      //});  
+      $.ajax({
+        type: "GET", 
+        url: url + "/notifications/subscriptions/",
+        success: function(res){
+          var rcount = 0;
+          var values = $("subscriptions > subscription[url]",res);
+          var vals = [];
+          values.each(function(){
+            vals.push($(this).attr('url'));
+          });
+          load_testset_handlers(url,testset,vals);
+        },
+        error: report_failure
+      });  
 
       $.ajax({
         type: "GET", 
@@ -584,11 +584,23 @@ function load_testset_pos(url,testset) {// {{{
   });
 }// }}}
 function load_testset_handlers(url,testset,vals) {// {{{
-  //$("testset > handlers > *",testset).each(function(){
-  //  var sub = this;
-  //  // console.log('hallo');
-  //  console.log($(sub).attr('url'));
-  //});
+  $("testset > handlers > *",testset).each(function(){
+    var han = this;
+    var suburl = $(han).attr('url');
+    console.log(vals);
+    if ($.inArray(suburl,vals) == -1) {
+      var inp = "url="+encodeURIComponent(suburl);
+      $("*",han).each(function(){
+        inp += "&topic=" + $(this).attr('topic');
+        inp += "&" + this.nodeName + "=" + $(this).text();
+      });
+      $.ajax({
+        type: "POST", 
+        url: url + "/notifications/subscriptions/",
+        data: inp
+      });
+    }
+  });
 }// }}}
 
 function tab_click(moi) { // {{{

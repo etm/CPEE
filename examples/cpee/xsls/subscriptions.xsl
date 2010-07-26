@@ -14,6 +14,9 @@
             <li>
               <xsl:element name="a">
                 <xsl:attribute name="href"><xsl:value-of select="@id"/>/</xsl:attribute>
+                <xsl:if test="@url">
+                  <xsl:value-of select="@url"/>:
+                </xsl:if>  
                 <xsl:value-of select="@id"/>
               </xsl:element>
             </li>  
