@@ -14,8 +14,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   def activity_handle(passthrough, parameters)
     $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
-
-    client = Riddl::Client.new(@handler_endpoint)
+    cpee_instance = "#{@url}/#{@instance}"
 
     params = []
     callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
@@ -26,10 +25,11 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
         end  
       end  
     end
-    params << Riddl::Header.new("CPEE-Instance","#{$url}/#{@instance}")
+    params << Riddl::Header.new("CPEE-Instance",cpee_instance)
     params << Riddl::Header.new("CPEE-Callback",callback)
 
     type = parameters[:method] || 'post'
+    client = Riddl::Client.new(@handler_endpoint)
     status, result, headers = client.request type => params
     raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
 
@@ -48,7 +48,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def callback(result)
-    @handler_returnValue = result
+    @handler_returnValue = [result,nil]
     @handler_continue.continue
   end
  
@@ -87,12 +87,12 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   def inform_activity_failed(err)
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
+    $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end
   def inform_syntax_error(err)
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message)
+    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end
   def inform_manipulate_change(status,context,endpoints)
     $controller[@instance].serialize!
@@ -106,7 +106,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   def inform_state_change(newstate)
     if $controller[@instance]
       $controller[@instance].serialize!
-      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate)
+      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate, :activity => @handler_position, :lay => @handler_lay)
     end
   end
 

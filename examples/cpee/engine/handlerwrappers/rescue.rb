@@ -58,7 +58,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   # executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, parameters)
     $controller[@instance].position
-    $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters) 
+    $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
     cpee_instance = "#{@url}/#{@instance}"
 
     params = []
@@ -96,6 +96,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         end
       end 
       callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+      params << Riddl::Header.new("CPEE-Instance","#{$url}/#{@instance}")
       params << Riddl::Header.new("CPEE-Callback",callback)
       status, result, headers = client.request type => params
       raise "Could not perform http-#{type} on URI: #{@handler_endpoint} - Status: #{status}" unless status == 200
@@ -149,8 +150,12 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     @handler_continue.continue
   end
 
+  def activity_result_status
+    Wee::Status.new(1, "everything okay")
+  end
+
   def callback(result)
-    @handler_returnValue = [result, nil]
+    @handler_returnValue = [result,nil]
     @handler_continue.continue
   end
  
@@ -179,10 +184,6 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def activity_no_longer_necessary
     @handler_stopped = true
   end
-  
-  def activity_result_status
-    Wee::Status.new(1, "everything okay")
-  end
 
   def inform_activity_done
     $controller[@instance].notify("running/activity_done", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
@@ -193,12 +194,12 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def inform_activity_failed(err)
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :message => err.message)
+    $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end
   def inform_syntax_error(err)
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message)
+    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end
   def inform_manipulate_change(status,context,endpoints)
     $controller[@instance].serialize!
@@ -211,8 +212,8 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
   def inform_state_change(newstate)
     if $controller[@instance]
-      $controller[@instance].serialize! if newstate != :running
-      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate, :activity => @handler_position, :lay => @handler_lay, :endpoint => @handler_endpoint)
+      $controller[@instance].serialize!
+      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate, :activity => @handler_position, :lay => @handler_lay)
     end
   end
 
