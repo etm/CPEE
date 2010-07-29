@@ -25,7 +25,7 @@
         <method>post</method>
         <info>true</info>
         <templates>
-          <uri>'http://localhost/input-forms/cinemas.xsl'</uri>
+          <uri>'http://www.pri.univie.ac.at/~ralph/input-forms/cinemas.xsl'</uri>
           <name>'Cinemas-Input'</name>
           <lang>'en'</lang>
         </templates>
