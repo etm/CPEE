@@ -250,7 +250,7 @@ class Controller
           elsif u.class == Riddl::Utils::Notifications::Producer::WS
             @callbacks[callback] = Callback.new("vote #{notf.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :ws, continue, voteid, callback, inum)
             e = XML::Smart::string("<vote/>")
-            vo.each do |ke,va|
+            notf.each do |ke,va|
               e.root.add(ke,va)
             end
             u.send(e.to_s)

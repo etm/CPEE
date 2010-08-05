@@ -808,9 +808,9 @@ function format_visual_set(what) {//{{{
     $.each(["graph","activity"],function(i,t){
       $('#' + t + '-' + what).each(function(a,b){ 
         var vs = node_state[what].join(" ");
-        if (vs.match(/active/) && vs.match(/passive/)) {
-          vs = vs.replace(/passive/,'');
-        }  
+        if (vs.match(/active/) && vs.match(/passive/)) vs = vs.replace(/passive/,'');
+        if (vs.match(/vote/) && vs.match(/passive/)) vs = vs.replace(/passive/,'');
+        if (vs.match(/active/) && vs.match(/vote/)) vs = vs.replace(/active/,'');
         b.setAttribute("class",'activities ' + vs);
       });
     });
