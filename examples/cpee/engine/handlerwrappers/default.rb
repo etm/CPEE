@@ -12,7 +12,6 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
   # executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, parameters)
-    $controller[@instance].position
     $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
     cpee_instance = "#{@url}/#{@instance}"
 
@@ -100,8 +99,10 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].notify("properties/context-variables/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => context) unless context.nil?
     $controller[@instance].notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => endpoints) unless endpoints.nil?
   end
-  def inform_position_change
-    $controller[@instance].position
+  def inform_position_change(ipc={})
+    $controller[@instance].serialize_position!
+    ipc[:instance] = "#{$url}/#{@instance}"
+    $controller[@instance].notify("properties/position/change", ipc)
   end
   def inform_state_change(newstate)
     if $controller[@instance]

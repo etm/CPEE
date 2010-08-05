@@ -60,11 +60,15 @@ td.switch h1.margin:before {
 
 span.active {
   font-weight: bold;
-  color: #ff0000;
+  color: #cc0000;
+}
+span.passive {
+  font-weight: bold;
+  color: #3465a4;
 }
 span.vote {
   font-weight: bold;
-  color: #00ff00;
+  color: #73d216;
 }
 
 table.layout {
@@ -205,11 +209,15 @@ svg rect.group {
 svg .clickable { cursor: pointer; }
 
 svg use.active circle {
-  fill: #ff0000;
+  fill: #ef2929;
+  fill-opacity:1;
+}  
+svg use.passive circle {
+  fill: #729fcf;
   fill-opacity:1;
 }  
 svg use.vote circle {
-  fill: #00ff00;
+  fill: #8ae234;
   fill-opacity:1;
 }  
 
@@ -286,7 +294,7 @@ svg text.super {
   font-family:Arial;
 }
 svg tspan.active {
-  fill:#ff0000;
+  fill:#cc0000;
   display: none;
 }
 svg tspan.vote {

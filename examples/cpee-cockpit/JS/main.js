@@ -1,4 +1,5 @@
 var running = false;
+var load;
 var subscription;
 var subscription_state = 'less';
 var save_state;
@@ -12,6 +13,8 @@ var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'votes'  + '=' + 'syncing_after' + '&' +
                'topic'  + '=' + 'properties/description' + '&' +
                'events' + '=' + 'change,error' + '&' +
+               'topic'  + '=' + 'properties/position' + '&' +
+               'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/state' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/context-variables' + '&' +
@@ -22,6 +25,8 @@ var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change';// }}}
 var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
+               'topic'  + '=' + 'properties/position' + '&' +
+               'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/description' + '&' +
                'events' + '=' + 'change,error' + '&' +
                'topic'  + '=' + 'properties/state' + '&' +
@@ -60,6 +65,11 @@ $(document).ready(function() {// {{{
     toggle_vis_tab($("#instance td.switch"));
     toggle_vis_tab($("#execution td.switch"));
   }
+  if (q.load) {
+    load = q.load;
+    toggle_vis_tab($("#instance td.switch"));
+    create_instance();
+  }
 });// }}}
 
 function check_subscription() { // {{{
@@ -95,7 +105,7 @@ function check_subscription() { // {{{
 }// }}}
 
 function create_instance() {// {{{
-  var name = prompt("Instance name?", "Enter name here");
+  var name = load ? load : prompt("Instance name?", "Enter name here");
   if (name != null) {
     if (name.match(/\S/)) {
       var base = $("input[name=base-url]").val();
@@ -106,6 +116,7 @@ function create_instance() {// {{{
         data: "name=" + name, 
         success: function(res){
           $("input[name=instance-url]").val((base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://"));
+          if (load) monitor_instance();
         },  
         error: report_failure
       });
@@ -160,8 +171,11 @@ function monitor_instance() {// {{{
                 case 'properties/state':
                   monitor_instance_state();
                   break;
+                case 'properties/position':
+                  monitor_instance_pos_change($('event > notification',data).text());
+                  break;
                 case 'running':
-                  monitor_instance_pos_change($('event > notification',data).text(),$('event > event',data).text());
+                  monitor_instance_running($('event > notification',data).text(),$('event > event',data).text());
                   break;
               }
               append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
@@ -175,6 +189,7 @@ function monitor_instance() {// {{{
           ws.onclose = function() {
             append_to_log("monitoring", "closed", "server down i assume.");
           };
+          if (load) load_testset();
         }
       });
 
@@ -238,68 +253,69 @@ $.ajax({
 }// }}}
 
 function monitor_instance_dsl() {// {{{
-var url = $("input[name=instance-url]").val();
-$.ajax({
-  type: "GET",
-  dataType: "text",
-  url: url + "/properties/values/dsl/",
-  success: function(res){
-    if (res != save_dsl) {
-      save_dsl = res;
-      var ctv = $("#areadsl");
-      ctv.empty();
+  var url = $("input[name=instance-url]").val();
+  $.ajax({
+    type: "GET",
+    dataType: "text",
+    url: url + "/properties/values/dsl/",
+    success: function(res){
+      if (res != save_dsl) {
+        save_dsl = res;
+        var ctv = $("#areadsl");
+        ctv.empty();
 
-      res = format_code(res,false,true);
-      res = res.replace(/activity\s+:([A-Za-z][a-zA-Z0-9_]+)/g,"<span class='activities' id=\"activity-$1\">activity :$1</span>");
-      res = res.replace(/activity\s+\[:([A-Za-z][a-zA-Z0-9_]+)([^\]]*\])/g,"<span class='activities' id=\"activity-$1\">activity [:$1$2</span>");
+        res = format_code(res,false,true);
+        res = res.replace(/activity\s+:([A-Za-z][a-zA-Z0-9_]+)/g,"<span class='activities' id=\"activity-$1\">activity :$1</span>");
+        res = res.replace(/activity\s+\[:([A-Za-z][a-zA-Z0-9_]+)([^\]]*\])/g,"<span class='activities' id=\"activity-$1\">activity [:$1$2</span>");
 
-      ctv.append(res);
-      $.ajax({
-        type: "GET",
-        url: url + "/properties/values/description/",
-        success: function(res){
-          var container = $("#canvas").get(0);
-          var g = new WFGraph(res, res.documentElement, container);
-          var width = g.generateGraph({
-            symclick: sym_click
-          });
-          container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
-          monitor_instance_pos();
-        }
-      });
+        ctv.append(res);
+        $.ajax({
+          type: "GET",
+          url: url + "/properties/values/description/",
+          success: function(res){
+            var container = $("#canvas").get(0);
+            var g = new WFGraph(res, res.documentElement, container);
+            var width = g.generateGraph({
+              symclick: sym_click
+            });
+            container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
+            monitor_instance_pos();
+          }
+        });
+      }
     }
-  }
-});
+  });
 }// }}}
 
 function monitor_instance_state() {// {{{
-var url = $("input[name=instance-url]").val();
-$.ajax({
-  type: "GET", 
-  url: url + "/properties/values/state/",
-  dataType: "text",
-  success: function(res){
-    if (res != save_state) {
-      save_state = res;
+  var url = $("input[name=instance-url]").val();
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/state/",
+    dataType: "text",
+    success: function(res){
+      if (res != save_state) {
+        save_state = res;
 
-      var ctv = $("#state");
-      ctv.empty();
+        var ctv = $("#state");
+        ctv.empty();
 
-      var but = "";
-      if (res == "stopped") {
-        monitor_instance_pos();
+        var but = "";
+        if (res == "stopped") {
+          format_visual_clear();
+          monitor_instance_pos();
+        }  
+        if (res == "ready" || res == "stopped") {
+          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
+        }
+        if (res == "running") {
+          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
+        }
+
+        ctv.append("<tr><td>State:</td><td>" + res + "</td>" + but + "</tr>");
       }  
-      if (res == "ready" || res == "stopped") {
-        but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
-      }
-      if (res == "running") {
-        but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
-      }
-
-      ctv.append("<tr><td>State:</td><td>" + res + "</td>" + but + "</tr>");
-    }  
-  }
-});
+    }
+  });
 }// }}}
 
 function monitor_instance_pos() {// {{{
@@ -318,13 +334,28 @@ function monitor_instance_pos() {// {{{
     }
   });
 }// }}}
-function monitor_instance_pos_change(notification,event) {// {{{
+
+function monitor_instance_running(notification,event) {// {{{
   if (save_state == "stopping") return;
   var parts = JSON.parse(notification);
   if (event == "activity_calling")
     format_visual_add(parts.activity,"active")
   if (event == "activity_done")
     format_visual_remove(parts.activity,"active")
+} // }}}
+
+function monitor_instance_pos_change(notification) {// {{{
+  var parts = JSON.parse(notification);
+  if (parts['delete']) {
+    $.each(parts['delete'],function(a,b){
+      format_visual_remove(b,"passive") 
+    });
+  }
+  if (parts['at']) {
+    $.each(parts['at'],function(a,b){
+      format_visual_add(b,"passive") 
+    });
+  }
 } // }}}
 
 function monitor_instance_vote_add(notification) {// {{{
@@ -379,11 +410,14 @@ function load_testset() {// {{{
   save_dsl = null; // reload dsl and position under all circumstances
   var table = $('#details');
   table.empty();
+
   var url = $("input[name=instance-url]").val();
+  var name = load ? load : $("select[name=testset-names]").val();
+
   $.ajax({ 
     cache: false,
     dataType: 'xml',
-    url: "Testsets/" + $('select[name=testset-names]').val() + ".xml",
+    url: "Testsets/" + name + ".xml",
     success: function(res){ 
       var testset = res; 
       
@@ -770,18 +804,23 @@ function format_visual_set(what) {//{{{
       $('#node-' + what + ' .super .vote').each(function(a,b){
         b.setAttribute('class','vote');
       });
+  
+    $.each(["graph","activity"],function(i,t){
+      $('#' + t + '-' + what).each(function(a,b){ 
+        var vs = node_state[what].join(" ");
+        if (vs.match(/active/) && vs.match(/passive/)) {
+          vs = vs.replace(/passive/,'');
+        }  
+        b.setAttribute("class",'activities ' + vs);
+      });
+    });
   }  
 
-  $.each(["graph","activity"],function(i,t){
-    $('#' + t + '-' + what).each(function(a,b){ 
-      if (node_state[what] != undefined)
-        b.setAttribute("class",'activities ' + node_state[what].join(" "));
-    });
-  });
 }//}}}
 function format_visual_clear() {//{{{
   node_state = {};
   $('.super .active').each(function(a,b){b.setAttribute("class","active");});
+  $('.super .passive').each(function(a,b){b.setAttribute("class","passive");});
   $('.super .vote').each(function(a,b){b.setAttribute("class","vote");});
   $('.super .colon').each(function(a,b){b.setAttribute("class","colon");});
   $('.activities').each(function(a,b){b.setAttribute("class","activities");});

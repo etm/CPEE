@@ -1,5 +1,4 @@
 <testsets>
-  <testset>Syncing P34</testset>
   <testset>RESCUE - Loop-Parallel Injection</testset>
   <testset>RESCUE - Book Movie</testset>
   <testset>Wrong Positions</testset>
@@ -11,4 +10,8 @@
   <testset>Bad Loop</testset>
   <testset>Endpoints</testset>
   <testset>Linear</testset>
+  <testset>Syncing P34</testset>
+  <testset>Syncing P34 1</testset>
+  <testset>Syncing P34 2</testset>
+  <testset>Syncing P34 3</testset>
 </testsets>

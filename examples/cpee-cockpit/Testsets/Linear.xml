@@ -7,11 +7,7 @@
   <context-variables><!--{{{-->
     <x>""</x>
   </context-variables><!--}}}-->
-  <handlers><!--{{{-->
-    <handler url="http://localhost:9299/1/events">
-      <votes topic='running'>syncing_before,syncing_after</votes>
-    </handler>
-  </handlers><!--}}}-->
+  <handlers/><!--{{{-->
   <endpoints><!--{{{-->
     <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>  <!--}}}-->

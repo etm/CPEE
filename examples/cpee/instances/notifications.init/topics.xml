@@ -7,6 +7,9 @@
     <vote>syncing_before</vote>
     <vote>syncing_after</vote>
   </topic>
+  <topic id='properties/position'>
+    <event>change</event>
+  </topic>
   <topic id='properties/description'>
     <event>change</event>
     <event>error</event>
