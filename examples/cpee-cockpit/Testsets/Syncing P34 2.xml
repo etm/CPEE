@@ -28,7 +28,7 @@
       <parameters><!--{{{-->
         <method>post</method>
         <parameters>
-          <timeout>5</timeout>
+          <timeout>10</timeout>
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">  context.x += "a2,"</manipulate>  
