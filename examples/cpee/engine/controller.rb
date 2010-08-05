@@ -14,6 +14,7 @@ class Controller
     @instance = EmptyWorkflow.new(id,url)
     @positions = []
     @thread = nil
+    @mutex = Mutex.new
     Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
       key = ::File::basename(::File::dirname(sub))
       self.unserialize_event!(:cre,key)
@@ -27,6 +28,7 @@ class Controller
   end
 
   attr_reader :callbacks
+  attr_reader :mutex
 
   def start# {{{
     @thread.join if !@thread.nil? && @thread.alive?
@@ -41,18 +43,6 @@ class Controller
     t.run
     @callbacks.delete_if{|k,c| c.callback(nil); true}
     @thread.join if !@thread.nil? && @thread.alive?
-  end# }}}
-
-  def position# {{{
-    XML::Smart::modify(@directory + 'properties.xml') do |doc|
-      doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
-      pos = doc.find("/p:properties/p:positions").first
-      pos.children.delete_all!
-      @positions = @instance.positions
-      @instance.positions.each do |p|
-        pos.add("#{p.position}",[p.detail,p.passthrough].compact.join(';'))
-      end
-    end
   end# }}}
 
   def serialize!# {{{
@@ -80,6 +70,18 @@ class Controller
       node.text = @instance.state
     end 
   end# }}}
+  def serialize_position!# {{{
+    XML::Smart::modify(@directory + 'properties.xml') do |doc|
+      doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+      pos = doc.find("/p:properties/p:positions").first
+      pos.children.delete_all!
+      @positions = @instance.positions
+      @instance.positions.each do |p|
+        pos.add("#{p.position}",[p.detail,p.passthrough].compact.join(';'))
+      end
+    end
+  end# }}}
+  
   def unserialize_event!(op,key)# {{{
     case op
       when :del
@@ -145,7 +147,6 @@ class Controller
         end  
     end    
   end # }}} 
-
   def unserialize_context! # {{{
     hw = nil
     state = nil
@@ -233,20 +234,21 @@ class Controller
         Thread.new(key,url,content.dup) do |k,u,c|
           callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
           c['callback'] = callback
-          vo = build_notification(k,what,c,'vote')
+          notf = build_notification(k,what,c,'vote')
           if u.class == String
             client = Riddl::Client.new(u)
-            params = vo.map{|ke,vo|Riddl::Parameter::Simple.new(ke,vo)}
+            params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
             params << Riddl::Header.new("CPEE-Callback",callback)
-            status, result, headers = client.post params
-
-            if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
-              @callbacks[callback] = Callback.new("vote #{vo.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :http, continue, voteid, callback, inum)
-            else
-              vote_callback(result,continue,voteid,callback, inum)
-            end
+            @mutex.synchronize do
+              status, result, headers = client.post params
+              if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
+                @callbacks[callback] = Callback.new("vote #{notf.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :http, continue, voteid, callback, inum)
+              else
+                vote_callback(result,continue,voteid,callback, inum)
+              end
+            end  
           elsif u.class == Riddl::Utils::Notifications::Producer::WS
-            @callbacks[callback] = Callback.new("vote #{vo.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :ws, continue, voteid, callback, inum)
+            @callbacks[callback] = Callback.new("vote #{notf.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :ws, continue, voteid, callback, inum)
             e = XML::Smart::string("<vote/>")
             vo.each do |ke,va|
               e.root.add(ke,va)
