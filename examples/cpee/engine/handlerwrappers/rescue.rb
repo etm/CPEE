@@ -214,7 +214,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def inform_state_change(newstate)
     if $controller[@instance]
       $controller[@instance].serialize!
-      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate, :activity => @handler_position, :lay => @handler_lay)
+      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate)
     end
   end
 
