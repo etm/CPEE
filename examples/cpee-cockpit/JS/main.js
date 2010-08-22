@@ -133,6 +133,7 @@ function monitor_instance() {// {{{
     url: url + "/properties/schema/",
     success: function(res){
       $("table.tab.hidden").removeClass("hidden");
+      $("div.tab.hidden").removeClass("hidden");
       $(".fixedstatehollow").height($(".fixedstate").height());
       $("input[name=instance-url]").attr("readonly","readonly");
       $("button[name=instance]").attr("disabled","disabled");
@@ -638,7 +639,7 @@ function load_testset_handlers(url,testset,vals) {// {{{
 
 function tab_click(moi) { // {{{
   var active = $(moi).attr('id').replace(/tab/,'');
-  var tab = $(moi).parent().parent();
+  var tab = $(moi).parent().parent().parent().parent();
   var tabs = [];
   $("td.tab",tab).each(function(){
     if (!$(this).attr('class').match(/switch/))
@@ -654,11 +655,12 @@ function tab_click(moi) { // {{{
   });
 } // }}}
 function toggle_vis_tab(moi) {// {{{
-  var tab = $(moi).parent().parent();
-  var fix = $(fix).parent().parent();
+  var tabbar = $(moi).parent().parent().parent();
+  var tab = $(tabbar).parent();
+  var fix = $(tab).parent();
   $('h1',moi).toggleClass('margin');
-  $("tr.border",tab).toggleClass('hidden');
-  $("tr.area",tab).toggleClass('hidden');
+  $("tr.border",tabbar).toggleClass('hidden');
+  $("div.area",tab).toggleClass('hidden');
   if ($(fix).attr('class') && $(fix).attr('class').match(/fixedstate/)) {
     $(".fixedstatehollow").height($(fix).height());
   }  

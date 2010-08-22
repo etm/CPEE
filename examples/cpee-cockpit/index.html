@@ -13,15 +13,17 @@
     <script type="text/javascript" src="JS/main.js"></script>
   </head>
   <body>
-    <table id="instance" class="tab layout">
-      <tr>
-        <td class="tab switch" onclick="toggle_vis_tab(this)"><h1></h1></td>
-        <td class="tab"><h1>CPEE Instance</h1></td>
-        <td class="tabbehind long"></td>
-      </tr>  
-      <tr class="border hidden"><td colspan="3"></td></tr>
-      <tr class="area">
-        <td class="tabbelow" colspan="3">
+    <div id="instance" class="tab layout">
+      <table class="tabbar">
+        <tr>
+          <td class="tab switch" onclick="toggle_vis_tab(this)"><h1></h1></td>
+          <td class="tab"><h1>CPEE Instance</h1></td>
+          <td class="tabbehind"></td>
+        </tr>  
+        <tr class="border hidden"><td colspan="3"></td></tr>
+      </table>  
+      <div class="area">
+        <div class="tabbelow" colspan="3">
           <div id="areainstance" class='area'>
             <table class='layout'>
             <tr>
@@ -43,51 +45,58 @@
             </tr>
             </table>
           </div>  
-        </td>  
-      </tr>  
-    </table>  
+        </div>  
+      </div>  
+    </div>  
   
-    <table class="tab hidden layout">
-      <tr>
-        <td class="tab switch" onclick="toggle_vis_tab(this)"><h1></h1></td>
-        <td class="tab"><h1>Endpoints</h1></td>
-        <td class="tabbehind long"></td>
-      </tr>  
-      <tr class="border hidden"><td colspan="3"></td></tr>
-      <tr class="area">
-        <td class="tabbelow" colspan="3">
+    <div class="tab hidden layout">
+      <table class="tabbar">
+        <tr>
+          <td class="tab switch" onclick="toggle_vis_tab(this)"><h1></h1></td>
+          <td class="tab"><h1>Endpoints</h1></td>
+          <td class="tabbehind"></td>
+        </tr>  
+        <tr class="border hidden"><td colspan="3"></td></tr>
+      </table>  
+      <div class="area">
+        <div class="tabbelow" colspan="3">
           <div id="areaendpoints" class='area'>
             <table id="endpoints"></table>
           </div>  
-        </td>  
-      </tr>  
-    </table>  
+        </div>  
+      </div>  
+    </div>
 
-    <table class="tab hidden layout">
-      <tr>
-        <td class="tab switch" onclick="toggle_vis_tab(this)"><h1></h1></td>
-        <td class="tab"><h1>Context Variables</h1></td>
-        <td class="tabbehind long"></td>
-      </tr>  
-      <tr class="border hidden"><td colspan="3"></td></tr>
-      <tr class="area">
-        <td class="tabbelow" colspan="3">
+    <div class="tab hidden layout">
+      <table class="tabbar">
+        <tr>
+          <td class="tab switch" onclick="toggle_vis_tab(this)"><h1></h1></td>
+          <td class="tab"><h1>Context Variables</h1></td>
+          <td class="tabbehind"></td>
+        </tr>  
+        <tr class="border hidden"><td colspan="3"></td></tr>
+      </table>  
+      <div class="area">
+        <div class="tabbelow" colspan="3">
           <div id="areacontext" class='area'>
             <table id="context-variables"></table>
           </div>
-        </td>  
-      </tr>  
-    </table>  
+        </div>  
+      </div>  
+    </div>  
 
-    <table id="main" class="tab hidden layout">
-      <tr>
-        <td class="tab"             id="tabgraph" onclick="tab_click(this)"><h1>Graph</h1></td>
-        <td class="tab inactivetab" id="tabdsl"   onclick="tab_click(this)"><h1>Description</h1></td>
-        <td class="tab inactivetab" id="tablog"   onclick="tab_click(this)"><h1>Log</h1></td>
-        <td class="tabbehind long"></td>
-      </tr>  
-      <tr>
-        <td class="tabbelow" colspan="4">
+    <div id="main" class="tab hidden layout">
+      <table class="tabbar">
+        <tr>
+          <td class="tab"             id="tabgraph" onclick="tab_click(this)"><h1>Graph</h1></td>
+          <td class="tab inactivetab" id="tabdsl"   onclick="tab_click(this)"><h1>Description</h1></td>
+          <td class="tab inactivetab" id="tablog"   onclick="tab_click(this)"><h1>Log</h1></td>
+          <td class="tabbehind"></td>
+        </tr>  
+        <tr class="border hidden"><td colspan="3"></td></tr>
+      </table>  
+      <div>
+        <div class="tabbelow" colspan="4">
           <div id="areagraph">
             <table class='layout'>
             <tr>
@@ -182,22 +191,24 @@
             <table id="log" class="layout">
             </table>
           </div>
-        </td>
-      </tr>  
-    </table>  
+        </div>
+      </div>  
+    </div>  
 
     <div class="fixedstatehollow"></div>
     <div class="fixedstate">
-      <table id="execution" class="tab hidden layout">
-        <tr>
-          <td class="tab switch"                         onclick="toggle_vis_tab(this)"><h1></h1></td>
-          <td class="tab"             id="tabposition"   onclick="tab_click(this)"><h1>State &amp; Positions</h1></td>
-          <td class="tab inactivetab" id="tabproperties" onclick="tab_click(this)"><h1>Execution Properties</h1></td>
-          <td class="tabbehind long"></td>
-        </tr>  
-        <tr class="border hidden"><td colspan="4"></td></tr>
-        <tr class="area">
-          <td class="tabbelow" colspan="4">
+      <div id="execution" class="tab hidden layout">
+        <table class="tabbar">
+          <tr>
+            <td class="tab switch"                         onclick="toggle_vis_tab(this)"><h1></h1></td>
+            <td class="tab"             id="tabposition"   onclick="tab_click(this)"><h1>State &amp; Positions</h1></td>
+            <td class="tab inactivetab" id="tabproperties" onclick="tab_click(this)"><h1>Execution Properties</h1></td>
+            <td class="tabbehind"></td>
+          </tr>  
+          <tr class="border hidden"><td colspan="4"></td></tr>
+        </table>  
+        <div class="area">
+          <div class="tabbelow" colspan="4">
             <div id="areaposition">
               <table>
                 <tbody id="state"></tbody>
@@ -208,9 +219,9 @@
               <div><input type="checkbox" name="votecontinue"/> Vote to continue</div>
               <div><input type="checkbox" name="votestop"/> Vote to stop</div>
             </div>
-          </td>  
-        </tr>  
-      </table>  
+          </div>  
+        </div>  
+      </div>  
     </div>  
   </body>
 </html>
