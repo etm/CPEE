@@ -94,7 +94,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
           end
         end
       end 
-      callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+      callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
       params << Riddl::Header.new("CPEE-Instance","#{$url}/#{@instance}")
       params << Riddl::Header.new("CPEE-Callback",callback)
       status, result, headers = client.request type => params

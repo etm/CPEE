@@ -266,8 +266,8 @@ class Wee
                 p.is_a?(Status)  
               end
               case blk.arity
-                when 1: mr.instance_exec(parameters,&blk)
-                when 2: mr.instance_exec(parameters,status,&blk)
+                when 1; mr.instance_exec(parameters,&blk)
+                when 2; mr.instance_exec(parameters,status,&blk)
                 else
                   mr.instance_eval(&blk)
               end
@@ -311,8 +311,8 @@ class Wee
               mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints,@__wee_status)
               status = handlerwrapper.activity_result_status
               case blk.arity
-                when 1: mr.instance_exec(handlerwrapper.activity_result_value,&blk)
-                when 2: mr.instance_exec(handlerwrapper.activity_result_value,(status.is_a?(Status)?status:nil),&blk)
+                when 1; mr.instance_exec(handlerwrapper.activity_result_value,&blk)
+                when 2; mr.instance_exec(handlerwrapper.activity_result_value,(status.is_a?(Status)?status:nil),&blk)
                 else
                   mr.instance_eval(&blk)
               end  

@@ -13,7 +13,7 @@ require '../../../riddl/lib/ruby/utils/notifications_producer'
 require '../../../riddl/lib/ruby/utils/properties'
 require '../../../riddl/lib/ruby/utils/fileserve'
 require '../../../riddl/lib/ruby/utils/declaration'
-require 'engine/implementation'
+require './engine/implementation'
 
 run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
   accessible_description true
@@ -38,9 +38,9 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
         instance       = ::File.dirname(__FILE__) + '/instances/' + r[:r][0] + '/'
         properties     = Riddl::Utils::Properties::file(instance + 'properties.xml')
         schema, strans = case $controller[r[:r][0].to_i].state
-          when :ready, :stopped: [i_schema,i_strans]
-          when :running, :stopping: [a_schema,a_strans]
-          when :finished: [f_schema,f_strans]
+          when :ready, :stopped; [i_schema,i_strans]
+          when :running, :stopping; [a_schema,a_strans]
+          when :finished; [f_schema,f_strans]
         end
         use Riddl::Utils::Properties::implementation(properties, schema, strans, PropertiesHandler, r[:match].count, $mode)
       end

@@ -215,7 +215,7 @@ class Controller
   end# }}}
 
   def call_vote(what,content={})# {{{
-    voteid = Digest::MD5.hexdigest(rand(Time.now).to_s)
+    voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
     item = @votes[what]
     if item && item.length > 0
       continue = Wee::Continue.new
@@ -232,7 +232,7 @@ class Controller
       item.each do |key,url|
 
         Thread.new(key,url,content.dup) do |k,u,c|
-          callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+          callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
           c['callback'] = callback
           notf = build_notification(k,what,c,'vote')
           if u.class == String

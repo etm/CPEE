@@ -16,7 +16,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     cpee_instance = "#{@url}/#{@instance}"
 
     params = []
-    callback = Digest::MD5.hexdigest(rand(Time.now).to_s)
+    callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
     (parameters[:parameters] || {}).each do |h|
       if h.class == Hash
         h.each do |k,v|
