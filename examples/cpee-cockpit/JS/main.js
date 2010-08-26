@@ -421,7 +421,8 @@ function load_testset() {// {{{
     url: "Testsets/" + name + ".xml",
     success: function(res){ 
       var testset = res; 
-      
+      document.title = name;
+
       $.ajax({
         type: "GET", 
         url: url + "/notifications/subscriptions/",
