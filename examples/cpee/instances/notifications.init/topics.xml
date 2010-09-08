@@ -21,7 +21,7 @@
   <topic id='properties/status'>
     <event>change</event>
   </topic>
-  <topic id='properties/context-variables'>
+  <topic id='properties/data-elements'>
     <event>change</event>
   </topic>
   <topic id='properties/endpoints'>

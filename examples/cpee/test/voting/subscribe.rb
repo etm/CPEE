@@ -14,7 +14,7 @@ status, response = res.post [
 instance = response[0].value
 puts "Instance: #{instance}"
  
-['endpoints','context-variables','description'].each do |e|
+['endpoints','data-elements','description'].each do |e|
   res = srv.resource("/#{instance}/properties/values/#{e}")
   status, response = res.put [
     Riddl::Parameter::Simple.new("content",File::read("testset/#{e}"))

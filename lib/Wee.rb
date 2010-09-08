@@ -14,7 +14,7 @@ class Wee
     @dslr.__wee_handlerwrapper_args = args
       
     initialize_search if methods.include?('initialize_search')
-    initialize_context if methods.include?('initialize_context')
+    initialize_data if methods.include?('initialize_data')
     initialize_endpoints if methods.include?('initialize_endpoints')
     initialize_handlerwrapper if methods.include?('initialize_handlerwrapper')
   end# }}}
@@ -28,23 +28,23 @@ class Wee
   end  # }}}
 
   class ManipulateRealization# {{{
-    def initialize(context,endpoints,status)
-      @__wee_context = context
+    def initialize(data,endpoints,status)
+      @__wee_data = data
       @__wee_endpoints = endpoints
       @__wee_status = status
       @changed_status = status.id
-      @changed_context = []
+      @changed_data = []
       @changed_endpoints = []
     end
 
-    attr_reader :changed_context, :changed_endpoints
+    attr_reader :changed_data, :changed_endpoints
 
     def changed_status
       @changed_status != status.id
     end
 
-    def context
-      ManipulateHash.new(@__wee_context,@changed_context)
+    def data
+      ManipulateHash.new(@__wee_data,@changed_data)
     end
     def endpoints
       ManipulateHash.new(@__wee_endpoints,@changed_endpoints)
@@ -182,12 +182,12 @@ class Wee
       end
     end
   end# }}}
-  def self::context(variables)# {{{
-    @@__wee_new_context_variables ||= {}
-    @@__wee_new_context_variables.merge! endpoints
-    define_method :initialize_context do
-      @@__wee_new_context_variables.each do |name,value|
-        @dslr.__wee_context[name.to_s.to_sym] = value
+  def self::data(variables)# {{{
+    @@__wee_new_data_elements ||= {}
+    @@__wee_new_data_elements.merge! endpoints
+    define_method :initialize_data do
+      @@__wee_new_data_elements.each do |name,value|
+        @dslr.__wee_data[name.to_s.to_sym] = value
       end
     end
   end# }}}
@@ -211,14 +211,14 @@ class Wee
       @__wee_search_positions = {}
       @__wee_positions = Array.new
       @__wee_main = nil
-      @__wee_context ||= Hash.new
+      @__wee_data ||= Hash.new
       @__wee_endpoints ||= Hash.new
       @__wee_handlerwrapper = HandlerWrapperBase
       @__wee_handlerwrapper_args = []
       @__wee_state = :ready
       @__wee_status = Status.new(0,"undefined")
     end
-    attr_accessor :__wee_search_positions, :__wee_positions, :__wee_main, :__wee_context, :__wee_endpoints, :__wee_handlerwrapper, :__wee_handlerwrapper_args
+    attr_accessor :__wee_search_positions, :__wee_positions, :__wee_main, :__wee_data, :__wee_endpoints, :__wee_handlerwrapper, :__wee_handlerwrapper_args
     attr_reader :__wee_state, :__wee_status
 
     # DSL-Construct for an atomic activity
@@ -259,7 +259,7 @@ class Wee
           when :manipulate
             if block_given?
               handlerwrapper.inform_activity_manipulate
-              mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints,@__wee_status)
+              mr = ManipulateRealization.new(@__wee_data,@__wee_endpoints,@__wee_status)
               status = nil
               parameters.delete_if do |p|
                 status = p if p.is_a?(Status)
@@ -273,7 +273,7 @@ class Wee
               end
               handlerwrapper.inform_manipulate_change(
                 (mr.changed_status ? @__wee_status : nil), 
-                (mr.changed_context.any? ? mr.changed_context.uniq : nil),
+                (mr.changed_data.any? ? mr.changed_data.uniq : nil),
                 (mr.changed_endpoints.any? ? mr.changed_endpoints.uniq : nil)
               )
               handlerwrapper.inform_activity_done
@@ -287,10 +287,10 @@ class Wee
               if p.class == Hash && parameters.length == 1
                 params = p
               else  
-                if !p.is_a?(Symbol) || !@__wee_context.include?(p)
-                  raise("not all passed parameters are context variables")
+                if !p.is_a?(Symbol) || !@__wee_data.include?(p)
+                  raise("not all passed parameters are data elements")
                 end
-                params[p] = @__wee_context[p]
+                params[p] = @__wee_data[p]
               end
             end
             # handshake call and wait until it finished
@@ -308,7 +308,7 @@ class Wee
 
             if wp.passthrough.nil? && block_given?
               handlerwrapper.inform_activity_manipulate
-              mr = ManipulateRealization.new(@__wee_context,@__wee_endpoints,@__wee_status)
+              mr = ManipulateRealization.new(@__wee_data,@__wee_endpoints,@__wee_status)
               status = handlerwrapper.activity_result_status
               case blk.arity
                 when 1; mr.instance_exec(handlerwrapper.activity_result_value,&blk)
@@ -318,7 +318,7 @@ class Wee
               end  
               handlerwrapper.inform_manipulate_change(
                 (mr.changed_status ? @__wee_status : nil), 
-                (mr.changed_context.any? ? mr.changed_context.uniq : nil),
+                (mr.changed_data.any? ? mr.changed_data.uniq : nil),
                 (mr.changed_endpoints.any? ? mr.changed_endpoints.uniq : nil)
               )
             end
@@ -491,8 +491,8 @@ class Wee
     def status# {{{
       @__wee_status
     end# }}}
-    def context# {{{
-      ReadHash.new(@__wee_context)
+    def data# {{{
+      ReadHash.new(@__wee_data)
     end# }}}
     def endpoints# {{{
       ReadHash.new(@__wee_endpoints)
@@ -636,8 +636,8 @@ public
     end
   end# }}}
   
-  def context# {{{
-    @dslr.__wee_context
+  def data# {{{
+    @dslr.__wee_data
   end# }}}
   def endpoints# {{{
     @dslr.__wee_endpoints

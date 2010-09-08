@@ -6,11 +6,11 @@ Dir['instances/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.e
 end
 
 class Callback #{{{
-  def initialize(info,handler,method,event,key,protocol,*context)
+  def initialize(info,handler,method,event,key,protocol,*data)
     @info = info
     @event = event
     @key = key
-    @context = context
+    @data = data
     @handler = handler
     @protocol = protocol
     @method = method.class == Symbol ? method : :callback
@@ -19,12 +19,12 @@ class Callback #{{{
   attr_reader :info, :protocol
 
   def delete_if!(event,key)
-    @handler.send @method, :DELETE, *@context if @key == key && @event == event
+    @handler.send @method, :DELETE, *@data if @key == key && @event == event
     nil
   end
 
   def callback(result)
-    @handler.send @method, result, *@context
+    @handler.send @method, result, *@data
   end
 end #}}}
 
@@ -160,7 +160,7 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
         end
       end
     else
-      $controller[id.to_i].unserialize_context!
+      $controller[id.to_i].unserialize_data!
     end
     case @property
       when 'handlerwrapper'
@@ -169,8 +169,8 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
         $controller[id.to_i].notify('properties/description/change')
       when 'endpoints'
         $controller[id.to_i].notify('properties/endpoints/change')
-      when 'context-variables'
-        $controller[id.to_i].notify('properties/context-variables/change')
+      when 'data-elements'
+        $controller[id.to_i].notify('properties/data-elements/change')
       else
         nil
     end

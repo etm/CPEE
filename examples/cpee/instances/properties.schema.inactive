@@ -50,11 +50,11 @@
       </element>
     </zeroOrMore>  
   </positions>  
-  <context-variables type="complex" modifiable="true">
+  <data-elements type="complex" modifiable="true">
     <zeroOrMore>
       <element><anyName/><text/></element>
     </zeroOrMore>  
-  </context-variables>  
+  </data-elements>  
   <endpoints type="complex" modifiable="true">
     <zeroOrMore>
       <element><anyName/><text/></element>

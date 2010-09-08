@@ -19,7 +19,7 @@ class Controller
       key = ::File::basename(::File::dirname(sub))
       self.unserialize_event!(:cre,key)
     end
-    unless ['stopped','ready'].include?(self.unserialize_context!)
+    unless ['stopped','ready'].include?(self.unserialize_data!)
       XML::Smart::modify(@directory + 'properties.xml') do |doc|
         doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
         doc.find("/p:properties/p:state").first.text = 'stopped'
@@ -49,9 +49,9 @@ class Controller
     XML::Smart::modify(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
       
-      node = doc.find("/p:properties/p:context-variables").first
+      node = doc.find("/p:properties/p:data-elements").first
       node.children.delete_all!
-      @instance.context.each do |k,v|
+      @instance.data.each do |k,v|
         node.add(k.to_s,ActiveSupport::JSON::encode(v))
       end
       
@@ -147,7 +147,7 @@ class Controller
         end  
     end    
   end # }}} 
-  def unserialize_context! # {{{
+  def unserialize_data! # {{{
     hw = nil
     state = nil
 
@@ -156,9 +156,9 @@ class Controller
 
       state = doc.find("string(/p:properties/p:state)")
 
-      @instance.context.clear
-      doc.find("/p:properties/p:context-variables/p:*").each do |e|
-        @instance.context[e.name.to_s.to_sym] = ActiveSupport::JSON::decode_translate(e.text) rescue nil
+      @instance.data.clear
+      doc.find("/p:properties/p:data-elements/p:*").each do |e|
+        @instance.data[e.name.to_s.to_sym] = ActiveSupport::JSON::decode_translate(e.text) rescue nil
       end
 
       @instance.endpoints.clear
