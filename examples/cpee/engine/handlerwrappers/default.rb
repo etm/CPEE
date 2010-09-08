@@ -93,10 +93,10 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     puts err.backtrace
     $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end
-  def inform_manipulate_change(status,context,endpoints)
+  def inform_manipulate_change(status,data,endpoints)
     $controller[@instance].serialize!
     $controller[@instance].notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :id => status.id, :message => status.message) unless status.nil?
-    $controller[@instance].notify("properties/data-elements/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => context) unless context.nil?
+    $controller[@instance].notify("properties/data-elements/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => data) unless data.nil?
     $controller[@instance].notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => endpoints) unless endpoints.nil?
   end
   def inform_position_change(ipc={})
