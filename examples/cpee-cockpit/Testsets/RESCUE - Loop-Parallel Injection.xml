@@ -2,22 +2,22 @@
 <testset>
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
-  <context-variables>
+  <data-elements>
     <outer>2</outer>
     <middle>2</middle>
     <inner>2</inner>
     <cons_a>10</cons_a>
     <cons_b>45</cons_b>
-  </context-variables>
+  </data-elements>
   <endpoints>
     <services>http://localhost:9290/groups/Interface</services>
     <injection>http://localhost:9290/injection/handler</injection>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <loop post_test="context.outer &gt; 0">
+    <loop post_test="data.outer &gt; 0">
       <parallel>
         <parallel_branch>
-          <loop post_test="context.middle &gt; 0">
+          <loop post_test="data.middle &gt; 0">
             <parallel>
               <parallel_branch>
                 <manipulate id="m01"/>
@@ -35,7 +35,7 @@
               </parallel_branch>
               <parallel_branch>
                 <manipulate id="m02"/>
-                <loop post_test="context.inner &gt; 0">
+                <loop post_test="data.inner &gt; 0">
                   <call id="branch_y" endpoint="services">
                     <constraints>
                         <constraint xpath="property_B" comparator="&gt;" variable="cons_b"/>
@@ -48,15 +48,15 @@
                     </parameters><!--}}}-->
                   </call> 
                   <manipulate id="reduce_inner">
-                    context.cons_b += 5
-                    context.inner -= 1
+                    data.cons_b += 5
+                    data.inner -= 1
                   </manipulate>
                 </loop>
               </parallel_branch>
             </parallel>
             <manipulate id="reduce_middle">
-              context.middle -= 1
-              context.inner = context.middle
+              data.middle -= 1
+              data.inner = data.middle
             </manipulate>
           </loop>
         </parallel_branch>
@@ -76,10 +76,10 @@
         </parallel_branch>
       </parallel>
       <manipulate id="reduce_outer">
-        context.cons_a += 50
-        context.outer -= 1
-        context.inner = context.outer 
-        context.middle = context.outer
+        data.cons_a += 50
+        data.outer -= 1
+        data.inner = data.outer 
+        data.middle = data.outer
       </manipulate>
     </loop>
   </description>
@@ -134,10 +134,10 @@
         </xsl:if>
         <xsl:if test="name()='manipulate'">
           <xsl:text>, :manipulate</xsl:text>
-          <!-- RESCUE: manipulate with context-variable as result object -->
-          <xsl:if test="@context">
+          <!-- RESCUE: manipulate with data-element as result object -->
+          <xsl:if test="@data">
             <xsl:text>, nil,</xsl:text>
-            <xsl:value-of select="@context"/>
+            <xsl:value-of select="@data"/>
           </xsl:if>
           <xsl:if test="@properties">
             <xsl:text>,</xsl:text>

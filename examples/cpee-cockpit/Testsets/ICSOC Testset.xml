@@ -2,16 +2,16 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <context-variables>
+  <data-elements>
     <rev>1</rev>
-  </context-variables>
+  </data-elements>
   <endpoints>
     <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <parallel>
       <parallel_branch>
-        <loop pre_test='context.feedback'>
+        <loop pre_test='data.feedback'>
           <call id="design" endpoint="timeout">
               <parameters><!--{{{-->
               <method>post</method>
@@ -39,7 +39,7 @@
         </loop>
       </parallel_branch>
       <parallel_branch>
-        <loop pre_test='context.feedback'>
+        <loop pre_test='data.feedback'>
           <call id="prepare" endpoint="timeout">
               <parameters><!--{{{-->
               <method>post</method>

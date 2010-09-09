@@ -2,7 +2,7 @@
 <testset>
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
-  <context-variables>
+  <data-elements>
     <title/>
     <date/>
     <selected_title/>
@@ -13,7 +13,7 @@
     <zip>1100</zip>
     <city/>
     <reservation_number/>
-  </context-variables>
+  </data-elements>
   <endpoints>
     <services>http://localhost:9290/groups/Cinemas</services>
     <injection_handler>http://localhost:9290/injection/handler</injection_handler>
@@ -31,9 +31,9 @@
         </templates>
       </parameters>
       <manipulate output="result">
-        context.title = result[0].value('title')
-        context.date = result[0].value('date')
-        context.city = result[0].value('city')
+        data.title = result[0].value('title')
+        data.date = result[0].value('date')
+        data.city = result[0].value('city')
       </manipulate>
     </call>
     <call id="a01" endpoint="services">
@@ -54,18 +54,18 @@
           <selector_service>"select"</selector_service>
         </additional_endpoints>
         <parameters>
-          <title>context.title</title>
-          <date>context.date</date>
+          <title>data.title</title>
+          <date>data.date</date>
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
         if result[0]['status'] == 200 
-          context.reservation_number = result[0].value('reservation_id')
-          context.starting_time = result[0].value('starting_time')
-          context.selected_title = result[0].value('movie_title')
-          context.selected_date = result[0].value('selected_date')
-          context.hall = result[0].value('hall')
-          context.selected_cinema = CGI::unescapeHTML("#{properties.value('perform_book')[0].value('name')}\n#{properties.value('perform_book')[0].value('street')}\n#{properties.value('perform_book')[0].value('zip')} #{properties.value('perform_book')[0].value('city')}")
+          data.reservation_number = result[0].value('reservation_id')
+          data.starting_time = result[0].value('starting_time')
+          data.selected_title = result[0].value('movie_title')
+          data.selected_date = result[0].value('selected_date')
+          data.hall = result[0].value('hall')
+          data.selected_cinema = CGI::unescapeHTML("#{properties.value('perform_book')[0].value('name')}\n#{properties.value('perform_book')[0].value('street')}\n#{properties.value('perform_book')[0].value('zip')} #{properties.value('perform_book')[0].value('city')}")
         end
       </manipulate>
     </call>  
@@ -121,10 +121,10 @@
         </xsl:if>
         <xsl:if test="name()='manipulate'">
           <xsl:text>, :manipulate</xsl:text>
-          <!-- RESCUE: manipulate with context-variable as result object -->
-          <xsl:if test="@context">
+          <!-- RESCUE: manipulate with data-element as result object -->
+          <xsl:if test="@data">
             <xsl:text>, nil,</xsl:text>
-            <xsl:value-of select="@context"/>
+            <xsl:value-of select="@data"/>
           </xsl:if>
           <!-- RESCUE -->
           <xsl:call-template name="print-content">

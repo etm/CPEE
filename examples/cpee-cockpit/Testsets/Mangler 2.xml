@@ -2,7 +2,7 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <context-variables>
+  <data-elements>
     <persons>3</persons>
     <card>Visa_12345</card>
     <airline>null</airline>
@@ -10,7 +10,7 @@
     <from>Vienna</from>
     <to>Prague</to>
     <costs>0</costs>
-  </context-variables>
+  </data-elements>
   <endpoints>
     <bookAir>http://www.pri.univie.ac.at/~mangler/services/airline.php</bookAir>
     <bookHotel>http://www.pri.univie.ac.at/~mangler/services/hotel.php</bookHotel>
@@ -21,65 +21,65 @@
       <parameters>
         <method>post</method>
         <parameters>
-          <from>context.from</from>
-          <to>context.to</to>
-          <persons>context.persons</persons>
+          <from>data.from</from>
+          <to>data.to</to>
+          <persons>data.persons</persons>
         </parameters>
       </parameters>
-      <manipulate output="result">  context.airline = result.value('id')
-  context.costs += result.value('costs').to_f</manipulate>
+      <manipulate output="result">  data.airline = result.value('id')
+  data.costs += result.value('costs').to_f</manipulate>
     </call>
     <parallel>
-      <loop pre_test="context.persons > 0">
-        <parallel_branch pass="context.persons" local="p">
+      <loop pre_test="data.persons > 0">
+        <parallel_branch pass="data.persons" local="p">
           <call id="a2" lay="p" endpoint="bookHotel">
             <parameters>
               <method>post</method>
               <parameters>
-                <to>context.to</to>
+                <to>data.to</to>
               </parameters>
             </parameters>
-            <manipulate output="result">        context.hotels &lt;&lt; result.value('id')
-        context.costs += result.value('costs').to_f</manipulate>
+            <manipulate output="result">        data.hotels &lt;&lt; result.value('id')
+        data.costs += result.value('costs').to_f</manipulate>
           </call>
         </parallel_branch>
-        <manipulate id="a3">      context.persons -= 1</manipulate>  
+        <manipulate id="a3">      data.persons -= 1</manipulate>  
       </loop>  
-      <loop pre_test="context.persons > 0">
-        <parallel_branch pass="context.persons" local="p">
+      <loop pre_test="data.persons > 0">
+        <parallel_branch pass="data.persons" local="p">
           <call id="a4" lay="p" endpoint="bookHotel">
             <parameters>
               <method>post</method>
               <parameters>
-                <to>context.to</to>
+                <to>data.to</to>
               </parameters>
             </parameters>
-            <manipulate output="result">        context.hotels &lt;&lt; result.value('id')
-        context.costs += result.value('costs').to_f</manipulate>
+            <manipulate output="result">        data.hotels &lt;&lt; result.value('id')
+        data.costs += result.value('costs').to_f</manipulate>
           </call>
         </parallel_branch>
-        <parallel_branch pass="context.persons" local="p">
+        <parallel_branch pass="data.persons" local="p">
           <call id="a5" lay="p" endpoint="bookHotel">
             <parameters>
               <method>post</method>
               <parameters>
-                <to>context.to</to>
+                <to>data.to</to>
               </parameters>
             </parameters>
-            <manipulate output="result">        context.hotels &lt;&lt; result.value('id')
-        context.costs += result.value('costs').to_f</manipulate>
+            <manipulate output="result">        data.hotels &lt;&lt; result.value('id')
+        data.costs += result.value('costs').to_f</manipulate>
           </call>
         </parallel_branch>
-        <manipulate id="a6">      context.persons -= 1</manipulate>  
+        <manipulate id="a6">      data.persons -= 1</manipulate>  
       </loop>  
     </parallel>  
     <choose>
-      <alternative condition="context.costs > 700">
+      <alternative condition="data.costs > 700">
         <call id="a7" endpoint="approve">
           <parameters>
             <method>post</method>
             <parameters>
-              <costs>context.costs</costs>
+              <costs>data.costs</costs>
             </parameters>
           </parameters>
         </call>  

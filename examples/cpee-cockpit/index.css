@@ -42,7 +42,7 @@ h1 {
 #areainstance button[name=testset]  { width: 100%;  }
 #areainstance button[name=base]     { width: 100%;  }
 #areainstance button[name=instance] { width: 100%;  }
-#areacontext    {                                }
+#areadata       {                                }
 #areaendpoints  {                                }
 #areaposition   { height: 7.2em; overflow: auto; }
 #areaproperties { height: 7.2em; overflow: auto; }
@@ -181,7 +181,7 @@ div.tab div.tabbelow {
   padding:0;
 }
 
-#context-variables {
+#data-elements {
   border-collapse:collapse;
   border-spacing:0;
   border:0 none;

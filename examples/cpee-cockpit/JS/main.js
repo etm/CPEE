@@ -17,7 +17,7 @@ var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/state' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/context-variables' + '&' +
+               'topic'  + '=' + 'properties/data-elements' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
@@ -31,7 +31,7 @@ var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change,error' + '&' +
                'topic'  + '=' + 'properties/state' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/context-variables' + '&' +
+               'topic'  + '=' + 'properties/data-elements' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
@@ -160,7 +160,7 @@ function monitor_instance() {// {{{
             data = e.data.parseXML();
             if ($('event > topic',data).length > 0) {
               switch($('event > topic',data).text()) {
-                case 'properties/context-variables':
+                case 'properties/data-elements':
                   monitor_instance_cvs();
                   break;
                 case 'properties/description':
@@ -209,7 +209,7 @@ function monitor_instance_cvs() {// {{{
   var url = $("input[name=instance-url]").val();
   $.ajax({
     type: "GET", 
-    url: url + "/properties/values/context-variables/",
+    url: url + "/properties/values/data-elements/",
     success: function(res){
       var values = $("value > *",res);
       var temp = "";
@@ -217,13 +217,13 @@ function monitor_instance_cvs() {// {{{
       if($(this).text().length < 80) {
         temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + format_text($(this).text()) + "</td></tr>";
       } else {
-        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td><a href=\"" + url + "/properties/values/context-variables/" + this.nodeName  +"\" target=\"_blank\">Show context</a></td></tr>";
+        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td><a href=\"" + url + "/properties/values/data-elements/" + this.nodeName  +"\" target=\"_blank\">Show data elements</a></td></tr>";
       }
     });
 
     if (temp != save_cvs) {
       save_cvs = temp;
-      var ctv = $("#context-variables");
+      var ctv = $("#data-elements");
       ctv.empty();
       ctv.append(temp);
     }  
@@ -440,7 +440,7 @@ function load_testset() {// {{{
 
       $.ajax({
         type: "GET", 
-        url: url + "/properties/values/context-variables/",
+        url: url + "/properties/values/data-elements/",
         success: function(res){
           var rcount = 0;
           var values = $("value > *",res);
@@ -449,7 +449,7 @@ function load_testset() {// {{{
             var name = this.nodeName;
             $.ajax({
               type: "DELETE", 
-              url: url + "/properties/values/context-variables/" + name,
+              url: url + "/properties/values/data-elements/" + name,
               success: function(){
                 rcount += 1;
                 if (rcount == length)
@@ -587,11 +587,11 @@ function load_testset_hw(url,testset) {// {{{
   });
 } // }}}
 function load_testset_cvs(url,testset) {// {{{
-  $("testset > context-variables > *",testset).each(function(){
+  $("testset > data-elements > *",testset).each(function(){
     var val = $(this).serializeXML();
     $.ajax({
       type: "POST", 
-      url: url + "/properties/values/context-variables/",
+      url: url + "/properties/values/data-elements/",
       data: ({value: val}),
       error: report_failure
     });  

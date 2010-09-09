@@ -2,9 +2,9 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <context-variables>
+  <data-elements>
     <wait>3</wait>
-  </context-variables>
+  </data-elements>
   <endpoints>
     <services>http://www.pri.univie.ac.at/~mangler/services/timeout.php</services>
     <injection>http://localhost:9290/injection/handler</injection>
@@ -16,15 +16,15 @@
           <parameters><!--{{{--> 
             <service/>
             <parameters>
-              <op1>context.wait</op1>
+              <op1>data.wait</op1>
             </parameters>
           </parameters><!--}}}-->
           <manipulate output="result">
-            context.wait -= 1
+            data.wait -= 1
           </manipulate>
         </call> 
         <manipulate id="b1_a02">
-          context.wait += 1
+          data.wait += 1
         </manipulate>
         <parallel>
           <parallel_branch>
@@ -32,26 +32,26 @@
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>context.wait</op1>
+                  <op1>data.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                context.wait -= 1
+                data.wait -= 1
               </manipulate>
             </call> 
             <call id="b1_a04" endpoint="services">
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>context.wait</op1>
+                  <op1>data.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                context.wait -= 1
+                data.wait -= 1
               </manipulate>
             </call> 
             <manipulate id="b1_a05">
-              context.wait += 1
+              data.wait += 1
             </manipulate>
           </parallel_branch>
           <parallel_branch>
@@ -59,25 +59,25 @@
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>context.wait</op1>
+                  <op1>data.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                context.wait -= 1
+                data.wait -= 1
               </manipulate>
             </call> 
             <manipulate id="b1_a07">
-              context.wait += 1
+              data.wait += 1
             </manipulate>
             <call id="b1_a08" endpoint="services">
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>context.wait</op1>
+                  <op1>data.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                context.wait -= 1
+                data.wait -= 1
               </manipulate>
             </call> 
           </parallel_branch>
@@ -88,15 +88,15 @@
           <parameters><!--{{{--> 
             <service/>
             <parameters>
-              <op1>context.wait</op1>
+              <op1>data.wait</op1>
             </parameters>
           </parameters><!--}}}-->
           <manipulate output="result">
-            context.wait -= 1
+            data.wait -= 1
           </manipulate>
         </call> 
         <manipulate id="b2_a02">
-          context.wait += 1
+          data.wait += 1
         </manipulate>
         <parallel>
           <parallel_branch>
@@ -104,26 +104,26 @@
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>context.wait</op1>
+                  <op1>data.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                context.wait -= 1
+                data.wait -= 1
               </manipulate>
             </call> 
             <call id="b2_a04" endpoint="services">
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>context.wait</op1>
+                  <op1>data.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                context.wait -= 1
+                data.wait -= 1
               </manipulate>
             </call> 
             <manipulate id="b2_a05">
-              context.wait += 1
+              data.wait += 1
             </manipulate>
           </parallel_branch>
           <parallel_branch>
@@ -131,25 +131,25 @@
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>context.wait</op1>
+                  <op1>data.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                context.wait -= 1
+                data.wait -= 1
               </manipulate>
             </call> 
             <manipulate id="b2_a07">
-              context.wait += 1
+              data.wait += 1
             </manipulate>
             <call id="b2_a08" endpoint="services">
               <parameters><!--{{{--> 
                 <service/>
                 <parameters>
-                  <op1>context.wait</op1>
+                  <op1>data.wait</op1>
                 </parameters>
               </parameters><!--}}}-->
               <manipulate output="result">
-                context.wait -= 1
+                data.wait -= 1
               </manipulate>
             </call> 
           </parallel_branch>
@@ -205,10 +205,10 @@
         </xsl:if>
         <xsl:if test="name()='manipulate'">
           <xsl:text>, :manipulate</xsl:text>
-          <!-- RESCUE: manipulate with context-variable as result object -->
-          <xsl:if test="@context">
+          <!-- RESCUE: manipulate with data-element as result object -->
+          <xsl:if test="@data">
             <xsl:text>, nil,</xsl:text>
-            <xsl:value-of select="@context"/>
+            <xsl:value-of select="@data"/>
           </xsl:if>
           <xsl:if test="@properties">
             <xsl:text>,</xsl:text>

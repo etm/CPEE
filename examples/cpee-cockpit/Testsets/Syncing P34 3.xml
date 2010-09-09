@@ -2,9 +2,9 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <context-variables><!--{{{-->
+  <data-elements><!--{{{-->
     <x>""</x>
-  </context-variables><!--}}}-->
+  </data-elements><!--}}}-->
   <handlers><!--{{{-->
     <handler url="http://localhost:9299/1/events">
       <votes topic='running'>syncing_before,syncing_after</votes>
@@ -22,7 +22,7 @@
           <timeout>2</timeout>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate output="result">  context.x += "a1,"</manipulate>  
+      <manipulate output="result">  data.x += "a1,"</manipulate>  
     </call>  
     <call id="a2" endpoint="timeouts">
       <parameters><!--{{{-->
@@ -31,7 +31,7 @@
           <timeout>16</timeout>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate output="result">  context.x += "a2,"</manipulate>  
+      <manipulate output="result">  data.x += "a2,"</manipulate>  
     </call>  
     <call id="a3" endpoint="timeout">
       <parameters><!--{{{-->
@@ -40,7 +40,7 @@
           <timeout>4</timeout>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate output="result">  context.x += "a3,"</manipulate>  
+      <manipulate output="result">  data.x += "a3,"</manipulate>  
     </call>  
   </description><!--}}}-->
   <transformation><!--{{{-->

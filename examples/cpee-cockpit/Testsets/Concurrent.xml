@@ -2,18 +2,18 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <context-variables>
+  <data-elements>
     <persons>3</persons>
     <hotels>[]</hotels>
     <costs>0</costs>
-  </context-variables>
+  </data-elements>
   <endpoints>
     <bookHotel>http://www.pri.univie.ac.at/~mangler/services/hotel.php</bookHotel>
   </endpoints>
   <description xmlns="http://cpee.org/ns/description/1.0">
     <parallel>
-      <loop pre_test="context.persons > 0">
-        <parallel_branch pass="context.persons" local="p">
+      <loop pre_test="data.persons > 0">
+        <parallel_branch pass="data.persons" local="p">
           <call id="a2" lay="p" endpoint="bookHotel">
             <parameters>
               <method>post</method>
@@ -21,11 +21,11 @@
                 <to>"Vienna"</to>
               </parameters>
             </parameters>
-            <manipulate output="result">        context.hotels &lt;&lt; result.value('id')
-        context.costs += result.value('costs').to_f</manipulate>
+            <manipulate output="result">        data.hotels &lt;&lt; result.value('id')
+        data.costs += result.value('costs').to_f</manipulate>
           </call>
         </parallel_branch>
-        <manipulate id="a3">      context.persons -= 1</manipulate>  
+        <manipulate id="a3">      data.persons -= 1</manipulate>  
       </loop>  
     </parallel>  
   </description>
