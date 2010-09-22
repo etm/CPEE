@@ -45,7 +45,7 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
   # information about how to continue the call. This passthrough-value is given
   # to activity_handle if the workflow is configured to do so.
   def activity_passthrough_value
-    return nil
+    nil
   end
 
   # Called if the execution of the actual activity_handle is not necessary anymore
@@ -69,7 +69,6 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
     $message += "Syntax messed with error #{err}\n"
     raise(err)
   end
-
   def inform_state_change(newstate)
     $message += "\n#{'-'*40}\nState changed to #{newstate}\n"
   end

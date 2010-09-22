@@ -68,7 +68,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   def activity_passthrough_value
     nil
   end
-  
+
   # Called if the execution of the actual activity_handle is not necessary anymore
   # It is definit that the call will not be continued.
   # At this stage, this is only the case if parallel branches are not needed

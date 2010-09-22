@@ -5,11 +5,11 @@ class TestWorkflow < Wee
   handlerwrapper TestHandlerWrapper
 
   endpoint :endpoint1 => 'http://www.heise.de'
-  context :x => 'begin_'
+  data :x => 'begin_'
   
   control flow do
     activity :a1_1, :call, :endpoint1 do |result|
-      @x += result
+      data.x += "#{result}"
     end
     parallel :wait => 2 do
       parallel_branch do
@@ -20,10 +20,10 @@ class TestWorkflow < Wee
       end
     end
     activity :a3, :manipulate do
-      @x += '_end'
+      data.x += '_end'
     end
     choose do
-      alternative @x != nil do
+      alternative data.x != nil do
         activity :a4a, :call, :endpoint1
       end
       otherwise do

@@ -17,11 +17,11 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
   def test_loop
     @wf.description do
       activity :a1, :manipulate do
-        @x = 0
+        data.x = 0
       end
-      loop pre_test{@x < 3} do
+      loop pre_test{data.x < 3} do
         activity :a2, :call, :endpoint1 do
-          @x += 1
+          data.x += 1
         end
       end
       activity :a3, :call, :endpoint1
@@ -43,18 +43,18 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
   def test_loop_search
     @wf.description do
       activity :a1, :manipulate do
-        @x = 0
+        data.x = 0
       end
-      loop pre_test{@x < 3} do
+      loop pre_test{data.x < 3} do
         activity :a2_1, :call, :endpoint1
         activity :a2_2, :manipulate do
-          @x += 1
+          data.x += 1
         end
       end
       activity :a3, :call, :endpoint1
     end
     @wf.search Wee::Position.new(:a2_2, :at)
-    @wf.context({:x => 0})
+    @wf.data :x => 0
     @wf.start
     sleep(0.1)
     assert(!$message.include?("Activity a1 done"), "pos a1 should not be done, see $message=#{$message}");
@@ -70,18 +70,18 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
   def test_loop_jump_over
     @wf.description do
       activity :a1, :manipulate do
-        @x = 0
+        data.x = 0
       end
-      loop pre_test{@x < 3} do
+      loop pre_test{data.x < 3} do
         activity :a2_1, :call, :endpoint1
         activity :a2_2, :manipulate do
-          @x += 1
+          data.x += 1
         end
       end
       activity :a3, :call, :endpoint1
     end
     @wf.search Wee::Position.new(:a3, :at)
-    @wf.context({:x => 0})
+    @wf.data :x => 0
     @wf.start
     sleep(0.1)
     assert($message.include?("Handle call: position=[a3]"), "Pos a3 should be called by now, see message=[#{$message}]");

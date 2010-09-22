@@ -18,20 +18,20 @@ class TestWFPDeferredChoice < Test::Unit::TestCase
       parallel :wait=>1 do
         parallel_branch do
           activity :a1_1, :call, :endpoint1 do
-            context :choice => 1
+            data.choice = 1
           end
         end
         parallel_branch do
           activity :a1_2, :call, :endpoint1 do
-            context :choice => 2
+            data.choice = 2
           end
         end
       end
       choose do
-        alternative(@choice == 1) do
+        alternative(data.choice == 1) do
           activity :a2_1, :call, :endpoint1
         end
-        alternative(@choice == 2) do
+        alternative(data.choice == 2) do
           activity :a2_2, :call, :endpoint1
         end
       end

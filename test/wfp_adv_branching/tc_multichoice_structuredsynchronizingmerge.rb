@@ -14,13 +14,13 @@ class TestWFPMultiChoice < Test::Unit::TestCase
   end
 
   def test_multichoice_chained
+    @wf.data :x => 1
     @wf.description do
-      context :x => 1
       choose do
-        alternative(@x == 1) do
+        alternative(data.x == 1) do
           activity :a1_1, :call, :endpoint1
         end
-        alternative(@x > 0) do
+        alternative(data.x > 0) do
           activity :a1_2, :call, :endpoint1
         end
       end
@@ -43,17 +43,17 @@ class TestWFPMultiChoice < Test::Unit::TestCase
     assert($message.include?("Activity a2 done"), "pos a2 not properly ended, see $message=#{$message}");
   end
   def test_multichoice_parallel
+    @wf.data :x => 1
     @wf.description do
-      context :x => 1
       parallel do
         choose do
           parallel_branch do
-            alternative(@x == 1) do
+            alternative(data.x == 1) do
               activity :a1_1, :call, :endpoint1
             end
           end
           parallel_branch do
-            alternative(@x > 0) do
+            alternative(data.x > 0) do
               activity :a1_2, :call, :endpoint1
             end
           end

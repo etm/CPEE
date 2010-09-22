@@ -17,6 +17,7 @@ class Wee
     initialize_data if methods.include?('initialize_data')
     initialize_endpoints if methods.include?('initialize_endpoints')
     initialize_handlerwrapper if methods.include?('initialize_handlerwrapper')
+    initialize_control if methods.include?('initialize_control')
   end# }}}
 
   module Signal# {{{
@@ -127,18 +128,17 @@ class Wee
 
     def activity_no_longer_necessary; end
 
-
     def inform_activity_done; end
     def inform_activity_manipulate; end
     def inform_activity_failed(err); end
 
     def inform_syntax_error(err); end
-    def inform_manipulate_change(changed); end
+    def inform_manipulate_change(status,data,endpoints); end
     def inform_position_change(ipc); end
     def inform_state_change(newstate); end
     
-    def vote_sync_before; end
-    def vote_sync_after; end
+    def vote_sync_before; true; end
+    def vote_sync_after; true; end
   end  # }}}
 
   class Position# {{{
@@ -175,16 +175,16 @@ class Wee
   end# }}}
   def self::endpoint(new_endpoints)# {{{
     @@__wee_new_endpoints ||= {}
-    @@__wee_new_endpoints.merge! endpoints
+    @@__wee_new_endpoints.merge! new_endpoints
     define_method :initialize_endpoints do
       @@__wee_new_endpoints.each do |name,value|
         @dslr.__wee_endpoints[name.to_s.to_sym] = value
       end
     end
   end# }}}
-  def self::data(variables)# {{{
+  def self::data(data_elements)# {{{
     @@__wee_new_data_elements ||= {}
-    @@__wee_new_data_elements.merge! endpoints
+    @@__wee_new_data_elements.merge! data_elements
     define_method :initialize_data do
       @@__wee_new_data_elements.each do |name,value|
         @dslr.__wee_data[name.to_s.to_sym] = value
@@ -196,10 +196,10 @@ class Wee
       self.handlerwrapper = aClassname
       self.handlerwrapper_args = args unless args.empty?
     end
-  end# }}}
+  end# }}} 
   def self::control(flow, &block)# {{{
     @@__wee_control_block = block
-    define_method :__wee_control_flow do
+    define_method :initialize_control do
       self.description(&(@@__wee_control_block))
     end
   end#  }}}
@@ -636,11 +636,23 @@ public
     end
   end# }}}
   
-  def data# {{{
+  def data(new_data=nil)# {{{
+    unless new_data.nil? || !new_data.is_a?(Hash)
+      new_data.each{|k,v|@dslr.__wee_data[k] = v}
+    end
     @dslr.__wee_data
   end# }}}
-  def endpoints# {{{
+  def endpoints(new_endpoints=nil)# {{{
+    unless new_endpoints.nil? || !new_endpoints.is_a?(Hash)
+      new_endpoints.each{|k,v|@dslr.__wee_endpoints[k] = v}
+    end
     @dslr.__wee_endpoints
+  end# }}}
+  def endpoint(new_endpoints)# {{{
+    unless new_endpoints.nil? || !new_endpoints.is_a?(Hash) || !new_endpoints.length == 1
+      new_endpoints.each{|k,v|@dslr.__wee_endpoints[k] = v}
+    end
+    nil
   end# }}}
   def status# {{{
     @dslr.__wee_status
@@ -648,17 +660,17 @@ public
 
   # get/set workflow description
   def description(code = nil,&blk)# {{{
-    if code.nil? && !block_given?
+    bgiven = block_given?
+    if code.nil? && !bgiven
       @wfsource
     else
-      r = rand()
-      @wfsource = code unless block_given?
+      @wfsource = code unless bgiven
       (class << self; self; end).class_eval do
         define_method :__wee_control_flow do
           @dslr.__wee_positions.clear
           @dslr.__wee_state = :running
           begin
-            if block_given?
+            if bgiven
               @dslr.instance_eval(&blk)
             else
               @dslr.instance_eval(code)
@@ -678,7 +690,7 @@ public
           end  
         end
       end
-      block_given? ? blk : code
+      bgiven ? blk : code
     end
   end# }}}
 
