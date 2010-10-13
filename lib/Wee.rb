@@ -116,7 +116,7 @@ class Wee
   end# }}}
 
   class HandlerWrapperBase# {{{
-    def initialize(args,position=nil,lay=nil,continue=nil); end
+    def initialize(arguments,endpoint=nil,position=nil,lay=nil,continue=nil); end
 
     def activity_handle(passthrough, endpoint, parameters); end
 
