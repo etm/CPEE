@@ -142,6 +142,40 @@
       };
 
       function testset_svg(){
+        if (window.location.search.match(/^\?url=/)) {
+          var ts = window.location.search.replace(/^\?url=/,'');
+          httpRequest = new XMLHttpRequest();
+          httpRequest.overrideMimeType('text/xml');
+          httpRequest.onreadystatechange = function(){
+            if (httpRequest.readyState == 4) {
+              if (httpRequest.status == 200) {
+                var canvas = document.getElementById("canvas");
+                var xml = httpRequest.responseXML;
+                var node = xml.evaluate("/x:description", xml.documentElement, cpeeResolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                httpRequest = new XMLHttpRequest();
+                httpRequest.overrideMimeType('text/javascript');
+                httpRequest.onreadystatechange = function(){
+                  if (httpRequest.readyState == 4) {
+                    if (httpRequest.status == 200) {
+                      globalEval(httpRequest.responseText);
+                      var wg = new WFGraph(xml, node, canvas);
+                      wg.generateGraph();
+                    } else {
+                      alert('There was a problem with loading graph.js.');
+                    }
+                  }
+                };
+                httpRequest.open('GET', 'JS/graph.js', true);
+                httpRequest.send(null);
+              } else {
+                alert('There was a problem with loading the testset.');
+              }
+            }
+          };
+          httpRequest.open('GET', ts, true);
+          httpRequest.send(null);
+        }  
         if (window.location.search.match(/^\?testset=/)) {
           var ts = window.location.search.replace(/^\?testset=/,'');
           httpRequest = new XMLHttpRequest();
