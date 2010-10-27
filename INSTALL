@@ -1,0 +1,11 @@
+For WEE and tests:
+  * No dependencies required
+  
+For CPEE
+  * clone repository http://www.pri.univie.ac.at/communities/riddl/
+  * see INSTALL file
+  
+Run CPEE  
+  cd examples
+  cd cpee
+  rackup declaration.ru
