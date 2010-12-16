@@ -1,0 +1,71 @@
+<wsdl:description 
+   targetNamespace="uri:air/booking"
+   xmlns:wsdl="http://www.w3.org/ns/wsdl"
+   xmlns:whttp="http://www.w3.org/ns/wsdl/http"
+   xmlns:wsdlx="http://www.w3.org/ns/wsdl-extensions"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns:msg="uri:air/booking/msg"
+   xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/">
+
+  <wsdl:types>
+    <xs:schema 
+      targetNamespace="uri:air/booking/msg"
+      xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      xmlns="uri:air/booking/msg"
+      xmlns:msg="uri:air/booking/msg"
+      elementFormDefault="qualified">
+  
+      <xs:element name="input" type="inputType"/>
+      <xs:element name="output" type="outputType"/>
+      
+      <xs:complexType name="inputType">
+        <xs:sequence>
+          <xs:element name="from" type="xs:string" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="to" type="xs:string" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="persons" type="arrayType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:complexType>
+      
+      <xs:complexType name="outputType">
+        <xs:sequence>
+          <xs:element name="costs" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <xs:complexType name="arrayType">
+        <xs:sequence>
+          <xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+
+    </xs:schema>
+  </wsdl:types>
+
+  <plnk:partnerLinkType name="bookPLT">
+    <plnk:role name="book_airline" portType="BookInterface"/>
+  </plnk:partnerLinkType>
+
+  <wsdl:interface name="BookInterface">
+    <wsdl:operation name="book"
+       pattern="http://www.w3.org/ns/wsdl/in-out"
+       style="http://www.w3.org/ns/wsdl/style/iri" 
+       wsdlx:safe="true">
+      <wsdl:input element="msg:input"/>
+      <wsdl:output element="msg:output"/>
+    </wsdl:operation>
+  </wsdl:interface>
+
+  <wsdl:binding name="BookHTTPBinding"
+     type="http://www.w3.org/ns/wsdl/http"
+     interface="BookInterface">
+    <wsdl:operation ref="book" whttp:method="POST"/>
+  </wsdl:binding>
+
+  <wsdl:service name="BookAirline" interface="BookInterface">
+    <wsdl:endpoint name="BookHTTPEndpoint"
+       binding="BookHTTPBinding"
+       address="http://www.pri.univie.ac.at/~mangler/book_airline/">
+    </wsdl:endpoint>
+  </wsdl:service>
+</wsdl:description>
