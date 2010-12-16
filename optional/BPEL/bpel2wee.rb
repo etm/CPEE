@@ -39,7 +39,7 @@ class BPELTransform
     @vars = {}
   end  
 
-  def transform_dsl# {{{
+  def transform_dsl # {{{
     @acounter = 0
     @vars = {}
     extract_vars
@@ -49,13 +49,13 @@ class BPELTransform
       result << print_elements(e,spaces)
     end
     result
-  end# }}}
-  def extract_vars# {{{
+  end # }}}
+  def extract_vars # {{{
     @doc.find("//bpel:variables/bpel:variable").each do |v|
       @vars[v.attributes['name']] = extract_ns_plus v.attributes['messageType']
     end  
-  end# }}}
-  def transform_data# {{{
+  end # }}}
+  def transform_data # {{{
     result = "<data-elements>\n"
     @doc.find("//bpel:variables/bpel:variable").each do |v|
       result << print_spaces(@MULTI)
@@ -63,8 +63,8 @@ class BPELTransform
     end  
     result << '</data-elements>'
     result
-  end# }}}
-  def transform_endpoints# {{{
+  end # }}}
+  def transform_endpoints # {{{
     result = XML::Smart.string('<endpoints/>')
     result.namespaces = {
       'xsd'  => 'http://www.w3.org/2001/XMLSchema',
@@ -105,8 +105,8 @@ class BPELTransform
       end
     end
     result.to_s
-  end# }}}
-  def transform_invocation# {{{
+  end # }}}
+  def transform_invocation # {{{
     result = XML::Smart.string('<invocations/>')
     @doc.find("/bpel:process/bpel:sequence/bpel:receive[@createInstance='yes']").each do |e|
       op = e.attributes['operation']
@@ -143,16 +143,16 @@ class BPELTransform
       end
     end
     result.to_s
-  end# }}}
+  end # }}}
 
-  def print_elements(e,spaces)# {{{
+  def print_elements(e,spaces) # {{{
     result = ''
     e.find("*[not(@createInstance) or @createInstance='no']").each do |e|
       result << print_element(e,spaces)
     end  
     result
-  end# }}}
-  def print_element(e,spaces)# {{{
+  end # }}}
+  def print_element(e,spaces) # {{{
     result = ''
     case e.name.name
       when 'invoke'
@@ -185,18 +185,18 @@ class BPELTransform
         result << print_parallel(e,spaces) 
     end
     result
-  end# }}}
+  end # }}}
 
-  def print_activity_plain(spaces)# {{{
+  def print_activity_plain(spaces) # {{{
     @acounter += 1
     result = print_spaces(spaces)
     result << 'activity :a'
     result << @acounter.to_s
   end    # }}}
-  def print_activity_manipulate(e)# {{{
+  def print_activity_manipulate(e) # {{{
     result = ", :manipulate do\n"
   end    # }}}
-  def print_activity_assign(e,spaces)# {{{
+  def print_activity_assign(e,spaces) # {{{
     result = ''
     e.find('bpel:copy').each do |c|
       result << print_spaces(spaces)
@@ -206,12 +206,12 @@ class BPELTransform
       result << "\n"
     end
     result
-  end# }}}
-  def print_activity_end(spaces)# {{{
+  end # }}}
+  def print_activity_end(spaces) # {{{
     result = print_spaces(spaces)
     result << "end\n"
-  end# }}}
-  def bpel_copy_x(c,what,op)# {{{
+  end # }}}
+  def bpel_copy_x(c,what,op) # {{{
     result = ''
     c.find(what).each do |to|
       text = if to.attributes['variable']
@@ -228,9 +228,9 @@ class BPELTransform
       end
     end
     result
-  end# }}}
+  end # }}}
 
-  def print_choose(e,spaces)# {{{
+  def print_choose(e,spaces) # {{{
     result = ''
     result << print_spaces(spaces) << "choose do\n"
     result << print_alternative(e,'alternative',spaces+@MULTI)
@@ -242,8 +242,8 @@ class BPELTransform
     end
     result << print_spaces(spaces) << "end\n"
     result
-  end# }}}
-  def print_alternative(e,word,spaces)# {{{
+  end # }}}
+  def print_alternative(e,word,spaces) # {{{
     result = ''
     result << print_spaces(spaces) 
     case word 
@@ -257,9 +257,9 @@ class BPELTransform
     result << print_elements(e,spaces+@MULTI)
     result << print_spaces(spaces) << "end\n"
     result
-  end# }}}
+  end # }}}
 
-  def print_while(e,spaces)# {{{
+  def print_while(e,spaces) # {{{
     result = ''
     result << print_spaces(spaces) 
     result << "loop pre_test{" 
@@ -268,9 +268,9 @@ class BPELTransform
     result << print_elements(e,spaces+@MULTI)
     result << print_spaces(spaces) << "end\n"
     result
-  end# }}}
+  end # }}}
   
-  def print_foreach(e,spaces)# {{{
+  def print_foreach(e,spaces) # {{{
     result = ''
     cname = e.find('string(@counterName)')
     parallel = e.find('boolean(@parallel[.="yes"])')
@@ -303,16 +303,16 @@ class BPELTransform
       result << print_spaces(spaces) << "end\n"
     end  
     result
-  end# }}}
+  end # }}}
   
-  def print_reply(e,spaces)# {{{
+  def print_reply(e,spaces) # {{{
     result = ''
     result << print_spaces(spaces) 
     result << "status.update(1,\"#{e.attributes['partnerLink']}.#{e.attributes['operation']};#{e.attributes['variable']}\")"
     result
-  end# }}}
+  end # }}}
 
-  def print_parallel(e,spaces)# {{{
+  def print_parallel(e,spaces) # {{{
     result = ''
     result << print_spaces(spaces) 
     result << "parallel do\n" 
@@ -350,7 +350,7 @@ class BPELTransform
     result
   end  # }}}
 
-  def print_activity_call(e,spaces)# {{{
+  def print_activity_call(e,spaces) # {{{
     result = ", :call, :\"#{e.attributes['partnerLink']}.#{e.attributes['operation']}\", data.#{e.attributes['inputVariable']}"
     if e.attributes['outputVariable']
       result << " do |result|\n"
@@ -362,10 +362,10 @@ class BPELTransform
     end  
   end    # }}}
 
-  def print_spaces(spaces)# {{{
+  def print_spaces(spaces) # {{{
     ' ' * spaces
   end  # }}}
-  def transform_bpel_xpath(text,op)# {{{
+  def transform_bpel_xpath(text,op) # {{{
     text.gsub!(/\$([a-z][a-zA-Z0-9]+)\.Document/,'/helper/\1')
     text.gsub!(/\$([a-z][a-zA-Z0-9]+)\.([a-z][a-zA-Z0-9]+)/) do
       t1,t2 = $1,$2
@@ -375,15 +375,15 @@ class BPELTransform
     "XPATHHelper.#{op}(\"" + text.strip + "\")"
   end  # }}}
 private
-  def remove_ns(str)# {{{
+  def remove_ns(str) # {{{
     str.gsub(/[a-zA_Z][a-zA_Z0-9]*:/,'')
-  end# }}}
-  def extract_ns(str)# {{{
+  end # }}}
+  def extract_ns(str) # {{{
     str.nil? ? '' : str.match(/^([a-zA_Z][a-zA_Z0-9]*):/)[1].to_s
-  end# }}}
-  def extract_ns_plus(str)# {{{
+  end # }}}
+  def extract_ns_plus(str) # {{{
     str.nil? ? '' : str.match(/^[a-zA_Z][a-zA_Z0-9]*:/).to_s
-  end# }}}
+  end # }}}
 end
 
 bt = BPELTransform.new(doc)

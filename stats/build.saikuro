@@ -4,8 +4,10 @@ require 'xml/smart'
 
 files = {
   'WEE'  => ['../lib/Wee.rb'],
+  'DefaultHandlerWrapper'  => '../examples/cpee/engine/handlerwrappers/default.rb',
   'CPEE'  => ['../examples/cpee/engine/controller.rb', '../examples/cpee/engine/implementation.rb'],
-  'DefaultHandlerWrapper'  => '../examples/cpee/engine/handlerwrappers/default.rb'
+  'BPEL'  => '../optional/BPEL/bpel2wee.rb',
+  'WSDLHandlerWrapper'  => '../examples/cpee/engine/handlerwrappers/rescue.rb'
 }
 
 files.each do |k,f|
