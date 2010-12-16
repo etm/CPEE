@@ -30,22 +30,22 @@ class Controller
   attr_reader :callbacks
   attr_reader :mutex
 
-  def start# {{{
+  def start # {{{
     @thread.join if !@thread.nil? && @thread.alive?
     unless @positions.empty?
       @instance.search(@positions)
     end
     @thread = @instance.start
-  end# }}}
+  end # }}}
 
-  def stop# {{{
+  def stop # {{{
     t = @instance.stop
     t.run
     @callbacks.delete_if{|k,c| c.callback(nil); true}
     @thread.join if !@thread.nil? && @thread.alive?
-  end# }}}
+  end # }}}
 
-  def serialize!# {{{
+  def serialize! # {{{
     XML::Smart::modify(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
       
@@ -69,8 +69,8 @@ class Controller
       node = doc.find("/p:properties/p:state").first
       node.text = @instance.state
     end 
-  end# }}}
-  def serialize_position!# {{{
+  end # }}}
+  def serialize_position! # {{{
     XML::Smart::modify(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
       pos = doc.find("/p:properties/p:positions").first
@@ -80,7 +80,7 @@ class Controller
         pos.add("#{p.position}",[p.detail,p.passthrough].compact.join(';'))
       end
     end
-  end# }}}
+  end # }}}
   
   def unserialize_event!(op,key)# {{{
     case op
@@ -191,7 +191,7 @@ class Controller
     end
 
     state
-  end# }}}
+  end # }}}
 
   def notify(what,content={})# {{{
     item = @events[what]
@@ -212,7 +212,7 @@ class Controller
         end
       end
     end
-  end# }}}
+  end # }}}
 
   def call_vote(what,content={})# {{{
     voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
@@ -264,7 +264,7 @@ class Controller
     else  
       true
     end
-  end# }}}
+  end # }}}
 
   def vote_callback(result,continue,voteid,callback,num)# {{{
     @callbacks.delete(callback)
@@ -276,7 +276,7 @@ class Controller
     if (num == @votes_results[voteid].length)
       continue.continue
     end  
-  end# }}}
+  end # }}}
 
   def add_ws(key,socket)# {{{
     @communication[key] = socket
@@ -290,7 +290,7 @@ class Controller
         a[1][key] = socket
       end  
     end
-  end# }}}
+  end # }}}
 
   def del_ws(key)# {{{
     @communication[key] = nil
@@ -304,7 +304,7 @@ class Controller
         a[1][key] = nil
       end
     end
-  end# }}}
+  end # }}}
 
   def state
     @instance.state
@@ -321,5 +321,5 @@ private
     res << ['uid'         , Digest::MD5.hexdigest(Kernel::rand().to_s)]
     res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
     # TODO add secret to fp
-  end# }}}
+  end # }}}
 end
