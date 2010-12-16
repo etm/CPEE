@@ -571,7 +571,7 @@ class Wee
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
       @__wee_state = newState
-
+  
       handlerwrapper.inform_state_change @__wee_state
 
       if newState == :stopping
