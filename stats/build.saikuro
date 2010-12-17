@@ -6,7 +6,7 @@ files = {
   'WEE'  => ['../lib/Wee.rb'],
   'DefaultHandlerWrapper'  => '../examples/cpee/engine/handlerwrappers/default.rb',
   'CPEE'  => ['../examples/cpee/engine/controller.rb', '../examples/cpee/engine/implementation.rb'],
-  'BPEL'  => '../optional/BPEL/bpel2wee.rb',
+  'BPEL'  => '../optional/BPEL/lib/BPEL_Transform.rb',
   'WSDLHandlerWrapper'  => '../examples/cpee/engine/handlerwrappers/rescue.rb'
 }
 
