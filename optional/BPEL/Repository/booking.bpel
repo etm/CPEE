@@ -9,10 +9,10 @@
      suppressJoinFailure="yes" 
      targetNamespace="http://cpee.org/bpel/booking.bpel">
      
-  <bpel:import importType="http://www.w3.org/ns/wsdl" location="./booking.wsdl" namespace="uri:company/booking"/>
-  <bpel:import importType="http://www.w3.org/ns/wsdl" location="./wsdl/airline.wsdl" namespace="uri:air/booking"/>
-  <bpel:import importType="http://www.w3.org/ns/wsdl" location="./wsdl/hotel.wsdl" namespace="uri:hotel/booking"/>
-  <bpel:import importType="http://www.w3.org/ns/wsdl" location="./wsdl/report.wsdl" namespace="uri:company/report"/>
+  <bpel:import importType="http://www.w3.org/ns/wsdl" location="booking.wsdl" namespace="uri:company/booking"/>
+  <bpel:import importType="http://www.w3.org/ns/wsdl" location="booking/airline.wsdl" namespace="uri:air/booking"/>
+  <bpel:import importType="http://www.w3.org/ns/wsdl" location="booking/hotel.wsdl" namespace="uri:hotel/booking"/>
+  <bpel:import importType="http://www.w3.org/ns/wsdl" location="booking/report.wsdl" namespace="uri:company/report"/>
 
   <bpel:partnerLinks>
      <bpel:partnerLink myRole="book_and_report"   name="book_and_report" partnerLinkType="ns1:bookPLT"/>

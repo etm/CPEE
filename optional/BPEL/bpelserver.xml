@@ -38,37 +38,33 @@
   </message>
 
   <resource>
-    <get in="*" out="list-of-workflow-instances"/>
-    <post in="instance-name" out="instance-id"/>
+    <get in="*" out="list-of-bpel-schemas"/>
     <resource relative='xsls'>
       <resource>
         <get in="*" out="xsl"/>
       </resource>  
     </resource>
-    <resource>
-      <get in="*" out="instance-info"/>
-      <delete in="*"/>
-      <resource relative="callbacks">
-        <get in="*" out="callbacks"/>
-        <resource>
-          <put in="*"/>
-        </resource>
-      </resource>
-      <resource relative="notifications">
-        <resource relative="subscriptions">
-          <resource>
-            <resource relative="debug">
-              <put in="message"/>
-            </resource>
-            <resource relative="error">
-              <put in="message"/>
-            </resource>
-            <resource relative="info">
-              <put in="message"/>
-            </resource>
-          </resource>
-        </resource>
-      </resource>
+    <resource relative="cpee">
+      <get in="*" out="cpee-base"/>
     </resource>
+    <resource>
+      <get in="*" out="schema-info"/>
+      <resource relative="instances">
+        <get in="*" out="instances"/>
+      </resource>
+      <resource relative="dsl">
+        <get in="*" out="dsl"/>
+      </resource>
+      <resource relative="data-elements">
+        <get in="*" out="data-elements"/>
+      </resource>
+      <resource relative="endpoints">
+        <get in="*" out="endpoints"/>
+      </resource>
+      <resource relative="invocation">
+        <get in="*" out="invocation"/>
+      </resource>
+      <post in="*"/>
+      <put in="*"/>
   </resource>
 </description>
