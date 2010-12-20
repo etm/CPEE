@@ -77,12 +77,11 @@ class NewInstance < Riddl::Implementation #{{{
   def response
     url = @a[0]
     name = @p[0].value
-    id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e)).to_i}.sort.last
-    id = (id.nil? ? 1 : id  + 1)
-    1.upto id do |i|
+    id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e)).to_i}.sort.last.to_i
+    while true
+      id += 1
       begin
-        Dir.mkdir("instances/#{i}")
-        id = i
+        Dir.mkdir("instances/#{id}")
         break
       rescue => details
       end
