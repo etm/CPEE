@@ -28,7 +28,6 @@ run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
   }
   
   on resource do
-    run Riddl::Utils::Declaration::Description, description_string if get 'riddl-description-request'
     run Instances if get '*'
     run NewInstance, $url if post 'instance-name'
     on resource do
