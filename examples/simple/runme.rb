@@ -2,9 +2,11 @@
 require ::File.dirname(__FILE__) + '/SimpleWorkflow'
 
 t = SimpleWorkflow.new
-result = nil
-execution = Thread.new {
-  result = t.start
-}
+execution = t.start
 execution.join()
-puts "========> Ending-Result: #{result.inspect}"
+puts "========> Ending-Result:"
+puts "  data:#{t.data.inspect}"
+puts "  status:#{t.status.inspect}"
+puts "  state:#{t.state}"
+
+

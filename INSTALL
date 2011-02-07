@@ -1,0 +1,18 @@
+For WEE and tests:
+  * No dependencies required
+  
+For CPEE
+  * clone repository http://www.pri.univie.ac.at/communities/riddl/
+  * see INSTALL file
+  
+  * For websocket support (cockpit) you need a custom rack gem.
+    * http://www.pri.univie.ac.at/~mangler/rack-1.1.0+rack.io.gem
+    * deinstall all other rack stuff, for less problems
+    * todo make the io patch a rack monkey patch addon
+
+Run CPEE  
+  cd examples
+  cd cpee
+  rackup declaration.ru
+
+  CPEE runs under localhost:9298  

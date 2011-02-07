@@ -1,0 +1,125 @@
+<bpel:process 
+     xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable" 
+     xmlns:ns1="uri:company/booking"
+     xmlns:ns2="uri:air/booking"
+     xmlns:ns3="uri:hotel/booking"
+     xmlns:ns4="uri:company/report"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+     name="book_and_report" 
+     suppressJoinFailure="yes" 
+     targetNamespace="http://cpee.org/bpel/booking.bpel">
+     
+  <bpel:import importType="http://www.w3.org/ns/wsdl" location="booking.wsdl" namespace="uri:company/booking"/>
+  <bpel:import importType="http://www.w3.org/ns/wsdl" location="booking/airline.wsdl" namespace="uri:air/booking"/>
+  <bpel:import importType="http://www.w3.org/ns/wsdl" location="booking/hotel.wsdl" namespace="uri:hotel/booking"/>
+  <bpel:import importType="http://www.w3.org/ns/wsdl" location="booking/report.wsdl" namespace="uri:company/report"/>
+
+  <bpel:partnerLinks>
+     <bpel:partnerLink myRole="book_and_report"   name="book_and_report" partnerLinkType="ns1:bookPLT"/>
+     <bpel:partnerLink partnerRole="book_airline" name="book_airline"    partnerLinkType="ns2:bookPLT"/>
+     <bpel:partnerLink partnerRole="book_hotel"   name="book_hotel"      partnerLinkType="ns3:bookPLT"/>
+     <bpel:partnerLink partnerRole="report"       name="report"          partnerLinkType="ns4:reportPLT"/>
+  </bpel:partnerLinks>
+
+  <bpel:variables>
+     <bpel:variable name="input"         messageType="ns1:input"/>
+     <bpel:variable name="airlineInput"  messageType="ns2:input"/>
+     <bpel:variable name="airlineResult" messageType="ns2:output"/>
+     <bpel:variable name="hotelInput"    messageType="ns3:input"/>
+     <bpel:variable name="hotelOutput"   messageType="ns3:output"/>
+     <bpel:variable name="reportInput"   messageType="ns4:input"/>
+     <bpel:variable name="output"        messageType="ns1:output"/>
+  </bpel:variables>
+
+  <bpel:sequence>
+    <bpel:receive createInstance="yes" operation="book_and_report" partnerLink="book_and_report" portType="ns1:BookAndReportInterface" variable="input"/>
+    
+    <bpel:assign name="Initialization">
+      <bpel:copy>
+        <bpel:from>0</bpel:from>
+        <bpel:to part="costs" variable="output"/>
+      </bpel:copy>
+      <bpel:copy>
+        <bpel:from>''</bpel:from>
+        <bpel:to part="airline" variable="output"/>
+      </bpel:copy>
+    </bpel:assign>
+    
+    <bpel:assign name="airlineInput">
+      <bpel:copy>
+        <bpel:from>$input/ns1:from</bpel:from>
+        <bpel:to part="from" variable="airlineInput"/>
+      </bpel:copy>
+      <bpel:copy>
+        <bpel:from>$input/ns1:to</bpel:from>
+        <bpel:to part="to" variable="airlineInput"/>
+      </bpel:copy>
+      <bpel:copy>
+        <bpel:from>$input/ns1:persons</bpel:from>
+        <bpel:to part="persons" variable="airlineInput"/>
+      </bpel:copy>
+    </bpel:assign>
+    <bpel:invoke inputVariable="airlineInput" operation="book" outputVariable="airlineResult" partnerLink="book_airline" portType="ns2:book"/>
+    <bpel:assign name="airlineResult">
+      <bpel:copy>
+        <bpel:from>$airlineResult/ns2:costs + $output/ns1:costs</bpel:from>
+        <bpel:to part="costs" variable="output"/>
+      </bpel:copy>
+      <bpel:copy>
+        <bpel:from>$airlineResult/ns1:name</bpel:from>
+        <bpel:to>$output.airline</bpel:to>
+      </bpel:copy>
+    </bpel:assign>
+     
+    <bpel:forEach counterName="counter" parallel="yes">
+      <bpel:startCounterValue>1</bpel:startCounterValue>
+      <bpel:finalCounterValue>count($input/ns1:persons/ns1:item)</bpel:finalCounterValue>
+      <bpel:scope>
+        <bpel:sequence>
+          <bpel:assign name="hotelInput">
+            <bpel:copy>
+              <bpel:from>$input/ns1:to</bpel:from>
+              <bpel:to part="to" variable="hotelInput"/>
+            </bpel:copy>
+            <bpel:copy>
+              <bpel:from>$input/ns1:persons/ns1:item[$counter]</bpel:from>
+              <bpel:to part="person" variable="hotelInput"/>
+            </bpel:copy>
+          </bpel:assign>
+          <bpel:invoke inputVariable="hotelInput" operation="book" outputVariable="hotelOutput" partnerLink="book_hotel" portType="ns3:book"/>
+          <bpel:assign name="hotelOutput">
+            <bpel:copy>
+              <bpel:from>$hotelOutput/ns3:costs + $output/ns1:costs</bpel:from>
+              <bpel:to part="costs" variable="output"/>
+            </bpel:copy>
+            <bpel:copy>
+              <bpel:from>$hotelOutput/ns3:name</bpel:from>
+              <bpel:to>$output.hotels/ns1:item[$counter]</bpel:to>
+            </bpel:copy>
+          </bpel:assign>
+        </bpel:sequence>
+      </bpel:scope>
+    </bpel:forEach>
+
+    <bpel:if>
+      <bpel:condition>$output.costs &gt; 1000</bpel:condition>
+      <bpel:assign name="reportInput">
+        <bpel:copy>
+          <bpel:from>$input/ns1:to</bpel:from>
+          <bpel:to part="to" variable="reportInput"/>
+        </bpel:copy>
+        <bpel:copy>
+          <bpel:from>$input/ns1:persons</bpel:from>
+          <bpel:to part="persons" variable="reportInput"/>
+        </bpel:copy>
+        <bpel:copy>
+          <bpel:from>$output/ns1:costs</bpel:from>
+          <bpel:to part="costs" variable="reportInput"/>
+        </bpel:copy>
+      </bpel:assign>
+      <bpel:invoke inputVariable="reportInput" operation="report" partnerLink="report" portType="ns4:report"/>
+    </bpel:if>
+      
+    <bpel:reply operation="book_and_report" partnerLink="book_and_report" portType="ship:BookAndReportInterface" variable="output"/>
+  </bpel:sequence>
+</bpel:process>

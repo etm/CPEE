@@ -1,13 +1,15 @@
 require ::File.dirname(__FILE__) + '/../../lib/Wee'
-require ::File.dirname(__FILE__) + '/../../lib/BasicHandler'
+require ::File.dirname(__FILE__) + '/SimpleHandlerWrapper'
 
 class SimpleWorkflow < Wee
-  handlerwrapper BasicHandler
+  handlerwrapper SimpleHandlerWrapper
   
   endpoint :ep1 => "orf.at"
-  context :a => 17
+  data :a => 17
 
   control flow do
-    activity :a1, :call, :ep1, :a => @a, :b => 2
+    activity :a1, :call, :ep1, :a => data.a, :b => 2 do
+      data.a += 3
+    end
   end
 end

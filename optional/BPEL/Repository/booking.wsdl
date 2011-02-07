@@ -1,0 +1,72 @@
+<wsdl:description 
+   targetNamespace="http://cpee.org/wsdl/booking.wsdl"
+   xmlns:wsdl="http://www.w3.org/ns/wsdl"
+   xmlns:whttp="http://www.w3.org/ns/wsdl/http"
+   xmlns:wsdlx="http://www.w3.org/ns/wsdl-extensions"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns:msg="http://cpee.org/wsdl/booking.wsdl/msg"
+   xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/">
+
+  <wsdl:types>
+    <xs:schema 
+      targetNamespace="http://cpee.org/wsdl/booking.wsdl/msg"
+      xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      xmlns="http://cpee.org/wsdl/booking.wsdl/msg"
+      xmlns:msg="http://cpee.org/wsdl/booking.wsdl/msg"
+      elementFormDefault="qualified">
+  
+      <xs:element name="input" type="inputType"/>
+      <xs:element name="output" type="outputType"/>
+      
+      <xs:complexType name="inputType">
+        <xs:sequence>
+          <xs:element name="from" type="xs:string" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="to" type="xs:string" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="persons" type="arrayType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:complexType>
+      
+      <xs:complexType name="outputType">
+        <xs:sequence>
+          <xs:element name="costs" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="airline" type="xs:string" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="hotels" type="arrayType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <xs:complexType name="arrayType">
+        <xs:sequence>
+          <xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+
+    </xs:schema>
+  </wsdl:types>
+
+  <plnk:partnerLinkType name="bookPLT">
+    <plnk:role name="book_and_report" portType="BookAndReportInterface"/>
+  </plnk:partnerLinkType>
+
+  <wsdl:interface name="BookAndReportInterface">
+    <wsdl:operation name="book_and_report"
+       pattern="http://www.w3.org/ns/wsdl/in-out"
+       style="http://www.w3.org/ns/wsdl/style/iri" 
+       wsdlx:safe="true">
+      <wsdl:input element="msg:input"/>
+      <wsdl:output element="msg:output"/>
+    </wsdl:operation>
+  </wsdl:interface>
+
+  <wsdl:binding name="BookAndReportHTTPBinding"
+     type="http://www.w3.org/ns/wsdl/http"
+     interface="BookAndReportInterface">
+    <wsdl:operation ref="book_and_report" whttp:method="POST"/>
+  </wsdl:binding>
+
+  <wsdl:service name="BookAndReport" interface="BookAndReportInterface">
+    <wsdl:endpoint name="BookAndReportHTTPEndpoint"
+       binding="BookAndReportHTTPBinding"
+       address="http://www.pri.univie.ac.at/~mangler/book_and_report/">
+    </wsdl:endpoint>
+  </wsdl:service>
+</wsdl:description>

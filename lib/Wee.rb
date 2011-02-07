@@ -1,11 +1,11 @@
 require 'thread'
 
 # OMG!111! strings have to be emptied
-class String# {{{
+class String # {{{
   def clear
       self.slice!(0..-1)
   end
-end# }}}
+end # }}}
 
 class Wee
   def initialize(*args)# {{{
@@ -18,17 +18,17 @@ class Wee
     initialize_endpoints if methods.include?('initialize_endpoints')
     initialize_handlerwrapper if methods.include?('initialize_handlerwrapper')
     initialize_control if methods.include?('initialize_control')
-  end# }}}
+  end # }}}
 
-  module Signal# {{{
+  module Signal # {{{
     class SkipManipulate < Exception; end
     class StopSkipManipulate < Exception; end
     class Stop < Exception; end
     class Proceed < Exception; end
     class NoLongerNecessary < Exception; end
-  end  # }}}
+  end # }}}
 
-  class ManipulateRealization# {{{
+  class ManipulateRealization # {{{
     def initialize(data,endpoints,status)
       @__wee_data = data
       @__wee_endpoints = endpoints
@@ -53,8 +53,8 @@ class Wee
     def status
       @__wee_status
     end
-  end# }}}
-  class ManipulateHash# {{{
+  end # }}}
+  class ManipulateHash # {{{
     def initialize(values,what)
       @__wee_values = values
       @__wee_what = what
@@ -85,7 +85,7 @@ class Wee
         nil
       end
     end
-  end# }}}
+  end # }}}
 
   class Status #{{{
     def initialize(id,message)
@@ -99,7 +99,7 @@ class Wee
     attr_reader :id, :message
   end #}}}
   
-  class ReadHash# {{{
+  class ReadHash # {{{
     def initialize(values)
       @__wee_values = values
     end
@@ -113,10 +113,10 @@ class Wee
         nil
       end
     end
-  end# }}}
+  end # }}}
 
-  class HandlerWrapperBase# {{{
-    def initialize(args,position=nil,lay=nil,continue=nil); end
+  class HandlerWrapperBase # {{{
+    def initialize(arguments,endpoint=nil,position=nil,lay=nil,continue=nil); end
 
     def activity_handle(passthrough, endpoint, parameters); end
 
@@ -141,7 +141,7 @@ class Wee
     def vote_sync_after; true; end
   end  # }}}
 
-  class Position# {{{
+  class Position # {{{
     attr_reader :position
     attr_accessor :detail, :passthrough
     def initialize(position, detail=:at, passthrough=nil) # :at or :after
@@ -149,9 +149,9 @@ class Wee
       @detail = detail
       @passthrough = passthrough
     end
-  end# }}}
+  end # }}}
 
-  class Continue# {{{
+  class Continue # {{{
     def initialize
       @thread = Thread.new{Thread.stop}
     end  
@@ -172,7 +172,7 @@ class Wee
     define_method :initialize_search do 
       self.search wee_search
     end
-  end# }}}
+  end # }}}
   def self::endpoint(new_endpoints)# {{{
     @@__wee_new_endpoints ||= {}
     @@__wee_new_endpoints.merge! new_endpoints
@@ -181,7 +181,7 @@ class Wee
         @dslr.__wee_endpoints[name.to_s.to_sym] = value
       end
     end
-  end# }}}
+  end # }}}
   def self::data(data_elements)# {{{
     @@__wee_new_data_elements ||= {}
     @@__wee_new_data_elements.merge! data_elements
@@ -190,23 +190,23 @@ class Wee
         @dslr.__wee_data[name.to_s.to_sym] = value
       end
     end
-  end# }}}
+  end # }}}
   def self::handlerwrapper(aClassname, *args)# {{{
     define_method :initialize_handlerwrapper do 
       self.handlerwrapper = aClassname
       self.handlerwrapper_args = args unless args.empty?
     end
-  end# }}} 
+  end # }}} 
   def self::control(flow, &block)# {{{
     @@__wee_control_block = block
     define_method :initialize_control do
       self.description(&(@@__wee_control_block))
     end
-  end#  }}}
-  def self::flow# {{{
-  end# }}}
+  end #  }}}
+  def self::flow #{{{
+  end #}}}
 
-  class DSLRealization# {{{
+  class DSLRealization # {{{
     def initialize
       @__wee_search_positions = {}
       @__wee_positions = Array.new
@@ -345,7 +345,7 @@ class Wee
       ensure  
         Thread.current[:continue].continue
       end
-    end# }}}
+    end # }}}
     
     # Parallel DSL-Construct
     # Defines Workflow paths that can be executed parallel.
@@ -388,7 +388,7 @@ class Wee
           end  
         end
       end  
-    end# }}}
+    end # }}}
 
     # Defines a branch of a parallel-Construct
     def parallel_branch(*vars)# {{{
@@ -424,19 +424,19 @@ class Wee
           end  
         end  
       end
-    end# }}}
+    end # }}}
 
     # Choose DSL-Construct
     # Defines a choice in the Workflow path.
     # May contain multiple execution alternatives
-    def choose# {{{
+    def choose # {{{
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
       Thread.current[:alternative_executed] ||= []
       Thread.current[:alternative_executed] << false
       yield
       Thread.current[:alternative_executed].pop
       nil
-    end# }}}
+    end # }}}
 
     # Defines a possible choice of a choose-Construct
     # Block is executed if condition == true or
@@ -445,11 +445,11 @@ class Wee
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
       yield if __wee_is_in_search_mode || condition
       Thread.current[:alternative_executed][-1] = true if condition
-    end# }}}
-    def otherwise# {{{
+    end # }}}
+    def otherwise # {{{
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
       yield if __wee_is_in_search_mode || !Thread.current[:alternative_executed].last
-    end# }}}
+    end # }}}
 
     # Defines a critical block (=Mutex)
     def critical(id)# {{{
@@ -463,7 +463,7 @@ class Wee
       semaphore.synchronize do
         yield
       end
-    end# }}}
+    end # }}}
 
     # Defines a Cycle (loop/iteration)
     def loop(condition)# {{{
@@ -479,24 +479,24 @@ class Wee
         when :post_test
           begin; yield; end while condition[0].call && self.__wee_state != :stopping && self.__wee_state != :stopped
       end
-    end# }}}
+    end # }}}
 
     def pre_test(&blk)# {{{
       [blk, :pre_test]
-    end# }}}
+    end # }}}
     def post_test(&blk)# {{{
       [blk, :post_test]
-    end# }}}
+    end # }}}
 
-    def status# {{{
+    def status # {{{
       @__wee_status
-    end# }}}
-    def data# {{{
+    end # }}}
+    def data # {{{
       ReadHash.new(@__wee_data)
-    end# }}}
-    def endpoints# {{{
+    end # }}}
+    def endpoints # {{{
       ReadHash.new(@__wee_endpoints)
-    end# }}}
+    end # }}}
 
   private
     def __wee_recursive_continue(thread)# {{{
@@ -546,7 +546,7 @@ class Wee
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
         handlerwrapper.inform_syntax_error(Exception.new("position (#{position}) and lay (#{lay.inspect}) not valid"))
       end
-    end# }}}
+    end # }}}
 
     def __wee_is_in_search_mode(position = nil)# {{{
       branch = Thread.current
@@ -563,7 +563,7 @@ class Wee
       else  
         branch[:branch_search] = true
       end  
-    end# }}}
+    end # }}}
   
   public
     def __wee_state=(newState)# {{{
@@ -571,7 +571,7 @@ class Wee
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
       @__wee_state = newState
-
+  
       handlerwrapper.inform_state_change @__wee_state
 
       if newState == :stopping
@@ -581,19 +581,19 @@ class Wee
         handlerwrapper.inform_state_change @__wee_state
       end
       @__wee_state
-    end# }}}
-  end# }}}
+    end # }}}
+  end # }}}
 
 public
-  def positions# {{{
+  def positions # {{{
     @dslr.__wee_positions
-  end# }}}
+  end # }}}
 
   # set the handlerwrapper
-  def handlerwrapper# {{{
+  def handlerwrapper # {{{
     @dslr.__wee_handlerwrapper
-  end# }}}
-  def handlerwrapper=(new_wee_handlerwrapper)# {{{
+  end # }}}
+  def  handlerwrapper=(new_wee_handlerwrapper) # {{{
     superclass = new_wee_handlerwrapper
     while superclass
       check_ok = true if superclass == Wee::HandlerWrapperBase
@@ -601,27 +601,27 @@ public
     end
     raise "Handlerwrapper is not inherited from HandlerWrapperBase" unless check_ok
     @dslr.__wee_handlerwrapper = new_wee_handlerwrapper
-  end# }}}
+  end # }}}
 
   # Get/Set the handlerwrapper arguments
-  def handlerwrapper_args# {{{
+  def handlerwrapper_args # {{{
     @dslr.__wee_handlerwrapper_args
-  end# }}}
-  def handlerwrapper_args=(args)# {{{
+  end # }}} 
+  def handlerwrapper_args=(args) # {{{
     if args.class == Array
       @dslr.__wee_handlerwrapper_args = args
     end
     nil
-  end# }}}
+  end #  }}}
 
   # Get the state of execution (ready|running|stopping|stopped|finished)
-  def state# {{{
+  def state # {{{
     @dslr.__wee_state
-  end# }}}
+  end #  }}}
 
   # Set search positions
   # set new_wee_search to a boolean (or anything else) to start the process from beginning (reset serach positions)
-  def search(new_wee_search=false)# {{{
+  def search(new_wee_search=false) # {{{
     @dslr.__wee_search_positions.clear
 
     new_wee_search = [new_wee_search] if new_wee_search.is_a?(Position)
@@ -634,32 +634,32 @@ public
       end  
       true
     end
-  end# }}}
+  end # }}}
   
-  def data(new_data=nil)# {{{
+  def data(new_data=nil) # {{{
     unless new_data.nil? || !new_data.is_a?(Hash)
       new_data.each{|k,v|@dslr.__wee_data[k] = v}
     end
     @dslr.__wee_data
-  end# }}}
-  def endpoints(new_endpoints=nil)# {{{
+  end # }}}
+  def endpoints(new_endpoints=nil) # {{{
     unless new_endpoints.nil? || !new_endpoints.is_a?(Hash)
       new_endpoints.each{|k,v|@dslr.__wee_endpoints[k] = v}
     end
     @dslr.__wee_endpoints
-  end# }}}
-  def endpoint(new_endpoints)# {{{
+  end # }}}
+  def endpoint(new_endpoints) # {{{
     unless new_endpoints.nil? || !new_endpoints.is_a?(Hash) || !new_endpoints.length == 1
       new_endpoints.each{|k,v|@dslr.__wee_endpoints[k] = v}
     end
     nil
-  end# }}}
-  def status# {{{
+  end # }}}
+  def status # {{{
     @dslr.__wee_status
-  end# }}}
+  end # }}}
 
   # get/set workflow description
-  def description(code = nil,&blk)# {{{
+  def  description(code = nil,&blk) # {{{
     bgiven = block_given?
     if code.nil? && !bgiven
       @wfsource
@@ -692,20 +692,20 @@ public
       end
       bgiven ? blk : code
     end
-  end# }}}
+  end # }}}
 
   # Stop the workflow execution
-  def stop# {{{
+  def  stop # {{{
     Thread.new do
       @dslr.__wee_state = :stopping
     end  
-  end# }}}
+  end # }}}
   # Start the workflow execution
-  def start# {{{
+  def  start # {{{
     return nil if @dslr.__wee_state != :ready && @dslr.__wee_state != :stopped
     @dslr.__wee_main = Thread.new do
       __wee_control_flow
     end
-  end# }}}
+  end # }}}
 
 end
