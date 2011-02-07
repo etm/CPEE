@@ -81,7 +81,7 @@ class Controller
       end
     end
   end# }}}
-  
+
   def unserialize_event!(op,key)# {{{
     case op
       when :del
@@ -322,4 +322,5 @@ private
     res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
     # TODO add secret to fp
   end# }}}
+
 end
