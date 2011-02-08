@@ -1,6 +1,8 @@
 require ::File.dirname(__FILE__) + '/empty_workflow'
 require 'xml/smart'
-require 'active_support'
+require 'active_support/core_ext'
+require 'active_support/dependencies'
+require 'active_support/json'
 
 class Controller
 
