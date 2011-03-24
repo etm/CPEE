@@ -3,10 +3,10 @@
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
   <data-elements>
-    <title/>
-    <date/>
-    <selected_title/>
-    <starting_time/>
+    <title>""</title>
+    <date>"</date>
+    <selected_title>""</selected_title>
+    <starting_time>""</starting_time>
     <selected_cinema/>
     <selected_date/>
     <hall/>
