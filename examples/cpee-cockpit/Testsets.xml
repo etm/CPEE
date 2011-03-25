@@ -1,6 +1,6 @@
 <testsets>
-  <testset>RESCUE - Loop-Parallel Injection</testset>
   <testset>RESCUE - Book Movie</testset>
+  <testset>RESCUE - Loop-Parallel Injection</testset>
   <testset>Wrong Positions</testset>
   <testset>Coopis Testset</testset>
   <testset>ICSOC Testset</testset>
