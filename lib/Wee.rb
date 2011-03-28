@@ -73,14 +73,17 @@ class Wee
     end
 
     def method_missing(name,*args)
+      
       if args.empty? && @__wee_values.has_key?(name)
-        #TODO mark dirty
         @__wee_values[name] 
-      elsif name.to_s[-1..-1] == "="
+      elsif name.to_s[-1..-1] == "=" && args.length == 1
         temp = name.to_s[0..-2]
         @__wee_what << temp.to_sym
         @__wee_values[temp.to_sym] = args[0]
-        nil
+      elsif name.to_s == "[]=" && args.length == 2  
+        @__wee_values[args[0]] = args[1] 
+      elsif name.to_s == "[]" && args.length == 1
+        @__wee_values[args[0]]
       else
         nil
       end

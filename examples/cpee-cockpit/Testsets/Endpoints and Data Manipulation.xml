@@ -11,14 +11,14 @@
     <ep1>Somewhere over the rainbow</ep1>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
-    <manipulate id="enpoints">
-      endpoint "a_new_one" => "new Endpoint"
+    <manipulate id="endpoints">
+      endpoints.a_new_one = "new Endpoint"
       endpoints.ep1 = "services changed"
-      endpoint "copy_of_ep1" => endpoints.ep1
+      endpoints.copy_of_ep1 = endpoints.ep1
       data.data_stores_endpoint = endpoints.ep1
     </manipulate>
     <manipulate id="data">
-      data "a_new_one" => "new data-element"
+      data.a_new_one = "new data-element"
       data[:input] = "data-element changed"
       data.output = data[:input]
     </manipulate>

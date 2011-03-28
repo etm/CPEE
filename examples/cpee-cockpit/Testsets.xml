@@ -5,11 +5,11 @@
   <testset>Mangler 1</testset>
   <testset>Mangler 2</testset>
   <testset>Concurrent</testset>
-  <testset>Endpoints</testset>
+  <testset>Endpoints and Data Manipulation</testset>
   <testset>RESCUE - Book Movie</testset>
   <testset>RESCUE - Loop-Parallel Injection</testset>
-  <testset>Wrong Positions</testset>
-  <testset>Bad Loop</testset>
+  <testset>TEST - Wrong Positions</testset>
+  <testset>TEST - Bad Loop</testset>
   <testset>Syncing P34</testset>
   <testset>Syncing P34 1</testset>
   <testset>Syncing P34 2</testset>
