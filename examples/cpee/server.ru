@@ -3,6 +3,11 @@ $url  = 'http://localhost:9298'
 $mode = :debug # :production
 $0 = "cpee"
 
+if File.exists?(File.expand_path(File.dirname(__FILE__) + '/server.config'))
+  require File.expand_path(File.dirname(__FILE__) + '/server.config')
+end  
+
+
 use Rack::ShowStatus
 
 require 'pp'
@@ -15,7 +20,7 @@ require '../../../riddl/lib/ruby/utils/fileserve'
 require '../../../riddl/lib/ruby/utils/declaration'
 require './engine/implementation'
 
-run Riddl::Server.new(::File.dirname(__FILE__) + '/declaration.xml') {
+run Riddl::Server.new(::File.dirname(__FILE__) + '/server.declaration.xml') {
   accessible_description true
   cross_site_xhr true
 
