@@ -422,8 +422,8 @@ class Wee
             @__wee_positions.delete Thread.current[:branch_position]
             handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
             ipc = {}
-            ipc[:delete] = Thread.current[:branch_position].position rescue nil
-            handlerwrapper.inform_position_change ipc
+            ipc[:delete] = [Thread.current[:branch_position].position] rescue nil
+            handlerwrapper.inform_position_change(ipc)
           end  
         end  
       end
