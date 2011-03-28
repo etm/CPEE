@@ -148,15 +148,26 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
     end  
     id = ::File::basename(::File::dirname(@properties)).to_i
     if @property == 'state'
+      state = nil
       XML::Smart::open(@properties) do |doc|
         doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
         state = doc.find("string(/p:properties/p:state)")
-        if state == 'stopping'
-          $controller[id.to_i].stop
+      end  
+      if $controller[id.to_i].call_vote("properties/state/change", :instance => id, :newstate => state)
+        case state
+          when 'stopping'; $controller[id.to_i].stop
+          when 'running'; $controller[id.to_i].start
         end
-        if state == 'running'
-          $controller[id.to_i].start
-        end
+      else
+        XML::Smart::open(@properties) do |doc|
+          doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+          if node = doc.find("/p:properties/p:state").first
+            case state
+              when 'stopping'; node.text = 'running'
+              when 'running'; node.text = 'stopped'
+            end
+          end
+        end  
       end
     else
       $controller[id.to_i].unserialize_data!

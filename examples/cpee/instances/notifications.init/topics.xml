@@ -16,7 +16,7 @@
   </topic>
   <topic id='properties/state'>
     <event>change</event>
-    <vote>running</vote>
+    <vote>change</vote>
   </topic>
   <topic id='properties/status'>
     <event>change</event>
