@@ -3,7 +3,7 @@ $url  = 'http://localhost:9298'
 $mode = :debug # :production
 $0 = "cpee"
 
-if File.exists?(File.expand_path(File.dirname(__FILE__) + '/server.config'))
+if File.exists?(File.expand_path(File.dirname(__FILE__) + '/server.config.rb'))
   require File.expand_path(File.dirname(__FILE__) + '/server.config')
 end  
 

@@ -135,7 +135,7 @@ class Wee
     def inform_activity_manipulate; end
     def inform_activity_failed(err); end
 
-    def inform_syntax_error(err); end
+    def inform_syntax_error(err,code); end
     def inform_manipulate_change(status,data,endpoints); end
     def inform_position_change(ipc); end
     def inform_state_change(newstate); end
@@ -552,7 +552,7 @@ class Wee
       else   
         self.__wee_state = :stopping
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
-        handlerwrapper.inform_syntax_error(Exception.new("position (#{position}) and lay (#{lay.inspect}) not valid"))
+        handlerwrapper.inform_syntax_error(Exception.new("position (#{position}) and lay (#{lay.inspect}) not valid"),nil)
       end
     end # }}}
 
@@ -683,10 +683,10 @@ public
             else
               @dslr.instance_eval(code)
             end  
-          rescue => err
+          rescue Exception => err
             @dslr.__wee_state = :stopping
             handlerwrapper = @dslr.__wee_handlerwrapper.new @dslr.__wee_handlerwrapper_args
-            handlerwrapper.inform_syntax_error(err)
+            handlerwrapper.inform_syntax_error(err,code)
           end
           if @dslr.__wee_state == :running
             @dslr.__wee_state = :finished 

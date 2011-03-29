@@ -71,11 +71,13 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end # }}}
 
-  def inform_syntax_error(err) # {{{
+  def inform_syntax_error(err,code)# {{{
+    puts code
+    puts "------"
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
-  end # }}}
+    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :code => code, :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+  end# }}}
   def inform_manipulate_change(status,data,endpoints) # {{{
     $controller[@instance].serialize!
     $controller[@instance].notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :id => status.id, :message => status.message) unless status.nil?
