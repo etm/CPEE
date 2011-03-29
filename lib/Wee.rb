@@ -242,14 +242,14 @@ class Wee
         ipc = {}
         if Thread.current[:branch_parent] && Thread.current[:branch_parent][:branch_position]
           @__wee_positions.delete Thread.current[:branch_parent][:branch_position]
-          ipc[:delete] ||= []
-          ipc[:delete] << Thread.current[:branch_parent][:branch_position].position rescue nil
+          ipc[:unmark] ||= []
+          ipc[:unmark] << Thread.current[:branch_parent][:branch_position].position rescue nil
           Thread.current[:branch_parent][:branch_position] = nil
         end  
         if Thread.current[:branch_position]
           @__wee_positions.delete Thread.current[:branch_position]
-          ipc[:delete] ||= []
-          ipc[:delete] << Thread.current[:branch_position].position rescue nil
+          ipc[:unmark] ||= []
+          ipc[:unmark] << Thread.current[:branch_position].position rescue nil
         end  
         wp = Wee::Position.new(position, :at, nil)
         Thread.current[:branch_position] = wp
@@ -336,10 +336,12 @@ class Wee
         if self.__wee_state != :stopping && !handlerwrapper.vote_sync_after
           self.__wee_state = :stopping
         end
+        wp.detail = :unmark
       rescue Signal::NoLongerNecessary
         @__wee_positions.delete wp
         Thread.current[:branch_position] = nil
-        handlerwrapper.inform_position_change :delete => [wp.position]
+        wp.detail = :unmark
+        handlerwrapper.inform_position_change :unmark => [wp.position]
       rescue Signal::StopSkipManipulate, Signal::Stop
         self.__wee_state = :stopping
       rescue => err
@@ -420,10 +422,13 @@ class Wee
         if self.__wee_state != :stopping && self.__wee_state != :stopped
           if Thread.current[:branch_position]
             @__wee_positions.delete Thread.current[:branch_position]
-            handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
-            ipc = {}
-            ipc[:delete] = [Thread.current[:branch_position].position] rescue nil
-            handlerwrapper.inform_position_change(ipc)
+            begin
+              ipc = {}
+              ipc[:unmark] = [Thread.current[:branch_position].position]
+              handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
+              handlerwrapper.inform_position_change(ipc)
+            end rescue nil
+            Thread.current[:branch_position] = nil
           end  
         end  
       end
@@ -685,8 +690,8 @@ public
           end
           if @dslr.__wee_state == :running
             @dslr.__wee_state = :finished 
-            ipc = { :delete => [] }
-            @dslr.__wee_positions.each{|wp| ipc[:delete] << wp.position}
+            ipc = { :unmark => [] }
+            @dslr.__wee_positions.each{|wp| ipc[:unmark] << wp.position}
             @dslr.__wee_positions.clear
             handlerwrapper = @dslr.__wee_handlerwrapper.new @dslr.__wee_handlerwrapper_args
             handlerwrapper.inform_position_change(ipc)

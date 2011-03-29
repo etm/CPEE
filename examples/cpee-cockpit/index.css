@@ -214,12 +214,12 @@ svg rect.group {
 }
 svg .clickable { cursor: pointer; }
 
-svg use.active circle {
-  fill: #ef2929;
-  fill-opacity:1;
-}  
 svg use.passive circle {
   fill: #729fcf;
+  fill-opacity:1;
+}  
+svg use.active circle {
+  fill: #ef2929;
   fill-opacity:1;
 }  
 svg use.vote circle {
