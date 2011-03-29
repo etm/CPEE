@@ -347,8 +347,8 @@ function monitor_instance_running(notification,event) {// {{{
 
 function monitor_instance_pos_change(notification) {// {{{
   var parts = JSON.parse(notification);
-  if (parts['delete']) {
-    $.each(parts['delete'],function(a,b){
+  if (parts['unmark']) {
+    $.each(parts['unmark'],function(a,b){
       format_visual_remove(b,"passive") 
     });
   }
