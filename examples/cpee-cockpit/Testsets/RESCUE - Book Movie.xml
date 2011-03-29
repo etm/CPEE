@@ -28,7 +28,7 @@
           <!-- uri>'http://www.pri.univie.ac.at/~ralph/input-forms/cinemas.xsl'</uri -->
           <uri>'http://localhost/input-forms/cinemas.xsl'</uri>
           <name>'Cinemas-Input'</name>
-          <lang>'en'</lang>
+          <lang>'EN'</lang>
         </templates>
       </parameters>
       <manipulate output="result">

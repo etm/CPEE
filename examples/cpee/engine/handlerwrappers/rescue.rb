@@ -1,40 +1,40 @@
 class RescueHash < Hash
-  def self::new_from_obj(obj)
-    RescueHash.new.merge(obj)
+def self::new_from_obj(obj)
+  RescueHash.new.merge(obj)
+end
+
+def value(key)
+  results = []
+  self.each do |k,v|
+    results << v.value(key) if v.class == RescueHash
+    results << v if k == key
   end
+  results.length != 1 ? results.flatten : results[0]
+end
 
-  def value(key)
-    results = []
-    self.each do |k,v|
-      results << v.value(key) if v.class == RescueHash
-      results << v if k == key
-    end
-    results.length != 1 ? results.flatten : results[0]
-  end
+def to_json(options = nil) #:nodoc:
+  hash = as_json(options)
 
-  def to_json(options = nil) #:nodoc:
-    hash = as_json(options)
+  result = '{ "!map:RescueHash": {'
+  result << hash.map do |key, value|
+    "#{ActiveSupport::JSON.encode(key.to_s)}:#{ActiveSupport::JSON.encode(value, options)}"
+  end * ','
+  result << '}}'
+end
 
-    result = '{ "!map:RescueHash": {'
-    result << hash.map do |key, value|
-      "#{ActiveSupport::JSON.encode(key.to_s)}:#{ActiveSupport::JSON.encode(value, options)}"
-    end * ','
-    result << '}}'
-  end
-
-  def as_json(options = nil) #:nodoc:
-    if options
-      if attrs = options[:except]
-        except(*Array.wrap(attrs))
-      elsif attrs = options[:only]
-        slice(*Array.wrap(attrs))
-      else
-        self
-      end
+def as_json(options = nil) #:nodoc:
+  if options
+    if attrs = options[:except]
+      except(*Array.wrap(attrs))
+    elsif attrs = options[:only]
+      slice(*Array.wrap(attrs))
     else
       self
     end
+  else
+    self
   end
+end
 end
 
 module Kernel
@@ -55,7 +55,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
     @handler_returnValue = nil
   end
 
-  # executes a ws-call to the given endpoint with the given parameters. the call
+# executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, parameters)
     $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
     cpee_instance = "#{@url}/#{@instance}"
@@ -81,7 +81,8 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       injection_handler = Riddl::Client.new(injection_handler_uri)
       status, resp = injection_handler.post [
         Riddl::Parameter::Simple.new('activity', @handler_position), 
-        Riddl::Parameter::Simple.new('instance', cpee_instance)] # here could be consumer, producer secrets
+        Riddl::Parameter::Simple.new('instance', cpee_instance)
+      ] # here could be consumer, producer secrets
       raise "Subscription to injection-handler at #{injection_handler_uri} failed with status #{status}" unless status == 200
       raise Wee::Signal::SkipManipulate # }}}
     elsif parameters.key?(:method) #{{{
@@ -133,18 +134,15 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       service = Riddl::Client.new(@handler_endpoint)
       status, result = service.post [Riddl::Parameter::Complex.new("", "text/xml", envelope.to_s)]
       out = XML::Smart.string(result[0].value.read)
-      if out.find("//soap:Fault", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
-        @handler_returnValue = [out.find("//soap:Fault", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first, nil]
-        @handler_continue.continue
-        return
+      if out.find("//s:Fault", {"s" => "http://schemas.xmlsoap.org/soap/envelope/"}).any?
+        node = out.find("//s:Fault", {"s"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
+        node.namespaces['soap'] = out.root.namespaces['soap']
+        @handler_returnValue = [node.to_doc, 500]
+      else 
+        node = out.find("//s:Body", {"s"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
+        node.namespaces['soap'] = out.root.namespaces['soap']
+        @handler_returnValue = [node.to_doc, 200]
       end
-      if out.namespaces.find("http://schemas.xmlsoap.org/soap/envelope/")
-        result = out.find("//soap:Body", {"soap"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
-        result.namespaces['soap'] = "http://schemas.xmlsoap.org/soap/envelope/"
-      else
-        result = out.find("//Body").first
-      end
-      @handler_returnValue = [result, nil]
     end# }}}  
     @handler_continue.continue
   end
