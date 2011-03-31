@@ -147,7 +147,7 @@ class Wee
   class Position # {{{
     attr_reader :position
     attr_accessor :detail, :passthrough
-    def initialize(position, detail=:at, passthrough=nil) # :at or :after
+    def initialize(position, detail=:at, passthrough=nil) # :at or :after or :unmark
       @position = position
       @detail = detail
       @passthrough = passthrough
@@ -601,7 +601,7 @@ public
   def handlerwrapper # {{{
     @dslr.__wee_handlerwrapper
   end # }}}
-  def  handlerwrapper=(new_wee_handlerwrapper) # {{{
+  def handlerwrapper=(new_wee_handlerwrapper) # {{{
     superclass = new_wee_handlerwrapper
     while superclass
       check_ok = true if superclass == Wee::HandlerWrapperBase
@@ -667,7 +667,7 @@ public
   end # }}}
 
   # get/set workflow description
-  def  description(code = nil,&blk) # {{{
+  def description(code = nil,&blk) # {{{
     bgiven = block_given?
     if code.nil? && !bgiven
       @wfsource
@@ -703,13 +703,13 @@ public
   end # }}}
 
   # Stop the workflow execution
-  def  stop # {{{
+  def stop # {{{
     Thread.new do
       @dslr.__wee_state = :stopping
     end  
   end # }}}
   # Start the workflow execution
-  def  start # {{{
+  def start # {{{
     return nil if @dslr.__wee_state != :ready && @dslr.__wee_state != :stopped
     @dslr.__wee_main = Thread.new do
       __wee_control_flow
