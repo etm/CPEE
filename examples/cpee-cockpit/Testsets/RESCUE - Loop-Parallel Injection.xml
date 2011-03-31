@@ -10,8 +10,8 @@
     <cons_b>45</cons_b>
   </data-elements>
   <endpoints>
-    <services>http://localhost:9290/groups/Interface</services>
-    <injection>http://localhost:9290/injection/handler</injection>
+    <services>http://gus.lan:9290/groups/Interface</services>
+    <injection>http://gus.lan:9290/injection/handler</injection>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <loop post_test="data.outer &gt; 0">
