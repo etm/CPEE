@@ -1,4 +1,4 @@
-require ::File.dirname(__FILE__) + '/../../../lib/Wee'
+require ::File.dirname(__FILE__) + '/../../lib/Wee'
 Dir[::File.dirname(__FILE__) + "/handlerwrappers/*"].each do |h|
   require h
 end  
