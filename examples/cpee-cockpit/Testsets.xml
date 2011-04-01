@@ -7,6 +7,7 @@
   <testset>Concurrent</testset>
   <testset>Endpoints and Data Manipulation</testset>
   <testset>RESCUE - Book Movie</testset>
+  <testset>RESCUE - Book Movie2</testset>
   <testset>RESCUE - Loop-Parallel Injection</testset>
   <testset>TEST - Wrong Positions</testset>
   <testset>TEST - Bad Loop</testset>
