@@ -12,12 +12,13 @@ use Rack::ShowStatus
 
 require 'pp'
 require 'fileutils'
-require '../../../riddl/lib/ruby/server'
-require '../../../riddl/lib/ruby/client'
-require '../../../riddl/lib/ruby/utils/notifications_producer'
-require '../../../riddl/lib/ruby/utils/properties'
-require '../../../riddl/lib/ruby/utils/fileserve'
-require '../../../riddl/lib/ruby/utils/declaration'
+require 'rubygems'
+require 'riddl/server'
+require 'riddl/client'
+require 'riddl/utils/notifications_producer'
+require 'riddl/utils/properties'
+require 'riddl/utils/fileserve'
+require 'riddl/utils/declaration'
 require './engine/implementation'
 
 run Riddl::Server.new(::File.dirname(__FILE__) + '/server.declaration.xml') {
