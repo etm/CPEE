@@ -1,0 +1,276 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" onload='testset_svg()'> 
+  <defs>
+    <!--{{{--><style type="text/css"><![CDATA[
+      svg rect.injected {
+        fill: Highlight;
+        fill-opacity: 0.2;
+      }
+      
+      svg use.active circle {
+        fill: #ff0000;
+        fill-opacity:1;
+      }  
+      svg use.vote circle {
+        fill: #00ff00;
+        fill-opacity:1;
+      }  
+      
+      svg path.ourline {
+        stroke-opacity: 0.9; 
+        stroke:#000000;
+        stroke-width: 2; 
+        fill: none;
+      }
+      svg rect.block {
+        stroke-width: 1; 
+        stroke-dasharray: 3,5;
+        stroke: #000000;
+        fill: none;
+      }
+      svg circle.stand {
+        stroke:#000000;
+        stroke-width:2.06896567;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+        stroke-miterlimit:4;
+        stroke-opacity:1;
+        stroke-dasharray:none;
+      }
+      svg circle.standwithout {
+      }
+      svg text.normal {
+        font-size:20px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:125%;
+        writing-mode:lr-tb;
+        text-anchor:middle;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+      
+      svg text.super {
+        font-size:11px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:100%;
+        writing-mode:lr-tb;
+        text-anchor:left;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+      svg tspan.active {
+        fill:#ff0000;
+        display: none;
+      }
+      svg tspan.vote {
+        fill:#73d216;
+        display: none;
+      }
+      svg tspan.colon {
+        display: none;
+      }
+      svg tspan.necessary {
+        display: inline;
+      }
+      
+      svg text.normallarge {
+        font-size:25px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:125%;
+        writing-mode:lr-tb;
+        text-anchor:middle;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+      svg text.small {
+        font-size:14px;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:bold;
+        font-stretch:normal;
+        text-align:center;
+        line-height:125%;
+        writing-mode:lr-tb;
+        text-anchor:middle;
+        color:#000000;
+        fill:#000000;
+        fill-opacity:1;
+        stroke:none;
+        font-family:Arial;
+      }
+       
+      #arrow { 
+       stroke: #000000;
+       stroke-width: 2;
+       fill: #000000;
+      }
+    ]]></style><!--}}}-->
+    <!--{{{--><script type="text/javascript"><![CDATA[
+      var running = false;
+      var svgNS = "http://www.w3.org/2000/svg";
+      var htmlNS = "http://www.w3.org/1999/xhtml";
+
+      var globalEval = function globalEval(src) {
+        if (window.execScript) {
+          window.execScript(src);
+          return;
+        }
+        var fn = function() {
+          window.eval.call(window,src);
+        };
+        fn();
+      };
+
+      function testset_svg(){
+        if (window.location.search.match(/^\?url=/)) {
+          var ts = window.location.search.replace(/^\?url=/,'');
+          httpRequest = new XMLHttpRequest();
+          httpRequest.overrideMimeType('text/xml');
+          httpRequest.onreadystatechange = function(){
+            if (httpRequest.readyState == 4) {
+              if (httpRequest.status == 200) {
+                var canvas = document.getElementById("canvas");
+                var xml = httpRequest.responseXML;
+                var node = xml.evaluate("/x:description", xml.documentElement, cpeeResolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                httpRequest = new XMLHttpRequest();
+                httpRequest.overrideMimeType('text/javascript');
+                httpRequest.onreadystatechange = function(){
+                  if (httpRequest.readyState == 4) {
+                    if (httpRequest.status == 200) {
+                      globalEval(httpRequest.responseText);
+                      var wg = new WFGraph(xml, node, canvas);
+                      wg.generateGraph();
+                    } else {
+                      alert('There was a problem with loading graph.js.');
+                    }
+                  }
+                };
+                httpRequest.open('GET', 'JS/graph.js', true);
+                httpRequest.send(null);
+              } else {
+                alert('There was a problem with loading the testset.');
+              }
+            }
+          };
+          httpRequest.open('GET', ts, true);
+          httpRequest.send(null);
+        }  
+        if (window.location.search.match(/^\?testset=/)) {
+          var ts = window.location.search.replace(/^\?testset=/,'');
+          httpRequest = new XMLHttpRequest();
+          httpRequest.overrideMimeType('text/xml');
+          httpRequest.onreadystatechange = function(){
+            if (httpRequest.readyState == 4) {
+              if (httpRequest.status == 200) {
+                var canvas = document.getElementById("canvas");
+                var xml = httpRequest.responseXML;
+                var node = xml.evaluate("//x:description", xml.documentElement, cpeeResolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                httpRequest = new XMLHttpRequest();
+                httpRequest.overrideMimeType('text/javascript');
+                httpRequest.onreadystatechange = function(){
+                  if (httpRequest.readyState == 4) {
+                    if (httpRequest.status == 200) {
+                      globalEval(httpRequest.responseText);
+                      var wg = new WFGraph(xml, node, canvas);
+                      wg.generateGraph();
+                    } else {
+                      alert('There was a problem with loading graph.js.');
+                    }
+                  }
+                };
+                httpRequest.open('GET', 'JS/graph.js', true);
+                httpRequest.send(null);
+              } else {
+                alert('There was a problem with loading the testset.');
+              }
+            }
+          };
+          httpRequest.open('GET', 'Testsets/' + ts + '.xml', true);
+          httpRequest.send(null);
+        }  
+      }
+
+      function cpeeResolver(prefix){
+        return 'http://cpee.org/ns/description/1.0';
+      }  
+    ]]></script><!--}}}-->
+    <symbol id="call" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"></circle>
+      <text class="normal" transform='translate(15,21)'>c</text>
+    </symbol><!-- }}} -->
+    <symbol id="manipulate" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"></circle>
+      <text class="normal" transform='translate(15,21)'>m</text>
+    </symbol><!-- }}} -->
+    <symbol id="callmanipulate" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"></circle>
+      <text class="normal" transform='translate(15,21)'>c</text>
+      <circle cx="28" cy="28" r="9" class="stand"></circle>
+      <text class="small" transform='translate(28,32)'>m</text>
+    </symbol><!-- }}} -->
+    <symbol id="choose" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"></circle>
+      <text class="normal" transform='translate(15,21)'>σ</text>
+    </symbol><!-- }}} -->
+    <symbol id="alternative" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="standwithout"></circle>
+      <text class="normal" transform='translate(15,20)'>{..}</text>
+    </symbol><!-- }}} -->
+    <symbol id="otherwise" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="standwithout"></circle>
+      <text class="normal" transform='translate(15,20)'>{⁎}</text>
+    </symbol><!-- }}} -->
+    <symbol id="parallel" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"></circle>
+      <text class="normal" transform='translate(15,21)'>||</text>
+    </symbol><!-- }}} -->
+    <symbol id="parallel_branch" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"></circle>
+      <text class="normal" transform='translate(15,21)'>|</text>
+    </symbol><!-- }}} -->
+    <symbol id="critical" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"></circle>
+      <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
+    </symbol><!-- }}} -->
+    <symbol id="loop" class="clickable"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"></circle>
+      <text class="normallarge" transform='translate(15,24)'>↺</text>
+    </symbol><!-- }}} -->
+    <symbol id="end"><!-- {{{ -->
+      <circle cx="15" cy="15" r="14" class="stand"></circle>
+      <circle cx="15" cy="15" r="11" class="stand"></circle>
+      <text class="normal" transform='translate(15,21)'>Ω</text>
+    </symbol><!-- }}} -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="24" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" markerHeight="4.5">
+      <path d="m 2 2 l 6 3 l -6 3 z"></path>
+    </marker>
+  </defs>
+
+  <g id="canvas">
+    <g id="blocks"></g>
+    <g id="lines"></g>
+    <g id="symbols"></g>
+  </g>
+</svg>

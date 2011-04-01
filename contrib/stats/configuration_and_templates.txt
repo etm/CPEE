@@ -1,0 +1,37 @@
+everthing in empty cpee/instances
+cpee/declaration.xml
+cpee/declaration.ru
+cpee/eninge/engine.xml
+
+creating filelist for instances
+Categorizing files.
+Finding a working MD5 command....
+Found a working MD5 command.
+Computing results.
+
+
+SLOC  Directory SLOC-by-Language (Sorted)
+391     instances       xml=333,ruby=58
+
+
+Totals grouped by language (dominant language first):
+xml:            333 (85.17%)
+ruby:            58 (14.83%)
+
+
+
+
+Total Physical Source Lines of Code (SLOC)                = 391
+Development Effort Estimate, Person-Years (Person-Months) = 0.07 (0.90)
+ (Basic COCOMO model, Person-Months = 2.4 * (KSLOC**1.05))
+Schedule Estimate, Years (Months)                         = 0.20 (2.40)
+ (Basic COCOMO model, Months = 2.5 * (person-months**0.38))
+Estimated Average Number of Developers (Effort/Schedule)  = 0.37
+Total Estimated Cost to Develop                           = $ 10,079
+ (average salary = $56,286/year, overhead = 2.40).
+SLOCCount, Copyright (C) 2001-2004 David A. Wheeler
+SLOCCount is Open Source Software/Free Software, licensed under the GNU GPL.
+SLOCCount comes with ABSOLUTELY NO WARRANTY, and you are welcome to
+redistribute it under certain conditions as specified by the GNU GPL license;
+see the documentation for details.
+Please credit this data as "generated using David A. Wheeler's 'SLOCCount'."
