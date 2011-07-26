@@ -761,10 +761,10 @@ function sym_click_para(node,ind) { // {{{
   return out;
 } // }}}
 
-function format_visual_add(what,class) {//{{{
+function format_visual_add(what,cls) {//{{{
   if (node_state[what] == undefined)
     node_state[what] = [];
-  node_state[what].push(class);
+  node_state[what].push(cls);
   format_visual_set(what);
 }//}}}
 function format_visual_remove(what,class) {//{{{
