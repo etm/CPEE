@@ -767,10 +767,10 @@ function format_visual_add(what,cls) {//{{{
   node_state[what].push(cls);
   format_visual_set(what);
 }//}}}
-function format_visual_remove(what,class) {//{{{
+function format_visual_remove(what,cls) {//{{{
   c = node_state[what];
-  if ($.inArray(class,c) != -1)
-    c.splice($.inArray(class,c),1);
+  if ($.inArray(cls,c) != -1)
+    c.splice($.inArray(cls,c),1);
   format_visual_set(what);
 }//}}}
 function format_visual_set(what) {//{{{
