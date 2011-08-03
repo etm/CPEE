@@ -275,6 +275,7 @@ function monitor_instance_dsl() {// {{{
           url: url + "/properties/values/description/",
           success: function(res){
             var container = $("#canvas").get(0);
+            var adaptor = new WfAdaptor(res, container, 'iconset');
             var g = new WFGraph(res, res.documentElement, container);
             var width = g.generateGraph({
               symclick: sym_click

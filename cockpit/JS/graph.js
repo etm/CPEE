@@ -1,3 +1,210 @@
+/* WfAdaptor: 
+Handles interaction between Illustartor and Description 
+e.g. Event fires to Adaptor to insert Element and Illustrator and Description do it
+*/
+
+function WfAdaptor(cpee_description, svg_container, svg_iconset) { // Controler {{{
+  // Variable {{{
+    // public
+    this.illustrator;
+    //private
+    var illustrator;
+    var description;
+  // }}}
+  // General Functions {{{
+  var set_description = this.set_description = function(desc) { // {{{
+    console.log("adaptor: set descirption");
+  } // }}}
+  var get_description = this.get_description = function(parser) { // {{{
+    console.log('adaptor: get description');
+  } // }}}
+  // }}}
+  // Adaption funcions {{{
+  var insert = function(def_id, parent_id, index) { // {{{
+    /* Interface: {{{
+      def_id ..... id of the SVG symbol in the icon set
+      parent ..... the SVG id of the parent node
+      index ... the index where the new element should be inserted using index origin zero.
+                If index represents a number greater then the number of elements, thex will be appended.
+      return value = the ID genreated for the element inside the svg
+     }}} */
+    console.log('adaptor: insert -> ' + index);
+  } // }}}
+  var append = function(def_id, parent_id) { // {{{
+    /* Interface: {{{
+      def_id ..... id of the SVG symbol in the icon set
+      parent ..... the SVG id of the parent node
+      return value = the ID genreated for the element inside the svg
+     }}} */
+     var length; // count child of parent_id;
+     return insert(def_id, parent_id, length);
+  } // }}}
+  var prepend = function(def_id, parent_id) { // {{{
+    /* Interface: {{{
+      def_id ..... id of the SVG symbol in the icon set
+      parent ..... the SVG id of the parent node
+      return value = the ID genreated for the element inside the svg
+     }}} */
+    return insert(def_id, parent_id, 0);
+  } // }}}
+  var remove = function(id) { // {{{
+    /* Interface: {{{
+      svg_id ..... the SVG id of the to be removed element
+     }}} */
+    console.log('adaptor: remove -> ' + id);
+  } // }}}
+  var update = function(id) { // {{{
+    /* Interface: {{{
+      svg_id ..... the SVG id of the to be removed element
+     }}} */
+    console.log('adaptor: update -> ' + id);
+  } // }}}
+  // }}}
+  // Helper Functions {{{
+  // }}}
+
+  // Initialze {{{
+console.log(" -> initializing adaptor: start");
+  this.illustrator = illustrator = new WfIllustrator(svg_container, svg_iconset, this);
+  this.description = description = new WfDescription(cpee_description, this);
+console.log(" -> initializing adaptor: end");
+  // }}}
+} // }}}
+
+/* WfIllustrator: 
+Is in charge of displaying the Graph. It iis further able insert and remove elements with given ID's from the illsutration.
+*/
+
+function WfIllustrator(svg_container, svg_iconset, wf_adaptor) { // View  {{{
+  // Variable {{{
+    // public
+    // private
+  // }}}
+  // General Functions {{{
+  var set_container = function(con) { // {{{
+    console.log('illustrator: set container');
+  } // }}}
+  var set_iconset = function(is) { // {{{
+    console.log('illsutrator: set iconset');
+  } // }}}
+  var clear = this.clear = function() { // {{{
+    console.log('illustrator: clear');
+  } // }}}
+  // }}}
+  // Adaption functions {{{
+  var insert = function(def_id, parent_id, index) { // {{{
+    /* Interface: {{{
+      def_id ..... id of the SVG symbol in the icon set
+      parent ..... the SVG id of the parent node
+      index ... the index where the new element should be inserted using index origin zero.
+                If index represents a number greater then the number of elements, thex will be appended.
+      return value = the ID genreated for the element inside the svg
+     }}} */
+    console.log('illustrator: insert -> ' + index);
+  } // }}}
+  var append = function(def_id, parent_id) { // {{{
+    /* Interface: {{{
+      def_id ..... id of the SVG symbol in the icon set
+      parent ..... the SVG id of the parent node
+      return value = the ID genreated for the element inside the svg
+     }}} */
+     var length; // count child of parent_id;
+     return insert(def_id, parent_id, length);
+  } // }}}
+  var prepend = function(def_id, parent_id) { // {{{
+    /* Interface: {{{
+      def_id ..... id of the SVG symbol in the icon set
+      parent ..... the SVG id of the parent node
+      return value = the ID genreated for the element inside the svg
+     }}} */
+    return insert(def_id, parent_id, 0);
+  } // }}}
+  var remove = function(svg_id) { // {{{
+    /* Interface: {{{
+      svg_id ..... the SVG id of the to be removed element
+     }}} */
+  } // }}}
+  // }}}
+  // Visualization Functions {{{
+    var draw_connection = function(start_id, end_id) { // {{{
+    } // }}}
+  // }}}
+  // Helper Functions {{{
+  // }}}
+  // Initialze {{{
+    set_container(svg_container);
+    set_iconset(svg_iconset);
+  // }}}
+} // }}}
+
+/* WfDescription: 
+Manages the description. Is is further able to add/remove elements from the controlflow description.
+*/
+
+function WfDescription(cpee_description, wf_adaptor) { // Model {{{
+  // Variable {{{
+    // public
+    // private
+    var adaptor;
+    var description;
+  // }}}
+  // General Functions {{{
+  var set_description = function(desc) { // {{{
+    console.log('descr: set description');
+    description = desc;
+    adaptor.illustrator.clear();
+  } // }}}
+  var get_description = function(parser) { // {{{
+    console.log('descr: get description');
+  } // }}}
+  // }}}
+  // Adaption functions {{{
+  var insert = function(def_id, parent_id, index) { // {{{
+    /* Interface: {{{
+      def_id ..... id of the SVG symbol in the icon set
+      parent ..... the SVG id of the parent node
+      index ... the index where the new element should be inserted using index origin zero.
+                If index represents a number greater then the number of elements, thex will be appended.
+      return value = the ID genreated for the element inside the svg
+     }}} */
+    console.log('descr: insert -> ' + index);
+  } // }}}
+  var append = function(def_id, parent_id) { // {{{
+    /* Interface: {{{
+      def_id ..... id of the SVG symbol in the icon set
+      parent ..... the SVG id of the parent node
+      return value = the ID genreated for the element inside the svg
+     }}} */
+     var length; // count child of parent_id;
+     return insert(def_id, parent_id, length);
+  } // }}}
+  var prepend = function(def_id, parent_id) { // {{{
+    /* Interface: {{{
+      def_id ..... id of the SVG symbol in the icon set
+      parent ..... the SVG id of the parent node
+      return value = the ID genreated for the element inside the svg
+     }}} */
+    return insert(def_id, parent_id, 0);
+  } // }}}
+  var remove = function(svg_id) { // {{{
+    /* Interface: {{{
+      svg_id ..... the SVG id of the to be removed element
+     }}} */
+    console.log('descr: remove -> ' + index);
+  } // }}}
+  // }}}
+  // Helper Functions {{{
+  // }}}
+  //  Initialze {{{
+  adaptor = wf_adaptor;
+  set_description(cpee_description);
+  // }}}
+} // }}} 
+
+
+
+
+//==== Original Version ==== {{{
 var WFGraph = function(xml, start, container) {
   var row_height = 40;
   var column_width = 40;
@@ -266,3 +473,4 @@ var WFGraph = function(xml, start, container) {
       blocks.insertBefore(block, blocks.firstChild);
   }// }}}
 };
+//==== Original Version ==== }}}
