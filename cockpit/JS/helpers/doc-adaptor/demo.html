@@ -5,19 +5,25 @@
     <script type="text/javascript" src="../jquery.min.js"></script>
     <script type="text/javascript" src="../jquery.svgdom.js"></script>
     <script type="text/javascript" src="../underscore.min.js"></script>
+    <script type="text/javascript" src="../../wfadaptor.js"></script>
     <script type="text/javascript">
+      var adaptor = null;
       function click_update_graph() {
-        console.log("Graph Update");
+        console.log("Demo: Graph Update");
+        adaptor.set_description($('#description').val());
+      }
+      function update_event(element_id, operation) {
+        console.log("Demo: update notification [ID: "+element_id+ ", OP: "+operation+"]");
       }
     </script>
   </head>
   <body>
-    <table style="background: ThreeDShadow; width: 80%; height: 100%;" border="1"><tr>
+    <table style="background: ThreeDShadow; width: 80%; height: 100%;"><tr>
     <td style="text-align:center; vertical-align:middle"><button type="button" onclick="click_update_graph();">Update Graph &gt;&gt;&gt; </button></td>
     <td style="text-align:center; vertical-align:middle"><b><font size="+2">Workflow Graph</font><b></td>
     </tr><tr height="95%">
       <td width="50%" style="vertical-align:middle; text-align:center"><!-- {{{ -->
-        <textarea style="width:98%;height:98%">
+        <textarea style="width:98%;height:98%" id="description">
 <description xmlns="http://cpee.org/ns/description/1.0">
   <parallel>
     <parallel_branch>
@@ -27,31 +33,38 @@
             <method>post</method>
             <parameters>
               <timeout>1</timeout>
+              <service>Blu</service>
+              <description>bla</description>
             </parameters>
           </parameters>
+          <manipulate/>
         </call>  
-        <choose>
-          <alternative condition="data.x != nil">
-            <call id="a4_1" endpoint="timeout">
-              <parameters>
-                <method>post</method>
+        <manipulate id="man1"/>
+        <critical id="crit1">
+          <choose>
+            <alternative condition="data.x != nil">
+              <call id="a4_1" endpoint="timeout">
                 <parameters>
-                  <timeout>4</timeout>
+                  <method>post</method>
+                  <parameters>
+                    <timeout>4</timeout>
+                  </parameters>
+                  <service>Injection</service>
                 </parameters>
-              </parameters>
-            </call>  
-          </alternative>
-          <otherwise>
-            <call id="a4_2" endpoint="timeout">
-              <parameters>
-                <method>post</method>
+              </call>  
+            </alternative>
+            <otherwise>
+              <call id="a4_2" endpoint="timeout">
                 <parameters>
-                  <timeout>10</timeout>
+                  <method>post</method>
+                  <parameters>
+                    <timeout>10</timeout>
+                  </parameters>
                 </parameters>
-              </parameters>
-            </call>  
-          </otherwise>
-        </choose>
+              </call>  
+            </otherwise>
+          </choose>
+        </critical>
         <choose>
           <alternative condition="data.x != nil">
             <call id="a4_1" endpoint="timeout">
@@ -152,7 +165,7 @@
     </parallel_branch>
   </parallel>  
 </description>
-        </textarea><!-- }}} -->
+        </textarea><!-- }}} -- > 
       </td>
       <td valign="top"><!-- {{{ -->
         <div style="text-align: center; vertical-align: middle;">
@@ -164,10 +177,6 @@
             </symbol><!-- }}} -->
             <symbol id="manipulate" class="clickable"><!-- {{{ -->
               <circle cx="15" cy="15" r="14" class="stand"></circle>
-              <text class="normal" transform='translate(15,21)'>m</text>
-            </symbol><!-- }}} -->
-            <symbol id="manipulate_gen" class="clickable"><!-- {{{ -->
-              <circle cx="15" cy="15" r="14" class="gen"></circle>
               <text class="normal" transform='translate(15,21)'>m</text>
             </symbol><!-- }}} -->
             <symbol id="callinject" class="clickable"><!-- {{{ -->
@@ -198,16 +207,8 @@
               <circle cx="15" cy="15" r="14" class="stand"></circle>
               <text class="normal" transform='translate(15,21)'>||</text>
             </symbol><!-- }}} -->
-            <symbol id="parallel_gen" class="clickable"><!-- {{{ -->
-              <circle cx="15" cy="15" r="14" class="gen"></circle>
-              <text class="normal" transform='translate(15,21)'>||</text>
-            </symbol><!-- }}} -->
             <symbol id="parallel_branch" class="clickable"><!-- {{{ -->
               <circle cx="15" cy="15" r="14" class="stand"></circle>
-              <text class="normal" transform='translate(15,21)'>|</text>
-            </symbol><!-- }}} -->
-            <symbol id="parallel_branch_gen" class="clickable"><!-- {{{ -->
-              <circle cx="15" cy="15" r="14" class="gen"></circle>
               <text class="normal" transform='translate(15,21)'>|</text>
             </symbol><!-- }}} -->
             <symbol id="critical" class="clickable"><!-- {{{ -->
@@ -227,7 +228,7 @@
               <path d="m 2 2 l 6 3 l -6 3 z"></path>
             </marker>
           </defs>
-          <g id="canvas">
+          <g id="drawing_area">
             <g id="blocks"></g>
             <g id="lines"></g>
             <g id="symbols"></g>
@@ -237,7 +238,10 @@
       </td><!-- }}} -->
     </table>
     <script type="text/javascript">
-      click_update_graph();
+      adaptor = new WfAdaptor($('#description').val(), $('#drawing_area'));
+      adaptor.notify = update_event;
+      adaptor.notify('none','test call from demo');
+      //console.log(adaptor.get_description());
     </script>
   </body>
 </html>
