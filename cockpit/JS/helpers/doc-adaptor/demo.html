@@ -1,0 +1,243 @@
+<html>
+  <head>
+    <title>WfAdaptor Demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <script type="text/javascript" src="../jquery.min.js"></script>
+    <script type="text/javascript" src="../jquery.svgdom.js"></script>
+    <script type="text/javascript" src="../underscore.min.js"></script>
+    <script type="text/javascript">
+      function click_update_graph() {
+        console.log("Graph Update");
+      }
+    </script>
+  </head>
+  <body>
+    <table style="background: ThreeDShadow; width: 80%; height: 100%;" border="1"><tr>
+    <td style="text-align:center; vertical-align:middle"><button type="button" onclick="click_update_graph();">Update Graph &gt;&gt;&gt; </button></td>
+    <td style="text-align:center; vertical-align:middle"><b><font size="+2">Workflow Graph</font><b></td>
+    </tr><tr height="95%">
+      <td width="50%" style="vertical-align:middle; text-align:center"><!-- {{{ -->
+        <textarea style="width:98%;height:98%">
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <parallel>
+    <parallel_branch>
+      <loop pre_test='data.feedback'>
+        <call id="publish" endpoint="timeout">
+            <parameters>
+            <method>post</method>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+        </call>  
+        <choose>
+          <alternative condition="data.x != nil">
+            <call id="a4_1" endpoint="timeout">
+              <parameters>
+                <method>post</method>
+                <parameters>
+                  <timeout>4</timeout>
+                </parameters>
+              </parameters>
+            </call>  
+          </alternative>
+          <otherwise>
+            <call id="a4_2" endpoint="timeout">
+              <parameters>
+                <method>post</method>
+                <parameters>
+                  <timeout>10</timeout>
+                </parameters>
+              </parameters>
+            </call>  
+          </otherwise>
+        </choose>
+        <choose>
+          <alternative condition="data.x != nil">
+            <call id="a4_1" endpoint="timeout">
+              <parameters>
+                <method>post</method>
+                <parameters>
+                  <timeout>4</timeout>
+                </parameters>
+              </parameters>
+            </call>  
+          </alternative>
+          <otherwise>
+            <call id="a4_2" endpoint="timeout">
+              <parameters>
+                <method>post</method>
+                <parameters>
+                  <timeout>10</timeout>
+                </parameters>
+              </parameters>
+            </call>  
+          </otherwise>
+        </choose>
+      </loop>
+      <call id="a4_1" endpoint="timeout">
+        <parameters>
+          <method>post</method>
+          <parameters>
+            <timeout>4</timeout>
+          </parameters>
+        </parameters>
+      </call>  
+    </parallel_branch>
+    <parallel_branch>
+      <loop pre_test='data.feedback'>
+        <call id="prepare" endpoint="timeout">
+            <parameters>
+            <method>post</method>
+            <parameters>
+              <timeout>4</timeout>
+            </parameters>
+          </parameters>
+        </call>
+        <parallel>
+          <choose>
+            <parallel_branch>
+              <alternative condition="data.x != nil">
+                <call id="a4_1" endpoint="timeout">
+                  <parameters>
+                    <method>post</method>
+                    <parameters>
+                      <timeout>4</timeout>
+                    </parameters>
+                  </parameters>
+                </call>  
+              </alternative>
+            </parallel_branch>
+            <parallel_branch>
+              <alternative condition="data.x.nil?">
+                <call id="a4_2" endpoint="timeout">
+                  <parameters>
+                    <method>post</method>
+                    <parameters>
+                      <timeout>10</timeout>
+                    </parameters>
+                  </parameters>
+                </call>  
+              </alternative>
+            </parallel_branch>
+          </choose>
+          <choose>
+            <parallel_branch>
+              <alternative condition="data.x != nil">
+                <call id="a4_1" endpoint="timeout">
+                  <parameters>
+                    <method>post</method>
+                    <parameters>
+                      <timeout>4</timeout>
+                    </parameters>
+                  </parameters>
+                </call>  
+              </alternative>
+            </parallel_branch>
+            <parallel_branch>
+              <alternative condition="data.x.nil?">
+                <call id="a4_2" endpoint="timeout">
+                  <parameters>
+                    <method>post</method>
+                    <parameters>
+                      <timeout>10</timeout>
+                    </parameters>
+                  </parameters>
+                </call>  
+              </alternative>
+            </parallel_branch>
+          </choose>
+        </parallel>
+      </loop>  
+    </parallel_branch>
+  </parallel>  
+</description>
+        </textarea><!-- }}} -->
+      </td>
+      <td valign="top"><!-- {{{ -->
+        <div style="text-align: center; vertical-align: middle;">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0" xmlns:xlink="http://www.w3.org/1999/xlink"> 
+          <defs>
+            <symbol id="call" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="stand"></circle>
+              <text class="normal" transform='translate(15,21)'>c</text>
+            </symbol><!-- }}} -->
+            <symbol id="manipulate" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="stand"></circle>
+              <text class="normal" transform='translate(15,21)'>m</text>
+            </symbol><!-- }}} -->
+            <symbol id="manipulate_gen" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="gen"></circle>
+              <text class="normal" transform='translate(15,21)'>m</text>
+            </symbol><!-- }}} -->
+            <symbol id="callinject" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="stand"></circle>
+              <text class="normal" transform='translate(15,21)'>c</text>
+              <circle cx="28" cy="27" r="9" class="stand"></circle>
+              <text class="small" transform='translate(28,32)'>i</text>
+            </symbol><!-- }}} -->
+            <symbol id="callmanipulate" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="stand"></circle>
+              <text class="normal" transform='translate(15,21)'>c</text>
+              <circle cx="28" cy="28" r="9" class="stand"></circle>
+              <text class="small" transform='translate(28,32)'>m</text>
+            </symbol><!-- }}} -->
+            <symbol id="choose" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="stand"></circle>
+              <text class="normal" transform='translate(15,21)'>σ</text>
+            </symbol><!-- }}} -->
+            <symbol id="alternative" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="standwithout"></circle>
+              <text class="normal" transform='translate(15,20)'>{..}</text>
+            </symbol><!-- }}} -->
+            <symbol id="otherwise" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="standwithout"></circle>
+              <text class="normal" transform='translate(15,20)'>{⁎}</text>
+            </symbol><!-- }}} -->
+            <symbol id="parallel" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="stand"></circle>
+              <text class="normal" transform='translate(15,21)'>||</text>
+            </symbol><!-- }}} -->
+            <symbol id="parallel_gen" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="gen"></circle>
+              <text class="normal" transform='translate(15,21)'>||</text>
+            </symbol><!-- }}} -->
+            <symbol id="parallel_branch" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="stand"></circle>
+              <text class="normal" transform='translate(15,21)'>|</text>
+            </symbol><!-- }}} -->
+            <symbol id="parallel_branch_gen" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="gen"></circle>
+              <text class="normal" transform='translate(15,21)'>|</text>
+            </symbol><!-- }}} -->
+            <symbol id="critical" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="stand"></circle>
+              <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
+            </symbol><!-- }}} -->
+            <symbol id="loop" class="clickable"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="stand"></circle>
+              <text class="normallarge" transform='translate(15,23)'>↺</text>
+            </symbol><!-- }}} -->
+            <symbol id="end"><!-- {{{ -->
+              <circle cx="15" cy="15" r="14" class="stand"></circle>
+              <circle cx="15" cy="15" r="11" class="stand"></circle>
+              <text class="normal" transform='translate(15,21)'>Ω</text>
+            </symbol><!-- }}} -->
+            <marker id="arrow" viewBox="0 0 10 10" refX="24" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" markerHeight="4.5">
+              <path d="m 2 2 l 6 3 l -6 3 z"></path>
+            </marker>
+          </defs>
+          <g id="canvas">
+            <g id="blocks"></g>
+            <g id="lines"></g>
+            <g id="symbols"></g>
+          </g>
+        </svg>
+        </div>
+      </td><!-- }}} -->
+    </table>
+    <script type="text/javascript">
+      click_update_graph();
+    </script>
+  </body>
+</html>
