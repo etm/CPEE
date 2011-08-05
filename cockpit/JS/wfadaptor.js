@@ -72,7 +72,7 @@ Is in charge of displaying the Graph. It is further able insert and remove eleme
 function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   // Variable {{{
     // public
-    var heigth = this.height = 40;
+    var height = this.height = 40;
     var width = this.width = 40;
     // private
     var matrix = []; // rows and cols
@@ -113,24 +113,15 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   } // }}}
   this.call = function(id, pid, index) { // public {{{
     console.log('CALL -> ' + id + ' Parent: ' + pid);
-    var ppos = find_parent(pid);
-    if(index == undefined) {
-//      if(matrix[ppos[row]+1] == undefined) matrix[ppos[row]] = [];
-//      matrix[ppos[row]+1][ppos[col]] = {'id':id};
-    } else {
-    }
+    handle_call_types(id, pid, index, 'call');
   } // }}}
   this.callmanipulate = function(id, pid, index) { // public {{{
     console.log('CALL_MANIPULATE -> ' + id + ' Parent: ' + pid);
-    if(index == undefined) {
-    } else {
-    }
+    handle_call_types(id, pid, index, 'callmanipulate');
   } // }}}
   this.callinject = function(id, pid, index) { // public {{{
     console.log('CALL_INJECT -> ' + id + ' Parent: ' + pid);
-    if(index == undefined) {
-    } else {
-    }
+    handle_call_types(id, pid, index, 'callinject');
   } // }}}
   this.manipulate = function(id, pid, index) { // public {{{
     console.log('MANIPULATE -> ' + id + ' Parent: ' + pid);
@@ -182,15 +173,87 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   } // }}}
   this.draw_connection = function(start_id, end_id) { // private {{{
   } // }}}
+  var repaint = this.repaint = function() { // public {{{
+    var lines = document.getElementById("lines");
+    var symbols = document.getElementById("symbols");
+    var blocks = document.getElementById("blocks");
+    var symclick= function(node) { };
+    
+    for(row in matrix) {
+      for(col in matrix[row]) {
+        var svgNS = "http://www.w3.org/2000/svg";
+        var xlinkNS = "http://www.w3.org/1999/xlink";
+        var g = document.createElementNS(svgNS, "g");
+        console.log(typeof row);
+        console.log(typeof col);
+            g.setAttribute('transform', 'translate(' + String((parseInt(col)+1)*width-15) + ',' + String((parseInt(row)+1)*height-30) + ')');
+
+        var use = document.createElementNS(svgNS, "use");
+        use.setAttributeNS(xlinkNS, "href", "#"+matrix[row][col].type);
+
+        var attrs = {};
+        g.setAttribute('id', 'node-' + matrix[row][col].id);
+
+        attrs = {'id': 'graph-' + matrix[row][col].id, 'class': 'activities'};
+        var title = document.createElementNS(svgNS, "title");
+        title.appendChild(document.createTextNode(matrix[row][col].id));
+        use.appendChild(title);
+
+        var ts1 = document.createElementNS(svgNS, "tspan");
+            ts1.setAttribute('class', 'active');
+            ts1.appendChild(document.createTextNode('0'));
+        var ts2 = document.createElementNS(svgNS, "tspan");
+            ts2.setAttribute('class', 'colon');
+            ts2.appendChild(document.createTextNode(','));
+        var ts3 = document.createElementNS(svgNS, "tspan");
+            ts3.setAttribute('class', 'vote');
+            ts3.appendChild(document.createTextNode('0'));
+        var supi = document.createElementNS(svgNS, "text");
+            supi.setAttribute('class', 'super');
+            supi.setAttribute('transform', 'translate(28.4,8.4)');
+            supi.appendChild(ts1);
+            supi.appendChild(ts2);
+            supi.appendChild(ts3);
+
+        g.appendChild(supi);
+        switch(matrix[row][col].type) {
+          case 'loop':
+          case 'alternative':
+            var title = document.createElementNS(svgNS, "title");
+            title.appendChild(document.createTextNode(matrix[row][col].condition));
+            use.appendChild(title);
+            break;
+          case 'parallel':
+            break;
+        }
+        for(var attr in attrs)
+          use.setAttribute(attr, attrs[attr]);
+
+        use.onclick = function(){ symclick(node); };
+        g.appendChild(use);
+        symbols.appendChild(g);        
+      }
+    }
+  } // }}}
   // }}}
   // Helper Functions {{{
-  var find_parent = function(pid) {
+  var handle_call_types = function(id, pid, index, type) { // private {{{
+    var ppos = find_parent(pid);
+    if(index == undefined && ppos == undefined) { // append on top-level
+      matrix.push([{'id': id, 'type': type,'pid':pid}]);
+      console.log(matrix);
+    } else if(index == undefined) { // append on sub-level
+    } else if(ppos == undefined) { // insert at top-level
+    } else {
+    }
+  } // }}}
+  var find_parent = function(pid) { // private {{{
     for(row in matrix) {
       for(col in matrix[row]) {
         if(matrix[row][col].id == pid) return {'row':row, 'col': col};
       }
     }
-  }
+  } // }}}
   // }}}
   // Initialze {{{
     set_container(svg_container);
@@ -226,6 +289,7 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
     id_counter = {};
     parse(description, null);
     console.log(' -> Description: End parsing');
+    illustrator.repaint();
   } // }}}
   this.get_description = function() { //  public {{{
     console.log('descr: get description');
