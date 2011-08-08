@@ -76,13 +76,19 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     var width = this.width = 40;
     // private
     var matrix = []; // rows and cols
+    var svg = null;
+    var max_height = 0;
+    var max_width = 0;
   // }}}
   // Generic Functions {{{
   var set_container = function(con) { // {{{
     console.log('illustrator: set container');
+    svg = $(con);
   } // }}}
   var clear = this.clear = function() { // {{{
     console.log('illustrator: clear');
+    $('g > *', svg).each(function() {$(this).remove()});
+    matrix = [];
   } // }}}
   // }}}
   // Adaption functions {{{
@@ -109,83 +115,115 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   // }}} 
   // Visualization Functions {{{
   this.endnode = function() { // public {{{
-    console.log('ENDNODE');
+    matrix.push([{'id': 'end-node', 'type': 'end','pid':'top-level'}]);
+    return {'row':matrix.length-1, 'col':0};
   } // }}}
-  this.call = function(id, pid, index) { // public {{{
-    console.log('CALL -> ' + id + ' Parent: ' + pid);
-    handle_call_types(id, pid, index, 'call');
+  this.call = function(id, pid, ppos, index) { // public {{{
+    return handle_call_types(id, pid, ppos, index, 'call');
   } // }}}
-  this.callmanipulate = function(id, pid, index) { // public {{{
-    console.log('CALL_MANIPULATE -> ' + id + ' Parent: ' + pid);
-    handle_call_types(id, pid, index, 'callmanipulate');
+  this.callmanipulate = function(id, pid, ppos, index) { // public {{{
+    return handle_call_types(id, pid, ppos, index, 'callmanipulate');
   } // }}}
-  this.callinject = function(id, pid, index) { // public {{{
-    console.log('CALL_INJECT -> ' + id + ' Parent: ' + pid);
-    handle_call_types(id, pid, index, 'callinject');
+  this.callinject = function(id, pid, ppos, index) { // public {{{
+    return handle_call_types(id, pid, ppos, index, 'callinject');
   } // }}}
-  this.manipulate = function(id, pid, index) { // public {{{
-    console.log('MANIPULATE -> ' + id + ' Parent: ' + pid);
-    if(index == undefined) {
+  this.manipulate = function(id, pid, ppos, index) { // public {{{
+    if(index == undefined && ppos == undefined) { // append on top-level
+      matrix.push([{'id': id, 'type': 'manipulate', 'pid':pid}]);
+      return {'row':matrix.length-1, 'col':0};
+    } else if(index == undefined) { // append on sub-level
+      return append_sublevel({'id': id, 'type': 'manipulate', 'pid':pid}, ppos);
+    } else if(ppos == undefined) { // insert at top-level
     } else {
     }
   } // }}}
-  this.choose = function(id, pid, index) { // public {{{
-    console.log('CHOOSE -> ' +id + ' Parent: ' + pid);
-    if(index == undefined) {
+  this.choose = function(id, pid, ppos, index) { // public {{{
+    if(index == undefined && ppos == undefined) { // append on top-level
+      matrix.push([{'id': id, 'type': 'choose', 'pid':pid, 'left_skip':1, 'expansion': 'horizontal'}]);
+      return {'row':matrix.length-1, 'col':0};
+    } else if(index == undefined) { // append on sub-level
+      return append_sublevel({'id': id, 'type': 'choose', 'pid':pid, 'ppos':ppos, 'left_skip':1, 'expansion': 'horizontal'});
+    } else if(ppos == undefined) { // insert at top-level
     } else {
     }
   } // }}}
-  this.loop = function(id, pid, index) { // public {{{
-    console.log('LOOP -> ' + id + ' Parent: ' + pid);
-    if(index == undefined) {
+  this.alternative = function(id, pid, ppos, index) { // public {{{
+    if(index == undefined && ppos == undefined) { // append on top-level
+      matrix.push([{'id': id, 'type': 'alternative', 'pid':pid, 'left_skip': 0, 'expansion': 'vertical'}]);
+      return {'row':matrix.length-1, 'col':0};
+    } else if(index == undefined) { // append on sub-level
+      return append_sublevel({'id': id, 'type': 'alternative', 'pid':pid, 'ppos':ppos, 'left_skip':0, 'expansion': 'vertical'});
+    } else if(ppos == undefined) { // insert at top-level
     } else {
     }
   } // }}}
-  this.alternative = function(id, pid, index) { // public {{{
-    console.log('ALTERNATIVE -> ' + id + ' Parent: ' + pid);
-    if(index == undefined) {
+  this.otherwise = function(id, pid, ppos, index) { // public {{{
+    if(index == undefined && ppos == undefined) { // append on top-level
+      matrix.push([{'id': id, 'type': 'otherwise', 'pid':pid, 'left_skip':1, 'expansion': 'vertical'}]);
+      return {'row':matrix.length-1, 'col':0};
+    } else if(index == undefined) { // append on sub-level
+      return append_sublevel({'id': id, 'type': 'otherwise', 'pid':pid, 'ppos':ppos, 'left_skip':1, 'expansion': 'vertical'});
+    } else if(ppos == undefined) { // insert at top-level
     } else {
     }
   } // }}}
-  this.otherwise = function(id, pid, index) { // public {{{
-    console.log('OTHERWISE -> ' + id + ' Parent: ' + pid);
-    if(index == undefined) {
+  this.loop = function(id, pid, ppos, index) { // public {{{
+    if(index == undefined && ppos == undefined) { // append on top-level
+      matrix.push([{'id': id, 'type': 'loop', 'pid':pid, 'left_skip':1, 'expansion': 'vertical'}]);
+      return {'row':matrix.length-1, 'col':0};
+    } else if(index == undefined) { // append on sub-level
+      return append_sublevel({'id': id, 'type': 'loop', 'pid':pid, 'ppos':ppos, 'left_skip':1, 'expansion': 'vertical'});
+    } else if(ppos == undefined) { // insert at top-level
     } else {
     }
   } // }}}
-  this.parallel = function(id, pid, index) { // public {{{
-    console.log('PARALLEL -> ' +id + ' Parent: ' + pid);
-    if(index == undefined) {
+  this.parallel = function(id, pid, ppos, index) { // public {{{
+    if(index == undefined && ppos == undefined) { // append on top-level
+      matrix.push([{'id': id, 'type': 'parallel', 'pid':pid, 'left_skip':1, 'expansion': 'horizontal'}]);
+      return {'row':matrix.length-1, 'col':0};
+    } else if(index == undefined) { // append on sub-level
+      return append_sublevel({'id': id, 'type': 'parallel', 'pid':pid, 'ppos':ppos, 'left_skip':1, 'expansion': 'horizontal'});
+    } else if(ppos == undefined) { // insert at top-level
     } else {
     }
   } // }}}
-  this.parallel_branch = function(id, pid, index) { // public {{{
-    console.log('PARALLEL_BRANCH -> ' +id + ' Parent: ' + pid);
-    if(index == undefined) {
+  this.parallel_branch = function(id, pid, ppos, index) { // public {{{
+    if(index == undefined && ppos == undefined) { // append on top-level
+      matrix.push([{'id': id, 'type': 'loop', 'pid':pid, 'left_skip':0, 'expansion': 'vertical'}]);
+      return {'row':matrix.length-1, 'col':0};
+    } else if(index == undefined) { // append on sub-level
+      return append_sublevel({'id': id, 'type': 'loop', 'pid':pid, 'ppos':ppos, 'left_skip':0, 'expansion': 'vertical'});
+    } else if(ppos == undefined) { // insert at top-level
     } else {
     }
   } // }}}
-  this.critical = function(id, pid, index) { // public {{{
-    console.log('CRITICAL -> ' + id + ' Parent: ' + pid);
-    if(index == undefined) {
+  this.critical = function(id, pid, ppos, index) { // public {{{
+    if(index == undefined && ppos == undefined) { // append on top-level
+      matrix.push([{'id': id, 'type': 'critical', 'pid':pid, 'left_skip':1, 'expansion': 'vertical'}]);
+      return {'row':matrix.length-1, 'col':0};
+    } else if(index == undefined) { // append on sub-level
+      return append_sublevel({'id': id, 'type': 'critical', 'pid':pid, 'ppos':ppos, 'left_skip':1, 'expansion': 'vertical'});
+    } else if(ppos == undefined) { // insert at top-level
     } else {
     }
   } // }}}
   this.draw_connection = function(start_id, end_id) { // private {{{
   } // }}}
   var repaint = this.repaint = function() { // public {{{
+    console.log('Illsutrator: repaint start');
+    console.log(matrix);
+    $('g > *', svg).each(function() {$(this).remove()});
     var lines = document.getElementById("lines");
     var symbols = document.getElementById("symbols");
     var blocks = document.getElementById("blocks");
     var symclick= function(node) { };
     
-    for(row in matrix) {
-      for(col in matrix[row]) {
+    for(var row = 0; row <  matrix.length; row++) {
+      for(var col = 0; col < matrix[row].length; col++) {
+        if(matrix[row][col] == undefined) continue;
         var svgNS = "http://www.w3.org/2000/svg";
         var xlinkNS = "http://www.w3.org/1999/xlink";
         var g = document.createElementNS(svgNS, "g");
-        console.log(typeof row);
-        console.log(typeof col);
             g.setAttribute('transform', 'translate(' + String((parseInt(col)+1)*width-15) + ',' + String((parseInt(row)+1)*height-30) + ')');
 
         var use = document.createElementNS(svgNS, "use");
@@ -234,23 +272,90 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
         symbols.appendChild(g);        
       }
     }
+    console.log('set SVG height: ' + max_height * height); 
+    svg.attr('height', max_height * height);
+    console.log('set SVG width: ' +  max_width * width); 
+    svg.attr('width', max_width * width);
+    console.log(svg);
+    console.log('Illsutrator: repaint end');
   } // }}}
   // }}}
   // Helper Functions {{{
-  var handle_call_types = function(id, pid, index, type) { // private {{{
-    var ppos = find_parent(pid);
+  var append_sublevel = function(obj) { // {{{
+    var row = null;
+    var col = null;
+    console.log('append');
+    for(var i = 0; i < matrix.length; i++) { console.log(matrix[i]);}
+    console.log('append');
+    console.log(obj);
+    if(matrix[obj.ppos.row][obj.ppos.col].expansion == 'vertical') { // {{{
+      var match = false;
+      row = obj.ppos.row+1;
+      while(!match) {
+        if(matrix[row] == undefined) matrix[row] = [];
+        if(matrix[row][obj.ppos.col + obj.ppos.left_skip] == undefined) {
+          matrix[row][obj.ppos.col + obj.ppos.left_skip] = obj;
+//          matrix[row][obj.ppos.col] = '';
+          match = true;
+          col = obj.ppos.col + matrix[obj.ppos.row][obj.ppos.col].left_skip;
+          console.log(obj.ppos.col);
+          console.log(matrix[obj.ppos.row][obj.ppos.col]);;
+          console.log("COL: " + col);
+        } else {row++;}
+      } // }}}
+    } else if(matrix[obj.ppos.row][obj.ppos.col].expansion == 'horizontal') { // {{{
+      row = obj.ppos.row+1;
+      if(matrix[row] == undefined) matrix[obj.ppos.row+1] = [];
+      if(matrix[row][obj.ppos.col + obj.ppos.left_skip] == undefined) {i
+        matrix[row][obj.ppos.col + obj.ppos.left_skip] = obj;
+        col = obj.ppos.col + obj.ppos.left_skip;
+      } else {
+        matrix[row].push(obj);
+        col = matrix[row].length;
+      } // }}}
+    } else { // {{{
+      console.log('Append Sublevel: Error -> ' + obj.id)
+      console.log(obj);
+      return;
+    } // }}}
+
+    // Expand Matrix up to Top-Parent // {{{
+    var p = matrix[obj.ppos.row][obj.ppos.col];
+    while(p.pid != 'top-level') {
+    console.log(p);
+      p = matrix[p.ppos.row][p.ppos.col];
+    }
+    for(var i = p.row; i < row; i++) {
+      if(matrix[i].length < matrix[row].length) matrix[i][matrix[row].length-1] = undefined;
+    } // }}}
+    return {'row': row, 'col':col};
+  } // }}}
+  var handle_call_types = function(id, pid, ppos, index, type) { // private {{{
     if(index == undefined && ppos == undefined) { // append on top-level
       matrix.push([{'id': id, 'type': type,'pid':pid}]);
-      console.log(matrix);
+      return {'row':matrix.length-1, 'col':0};
     } else if(index == undefined) { // append on sub-level
+      return append_sublevel({'id': id, 'type': type, 'pid':pid,  'ppos':ppos});
     } else if(ppos == undefined) { // insert at top-level
     } else {
     }
   } // }}}
   var find_parent = function(pid) { // private {{{
-    for(row in matrix) {
-      for(col in matrix[row]) {
-        if(matrix[row][col].id == pid) return {'row':row, 'col': col};
+    for(var row = 0; row <  matrix.length; row++) {
+      for(var col = 0; col < matrix[row].length; col++) {
+        if(matrix[row][col] != undefined  && matrix[row][col].id != undefined && matrix[row][col].id == pid) return {'row':parseInt(row), 'col': parseInt(col), 'left_skip':matrix[row][col].left_skip};
+      }
+    }
+  } // }}}
+  this.display_matrix = function() { // to be removed in the end {{{
+    var tab = $('#matrix');
+    tab.children().each(function() {$(this).remove();});
+    for(var row = 0; row <  matrix.length; row++) {
+      var r = $('<tr/>');
+      r.append('<b>' + row + '</b>');
+      tab.append(r);
+      for(var col = 0; col < matrix[row].length; col++) {
+        r.append('<td>' + (matrix[row][col] == undefined ? '&nbsp;' : matrix[row][col].id) + '</td>');
       }
     }
   } // }}}
@@ -287,9 +392,11 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
     }
     console.log(' -> Description: Start parsing');
     id_counter = {};
+    illustrator.clear();
     parse(description, null);
-    console.log(' -> Description: End parsing');
     illustrator.repaint();
+    illustrator.display_matrix();
+    console.log(' -> Description: End parsing');
   } // }}}
   this.get_description = function() { //  public {{{
     console.log('descr: get description');
@@ -320,7 +427,7 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
   } // }}}
   // }}}
   // Helper Functions {{{
-  var parse = function(root, pid) { // private {{{
+  var parse = function(root, pid, ppos)  { // private {{{
     //for(index in children.toArray()) {
     root.children().each(function() {
       var matched = false;
@@ -328,7 +435,7 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
       switch(this.tagName) {
         // special elements
         case 'description': // matches only root element named description as only this one has no pid as parameter
-          if(pid == undefined) {
+          if(ppos == undefined) {
             parse($(this), 'top-level');
             illustrator.endnode();
             break;
@@ -337,11 +444,13 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
         case 'call':
           if($(this).children('parameters').children('service').length > 0 && !matched) {  // $('> parameters > service', $(this)) is deprecated (see jQuery Selectors 
             matched = true;
-            (illustrator['callinject'])($(this).attr('id'), pid);
+            (illustrator['callinject'])($(this).attr('id'), pid, ppos);
+            illustrator.display_matrix();
           }
           if($(this).children('manipulate').length > 0 && !matched) {
             matched = true;
-            (illustrator['callmanipulate'])($(this).attr('id'), pid);
+            (illustrator['callmanipulate'])($(this).attr('id'), pid, ppos);
+            illustrator.display_matrix();
           }
         // non-atomic elements
         default:
@@ -351,8 +460,9 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
           } else { id = $(this).attr('id');}
           $(this).attr('svg-id', id);
           if((illustrator[this.tagName] != undefined) && !matched) {
-            (illustrator[this.tagName])(id, pid); 
-            parse($(this), id);
+            var pos = (illustrator[this.tagName])(id, pid, ppos);
+            illustrator.display_matrix();
+            parse($(this), id, pos);
           }
       }
     });
