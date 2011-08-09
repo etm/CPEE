@@ -75,10 +75,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     var height = this.height = 40;
     var width = this.width = 40;
     // private
-    var matrix = []; // rows and cols
     var svg = null;
-    var max_height = 0;
-    var max_width = 0;
   // }}}
   // Generic Functions {{{
   var set_container = function(con) { // {{{
@@ -114,251 +111,152 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   } // }}}
   // }}} 
   // Visualization Functions {{{
-  this.endnode = function() { // public {{{
-    matrix.push([{'id': 'end-node', 'type': 'end','pid':'top-level'}]);
-    return {'row':matrix.length-1, 'col':0};
-  } // }}}
-  this.call = function(id, pid, ppos, index) { // public {{{
-    return handle_call_types(id, pid, ppos, index, 'call');
-  } // }}}
-  this.callmanipulate = function(id, pid, ppos, index) { // public {{{
-    return handle_call_types(id, pid, ppos, index, 'callmanipulate');
-  } // }}}
-  this.callinject = function(id, pid, ppos, index) { // public {{{
-    return handle_call_types(id, pid, ppos, index, 'callinject');
-  } // }}}
-  this.manipulate = function(id, pid, ppos, index) { // public {{{
-    if(index == undefined && ppos == undefined) { // append on top-level
-      matrix.push([{'id': id, 'type': 'manipulate', 'pid':pid}]);
-      return {'row':matrix.length-1, 'col':0};
-    } else if(index == undefined) { // append on sub-level
-      return append_sublevel({'id': id, 'type': 'manipulate', 'pid':pid}, ppos);
-    } else if(ppos == undefined) { // insert at top-level
+  this.call = {};//{{{ 
+  this.call.draw = function(node, pos) { 
+    if($(node).children('parameters').children('service').length > 0) {  // $('> parameters > service', $(this)) is deprecated (see jQuery Selectors)
+      draw_symbol('callinject', $(node).attr('svg-id'), pos.row, pos.col);
+    } else if($(node).children('manipulate').length > 0) {
+      draw_symbol('callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
     } else {
+      draw_symbol('call', $(node).attr('svg-id'), pos.row, pos.col);
     }
-  } // }}}
-  this.choose = function(id, pid, ppos, index) { // public {{{
-    if(index == undefined && ppos == undefined) { // append on top-level
-      matrix.push([{'id': id, 'type': 'choose', 'pid':pid, 'left_skip':1, 'expansion': 'horizontal'}]);
-      return {'row':matrix.length-1, 'col':0};
-    } else if(index == undefined) { // append on sub-level
-      return append_sublevel({'id': id, 'type': 'choose', 'pid':pid, 'ppos':ppos, 'left_skip':1, 'expansion': 'horizontal'});
-    } else if(ppos == undefined) { // insert at top-level
-    } else {
-    }
-  } // }}}
-  this.alternative = function(id, pid, ppos, index) { // public {{{
-    if(index == undefined && ppos == undefined) { // append on top-level
-      matrix.push([{'id': id, 'type': 'alternative', 'pid':pid, 'left_skip': 0, 'expansion': 'vertical'}]);
-      return {'row':matrix.length-1, 'col':0};
-    } else if(index == undefined) { // append on sub-level
-      return append_sublevel({'id': id, 'type': 'alternative', 'pid':pid, 'ppos':ppos, 'left_skip':0, 'expansion': 'vertical'});
-    } else if(ppos == undefined) { // insert at top-level
-    } else {
-    }
-  } // }}}
-  this.otherwise = function(id, pid, ppos, index) { // public {{{
-    if(index == undefined && ppos == undefined) { // append on top-level
-      matrix.push([{'id': id, 'type': 'otherwise', 'pid':pid, 'left_skip':1, 'expansion': 'vertical'}]);
-      return {'row':matrix.length-1, 'col':0};
-    } else if(index == undefined) { // append on sub-level
-      return append_sublevel({'id': id, 'type': 'otherwise', 'pid':pid, 'ppos':ppos, 'left_skip':1, 'expansion': 'vertical'});
-    } else if(ppos == undefined) { // insert at top-level
-    } else {
-    }
-  } // }}}
-  this.loop = function(id, pid, ppos, index) { // public {{{
-    if(index == undefined && ppos == undefined) { // append on top-level
-      matrix.push([{'id': id, 'type': 'loop', 'pid':pid, 'left_skip':1, 'expansion': 'vertical'}]);
-      return {'row':matrix.length-1, 'col':0};
-    } else if(index == undefined) { // append on sub-level
-      return append_sublevel({'id': id, 'type': 'loop', 'pid':pid, 'ppos':ppos, 'left_skip':1, 'expansion': 'vertical'});
-    } else if(ppos == undefined) { // insert at top-level
-    } else {
-    }
-  } // }}}
-  this.parallel = function(id, pid, ppos, index) { // public {{{
-    if(index == undefined && ppos == undefined) { // append on top-level
-      matrix.push([{'id': id, 'type': 'parallel', 'pid':pid, 'left_skip':1, 'expansion': 'horizontal'}]);
-      return {'row':matrix.length-1, 'col':0};
-    } else if(index == undefined) { // append on sub-level
-      return append_sublevel({'id': id, 'type': 'parallel', 'pid':pid, 'ppos':ppos, 'left_skip':1, 'expansion': 'horizontal'});
-    } else if(ppos == undefined) { // insert at top-level
-    } else {
-    }
-  } // }}}
-  this.parallel_branch = function(id, pid, ppos, index) { // public {{{
-    if(index == undefined && ppos == undefined) { // append on top-level
-      matrix.push([{'id': id, 'type': 'loop', 'pid':pid, 'left_skip':0, 'expansion': 'vertical'}]);
-      return {'row':matrix.length-1, 'col':0};
-    } else if(index == undefined) { // append on sub-level
-      return append_sublevel({'id': id, 'type': 'loop', 'pid':pid, 'ppos':ppos, 'left_skip':0, 'expansion': 'vertical'});
-    } else if(ppos == undefined) { // insert at top-level
-    } else {
-    }
-  } // }}}
-  this.critical = function(id, pid, ppos, index) { // public {{{
-    if(index == undefined && ppos == undefined) { // append on top-level
-      matrix.push([{'id': id, 'type': 'critical', 'pid':pid, 'left_skip':1, 'expansion': 'vertical'}]);
-      return {'row':matrix.length-1, 'col':0};
-    } else if(index == undefined) { // append on sub-level
-      return append_sublevel({'id': id, 'type': 'critical', 'pid':pid, 'ppos':ppos, 'left_skip':1, 'expansion': 'vertical'});
-    } else if(ppos == undefined) { // insert at top-level
-    } else {
-    }
-  } // }}}
-  this.draw_connection = function(start_id, end_id) { // private {{{
-  } // }}}
-  var repaint = this.repaint = function() { // public {{{
-    console.log('Illsutrator: repaint start');
-    console.log(matrix);
-    $('g > *', svg).each(function() {$(this).remove()});
-    var lines = document.getElementById("lines");
-    var symbols = document.getElementById("symbols");
-    var blocks = document.getElementById("blocks");
-    var symclick= function(node) { };
-    
-    for(var row = 0; row <  matrix.length; row++) {
-      for(var col = 0; col < matrix[row].length; col++) {
-        if(matrix[row][col] == undefined) continue;
-        var svgNS = "http://www.w3.org/2000/svg";
-        var xlinkNS = "http://www.w3.org/1999/xlink";
-        var g = document.createElementNS(svgNS, "g");
-            g.setAttribute('transform', 'translate(' + String((parseInt(col)+1)*width-15) + ',' + String((parseInt(row)+1)*height-30) + ')');
-
-        var use = document.createElementNS(svgNS, "use");
-        use.setAttributeNS(xlinkNS, "href", "#"+matrix[row][col].type);
-
-        var attrs = {};
-        g.setAttribute('id', 'node-' + matrix[row][col].id);
-
-        attrs = {'id': 'graph-' + matrix[row][col].id, 'class': 'activities'};
-        var title = document.createElementNS(svgNS, "title");
-        title.appendChild(document.createTextNode(matrix[row][col].id));
-        use.appendChild(title);
-
-        var ts1 = document.createElementNS(svgNS, "tspan");
-            ts1.setAttribute('class', 'active');
-            ts1.appendChild(document.createTextNode('0'));
-        var ts2 = document.createElementNS(svgNS, "tspan");
-            ts2.setAttribute('class', 'colon');
-            ts2.appendChild(document.createTextNode(','));
-        var ts3 = document.createElementNS(svgNS, "tspan");
-            ts3.setAttribute('class', 'vote');
-            ts3.appendChild(document.createTextNode('0'));
-        var supi = document.createElementNS(svgNS, "text");
-            supi.setAttribute('class', 'super');
-            supi.setAttribute('transform', 'translate(28.4,8.4)');
-            supi.appendChild(ts1);
-            supi.appendChild(ts2);
-            supi.appendChild(ts3);
-
-        g.appendChild(supi);
-        switch(matrix[row][col].type) {
-          case 'loop':
-          case 'alternative':
-            var title = document.createElementNS(svgNS, "title");
-            title.appendChild(document.createTextNode(matrix[row][col].condition));
-            use.appendChild(title);
-            break;
-          case 'parallel':
-            break;
-        }
-        for(var attr in attrs)
-          use.setAttribute(attr, attrs[attr]);
-
-        use.onclick = function(){ symclick(node); };
-        g.appendChild(use);
-        symbols.appendChild(g);        
-      }
-    }
-    console.log('set SVG height: ' + max_height * height); 
-    svg.attr('height', max_height * height);
-    console.log('set SVG width: ' +  max_width * width); 
-    svg.attr('width', max_width * width);
-    console.log(svg);
-    console.log('Illsutrator: repaint end');
-  } // }}}
+  }
+  this.call.type = 'primitive'; 
+  // }}}
+  this.manipulate = {}; // {{{
+  this.manipulate.draw = function(node, _pos) {
+    draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
+  }
+  this.manipulate.type = 'primitive'; 
+  // }}}
+  this.choose = {}; // {{{
+  this.choose.draw = function(node, pos) {
+    draw_symbol('choose', $(node).attr('svg-id'), pos.row, pos.col);
+  }
+  this.choose.type = 'complex';
+  this.choose.expansion = 'horizontal';
+  this.choose.col_shift = true; 
+  this.choose.closing = 'branches'; 
+  // }}}
+  this.loop = {}; // {{{
+  this.loop.draw = function(node, pos) {
+    draw_symbol('loop', $(node).attr('svg-id'), pos.row, pos.col);
+  }
+  this.loop.type = 'complex';
+  this.loop.expansion = 'vertical';
+  this.loop.col_shift = true; 
+  this.loop.closing = 'root'; 
+  // }}}
+  this.otherwise = {}; // {{{
+  this.otherwise.draw = function(node, pos) {
+    draw_symbol('otherwise', $(node).attr('svg-id'), pos.row, pos.col);
+  }
+  this.otherwise.type = 'complex';
+  this.otherwise.expansion = 'vertical'; 
+  this.otherwise.col_shift = false; 
+  this.otherwise.closing = 'none'; 
+  // }}}
+  this.alternative = {}; // {{{
+  this.alternative.draw = function(node, pos) {
+    draw_symbol('alternative', $(node).attr('svg-id'), pos.row, pos.col);
+  }
+  this.alternative.type = 'complex';
+  this.alternative.expansion = 'vertical'; 
+  this.alternative.col_shift = false; 
+  this.alternative.closing = 'none'; 
+  // }}}
+  this.parallel = {}; // {{{
+  this.parallel.draw = function(node, pos) {
+    draw_symbol('parallel', $(node).attr('svg-id'), pos.row, pos.col);
+  }
+  this.parallel.type = 'complex';
+  this.parallel.expansion = 'horizontal';
+  this.parallel.col_shift = true; 
+  this.parallel.closing = 'none'; 
+  // }}}
+  this.parallel_branch = {}; // {{{
+  this.parallel_branch.draw = function(node, pos) {
+    draw_symbol('parallel_branch', $(node).attr('svg-id'), pos.row, pos.col);
+  }
+  this.parallel_branch.type = 'complex';
+  this.parallel_branch.expansion = 'vertical'; 
+  this.parallel_branch.col_shift = false; 
+  this.parallel_branch.closing = 'none'; 
+  // }}}
+  this.critical = {}; // {{{
+  this.critical.draw = function(node, pos) {
+    draw_symbol('critical', $(node).attr('svg-id'), pos.row, pos.col);
+  }
+  this.critical.type = 'complex';
+  this.critical.expansion = 'vertical';
+  this.critical.col_shift = true; 
+  this.critical.closing = 'successor'; 
+  // }}}
+  this.end = {}; // {{{
+  this.end.draw = function(node, pos) {
+//    draw_symbol('end', $(node).attr('svg-id'), pos.row, pos.col);
+  } 
+  this.end.type = 'primitive'; // }}}
+  // }}}
+  this.description = {}; // {{{
+  this.description.expansion = 'vertical';
+  this.description.col_shift = true; 
+  this.description.closing = 'end'; 
   // }}}
   // Helper Functions {{{
-  var append_sublevel = function(obj) { // {{{
-    var row = null;
-    var col = null;
-    console.log('append');
-    for(var i = 0; i < matrix.length; i++) { console.log(matrix[i]);}
-    console.log('append');
-    console.log(obj);
-    if(matrix[obj.ppos.row][obj.ppos.col].expansion == 'vertical') { // {{{
-      var match = false;
-      row = obj.ppos.row+1;
-      while(!match) {
-        if(matrix[row] == undefined) matrix[row] = [];
-        if(matrix[row][obj.ppos.col + obj.ppos.left_skip] == undefined) {
-          matrix[row][obj.ppos.col + obj.ppos.left_skip] = obj;
-//          matrix[row][obj.ppos.col] = '';
-          match = true;
-          col = obj.ppos.col + matrix[obj.ppos.row][obj.ppos.col].left_skip;
-          console.log(obj.ppos.col);
-          console.log(matrix[obj.ppos.row][obj.ppos.col]);;
-          console.log("COL: " + col);
-        } else {row++;}
-      } // }}}
-    } else if(matrix[obj.ppos.row][obj.ppos.col].expansion == 'horizontal') { // {{{
-      row = obj.ppos.row+1;
-      if(matrix[row] == undefined) matrix[obj.ppos.row+1] = [];
-      if(matrix[row][obj.ppos.col + obj.ppos.left_skip] == undefined) {i
-        matrix[row][obj.ppos.col + obj.ppos.left_skip] = obj;
-        col = obj.ppos.col + obj.ppos.left_skip;
-      } else {
-        matrix[row].push(obj);
-        col = matrix[row].length;
-      } // }}}
-    } else { // {{{
-      console.log('Append Sublevel: Error -> ' + obj.id)
-      console.log(obj);
-      return;
-    } // }}}
+  var draw_symbol = function (sym_name, id, row, col) { // {{{
+    var svgNS = "http://www.w3.org/2000/svg";
+    var xlinkNS = "http://www.w3.org/1999/xlink";
+    var g = document.createElementNS(svgNS, "g");
+        g.setAttribute('transform', 'translate(' + String((col*width)-((width/2))) + ',' + String(row*height-((height/2))) + ')');
 
-    // Expand Matrix up to Top-Parent // {{{
-    var p = matrix[obj.ppos.row][obj.ppos.col];
-    while(p.pid != 'top-level') {
-    console.log(p);
-      p = matrix[p.ppos.row][p.ppos.col];
+    var use = document.createElementNS(svgNS, "use");
+    use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
+
+    var attrs = {};
+    if (id) {
+      g.setAttribute('id', 'node-' + id);
+
+      attrs = {'id': 'graph-' + id, 'class': 'activities'};
+      var title = document.createElementNS(svgNS, "title");
+      title.appendChild(document.createTextNode(id));
+      use.appendChild(title);
+
+      var ts1 = document.createElementNS(svgNS, "tspan");
+          ts1.setAttribute('class', 'active');
+          ts1.appendChild(document.createTextNode('0'));
+      var ts2 = document.createElementNS(svgNS, "tspan");
+          ts2.setAttribute('class', 'colon');
+          ts2.appendChild(document.createTextNode(','));
+      var ts3 = document.createElementNS(svgNS, "tspan");
+          ts3.setAttribute('class', 'vote');
+          ts3.appendChild(document.createTextNode('0'));
+      var supi = document.createElementNS(svgNS, "text");
+          supi.setAttribute('class', 'super');
+          supi.setAttribute('transform', 'translate(28.4,8.4)');
+          supi.appendChild(ts1);
+          supi.appendChild(ts2);
+          supi.appendChild(ts3);
+       
+      g.appendChild(supi);
     }
-    for(var i = p.row; i < row; i++) {
-      if(matrix[i].length < matrix[row].length) matrix[i][matrix[row].length-1] = undefined;
-    } // }}}
-    return {'row': row, 'col':col};
-  } // }}}
-  var handle_call_types = function(id, pid, ppos, index, type) { // private {{{
-    if(index == undefined && ppos == undefined) { // append on top-level
-      matrix.push([{'id': id, 'type': type,'pid':pid}]);
-      return {'row':matrix.length-1, 'col':0};
-    } else if(index == undefined) { // append on sub-level
-      return append_sublevel({'id': id, 'type': type, 'pid':pid,  'ppos':ppos});
-    } else if(ppos == undefined) { // insert at top-level
-    } else {
+    switch(sym_name) {
+      case 'loop':
+      case 'alternative':
+        var title = document.createElementNS(svgNS, "title");
+//        title.appendChild(document.createTextNode(node.getAttribute('condition')));
+        use.appendChild(title);
+        break;
+      case 'parallel':  
+        break;
     }
-  } // }}}
-  var find_parent = function(pid) { // private {{{
-    for(var row = 0; row <  matrix.length; row++) {
-      for(var col = 0; col < matrix[row].length; col++) {
-        if(matrix[row][col] != undefined  && matrix[row][col].id != undefined && matrix[row][col].id == pid) return {'row':parseInt(row), 'col': parseInt(col), 'left_skip':matrix[row][col].left_skip};
-      }
-    }
-  } // }}}
-  this.display_matrix = function() { // to be removed in the end {{{
-    var tab = $('#matrix');
-    tab.children().each(function() {$(this).remove();});
-    for(var row = 0; row <  matrix.length; row++) {
-      var r = $('<tr/>');
-      r.append('<b>' + row + '</b>');
-      tab.append(r);
-      for(var col = 0; col < matrix[row].length; col++) {
-        r.append('<td>' + (matrix[row][col] == undefined ? '&nbsp;' : matrix[row][col].id) + '</td>');
-      }
-    }
-  } // }}}
+    for(var attr in attrs)
+      use.setAttribute(attr, attrs[attr]);
+
+    //use.onclick = function(){ symclick(node); };
+    g.appendChild(use);
+    $('#symbols_new').append(g);
+  } // }}}    
   // }}}
   // Initialze {{{
     set_container(svg_container);
@@ -371,7 +269,7 @@ Manages the description. Is is further able to add/remove elements from the cont
 */
 
 function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model {{{
-  // Variable {{{
+  // Variable {{{ 
     // public
     // private
     var adaptor;
@@ -393,9 +291,7 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
     console.log(' -> Description: Start parsing');
     id_counter = {};
     illustrator.clear();
-    parse(description, null);
-    illustrator.repaint();
-    illustrator.display_matrix();
+    var expansion = parse($(description), {'row':0,'col':0, 'max':{'row':0,'col':0}});
     console.log(' -> Description: End parsing');
   } // }}}
   this.get_description = function() { //  public {{{
@@ -427,45 +323,62 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
   } // }}}
   // }}}
   // Helper Functions {{{
-  var parse = function(root, pid, ppos)  { // private {{{
-    //for(index in children.toArray()) {
-    root.children().each(function() {
-      var matched = false;
-      var id = null;
+  var parse = function(root, parent_pos)  { // private {{{
+    var pos = jQuery.extend(true, {}, parent_pos);
+    var max = {'row': 0,'col': 0};
+    var end_nodes = []; 
+    var initial_shift = false;
+
+    if(illustrator[root.tagName] != undefined && illustrator[root.tagName].col_shift == true) {pos.col++; initial_shift = true;}
+    if(illustrator[root.tagName] != undefined && illustrator[root.tagName].expansion == 'horizontal') pos.row++;
+
+    $(root).children().each(function() {
+      // Set SVG-ID {{{
+      if($(this).attr('id') == undefined) {
+        if(id_counter[this.tagName] == undefined) id_counter[this.tagName] = -1;
+         $(this).attr('svg-id',this.tagName + '_' + (++id_counter[this.tagName]));
+      } else { $(this).attr('svg-id', $(this).attr('id'));} // }}}
       switch(this.tagName) {
         // special elements
-        case 'description': // matches only root element named description as only this one has no pid as parameter
-          if(ppos == undefined) {
-            parse($(this), 'top-level');
-            illustrator.endnode();
-            break;
-          }
-        // atomic elements
-        case 'call':
-          if($(this).children('parameters').children('service').length > 0 && !matched) {  // $('> parameters > service', $(this)) is deprecated (see jQuery Selectors 
-            matched = true;
-            (illustrator['callinject'])($(this).attr('id'), pid, ppos);
-            illustrator.display_matrix();
-          }
-          if($(this).children('manipulate').length > 0 && !matched) {
-            matched = true;
-            (illustrator['callmanipulate'])($(this).attr('id'), pid, ppos);
-            illustrator.display_matrix();
-          }
-        // non-atomic elements
+        case 'description': 
+          var block = parse(this, parent_pos);
+console.log('Block: description');
+console.log(block);
+          illustrator.end.draw(block);
+          return {'col':0,'row':0,'max':{'col':0,'row':0}};
+        case 'group': // ???
+          break;
         default:
-          if($(this).attr('id') == undefined) {
-            if(id_counter[this.tagName] == undefined) id_counter[this.tagName] = -1;
-            id = this.tagName + '_' + (++id_counter[this.tagName]);
-          } else { id = $(this).attr('id');}
-          $(this).attr('svg-id', id);
-          if((illustrator[this.tagName] != undefined) && !matched) {
-            var pos = (illustrator[this.tagName])(id, pid, ppos);
-            illustrator.display_matrix();
-            parse($(this), id, pos);
-          }
+        if(illustrator[root.tagName].expansion == 'vertical')  pos.row++;
+        if(illustrator[root.tagName].expansion == 'horizontal' && !initial_shift)  pos.col++; // second condition avoid second shift after initial col_shift happend
+        initial_shift = false;
+          (illustrator[this.tagName].draw)(this, pos);
+          // draw line from prev_pos to pos
       }
+    
+      if(illustrator[this.tagName].type == 'complex') { // complex elements
+        var block = parse(this, pos);
+console.log('Block: ' + this.tagName);
+console.log(block);
+        if(max.row < block.max.row) max.row = block.max.row;
+        if(max.col < block.max.col) max.col = block.max.col;
+        if(illustrator[root.tagName].expansion == 'vertical' && max.row > pos.row) pos.row = max.row;
+        if(illustrator[root.tagName].expansion == 'horizontal' && max.col > pos.col) pos.col = max.col;
+      } else { // primitive elements
+      }
+      
     });
+    // if(illustrator[root.nodeName] != undefined && illustrator[root.nodeName].closing_connector == 'parent') ... draw line back to parent
+    if(max.row < pos.row) max.row = pos.row;
+    if(max.col < pos.col) max.col = pos.col;
+/*
+    switch(illustrator[root.tagName].closing) { // {{{
+      case 'none':
+      case 'root':
+      case 'successor':
+    } // }}}
+*/
+    return {'end_nodes': end_nodes, 'max':max};
   } // }}}
   // }}}
   //  Initialze {{{
