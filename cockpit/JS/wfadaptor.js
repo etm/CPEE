@@ -75,6 +75,8 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     var height = this.height = 40;
     var width = this.width = 40;
     // private
+    var svgNS = "http://www.w3.org/2000/svg";
+    var xlinkNS = "http://www.w3.org/1999/xlink";
     var svg = null;
   // }}}
   // Generic Functions {{{
@@ -136,6 +138,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   this.choose.type = 'complex';
   this.choose.expansion = 'horizontal';
   this.choose.col_shift = true; 
+  this.choose.border = false; 
   this.choose.closing = 'branches'; 
   // }}}
   this.loop = {}; // {{{
@@ -145,6 +148,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   this.loop.type = 'complex';
   this.loop.expansion = 'vertical';
   this.loop.col_shift = true; 
+  this.loop.border = false; 
   this.loop.closing = 'root'; 
   // }}}
   this.otherwise = {}; // {{{
@@ -154,6 +158,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   this.otherwise.type = 'complex';
   this.otherwise.expansion = 'vertical'; 
   this.otherwise.col_shift = false; 
+  this.otherwise.border = false; 
   this.otherwise.closing = 'none'; 
   // }}}
   this.alternative = {}; // {{{
@@ -163,6 +168,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   this.alternative.type = 'complex';
   this.alternative.expansion = 'vertical'; 
   this.alternative.col_shift = false; 
+  this.alternative.border = false; 
   this.alternative.closing = 'none'; 
   // }}}
   this.parallel = {}; // {{{
@@ -172,6 +178,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   this.parallel.type = 'complex';
   this.parallel.expansion = 'horizontal';
   this.parallel.col_shift = true; 
+  this.parallel.border = true; 
   this.parallel.closing = 'none'; 
   // }}}
   this.parallel_branch = {}; // {{{
@@ -181,6 +188,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   this.parallel_branch.type = 'complex';
   this.parallel_branch.expansion = 'vertical'; 
   this.parallel_branch.col_shift = false; 
+  this.parallel_branch.border = false; 
   this.parallel_branch.closing = 'none'; 
   // }}}
   this.critical = {}; // {{{
@@ -190,23 +198,23 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   this.critical.type = 'complex';
   this.critical.expansion = 'vertical';
   this.critical.col_shift = true; 
+  this.critical.border = true; 
   this.critical.closing = 'successor'; 
   // }}}
   this.end = {}; // {{{
   this.end.draw = function(node, pos) {
 //    draw_symbol('end', $(node).attr('svg-id'), pos.row, pos.col);
   } 
-  this.end.type = 'primitive'; // }}}
+  this.end.type = 'primitive'; 
   // }}}
-  this.description = {}; // {{{
+  this.description = {}; //{{{ 
   this.description.expansion = 'vertical';
   this.description.col_shift = true; 
   this.description.closing = 'end'; 
   // }}}
+  // }}} 
   // Helper Functions {{{
   var draw_symbol = function (sym_name, id, row, col) { // {{{
-    var svgNS = "http://www.w3.org/2000/svg";
-    var xlinkNS = "http://www.w3.org/1999/xlink";
     var g = document.createElementNS(svgNS, "g");
         g.setAttribute('transform', 'translate(' + String((col*width)-((width/2))) + ',' + String(row*height-((height/2))) + ')');
 
@@ -257,6 +265,18 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     g.appendChild(use);
     $('#symbols_new').append(g);
   } // }}}    
+  this.draw_border = function(p1, p2) {
+     var block = document.createElementNS(svgNS, "rect");
+      var attrs = {'x':(p1.col-0.50)*width,'y':(p1.row-0.50)*height,'width':((p2.col+1.00)-p1.col)*width,'height':((p2.row+1.00)-p1.row)*height, 'class':'block', 'rx':'15', 'ry':'15' } 
+      if(typeof css_class == "string")
+        attrs['class'] = css_class;
+      if (attrs['class'] == "group")
+        block.onclick = function(){ symclick(injected_node); };
+      for(var attr in attrs)
+        block.setAttribute(attr, attrs[attr]);
+      var blocks = document.getElementById('blocks_new');
+      blocks.insertBefore(block, blocks.firstChild);
+  } // }}}
   // }}}
   // Initialze {{{
     set_container(svg_container);
@@ -342,8 +362,6 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
         // special elements
         case 'description': 
           var block = parse(this, parent_pos);
-console.log('Block: description');
-console.log(block);
           illustrator.end.draw(block);
           return {'col':0,'row':0,'max':{'col':0,'row':0}};
         case 'group': // ???
@@ -358,8 +376,7 @@ console.log(block);
     
       if(illustrator[this.tagName].type == 'complex') { // complex elements
         var block = parse(this, pos);
-console.log('Block: ' + this.tagName);
-console.log(block);
+        if(illustrator[this.tagName].border) illustrator.draw_border(pos,block.max);
         if(max.row < block.max.row) max.row = block.max.row;
         if(max.col < block.max.col) max.col = block.max.col;
         if(illustrator[root.tagName].expansion == 'vertical' && max.row > pos.row) pos.row = max.row;
