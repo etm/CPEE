@@ -83,11 +83,14 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   var set_container = function(con) { // {{{
     console.log('illustrator: set container');
     svg = $(con);
-  } // }}}
+  }  // }}}
   var clear = this.clear = function() { // {{{
     console.log('illustrator: clear');
     $('g > *', svg).each(function() {$(this).remove()});
     matrix = [];
+  } // }}}
+  this.set_expansion = function(expansion) { // {{{
+    svg.parent().attr({'height':(expansion.row+0.5)*height,'width':(expansion.col+0.5)*width});
   } // }}}
   // }}}
   // Adaption functions {{{
@@ -116,101 +119,134 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   this.call = {};//{{{ 
   this.call.draw = function(node, pos) { 
     if($(node).children('parameters').children('service').length > 0) {  // $('> parameters > service', $(this)) is deprecated (see jQuery Selectors)
-      draw_symbol('callinject', $(node).attr('svg-id'), pos.row, pos.col);
+      return draw_symbol('callinject', $(node).attr('svg-id'), pos.row, pos.col);
     } else if($(node).children('manipulate').length > 0) {
-      draw_symbol('callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
+      return draw_symbol('callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
     } else {
-      draw_symbol('call', $(node).attr('svg-id'), pos.row, pos.col);
+      return draw_symbol('call', $(node).attr('svg-id'), pos.row, pos.col);
     }
   }
   this.call.type = 'primitive'; 
   // }}}
   this.manipulate = {}; // {{{
   this.manipulate.draw = function(node, _pos) {
-    draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
+    return draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.manipulate.type = 'primitive'; 
   // }}}
   this.choose = {}; // {{{
   this.choose.draw = function(node, pos) {
-    draw_symbol('choose', $(node).attr('svg-id'), pos.row, pos.col);
+    return draw_symbol('choose', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.choose.type = 'complex';
-  this.choose.expansion = 'horizontal';
+  this.choose.expansion = function(node) { 
+    return 'horizontal';
+  } 
   this.choose.col_shift = true; 
   this.choose.border = false; 
-  this.choose.closing = 'branches'; 
+  this.choose.closing = function(node) {
+    return {'type':'endnodes', 'target':'successor'}
+  }
   // }}}
   this.loop = {}; // {{{
   this.loop.draw = function(node, pos) {
-    draw_symbol('loop', $(node).attr('svg-id'), pos.row, pos.col);
+    return draw_symbol('loop', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.loop.type = 'complex';
-  this.loop.expansion = 'vertical';
+  this.loop.expansion = function(node) {
+    if($(node).parents('parallel').length >  $(node).parents('parallel_branch').length) return 'horizontal';
+    return 'vertical';
+  } 
   this.loop.col_shift = true; 
   this.loop.border = false; 
-  this.loop.closing = 'root'; 
+  this.loop.closing = function(node) {
+    return 'self';
+  }
   // }}}
   this.otherwise = {}; // {{{
   this.otherwise.draw = function(node, pos) {
-    draw_symbol('otherwise', $(node).attr('svg-id'), pos.row, pos.col);
+    return draw_symbol('otherwise', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.otherwise.type = 'complex';
-  this.otherwise.expansion = 'vertical'; 
+  this.otherwise.expansion = function(node) {
+    return 'vertical';
+  } 
   this.otherwise.col_shift = false; 
   this.otherwise.border = false; 
-  this.otherwise.closing = 'none'; 
+  this.otherwise.closing = function(node) {
+    return {'type':'parent successor'};
+  }
   // }}}
   this.alternative = {}; // {{{
   this.alternative.draw = function(node, pos) {
-    draw_symbol('alternative', $(node).attr('svg-id'), pos.row, pos.col);
+    return draw_symbol('alternative', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.alternative.type = 'complex';
-  this.alternative.expansion = 'vertical'; 
+  this.alternative.expansion = function(node) {
+    return 'vertical';
+  } 
   this.alternative.col_shift = false; 
   this.alternative.border = false; 
-  this.alternative.closing = 'none'; 
+  this.alternative.closing = function(node) {
+    return {'type':'parent successor'};
+  }
   // }}}
   this.parallel = {}; // {{{
   this.parallel.draw = function(node, pos) {
-    draw_symbol('parallel', $(node).attr('svg-id'), pos.row, pos.col);
+    return draw_symbol('parallel', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.parallel.type = 'complex';
-  this.parallel.expansion = 'horizontal';
+  this.parallel.expansion = function(node) { 
+    return 'horizontal';
+  } 
   this.parallel.col_shift = true; 
   this.parallel.border = true; 
-  this.parallel.closing = 'none'; 
+  this.parallel.closing = function(node) {
+    return {'type':'successor'};
+  }
   // }}}
   this.parallel_branch = {}; // {{{
   this.parallel_branch.draw = function(node, pos) {
-    draw_symbol('parallel_branch', $(node).attr('svg-id'), pos.row, pos.col);
+    return draw_symbol('parallel_branch', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.parallel_branch.type = 'complex';
-  this.parallel_branch.expansion = 'vertical'; 
+  this.parallel_branch.expansion = function(node) { 
+    return 'vertical';
+  } 
   this.parallel_branch.col_shift = false; 
   this.parallel_branch.border = false; 
-  this.parallel_branch.closing = 'none'; 
+  this.parallel_branch.closing = function(node) {
+    return {'type':'none'};
+  }
   // }}}
   this.critical = {}; // {{{
   this.critical.draw = function(node, pos) {
-    draw_symbol('critical', $(node).attr('svg-id'), pos.row, pos.col);
+    return draw_symbol('critical', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.critical.type = 'complex';
-  this.critical.expansion = 'vertical';
+  this.critical.expansion = function(node) {
+    return 'vertical';
+  } 
   this.critical.col_shift = true; 
   this.critical.border = true; 
-  this.critical.closing = 'successor'; 
+  this.critical.closing = function(node) {
+  }
   // }}}
   this.end = {}; // {{{
   this.end.draw = function(node, pos) {
-//    draw_symbol('end', $(node).attr('svg-id'), pos.row, pos.col);
+    return draw_symbol('end', $(node).attr('svg-id'), pos.row, pos.col);
   } 
   this.end.type = 'primitive'; 
   // }}}
   this.description = {}; //{{{ 
-  this.description.expansion = 'vertical';
+  this.description.type = 'description';
+  this.description.expansion = function(node) {
+    return 'vertical';
+  } 
   this.description.col_shift = true; 
-  this.description.closing = 'end'; 
+  this.description.closing = function(node) {
+
+  } 
   // }}}
   // }}} 
   // Helper Functions {{{
@@ -223,7 +259,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
 
     var attrs = {};
     if (id) {
-      g.setAttribute('id', 'node-' + id);
+      g.setAttribute('id', id);
 
       attrs = {'id': 'graph-' + id, 'class': 'activities'};
       var title = document.createElementNS(svgNS, "title");
@@ -264,8 +300,9 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     //use.onclick = function(){ symclick(node); };
     g.appendChild(use);
     $('#symbols_new').append(g);
+    return g;
   } // }}}    
-  this.draw_border = function(p1, p2) {
+  this.draw_border = function(p1, p2) { // {{{
      var block = document.createElementNS(svgNS, "rect");
       var attrs = {'x':(p1.col-0.50)*width,'y':(p1.row-0.50)*height,'width':((p2.col+1.00)-p1.col)*width,'height':((p2.row+1.00)-p1.row)*height, 'class':'block', 'rx':'15', 'ry':'15' } 
       if(typeof css_class == "string")
@@ -277,6 +314,51 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
       var blocks = document.getElementById('blocks_new');
       blocks.insertBefore(block, blocks.firstChild);
   } // }}}
+  this.draw_connection = function(start, end, max_line, num_lines) { // {{{
+ //   console.log('connection  from ' +start.row+"/"+start.col+" -> "+end.row+"/"+end.col);
+
+    if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
+    var attrs = {'class': 'ourline', 'marker-end': 'url(#arrow)' };
+    var line = document.createElementNS(svgNS, "path");
+    for(var attr in attrs)
+      line.setAttribute(attr, attrs[attr]);
+    if (end['row']-start['row'] == 0 || end['col']-start['col'] == 0) {
+      line.setAttribute("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
+                                    String(end['col']*width) + "," + String(end['row']*height-15)
+      );
+    } else if (end['row']-start['row'] > 0) {
+      if (end['col']-start['col'] > 0) {
+        line.setAttribute("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
+                                      String(start['col']*width+14) + "," + String((end['row']-1)*height) +" "+ // first turn of hotizontal-line going away from node
+                                      String(end['col']*width) + "," + String((end['row']-1)*height) +" "+
+                                      String(end['col']*width) + "," + String(end['row']*height-15)
+        );
+      } else {
+        line.setAttribute("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
+                                      String(start['col']*width) + "," + String(end['row']*height-35) +" "+
+                                      String(end['col']*width+14) + "," + String(end['row']*height-35) +" "+ // last turn of horizontal-line going into the node
+                                      String(end['col']*width) + "," + String(end['row']*height-15)
+        );
+      }
+    } else if(end['row']-start['row'] < 0) {
+      if(num_lines > 1) {
+        line.setAttribute("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
+                                      String(start['col']*width) + "," + String((max_line-1)*height+5) +" "+
+                                      String(end['col']*width+20) + "," + String((max_line-1)*height+5) +" "+
+                                      String(end['col']*width+20) + "," + String(end['row']*height+25)+" "+
+                                      String(end['col']*width) + "," + String(end['row']*height-15)
+        );
+      } else {
+        line.setAttribute("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
+                                      String(end['col']*width+20) + "," + String(start['row']*height-15) +" "+
+                                      String(end['col']*width+20) + "," + String(end['row']*height+25)+" "+
+                                      String(end['col']*width) + "," + String(end['row']*height-15)
+        );
+      }
+    }
+    document.getElementById('lines_new').appendChild(line);
+
+  } //  }}}
   // }}}
   // Initialze {{{
     set_container(svg_container);
@@ -311,7 +393,9 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
     console.log(' -> Description: Start parsing');
     id_counter = {};
     illustrator.clear();
-    var expansion = parse($(description), {'row':0,'col':0, 'max':{'row':0,'col':0}});
+    var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
+    console.log('expansion of graph: ' + expansion.max.row + '/' + expansion.max.col);
+    illustrator.set_expansion(expansion.max);
     console.log(' -> Description: End parsing');
   } // }}}
   this.get_description = function() { //  public {{{
@@ -346,56 +430,80 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
   var parse = function(root, parent_pos)  { // private {{{
     var pos = jQuery.extend(true, {}, parent_pos);
     var max = {'row': 0,'col': 0};
-    var end_nodes = []; 
     var initial_shift = false;
 
-    if(illustrator[root.tagName] != undefined && illustrator[root.tagName].col_shift == true) {pos.col++; initial_shift = true;}
-    if(illustrator[root.tagName] != undefined && illustrator[root.tagName].expansion == 'horizontal') pos.row++;
+    var prev = jQuery.extend(true, {}, parent_pos);
+    var endnodes = []; 
 
-    $(root).children().each(function() {
+    var root_expansion = illustrator[root.tagName].expansion(root);
+    var root_closing = illustrator[root.tagName].closing(root);
+
+    if(illustrator[root.tagName] != undefined && illustrator[root.tagName].col_shift == true) {pos.col++; initial_shift = true;}
+    if(illustrator[root.tagName] != undefined && root_expansion == 'horizontal') pos.row++;
+
+    $(root).children().each(function() { // {{{
       // Set SVG-ID {{{
       if($(this).attr('id') == undefined) {
         if(id_counter[this.tagName] == undefined) id_counter[this.tagName] = -1;
          $(this).attr('svg-id',this.tagName + '_' + (++id_counter[this.tagName]));
-      } else { $(this).attr('svg-id', $(this).attr('id'));} // }}}
+      } else { $(this).attr('svg-id',  $(this).attr('id'));}  // }}}
       switch(this.tagName) {
-        // special elements
-        case 'description': 
-          var block = parse(this, parent_pos);
-          illustrator.end.draw(block);
-          return {'col':0,'row':0,'max':{'col':0,'row':0}};
         case 'group': // ???
           break;
         default:
-        if(illustrator[root.tagName].expansion == 'vertical')  pos.row++;
-        if(illustrator[root.tagName].expansion == 'horizontal' && !initial_shift)  pos.col++; // second condition avoid second shift after initial col_shift happend
+        if(root_expansion == 'vertical')  pos.row++;
+        if(root_expansion == 'horizontal' && !initial_shift)  pos.col++; // second condition avoid second shift after initial col_shift happend
         initial_shift = false;
-          (illustrator[this.tagName].draw)(this, pos);
-          // draw line from prev_pos to pos
+        (illustrator[this.tagName].draw)(this, pos);
       }
     
       if(illustrator[this.tagName].type == 'complex') { // complex elements
+        illustrator.draw_connection(prev, pos);
         var block = parse(this, pos);
         if(illustrator[this.tagName].border) illustrator.draw_border(pos,block.max);
         if(max.row < block.max.row) max.row = block.max.row;
         if(max.col < block.max.col) max.col = block.max.col;
-        if(illustrator[root.tagName].expansion == 'vertical' && max.row > pos.row) pos.row = max.row;
-        if(illustrator[root.tagName].expansion == 'horizontal' && max.col > pos.col) pos.col = max.col;
-      } else { // primitive elements
+        if(root_expansion == 'vertical' && max.row > pos.row) pos.row = max.row;
+        if(root_expansion == 'horizontal' && max.col > pos.col) pos.col = max.col;
+        // up from here the pos represents the successor
+        var closing = illustrator[this.tagName].closing(this);
+        switch(closing.type) {
+          case 'successor':
+            illustrator.draw_connection(prev, pos);
+            break;
+          case 'parent successor':
+            endnodes.push(block.max);
+            console.log($(this).attr('svg-id') + " push Endnode: ");
+            console.log(block.max);
+            break;
+          case 'endnodes':
+            if(closing.target == 'successor') {
+              console.log($(this).attr('svg-id') +  " found Block-Endnodes: " + block.endnodes.length);
+              console.log(block);
+              $.each(block.endnodes, function(index, endnode) {
+                illustrator.draw_connection(endnode, pos, block.max.row);
+              });
+            } else if(closing.target == 'self') {
+            }
+            break;
+        }
+      } else if (illustrator[this.tagName].type == 'primitive') { // primitive elements
+          illustrator.draw_connection(prev, pos);
       }
+      if(root_expansion == 'vertical') { prev = jQuery.extend(true, {}, pos); } // otherwise it will be always the root element
       
-    });
-    // if(illustrator[root.nodeName] != undefined && illustrator[root.nodeName].closing_connector == 'parent') ... draw line back to parent
+    }); // }}}
     if(max.row < pos.row) max.row = pos.row;
     if(max.col < pos.col) max.col = pos.col;
-/*
-    switch(illustrator[root.tagName].closing) { // {{{
-      case 'none':
-      case 'root':
-      case 'successor':
-    } // }}}
-*/
-    return {'end_nodes': end_nodes, 'max':max};
+
+    if(root.tagName == 'description'){
+        max.row++;
+        illustrator.end.draw(null,{'col':1,'row':max.row});
+
+    } else {
+      //endnodes.push(pos); // only primitives included
+    }
+    return {'endnodes': endnodes, 'max':max};
   } // }}}
   // }}}
   //  Initialze {{{
