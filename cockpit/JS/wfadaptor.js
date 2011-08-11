@@ -117,7 +117,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   // }}} 
   // Visualization Functions {{{
   this.call = {};//{{{ 
-  this.call.draw = function(node, pos) { 
+  this.call.draw = function(node, pos, block) { 
     if($(node).children('parameters').children('service').length > 0) {  // $('> parameters > service', $(this)) is deprecated (see jQuery Selectors)
       return draw_symbol('callinject', $(node).attr('svg-id'), pos.row, pos.col);
     } else if($(node).children('manipulate').length > 0) {
@@ -127,21 +127,17 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     }
   }
   this.call.type = 'primitive'; 
-  this.call.closing = function(node) {
-    return {'level':'this','target':'successor'}
-  }
+  this.call.endnodes = 'this';
   // }}}
   this.manipulate = {}; // {{{
-  this.manipulate.draw = function(node, _pos) {
+  this.manipulate.draw = function(node, pos, block) {
     return draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.manipulate.type = 'primitive'; 
-  this.manipulate.closing = function(node) {
-    return {'level':'this','target':'successor'}
-  }
+  this.call.endnodes = 'this';
   // }}}
   this.choose = {}; // {{{
-  this.choose.draw = function(node, pos) {
+  this.choose.draw = function(node, pos, block) {
     return draw_symbol('choose', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.choose.type = 'complex';
@@ -149,13 +145,33 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     return 'horizontal';
   } 
   this.choose.col_shift = false; 
-  this.choose.border = false; 
-  this.choose.closing = function(node) {
-    return {'level':'children','target':'successor'}
-  }
+  this.choose.endnodes = 'aggregate';
   // }}}
+  this.otherwise = {}; // {{{
+  this.otherwise.draw = function(node, pos, block) {
+    return draw_symbol('otherwise', $(node).attr('svg-id'), pos.row, pos.col);
+  }
+  this.otherwise.type = 'complex';
+  this.otherwise.expansion = function(node) {
+    return 'vertical';
+  } 
+  this.otherwise.col_shift = false; 
+  this.otherwise.endnodes = 'passthrough';
+  // }}}
+  this.alternative = {}; // {{{
+  this.alternative.draw = function(node, pos, block) {
+    return draw_symbol('alternative', $(node).attr('svg-id'), pos.row, pos.col);
+  }
+  this.alternative.type = 'complex';
+  this.alternative.expansion = function(node) {
+    return 'vertical';
+  } 
+  this.alternative.col_shift = false; 
+  this.alternative.endnodes = 'passthrough';
+  // }}}
+
   this.loop = {}; // {{{
-  this.loop.draw = function(node, pos) {
+  this.loop.draw = function(node, pos, block) {
     return draw_symbol('loop', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.loop.type = 'complex';
@@ -164,41 +180,12 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     return 'vertical';
   } 
   this.loop.col_shift = true; 
-  this.loop.border = false; 
-  this.loop.closing = function(node) {
-    return {'level':'children','target':'self'}
-  }
+
   // }}}
-  this.otherwise = {}; // {{{
-  this.otherwise.draw = function(node, pos) {
-    return draw_symbol('otherwise', $(node).attr('svg-id'), pos.row, pos.col);
-  }
-  this.otherwise.type = 'complex';
-  this.otherwise.expansion = function(node) {
-    return 'vertical';
-  } 
-  this.otherwise.col_shift = false; 
-  this.otherwise.border = false; 
-  this.otherwise.closing = function(node) {
-    return {'level':'none','target':'none'}
-  }
-  // }}}
-  this.alternative = {}; // {{{
-  this.alternative.draw = function(node, pos) {
-    return draw_symbol('alternative', $(node).attr('svg-id'), pos.row, pos.col);
-  }
-  this.alternative.type = 'complex';
-  this.alternative.expansion = function(node) {
-    return 'vertical';
-  } 
-  this.alternative.col_shift = false; 
-  this.alternative.border = false; 
-  this.alternative.closing = function(node) {
-    return {'level':'none','target':'none'}
-  }
-  // }}}
+
   this.parallel = {}; // {{{
-  this.parallel.draw = function(node, pos) {
+  this.parallel.draw = function(node, pos, block) {
+    draw_border(pos,block.max);
     return draw_symbol('parallel', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.parallel.type = 'complex';
@@ -206,13 +193,10 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     return 'horizontal';
   } 
   this.parallel.col_shift = false; 
-  this.parallel.border = true; 
-  this.parallel.closing = function(node) {
-    return {'level':'this','target':'successor'}
-  }
-  // }}}
+  this.parallel.endnodes = 'this';
+  // }}} 
   this.parallel_branch = {}; // {{{
-  this.parallel_branch.draw = function(node, pos) {
+  this.parallel_branch.draw = function(node, pos, block) {
     return draw_symbol('parallel_branch', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.parallel_branch.type = 'complex';
@@ -220,13 +204,10 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     return 'vertical';
   } 
   this.parallel_branch.col_shift = false; 
-  this.parallel_branch.border = false; 
-  this.parallel_branch.closing = function(node) {
-    return {'level':'none','target':'none'}
-  }
+  this.parallel_branch.endnodes = 'clear';
   // }}}
   this.critical = {}; // {{{
-  this.critical.draw = function(node, pos) {
+  this.critical.draw = function(node, pos, block) {
     return draw_symbol('critical', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.critical.type = 'complex';
@@ -234,23 +215,18 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     return 'vertical';
   } 
   this.critical.col_shift = true; 
-  this.critical.border = true; 
-  this.critical.closing = function(node) {
-    return {'level':'children','target':'successor'}
-  }
   // }}}
   this.description = {}; //{{{ 
   this.description.type = 'description';
   this.description.expansion = function(node) {
     return 'vertical';
   } 
-  this.description.draw = function(node, pos) {
+  this.description.draw = function(node, pos, block) {
     return draw_symbol('end', $(node).attr('svg-id'), pos.row, pos.col);
   } 
   this.description.col_shift = true; 
-  this.description.closing = function(node) {
-    return {'level':'none','target':'none'}
-  } 
+  this.description.endnodes = 'passthrough';
+  // }}}
   // }}}
   // }}} 
   // Helper Functions {{{
@@ -306,7 +282,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     $('#symbols_new').append(g);
     return g;
   } // }}}    
-  this.draw_border = function(p1, p2) { // {{{
+  var draw_border = this.draw_border = function(p1, p2) { // {{{
      var block = document.createElementNS(svgNS, "rect");
       var attrs = {'x':(p1.col-0.50)*width,'y':(p1.row-0.50)*height,'width':((p2.col+1.00)-p1.col)*width,'height':((p2.row+1.00)-p1.row)*height, 'class':'block', 'rx':'15', 'ry':'15' } 
       if(typeof css_class == "string")
@@ -318,7 +294,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
       var blocks = document.getElementById('blocks_new');
       blocks.insertBefore(block, blocks.firstChild);
   } // }}}
-  this.draw_connection = function(start, end, max_line, num_lines) { // {{{
+  var draw_connection = this.draw_connection = function(start, end, max_line, num_lines) { // {{{
  //   console.log('connection  from ' +start.row+"/"+start.col+" -> "+end.row+"/"+end.col);
 
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
@@ -435,18 +411,18 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
     var pos = jQuery.extend(true, {}, parent_pos);
     var max = {'row': 0,'col': 0};
 
-    var prev = jQuery.extend(true, {}, parent_pos);
+    var prev = [jQuery.extend(true, {}, parent_pos)]; // connects parent with child(s), depending on the expansion
     var endnodes = []; 
 
     var root_expansion = illustrator[root.tagName].expansion(root);
+    var block = {'max':{'row':0,'col':0}};
+    var primitive = true;
 
     if(illustrator[root.tagName].col_shift == true) pos.col++; 
     if(root_expansion == 'horizontal') pos.row++; 
 
     $(root).children().each(function() { // {{{
-    var closing = illustrator[this.tagName].closing(root);
       // Calculate next position {{{
-      var block = {'max':{'row':0,'col':0}};
       switch(illustrator[this.tagName].type) {
         case 'complex': 
           if(root_expansion == 'vertical')  pos.row++;
@@ -458,6 +434,7 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
           if(root_expansion == 'horizontal')  pos.col++; 
           block.max.row = pos.row;
           block.max.col = pos.col;
+          block.endnodes = [pos];
           break;
       }
       // }}}
@@ -468,31 +445,20 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
         if(id_counter[this.tagName] == undefined) id_counter[this.tagName] = -1;
          $(this).attr('svg-id',this.tagName + '_' + (++id_counter[this.tagName]));
       } else { $(this).attr('svg-id',  $(this).attr('id'));}  // }}}
-
-      (illustrator[this.tagName].draw)(this, pos);
-      if(illustrator[this.tagName].border) illustrator.draw_border(pos,block.max);
+      (illustrator[this.tagName].draw)(this, pos, block);
       // }}}
 
+      // if not last chlid ?
       // Draw Connection {{{
-      switch(closing.level) {
-        case 'children':
-          if(closing.target == 'self') {
-          } else if(closing.target == 'successor') {
-          }
-          break;
-        case 'this':
-          if(closing.target == 'successor') {
-            illustrator.draw_connection(prev, pos);
-          }
-          break;
-        case 'none':
-          break;
-      }
+      if(illustrator[this.tagName].endnodes == 'passthrough' && illustrator[root.tagName].endnodes != 'aggregate')     { endnodes = block.endnodes; } // forwards the endpoints e.g. last node of otherwise to choose
+      else if(illustrator[this.tagName].endnodes == 'this')       { endnodes = [pos]; }
+      else if(illustrator[this.tagName].endnodes == 'passthrough' && illustrator[root.tagName].endnodes == 'aggregate')  { for(i in block.endnodes) endnodes.push(block.endnodes[i]); } // collects all endpoints from different childs e.g. alternatives from choose 
+      else if(illustrator[this.tagName].endnodes == 'aggregate')  { for(i in block.endnodes) endnodes.push(block.endnodes[i]); } // collects all endpoints from different childs e.g. alternatives from choose 
+      for(node in prev) illustrator.draw_connection(prev[node], pos);
+      if(root_expansion == 'vertical' && illustrator[root.tagName].endnodes == 'passthrough') prev = jQuery.extend(true, {}, endnodes);  // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
       // }}}
 
       // Prepare next iteration
-      closing = illustrator[this.tagName].closing(root);
-      if(root_expansion == 'vertical') prev = jQuery.extend(true, {}, pos);  
       if(root_expansion == 'vertical') pos.row = block.max.row;
       if(root_expansion == 'horizontal') pos.col = block.max.col;
       if(max.row < block.max.row) max.row = block.max.row;
@@ -503,6 +469,7 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
       max.row++;
       illustrator[root.tagName].draw(null, pos);
     }
+    if(illustrator[root.tagName].endnodes == 'this') endnodes = [parent_pos];
     return {'endnodes': endnodes, 'max':max};
   } // }}}
   // }}}

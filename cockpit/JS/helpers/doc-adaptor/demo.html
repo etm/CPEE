@@ -36,115 +36,79 @@
       <tr height="95%">
         <td width="40%" style="vertical-align:middle; text-align:center"><!-- {{{ -->
           <textarea style="width:98%;height:98%" id="description">
-  <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
-    <call id="a1" endpoint="timeout">
-      <parameters><!--{{{-->
-
-        <method>post</method>
-        <parameters>
-          <timeout>2</timeout>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">  data.x += "a1,"</manipulate>  
-    </call>  
-
-    <parallel>
-      <parallel_branch>
-        <call id="a20" endpoint="timeout">
-          <parameters><!--{{{-->
-            <method>post</method>
-            <parameters>
-              <timeout>4</timeout>
-            </parameters>
-          </parameters><!--}}}-->
-          <manipulate output="result">  data.x += "a2,"</manipulate>  
-        </call>  
-      </parallel_branch>
-      <parallel_branch>
-        <call id="a22" endpoint="timeout">
-          <parameters><!--{{{-->
-            <method>post</method>
-            <parameters>
-              <timeout>4</timeout>
-            </parameters>
-          </parameters><!--}}}-->
-          <manipulate output="result">  data.x += "a2,"</manipulate>  
-        </call>  
-      </parallel_branch>
-    </parallel>
-<critical>
-    <call id="a3" endpoint="timeout">
-      <parameters><!--{{{-->
-        <method>post</method>
-        <parameters>
-          <timeout>4</timeout>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">  data.x += "a3,"</manipulate>  
-    </call>
-</critical>  
-    <call id="a1" endpoint="timeout">
-      <parameters><!--{{{-->
-
-        <method>post</method>
-        <parameters>
-          <timeout>2</timeout>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">  data.x += "a1,"</manipulate>  
-    </call>  
-
-    <choose>
-      <alternative>
-<loop>
-        <call id="a20" endpoint="timeout">
-          <parameters><!--{{{-->
-            <method>post</method>
-            <parameters>
-              <timeout>4</timeout>
-            </parameters>
-          </parameters><!--}}}-->
-          <manipulate output="result">  data.x += "a2,"</manipulate>  
-        </call>  
-<loop>
-        <call id="a20" endpoint="timeout">
-          <parameters><!--{{{-->
-            <method>post</method>
-            <parameters>
-              <timeout>4</timeout>
-            </parameters>
-          </parameters><!--}}}-->
-          <manipulate output="result">  data.x += "a2,"</manipulate>  
-        </call>  
-</loop>
-</loop>
-      </alternative>
-      <alternative>
-        <call id="a22" endpoint="timeout">
-          <parameters><!--{{{-->
-            <method>post</method>
-            <parameters>
-              <timeout>4</timeout>
-            </parameters>
-          </parameters><!--}}}-->
-          <manipulate output="result">  data.x += "a2,"</manipulate>  
-        </call>  
-      </alternative>
-    </choose>
-
-    <call id="a3" endpoint="timeout">
-      <parameters><!--{{{-->
-        <method>post</method>
-        <parameters>
-          <timeout>4</timeout>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">  data.x += "a3,"</manipulate>  
-    </call>  
-
-
-
-  </description><!--}}}-->
+<description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
+  <call/>
+  <call/>
+  <call/>
+  <choose>
+    <alternative>
+      <choose>
+        <alternative>
+          <call/>
+        </alternative>
+        <otherwise>
+          <call/>
+        </otherwise>
+      </choose>
+      <call/>
+    </alternative>
+    <otherwise>
+      <choose>
+        <alternative>
+          <call/>
+        </alternative>
+        <otherwise>
+          <call/>
+        </otherwise>
+      </choose>
+    </otherwise>
+  </choose>
+  <call/>
+  <parallel>
+    <parallel_branch>
+      <choose>
+        <alternative>
+          <call/>
+          <call/>
+        </alternative>
+        <otherwise>
+          <call/>
+          <call/>
+        </otherwise>
+      </choose>
+      <call/>
+    </parallel_branch>
+    <parallel_branch>
+      <call/>
+    </parallel_branch>
+  </parallel>
+  <call/>
+  <choose>
+    <alternative>
+      <parallel>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+      </parallel>
+    </alternative>
+    <otherwise>
+      <call/>
+    </otherwise>
+  </choose>
+  <call/>
+  <parallel>
+    <parallel_branch>
+      <call/>
+    </parallel_branch>
+    <parallel_branch>
+      <call/>
+    </parallel_branch>
+  </parallel>
+  <call/>
+</description><!--}}}-->
           </textarea>
         </td><!-- }}} --> 
         <td style="vertical-align: top"><!-- {{{ -->
