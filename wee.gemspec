@@ -12,7 +12,6 @@ EOF
 
   s.files            = Dir['{lib/*,example/simple/*}'] + %w(COPYING Rakefile wee.gemspec README AUTHORS)
   s.require_path     = 'lib'
-  s.has_rdoc         = false
   s.extra_rdoc_files = ['README']
   s.test_files       = Dir['test/*/tc_*.rb']
 
