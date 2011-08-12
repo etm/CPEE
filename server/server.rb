@@ -1,4 +1,4 @@
-#!/usr/bin/ruby1.9.1
+#!/usr/bin/ruby
 $url  = 'http://localhost:9298'
 $mode = :debug # :production
 $0 = "cpee"
