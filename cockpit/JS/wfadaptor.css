@@ -1,0 +1,161 @@
+/* Browser Bug, set textarea explicitly */
+textarea, input, select, button {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 1em;
+}
+
+
+svg {
+  fill: #DDDDDD;
+  fill-opacity:1;
+  display:inline;
+  margin:0;
+  padding:0;
+  margin-top: -0.4em;
+  margin-left: -0.5em;
+}
+
+svg rect.group {
+  fill: Highlight;
+  fill-opacity: 0.2;
+}
+svg .clickable { cursor: pointer; }
+
+svg use.passive circle {
+  fill: #729fcf;
+  fill-opacity:1;
+}  
+svg use.active circle {
+  fill: #ef2929;
+  fill-opacity:1;
+}  
+svg use.vote circle {
+  fill: #8ae234;
+  fill-opacity:1;
+}  
+
+svg line.ourline, svg path.ourline {
+  stroke-opacity:1; 
+  stroke:#000000;
+  stroke-width: 2; 
+  fill: none;
+}
+svg rect.block {
+  stroke-width: 1; 
+  stroke-dasharray: 3,5;
+  stroke: #000000;
+  fill: none;
+}
+svg .stand {
+  fill:#ffffff;
+  fill-opacity:1;
+  stroke:#000000;
+  stroke-width:2.06896567;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
+svg .gen {
+  fill:ButtonFace;
+  fill-opacity:1;
+  stroke-opacity:0.7;
+  stroke:#000000;
+  stroke-width:2.06896567;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
+svg .standwithout {
+  fill:#ffffff;
+  fill-opacity:1;
+}
+svg text.normal {
+  font-size:20px;
+  font-style:normal;
+  font-variant:normal;
+  font-weight:bold;
+  font-stretch:normal;
+  text-align:center;
+  line-height:125%;
+  writing-mode:lr-tb;
+  text-anchor:middle;
+  color:#000000;
+  fill:#000000;
+  fill-opacity:1;
+  stroke:none;
+  font-family:Arial;
+}
+
+svg text.super {
+  font-size:11px;
+  font-style:normal;
+  font-variant:normal;
+  font-weight:bold;
+  font-stretch:normal;
+  text-align:center;
+  line-height:100%;
+  writing-mode:lr-tb;
+  text-anchor:left;
+  color:#000000;
+  fill:#000000;
+  fill-opacity:1;
+  stroke:none;
+  font-family:Arial;
+}
+svg tspan.active {
+  fill:#cc0000;
+  display: none;
+}
+svg tspan.vote {
+  fill:#73d216;
+  display: none;
+}
+svg tspan.colon {
+  display: none;
+}
+svg tspan.necessary {
+  display: inline;
+}
+
+svg text.normallarge {
+  font-size:25px;
+  font-style:normal;
+  font-variant:normal;
+  font-weight:bold;
+  font-stretch:normal;
+  text-align:center;
+  line-height:125%;
+  writing-mode:lr-tb;
+  text-anchor:middle;
+  color:#000000;
+  fill:#000000;
+  fill-opacity:1;
+  stroke:none;
+  font-family:Arial;
+}
+svg text.small {
+  font-size:14px;
+  font-style:normal;
+  font-variant:normal;
+  font-weight:bold;
+  font-stretch:normal;
+  text-align:center;
+  line-height:125%;
+  writing-mode:lr-tb;
+  text-anchor:middle;
+  color:#000000;
+  fill:#000000;
+  fill-opacity:1;
+  stroke:none;
+  font-family:Arial;
+}
+
+#arrow { 
+  stroke: #000000;
+  stroke-width: 2;
+  fill: #000000;
+}

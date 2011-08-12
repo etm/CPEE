@@ -275,6 +275,7 @@ function monitor_instance_dsl() {// {{{
           url: url + "/properties/values/description/",
           success: function(res){
             var container = $("#canvas").get(0);
+            var adaptor = new WfAdaptor(res, container, 'iconset');
             var g = new WFGraph(res, res.documentElement, container);
             var width = g.generateGraph({
               symclick: sym_click
@@ -761,16 +762,16 @@ function sym_click_para(node,ind) { // {{{
   return out;
 } // }}}
 
-function format_visual_add(what,class) {//{{{
+function format_visual_add(what,cls) {//{{{
   if (node_state[what] == undefined)
     node_state[what] = [];
-  node_state[what].push(class);
+  node_state[what].push(cls);
   format_visual_set(what);
 }//}}}
-function format_visual_remove(what,class) {//{{{
+function format_visual_remove(what,cls) {//{{{
   c = node_state[what];
-  if ($.inArray(class,c) != -1)
-    c.splice($.inArray(class,c),1);
+  if ($.inArray(cls,c) != -1)
+    c.splice($.inArray(cls,c),1);
   format_visual_set(what);
 }//}}}
 function format_visual_set(what) {//{{{
