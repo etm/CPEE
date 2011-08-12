@@ -209,6 +209,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   // }}}
   this.critical = {}; // {{{
   this.critical.draw = function(node, pos, block) {
+    draw_border(pos,block.max);
     return draw_symbol('critical', $(node).attr('svg-id'), pos.row, pos.col);
   }
   this.critical.type = 'complex';
@@ -216,6 +217,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     return 'vertical';
   } 
   this.critical.col_shift = true; 
+  this.critical.endnodes = 'aggregate';
   // }}}
   this.description = {}; //{{{ 
   this.description.type = 'description';
@@ -428,6 +430,11 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
           if(root_expansion == 'vertical')  pos.row++;
           if(root_expansion == 'horizontal')  pos.col++;
           block = parse(this, pos);
+          if(this.tagName == 'choose') {
+//            console.log('choose');
+//            console.log(block);
+          }
+          if(illustrator[this.tagName].endnodes == 'aggregate') endnodes = [];
           break;
         case 'primitive':
           if(root_expansion == 'vertical')  pos.row++;
@@ -451,11 +458,21 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
       // if not last chlid ?
       // Calculate Connection {{{
       if(illustrator[this.tagName].closeblock && illustrator[this.tagName].endnodes) { 
-        console.log(block.endnodes);
-        for(node in block.endnodes) illustrator.draw_connection(block.endnodes[node], pos, max.row, -max.row); 
+//        console.log('closing: ' + block.max.row);
+//        console.log(block.endnodes);
+        for(node in block.endnodes) illustrator.draw_connection(block.endnodes[node], pos, block.max.row+1, block.max.row); 
       }
-      if(illustrator[this.tagName].endnodes == 'aggregate' || illustrator[this.tagName].endnodes == 'passthrough')  { for(i in block.endnodes) endnodes.push(block.endnodes[i]); } // collects all endpoints from different childs e.g. alternatives from choose 
+      if(this.tagName != 'call') {
+  //      console.log("1: " + this.tagName);
+    //    console.log(endnodes);
+      }
+      if(illustrator[this.tagName].endnodes == 'aggregate')  { for(i in block.endnodes) endnodes.push(block.endnodes[i]); } // collects all endpoints from different childs e.g. alternatives from choose 
+      else if(illustrator[this.tagName].endnodes == 'passthrough')  { for(i in block.endnodes) endnodes.push(block.endnodes[i]); } // collects all endpoints from different childs e.g. alternatives from choose 
       else if(illustrator[this.tagName].endnodes == 'this')       { endnodes = [pos]; }
+      if(this.tagName != 'call') {
+      //  console.log("2: " + this.tagName);
+      //  console.log(endnodes);
+      }
       for(node in prev) illustrator.draw_connection(prev[node], pos);
       if(root_expansion == 'vertical') prev = jQuery.extend(true, {}, endnodes);  // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
       // }}}

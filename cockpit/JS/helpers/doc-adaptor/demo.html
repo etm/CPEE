@@ -36,12 +36,161 @@
       <tr height="95%">
         <td width="40%" style="vertical-align:middle; text-align:center"><!-- {{{ -->
           <textarea style="width:98%;height:98%" id="description">
-<description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <call/><!--{{{-->
   <call/>
   <call/>
-  <call/>
+
+<!--  Parallel {{{ -->
+  <parallel>
+    <parallel_branch>
+      <call/>
+      <call/>
+    </parallel_branch>
+    <parallel_branch>
+      <call/>
+      <call/>
+    </parallel_branch>
+  </parallel>
+
+  <parallel>
+    <parallel_branch>
+      <call/>
+      <choose>
+        <alternative>
+          <call/>
+        </alternative>
+        <otherwise>
+          <call/>
+        </otherwise>
+        <alternative>
+          <call/>
+        </alternative>
+      </choose>
+    </parallel_branch>
+    <parallel_branch>
+      <choose>
+        <alternative>
+          <call/>
+        </alternative>
+        <otherwise>
+          <call/>
+        </otherwise>
+        <alternative>
+          <call/>
+        </alternative>
+      </choose>
+      <call/>
+    </parallel_branch>
+  </parallel>
+
+  <parallel>
+    <parallel_branch>
+      <call/>
+      <parallel>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+        <parallel_branch>
+          <call/>
+          <call/>
+          <call/>
+        </parallel_branch>
+      </parallel>
+    </parallel_branch>
+    <parallel_branch>
+      <parallel>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+        <parallel_branch>
+          <call/>
+          <call/>
+          <call/>
+        </parallel_branch>
+      </parallel>
+      <call/>
+    </parallel_branch>
+  </parallel>
+
+  <parallel>
+    <parallel_branch>
+      <call/>
+      <loop>
+        <call/>
+        <call/>
+        <call/>
+      </loop>
+    </parallel_branch>
+    <parallel_branch>
+      <loop>
+        <call/>
+        <call/>
+        <call/>
+      </loop>
+      <call/>
+    </parallel_branch>
+  </parallel>
+
+  <parallel>
+    <loop>
+      <call/>
+      <parallel_branch>
+          <call/>
+      </parallel_branch>
+    </loop>
+  </parallel>
+
+  <parallel>
+    <loop>
+      <parallel_branch>
+          <call/>
+      </parallel_branch>
+      <call/>
+    </loop>
+  </parallel>
+
+  <parallel>
+    <loop>
+      <parallel_branch>
+          <call/>
+      </parallel_branch>
+    </loop>
+  </parallel>
+
+  <parallel>
+    <parallel_branch>
+      <call/>
+      <critical>
+        <call/>
+        <call/>
+        <call/>
+      </critical>
+    </parallel_branch>
+    <parallel_branch>
+      <critical>
+        <call/>
+      </critical>
+      <call/>
+    </parallel_branch>
+  </parallel>
+<!--  Parallel }}} -->
+<!--  Choose {{{ -->
   <choose>
     <alternative>
+      <call/>
+    </alternative>
+    <otherwise>
+      <call/>
+    </otherwise>
+    <alternative>
+      <call/>
+    </alternative>
+  </choose>
+
+  <choose>
+    <alternative>
+      <call/>
       <choose>
         <alternative>
           <call/>
@@ -50,7 +199,6 @@
           <call/>
         </otherwise>
       </choose>
-      <call/>
     </alternative>
     <otherwise>
       <choose>
@@ -61,30 +209,36 @@
           <call/>
         </otherwise>
       </choose>
+      <call/>
     </otherwise>
+    <alternative>
+      <call/>
+    </alternative>
   </choose>
-  <call/>
-  <parallel>
-    <parallel_branch>
-      <choose>
-        <alternative>
-          <call/>
-          <call/>
-        </alternative>
-        <otherwise>
-          <call/>
-          <call/>
-        </otherwise>
-      </choose>
-      <call/>
-    </parallel_branch>
-    <parallel_branch>
-      <call/>
-    </parallel_branch>
-  </parallel>
-  <call/>
+
   <choose>
     <alternative>
+      <call/>
+      <loop>
+        <call/>
+        <call/>
+      </loop>
+    </alternative>
+    <otherwise>
+      <loop>
+        <call/>
+        <call/>
+      </loop>
+      <call/>
+    </otherwise>
+    <alternative>
+      <call/>
+    </alternative>
+  </choose>
+
+  <choose>
+    <alternative>
+      <call/>
       <parallel>
         <parallel_branch>
           <call/>
@@ -95,20 +249,158 @@
       </parallel>
     </alternative>
     <otherwise>
+      <parallel>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+      </parallel>
       <call/>
     </otherwise>
+    <alternative>
+      <call/>
+    </alternative>
   </choose>
-  <call/>
-  <parallel>
-    <parallel_branch>
+
+  <choose>
+    <alternative>
       <call/>
-    </parallel_branch>
-    <parallel_branch>
+      <critical>
+        <call/>
+        <call/>
+      </critical>
+    </alternative>
+    <otherwise>
+      <critical>
+        <call/>
+        <call/>
+      </critical>
       <call/>
-    </parallel_branch>
-  </parallel>
-  <call/>
-</description><!--}}}-->
+    </otherwise>
+    <alternative>
+      <call/>
+    </alternative>
+  </choose>
+
+
+<!--  Choose }}} -->
+  <!-- loop  {{{ -->
+  <loop>
+    <call/>
+    <call/>
+  </loop>
+  <loop>
+    <call/>
+    <choose>
+      <alternative>
+        <call/>
+        <choose>
+          <alternative>
+            <call/>
+          </alternative>
+          <otherwise>
+            <call/>
+          </otherwise>
+        </choose>
+      </alternative>
+      <otherwise>
+        <choose>
+          <alternative>
+            <call/>
+          </alternative>
+          <otherwise>
+            <call/>
+          </otherwise>
+        </choose>
+        <call/>
+      </otherwise>
+    </choose>
+  </loop>
+  <loop>
+    <loop>
+      <call/>
+      <call/>
+    </loop>
+  </loop>
+  <loop>
+    <parallel>
+      <parallel_branch>
+        <call/>
+      </parallel_branch>
+      <parallel_branch>
+        <call/>
+      </parallel_branch>
+    </parallel>
+  </loop>
+  <loop>
+    <critical>
+      <call/>
+      <call/>
+    </critical>
+  </loop>
+  <!-- loop  }}} -->
+  <!-- Critical  {{{ -->
+  <critical>
+    <call/>
+    <call/>
+  </critical>
+  <critical>
+    <critical>
+      <call/>
+      <call/>
+    </critical>
+  </critical>
+  <critical>
+    <call/>
+    <choose>
+      <alternative>
+        <call/>
+        <choose>
+          <alternative>
+            <call/>
+          </alternative>
+          <otherwise>
+            <call/>
+          </otherwise>
+        </choose>
+      </alternative>
+      <otherwise>
+        <choose>
+          <alternative>
+            <call/>
+          </alternative>
+          <otherwise>
+            <call/>
+          </otherwise>
+        </choose>
+        <call/>
+      </otherwise>
+    </choose>
+  </critical>
+  <critical>
+    <loop>
+      <call/>
+      <call/>
+      <call/>
+    </loop>
+  </critical>
+  <critical>
+    <call/>
+    <parallel>
+      <parallel_branch>
+        <call/>
+      </parallel_branch>
+      <parallel_branch>
+        <call/>
+      </parallel_branch>
+    </parallel>
+  </critical>
+  <!-- Critical  }}} -->
+
+  <call/><!--}}}-->
+</description>
           </textarea>
         </td><!-- }}} --> 
         <td style="vertical-align: top"><!-- {{{ -->
