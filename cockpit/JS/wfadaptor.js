@@ -25,6 +25,113 @@ function WfAdaptor(cpee_description, svg_container, update_function) { // Contro
     console.log("Adaptor Notification: " + element_id + " -> " + operation);
   } // }}}
   // }}}
+  // Controler functions {{{
+  // Primitives {{{
+  this.call = { //{{{ 
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
+      return false;
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
+      return false;
+    } // }}}
+  };  // }}}
+  this.manipulate = { // {{{
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on man with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on man with id ' + $(node).parents(':first').attr('id'));
+    } // }}} 
+  };  // }}}
+  // }}}
+  // Complex {{{
+  this.choose = { // {{{
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on choose with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on choose with id ' + $(node).parents(':first').attr('id'));
+    } // }}} 
+  };  // }}}
+  this.otherwise = { // {{{
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on oth with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on oth with id ' + $(node).parents(':first').attr('id'));
+    }, // }}} 
+  }; // }}}
+  this.alternative = { // {{{
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on alt with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on alt with id ' + $(node).parents(':first').attr('id'));
+    }, // }}} 
+  };  // }}}
+  this.loop = { // {{{
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on loop with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on loop with id ' + $(node).parents(':first').attr('id'));
+    }, // }}} 
+  };  // }}}
+  this.parallel = { // {{{
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on par with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on par with id ' + $(node).parents(':first').attr('id'));
+    }, // }}} 
+  };  // }}}  
+  this.parallel_branch = { // {{{
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on branch with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on branch with id ' + $(node).parents(':first').attr('id'));
+    }, // }}} 
+  };  // }}}
+  this.critical = { // {{{
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on srti with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on srti with id ' + $(node).parents(':first').attr('id'));
+    }, // }}} 
+  };  // }}}
+  this.description = { //{{{ 
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on desc with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on desc with id ' + $(node).parents(':first').attr('id'));
+    }, // }}} 
+  }; // }}} 
+   // }}}
+   // Abstracts {{{
+  this.call_inject = { //{{{ 
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on call with id ' + $(node).parents(':first').attr('id'));
+    }, // }}} 
+  }; // }}}
+  this.call_manipulate = { //{{{ 
+    'right_click' : function(node) { // {{{
+      console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
+    }, // }}}
+    'left_click' : function(node) { // {{{
+      console.log('leftclick on call with id ' + $(node).parents(':first').attr('id'));
+    }, // }}} 
+  }; // }}}
+   // }}}
+   // }}}
+  // }}}
   // Adaption funcions {{{
   var insert = function(element, parent_id, index) { // {{{
     /* Interface: {{{
@@ -78,7 +185,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     var svgNS = "http://www.w3.org/2000/svg";
     var xlinkNS = "http://www.w3.org/1999/xlink";
     var svg = null;
-    var illustrator = this;
+    var adaptor = null;
   // }}}
   // Generic Functions {{{
   var set_container = function(con) { // {{{
@@ -91,31 +198,11 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     matrix = [];
   } // }}}
   this.set_expansion = function(expansion) { // {{{
+    if(expansion.row < 0) expansion.row = 1;
+    if(expansion.col < 0) expansion.col = 1;
     svg.parent().attr({'height':(expansion.row+0.0)*height,'width':(expansion.col+0.55)*width});
   } // }}}
   // }}}
-  // Adaption functions {{{
-  var insert = this.insert = function(element, pid, index) { // {{{
-    /* Interface: {{{
-     }}} */
-    console.log('illustrator: insert -> ' + index +', pid: ' + pid);
-  } // }}}
-  var append = this.append = function(element, pid) { // {{{
-    /* Interface: {{{
-     }}} */
-     var length; // count child of parent_id;
-     return insert(element, pid, length);
-  } // }}}
-  var prepend = this.prepend = function(element, pid) { // {{{
-    /* Interface: {{{
-     }}} */
-    return insert(element, pid, 0);
-  } // }}}
-  var remove = this.remove = function(id) { // {{{
-    /* Interface: {{{
-     }}} */
-  } // }}}
-  // }}} 
   // Visualization Functions {{{
   // Primitives {{{
   this.call = { //{{{ 
@@ -130,12 +217,6 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
           return draw_symbol('call', $(node).attr('svg-id'), pos.row, pos.col);
         }
       }, // }}}
-    'right_click' : function(id) { // {{{
-      console.log('rightclick on call with id ' + $(id).attr('svg-id'));
-    }, // }}}
-    'left_click' : function(id) { // {{{
-      console.log('leftclick on call with id ' + $(id).attr('svg-id'));
-    } // }}} 
   };  // }}}
   this.manipulate = { // {{{
     'type' : 'primitive',
@@ -269,7 +350,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     'type' : 'abstract', 
     'draw' : function(node, pos, block) { // {{{
       return draw_symbol('callinject', $(node).attr('svg-id'), pos.row, pos.col);
-    }
+    },// }}}
   }; // }}}
   this.call_manipulate = { //{{{ 
     'type' : 'abstract', 
@@ -277,6 +358,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
       return draw_symbol('callinject', $(node).attr('svg-id'), pos.row, pos.col);
     }
   }; // }}}
+   // }}}
    // }}}
    // }}}
   // Helper Functions {{{
@@ -316,19 +398,17 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     for(var attr in attrs)
       use.setAttribute(attr, attrs[attr]);
 
-    use.onclick = function(e){ 
-      console.log("click");
-    }
-    use.onmousedown = function(e) {
-      console.log(this);
-      if(e.button == 2) { // 3 egauls rightclick
-        illustrator[sym_name].rightclick(this);
-
-      } else if(e.which == 0) { // 0 equals left click
-        this.leftclick(id);
+    $(use).bind('mousedown', function(e) {
+      if(e.button == 2) {  // rightclick
+        if(adaptor[sym_name] == undefined || adaptor[sym_name].right_click == undefined) return;
+        adaptor[sym_name].right_click(this)
       }
-      //symclick(node); 
-    };
+    });
+    $(use).bind('click', function(e){ 
+      if(adaptor[sym_name] == undefined || adaptor[sym_name].right_click == undefined) return;
+      adaptor[sym_name].left_click(this)
+    });
+    $(use).bind('contextmenu', false);
     g.appendChild(use);
     $('#symbols_new').append(g);
     return g;
@@ -392,6 +472,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   } //  }}}
   // }}}
   // Initialze {{{
+    adaptor = wf_adaptor;
     set_container(svg_container);
     clear();
   // }}}
@@ -538,7 +619,6 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
     if(root.tagName == 'description') { // {{{
       pos.row++;
       max.row++;
-      if(max.col < 1) max.col = 1;
       if(prev[0].row != 0 || prev[0].col != 0) // this if avoids the connection from description to the first element
         for(node in prev) illustrator.draw_connection(prev[node], pos);
       illustrator[root.tagName].draw(null, pos);
@@ -554,7 +634,6 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
   this.set_description(cpee_description);
   // }}}
 } // }}} 
-
 
 // serializeXML extension for jQuery by Mark Gibson {{{
 $.fn.serializeXML = function () {
