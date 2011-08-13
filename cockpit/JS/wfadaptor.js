@@ -169,7 +169,6 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   this.alternative.col_shift = false; 
   this.alternative.endnodes = 'passthrough';
   // }}}
-
   this.loop = {}; // {{{
   this.loop.draw = function(node, pos, block) {
     return draw_symbol('loop', $(node).attr('svg-id'), pos.row, pos.col);
@@ -183,7 +182,6 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   this.loop.endnodes = 'this';
   this.loop.closeblock = true;
   // }}}
-
   this.parallel = {}; // {{{
   this.parallel.draw = function(node, pos, block) {
     draw_border(pos,block.max);
@@ -195,6 +193,7 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
   } 
   this.parallel.col_shift = false; 
   this.parallel.endnodes = 'this';
+  this.parallel.closing = false; 
   // }}} 
   this.parallel_branch = {}; // {{{
   this.parallel_branch.draw = function(node, pos, block) {
@@ -205,7 +204,8 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     return 'vertical';
   } 
   this.parallel_branch.col_shift = false; 
-  this.parallel_branch.endnodes = 'passthrough';
+  this.parallel_branch.endnodes = 'clear';
+  this.parallel_branch.closing = false; 
   // }}}
   this.critical = {}; // {{{
   this.critical.draw = function(node, pos, block) {
@@ -429,12 +429,8 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
         case 'complex': 
           if(root_expansion == 'vertical')  pos.row++;
           if(root_expansion == 'horizontal')  pos.col++;
-          block = parse(this, pos);
-          if(this.tagName == 'choose') {
-//            console.log('choose');
-//            console.log(block);
-          }
-          if(illustrator[this.tagName].endnodes == 'aggregate') endnodes = [];
+          block = parse(this, jQuery.extend(true, {}, pos));
+          if(illustrator[this.tagName].endnodes == 'aggregate') endnodes = []; // TODO: ???? brauchst das wirklich?
           break;
         case 'primitive':
           if(root_expansion == 'vertical')  pos.row++;
@@ -455,24 +451,14 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
       (illustrator[this.tagName].draw)(this, pos, block);
       // }}}
 
-      // if not last chlid ?
       // Calculate Connection {{{
-      if(illustrator[this.tagName].closeblock && illustrator[this.tagName].endnodes) { 
-//        console.log('closing: ' + block.max.row);
-//        console.log(block.endnodes);
-        for(node in block.endnodes) illustrator.draw_connection(block.endnodes[node], pos, block.max.row+1, block.max.row); 
+      if(illustrator[this.tagName].closeblock) { 
+        for(node in block.endnodes) illustrator.draw_connection(block.endnodes[node], pos, block.max.row, block.endnodes.length);
       }
-      if(this.tagName != 'call') {
-  //      console.log("1: " + this.tagName);
-    //    console.log(endnodes);
-      }
-      if(illustrator[this.tagName].endnodes == 'aggregate')  { for(i in block.endnodes) endnodes.push(block.endnodes[i]); } // collects all endpoints from different childs e.g. alternatives from choose 
-      else if(illustrator[this.tagName].endnodes == 'passthrough')  { for(i in block.endnodes) endnodes.push(block.endnodes[i]); } // collects all endpoints from different childs e.g. alternatives from choose 
-      else if(illustrator[this.tagName].endnodes == 'this')       { endnodes = [pos]; }
-      if(this.tagName != 'call') {
-      //  console.log("2: " + this.tagName);
-      //  console.log(endnodes);
-      }
+
+      if(illustrator[this.tagName].endnodes == 'aggregate' || illustrator[this.tagName].endnodes == 'passthrough')  { for(i in block.endnodes) endnodes.push(block.endnodes[i]); } // collects all endpoints from different childs e.g. alternatives from choose 
+      else if(illustrator[this.tagName].endnodes == 'clear')      { endnodes = []; } 
+      else if(illustrator[this.tagName].endnodes == 'this')       { endnodes = [jQuery.extend(true, {}, pos)]; }
       for(node in prev) illustrator.draw_connection(prev[node], pos);
       if(root_expansion == 'vertical') prev = jQuery.extend(true, {}, endnodes);  // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
       // }}}
@@ -488,7 +474,8 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
       max.row++;
       illustrator[root.tagName].draw(null, pos);
     }
-    if(illustrator[root.tagName].endnodes == 'this' && illustrator[root.tagName].closing == false) endnodes = [parent_pos];
+    if(illustrator[root.tagName].endnodes == 'this' && illustrator[root.tagName].closeblock == false) {endnodes = [prev];} // closeblock == false, allows loop to close himselfe
+
     return {'endnodes': endnodes, 'max':max};
   } // }}}
   // }}}
