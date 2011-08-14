@@ -30,12 +30,11 @@ function WfAdaptor() { // Controler {{{
     for(element in elements) {
       // Illsutrator
       illustrator.elements[element] = elements[element].illustrator;
-      console.log(this.illustrator.svg.defs.namespaceURI);
       this.illustrator.svg.defs.append(elements[element].illustrator.svg_def);
       // Description
       description.elements[element] = elements[element].description;
       // Adaptor
-      elements[element] = elements[element].adaptor;
+      this.elements[element] = elements[element].adaptor;
     }
   } // }}}
   this.set_svg_container = function (container) { // {{{
@@ -157,13 +156,13 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     $(use).bind('mousedown', function(e) {
       if(e.button == 2) {  // rightclick
-        if(adaptor[sym_name] == undefined || adaptor[sym_name].right_click == undefined) return;
-        adaptor[sym_name].right_click(this)
+        if(adaptor.elements[sym_name] == undefined || adaptor.elements[sym_name].right_click == undefined) return;
+        adaptor.elements[sym_name].right_click(this)
       }
     });
     $(use).bind('click', function(e){ 
-      if(adaptor[sym_name] == undefined || adaptor[sym_name].right_click == undefined) return;
-      adaptor[sym_name].left_click(this)
+        if(adaptor.elements[sym_name] == undefined || adaptor.elements[sym_name].left_click == undefined) return;
+        adaptor.elements[sym_name].left_click(this)
     });
     $(use).bind('contextmenu', false);
     g.appendChild(use);

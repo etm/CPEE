@@ -6,12 +6,12 @@ function create_cpee_elements(illustrator) {
     'illustrator': {
       'type' : 'abstract', 
       'draw' : function(node, pos, block) { 
-        return illustrator.draw.draw_symbol('cpee:callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
+        return illustrator.draw.draw_symbol('callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
         },
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:callmanipulate','class':'clickable'};
+        var attrs = {'id':'callmanipulate','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
@@ -65,13 +65,13 @@ function create_cpee_elements(illustrator) {
         if($(node).children('manipulate').length > 0) {
           return illustrator.elements.call_manipulate.draw(node, pos, block);
         } else {
-          return illustrator.draw.draw_symbol('cpee:call', $(node).attr('svg-id'), pos.row, pos.col);
+          return illustrator.draw.draw_symbol('call', $(node).attr('svg-id'), pos.row, pos.col);
         }
       },
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:call','class':'clickable'};
+        var attrs = {'id':'call','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
@@ -112,12 +112,12 @@ function create_cpee_elements(illustrator) {
       'type' : 'primitive',
       'endnodes' : 'this',
       'draw' : function(node, pos, block) { 
-        return illustrator.draw.draw_symbol('cpee:manipulate', $(node).attr('svg-id'), pos.row, pos.col);
+        return illustrator.draw.draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:manipulate','class':'clickable'};
+        var attrs = {'id':'manipulate','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
@@ -160,7 +160,7 @@ function create_cpee_elements(illustrator) {
       'endnodes' : 'aggregate',
       'closeblock': false,
       'draw' : function(node, pos, block) { 
-        return illustrator.draw.draw_symbol('cpee:choose', $(node).attr('svg-id'), pos.row, pos.col);
+        return illustrator.draw.draw_symbol('choose', $(node).attr('svg-id'), pos.row, pos.col);
       }, 
       'expansion' : function(node) { 
         return 'horizontal';
@@ -171,7 +171,7 @@ function create_cpee_elements(illustrator) {
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:choose','class':'clickable'};
+        var attrs = {'id':'choose','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
@@ -213,7 +213,7 @@ function create_cpee_elements(illustrator) {
       'endnodes' : 'passthrough',
       'closeblock': false,
       'draw' : function(node, pos, block) { 
-        return illustrator.draw.draw_symbol('cpee:otherwise', $(node).attr('svg-id'), pos.row, pos.col);
+        return illustrator.draw.draw_symbol('otherwise', $(node).attr('svg-id'), pos.row, pos.col);
       }, 
       'expansion' : function(node) { 
         return 'vertical';
@@ -224,7 +224,7 @@ function create_cpee_elements(illustrator) {
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:otherwise','class':'clickable'};
+        var attrs = {'id':'otherwise','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'standwithout'};
@@ -266,7 +266,7 @@ function create_cpee_elements(illustrator) {
       'endnodes' : 'passthrough',
       'closeblock':false,
       'draw' : function(node, pos, block) { 
-        return illustrator.draw.draw_symbol('cpee:alternative', $(node).attr('svg-id'), pos.row, pos.col);
+        return illustrator.draw.draw_symbol('alternative', $(node).attr('svg-id'), pos.row, pos.col);
       }, 
       'expansion' : function(node) { 
         return 'vertical';
@@ -277,7 +277,7 @@ function create_cpee_elements(illustrator) {
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:alternative','class':'clickable'};
+        var attrs = {'id':'alternative','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'standwithout'};
@@ -319,7 +319,7 @@ function create_cpee_elements(illustrator) {
       'endnodes' : 'this',
       'closeblock' : true,
       'draw' : function(node, pos, block) {
-        return illustrator.draw.draw_symbol('cpee:loop', $(node).attr('svg-id'), pos.row, pos.col);
+        return illustrator.draw.draw_symbol('loop', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'expansion' : function(node) {
         return 'vertical';
@@ -330,7 +330,7 @@ function create_cpee_elements(illustrator) {
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:loop','class':'clickable'};
+        var attrs = {'id':'loop','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
@@ -373,7 +373,7 @@ function create_cpee_elements(illustrator) {
       'closeblock' : false,
       'draw' : function(node, pos, block) {
         illustrator.draw.draw_border(pos,block.max);
-        return illustrator.draw.draw_symbol('cpee:parallel', $(node).attr('svg-id'), pos.row, pos.col);
+        return illustrator.draw.draw_symbol('parallel', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'expansion' : function(node) { 
         // check if any sibling other than 'parallel_branch' is present 
@@ -386,7 +386,7 @@ function create_cpee_elements(illustrator) {
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:parallel','class':'clickable'};
+        var attrs = {'id':'parallel','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
@@ -428,7 +428,7 @@ function create_cpee_elements(illustrator) {
       'endnodes' : 'this',
       'closeblock' : false,
       'draw' : function(node, pos, block) {
-        return illustrator.draw.draw_symbol('cpee:parallel_branch', $(node).attr('svg-id'), pos.row, pos.col);
+        return illustrator.draw.draw_symbol('parallel_branch', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'expansion' : function(node) { 
         return 'vertical';
@@ -440,7 +440,7 @@ function create_cpee_elements(illustrator) {
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:parallel_branch','class':'clickable'};
+        var attrs = {'id':'parallel_branch','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
@@ -483,7 +483,7 @@ function create_cpee_elements(illustrator) {
       'closeblock' : false,
       'draw' : function(node, pos, block) {
         illustrator.draw.draw_border(pos,block.max);
-        return illustrator.draw.draw_symbol('cpee:critical', $(node).attr('svg-id'), pos.row, pos.col);
+        return illustrator.draw.draw_symbol('critical', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'expansion' : function(node) {
         return 'vertical';
@@ -494,7 +494,7 @@ function create_cpee_elements(illustrator) {
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:critical','class':'clickable'};
+        var attrs = {'id':'critical','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
@@ -536,7 +536,7 @@ function create_cpee_elements(illustrator) {
       'endnodes' : 'passthrough',
       'closeblock' : false,
       'draw' : function(node, pos, block) {
-        return illustrator.draw.draw_symbol('cpee:end', $(node).attr('svg-id'), pos.row, pos.col);
+        return illustrator.draw.draw_symbol('end', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'expansion' : function(node) {
         return 'vertical';
@@ -547,7 +547,7 @@ function create_cpee_elements(illustrator) {
       'svg_def': function() {
         var svgNS = "http://www.w3.org/2000/svg";
         var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'cpee:end','class':'clickable'};
+        var attrs = {'id':'end','class':'clickable'};
         for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
         var sub = document.createElementNS(svgNS, "circle");
         attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
