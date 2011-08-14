@@ -96,11 +96,15 @@ function create_cpee_elements(illustrator) {
       },
     },
     'adaptor' : {
-      'right_click' : function(node) { 
-        console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
+      'right_click' : function(node, e) { 
+        var node_id = $(node).parents(':first').attr('id');
+        console.log('rightclick on call with id ' + node_id);
+        var menu_items = ['Insert Manipulate', 'Append Call', 'Append Manipulate'];
+        var selection = contextmenu(node_id, menu_items, e.pageX, e.pageY);
+        console.log('Selected item: ' + selection);
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 

@@ -157,12 +157,12 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     $(use).bind('mousedown', function(e) {
       if(e.button == 2) {  // rightclick
         if(adaptor.elements[sym_name] == undefined || adaptor.elements[sym_name].right_click == undefined) return;
-        adaptor.elements[sym_name].right_click(this)
+        adaptor.elements[sym_name].right_click(this,e)
       }
     });
     $(use).bind('click', function(e){ 
         if(adaptor.elements[sym_name] == undefined || adaptor.elements[sym_name].left_click == undefined) return;
-        adaptor.elements[sym_name].left_click(this)
+        adaptor.elements[sym_name].left_click(this,e)
     });
     $(use).bind('contextmenu', false);
     g.appendChild(use);

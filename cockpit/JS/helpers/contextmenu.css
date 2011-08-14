@@ -1,0 +1,7 @@
+
+div.contextmenu {
+  position: absolute;
+  display:none;
+  background: Menu;
+  border: 1px solid ActiveBorder;
+}
