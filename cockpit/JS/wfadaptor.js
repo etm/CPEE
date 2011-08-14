@@ -3,11 +3,12 @@ Handles interaction between Illustartor and Description
 e.g. Event fires to Adaptor to insert Element and Illustrator and Description do it
 */
 
-function WfAdaptor(cpee_description, svg_container, update_function) { // Controler {{{
+function WfAdaptor() { // Controler {{{
   // Variable {{{
     // public
     this.illustrator;
     this.description;
+    this.elements = {};
     //private
     var illustrator;
     var description;
@@ -24,150 +25,34 @@ function WfAdaptor(cpee_description, svg_container, update_function) { // Contro
   this.notify = function(element_id, operation) { // public {{{
     console.log("Adaptor Notification: " + element_id + " -> " + operation);
   } // }}}
+  this.add_elements = function(elements) { // {{{
+    console.log('Adaptor: adding elements');
+    for(element in elements) {
+      // Illsutrator
+      illustrator.elements[element] = elements[element].illustrator;
+      this.illustrator.svg.defs.append(elements[element].illustrator['svg_def']);
+      // Description
+      description.elements[element] = elements[element].description;
+      // Adaptor
+      elements[element] = elements[element].adaptor;
+    }
+  } // }}}
+  this.set_svg_container = function (container, elements) { // {{{
+    illustrator.set_container(container, elements);
+    this.add_elements(elements);
+  } // }}}
   // }}}
-  // Controler functions {{{
-  // Primitives {{{
-  this.call = { //{{{ 
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
-      return false;
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-      return false;
-    } // }}}
-  };  // }}}
-  this.manipulate = { // {{{
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on man with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on man with id ' + $(node).parents(':first').attr('id'));
-    } // }}} 
-  };  // }}}
-  // }}}
-  // Complex {{{
-  this.choose = { // {{{
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on choose with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on choose with id ' + $(node).parents(':first').attr('id'));
-    } // }}} 
-  };  // }}}
-  this.otherwise = { // {{{
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on oth with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on oth with id ' + $(node).parents(':first').attr('id'));
-    }, // }}} 
-  }; // }}}
-  this.alternative = { // {{{
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on alt with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on alt with id ' + $(node).parents(':first').attr('id'));
-    }, // }}} 
-  };  // }}}
-  this.loop = { // {{{
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on loop with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on loop with id ' + $(node).parents(':first').attr('id'));
-    }, // }}} 
-  };  // }}}
-  this.parallel = { // {{{
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on par with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on par with id ' + $(node).parents(':first').attr('id'));
-    }, // }}} 
-  };  // }}}  
-  this.parallel_branch = { // {{{
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on branch with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on branch with id ' + $(node).parents(':first').attr('id'));
-    }, // }}} 
-  };  // }}}
-  this.critical = { // {{{
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on srti with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on srti with id ' + $(node).parents(':first').attr('id'));
-    }, // }}} 
-  };  // }}}
-  this.description = { //{{{ 
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on desc with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on desc with id ' + $(node).parents(':first').attr('id'));
-    }, // }}} 
-  }; // }}} 
-   // }}}
-   // Abstracts {{{
-  this.call_inject = { //{{{ 
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on call with id ' + $(node).parents(':first').attr('id'));
-    }, // }}} 
-  }; // }}}
-  this.call_manipulate = { //{{{ 
-    'right_click' : function(node) { // {{{
-      console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
-    }, // }}}
-    'left_click' : function(node) { // {{{
-      console.log('leftclick on call with id ' + $(node).parents(':first').attr('id'));
-    }, // }}} 
-  }; // }}}
-   // }}}
-   // }}}
-  // }}}
+
   // Adaption funcions {{{
-  var insert = function(element, parent_id, index) { // {{{
-    /* Interface: {{{
-     }}} */
-    console.log('adaptor: insert -> ' + index);
-  } // }}}
-  var append = function(element, parent_id) { // {{{
-    /* Interface: {{{
-     }}} */
-     var length; // count child of parent_id;
-     return insert(element, parent_id, length);
-  } // }}}
-  var prepend = function(elment, parent_id) { // {{{
-    /* Interface: {{{
-     }}} */
-    return insert(element, parent_id, 0);
-  } // }}}
-  var remove = function(id) { // {{{
-    /* Interface: {{{
-     }}} */
-    console.log('adaptor: remove -> ' + id);
-  } // }}}
-  var update = function(id) { // {{{
-    /* Interface: {{{
-     }}} */
-    console.log('adaptor: update -> ' + id);
-  } // }}}
   // }}}
-  // Helper Functions {{{
+
+  // Helper Functions {{{ 
   // }}}
 
   // Initialze {{{
 console.log(" -> initializing adaptor: start");
-  if(update_function != null) this.notify = update_function;
-  if(cpee_description != null) this.illustrator = illustrator = new WfIllustrator(svg_container, this);
-  if(svg_container != null) this.description = description = new WfDescription(cpee_description, this, this.illustrator);
+  this.illustrator = illustrator = new WfIllustrator(this);
+  this.description = description = new WfDescription(this, this.illustrator);
 console.log(" -> initializing adaptor: end");
   // }}}
 }  // }}}
@@ -176,193 +61,52 @@ console.log(" -> initializing adaptor: end");
 Is in charge of displaying the Graph. It is further able insert and remove elements with given ID's from the illsutration.
 */
 
-function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
+function WfIllustrator(wf_adaptor) { // View  {{{
   // Variable {{{
     // public
     var height = this.height = 40;
     var width = this.width = 40;
+    var elements = this.elements = {};
+    this.draw = {};
     // private
     var svgNS = "http://www.w3.org/2000/svg";
     var xlinkNS = "http://www.w3.org/1999/xlink";
-    var svg = null;
+    var svg = this.svg = {};
     var adaptor = null;
-  // }}}
+  // }}} 
   // Generic Functions {{{
-  var set_container = function(con) { // {{{
+  this.set_container = function(con) { // {{{
     console.log('illustrator: set container');
-    svg = $(con);
+    clear();
+    svg.container = con;
+    svg.container.append('<defs/>');
+    svg.defs = $('defs:first', svg.container);
+    svg_structure();
+    // Adding arrow
+    var svgNS = "http://www.w3.org/2000/svg";
+    var symbol = document.createElementNS(svgNS, "marker");
+    var attrs = {'id':'arrow','viewBox':'0 0 10 10', 'refX':24, 'refY':5, 'orient':'auto', 'markerUnits':'strokeWidth', 'markerWidth':4.5, 'makerHeight':4.5};
+    for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
+    var sub = document.createElementNS(svgNS, "path");
+    attrs = {'d':'m 2 2 l 6 3 l -6 3 z'};
+    for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
+    symbol.appendChild(sub);
+    svg.defs.append(symbol);
+ 
+    //svg.defs.append('<marker id="arrow" viewBox="0 0 10 10" refX="24" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" markerHeight="4.5"><path d="m 2 2 l 6 3 l -6 3 z"></path></marker>');
   }  // }}}
   var clear = this.clear = function() { // {{{
     console.log('illustrator: clear');
     $('g > *', svg).each(function() {$(this).remove()});
-    matrix = [];
   } // }}}
   this.set_expansion = function(expansion) { // {{{
     if(expansion.row < 0) expansion.row = 1;
     if(expansion.col < 0) expansion.col = 1;
-    svg.parent().attr({'height':(expansion.row+0.0)*height,'width':(expansion.col+0.55)*width});
+    $(svg.container).attr({'height':(expansion.row+0.0)*height,'width':(expansion.col+0.55)*width});
   } // }}}
   // }}}
-  // Visualization Functions {{{
-  // Primitives {{{
-  this.call = { //{{{ 
-    'type' : 'primitive', 
-    'endnodes' : 'this',
-    'draw' : function(node, pos, block) { // {{{
-      if($(node).children('parameters').children('service').length > 0) {  // $('> parameters > service', $(this)) is deprecated (see jQuery Selectors)
-         return this.call_injcet.draw(node, pos, block);
-        } else if($(node).children('manipulate').length > 0) {
-         return this.call_manipulate.draw(node, pos, block);
-        } else {
-          return draw_symbol('call', $(node).attr('svg-id'), pos.row, pos.col);
-        }
-      }, // }}}
-  };  // }}}
-  this.manipulate = { // {{{
-    'type' : 'primitive',
-    'endnodes' : 'this',
-    'draw' : function(node, pos, block) { // {{{
-      return draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
-    } // }}}
-  };  // }}}
-  // }}}
-  // Complex {{{
-  this.choose = { // {{{
-    'type' : 'complex',
-    'endnodes' : 'aggregate',
-    'closeblock': false,
-    'draw' : function(node, pos, block) { // {{{
-      return draw_symbol('choose', $(node).attr('svg-id'), pos.row, pos.col);
-    }, // }}}
-    'expansion' : function(node) { // {{{
-      return 'horizontal';
-    }, // }}}
-    'col_shift' : function(node) { // {{{
-      return false; 
-    }, // }}}
-  };  // }}}
-  this.otherwise = { // {{{
-    'type' : 'complex',
-    'endnodes' : 'passthrough',
-    'closeblock': false,
-    'draw' : function(node, pos, block) { // {{{
-      return draw_symbol('otherwise', $(node).attr('svg-id'), pos.row, pos.col);
-    }, // }}}
-    'expansion' : function(node) { // {{{
-      return 'vertical';
-    }, // }}}
-    'col_shift' : function(node) { // {{{
-      return false; 
-    }, // }}}
-  }; // }}}
-  this.alternative = { // {{{
-    'type' : 'complex',
-    'endnodes' : 'passthrough',
-    'closeblock':false,
-    'draw' : function(node, pos, block) { // {{{
-      return draw_symbol('alternative', $(node).attr('svg-id'), pos.row, pos.col);
-    }, // }}}
-    'expansion' : function(node) { // {{{ 
-      return 'vertical';
-    }, // }}}
-    'col_shift' : function(node) { // {{{
-      return false;
-    } // }}}
-  };  // }}}
-  this.loop = { // {{{
-    'type' : 'complex',
-    'endnodes' : 'this',
-    'closeblock' : true,
-    'draw' : function(node, pos, block) {/*{{{*/
-      return draw_symbol('loop', $(node).attr('svg-id'), pos.row, pos.col);
-    },/*}}}*/
-    'expansion' : function(node) {/*{{{*/
-      return 'vertical';
-    },/*}}}*/
-    'col_shift' : function(node) {/*{{{*/
-      return true;
-    }/*}}}*/
-  };  // }}}
-  this.parallel = { // {{{
-    'type' : 'complex',
-    'endnodes' : 'this',
-    'closeblock' : false,
-    'draw' : function(node, pos, block) {/*{{{*/
-      draw_border(pos,block.max);
-      return draw_symbol('parallel', $(node).attr('svg-id'), pos.row, pos.col);
-    },/*}}}*/
-    'expansion' : function(node) { /*{{{*/
-      // check if any sibling other than 'parallel_branch' is present 
-      if($(node).children(':not(parallel_branch)').length > 0) return 'vertical';
-      return 'horizontal';
-    },/*}}}*/
-    'col_shift' : function(node) {/*{{{*/
-      return true;
-    }/*}}}*/
-  };  // }}}  
-  this.parallel_branch = { // {{{
-    'type' : 'complex',
-    'endnodes' : 'this',
-    'closeblock' : false,
-    'draw' : function(node, pos, block) {/*{{{*/
-      return draw_symbol('parallel_branch', $(node).attr('svg-id'), pos.row, pos.col);
-    },/*}}}*/
-    'expansion' : function(node) { /*{{{*/
-      return 'vertical';
-    },/*}}}*/
-    'col_shift' : function(node) {/*{{{*/
-      if($(node).parents('parallel').first().children(':not(parallel_branch)').length > 0) return true;
-      return false; 
-    }/*}}}*/
-  };  // }}}
-  this.critical = { // {{{
-    'type' : 'complex',
-    'endnodes' : 'aggregate',
-    'closeblock' : false,
-    'draw' : function(node, pos, block) {/*{{{*/
-      draw_border(pos,block.max);
-      return draw_symbol('critical', $(node).attr('svg-id'), pos.row, pos.col);
-    },/*}}}*/
-    'expansion' : function(node) {/*{{{*/
-      return 'vertical';
-    },/*}}}*/
-    'col_shift' : function(node) {/*{{{*/
-      return true;
-    }/*}}}*/
-  };  // }}}
-  this.description = { //{{{ 
-    'type' : 'description',
-    'endnodes' : 'passthrough',
-    'closeblock' : false,
-    'draw' : function(node, pos, block) {/*{{{*/
-      return draw_symbol('end', $(node).attr('svg-id'), pos.row, pos.col);
-    },/*}}}*/
-    'expansion' : function(node) {/*{{{*/
-      return 'vertical';
-    },/*}}}*/
-    'col_shift' : function(node) {/*{{{*/
-      return true;
-    }/*}}}*/
-  }; // }}} 
-   // }}}
-   // Abstracts {{{
-  this.call_inject = { //{{{ 
-    'type' : 'abstract', 
-    'draw' : function(node, pos, block) { // {{{
-      return draw_symbol('callinject', $(node).attr('svg-id'), pos.row, pos.col);
-    },// }}}
-  }; // }}}
-  this.call_manipulate = { //{{{ 
-    'type' : 'abstract', 
-    'draw' : function(node, pos, block) { // {{{
-      return draw_symbol('callinject', $(node).attr('svg-id'), pos.row, pos.col);
-    }
-  }; // }}}
-   // }}}
-   // }}}
-   // }}}
   // Helper Functions {{{
-  var draw_symbol = function (sym_name, id, row, col) { // {{{
+  var draw_symbol = this.draw.draw_symbol = function (sym_name, id, row, col) { // {{{
     var g = document.createElementNS(svgNS, "g");
         g.setAttribute('transform', 'translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')');
 
@@ -410,10 +154,10 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
     });
     $(use).bind('contextmenu', false);
     g.appendChild(use);
-    $('#symbols_new').append(g);
+    svg.symbols.append(g);
     return g;
   } // }}}    
-  var draw_border = this.draw_border = function(p1, p2) { // {{{
+  var draw_border = this.draw.draw_border = function(p1, p2) { // {{{
      var block = document.createElementNS(svgNS, "rect");
       var attrs = {'x':(p1.col-0.50)*width,'y':(p1.row-0.80)*height,'width':((p2.col+1.00)-p1.col)*width,'height':((p2.row+1.00)-p1.row)*height, 'class':'block', 'rx':'15', 'ry':'15' } 
       if(typeof css_class == "string")
@@ -422,12 +166,9 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
         block.onclick = function(){ symclick(injected_node); };
       for(var attr in attrs)
         block.setAttribute(attr, attrs[attr]);
-      var blocks = document.getElementById('blocks_new');
-      blocks.insertBefore(block, blocks.firstChild);
+      svg.blocks.prepend(block);
   } // }}}
-  var draw_connection = this.draw_connection = function(start, end, max_line, num_lines) { // {{{
- //   console.log('connection  from ' +start.row+"/"+start.col+" -> "+end.row+"/"+end.col);
-
+  var draw_connection = this.draw.draw_connection = function(start, end, max_line, num_lines) { // {{{
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
     var attrs = {'class': 'ourline', 'marker-end': 'url(#arrow)' };
     var line = document.createElementNS(svgNS, "path");
@@ -467,14 +208,24 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
         );
       }
     }
-    document.getElementById('lines_new').appendChild(line);
+    svg.lines.append(line);
 
   } //  }}}
+  var svg_structure = function() { // {{{
+    console.log('Illsutrator: building svg structure');
+    svg.container.append(document.createElementNS(svgNS, "g"));
+    var canvas = $('g:first', svg.container);
+    svg.blocks = canvas.append(document.createElementNS(svgNS, "g"));
+    svg.blocks = $('g:last',canvas);
+    svg.lines = canvas.append(document.createElementNS(svgNS, "g"));
+    svg.lines = $('g:last',canvas);
+    svg.symbols = canvas.append(document.createElementNS(svgNS, "g"));
+    svg.symbols = $('g:last',canvas);
+
+  } // }}}
   // }}}
   // Initialze {{{
     adaptor = wf_adaptor;
-    set_container(svg_container);
-    clear();
   // }}}
 } // }}}
 
@@ -482,9 +233,10 @@ function WfIllustrator(svg_container, wf_adaptor) { // View  {{{
 Manages the description. Is is further able to add/remove elements from the controlflow description.
 */
 
-function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model {{{
+function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // Variable {{{ 
     // public
+    var elements = this.elements = {};
     // private
     var adaptor;
     var illustrator;
@@ -502,11 +254,10 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
       alert("WfDescription: unknown description type:\nConstructor-Name: " + desc.constructor + " / TypeOf: " + (typeof desc));
       description = null;
     }
-    console.log(' -> Description: Start parsing');
     id_counter = {};
     illustrator.clear();
+    console.log(' -> Description: Start parsing');
     var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
-    console.log('expansion of graph: ' + expansion.max.row + '/' + expansion.max.col);
     illustrator.set_expansion(expansion.max);
     console.log(' -> Description: End parsing');
   } // }}}
@@ -515,73 +266,30 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
     return description.serializeXML();
   } // }}}
   // }}}
+
   // Adaption functions {{{
-  var insert = function(element, parent_id, index) { // {{{
-    /* Interface: {{{
-     }}} */
-    console.log('descr: insert -> ' + index);
-  } // }}}
-  var append = function(element, parent_id) { // {{{
-    /* Interface: {{{
-     }}} */
-     var length; // count child of parent_id;
-     return insert(element, parent_id, length);
-  } // }}}
-  var prepend = function(element, parent_id) { // {{{
-    /* Interface: {{{
-     }}} */
-    return insert(element, parent_id, 0);
-  } // }}}
-  var remove = function(svg_id) { // {{{
-    /* Interface: {{{
-     }}} */
-    console.log('descr: remove -> ' + index);
-  } // }}}
   // }}}
-  // Element Defintions {{{
-  this.elements = {
-    'call' : { // {{{
-      'create':  function() {
-        var node = $('');
-        return node;
-      },
-      'insertable' : function(parent_node, index) {
-        return true;
-        return false;
-      },
-    }, // }}}
-    'manipulate' : { // {{{
-      'create':  function() {
-        var node = $('');
-        return node;
-      },
-      'insertable' : function(parent_node, index) {
-        return true;
-        return false;
-      },
-    }, // }}}
-  }; // }}}
-  // }}}
+
   // Helper Functions {{{
   var parse = function(root, parent_pos)  { // private {{{
     var pos = jQuery.extend(true, {}, parent_pos);
     var max = {'row': 0,'col': 0};
     var prev = [parent_pos]; // connects parent with child(s), depending on the expansion
     var endnodes = []; 
-    var root_expansion = illustrator[root.tagName].expansion(root);
+    var root_expansion = illustrator.elements[root.tagName].expansion(root);
     var block =  {'max':{}}; // e.g. {'max':{'row':0,'col':0}, 'endpoints':[]};
 
     if(root_expansion == 'horizontal') pos.row++; 
-    if(illustrator[root.tagName].col_shift(root) == true && root_expansion != 'horizontal') pos.col++; 
+    if(illustrator.elements[root.tagName].col_shift(root) == true && root_expansion != 'horizontal') pos.col++; 
 
     $(root).children().each(function() { 
       // Calculate next position {{{
       if(root_expansion == 'vertical')  pos.row++;
       if(root_expansion == 'horizontal')  pos.col++;
-      switch(illustrator[this.tagName].type) {
+      switch(illustrator.elements[this.tagName].type) {
         case 'complex': 
           block = parse(this, jQuery.extend(true, {}, pos));
-          if(illustrator[this.tagName].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive 
+          if(illustrator.elements[this.tagName].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive 
           break;
         case 'primitive':
           block.max.row = pos.row;
@@ -596,17 +304,17 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
         if(id_counter[this.tagName] == undefined) id_counter[this.tagName] = -1;
          $(this).attr('svg-id',this.tagName + '_' + (++id_counter[this.tagName]));
       } else { $(this).attr('svg-id',  $(this).attr('id'));}  // }}}
-      (illustrator[this.tagName].draw)(this, pos, block);
+      (illustrator.elements[this.tagName].draw)(this, pos, block);
       // }}}
       // Calculate Connection {{{
-      if(illustrator[this.tagName].closeblock) { // Close Block if element e.g. loop 
-        for(node in block.endnodes) illustrator.draw_connection(block.endnodes[node], pos, block.max.row+1, block.endnodes.length);
+      if(illustrator.elements[this.tagName].closeblock) { // Close Block if element e.g. loop 
+        for(node in block.endnodes) illustrator.draw.draw_connection(block.endnodes[node], pos, block.max.row+1, block.endnodes.length);
       }
-      if(illustrator[this.tagName].endnodes != 'this')  { 
+      if(illustrator.elements[this.tagName].endnodes != 'this')  { 
         for(i in block.endnodes) endnodes.push(block.endnodes[i]); // collects all endpoints from different childs e.g. alternatives from choose 
       } else { endnodes = [jQuery.extend(true, {}, pos)]; } // sets this element as only endpoint
       if(prev[0].row != 0 || prev[0].col != 0) // this if avoids the connection from description to the first element
-        for(node in prev) illustrator.draw_connection(prev[node], pos);
+        for(node in prev) illustrator.draw.draw_connection(prev[node], pos);
       // }}}
       // Prepare next iteration {{{
       if(root_expansion == 'vertical') { prev = jQuery.extend(true, {}, endnodes); pos.row = block.max.row;} // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
@@ -620,18 +328,18 @@ function WfDescription(cpee_description, wf_adaptor, wf_illustrator) { // Model 
       pos.row++;
       max.row++;
       if(prev[0].row != 0 || prev[0].col != 0) // this if avoids the connection from description to the first element
-        for(node in prev) illustrator.draw_connection(prev[node], pos);
-      illustrator[root.tagName].draw(null, pos);
+        for(node in prev) illustrator.draw.draw_connection(prev[node], pos);
+      illustrator.elements[root.tagName].draw(null, pos);
     } // }}}
 
-    if(illustrator[root.tagName].endnodes == 'this' && illustrator[root.tagName].closeblock == false) {endnodes = [prev];} // closeblock == false, allows loop to close himselfe
+    if(illustrator.elements[root.tagName].endnodes == 'this' && illustrator.elements[root.tagName].closeblock == false) {endnodes = [prev];} // closeblock == false, allows loop to close himselfe
     return {'endnodes': endnodes, 'max':max};
   } // }}}
   // }}}
+
   //  Initialze {{{
   adaptor = wf_adaptor;
   illustrator = wf_illustrator;
-  this.set_description(cpee_description);
   // }}}
 } // }}} 
 
