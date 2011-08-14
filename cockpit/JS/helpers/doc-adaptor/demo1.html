@@ -5,9 +5,9 @@
     <script type="text/javascript" src="../jquery.min.js"></script>
     <script type="text/javascript" src="../jquery.svgdom.js"></script>
     <script type="text/javascript" src="../underscore.min.js"></script>
+    <script type="text/javascript" src="../../graph.js"></script>
     <script type="text/javascript" src="../../wfadaptor.js"></script>
     <script type="text/javascript" src="../../wfadaptor.cpee.js"></script>
-    <script type="text/javascript" src="../../graph.js"></script>
     <link rel="stylesheet" href="../../wfadaptor.css" type="text/css"/>
     <script type="text/javascript">
       var adaptor = null;
@@ -481,7 +481,7 @@
     <script type="text/javascript">
       var then = new Date();
       adaptor = new WfAdaptor();
-      var cpee = create_cpee_elements(adaptor.illustrator.draw);
+      var cpee = create_cpee_elements(adaptor.illustrator);
       adaptor.set_svg_container($('#drawing_area'));
       adaptor.add_elements(cpee);
       adaptor.set_description($('#description').val());

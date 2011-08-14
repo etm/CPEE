@@ -30,16 +30,16 @@ function WfAdaptor() { // Controler {{{
     for(element in elements) {
       // Illsutrator
       illustrator.elements[element] = elements[element].illustrator;
-      this.illustrator.svg.defs.append(elements[element].illustrator['svg_def']);
+      console.log(this.illustrator.svg.defs.namespaceURI);
+      this.illustrator.svg.defs.append(elements[element].illustrator.svg_def);
       // Description
       description.elements[element] = elements[element].description;
       // Adaptor
       elements[element] = elements[element].adaptor;
     }
   } // }}}
-  this.set_svg_container = function (container, elements) { // {{{
-    illustrator.set_container(container, elements);
-    this.add_elements(elements);
+  this.set_svg_container = function (container) { // {{{
+    illustrator.set_container(container);
   } // }}}
   // }}}
 
@@ -76,24 +76,37 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // }}} 
   // Generic Functions {{{
   this.set_container = function(con) { // {{{
+    var svgNS = "http://www.w3.org/2000/svg";
     console.log('illustrator: set container');
     clear();
     svg.container = con;
+    // TODO: Problem when creatign this element with a namespace. I think this must be the reason why the arrow is not displayed at all
     svg.container.append('<defs/>');
     svg.defs = $('defs:first', svg.container);
     svg_structure();
     // Adding arrow
-    var svgNS = "http://www.w3.org/2000/svg";
     var symbol = document.createElementNS(svgNS, "marker");
-    var attrs = {'id':'arrow','viewBox':'0 0 10 10', 'refX':24, 'refY':5, 'orient':'auto', 'markerUnits':'strokeWidth', 'markerWidth':4.5, 'makerHeight':4.5};
+    var attrs = {'id':'arrow','viewBox':'0 0 10 10', 'refX':'24', 'refY':'5', 'orient':'auto', 'markerUnits':'strokeWidth', 'markerWidth':'4.5', 'makerHeight':'4.5'};
     for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-    var sub = document.createElementNS(svgNS, "path");
+    sub = document.createElementNS(svgNS, "path");
     attrs = {'d':'m 2 2 l 6 3 l -6 3 z'};
     for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
     symbol.appendChild(sub);
     svg.defs.append(symbol);
- 
-    //svg.defs.append('<marker id="arrow" viewBox="0 0 10 10" refX="24" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" markerHeight="4.5"><path d="m 2 2 l 6 3 l -6 3 z"></path></marker>');
+    // Adding symbol for un-known element
+    symbol = document.createElementNS(svgNS, "symbol");
+    attrs = {'id':'unknown','class':''};
+    for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
+    sub = document.createElementNS(svgNS, "circle");
+    attrs = {'cx':15, 'cy':15,'r':14,'class':'unknown'};
+    for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
+    symbol.appendChild(sub);
+    sub = document.createElementNS(svgNS, "text");
+    attrs = {'transform':'translate(15,20)','class':'normal'};
+    for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
+    sub.appendChild(document.createTextNode('?'));
+    symbol.appendChild(sub);
+    svg.defs.append(symbol);
   }  // }}}
   var clear = this.clear = function() { // {{{
     console.log('illustrator: clear');
@@ -286,16 +299,13 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       // Calculate next position {{{
       if(root_expansion == 'vertical')  pos.row++;
       if(root_expansion == 'horizontal')  pos.col++;
-      switch(illustrator.elements[this.tagName].type) {
-        case 'complex': 
-          block = parse(this, jQuery.extend(true, {}, pos));
-          if(illustrator.elements[this.tagName].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive 
-          break;
-        case 'primitive':
-          block.max.row = pos.row;
-          block.max.col = pos.col;
-          block.endnodes = [pos];
-          break;
+      if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].type == 'complex') {
+        block = parse(this, jQuery.extend(true, {}, pos));
+        if(illustrator.elements[this.tagName].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive 
+      } else {
+        block.max.row = pos.row;
+        block.max.col = pos.col;
+        block.endnodes = [pos];
       }
       // }}}
       // Draw symbol {{{
@@ -304,13 +314,17 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         if(id_counter[this.tagName] == undefined) id_counter[this.tagName] = -1;
          $(this).attr('svg-id',this.tagName + '_' + (++id_counter[this.tagName]));
       } else { $(this).attr('svg-id',  $(this).attr('id'));}  // }}}
-      (illustrator.elements[this.tagName].draw)(this, pos, block);
+      if(illustrator.elements[this.tagName] == undefined) {
+        illustrator.draw.draw_symbol('unknown', $(this).attr('svg-id'), pos.row, pos.col);
+      } else {
+        (illustrator.elements[this.tagName].draw)(this, pos, block);
+      }
       // }}}
       // Calculate Connection {{{
-      if(illustrator.elements[this.tagName].closeblock) { // Close Block if element e.g. loop 
+      if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].closeblock) { // Close Block if element e.g. loop 
         for(node in block.endnodes) illustrator.draw.draw_connection(block.endnodes[node], pos, block.max.row+1, block.endnodes.length);
       }
-      if(illustrator.elements[this.tagName].endnodes != 'this')  { 
+      if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].endnodes != 'this')  { 
         for(i in block.endnodes) endnodes.push(block.endnodes[i]); // collects all endpoints from different childs e.g. alternatives from choose 
       } else { endnodes = [jQuery.extend(true, {}, pos)]; } // sets this element as only endpoint
       if(prev[0].row != 0 || prev[0].col != 0) // this if avoids the connection from description to the first element
