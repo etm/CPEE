@@ -1,17 +1,18 @@
-function contextmenu(id, items, x, y) {
-  console.log(items);
-  console.log(x);
-  console.log(y);
-  var div = $('<div><table><tr><td><b>Selected ' + id +'</b></td></tr></div>');
+function contextmenu(items, x, y) {
+  var div = $('<div><table/></div>');
   for(item in items) {
-    div.children(':first').append('<tr><td>'+items[item]+'</td></tr>');
+    var row = $('<tr class="contextmenuitem"><td>' + item + '</td></tr>');
+    div.children(':first').append(row);
+    row.bind('click', items[item], function(event){
+      console.log('with params');
+      console.log(event.data.params);
+      event.data.function_call.apply(null, event.data.params);
+    });
   }
   div.attr('class','contextmenu');
-  div.css({'left':x-10,'top':y-10, 'display':'block'});
+  div.css({'left':x+5,'top':y+5, 'display':'block'});
   $('body', document).append(div);
-  $('body', document).bind('click',contextmenu_remove);
-
-  return 42;
+  $('body', document).bind('click',contextmenu_remove); // must the binding also be removed? (TODO)
 }
 
 function contextmenu_remove() {

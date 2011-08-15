@@ -5,3 +5,8 @@ div.contextmenu {
   background: Menu;
   border: 1px solid ActiveBorder;
 }
+
+tr.contextmenuitem:hover {
+  background-color:Highlight;
+  color: MenuText;
+}

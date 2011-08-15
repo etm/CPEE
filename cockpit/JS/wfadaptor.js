@@ -25,18 +25,6 @@ function WfAdaptor() { // Controler {{{
   this.notify = function(element_id, operation) { // public {{{
     console.log("Adaptor Notification: " + element_id + " -> " + operation);
   } // }}}
-  this.add_elements = function(elements) { // {{{
-    console.log('Adaptor: adding elements');
-    for(element in elements) {
-      // Illsutrator
-      illustrator.elements[element] = elements[element].illustrator;
-      this.illustrator.svg.defs.append(elements[element].illustrator.svg_def);
-      // Description
-      description.elements[element] = elements[element].description;
-      // Adaptor
-      this.elements[element] = elements[element].adaptor;
-    }
-  } // }}}
   this.set_svg_container = function (container) { // {{{
     illustrator.set_container(container);
   } // }}}
@@ -277,9 +265,24 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     console.log('descr: get description');
     return description.serializeXML();
   } // }}}
+  this.get_node_by_svg_id = function(svg_id) { // {{{
+    return $('[svg-id = ' + svg_id + ']', description);
+  } // }}}
   // }}}
 
   // Adaption functions {{{
+  this.insert_after = function(new_node, node_id) { // {{{
+    console.log("Description: Inster after node-id " + node_id);
+    console.log(new_node);
+  } // }}}
+  this.append = function(new_node, node_id) { // {{{
+    console.log("Description: Append node-id " + node_id);
+    console.log(new_node);
+  } // }}}
+  this.remove = function(selctor, node_id) {
+    console.log("Description: Remove from node-id " + node_id);
+    console.log(selector);
+  }
   // }}}
 
   // Helper Functions {{{

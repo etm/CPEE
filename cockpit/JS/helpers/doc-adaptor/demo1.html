@@ -10,6 +10,7 @@
     <script type="text/javascript" src="../../wfadaptor.js"></script>
     <script type="text/javascript" src="../../wfadaptor.cpee.js"></script>
     <link rel="stylesheet" href="../../wfadaptor.css" type="text/css"/>
+    <link rel="stylesheet" href="../contextmenu.css" type="text/css"/>
     <script type="text/javascript">
       var adaptor = null;
       var parser = DOMParser();
@@ -482,9 +483,8 @@
     <script type="text/javascript">
       var then = new Date();
       adaptor = new WfAdaptor();
-      var cpee = create_cpee_elements(adaptor.illustrator);
       adaptor.set_svg_container($('#drawing_area'));
-      adaptor.add_elements(cpee);
+      create_cpee_elements(adaptor);
       adaptor.set_description($('#description').val());
       $('#t_new').text((new Date()).getTime() - then.getTime() + 'ms'); 
       adaptor.notify = update_event;

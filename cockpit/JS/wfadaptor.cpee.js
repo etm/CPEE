@@ -1,4 +1,6 @@
-function create_cpee_elements(illustrator) {
+function create_cpee_elements(adaptor) {
+  var illustrator = adaptor.illustrator;
+  var description = adaptor.description;
   var elements = {};
 
   // Abstracts 
@@ -35,9 +37,14 @@ function create_cpee_elements(illustrator) {
       }
     },
     'description' : {
-      'create':  function() {
-        var node = $('');
-        return node;
+      'create':  function(only_manipulate) {
+        var node = null;
+        if(only_manipulate) {
+          node = $('<manipulate/>');
+        } else {
+          node = $('<call><manipulate/></call>');
+        }
+          return node;
       },
       'insertable' : function(parent_node, index) {
         return true;
@@ -87,7 +94,7 @@ function create_cpee_elements(illustrator) {
     },
     'description' : {
       'create':  function() {
-        var node = $('');
+        var node = $('<call/>');
         return node;
       },
       'insertable' : function(parent_node, index) {
@@ -99,9 +106,19 @@ function create_cpee_elements(illustrator) {
       'right_click' : function(node, e) { 
         var node_id = $(node).parents(':first').attr('id');
         console.log('rightclick on call with id ' + node_id);
-        var menu_items = ['Insert Manipulate', 'Append Call', 'Append Manipulate'];
-        var selection = contextmenu(node_id, menu_items, e.pageX, e.pageY);
-        console.log('Selected item: ' + selection);
+        var menu_items = {
+          'Insert Call after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
+          'Insert Manipulate after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
+          'Insert Choose after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
+          'Insert Parallel after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
+          'Insert Parallel Branch after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
+          'Insert Loop after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
+          'Insert Critical after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
+        }
+        if(description.get_node_by_svg_id(node_id).children('manipulate').length == 0) {
+          menu_items['Insert Manipulate into'] = {'function_call': description.append, 'params': [description.elements.call_manipulate.create(true), node_id]};
+        } 
+        contextmenu(menu_items, e.pageX, e.pageY);
         return false;
       }, 
       'left_click' : function(node, e) { 
@@ -591,5 +608,16 @@ function create_cpee_elements(illustrator) {
     }
   }; /*}}}*/
    
+   console.log('Adaptor: adding cpee elements');
+    for(element in elements) {
+      // Illsutrator
+      illustrator.elements[element] = elements[element].illustrator;
+      illustrator.svg.defs.append(elements[element].illustrator.svg_def);
+      // Description
+      description.elements[element] = elements[element].description;
+      // Adaptor
+      adaptor.elements[element] = elements[element].adaptor;
+    }
+
   return elements;
 }   
