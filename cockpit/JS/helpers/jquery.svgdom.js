@@ -90,6 +90,12 @@ $.fn.hasClass = function(origHasClass) {
   };
 }($.fn.hasClass);
 
+/* Support checking class names on SVG nodes. */
+$X = function(xmlstr) {
+  var test = $.parseXML(xmlstr).documentElement;
+  return $(test);
+};
+
 /* Support attributes on SVG nodes. */
 $.fn.attr = function(origAttr) {
   return function(name, value, type) {
