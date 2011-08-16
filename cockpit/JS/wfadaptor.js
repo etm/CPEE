@@ -402,7 +402,7 @@ $.fn.serializeXML = function () {
     if (typeof XMLSerializer == 'function') {
         var xs = new XMLSerializer();
         this.each(function() {
-            out += xs.serializeToString(this);
+            out += XML(xs.serializeToString(this)).toXMLString();;
         });
     } else if (this[0] && this[0].xml != 'undefined') {
         this.each(function() {
