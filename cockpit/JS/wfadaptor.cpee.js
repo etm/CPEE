@@ -3,9 +3,45 @@ function create_cpee_elements(adaptor) {
   var description = adaptor.description;
   var elements = {};
 
+/* {{{
+    {'label': 'Service Call with Manipulate Block', 
+     'function_call': description.append, 
+     'params': [description.elements.callmanipulate.create(false), node]},
+    {'label': 'Service Call', 
+     'function_call': description.append, 
+     'params': [description.elements.call.create(), node]},
+    {'label': 'Manipulate Block', 
+     'function_call': description.append, 
+     'params': [description.elements.callmanipulate.create(true), node]},
+    {'label': 'Manipulate', 
+     'function_call': description.append, 
+     'params': [description.elements.manipulate.create(), node]},
+    {'label': 'Parallel', 
+     'function_call': description.append, 
+     'params': [description.elements.parallel.create(), node]},
+    {'label': 'Parallel Branch', 
+     'function_call': description.append, 
+     'params': [description.elements.parallel_branch.create(), node]},
+    {'label': 'Choose', 
+     'function_call': description.append, 
+     'params': [description.elements.choose.create(), node]},
+    {'label': 'Alternative', 
+     'function_call': description.append, 
+     'params': [description.elements.alternative.create(), node]},
+    {'label': 'Otherwise', 
+     'function_call': description.append, 
+     'params': [description.elements.otherwise.create(), node]},
+    {'label': 'Loop', 
+     'function_call': description.append, 
+     'params': [description.elements.loop.create(), node]},
+    {'label': 'Critical', 
+     'function_call': description.append, 
+     'params': [description.elements.critical.create(), node]},
+}}} */
+
   // Abstracts 
-  elements.call_manipulate = { /*{{{*/
-    'illustrator': {
+  elements.callmanipulate = { /*{{{*/
+    'illustrator': {//{{{
       'type' : 'abstract', 
       'draw' : function(node, pos, block) { 
         return illustrator.draw.draw_symbol('callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
@@ -35,8 +71,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function(only_manipulate) {
         var node = null;
         if(only_manipulate) {
@@ -50,27 +86,33 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
-      'right_click' : function(node) { 
+      'permissible_children': function(node) {
+        var func = null
+        if(node.tagName == 'call') { func = description.append}
+        else { func = description.insert_after}
+        return [];
+      }
+    },//}}}
+    'adaptor' : {//{{{
+      'right_click' : function(node, e) { 
         console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   }; /*}}}*/
 
   // Primitives 
   elements.call = { /*{{{*/
-    'illustrator': {
+    'illustrator': {//{{{
       'type' : 'primitive', 
       'endnodes' : 'this',
       'draw' : function(node, pos, block) { 
         if($(node).children('manipulate').length > 0) {
-          return illustrator.elements.call_manipulate.draw(node, pos, block);
+          return illustrator.elements.callmanipulate.draw(node, pos, block);
         } else {
           return illustrator.draw.draw_symbol('call', $(node).attr('svg-id'), pos.row, pos.col);
         }
@@ -91,8 +133,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function() {
         var node = $('<call/>');
         return node;
@@ -101,35 +143,34 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
+      'permissible_children': function(node) {
+        if($(node).children('manipulate').length == 0) 
+          return [
+           {'label': 'Manipulate Block', 
+            'function_call': description.insert_last_into, 
+            'params': [description.elements.callmanipulate.create(true), node]}
+          ];
+        return [];
+      }
+    },//}}}
+    'adaptor' : {//{{{
       'right_click' : function(node, e) { 
-        var node_id = $(node).parents(':first').attr('id');
-        console.log('rightclick on call with id ' + node_id);
-        var menu_items = {
-          'Insert Call after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
-          'Insert Manipulate after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
-          'Insert Choose after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
-          'Insert Parallel after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
-          'Insert Parallel Branch after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
-          'Insert Loop after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
-          'Insert Critical after': {'function_call': description.insert_after, 'params': [description.elements.call.create(), node_id]},
-        }
-        if(description.get_node_by_svg_id(node_id).children('manipulate').length == 0) {
-          menu_items['Insert Manipulate into'] = {'function_call': description.append, 'params': [description.elements.call_manipulate.create(true), node_id]};
-        } 
-        contextmenu(menu_items, e.pageX, e.pageY);
+        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
+        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
+        var insert_into = elements.call.description.permissible_children(xml_node);
+        var insert_after = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
+        contextmenu({'Insert Into Element ...':insert_into, 'Insert After Element ...': insert_after}, e.pageX, e.pageY);
         return false;
       }, 
       'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   }; /*}}}*/
 
   elements.manipulate = { /*{{{*/
-    'illustrator': {
+    'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
       'draw' : function(node, pos, block) { 
@@ -151,8 +192,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function() {
         var node = $('');
         return node;
@@ -161,22 +202,22 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
-      'right_click' : function(node) { 
+    },//}}}
+    'adaptor' : {//{{{
+      'right_click' : function(node, e) { 
         console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   }; /*}}}*/
 
 // Complex 
   elements.choose = { /*{{{*/
-    'illustrator': {
+    'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'aggregate',
       'closeblock': false,
@@ -205,8 +246,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function() {
         var node = $('');
         return node;
@@ -215,21 +256,31 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
-      'right_click' : function(node) { 
+      'permissible_children': function(node) {
+        return [
+          {'label': 'Alternative', 
+           'function_call': description.append, 
+           'params': [description.elements.alternative.create(), node]},
+          {'label': 'Otherwise', 
+           'function_call': description.append, 
+           'params': [description.elements.otherwise.create(), node]},
+        ];
+      }
+    },//}}}
+    'adaptor' : {//{{{
+      'right_click' : function(node, e) { 
         console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   };  /*}}}*/
 
   elements.otherwise = { /*{{{*/
-    'illustrator': {
+    'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'passthrough',
       'closeblock': false,
@@ -258,8 +309,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function() {
         var node = $('');
         return node;
@@ -268,21 +319,50 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
-      'right_click' : function(node) { 
-        console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
+      'permissible_children': function(node) {
+        return [
+          {'label': 'Service Call with Manipulate Block', 
+           'function_call': description.append, 
+           'params': [description.elements.callmanipulate.create(false), node]},
+          {'label': 'Service Call', 
+           'function_call': description.append, 
+           'params': [description.elements.call.create(), node]},
+          {'label': 'Manipulate', 
+           'function_call': description.append, 
+           'params': [description.elements.manipulate.create(), node]},
+          {'label': 'Parallel', 
+           'function_call': description.append, 
+           'params': [description.elements.parallel.create(), node]},
+          {'label': 'Choose', 
+           'function_call': description.append, 
+           'params': [description.elements.choose.create(), node]},
+          {'label': 'Loop', 
+           'function_call': description.append, 
+           'params': [description.elements.loop.create(), node]},
+          {'label': 'Critical', 
+           'function_call': description.append, 
+           'params': [description.elements.critical.create(), node]}
+        ];
+      }
+    },//}}}
+    'adaptor' : {//{{{
+      'right_click' : function(node, e) { 
+        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
+        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
+        var insert_into = elements.call.description.permissible_children(xml_node);
+        var insert_after = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
+        contextmenu({'Insert Into Element ...':insert_into, 'Insert After Element ...': insert_after}, e.pageX, e.pageY);
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   }; /*}}}*/
   
   elements.alternative = { /*{{{*/
-    'illustrator': {
+    'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'passthrough',
       'closeblock':false,
@@ -311,8 +391,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function() {
         var node = $('');
         return node;
@@ -321,21 +401,50 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
-      'right_click' : function(node) { 
-        console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
+      'permissible_children': function(node) {
+        return [
+          {'label': 'Service Call with Manipulate Block', 
+           'function_call': description.append, 
+           'params': [description.elements.callmanipulate.create(false), node]},
+          {'label': 'Service Call', 
+           'function_call': description.append, 
+           'params': [description.elements.call.create(), node]},
+          {'label': 'Manipulate', 
+           'function_call': description.append, 
+           'params': [description.elements.manipulate.create(), node]},
+          {'label': 'Parallel', 
+           'function_call': description.append, 
+           'params': [description.elements.parallel.create(), node]},
+          {'label': 'Choose', 
+           'function_call': description.append, 
+           'params': [description.elements.choose.create(), node]},
+          {'label': 'Loop', 
+           'function_call': description.append, 
+           'params': [description.elements.loop.create(), node]},
+          {'label': 'Critical', 
+           'function_call': description.append, 
+           'params': [description.elements.critical.create(), node]}
+        ];
+      }
+    },//}}}
+    'adaptor' : {//{{{
+      'right_click' : function(node, e) { 
+        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
+        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
+        var insert_into = elements.call.description.permissible_children(xml_node);
+        var insert_after = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
+        contextmenu({'Insert Into Element ...':insert_into, 'Insert After Element ...': insert_after}, e.pageX, e.pageY);
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   };  /*}}}*/
   
   elements.loop = { /*{{{*/
-    'illustrator': {
+    'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : true,
@@ -364,8 +473,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function() {
         var node = $('');
         return node;
@@ -374,21 +483,21 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
-      'right_click' : function(node) { 
+    },//}}}
+    'adaptor' : {//{{{
+      'right_click' : function(node, e) { 
         console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   };  /*}}}*/
   
   elements.parallel = { /*{{{*/
-    'illustrator': {
+    'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : false,
@@ -420,8 +529,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function() {
         var node = $('');
         return node;
@@ -430,21 +539,21 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
-      'right_click' : function(node) { 
+    },//}}}
+    'adaptor' : {//{{{
+      'right_click' : function(node, e) { 
         console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   };  /*}}}*/
   
   elements.parallel_branch = { /*{{{*/
-    'illustrator': {
+    'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : false,
@@ -474,8 +583,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function() {
         var node = $('');
         return node;
@@ -484,21 +593,21 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
-      'right_click' : function(node) { 
+    },//}}}
+    'adaptor' : {//{{{
+      'right_click' : function(node, e) { 
         console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   };  /*}}}*/
   
   elements.critical = { /*{{{*/
-    'illustrator': {
+    'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'aggregate',
       'closeblock' : false,
@@ -528,8 +637,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function() {
         var node = $('');
         return node;
@@ -538,21 +647,21 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
-      'right_click' : function(node) { 
+    },//}}}
+    'adaptor' : {//{{{
+      'right_click' : function(node, e) { 
         console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   };  /*}}}*/
   
   elements.description = { /*{{{*/
-    'illustrator': {
+    'illustrator': {//{{{
       'type' : 'description',
       'endnodes' : 'passthrough',
       'closeblock' : false,
@@ -585,8 +694,8 @@ function create_cpee_elements(adaptor) {
         symbol.appendChild(sub);
         return symbol;
       }
-    },
-    'description' : {
+    },//}}}
+    'description' : {//{{{
       'create':  function() {
         var node = $('');
         return node;
@@ -595,17 +704,45 @@ function create_cpee_elements(adaptor) {
         return true;
         return false;
       },
-    },
-    'adaptor' : {
-      'right_click' : function(node) { 
+      'permissible_children': function(node) {
+        var func = null
+        if(node.tagName == 'description') { func = description.append}
+        else { func = description.insert_after}
+        return [
+          {'label': 'Service Call with Manipulate Block', 
+           'function_call': func, 
+           'params': [description.elements.callmanipulate.create(false), node]},
+          {'label': 'Service Call', 
+           'function_call': func, 
+           'params': [description.elements.call.create(), node]},
+          {'label': 'Manipulate', 
+           'function_call': func, 
+           'params': [description.elements.manipulate.create(), node]},
+          {'label': 'Parallel', 
+           'function_call': func, 
+           'params': [description.elements.parallel.create(), node]},
+          {'label': 'Choose', 
+           'function_call': func, 
+           'params': [description.elements.choose.create(), node]},
+          {'label': 'Loop', 
+           'function_call': func, 
+           'params': [description.elements.loop.create(), node]},
+          {'label': 'Critical', 
+           'function_call': func, 
+           'params': [description.elements.critical.create(), node]}
+        ];
+      }
+    },//}}}
+    'adaptor' : {//{{{
+      'right_click' : function(node, e) { 
         console.log('rightclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       }, 
-      'left_click' : function(node) { 
+      'left_click' : function(node, e) { 
         console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
         return false;
       } 
-    }
+    }//}}}
   }; /*}}}*/
    
    console.log('Adaptor: adding cpee elements');

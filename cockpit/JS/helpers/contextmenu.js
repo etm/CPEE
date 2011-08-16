@@ -1,13 +1,17 @@
 function contextmenu(items, x, y) {
-  var div = $('<div><table/></div>');
-  for(item in items) {
-    var row = $('<tr class="contextmenuitem"><td>' + item + '</td></tr>');
-    div.children(':first').append(row);
-    row.bind('click', items[item], function(event){
-      console.log('with params');
-      console.log(event.data.params);
-      event.data.function_call.apply(null, event.data.params);
-    });
+  if($('div.contextmenu').length > 0) contextmenu_remove();
+  var div = $('<div><table class="contextmenu"/></div>');
+  for(head in items) {
+    div.children(':first').append('<tr class="contextmenuheader"><td>' + head + '</td></tr>');
+    for(item in items[head]) {
+      var row = $('<tr class="contextmenuitem"><td>' + items[head][item].label + '</td></tr>');
+      div.children(':first').append(row);
+      row.bind('click', items[head][item], function(event){
+        console.log(event.data.params);
+        console.log(items[head][item].label);
+        event.data.function_call.apply(null, event.data.params);
+      });
+    }
   }
   div.attr('class','contextmenu');
   div.css({'left':x+5,'top':y+5, 'display':'block'});
@@ -16,7 +20,6 @@ function contextmenu(items, x, y) {
 }
 
 function contextmenu_remove() {
-  console.log('body click');
   $('.contextmenu:first').remove();
   $('body', document).unbind('click',contextmenu_remove);
 }

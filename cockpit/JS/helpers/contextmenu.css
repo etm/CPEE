@@ -3,10 +3,36 @@ div.contextmenu {
   position: absolute;
   display:none;
   background: Menu;
-  border: 1px solid ActiveBorder;
+  border: 3px solid InactiveBorder;
 }
 
+table.contextmenu {
+  border-collapse:collapse;
+}
+
+tr.contextmenuheader {
+  font-style:italic;
+  color: GrayText;
+  font-size: small;
+}
+
+tr.contextmenuheader > td{
+  padding-left: 0.5em;
+  padding-right: 1em;
+}
+tr.contextmenuheader:not(:first-child) {
+  border-top: 0.2em solid ButtonShadow;
+}
+
+tr.contextmenuitem {
+  font-size: small;
+  color: MenuText;
+}
 tr.contextmenuitem:hover {
   background-color:Highlight;
-  color: MenuText;
+  color: HighlightText;
+}
+tr.contextmenuitem > td{
+  padding-left: 1.5em;
+  padding-right: 1em;
 }

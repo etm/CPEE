@@ -1,3 +1,9 @@
+/* TODO: changes in svg-script:
+  1) drawing frunctions
+  2) creation of svg-container (Bug: arrows on lines)
+  3) after-function to insert using namespace of description
+*/
+
 /* WfAdaptor: 
 Handles interaction between Illustartor and Description 
 e.g. Event fires to Adaptor to insert Element and Illustrator and Description do it
@@ -22,11 +28,11 @@ function WfAdaptor() { // Controler {{{
     console.log('adaptor: get description');
     return description.get_description();
   } // }}}
-  this.notify = function(element_id, operation) { // public {{{
-    console.log("Adaptor Notification: " + element_id + " -> " + operation);
+  this.notify = function() { // public {{{
+    console.log("Adaptor Notification: description change");
   } // }}}
   this.set_svg_container = function (container) { // {{{
-    illustrator.set_container(container);
+    illustrator.set_container(container); // TODO: shadowing the container element
   } // }}}
   // }}}
 
@@ -97,7 +103,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   }  // }}}
   var clear = this.clear = function() { // {{{
     console.log('illustrator: clear');
-    $('g > *', svg).each(function() {$(this).remove()});
+    $('> path', svg.lines).each(function() {$(this).remove()});
+    $('> g', svg.symbols).each(function() {$(this).remove()});
   } // }}}
   this.set_expansion = function(expansion) { // {{{
     if(expansion.row < 0) expansion.row = 1;
@@ -141,15 +148,20 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     for(var attr in attrs)
       use.setAttribute(attr, attrs[attr]);
-
     $(use).bind('mousedown', function(e) {
       if(e.button == 2) {  // rightclick
-        if(adaptor.elements[sym_name] == undefined || adaptor.elements[sym_name].right_click == undefined) return;
+        if(adaptor.elements[sym_name] == undefined || adaptor.elements[sym_name].right_click == undefined) {
+          console.log('Binding right-click: unkown element named ' + sym_name);
+          return;
+        }
         adaptor.elements[sym_name].right_click(this,e)
       }
     });
     $(use).bind('click', function(e){ 
-        if(adaptor.elements[sym_name] == undefined || adaptor.elements[sym_name].left_click == undefined) return;
+        if(adaptor.elements[sym_name] == undefined || adaptor.elements[sym_name].left_click == undefined) { 
+          console.log('Binding left-click: unkown element named ' + sym_name);
+          return;
+        }
         adaptor.elements[sym_name].left_click(this,e)
     });
     $(use).bind('contextmenu', false);
@@ -242,10 +254,13 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     var illustrator;
     var description;
     var id_counter = {};
+    var update_illustrator = true;
   // }}} 
   // Generic Functions {{{
-  this.set_description = function(desc) { // public {{{
+  this.set_description = function(desc, auto_update) { // public {{{
     console.log('descr: set description');
+    console.log('descr: set auto-update to ' + auto_update);
+    if(auto_update != undefined)  update_illustrator = auto_update;
     if(typeof desc == "string") {
       description = $($.parseXML(desc));
     } else if(desc instanceof jQuery) {
@@ -261,7 +276,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     illustrator.set_expansion(expansion.max);
     console.log(' -> Description: End parsing');
   } // }}}
-  this.get_description = function() { //  public {{{
+  var gd = this.get_description = function() { //  public {{{
     console.log('descr: get description');
     return description.serializeXML();
   } // }}}
@@ -271,16 +286,38 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
 
   // Adaption functions {{{
-  this.insert_after = function(new_node, node_id) { // {{{
-    console.log("Description: Inster after node-id " + node_id);
-    console.log(new_node);
+  this.insert_after = function(new_node, target) { // {{{
+    target.after(new_node);
+console.log(gd());
+    if(update_illustrator) { 
+      illustrator.clear();
+      var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
+      illustrator.set_expansion(expansion.max);
+    }
+    adaptor.notify();
   } // }}}
-  this.append = function(new_node, node_id) { // {{{
-    console.log("Description: Append node-id " + node_id);
-    console.log(new_node);
+  this.insert_first_into = function(new_node, target, selector) { // {{{
+    target.prepend(new_node);
+console.log(gd());
+    if(update_illustrator) { 
+      illustrator.clear();
+      var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
+      illustrator.set_expansion(expansion.max);
+    }
+    adaptor.notify();
   } // }}}
-  this.remove = function(selctor, node_id) {
-    console.log("Description: Remove from node-id " + node_id);
+  this.insert_last_into = function(new_node, target, selector) { // {{{
+    target.append(new_node);
+console.log(gd());
+    if(update_illustrator) { 
+      illustrator.clear();
+      var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
+      illustrator.set_expansion(expansion.max);
+    }
+    adaptor.notify();
+  } // }}}
+  this.remove = function(selector, target) {
+    console.log("Description: Remove from node-id " + target);
     console.log(selector);
   }
   // }}}
