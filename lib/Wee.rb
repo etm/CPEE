@@ -13,11 +13,18 @@ class Wee
     @dslr = DSLRealization.new
     @dslr.__wee_handlerwrapper_args = args
       
+    ### 1.8
     initialize_search if methods.include?('initialize_search')
     initialize_data if methods.include?('initialize_data')
     initialize_endpoints if methods.include?('initialize_endpoints')
     initialize_handlerwrapper if methods.include?('initialize_handlerwrapper')
     initialize_control if methods.include?('initialize_control')
+    ### 1.9
+    initialize_search if methods.include?(:initialize_search)
+    initialize_data if methods.include?(:initialize_data)
+    initialize_endpoints if methods.include?(:initialize_endpoints)
+    initialize_handlerwrapper if methods.include?(:initialize_handlerwrapper)
+    initialize_control if methods.include?(:initialize_control)
   end # }}}
 
   module Signal # {{{
