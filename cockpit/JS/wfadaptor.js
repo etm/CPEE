@@ -21,15 +21,12 @@ function WfAdaptor() { // Controler {{{
   // }}}
   // Generic Functions {{{
   this.set_description = function(desc) { // public {{{
-    console.log("adaptor: set descirption");
     this.description.set_description(desc);
   } // }}}
   this.get_description = function() { // public {{{
-    console.log('adaptor: get description');
     return description.get_description();
   } // }}}
   this.notify = function() { // public {{{
-    console.log("Adaptor Notification: description change");
   } // }}}
   this.set_svg_container = function (container) { // {{{
     illustrator.set_container(container); // TODO: shadowing the container element
@@ -43,10 +40,8 @@ function WfAdaptor() { // Controler {{{
   // }}}
 
   // Initialze {{{
-console.log(" -> initializing adaptor: start");
   this.illustrator = illustrator = new WfIllustrator(this);
   this.description = description = new WfDescription(this, this.illustrator);
-console.log(" -> initializing adaptor: end");
   // }}}
 }  // }}}
 
@@ -70,7 +65,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // Generic Functions {{{
   this.set_container = function(con) { // {{{
     var svgNS = "http://www.w3.org/2000/svg";
-    console.log('illustrator: set container');
     clear();
     svg.container = con;
     // TODO: Problem when creatign this element with a namespace. I think this must be the reason why the arrow is not displayed at all
@@ -102,7 +96,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     svg.defs.append(symbol);
   }  // }}}
   var clear = this.clear = function() { // {{{
-    console.log('illustrator: clear');
     $('> path', svg.lines).each(function() {$(this).remove()});
     $('> rect', svg.blocks).each(function() {$(this).remove()});
     $('> g', svg.symbols).each(function() {$(this).remove()});
@@ -149,23 +142,12 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     for(var attr in attrs)
       use.setAttribute(attr, attrs[attr]);
-    $(use).bind('mousedown', function(e) {
-      if(e.button == 2) {  // rightclick
-        if(adaptor.elements[sym_name] == undefined || adaptor.elements[sym_name].right_click == undefined) {
-          console.log('Binding right-click: unkown element named ' + sym_name);
-          return;
-        }
-        adaptor.elements[sym_name].right_click(this,e)
-      }
-    });
-    $(use).bind('click', function(e){ 
-        if(adaptor.elements[sym_name] == undefined || adaptor.elements[sym_name].left_click == undefined) { 
-          console.log('Binding left-click: unkown element named ' + sym_name);
-          return;
-        }
-        adaptor.elements[sym_name].left_click(this,e)
-    });
-    $(use).bind('contextmenu', false);
+
+    // Binding events for symbol
+    for(event_name in adaptor.elements[sym_name]) {
+      $(use).bind(event_name, {'function_call':adaptor.elements[sym_name][event_name]}, function(e) { e.data.function_call(this,e)});
+      if(event_name == 'mousedown') $(use).bind('contextmenu', false);
+    }
     g.appendChild(use);
     svg.symbols.append(g);
     return g;
@@ -225,7 +207,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
   } //  }}}
   var svg_structure = function() { // {{{
-    console.log('Illsutrator: building svg structure');
     svg.container.append(document.createElementNS(svgNS, "g"));
     var canvas = $('g:first', svg.container);
     svg.blocks = canvas.append(document.createElementNS(svgNS, "g"));
@@ -259,8 +240,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}} 
   // Generic Functions {{{
   this.set_description = function(desc, auto_update) { // public {{{
-    console.log('descr: set description');
-    console.log('descr: set auto-update to ' + auto_update);
     if(auto_update != undefined)  update_illustrator = auto_update;
     if(typeof desc == "string") {
       description = $($.parseXML(desc));
@@ -272,15 +251,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     id_counter = {};
     illustrator.clear();
-    console.log(' -> Description: Start parsing');
     var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
-    console.log('expansion');
-    console.log(expansion);
     illustrator.set_expansion(expansion.max);
-    console.log(' -> Description: End parsing');
   } // }}}
   var gd = this.get_description = function() { //  public {{{
-    console.log('descr: get description');
     return description.serializeXML();
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
@@ -290,7 +264,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
   // Adaption functions {{{
   this.insert_after = function(new_node, target) { // {{{
-    console.log('insert after');
     target.after(new_node);
     if(update_illustrator) { 
       illustrator.clear();
@@ -300,7 +273,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     adaptor.notify();
   } // }}}
   this.insert_first_into = function(new_node, target, selector) { // {{{
-    console.log('insert first into');
     target.prepend(new_node);
     if(update_illustrator) { 
       illustrator.clear();
@@ -310,7 +282,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     adaptor.notify();
   } // }}}
   this.insert_last_into = function(new_node, target, selector) { // {{{
-    console.log('insert last into');
     target.append(new_node);
     if(update_illustrator) { 
       illustrator.clear();
@@ -322,7 +293,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.remove = function(selector, target) {//{{{
     if(selector == undefined) {target.remove()}
     else { $(selector, target).remove();}
-console.log(gd());
     if(update_illustrator) { 
       illustrator.clear();
       var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
@@ -388,7 +358,6 @@ console.log(gd());
     });
 
     if(root.tagName == 'description') { // Finsished parsing {{{
-      console.log('desc');
       pos.row++;
       max.row++;
       $(root).attr('svg-id','description');

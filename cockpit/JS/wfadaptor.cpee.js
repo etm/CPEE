@@ -1,7 +1,45 @@
 function create_cpee_elements(adaptor) {
   var illustrator = adaptor.illustrator;
   var description = adaptor.description;
-  var elements = {};
+  var cpee = {};
+
+  cpee.events = {}; // {{{
+  cpee.events.mousedown = function(node, e, child, sibling) {
+    if(e.button == 0) {  // left-click
+    } else if(e.button == 1) { // middle-click
+    } else if(e.button == 2) { // right-click
+      var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
+      var group = null;
+      var menu = {};
+
+      if(child) {
+        group = cpee.elements[xml_node.get(0).tagName].description.permissible_children(xml_node);
+        if(group.length > 0) menu['Inster into'] = group;
+      }
+      if(sibling) {
+        group = cpee.elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
+        if(group.length > 0) menu['Insert after'] = group;
+      }
+
+      if(xml_node.get(0).tagName != 'description')
+        menu['Remove Element'] = [{'label': 'Actual Element', 
+                        'function_call': description.remove, 
+                        'params': [null, xml_node]}];
+      if($('> manipulate', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
+        menu['Remove Element'].push({'label': 'Remove Manipulate Block', 
+                        'function_call': description.remove, 
+                        'params': ['> manipulate', xml_node]});
+      }
+      contextmenu(menu, e.pageX, e.pageY);
+    }
+    return false;
+  } 
+  cpee.events.click = function(node, e) {
+    console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
+    return false;
+  } // }}}
+
+  cpee.elements = {}; // {{{
 
 /* {{{
     {'label': 'Service Call with Manipulate Block', 
@@ -39,8 +77,8 @@ function create_cpee_elements(adaptor) {
      'params': [description.elements.critical.create(), node]},
 }}} */
 
-  // Abstracts 
-  elements.callmanipulate = { /*{{{*/
+// Primitives 
+  cpee.elements.callmanipulate = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract', 
       'draw' : function(node, pos, block) { 
@@ -72,42 +110,35 @@ function create_cpee_elements(adaptor) {
         return symbol;
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(only_manipulate) {
-        var node = null;
-        if(only_manipulate) {
-          node = $('<manipulate/>');
-        } else {
-          node = $('<call><manipulate/></call>');
-        }
-          return node;
-      },
-      'permissible_children': function(node) {
-        return [];
+  'description' : {//{{{
+    'create':  function(only_manipulate) {
+      var node = null;
+      if(only_manipulate) {
+        node = $('<manipulate/>');
+      } else {
+        node = $('<call><manipulate/></call>');
       }
-    },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        contextmenu({'Remove Element ...': [
-           {'label': 'Actual Element', 
-            'function_call': description.remove, 
-            'params': [null, xml_node]},
-           {'label': 'Manipulate Block', 
-            'function_call': description.remove, 
-            'params': ['> manipulate', xml_node]},
-        ]}, e.pageX, e.pageY);
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-    }//}}}
-  }; /*}}}*/
+        return node;
+    },
+    'permissible_children': function(node) {
+      if(node.children('manipulate').lenght < 1)
+        return [
+         {'label': 'Manipulate Block', 
+          'function_call': description.insert_last_into, 
+          'params': [description.elements.callmanipulate.create(true), node]}
+        ];
+      return [];
+    }
+  },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,true, true);
+    },
+    'click': cpee.events.click
+   }//}}}
+ }; /*}}}*/
 
-  // Primitives 
-  elements.call = { /*{{{*/
+  cpee.elements.call = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'primitive', 
       'endnodes' : 'this',
@@ -143,7 +174,7 @@ function create_cpee_elements(adaptor) {
         return node;
       },
       'permissible_children': function(node) {
-        if(node.children('manipulate').length == 0) 
+        if(node.children('manipulate').length < 1) 
           return [
            {'label': 'Manipulate Block', 
             'function_call': description.insert_last_into, 
@@ -152,26 +183,15 @@ function create_cpee_elements(adaptor) {
         return [];
       }
     },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
-        var insert_into = elements.call.description.permissible_children(xml_node);
-        var insert_after = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
-        var remove = [ {'label': 'Actual Element', 
-                        'function_call': description.remove, 
-                        'params': [null, xml_node]}];
-        contextmenu({'Insert Into Element ...':insert_into, 'Insert After Element ...': insert_after, 'Remove Element ...': remove}, e.pageX, e.pageY);
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-    }//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,true, true);
+    },
+    'click': cpee.events.click
+   }//}}}
   }; /*}}}*/
 
-  elements.manipulate = { /*{{{*/
+  cpee.elements.manipulate = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
@@ -204,26 +224,16 @@ function create_cpee_elements(adaptor) {
         return [];
       }
     },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        console.log('rightclick on manipulate with id ' + xml_node.attr('svg-id'));
-        var insert_after = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
-        var remove = [ {'label': 'Actual Element', 
-                        'function_call': description.remove, 
-                        'params': [null, xml_node]}];
-        contextmenu({'Insert After Element ...': insert_after, 'Remove Element ...': remove}, e.pageX, e.pageY);
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-    }//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,false, true);
+    },
+    'click': cpee.events.click
+   }//}}}
   }; /*}}}*/
 
 // Complex 
-  elements.choose = { /*{{{*/
+  cpee.elements.choose = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'aggregate',
@@ -286,26 +296,15 @@ function create_cpee_elements(adaptor) {
         return childs; 
       }
     },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
-        var insert_into = elements.choose.description.permissible_children(xml_node);
-        var insert_after = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
-        var remove = [ {'label': 'Actual Element', 
-                        'function_call': description.remove, 
-                        'params': [null, xml_node]}];
-        contextmenu({'Insert Into Element ...':insert_into, 'Insert After Element ...': insert_after, 'Remove Element ...': remove}, e.pageX, e.pageY);
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-    }//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,true, true);
+    },
+    'click': cpee.events.click
+   }//}}}
   };  /*}}}*/
 
-  elements.otherwise = { /*{{{*/
+  cpee.elements.otherwise = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'passthrough',
@@ -371,25 +370,15 @@ function create_cpee_elements(adaptor) {
         ];
       }
     },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
-        var insert_into = elements.otherwise.description.permissible_children(xml_node);
-        var remove = [ {'label': 'Actual Element', 
-                        'function_call': description.remove, 
-                        'params': [null, xml_node]}];
-        contextmenu({'Insert Into Element ...':insert_into, 'Remove Element ...': remove}, e.pageX, e.pageY);
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-    }//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,true, false);
+    },
+    'click': cpee.events.click
+   }//}}}
   }; /*}}}*/
   
-  elements.alternative = { /*{{{*/
+  cpee.elements.alternative = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'passthrough',
@@ -455,25 +444,15 @@ function create_cpee_elements(adaptor) {
         ];
       }
     },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
-        var insert_into = elements.alternative.description.permissible_children(xml_node);
-        var remove = [ {'label': 'Actual Element', 
-                        'function_call': description.remove, 
-                        'params': [null, xml_node]}];
-        contextmenu({'Insert Into Element ...':insert_into, 'Remove Element ...': remove}, e.pageX, e.pageY);
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-    }//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,true, false);
+    },
+    'click': cpee.events.click
+   }//}}}
   };  /*}}}*/
   
-  elements.loop = { /*{{{*/
+  cpee.elements.loop = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'this',
@@ -547,26 +526,15 @@ function create_cpee_elements(adaptor) {
         return childs;
       }
     },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
-        var insert_into = elements.loop.description.permissible_children(xml_node);
-        var insert_after = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
-        var remove = [ {'label': 'Actual Element', 
-                        'function_call': description.remove, 
-                        'params': [null, xml_node]}];
-        contextmenu({'Insert Into Element ...':insert_into, 'Insert After Element ...': insert_after, 'Remove Element ...': remove}, e.pageX, e.pageY);
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-    }//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,true, true);
+    },
+    'click': cpee.events.click
+   }//}}}
   };  /*}}}*/
   
-  elements.parallel = { /*{{{*/
+  cpee.elements.parallel = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'this',
@@ -636,26 +604,15 @@ function create_cpee_elements(adaptor) {
         return childs;
       }
     },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
-        var insert_into = elements.parallel.description.permissible_children(xml_node);
-        var insert_after = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
-        var remove = [ {'label': 'Actual Element', 
-                        'function_call': description.remove, 
-                        'params': [null, xml_node]}];
-        contextmenu({'Insert Into Element ...':insert_into, 'Insert After Element ...': insert_after, 'Remove Element ...': remove}, e.pageX, e.pageY);
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-    }//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,true, true);
+    },
+    'click': cpee.events.click
+   }//}}}
   };  /*}}}*/
   
-  elements.parallel_branch = { /*{{{*/
+  cpee.elements.parallel_branch = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'this',
@@ -732,30 +689,15 @@ function create_cpee_elements(adaptor) {
         return childs;
       }
     },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-       var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
-        var insert_into = elements.parallel_branch.description.permissible_children(xml_node);
-        var insert_after = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
-        var remove = [ {'label': 'Actual Element', 
-                        'function_call': description.remove, 
-                        'params': [null, xml_node]}];
-        if(insert_into.length > 0) {
-          contextmenu({'Insert Into Element ...':insert_into, 'Insert After Element ...': insert_after, 'Remove Element ...': remove}, e.pageX, e.pageY); 
-        } else {
-          contextmenu({'Insert After Element ...': insert_after, 'Remove Element ...': remove}, e.pageX, e.pageY); 
-        }
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-    }//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,true, false);
+    },
+    'click': cpee.events.click
+   }//}}}
   };  /*}}}*/
   
-  elements.critical = { /*{{{*/
+  cpee.elements.critical = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'complex',
       'endnodes' : 'aggregate',
@@ -821,26 +763,15 @@ function create_cpee_elements(adaptor) {
         ];
       }
     },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        console.log('rightclick on call with id ' + xml_node.attr('svg-id'));
-        var insert_into = elements.critical.description.permissible_children(xml_node);
-        var insert_after = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
-        var remove = [ {'label': 'Actual Element', 
-                        'function_call': description.remove, 
-                        'params': [null, xml_node]}];
-        contextmenu({'Insert Into Element ...':insert_into, 'Insert After Element ...': insert_after, 'Remove Element ...': remove}, e.pageX, e.pageY);
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-     }//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,true, true);
+    },
+    'click': cpee.events.click
+   }//}}}
   };  /*}}}*/
   
-  elements.end = elements.description = { /*{{{*/
+  cpee.elements.end = cpee.elements.description = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'description',
       'endnodes' : 'passthrough',
@@ -905,30 +836,27 @@ function create_cpee_elements(adaptor) {
         ];
       }
     },//}}}
-    'adaptor' : {//{{{
-      'right_click' : function(node, e) { 
-        var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
-        var insert_into = elements.description.description.permissible_children(xml_node);
-        contextmenu({'Insert at the End ...': insert_into}, e.pageX, e.pageY);
-        return false;
-      }, 
-      'left_click' : function(node, e) { 
-        console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
-        return false;
-      } 
-    }//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      cpee.events.mousedown(node,e,true, false);
+    },
+    'click': cpee.events.click
+   }//}}}
   }; /*}}}*/
+  // }}}
    
-   console.log('Adaptor: adding cpee elements');
-    for(element in elements) {
+  cpee.add_elements = function() { // {{{
+    console.log('Adaptor: adding cpee elements');
+    for(element in cpee.elements) {
       // Illsutrator
-      illustrator.elements[element] = elements[element].illustrator;
-      illustrator.svg.defs.append(elements[element].illustrator.svg_def);
+      illustrator.elements[element] = cpee.elements[element].illustrator;
+      illustrator.svg.defs.append(cpee.elements[element].illustrator.svg_def);
       // Description
-      description.elements[element] = elements[element].description;
+      description.elements[element] = cpee.elements[element].description;
       // Adaptor
-      adaptor.elements[element] = elements[element].adaptor;
+      adaptor.elements[element] = cpee.elements[element].adaptor;
     }
+  } // }}}
 
-  return elements;
+  cpee.add_elements();
 }   
