@@ -606,7 +606,7 @@ function create_cpee_elements(adaptor) {
         return node;
       },
       'permissible_children': function(node) {
-        return [
+        var childs =  [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': description.insert_last_into, 
            'params': [description.elements.callmanipulate.create(false), node]},
@@ -616,9 +616,6 @@ function create_cpee_elements(adaptor) {
           {'label': 'Manipulate', 
            'function_call': description.insert_last_into, 
            'params': [description.elements.manipulate.create(), node]},
-          {'label': 'Parallel', 
-           'function_call': description.insert_last_into, 
-           'params': [description.elements.parallel.create(), node]},
           {'label': 'Choose', 
            'function_call': description.insert_last_into, 
            'params': [description.elements.choose.create(), node]},
@@ -632,6 +629,11 @@ function create_cpee_elements(adaptor) {
            'function_call': description.insert_last_into, 
            'params': [description.elements.parallel_branch.create(), node]}
         ];
+        if(node.get(0).tagName != 'parallel')
+          childs.push({'label': 'Parallel', 
+             'function_call': description.insert_last_into, 
+             'params': [description.elements.parallel.create(), node]});
+        return childs;
       }
     },//}}}
     'adaptor' : {//{{{
@@ -719,7 +721,10 @@ function create_cpee_elements(adaptor) {
            'function_call': func, 
            'params': [description.elements.critical.create(), node]},
         ];
-        if(node.parents('choose').length > node.parents('alternative').length) {
+        if(node.parents('choose').length > node.parents('alternative').length && node.get(0).tagName == 'parallel_branch') {
+          return [{'label': 'Alternative', 
+           'function_call': func, 
+           'params': [description.elements.alternative.create(), node]}];
           childs.push({'label': 'Alternative', 
            'function_call': func, 
            'params': [description.elements.alternative.create(), node]});
