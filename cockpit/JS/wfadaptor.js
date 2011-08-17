@@ -68,32 +68,17 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     clear();
     svg.container = con;
     // TODO: Problem when creatign this element with a namespace. I think this must be the reason why the arrow is not displayed at all
-    svg.container.append('<defs/>');
-    svg.defs = $('defs:first', svg.container);
+    svg.defs = $X('<defs xmlns="http://www.w3.org/2000/svg">' +
+        '<marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
+          '<path d="m 2 2 l 6 3 l -6 3 z"/>' +
+        '</marker>' +
+        '<symbol id="unknown" class="unknown">' +
+          '<circle cx="15" cy="15" r="14" class="unkown"/>' +
+          '<text transform="translate(15,20)" class="normal">?</text>' +
+        '</symbol>' +
+      '</defs>');
+    svg.container.append(svg.defs);
     svg_structure();
-    // Adding arrow
-    var symbol = document.createElementNS(svgNS, "marker");
-    var attrs = {'id':'arrow','viewBox':'0 0 10 10', 'refX':'24', 'refY':'5', 'orient':'auto', 'markerUnits':'strokeWidth', 'markerWidth':'4.5', 'makerHeight':'4.5'};
-    for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-    sub = document.createElementNS(svgNS, "path");
-    attrs = {'d':'m 2 2 l 6 3 l -6 3 z'};
-    for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-    symbol.appendChild(sub);
-    svg.defs.append(symbol);
-    // Adding symbol for un-known element
-    symbol = document.createElementNS(svgNS, "symbol");
-    attrs = {'id':'unknown','class':''};
-    for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-    sub = document.createElementNS(svgNS, "circle");
-    attrs = {'cx':15, 'cy':15,'r':14,'class':'unknown'};
-    for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-    symbol.appendChild(sub);
-    sub = document.createElementNS(svgNS, "text");
-    attrs = {'transform':'translate(15,20)','class':'normal'};
-    for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-    sub.appendChild(document.createTextNode('?'));
-    symbol.appendChild(sub);
-    svg.defs.append(symbol);
   }  // }}}
   var clear = this.clear = function() { // {{{
     $('> path', svg.lines).each(function() {$(this).remove()});
@@ -108,80 +93,49 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // }}}
   // Helper Functions {{{
   var draw_symbol = this.draw.draw_symbol = function (sym_name, id, row, col) { // {{{
-    var g = document.createElementNS(svgNS, "g");
-        g.setAttribute('transform', 'translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')');
-
-    var use = document.createElementNS(svgNS, "use");
-    use.setAttributeNS(xlinkNS, "href", "#"+sym_name);
-
-    var attrs = {};
-    g.setAttribute('id', id);
-
-    attrs = {'id': 'graph-' + id, 'class': 'activities'};
-    var title = document.createElementNS(svgNS, "title");
-    title.appendChild(document.createTextNode(id));
-    use.appendChild(title);
-
-    var ts1 = document.createElementNS(svgNS, "tspan");
-        ts1.setAttribute('class', 'active');
-        ts1.appendChild(document.createTextNode('0'));
-    var ts2 = document.createElementNS(svgNS, "tspan");
-        ts2.setAttribute('class', 'colon');
-        ts2.appendChild(document.createTextNode(','));
-    var ts3 = document.createElementNS(svgNS, "tspan");
-        ts3.setAttribute('class', 'vote');
-        ts3.appendChild(document.createTextNode('0'));
-    var supi = document.createElementNS(svgNS, "text");
-        supi.setAttribute('class', 'super');
-        supi.setAttribute('transform', 'translate(28.4,8.4)');
-        supi.appendChild(ts1);
-        supi.appendChild(ts2);
-        supi.appendChild(ts3);
-     
-    g.appendChild(supi);
-
-    for(var attr in attrs)
-      use.setAttribute(attr, attrs[attr]);
+    if(elements[sym_name] == undefined || elements[sym_name].svg_def == undefined) sym_name = 'unknown';
+    var g = $X('<g id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg" xmlns:x="http://www.w3.org/1999/xlink">' + 
+                  '<text class="super" transform="translate(28.4,8.4)">' +
+                    '<tspan class="active">0</tspan>' +
+                    '<tspan class="colon">,</tspan>' +
+                    '<tspan class="vote">0</tspan>' +
+                  '</text>' +
+                  '<use id="graph-' + id  + '" class="activities" x:href="#' + sym_name  + '">' +
+                    '<title>' + id  + '</title>' +
+                  '</use>' +
+               '</g>'); 
 
     // Binding events for symbol
     for(event_name in adaptor.elements[sym_name]) {
-      $(use).bind(event_name, {'function_call':adaptor.elements[sym_name][event_name]}, function(e) { e.data.function_call(this,e)});
-      if(event_name == 'mousedown') $(use).bind('contextmenu', false);
+      g.children('use:first').bind(event_name, {'function_call':adaptor.elements[sym_name][event_name]}, function(e) { e.data.function_call(this,e)});
+      if(event_name == 'mousedown') g.children('use:first').bind('contextmenu', false);
     }
-    g.appendChild(use);
     svg.symbols.append(g);
     return g;
   } // }}}    
   var draw_border = this.draw.draw_border = function(p1, p2) { // {{{
-     var block = document.createElementNS(svgNS, "rect");
-      var attrs = {'x':(p1.col-0.50)*width,'y':(p1.row-0.80)*height,'width':((p2.col+1.00)-p1.col)*width,'height':((p2.row+1.00)-p1.row)*height, 'class':'block', 'rx':'15', 'ry':'15' } 
-      if(typeof css_class == "string")
-        attrs['class'] = css_class;
-      if (attrs['class'] == "group")
-        block.onclick = function(){ symclick(injected_node); };
-      for(var attr in attrs)
-        block.setAttribute(attr, attrs[attr]);
-      svg.blocks.prepend(block);
+    svg.blocks.prepend($X('<rect x="' + (p1.col-0.50)*width + '" ' +
+        'y="' + (p1.row-0.80)*height + '" ' +
+        'width="' + ((p2.col+1.00)-p1.col)*width + '" ' +
+        'height="' + ((p2.row+1.00)-p1.row)*height +'" ' +
+        'class="block" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_connection = this.draw.draw_connection = function(start, end, max_line, num_lines) { // {{{
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
-    var attrs = {'class': 'ourline', 'marker-end': 'url(#arrow)' };
-    var line = document.createElementNS(svgNS, "path");
-    for(var attr in attrs)
-      line.setAttribute(attr, attrs[attr]);
+    var line = $X('<path xmlns="http://www.w3.org/2000/svg" class="ourline" marker-end="url(#arrow)"/>');
     if (end['row']-start['row'] == 0 || end['col']-start['col'] == 0) { // straight line
-      line.setAttribute("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
+      line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
                                     String(end['col']*width) + "," + String(end['row']*height-15)
       );
     } else if (end['row']-start['row'] > 0) { // downwards
       if (end['col']-start['col'] > 0) {// left - right
-        line.setAttribute("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
+        line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
                                       String(start['col']*width+14) + "," + String((end['row']-1)*height) +" "+ // first turn of hotizontal-line going away from node
                                       String(end['col']*width) + "," + String((end['row']-1)*height) +" "+
                                       String(end['col']*width) + "," + String(end['row']*height-15)
         );
       } else { // right - left
-        line.setAttribute("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
+        line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
                                       String(start['col']*width) + "," + String(end['row']*height-35) +" "+
                                       String(end['col']*width+14) + "," + String(end['row']*height-35) +" "+ // last turn of horizontal-line going into the node
                                       String(end['col']*width) + "," + String(end['row']*height-15)
@@ -189,14 +143,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       }
     } else if(end['row']-start['row'] < 0) { // upwards
       if(num_lines > 1) {// ??? no idea
-        line.setAttribute("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
+        line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
                                       String(start['col']*width) + "," + String((max_line-1)*height+5) +" "+
                                       String(end['col']*width+20) + "," + String((max_line-1)*height+5) +" "+
                                       String(end['col']*width+20) + "," + String(end['row']*height+25)+" "+
                                       String(end['col']*width) + "," + String(end['row']*height-15)
         );
       } else {
-        line.setAttribute("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
+        line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
                                       String(end['col']*width+20) + "," + String(start['row']*height-15) +" "+
                                       String(end['col']*width+20) + "," + String(end['row']*height+25)+" "+
                                       String(end['col']*width) + "," + String(end['row']*height-15)
@@ -204,18 +158,16 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       }
     }
     svg.lines.append(line);
-
   } //  }}}
   var svg_structure = function() { // {{{
-    svg.container.append(document.createElementNS(svgNS, "g"));
+    svg.container.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
     var canvas = $('g:first', svg.container);
-    svg.blocks = canvas.append(document.createElementNS(svgNS, "g"));
+    svg.blocks = canvas.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
     svg.blocks = $('g:last',canvas);
-    svg.lines = canvas.append(document.createElementNS(svgNS, "g"));
+    svg.lines = canvas.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
     svg.lines = $('g:last',canvas);
-    svg.symbols = canvas.append(document.createElementNS(svgNS, "g"));
+    svg.symbols = canvas.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
     svg.symbols = $('g:last',canvas);
-
   } // }}}
   // }}}
   // Initialze {{{

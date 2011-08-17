@@ -85,29 +85,12 @@ function create_cpee_elements(adaptor) {
         return illustrator.draw.draw_symbol('callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
         },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'callmanipulate','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(15,21)','class':'normal'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('c'));
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':28, 'cy':27, 'r':9,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(28,31)','class':'small'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('m'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="callmanipulate" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<text transform="translate(15,21)" class="normal">c</text>' +
+                    '<circle cx="28" cy="27" r="9" class="stand"/>' + 
+                    '<text transform="translate(28,31)" class="small">m</text>' +
+                  '</symbol>');
       }
     },//}}}
   'description' : {//{{{
@@ -150,20 +133,10 @@ function create_cpee_elements(adaptor) {
         }
       },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'call','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(15,21)','class':'normal'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('c'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="call" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<text transform="translate(15,21)" class="normal">c</text>' +
+                  '</symbol>');
       }
     },//}}}
     'description' : {//{{{
@@ -199,20 +172,10 @@ function create_cpee_elements(adaptor) {
         return illustrator.draw.draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'manipulate','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(15,21)','class':'normal'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('m'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="manipulate" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<text transform="translate(15,21)" class="normal">m</text>' +
+                  '</symbol>');
       }
     },//}}}
     'description' : {//{{{
@@ -248,20 +211,10 @@ function create_cpee_elements(adaptor) {
         return false; 
       },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'choose','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(15,21)','class':'normal'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('σ'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="choose" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<text transform="translate(15,21)" class="normal">σ</text>' +
+                  '</symbol>');
       }
     },//}}}
     'description' : {//{{{
@@ -319,20 +272,10 @@ function create_cpee_elements(adaptor) {
         return false; 
       },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'otherwise','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'standwithout'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(15,20)','class':'normal'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('{⁎}'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="otherwise" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="standwithout"/>' + 
+                    '<text transform="translate(15,20)" class="normal">{⁎}</text>' +
+                  '</symbol>');
       }
     },//}}}
     'description' : {//{{{
@@ -393,20 +336,10 @@ function create_cpee_elements(adaptor) {
         return false;
       },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'alternative','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'standwithout'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(15,20)','class':'normal'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('{..}'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="alternative" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="standwithout"/>' + 
+                    '<text transform="translate(15,20)" class="normal">{..}</text>' +
+                  '</symbol>');
       }
     },//}}}
     'description' : {//{{{
@@ -467,20 +400,10 @@ function create_cpee_elements(adaptor) {
         return true;
       },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'loop','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(15,23)','class':'normallarge'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('↺'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="loop" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<text transform="translate(15,23)" class="normallarge">↺</text>' +
+                  '</symbol>');
       }
     },// }}}
     'description' : {//{{{
@@ -552,20 +475,10 @@ function create_cpee_elements(adaptor) {
         return true;
       },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'parallel','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(15,21)','class':'normal'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('||'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="parallel" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<text transform="translate(15,21)" class="normal">||</text>' +
+                  '</symbol>');
       }
     },//}}}
     'description' : {//{{{
@@ -629,20 +542,10 @@ function create_cpee_elements(adaptor) {
         return false; 
       },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'parallel_branch','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(15,20)','class':'normal'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('|'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="parallel_branch" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<text transform="translate(15,20)" class="normal">|</text>' +
+                  '</symbol>');
       }
     },//}}}
     'description' : {//{{{
@@ -713,20 +616,10 @@ function create_cpee_elements(adaptor) {
         return true;
       },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'critical','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(16.5,21.5)','class':'normal'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('⚠'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="critical" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<text transform="translate(16.5,21.5)" class="normal">⚠</text>' +
+                  '</symbol>');
       }
     },//}}}
     'description' : {//{{{
@@ -786,24 +679,11 @@ function create_cpee_elements(adaptor) {
         return true;
       },
       'svg_def': function() {
-        var svgNS = "http://www.w3.org/2000/svg";
-        var symbol = document.createElementNS(svgNS, "symbol");
-        var attrs = {'id':'end','class':'clickable'};
-        for(attr in attrs) symbol.setAttribute(attr, attrs[attr]);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':14,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "circle");
-        attrs = {'cx':15, 'cy':15,'r':11,'class':'stand'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        symbol.appendChild(sub);
-        var sub = document.createElementNS(svgNS, "text");
-        attrs = {'transform':'translate(15,21)','class':'normal'};
-        for(attr in attrs) sub.setAttribute(attr, attrs[attr]);
-        sub.appendChild(document.createTextNode('Ω'));
-        symbol.appendChild(sub);
-        return symbol;
+        return $X('<symbol id="end" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<circle cx="15" cy="15" r="11" class="stand"/>' + 
+                    '<text transform="translate(15,21)" class="normal">Ω</text>' +
+                  '</symbol>');
       }
     },//}}}
     'description' : {//{{{
@@ -850,12 +730,13 @@ function create_cpee_elements(adaptor) {
     for(element in cpee.elements) {
       // Illsutrator
       illustrator.elements[element] = cpee.elements[element].illustrator;
-      illustrator.svg.defs.append(cpee.elements[element].illustrator.svg_def);
+      illustrator.svg.defs.append(cpee.elements[element].illustrator.svg_def());
       // Description
       description.elements[element] = cpee.elements[element].description;
       // Adaptor
       adaptor.elements[element] = cpee.elements[element].adaptor;
     }
+    console.log('all added');
   } // }}}
 
   cpee.add_elements();
