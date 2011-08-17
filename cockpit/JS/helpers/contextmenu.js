@@ -17,6 +17,12 @@ function contextmenu(items, x, y) {
   div.css({'left':x+5,'top':y+5, 'display':'block'});
   $('body', document).append(div);
   $('body', document).bind('click',contextmenu_remove); // must the binding also be removed? (TODO)
+  if(document.height - 20 < (y + div.height())) { // contextmenu is positioned upwards
+    div.css({'top':y-div.height()-5});
+  }
+  if(document.width - 20 < (x + div.width())) { // contextmenu is positioned upwards
+    div.css({'left':x-div.width()-5});
+  }
 }
 
 function contextmenu_remove() {
