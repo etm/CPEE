@@ -4,7 +4,7 @@ function create_cpee_elements(adaptor) {
   var cpee = {};
 
   cpee.events = {}; // {{{
-  cpee.events.mousedown = function(node, e, child, sibling) {
+  cpee.events.mousedown = function(node, e, child, sibling) { // {{{
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
     } else if(e.button == 2) { // right-click
@@ -33,48 +33,53 @@ function create_cpee_elements(adaptor) {
       contextmenu(menu, e.pageX, e.pageY);
     }
     return false;
-  } 
-  cpee.events.click = function(node, e) {
+  } // }}} 
+  cpee.events.click = function(node, e) { // {{{ 
     console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
     return false;
   } // }}}
+  cpee.events.dblclick = function(node, e) { // {{{
+    console.log('Double Click ' + $(node).parents(':first').attr('id'));
+    return false;
+  } // }}}
+  // }}}
 
   cpee.elements = {}; // {{{
 
 /* {{{
     {'label': 'Service Call with Manipulate Block', 
      'function_call': func, 
-     'params': [description.elements.callmanipulate.create(false), node]},
+     'params': [description.elements.callmanipulate.create, node]},
     {'label': 'Service Call', 
      'function_call': func, 
-     'params': [description.elements.call.create(), node]},
+     'params': [description.elements.call.create, node]},
     {'label': 'Manipulate Block', 
      'function_call': func, 
-     'params': [description.elements.callmanipulate.create(true), node]},
+     'params': [description.elements.callmanipulate.create, node]},
     {'label': 'Manipulate', 
      'function_call': func, 
-     'params': [description.elements.manipulate.create(), node]},
+     'params': [description.elements.manipulate.create, node]},
     {'label': 'Parallel', 
      'function_call': func, 
-     'params': [description.elements.parallel.create(), node]},
+     'params': [description.elements.parallel.create, node]},
     {'label': 'Parallel Branch', 
      'function_call': func, 
-     'params': [description.elements.parallel_branch.create(), node]},
+     'params': [description.elements.parallel_branch.create, node]},
     {'label': 'Choose', 
      'function_call': func, 
-     'params': [description.elements.choose.create(), node]},
+     'params': [description.elements.choose.create, node]},
     {'label': 'Alternative', 
      'function_call': func, 
-     'params': [description.elements.alternative.create(), node]},
+     'params': [description.elements.alternative.create, node]},
     {'label': 'Otherwise', 
      'function_call': func, 
-     'params': [description.elements.otherwise.create(), node]},
+     'params': [description.elements.otherwise.create, node]},
     {'label': 'Loop', 
      'function_call': func, 
-     'params': [description.elements.loop.create(), node]},
+     'params': [description.elements.loop.create, node]},
     {'label': 'Critical', 
      'function_call': func, 
-     'params': [description.elements.critical.create(), node]},
+     'params': [description.elements.critical.create, node]},
 }}} */
 
 // Primitives 
@@ -94,21 +99,17 @@ function create_cpee_elements(adaptor) {
       }
     },//}}}
   'description' : {//{{{
-    'create':  function(only_manipulate) {
+    'create':  function(target) {
       var node = null;
-      if(only_manipulate) {
-        node = $('<manipulate/>');
-      } else {
-        node = $('<call><manipulate/></call>');
-      }
-        return node;
+      node = $('<call><manipulate/></call>');
+      return node;
     },
     'permissible_children': function(node) {
       if(node.children('manipulate').lenght < 1)
         return [
          {'label': 'Manipulate Block', 
           'function_call': description.insert_last_into, 
-          'params': [description.elements.callmanipulate.create(true), node]}
+          'params': [description.elements.manipulate.create, node]}
         ];
       return [];
     }
@@ -117,7 +118,7 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,true, true);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
    }//}}}
  }; /*}}}*/
 
@@ -140,10 +141,10 @@ function create_cpee_elements(adaptor) {
       }
     },//}}}
     'description' : {//{{{
-      'create':  function() {
+      'create':  function(target) {
         var node = $X('<call xmlns="http://cpee.org/ns/description/1.0"/>');
         node.append($X('<parameters><bla/></parameters>'));
-        node.attr({'id':'suoer','endpoint':'besser'});
+        node.attr({'id-di':'super','endpoint':'besser'});
         return node;
       },
       'permissible_children': function(node) {
@@ -151,7 +152,7 @@ function create_cpee_elements(adaptor) {
           return [
            {'label': 'Manipulate Block', 
             'function_call': description.insert_last_into, 
-            'params': [description.elements.callmanipulate.create(true), node]}
+            'params': [description.elements.manipulate.create, node]}
           ];
         return [];
       }
@@ -160,7 +161,7 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,true, true);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
    }//}}}
   }; /*}}}*/
 
@@ -179,7 +180,8 @@ function create_cpee_elements(adaptor) {
       }
     },//}}}
     'description' : {//{{{
-      'create':  function() {
+      'create':  function(target) {
+        // if(target.get(0).tagName == 'call') ... means a manipukate block is requested
         var node = $('<manipulate/>');
         return node;
       },
@@ -191,7 +193,7 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,false, true);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
    }//}}}
   }; /*}}}*/
 
@@ -218,7 +220,7 @@ function create_cpee_elements(adaptor) {
       }
     },//}}}
     'description' : {//{{{
-      'create':  function() {
+      'create':  function(target) {
         var node = $('<choose><otherwise/></choose>');
         return node;
       },
@@ -233,19 +235,19 @@ function create_cpee_elements(adaptor) {
         if(node.children('parallel_branch').length > 0) {
           return [{'label': 'Parallel Branch', 
            'function_call': func, 
-           'params': [description.elements.parallel_branch.create(), node]}];
+           'params': [description.elements.parallel_branch.create, node]}];
         }
         var childs = [{'label': 'Alternative', 
          'function_call': func, 
-         'params': [description.elements.alternative.create(), node]}];
+         'params': [description.elements.alternative.create, node]}];
         if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length) 
           childs.push({'label': 'Otherwise', 
            'function_call': func, 
-           'params': [description.elements.otherwise.create(), node]});
+           'params': [description.elements.otherwise.create, node]});
         if(node.parents('parallel').length > node.parents('parallel_branch').length) 
           childs.push({'label': 'Parallel Branch', 
            'function_call': func, 
-           'params': [description.elements.parallel_branch.create(), node]});
+           'params': [description.elements.parallel_branch.create, node]});
         return childs; 
       }
     },//}}}
@@ -253,7 +255,8 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,true, true);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
+    'dblclick': cpee.events.dblclick 
    }//}}}
   };  /*}}}*/
 
@@ -279,7 +282,7 @@ function create_cpee_elements(adaptor) {
       }
     },//}}}
     'description' : {//{{{
-      'create':  function() {
+      'create':  function(target) {
         var node = $('<otherwise/>');
         return node;
       },
@@ -288,28 +291,32 @@ function create_cpee_elements(adaptor) {
         return false;
       },
       'permissible_children': function(node) {
+        var func = null;
+        var childs = null;
+        if(node.get(0).tagName == 'otherwise') { func = description.insert_first_into }
+        else { func = description.insert_after }
         return [
           {'label': 'Service Call with Manipulate Block', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.callmanipulate.create(false), node]},
+           'function_call': func, 
+           'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.call.create(), node]},
+           'function_call': func, 
+           'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.manipulate.create(), node]},
+           'function_call': func, 
+           'params': [description.elements.manipulate.create, node]},
           {'label': 'Parallel', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.parallel.create(), node]},
+           'function_call': func, 
+           'params': [description.elements.parallel.create, node]},
           {'label': 'Choose', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.choose.create(), node]},
+           'function_call': func, 
+           'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.loop.create(), node]},
+           'function_call': func, 
+           'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.critical.create(), node]}
+           'function_call': func, 
+           'params': [description.elements.critical.create, node]}
         ];
       }
     },//}}}
@@ -317,7 +324,8 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,true, false);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
+    'dblclick': cpee.events.dblclick 
    }//}}}
   }; /*}}}*/
   
@@ -343,7 +351,7 @@ function create_cpee_elements(adaptor) {
       }
     },//}}}
     'description' : {//{{{
-      'create':  function() {
+      'create':  function(target) {
         var node = $('<alternative/>');
         return node;
       },
@@ -352,28 +360,34 @@ function create_cpee_elements(adaptor) {
         return false;
       },
       'permissible_children': function(node) {
+        if(node.get(0).tagName == 'alternative') { func = description.insert_first_into }
+        else { func = description.insert_after }
+        if(node.parents('parallel').length > node.parents('parallel_branch').length && node.get(0).tagName == 'alternative') 
+          return [{'label': 'Parallel Branch', 
+           'function_call': func, 
+           'params': [description.elements.parallel_branch.create, node]}];
         return [
           {'label': 'Service Call with Manipulate Block', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.callmanipulate.create(false), node]},
+           'function_call': func, 
+           'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.call.create(), node]},
+           'function_call': func, 
+           'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.manipulate.create(), node]},
+           'function_call': func, 
+           'params': [description.elements.manipulate.create, node]},
           {'label': 'Parallel', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.parallel.create(), node]},
+           'function_call': func, 
+           'params': [description.elements.parallel.create, node]},
           {'label': 'Choose', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.choose.create(), node]},
+           'function_call': func, 
+           'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.loop.create(), node]},
+           'function_call': func, 
+           'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
-           'function_call': description.insert_first_into, 
-           'params': [description.elements.critical.create(), node]}
+           'function_call': func, 
+           'params': [description.elements.critical.create, node]}
         ];
       }
     },//}}}
@@ -381,7 +395,8 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,true, false);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
+    'dblclick': cpee.events.dblclick 
    }//}}}
   };  /*}}}*/
   
@@ -407,7 +422,7 @@ function create_cpee_elements(adaptor) {
       }
     },// }}}
     'description' : {//{{{
-      'create':  function() {
+      'create':  function(target) {
         var node = $('<loop/>');
         return node;
       },
@@ -418,32 +433,32 @@ function create_cpee_elements(adaptor) {
         var childs = [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': func, 
-           'params': [description.elements.callmanipulate.create(false), node]},
+           'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': func, 
-           'params': [description.elements.call.create(), node]},
+           'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': func, 
-           'params': [description.elements.manipulate.create(), node]},
+           'params': [description.elements.manipulate.create, node]},
           {'label': 'Choose', 
            'function_call': func, 
-           'params': [description.elements.choose.create(), node]},
+           'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': func, 
-           'params': [description.elements.loop.create(), node]},
+           'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': func, 
-           'params': [description.elements.critical.create(), node]}
+           'params': [description.elements.critical.create, node]}
         ];
         if(node.parent('parallel').length > node.parent('parallel_branch').length) {
           childs.push({'label': 'Parallel Branch',
                        'function_call': func, 
-                       'params': [description.elements.parallel_branch.create(), node]}
+                       'params': [description.elements.parallel_branch.create, node]}
                       );
         } else {
           childs.push({'label': 'Parallel',
                        'function_call': func, 
-                       'params': [description.elements.parallel.create(), node]}
+                       'params': [description.elements.parallel.create, node]}
                       );
         }
         return childs;
@@ -453,7 +468,8 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,true, true);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
+    'dblclick': cpee.events.dblclick 
    }//}}}
   };  /*}}}*/
   
@@ -482,7 +498,7 @@ function create_cpee_elements(adaptor) {
       }
     },//}}}
     'description' : {//{{{
-      'create':  function() {
+      'create':  function(target) {
         var node = $('<parallel/>');
         return node;
       },
@@ -490,30 +506,30 @@ function create_cpee_elements(adaptor) {
         var childs =  [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': description.insert_last_into, 
-           'params': [description.elements.callmanipulate.create(false), node]},
+           'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': description.insert_last_into, 
-           'params': [description.elements.call.create(), node]},
+           'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': description.insert_last_into, 
-           'params': [description.elements.manipulate.create(), node]},
+           'params': [description.elements.manipulate.create, node]},
           {'label': 'Choose', 
            'function_call': description.insert_last_into, 
-           'params': [description.elements.choose.create(), node]},
+           'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': description.insert_last_into, 
-           'params': [description.elements.loop.create(), node]},
+           'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': description.insert_last_into, 
-           'params': [description.elements.critical.create(), node]},
+           'params': [description.elements.critical.create, node]},
           {'label': 'Parallel Branch',
            'function_call': description.insert_last_into, 
-           'params': [description.elements.parallel_branch.create(), node]}
+           'params': [description.elements.parallel_branch.create, node]}
         ];
         if(node.get(0).tagName != 'parallel')
           childs.push({'label': 'Parallel', 
              'function_call': description.insert_last_into, 
-             'params': [description.elements.parallel.create(), node]});
+             'params': [description.elements.parallel.create, node]});
         return childs;
       }
     },//}}}
@@ -521,7 +537,8 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,true, true);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
+    'dblclick': cpee.events.dblclick 
    }//}}}
   };  /*}}}*/
   
@@ -549,7 +566,7 @@ function create_cpee_elements(adaptor) {
       }
     },//}}}
     'description' : {//{{{
-      'create':  function() {
+      'create':  function(target) {
         var node = $('<parallel_branch/>');
         return node;
       },
@@ -561,33 +578,33 @@ function create_cpee_elements(adaptor) {
         childs =  [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': func, 
-           'params': [description.elements.callmanipulate.create(false), node]},
+           'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': func, 
-           'params': [description.elements.call.create(), node]},
+           'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': func, 
-           'params': [description.elements.manipulate.create(), node]},
+           'params': [description.elements.manipulate.create, node]},
           {'label': 'Parallel', 
            'function_call': func, 
-           'params': [description.elements.parallel.create(), node]},
+           'params': [description.elements.parallel.create, node]},
           {'label': 'Choose', 
            'function_call': func, 
-           'params': [description.elements.choose.create(), node]},
+           'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': func, 
-           'params': [description.elements.loop.create(), node]},
+           'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': func, 
-           'params': [description.elements.critical.create(), node]},
+           'params': [description.elements.critical.create, node]},
         ];
-        if(node.parents('choose').length > node.parents('alternative').length && node.get(0).tagName == 'parallel_branch') {
+        if(node.parents('choose').length > node.parents('alternative, otherwise').length && node.get(0).tagName == 'parallel_branch') {
           return [{'label': 'Alternative', 
            'function_call': func, 
-           'params': [description.elements.alternative.create(), node]}];
-          childs.push({'label': 'Alternative', 
-           'function_call': func, 
-           'params': [description.elements.alternative.create(), node]});
+           'params': [description.elements.alternative.create, node]}];
+//          childs.push({'label': 'Alternative', 
+//           'function_call': func, 
+//           'params': [description.elements.alternative.create, node]});
         }
         return childs;
       }
@@ -596,7 +613,8 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,true, false);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
+    'dblclick': cpee.events.dblclick 
    }//}}}
   };  /*}}}*/
   
@@ -623,7 +641,7 @@ function create_cpee_elements(adaptor) {
       }
     },//}}}
     'description' : {//{{{
-      'create':  function() {
+      'create':  function(target) {
         var node = $('<critical/>');
         return node;
       },
@@ -634,25 +652,25 @@ function create_cpee_elements(adaptor) {
         return [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': func, 
-           'params': [description.elements.callmanipulate.create(false), node]},
+           'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': func, 
-           'params': [description.elements.call.create(), node]},
+           'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': func, 
-           'params': [description.elements.manipulate.create(), node]},
+           'params': [description.elements.manipulate.create, node]},
           {'label': 'Parallel', 
            'function_call': func, 
-           'params': [description.elements.parallel.create(), node]},
+           'params': [description.elements.parallel.create, node]},
           {'label': 'Choose', 
            'function_call': func, 
-           'params': [description.elements.choose.create(), node]},
+           'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': func, 
-           'params': [description.elements.loop.create(), node]},
+           'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': func, 
-           'params': [description.elements.critical.create(), node]},
+           'params': [description.elements.critical.create, node]},
         ];
       }
     },//}}}
@@ -660,7 +678,8 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,true, true);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
+    'dblclick': cpee.events.dblclick 
    }//}}}
   };  /*}}}*/
   
@@ -694,25 +713,25 @@ function create_cpee_elements(adaptor) {
         return [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': func, 
-           'params': [description.elements.callmanipulate.create(false), node]},
+           'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': func, 
-           'params': [description.elements.call.create(), node]},
+           'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': func, 
-           'params': [description.elements.manipulate.create(), node]},
+           'params': [description.elements.manipulate.create, node]},
           {'label': 'Parallel', 
            'function_call': func, 
-           'params': [description.elements.parallel.create(), node]},
+           'params': [description.elements.parallel.create, node]},
           {'label': 'Choose', 
            'function_call': func, 
-           'params': [description.elements.choose.create(), node]},
+           'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': func, 
-           'params': [description.elements.loop.create(), node]},
+           'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': func, 
-           'params': [description.elements.critical.create(), node]}
+           'params': [description.elements.critical.create, node]}
         ];
       }
     },//}}}
@@ -720,7 +739,8 @@ function create_cpee_elements(adaptor) {
     'mousedown': function (node, e) {
       cpee.events.mousedown(node,e,true, false);
     },
-    'click': cpee.events.click
+    'click': cpee.events.click,
+    'dblclick': cpee.events.dblclick 
    }//}}}
   }; /*}}}*/
   // }}}

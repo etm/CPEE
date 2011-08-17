@@ -216,7 +216,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
   // Adaption functions {{{
   this.insert_after = function(new_node, target) { // {{{
-    target.after(new_node);
+    if(typeof(new_node) == 'function') {target.after(new_node(target));}
+    else {target.after(new_node);}
     if(update_illustrator) { 
       illustrator.clear();
       var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
@@ -225,7 +226,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     adaptor.notify();
   } // }}}
   this.insert_first_into = function(new_node, target, selector) { // {{{
-    target.prepend(new_node);
+    if(typeof(new_node) == 'function') {target.prepend(new_node(target));}
+    else {target.prepend(new_node);}
     if(update_illustrator) { 
       illustrator.clear();
       var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
@@ -234,7 +236,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     adaptor.notify();
   } // }}}
   this.insert_last_into = function(new_node, target, selector) { // {{{
-    target.append(new_node);
+    if(typeof(new_node) == 'function') {target.append(new_node(target));}
+    else {target.append(new_node);}
     if(update_illustrator) { 
       illustrator.clear();
       var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
