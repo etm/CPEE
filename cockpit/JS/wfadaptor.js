@@ -104,6 +104,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   var clear = this.clear = function() { // {{{
     console.log('illustrator: clear');
     $('> path', svg.lines).each(function() {$(this).remove()});
+    $('> rect', svg.blocks).each(function() {$(this).remove()});
     $('> g', svg.symbols).each(function() {$(this).remove()});
   } // }}}
   this.set_expansion = function(expansion) { // {{{
@@ -273,6 +274,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     illustrator.clear();
     console.log(' -> Description: Start parsing');
     var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
+    console.log('expansion');
+    console.log(expansion);
     illustrator.set_expansion(expansion.max);
     console.log(' -> Description: End parsing');
   } // }}}
@@ -287,8 +290,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
   // Adaption functions {{{
   this.insert_after = function(new_node, target) { // {{{
+    console.log('insert after');
     target.after(new_node);
-console.log(gd());
     if(update_illustrator) { 
       illustrator.clear();
       var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
@@ -297,8 +300,8 @@ console.log(gd());
     adaptor.notify();
   } // }}}
   this.insert_first_into = function(new_node, target, selector) { // {{{
+    console.log('insert first into');
     target.prepend(new_node);
-console.log(gd());
     if(update_illustrator) { 
       illustrator.clear();
       var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
@@ -307,8 +310,8 @@ console.log(gd());
     adaptor.notify();
   } // }}}
   this.insert_last_into = function(new_node, target, selector) { // {{{
+    console.log('insert last into');
     target.append(new_node);
-console.log(gd());
     if(update_illustrator) { 
       illustrator.clear();
       var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
@@ -316,9 +319,16 @@ console.log(gd());
     }
     adaptor.notify();
   } // }}}
-  this.remove = function(selector, target) {
-    console.log("Description: Remove from node-id " + target);
-    console.log(selector);
+  this.remove = function(selector, target) {//{{{
+    if(selector == undefined) {target.remove()}
+    else { $(selector, target).remove();}
+console.log(gd());
+    if(update_illustrator) { 
+      illustrator.clear();
+      var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
+      illustrator.set_expansion(expansion.max);
+    }//}}}
+    adaptor.notify();
   }
   // }}}
 
@@ -377,15 +387,24 @@ console.log(gd());
       // }}}
     });
 
-    if(root.tagName == 'description') { // {{{
+    if(root.tagName == 'description') { // Finsished parsing {{{
+      console.log('desc');
       pos.row++;
       max.row++;
+      $(root).attr('svg-id','description');
       if(prev[0].row != 0 || prev[0].col != 0) // this if avoids the connection from description to the first element
         for(node in prev) illustrator.draw.draw_connection(prev[node], pos);
       illustrator.elements[root.tagName].draw(null, pos);
     } // }}}
-
+    if($(root).children().length == 0) { // empty complex found
+      endnodes = [parent_pos];
+      max.row = parent_pos.row;
+      max.col = parent_pos.col;
+    }
     if(illustrator.elements[root.tagName].endnodes == 'this' && illustrator.elements[root.tagName].closeblock == false) {endnodes = [prev];} // closeblock == false, allows loop to close himselfe
+      // Needed for empty description
+    if(max.col < 1) max.col = 1;
+    if(max.row < 1) max.row = 1;
     return {'endnodes': endnodes, 'max':max};
   } // }}}
   // }}}
