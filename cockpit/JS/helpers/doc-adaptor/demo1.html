@@ -408,7 +408,8 @@
         </td><!-- }}} --> 
         <td style="vertical-align: top"><!-- {{{ -->
           <h3>New Graph Version -> Built-Time:<span id="t_new">00</span></h3>
-          <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="600" width="300" xmlns:xlink="http://www.w3.org/1999/xlink" id="drawing_area"/>
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="600" width="300" xmlns:xlink="http://www.w3.org/1999/xlink" id="drawing_area">
+          </svg>
         </td><!-- }}} -->
         <td style="vertical-align: top"><!-- {{{ -->
           <h3>Old Graph Version -> Built-Time:<span id="t_old">00</span></h3>
@@ -485,10 +486,10 @@
       adaptor = new WfAdaptor();
       adaptor.set_svg_container($('#drawing_area'));
       create_cpee_elements(adaptor);
-      adaptor.set_description($('#description').val());
+      adaptor.set_description($('#description').val(), true);
+      
       $('#t_new').text((new Date()).getTime() - then.getTime() + 'ms'); 
       adaptor.notify = update_event;
-      adaptor.notify('none','test call from demo');
       then = new Date();
       var xml = parser.parseFromString($('#description').val(),"text/xml");
       var g = new WFGraph(xml,xml.documentElement, $("#canvas").get(0));

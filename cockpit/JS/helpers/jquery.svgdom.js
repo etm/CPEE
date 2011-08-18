@@ -159,7 +159,7 @@ $.fn.removeAttr = function(origRemoveAttr) {
 /* Determine if any nodes are SVG nodes. */
 function anySVG(checkSet) {
   for (var i = 0; i < checkSet.length; i++) {
-    if (checkSet[i].nodeType == 1 && checkSet[i].namespaceURI == $.svg.svgNS) {
+    if (checkSet[i].nodeType == 1 && checkSet[i].namespaceURI == 'http://www.w3.org/2000/svg') {
       return true;
     }
   }

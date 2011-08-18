@@ -20,8 +20,10 @@
         adaptor.set_description($('#description').val());
         $('#t_new').text((new Date()).getTime() - then.getTime() + 'ms'); 
       }
-      function update_event(element_id, operation) {
-        console.log("Demo: update notification [ID: "+element_id+ ", OP: "+operation+"]");
+      function update_event() {
+        console.log("Demo: update notification");
+        $('#description').val(adaptor.get_description);
+
       }
     </script>
   </head>
@@ -59,11 +61,9 @@
       adaptor = new WfAdaptor();
       adaptor.set_svg_container($('#drawing_area'));
       create_cpee_elements(adaptor);
-      adaptor.set_description($('#description').val());
-                                    
+      adaptor.set_description($('#description').val(), true);
       $('#t_new').text((new Date()).getTime() - then.getTime() + 'ms'); 
       adaptor.notify = update_event;
-      adaptor.notify('none','test call from demo');
       //console.log(adaptor.get_description());
     </script>
   </body>
