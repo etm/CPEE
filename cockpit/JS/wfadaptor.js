@@ -261,21 +261,24 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     var endnodes = []; 
     var root_expansion = illustrator.elements[root.tagName].expansion(root);
     var block =  {'max':{}}; // e.g. {'max':{'row':0,'col':0}, 'endpoints':[]};
+    var collapsed = false;
 
     if(root_expansion == 'horizontal') pos.row++; 
     if(illustrator.elements[root.tagName].col_shift(root) == true && root_expansion != 'horizontal') pos.col++; 
 
     $(root).children().each(function() { 
       // Calculate next position {{{
+      if($(this).attr('collapsed') == undefined || $(this).attr('collapsed') == 'false') { collapsed = false; }
+      else { collapsed = true; }
       if(root_expansion == 'vertical')  pos.row++;
       if(root_expansion == 'horizontal')  pos.col++;
-      if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].type == 'complex' && ($(this).attr('collapsed') == undefined || $(this).attr('collapsed') == 'false')) {
+      if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].type == 'complex' && !collapsed) {
         block = parse(this, jQuery.extend(true, {}, pos));
         if(illustrator.elements[this.tagName].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive 
       } else {
         block.max.row = pos.row;
         block.max.col = pos.col;
-        block.endnodes = [pos];
+        block.endnodes = (!collapsed ? [pos] : [jQuery.extend(true, {}, pos)]);
       }
       // }}}
       // Draw symbol {{{
@@ -322,9 +325,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       max.col = parent_pos.col;
     }
     if(illustrator.elements[root.tagName].endnodes == 'this' && illustrator.elements[root.tagName].closeblock == false) {endnodes = [prev];} // closeblock == false, allows loop to close himselfe
-      // Needed for empty description
-    if(max.col < 1) max.col = 1;
-    if(max.row < 1) max.row = 1;
     return {'endnodes': endnodes, 'max':max};
   } // }}}
   // }}}
