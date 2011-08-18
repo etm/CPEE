@@ -222,47 +222,34 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     return $('[svg-id = ' + svg_id + ']', description);
   } // }}}
   // }}}
-
+  var update = this.update = function() { // {{{
+    if(update_illustrator ){
+      illustrator.clear();
+      var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
+      illustrator.set_expansion(expansion.max);
+    }
+    adaptor.notify();
+  } // }}}
   // Adaption functions {{{
   this.insert_after = function(new_node, target) { // {{{
     if(typeof(new_node) == 'function') {target.after(new_node(target));}
     else {target.after(new_node);}
-    if(update_illustrator) { 
-      illustrator.clear();
-      var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
-      illustrator.set_expansion(expansion.max);
-    }
-    adaptor.notify();
+    update();
   } // }}}
   this.insert_first_into = function(new_node, target, selector) { // {{{
     if(typeof(new_node) == 'function') {target.prepend(new_node(target));}
     else {target.prepend(new_node);}
-    if(update_illustrator) { 
-      illustrator.clear();
-      var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
-      illustrator.set_expansion(expansion.max);
-    }
-    adaptor.notify();
+    update();
   } // }}}
   this.insert_last_into = function(new_node, target, selector) { // {{{
     if(typeof(new_node) == 'function') {target.append(new_node(target));}
     else {target.append(new_node);}
-    if(update_illustrator) { 
-      illustrator.clear();
-      var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
-      illustrator.set_expansion(expansion.max);
-    }
-    adaptor.notify();
+    update();
   } // }}}
   this.remove = function(selector, target) {//{{{
     if(selector == undefined) {target.remove()}
     else { $(selector, target).remove();}
-    if(update_illustrator) { 
-      illustrator.clear();
-      var expansion = parse($('description:first', description)[0], {'row':0,'col':0});
-      illustrator.set_expansion(expansion.max);
-    }//}}}
-    adaptor.notify();
+    update();
   }
   // }}}
 
@@ -282,7 +269,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       // Calculate next position {{{
       if(root_expansion == 'vertical')  pos.row++;
       if(root_expansion == 'horizontal')  pos.col++;
-      if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].type == 'complex') {
+      if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].type == 'complex' && ($(this).attr('collapsed') == undefined || $(this).attr('collapsed') == 'false')) {
         block = parse(this, jQuery.extend(true, {}, pos));
         if(illustrator.elements[this.tagName].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive 
       } else {

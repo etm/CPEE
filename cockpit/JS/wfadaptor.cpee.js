@@ -40,6 +40,11 @@ function create_cpee_elements(adaptor) {
   } // }}}
   cpee.events.dblclick = function(node, e) { // {{{
     console.log('Double Click ' + $(node).parents(':first').attr('id'));
+    $('#tile-' + $(node).parents(':first').attr('id')).css('display','none');
+    var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
+    if(xml_node.attr('collapsed') == undefined || xml_node.attr('collapsed') == 'false') {xml_node.attr('collapsed','true');}
+    else {xml_node.attr('collapsed','false');}
+    description.update();
     return false;
   } // }}}
   cpee.events.mouseover = function(node, e) { // {{{
