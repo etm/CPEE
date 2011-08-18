@@ -46,6 +46,13 @@ svg rect.block {
   stroke: #000000;
   fill: none;
 }
+svg rect.tile {
+  stroke-width: 1; 
+  stroke-dasharray: 3,5;
+  fill: Highlight;
+  fill-opacity: 0.3;
+  display: none;
+}
 svg .stand {
   fill:#ffffff;
   fill-opacity:1;

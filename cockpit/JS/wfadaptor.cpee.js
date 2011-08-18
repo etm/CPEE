@@ -42,6 +42,14 @@ function create_cpee_elements(adaptor) {
     console.log('Double Click ' + $(node).parents(':first').attr('id'));
     return false;
   } // }}}
+  cpee.events.mouseover = function(node, e) { // {{{
+    $('#tile-' + $(node.parentNode).attr('id')).css('display','block');
+    return false;
+  } // }}}
+  cpee.events.mouseout = function(node, e) { // {{{
+    $('#tile-' + $(node.parentNode).attr('id')).css('display','none');
+    return false;
+  } // }}}
   // }}}
 
   cpee.elements = {}; // {{{
@@ -87,6 +95,7 @@ function create_cpee_elements(adaptor) {
     'illustrator': {//{{{
       'type' : 'abstract', 
       'draw' : function(node, pos, block) { 
+        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
         },
       'svg_def': function() {
@@ -127,6 +136,7 @@ function create_cpee_elements(adaptor) {
       'type' : 'primitive', 
       'endnodes' : 'this',
       'draw' : function(node, pos, block) { 
+        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         if($(node).children('manipulate').length > 0) {
           return illustrator.elements.callmanipulate.draw(node, pos, block);
         } else {
@@ -170,6 +180,7 @@ function create_cpee_elements(adaptor) {
       'type' : 'primitive',
       'endnodes' : 'this',
       'draw' : function(node, pos, block) { 
+        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'svg_def': function() {
@@ -204,6 +215,7 @@ function create_cpee_elements(adaptor) {
       'endnodes' : 'aggregate',
       'closeblock': false,
       'draw' : function(node, pos, block) { 
+        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('choose', $(node).attr('svg-id'), pos.row, pos.col);
       }, 
       'expansion' : function(node) { 
@@ -256,7 +268,9 @@ function create_cpee_elements(adaptor) {
       cpee.events.mousedown(node,e,true, true);
     },
     'click': cpee.events.click,
-    'dblclick': cpee.events.dblclick 
+    'dblclick': cpee.events.dblclick,
+    'mouseover': cpee.events.mouseover,
+    'mouseout': cpee.events.mouseout,
    }//}}}
   };  /*}}}*/
 
@@ -266,6 +280,7 @@ function create_cpee_elements(adaptor) {
       'endnodes' : 'passthrough',
       'closeblock': false,
       'draw' : function(node, pos, block) { 
+        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('otherwise', $(node).attr('svg-id'), pos.row, pos.col);
       }, 
       'expansion' : function(node) { 
@@ -325,7 +340,9 @@ function create_cpee_elements(adaptor) {
       cpee.events.mousedown(node,e,true, false);
     },
     'click': cpee.events.click,
-    'dblclick': cpee.events.dblclick 
+    'dblclick': cpee.events.dblclick, 
+    'mouseover': cpee.events.mouseover,
+    'mouseout': cpee.events.mouseout,
    }//}}}
   }; /*}}}*/
   
@@ -335,6 +352,7 @@ function create_cpee_elements(adaptor) {
       'endnodes' : 'passthrough',
       'closeblock':false,
       'draw' : function(node, pos, block) { 
+        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('alternative', $(node).attr('svg-id'), pos.row, pos.col);
       }, 
       'expansion' : function(node) { 
@@ -396,7 +414,9 @@ function create_cpee_elements(adaptor) {
       cpee.events.mousedown(node,e,true, false);
     },
     'click': cpee.events.click,
-    'dblclick': cpee.events.dblclick 
+    'dblclick': cpee.events.dblclick, 
+    'mouseover': cpee.events.mouseover,
+    'mouseout': cpee.events.mouseout,
    }//}}}
   };  /*}}}*/
   
@@ -406,6 +426,7 @@ function create_cpee_elements(adaptor) {
       'endnodes' : 'this',
       'closeblock' : true,
       'draw' : function(node, pos, block) {
+        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('loop', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'expansion' : function(node) {
@@ -469,7 +490,9 @@ function create_cpee_elements(adaptor) {
       cpee.events.mousedown(node,e,true, true);
     },
     'click': cpee.events.click,
-    'dblclick': cpee.events.dblclick 
+    'dblclick': cpee.events.dblclick, 
+    'mouseover': cpee.events.mouseover,
+    'mouseout': cpee.events.mouseout,
    }//}}}
   };  /*}}}*/
   
@@ -479,7 +502,8 @@ function create_cpee_elements(adaptor) {
       'endnodes' : 'this',
       'closeblock' : false,
       'draw' : function(node, pos, block) {
-        illustrator.draw.draw_border(pos,block.max);
+        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
+        illustrator.draw.draw_border($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('parallel', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'expansion' : function(node) { 
@@ -538,7 +562,9 @@ function create_cpee_elements(adaptor) {
       cpee.events.mousedown(node,e,true, true);
     },
     'click': cpee.events.click,
-    'dblclick': cpee.events.dblclick 
+    'dblclick': cpee.events.dblclick, 
+    'mouseover': cpee.events.mouseover,
+    'mouseout': cpee.events.mouseout,
    }//}}}
   };  /*}}}*/
   
@@ -548,6 +574,7 @@ function create_cpee_elements(adaptor) {
       'endnodes' : 'this',
       'closeblock' : false,
       'draw' : function(node, pos, block) {
+        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('parallel_branch', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'expansion' : function(node) { 
@@ -614,7 +641,9 @@ function create_cpee_elements(adaptor) {
       cpee.events.mousedown(node,e,true, false);
     },
     'click': cpee.events.click,
-    'dblclick': cpee.events.dblclick 
+    'dblclick': cpee.events.dblclick, 
+    'mouseover': cpee.events.mouseover,
+    'mouseout': cpee.events.mouseout,
    }//}}}
   };  /*}}}*/
   
@@ -624,7 +653,8 @@ function create_cpee_elements(adaptor) {
       'endnodes' : 'aggregate',
       'closeblock' : false,
       'draw' : function(node, pos, block) {
-        illustrator.draw.draw_border(pos,block.max);
+        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
+        illustrator.draw.draw_border($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('critical', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'expansion' : function(node) {
@@ -679,7 +709,9 @@ function create_cpee_elements(adaptor) {
       cpee.events.mousedown(node,e,true, true);
     },
     'click': cpee.events.click,
-    'dblclick': cpee.events.dblclick 
+    'dblclick': cpee.events.dblclick, 
+    'mouseover': cpee.events.mouseover,
+    'mouseout': cpee.events.mouseout,
    }//}}}
   };  /*}}}*/
   
@@ -740,7 +772,9 @@ function create_cpee_elements(adaptor) {
       cpee.events.mousedown(node,e,true, false);
     },
     'click': cpee.events.click,
-    'dblclick': cpee.events.dblclick 
+    'dblclick': cpee.events.dblclick, 
+    'mouseover': cpee.events.mouseover,
+    'mouseout': cpee.events.mouseout,
    }//}}}
   }; /*}}}*/
   // }}}

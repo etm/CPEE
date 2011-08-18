@@ -113,12 +113,19 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     svg.symbols.append(g);
     return g;
   } // }}}    
-  var draw_border = this.draw.draw_border = function(p1, p2) { // {{{
-    svg.blocks.prepend($X('<rect x="' + (p1.col-0.50)*width + '" ' +
+  var draw_border = this.draw.draw_border = function(id, p1, p2) { // {{{
+    svg.blocks.prepend($X('<rect id="block-' + id + '" x="' + (p1.col-0.50)*width + '" ' +
         'y="' + (p1.row-0.80)*height + '" ' +
         'width="' + ((p2.col+1.00)-p1.col)*width + '" ' +
         'height="' + ((p2.row+1.00)-p1.row)*height +'" ' +
         'class="block" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
+  } // }}} 
+  var draw_tile = this.draw.draw_tile = function(id, p1, p2) { // {{{
+    svg.tiles.prepend($X('<rect id="tile-' + id + '" x="' + (p1.col-0.50)*width + '" ' +
+        'y="' + (p1.row-0.80)*height + '" ' +
+        'width="' + ((p2.col+1.00)-p1.col)*width + '" ' +
+        'height="' + ((p2.row+1.00)-p1.row)*height +'" ' +
+        'class="tile" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_connection = this.draw.draw_connection = function(start, end, max_line, num_lines) { // {{{
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
@@ -162,6 +169,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   var svg_structure = function() { // {{{
     svg.container.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
     var canvas = $('g:first', svg.container);
+    svg.tiles = canvas.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
+    svg.tiles = $('g:last',canvas);
     svg.blocks = canvas.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
     svg.blocks = $('g:last',canvas);
     svg.lines = canvas.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
