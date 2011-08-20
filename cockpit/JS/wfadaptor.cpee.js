@@ -64,6 +64,11 @@ function create_cpee_elements(adaptor) {
     $('#tile-' + $(node.parentNode).attr('id')).css('display','none');
     return false;
   } // }}}
+  cpee.events.dragstart = function (node, e) {
+    console.log('Dargstart!');
+    console.log(node);
+    console.log(e);
+  }
   // }}}
 
   cpee.elements = {}; // {{{
@@ -186,6 +191,7 @@ function create_cpee_elements(adaptor) {
       cpee.events.mousedown(node,e,true, true);
     },
     'click': cpee.events.click,
+    'dragstart': cpee.events.dragstart,
    }//}}}
   }; /*}}}*/
 

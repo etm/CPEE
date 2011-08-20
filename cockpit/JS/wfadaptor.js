@@ -79,8 +79,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     svg.container.append(svg.defs);
     svg_structure();
     for(element in elements) 
-      if(elements[element].svg)
-        svg.defs.append($X('<symbol id="' + element + '" xmlns="http://www.w3.org/2000/svg"/>').append(elements[element].svg().children()));
+      if(elements[element].svg) {
+        var sym = $X('<symbol id="' + element + '" xmlns="http://www.w3.org/2000/svg"/>').append(elements[element].svg().children()); // append all children to symbol
+        $.each(elements[element].svg().attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
+        svg.defs.append(sym);
+      }
   }  // }}}
   var clear = this.clear = function() { // {{{
     $('> path', svg.lines).each(function() {$(this).remove()});
