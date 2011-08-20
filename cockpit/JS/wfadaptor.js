@@ -221,7 +221,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[svg-id = ' + svg_id + ']', description);
   } // }}}
-  // }}}
   var update = this.update = function() { // {{{
     if(update_illustrator ){
       illustrator.clear();
@@ -230,6 +229,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     adaptor.notify();
   } // }}}
+  // }}}
   // Adaption functions {{{
   this.insert_after = function(new_node, target) { // {{{
     if(typeof(new_node) == 'function') {target.after(new_node(target));}
@@ -252,7 +252,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     update();
   }
   // }}}
-
+  // }}}
   // Helper Functions {{{
   var parse = function(root, parent_pos)  { // private {{{
     var pos = jQuery.extend(true, {}, parent_pos);
@@ -311,6 +311,11 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       // }}}
     });
 
+    if($(root).children().length == 0) { // empty complex found
+      endnodes = [parent_pos];
+      max.row = parent_pos.row;
+      max.col = parent_pos.col;
+    }
     if(root.tagName == 'description') { // Finsished parsing {{{
       pos.row++;
       max.row++;
@@ -318,12 +323,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(prev[0].row != 0 || prev[0].col != 0) // this if avoids the connection from description to the first element
         for(node in prev) illustrator.draw.draw_connection(prev[node], pos);
       illustrator.elements[root.tagName].draw(null, pos);
+      if(max.col < 1) max.col = 1;
     } // }}}
-    if($(root).children().length == 0) { // empty complex found
-      endnodes = [parent_pos];
-      max.row = parent_pos.row;
-      max.col = parent_pos.col;
-    }
     if(illustrator.elements[root.tagName].endnodes == 'this' && illustrator.elements[root.tagName].closeblock == false) {endnodes = [prev];} // closeblock == false, allows loop to close himselfe
     return {'endnodes': endnodes, 'max':max};
   } // }}}
