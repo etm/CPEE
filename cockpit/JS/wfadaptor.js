@@ -222,6 +222,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     return $('[svg-id = ' + svg_id + ']', description);
   } // }}}
   var update = this.update = function() { // {{{
+    id_counter = {};
     if(update_illustrator ){
       illustrator.clear();
       var expansion = parse($('description:first', description)[0], {'row':0,'col':0});

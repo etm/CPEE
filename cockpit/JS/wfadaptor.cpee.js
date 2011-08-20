@@ -109,7 +109,6 @@ function create_cpee_elements(adaptor) {
     'illustrator': {//{{{
       'type' : 'abstract', 
       'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
         },
       'svg_def': function() {
@@ -151,7 +150,6 @@ function create_cpee_elements(adaptor) {
       'type' : 'primitive', 
       'endnodes' : 'this',
       'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         if($(node).children('manipulate').length > 0) {
           return illustrator.elements.callmanipulate.draw(node, pos, block);
         } else {
@@ -196,7 +194,6 @@ function create_cpee_elements(adaptor) {
       'type' : 'primitive',
       'endnodes' : 'this',
       'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
         return illustrator.draw.draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
       },
       'svg_def': function() {
