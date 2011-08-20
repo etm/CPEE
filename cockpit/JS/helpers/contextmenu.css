@@ -27,12 +27,17 @@ tr.contextmenuheader:not(:first-child) {
 tr.contextmenuitem {
   font-size: small;
   color: MenuText;
+  height:1.6em;
 }
 tr.contextmenuitem:hover {
   background-color:Highlight;
   color: HighlightText;
 }
 tr.contextmenuitem > td{
-  padding-left: 1.5em;
+  padding-left: 0.5em;
   padding-right: 1em;
+}
+tr.contextmenuitem > .contextmenuicon{
+  margin-left: 0.7em;
+  padding-right: 0em;
 }
