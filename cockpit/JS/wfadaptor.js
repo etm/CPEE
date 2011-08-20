@@ -67,7 +67,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     var svgNS = "http://www.w3.org/2000/svg";
     clear();
     svg.container = con;
-    // TODO: Problem when creatign this element with a namespace. I think this must be the reason why the arrow is not displayed at all
     svg.defs = $X('<defs xmlns="http://www.w3.org/2000/svg">' +
         '<marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
           '<path d="m 2 2 l 6 3 l -6 3 z"/>' +
@@ -79,6 +78,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       '</defs>');
     svg.container.append(svg.defs);
     svg_structure();
+    for(element in elements) 
+      if(elements[element].svg)
+        svg.defs.append($X('<symbol id="' + element + '" xmlns="http://www.w3.org/2000/svg"/>').append(elements[element].svg().children()));
   }  // }}}
   var clear = this.clear = function() { // {{{
     $('> path', svg.lines).each(function() {$(this).remove()});
@@ -93,7 +95,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // }}}
   // Helper Functions {{{
   var draw_symbol = this.draw.draw_symbol = function (sym_name, id, row, col) { // {{{
-    if(elements[sym_name] == undefined || elements[sym_name].svg_def == undefined) sym_name = 'unknown';
+    if(elements[sym_name] == undefined || elements[sym_name].svg == undefined) sym_name = 'unknown';
     var g = $X('<g id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg" xmlns:x="http://www.w3.org/1999/xlink">' + 
                   '<text class="super" transform="translate(28.4,8.4)">' +
                     '<tspan class="active">0</tspan>' +

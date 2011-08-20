@@ -9,9 +9,7 @@ function contextmenu(items, x, y) {
         icon = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="2em" width="2em">' +
                     '<g transform="translate(5,8) scale(0.5, 0.5)"/>' +
                   '</svg>');
-        items[head][item].menu_icon().children().each(function() {
-          icon.children('g:first').append(this);
-        });
+        icon.children('g').append(items[head][item].menu_icon().children());
         icon = icon.serializeXML();
       }
       var row = $('<tr class="contextmenuitem"><td class="contextmenuicon">' + (icon == null ? '' : icon) + '</td><td>' + items[head][item].label + '</td></tr>');
