@@ -123,7 +123,7 @@ function create_cpee_elements(adaptor) {
   'description' : {//{{{
     'create':  function(target) {
       var node = null;
-      node = $('<call><manipulate/></call>');
+      node = $X('<call xmlns="http://cpee.org/ns/description/1.0"><manipulate/></call>');
       return node;
     },
     'permissible_children': function(node) {
@@ -206,7 +206,7 @@ function create_cpee_elements(adaptor) {
     'description' : {//{{{
       'create':  function(target) {
         // if(target.get(0).tagName == 'call') ... means a manipukate block is requested
-        var node = $('<manipulate/>');
+        var node = $X('<manipulate xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -246,7 +246,7 @@ function create_cpee_elements(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<choose><otherwise/></choose>');
+        var node = $X('<choose xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
         return node;
       },
       'insertable' : function(parent_node, index) {
@@ -315,7 +315,7 @@ function create_cpee_elements(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<otherwise/>');
+        var node = $X('<otherwise xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'insertable' : function(parent_node, index) {
@@ -394,7 +394,7 @@ function create_cpee_elements(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<alternative/>');
+        var node = $X('<alternative xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'insertable' : function(parent_node, index) {
@@ -476,7 +476,7 @@ function create_cpee_elements(adaptor) {
     },// }}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<loop/>');
+        var node = $X('<loop xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -563,7 +563,7 @@ function create_cpee_elements(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<parallel/>');
+        var node = $X('<parallel xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -642,7 +642,7 @@ function create_cpee_elements(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<parallel_branch/>');
+        var node = $X('<parallel_branch xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -728,7 +728,7 @@ function create_cpee_elements(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<critical/>');
+        var node = $X('<critical xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
