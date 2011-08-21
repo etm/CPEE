@@ -85,6 +85,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     $('> :not(defs)', svg.container).each(function() {$(this).remove()});
   } // }}}
   this.set_svg = function(graph) { // {{{
+    if(graph.max.row < 1) graph.max.row = 1;
+    if(graph.max.col < 1) graph.max.col = 1;
+    svg.container.attr({'height': (graph.max.row+0.1)*height, 'width':(graph.max.col+0.55)*width});
     svg.container.append(graph.svg);
   } // }}}
   // }}}
@@ -220,6 +223,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     return description.serializeXML();
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
+    console.log(svg_id);
     return $('[svg-id = \'' + svg_id + '\']', description);
   } // }}}
   var update = this.update = function() { // {{{
@@ -330,10 +334,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       pos.row++;
       max.row++;
       $(root).attr('svg-id','description');
-      group.attr('id','group-description');
+      group.attr('element-id','group-description');
       if(prev[0].row != 0 || prev[0].col != 0) // this if avoids the connection from description to the first element
         for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos);
-      illustrator.draw.draw_symbol('end', 'end', pos.row, pos.col, group);
+      illustrator.draw.draw_symbol('end', 'description', pos.row, pos.col, group);
       if(max.col < 1) max.col = 1;
     } // }}}
     if(illustrator.elements[root.tagName].endnodes == 'this' && illustrator.elements[root.tagName].closeblock == false) {endnodes = [prev];} // closeblock == false, allows loop to close himselfe
