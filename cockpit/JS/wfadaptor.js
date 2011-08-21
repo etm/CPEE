@@ -91,7 +91,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // Helper Functions {{{
   var draw_symbol = this.draw.draw_symbol = function (sym_name, id, row, col, group) { // {{{
     if(elements[sym_name] == undefined || elements[sym_name].svg == undefined) sym_name = 'unknown';
-    var g = $X('<g class="element" id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg" xmlns:x="http://www.w3.org/1999/xlink">' + 
+    var g = $X('<g class="element" element-id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg" xmlns:x="http://www.w3.org/1999/xlink">' + 
                   '<text class="super" transform="translate(28.4,8.4)">' +
                     '<tspan class="active">0</tspan>' +
                     '<tspan class="colon">,</tspan>' +
@@ -112,14 +112,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return g;
   } // }}}    
   var draw_border = this.draw.draw_border = function(id, p1, p2, group) { // {{{
-    group.prepend($X('<rect id="block-' + id + '" x="' + (p1.col-0.50)*width + '" ' +
+    group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*width + '" ' +
         'y="' + (p1.row-0.80)*height + '" ' +
         'width="' + ((p2.col+1.00)-p1.col)*width + '" ' +
         'height="' + ((p2.row+1.00)-p1.row)*height +'" ' +
         'class="block" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}} 
   var draw_tile = this.draw.draw_tile = function(id, p1, p2, group) { // {{{
-    group.prepend($X('<rect id="tile-' + id + '" x="' + (p1.col-0.50)*width + '" ' +
+    group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*width + '" ' +
         'y="' + (p1.row-0.80)*height + '" ' +
         'width="' + ((p2.col+1.00)-p1.col)*width + '" ' +
         'height="' + ((p2.row+1.00)-p1.row)*height +'" ' +

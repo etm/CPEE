@@ -8,7 +8,7 @@ function create_cpee_elements(adaptor) {
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
     } else if(e.button == 2) { // right-click
-      var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
+      var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('element-id'));
       var group = null;
       var menu = {};
 
@@ -45,23 +45,23 @@ function create_cpee_elements(adaptor) {
     return false;
   } // }}} 
   cpee.events.click = function(node, e) { // {{{ 
-    console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
+    console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('element-id'));
     return false;
   } // }}}
   cpee.events.dblclick = function(node, e) { // {{{
-    $('#tile-' + $(node).parents(':first').attr('id')).css('display','none');
-    var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
+    $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','none');
+    var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('element-id'));
     if(xml_node.attr('collapsed') == undefined || xml_node.attr('collapsed') == 'false') {xml_node.attr('collapsed','true');}
     else {xml_node.attr('collapsed','false');}
     description.update();
     return false;
   } // }}}
   cpee.events.mouseover = function(node, e) { // {{{
-    $('#tile-' + $(node.parentNode).attr('id')).css('display','block');
+    $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','block');
     return false;
   } // }}}
   cpee.events.mouseout = function(node, e) { // {{{
-    $('#tile-' + $(node.parentNode).attr('id')).css('display','none');
+    $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','none');
     return false;
   } // }}}
   cpee.events.dragstart = function (node, e) {
