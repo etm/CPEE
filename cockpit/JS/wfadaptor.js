@@ -85,9 +85,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     $('> :not(defs)', svg.container).each(function() {$(this).remove()});
   } // }}}
   this.set_svg = function(graph) { // {{{
-    if(graph.row < 0) graph.row = 1;
-    if(graph.col < 0) graph.col = 1;
-    $(svg.container).attr({'height':(graph.row+0.0)*height,'width':(graph.col+0.55)*width});
     svg.container.append(graph.svg);
   } // }}}
   // }}}
