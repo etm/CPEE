@@ -113,9 +113,6 @@ function create_cpee_elements(adaptor) {
   cpee.elements.callmanipulate = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract', 
-      'draw' : function(node, pos, block) { 
-        return illustrator.draw.draw_symbol('callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
-        },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
@@ -154,10 +151,12 @@ function create_cpee_elements(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive', 
       'endnodes' : 'this',
-      'draw' : function(node, pos, block) { 
+      'resolve_symbol' : function(node) { 
         if($(node).children('manipulate').length > 0) {
+          return 'callmanipulate'; 
           return illustrator.elements.callmanipulate.draw(node, pos, block);
         } else {
+          return'call' 
           return illustrator.draw.draw_symbol('call', $(node).attr('svg-id'), pos.row, pos.col);
         }
       },
@@ -199,9 +198,6 @@ function create_cpee_elements(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'draw' : function(node, pos, block) { 
-        return illustrator.draw.draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
-      },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
@@ -233,10 +229,6 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'aggregate',
       'closeblock': false,
-      'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('choose', $(node).attr('svg-id'), pos.row, pos.col);
-      }, 
       'expansion' : function(node) { 
         return 'horizontal';
       }, 
@@ -302,10 +294,6 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'passthrough',
       'closeblock': false,
-      'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('otherwise', $(node).attr('svg-id'), pos.row, pos.col);
-      }, 
       'expansion' : function(node) { 
         return 'vertical';
       }, 
@@ -381,10 +369,6 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'passthrough',
       'closeblock':false,
-      'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('alternative', $(node).attr('svg-id'), pos.row, pos.col);
-      }, 
       'expansion' : function(node) { 
         return 'vertical';
       }, 
@@ -463,10 +447,6 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : true,
-      'draw' : function(node, pos, block) {
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('loop', $(node).attr('svg-id'), pos.row, pos.col);
-      },
       'expansion' : function(node) {
         return 'vertical';
       },
@@ -547,11 +527,7 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : false,
-      'draw' : function(node, pos, block) {
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        illustrator.draw.draw_border($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('parallel', $(node).attr('svg-id'), pos.row, pos.col);
-      },
+      'border': true,
       'expansion' : function(node) { 
         // check if any sibling other than 'parallel_branch' is present 
         if($(node).children(':not(parallel_branch)').length > 0) return 'vertical';
@@ -627,10 +603,6 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : false,
-      'draw' : function(node, pos, block) {
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('parallel_branch', $(node).attr('svg-id'), pos.row, pos.col);
-      },
       'expansion' : function(node) { 
         return 'vertical';
       },
@@ -714,11 +686,7 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'aggregate',
       'closeblock' : false,
-      'draw' : function(node, pos, block) {
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        illustrator.draw.draw_border($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('critical', $(node).attr('svg-id'), pos.row, pos.col);
-      },
+      'border': true,
       'expansion' : function(node) {
         return 'vertical';
       },
@@ -789,9 +757,6 @@ function create_cpee_elements(adaptor) {
       'type' : 'description',
       'endnodes' : 'passthrough',
       'closeblock' : false,
-      'draw' : function(node, pos, block) {
-        return illustrator.draw.draw_symbol('end', 'description', pos.row, pos.col);
-      },
       'expansion' : function(node) {
         return 'vertical';
       },
