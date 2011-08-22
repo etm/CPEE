@@ -15,12 +15,12 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
     if parameters[:call]
       @t = Thread.new do
         parameters[:call].call
-        @__myhandler_returnValue = 'Handler_Dummy_Result'
+        @__myhandler_returnValue = parameters.has_key?(:result) ? parameters[:result] : 'Handler_Dummy_Result'
         @__myhandler_continue.continue
       end   
       # give nothing back 
-    else  
-      @__myhandler_returnValue = 'Handler_Dummy_Result'
+    else
+      @__myhandler_returnValue = parameters.has_key?(:result) ? parameters[:result] : 'Handler_Dummy_Result'
       @__myhandler_continue.continue
     end  
   end

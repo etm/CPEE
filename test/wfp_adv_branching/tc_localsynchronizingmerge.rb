@@ -26,8 +26,7 @@ class TestWFPLocalSynchronizingMerge < Test::Unit::TestCase
       end
       activity :a3, :call, :endpoint1
     end
-    @wf.start
-    sleep 1
+    @wf.start.join
     wf_sassert('SrunningCa2_2Da2_2')
     wf_assert('CALL a1_1:')
     wf_assert('CALL a1_2:')
