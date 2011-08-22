@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="../contextmenu.css" type="text/css"/>
     <script type="text/javascript">
       var adaptor = null;
-      var parser = DOMParser();
       function click_update_graph() {
         console.log("Demo: Graph Update");
         var then = new Date();
@@ -59,8 +58,8 @@
     <script type="text/javascript">
       var then = new Date();
       adaptor = new WfAdaptor();
-      adaptor.set_svg_container($('#drawing_area'));
       create_cpee_elements(adaptor);
+      adaptor.set_svg_container($('#drawing_area'));
       adaptor.set_description($('#description').val(), true);
       $('#t_new').text((new Date()).getTime() - then.getTime() + 'ms'); 
       adaptor.notify = update_event;

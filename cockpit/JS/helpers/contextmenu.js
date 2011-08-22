@@ -2,13 +2,19 @@ function contextmenu(items, x, y) {
   if($('div.contextmenu').length > 0) contextmenu_remove();
   var div = $('<div><table class="contextmenu"/></div>');
   for(head in items) {
-    div.children(':first').append('<tr class="contextmenuheader"><td>' + head + '</td></tr>');
+    div.children(':first').append('<tr class="contextmenuheader"><td colspan="2">' + head + '</td></tr>');
     for(item in items[head]) {
-      var row = $('<tr class="contextmenuitem"><td>' + items[head][item].label + '</td></tr>');
+      var icon = null;
+      if(items[head][item].menu_icon) {
+        icon = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="2em" width="2em">' +
+                    '<g transform="translate(5,8) scale(0.5, 0.5)"/>' +
+                  '</svg>');
+        icon.children('g').append(items[head][item].menu_icon().children());
+        icon = icon.serializeXML();
+      }
+      var row = $('<tr class="contextmenuitem"><td class="contextmenuicon">' + (icon == null ? '' : icon) + '</td><td>' + items[head][item].label + '</td></tr>');
       div.children(':first').append(row);
       row.bind('click', items[head][item], function(event){
-        console.log(event.data.params);
-        console.log(items[head][item].label);
         event.data.function_call.apply(null, event.data.params);
       });
     }
@@ -16,11 +22,11 @@ function contextmenu(items, x, y) {
   div.attr('class','contextmenu');
   div.css({'left':x+5,'top':y+5, 'display':'block'});
   $('body', document).append(div);
-  $('body', document).bind('click',contextmenu_remove); // must the binding also be removed? (TODO)
-  if(document.body.clientHeight - 20 < (y + div.height())) { // contextmenu is positioned upwards
+  $('body', document).bind('click',contextmenu_remove); 
+  if((document.body.clientHeight < (y + div.height())) && (y-div.height()-5 >= 0)) { // contextmenu is positioned upwards
     div.css({'top':y-div.height()-5});
   }
-  if(document.body.clientWidth - 20 < (x + div.width())) { // contextmenu is positioned upwards
+  if((document.body.clientWidth < (x + div.width())) && (x-div.width()-5 >= 0)) { // contextmenu is positioned upwards
     div.css({'left':x-div.width()-5});
   }
 }

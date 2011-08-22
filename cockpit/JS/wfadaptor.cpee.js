@@ -8,7 +8,7 @@ function create_cpee_elements(adaptor) {
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
     } else if(e.button == 2) { // right-click
-      var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
+      var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('element-id'));
       var group = null;
       var menu = {};
 
@@ -24,10 +24,20 @@ function create_cpee_elements(adaptor) {
       if(xml_node.get(0).tagName != 'description')
         menu['Remove Element'] = [{'label': 'Actual Element', 
                         'function_call': description.remove, 
+                        'menu_icon': function() {
+                          var icon =  cpee.elements[xml_node.get(0).tagName].illustrator.svg();
+                          icon.children('circle').css({'fill':'red','fill-opacity':'0.5'});
+                          return icon;
+                        },
                         'params': [null, xml_node]}];
       if($('> manipulate', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
         menu['Remove Element'].push({'label': 'Remove Manipulate Block', 
                         'function_call': description.remove, 
+                        'menu_icon': function() {
+                          var icon =  cpee.elements.callmanipulate.illustrator.svg();
+                          icon.children('circle:last').css({'fill':'red','fill-opacity':'0.5'});
+                          return icon;
+                        },
                         'params': ['> manipulate', xml_node]});
       }
       contextmenu(menu, e.pageX, e.pageY);
@@ -35,26 +45,30 @@ function create_cpee_elements(adaptor) {
     return false;
   } // }}} 
   cpee.events.click = function(node, e) { // {{{ 
-    console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('id'));
+    console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('element-id'));
     return false;
   } // }}}
   cpee.events.dblclick = function(node, e) { // {{{
-    console.log('Double Click ' + $(node).parents(':first').attr('id'));
-    $('#tile-' + $(node).parents(':first').attr('id')).css('display','none');
-    var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('id'));
+    $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','none');
+    var xml_node = description.get_node_by_svg_id($(node).parents(':first').attr('element-id'));
     if(xml_node.attr('collapsed') == undefined || xml_node.attr('collapsed') == 'false') {xml_node.attr('collapsed','true');}
     else {xml_node.attr('collapsed','false');}
     description.update();
     return false;
   } // }}}
   cpee.events.mouseover = function(node, e) { // {{{
-    $('#tile-' + $(node.parentNode).attr('id')).css('display','block');
+    $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','block');
     return false;
   } // }}}
   cpee.events.mouseout = function(node, e) { // {{{
-    $('#tile-' + $(node.parentNode).attr('id')).css('display','none');
+    $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','none');
     return false;
   } // }}}
+  cpee.events.dragstart = function (node, e) {
+    console.log('Dargstart!');
+    console.log(node);
+    console.log(e);
+  }
   // }}}
 
   cpee.elements = {}; // {{{
@@ -99,23 +113,19 @@ function create_cpee_elements(adaptor) {
   cpee.elements.callmanipulate = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract', 
-      'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('callmanipulate', $(node).attr('svg-id'), pos.row, pos.col);
-        },
-      'svg_def': function() {
-        return $X('<symbol id="callmanipulate" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
                     '<text transform="translate(15,21)" class="normal">c</text>' +
                     '<circle cx="28" cy="27" r="9" class="stand"/>' + 
                     '<text transform="translate(28,31)" class="small">m</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },//}}}
   'description' : {//{{{
     'create':  function(target) {
       var node = null;
-      node = $('<call><manipulate/></call>');
+      node = $X('<call xmlns="http://cpee.org/ns/description/1.0"><manipulate/></call>');
       return node;
     },
     'permissible_children': function(node) {
@@ -123,6 +133,7 @@ function create_cpee_elements(adaptor) {
         return [
          {'label': 'Manipulate Block', 
           'function_call': description.insert_last_into, 
+          'menu_icon': cpee.elements.callmanipulate.illustrator.svg, 
           'params': [description.elements.manipulate.create, node]}
         ];
       return [];
@@ -140,19 +151,20 @@ function create_cpee_elements(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive', 
       'endnodes' : 'this',
-      'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
+      'resolve_symbol' : function(node) { 
         if($(node).children('manipulate').length > 0) {
+          return 'callmanipulate'; 
           return illustrator.elements.callmanipulate.draw(node, pos, block);
         } else {
+          return'call' 
           return illustrator.draw.draw_symbol('call', $(node).attr('svg-id'), pos.row, pos.col);
         }
       },
-      'svg_def': function() {
-        return $X('<symbol id="call" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
                     '<text transform="translate(15,21)" class="normal">c</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },//}}}
     'description' : {//{{{
@@ -167,6 +179,7 @@ function create_cpee_elements(adaptor) {
           return [
            {'label': 'Manipulate Block', 
             'function_call': description.insert_last_into, 
+            'menu_icon': cpee.elements.callmanipulate.illustrator.svg, 
             'params': [description.elements.manipulate.create, node]}
           ];
         return [];
@@ -177,6 +190,7 @@ function create_cpee_elements(adaptor) {
       cpee.events.mousedown(node,e,true, true);
     },
     'click': cpee.events.click,
+    'dragstart': cpee.events.dragstart,
    }//}}}
   }; /*}}}*/
 
@@ -184,21 +198,17 @@ function create_cpee_elements(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('manipulate', $(node).attr('svg-id'), pos.row, pos.col);
-      },
-      'svg_def': function() {
-        return $X('<symbol id="manipulate" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
                     '<text transform="translate(15,21)" class="normal">m</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
         // if(target.get(0).tagName == 'call') ... means a manipukate block is requested
-        var node = $('<manipulate/>');
+        var node = $X('<manipulate xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -219,26 +229,22 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'aggregate',
       'closeblock': false,
-      'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('choose', $(node).attr('svg-id'), pos.row, pos.col);
-      }, 
       'expansion' : function(node) { 
         return 'horizontal';
       }, 
       'col_shift' : function(node) { 
         return false; 
       },
-      'svg_def': function() {
-        return $X('<symbol id="choose" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
                     '<text transform="translate(15,21)" class="normal">σ</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<choose><otherwise/></choose>');
+        var node = $X('<choose xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
         return node;
       },
       'insertable' : function(parent_node, index) {
@@ -252,18 +258,22 @@ function create_cpee_elements(adaptor) {
         if(node.children('parallel_branch').length > 0) {
           return [{'label': 'Parallel Branch', 
            'function_call': func, 
+           'menu_icon': cpee.elements.parallel_branch.illustrator.svg, 
            'params': [description.elements.parallel_branch.create, node]}];
         }
         var childs = [{'label': 'Alternative', 
          'function_call': func, 
+         'menu_icon': cpee.elements.alternative.illustrator.svg, 
          'params': [description.elements.alternative.create, node]}];
         if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length) 
           childs.push({'label': 'Otherwise', 
            'function_call': func, 
+           'menu_icon': cpee.elements.otherwise.illustrator.svg, 
            'params': [description.elements.otherwise.create, node]});
         if(node.parents('parallel').length > node.parents('parallel_branch').length) 
           childs.push({'label': 'Parallel Branch', 
            'function_call': func, 
+           'menu_icon': cpee.elements.parallel_branch.illustrator.svg, 
            'params': [description.elements.parallel_branch.create, node]});
         return childs; 
       }
@@ -284,26 +294,22 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'passthrough',
       'closeblock': false,
-      'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('otherwise', $(node).attr('svg-id'), pos.row, pos.col);
-      }, 
       'expansion' : function(node) { 
         return 'vertical';
       }, 
       'col_shift' : function(node) { 
         return false; 
       },
-      'svg_def': function() {
-        return $X('<symbol id="otherwise" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="standwithout"/>' + 
                     '<text transform="translate(15,20)" class="normal">{⁎}</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<otherwise/>');
+        var node = $X('<otherwise xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'insertable' : function(parent_node, index) {
@@ -318,24 +324,31 @@ function create_cpee_elements(adaptor) {
         return [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': func, 
+           'menu_icon': cpee.elements.callmanipulate.illustrator.svg, 
            'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': func, 
+           'menu_icon': cpee.elements.call.illustrator.svg, 
            'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': func, 
+           'menu_icon': cpee.elements.manipulate.illustrator.svg, 
            'params': [description.elements.manipulate.create, node]},
           {'label': 'Parallel', 
            'function_call': func, 
+           'menu_icon': cpee.elements.parallel.illustrator.svg, 
            'params': [description.elements.parallel.create, node]},
           {'label': 'Choose', 
            'function_call': func, 
+           'menu_icon': cpee.elements.choose.illustrator.svg, 
            'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': func, 
+           'menu_icon': cpee.elements.loop.illustrator.svg, 
            'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': func, 
+           'menu_icon': cpee.elements.critical.illustrator.svg, 
            'params': [description.elements.critical.create, node]}
         ];
       }
@@ -356,26 +369,22 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'passthrough',
       'closeblock':false,
-      'draw' : function(node, pos, block) { 
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('alternative', $(node).attr('svg-id'), pos.row, pos.col);
-      }, 
       'expansion' : function(node) { 
         return 'vertical';
       }, 
       'col_shift' : function(node) { 
         return false;
       },
-      'svg_def': function() {
-        return $X('<symbol id="alternative" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="standwithout"/>' + 
                     '<text transform="translate(15,20)" class="normal">{..}</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<alternative/>');
+        var node = $X('<alternative xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'insertable' : function(parent_node, index) {
@@ -388,28 +397,36 @@ function create_cpee_elements(adaptor) {
         if(node.parents('parallel').length > node.parents('parallel_branch').length && node.get(0).tagName == 'alternative') 
           return [{'label': 'Parallel Branch', 
            'function_call': func, 
+           'menu_icon': cpee.elements.parallel_branch.illustrator.svg, 
            'params': [description.elements.parallel_branch.create, node]}];
         return [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': func, 
+           'menu_icon': cpee.elements.callmanipulate.illustrator.svg, 
            'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': func, 
+           'menu_icon': cpee.elements.call.illustrator.svg, 
            'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': func, 
+           'menu_icon': cpee.elements.manipulate.illustrator.svg, 
            'params': [description.elements.manipulate.create, node]},
           {'label': 'Parallel', 
            'function_call': func, 
+           'menu_icon': cpee.elements.parallel.illustrator.svg, 
            'params': [description.elements.parallel.create, node]},
           {'label': 'Choose', 
            'function_call': func, 
+           'menu_icon': cpee.elements.choose.illustrator.svg, 
            'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': func, 
+           'menu_icon': cpee.elements.loop.illustrator.svg, 
            'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': func, 
+           'menu_icon': cpee.elements.critical.illustrator.svg, 
            'params': [description.elements.critical.create, node]}
         ];
       }
@@ -430,26 +447,22 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : true,
-      'draw' : function(node, pos, block) {
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('loop', $(node).attr('svg-id'), pos.row, pos.col);
-      },
       'expansion' : function(node) {
         return 'vertical';
       },
       'col_shift' : function(node) {
         return true;
       },
-      'svg_def': function() {
-        return $X('<symbol id="loop" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
                     '<text transform="translate(15,23)" class="normallarge">↺</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },// }}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<loop/>');
+        var node = $X('<loop xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -459,31 +472,39 @@ function create_cpee_elements(adaptor) {
         var childs = [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': func, 
+           'menu_icon': cpee.elements.callmanipulate.illustrator.svg, 
            'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': func, 
+           'menu_icon': cpee.elements.call.illustrator.svg, 
            'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': func, 
+           'menu_icon': cpee.elements.manipulate.illustrator.svg, 
            'params': [description.elements.manipulate.create, node]},
           {'label': 'Choose', 
            'function_call': func, 
+           'menu_icon': cpee.elements.choose.illustrator.svg, 
            'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': func, 
+           'menu_icon': cpee.elements.loop.illustrator.svg, 
            'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': func, 
+           'menu_icon': cpee.elements.critical.illustrator.svg, 
            'params': [description.elements.critical.create, node]}
         ];
         if(node.parent('parallel').length > node.parent('parallel_branch').length) {
           childs.push({'label': 'Parallel Branch',
                        'function_call': func, 
+                       'menu_icon': cpee.elements.parallel_branch.illustrator.svg, 
                        'params': [description.elements.parallel_branch.create, node]}
                       );
         } else {
           childs.push({'label': 'Parallel',
                        'function_call': func, 
+                       'menu_icon': cpee.elements.parallel.illustrator.svg, 
                        'params': [description.elements.parallel.create, node]}
                       );
         }
@@ -506,11 +527,7 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : false,
-      'draw' : function(node, pos, block) {
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        illustrator.draw.draw_border($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('parallel', $(node).attr('svg-id'), pos.row, pos.col);
-      },
+      'border': true,
       'expansion' : function(node) { 
         // check if any sibling other than 'parallel_branch' is present 
         if($(node).children(':not(parallel_branch)').length > 0) return 'vertical';
@@ -519,45 +536,53 @@ function create_cpee_elements(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg_def': function() {
-        return $X('<symbol id="parallel" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
                     '<text transform="translate(15,21)" class="normal">||</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<parallel/>');
+        var node = $X('<parallel xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
         var childs =  [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': description.insert_last_into, 
+           'menu_icon': cpee.elements.callmanipulate.illustrator.svg, 
            'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': description.insert_last_into, 
+           'menu_icon': cpee.elements.call.illustrator.svg, 
            'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': description.insert_last_into, 
+           'menu_icon': cpee.elements.manipulate.illustrator.svg, 
            'params': [description.elements.manipulate.create, node]},
           {'label': 'Choose', 
            'function_call': description.insert_last_into, 
+           'menu_icon': cpee.elements.choose.illustrator.svg, 
            'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': description.insert_last_into, 
+           'menu_icon': cpee.elements.loop.illustrator.svg, 
            'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': description.insert_last_into, 
+           'menu_icon': cpee.elements.critical.illustrator.svg, 
            'params': [description.elements.critical.create, node]},
           {'label': 'Parallel Branch',
            'function_call': description.insert_last_into, 
+           'menu_icon': cpee.elements.parallel_branch.illustrator.svg, 
            'params': [description.elements.parallel_branch.create, node]}
         ];
         if(node.get(0).tagName != 'parallel')
           childs.push({'label': 'Parallel', 
              'function_call': description.insert_last_into, 
+             'menu_icon': cpee.elements.parallel.illustrator.svg, 
              'params': [description.elements.parallel.create, node]});
         return childs;
       }
@@ -578,10 +603,6 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : false,
-      'draw' : function(node, pos, block) {
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('parallel_branch', $(node).attr('svg-id'), pos.row, pos.col);
-      },
       'expansion' : function(node) { 
         return 'vertical';
       },
@@ -590,16 +611,16 @@ function create_cpee_elements(adaptor) {
         if($(node).parents('parallel').first().children(':not(parallel_branch)').length > 0) return true;
         return false; 
       },
-      'svg_def': function() {
-        return $X('<symbol id="parallel_branch" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
                     '<text transform="translate(15,20)" class="normal">|</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<parallel_branch/>');
+        var node = $X('<parallel_branch xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -610,29 +631,37 @@ function create_cpee_elements(adaptor) {
         childs =  [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': func, 
+           'menu_icon': cpee.elements.callmanipulate.illustrator.svg, 
            'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': func, 
+           'menu_icon': cpee.elements.call.illustrator.svg, 
            'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': func, 
+           'menu_icon': cpee.elements.manipulate.illustrator.svg, 
            'params': [description.elements.manipulate.create, node]},
           {'label': 'Parallel', 
            'function_call': func, 
+           'menu_icon': cpee.elements.parallel.illustrator.svg, 
            'params': [description.elements.parallel.create, node]},
           {'label': 'Choose', 
            'function_call': func, 
+           'menu_icon': cpee.elements.choose.illustrator.svg, 
            'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': func, 
+           'menu_icon': cpee.elements.loop.illustrator.svg, 
            'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': func, 
+           'menu_icon': cpee.elements.critical.illustrator.svg, 
            'params': [description.elements.critical.create, node]},
         ];
         if(node.parents('choose').length > node.parents('alternative, otherwise').length && node.get(0).tagName == 'parallel_branch') {
           return [{'label': 'Alternative', 
            'function_call': func, 
+           'menu_icon': cpee.elements.alternative.illustrator.svg, 
            'params': [description.elements.alternative.create, node]}];
 //          childs.push({'label': 'Alternative', 
 //           'function_call': func, 
@@ -657,27 +686,23 @@ function create_cpee_elements(adaptor) {
       'type' : 'complex',
       'endnodes' : 'aggregate',
       'closeblock' : false,
-      'draw' : function(node, pos, block) {
-        illustrator.draw.draw_tile($(node).attr('svg-id'), pos,block.max);
-        illustrator.draw.draw_border($(node).attr('svg-id'), pos,block.max);
-        return illustrator.draw.draw_symbol('critical', $(node).attr('svg-id'), pos.row, pos.col);
-      },
+      'border': true,
       'expansion' : function(node) {
         return 'vertical';
       },
       'col_shift' : function(node) {
         return true;
       },
-      'svg_def': function() {
-        return $X('<symbol id="critical" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
                     '<text transform="translate(16.5,21.5)" class="normal">⚠</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $('<critical/>');
+        var node = $X('<critical xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -687,24 +712,31 @@ function create_cpee_elements(adaptor) {
         return [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': func, 
+           'menu_icon': cpee.elements.callmanipulate.illustrator.svg, 
            'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': func, 
+           'menu_icon': cpee.elements.call.illustrator.svg, 
            'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': func, 
+           'menu_icon': cpee.elements.manipulate.illustrator.svg, 
            'params': [description.elements.manipulate.create, node]},
           {'label': 'Parallel', 
            'function_call': func, 
+           'menu_icon': cpee.elements.parallel.illustrator.svg, 
            'params': [description.elements.parallel.create, node]},
           {'label': 'Choose', 
            'function_call': func, 
+           'menu_icon': cpee.elements.choose.illustrator.svg, 
            'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': func, 
+           'menu_icon': cpee.elements.loop.illustrator.svg, 
            'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': func, 
+           'menu_icon': cpee.elements.critical.illustrator.svg, 
            'params': [description.elements.critical.create, node]},
         ];
       }
@@ -725,21 +757,18 @@ function create_cpee_elements(adaptor) {
       'type' : 'description',
       'endnodes' : 'passthrough',
       'closeblock' : false,
-      'draw' : function(node, pos, block) {
-        return illustrator.draw.draw_symbol('end', 'description', pos.row, pos.col);
-      },
       'expansion' : function(node) {
         return 'vertical';
       },
       'col_shift' : function(node) {
         return true;
       },
-      'svg_def': function() {
-        return $X('<symbol id="end" class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
                     '<circle cx="15" cy="15" r="11" class="stand"/>' + 
                     '<text transform="translate(15,21)" class="normal">Ω</text>' +
-                  '</symbol>');
+                  '</svg>');
       }
     },//}}}
     'description' : {//{{{
@@ -750,24 +779,31 @@ function create_cpee_elements(adaptor) {
         return [
           {'label': 'Service Call with Manipulate Block', 
            'function_call': func, 
+           'menu_icon': cpee.elements.callmanipulate.illustrator.svg, 
            'params': [description.elements.callmanipulate.create, node]},
           {'label': 'Service Call', 
            'function_call': func, 
+           'menu_icon': cpee.elements.call.illustrator.svg, 
            'params': [description.elements.call.create, node]},
           {'label': 'Manipulate', 
            'function_call': func, 
+           'menu_icon': cpee.elements.manipulate.illustrator.svg, 
            'params': [description.elements.manipulate.create, node]},
           {'label': 'Parallel', 
            'function_call': func, 
+           'menu_icon': cpee.elements.parallel.illustrator.svg, 
            'params': [description.elements.parallel.create, node]},
           {'label': 'Choose', 
            'function_call': func, 
+           'menu_icon': cpee.elements.choose.illustrator.svg, 
            'params': [description.elements.choose.create, node]},
           {'label': 'Loop', 
            'function_call': func, 
+           'menu_icon': cpee.elements.loop.illustrator.svg, 
            'params': [description.elements.loop.create, node]},
           {'label': 'Critical', 
            'function_call': func, 
+           'menu_icon': cpee.elements.critical.illustrator.svg, 
            'params': [description.elements.critical.create, node]}
         ];
       }
@@ -789,7 +825,6 @@ function create_cpee_elements(adaptor) {
     for(element in cpee.elements) {
       // Illsutrator
       illustrator.elements[element] = cpee.elements[element].illustrator;
-      illustrator.svg.defs.append(cpee.elements[element].illustrator.svg_def());
       // Description
       description.elements[element] = cpee.elements[element].description;
       // Adaptor
