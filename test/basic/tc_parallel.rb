@@ -1,159 +1,84 @@
 require 'test/unit'
-require ::File.dirname(__FILE__) + '/../TestWorkflow'
+require File.expand_path(::File.dirname(__FILE__) + '/../TestWorkflow')
 
 class TestParallel < Test::Unit::TestCase
-  def setup
-    $message = ""
-    $released = ""
-    @wf = TestWorkflow.new
-  end
-  def teardown
-    @wf.stop
-    $message = ""
-    $released = ""
-  end
+  include TestMixin
+
   def test_parallel_simple
-    @wf.search false
     @wf.description do
       parallel do
         parallel_branch do
-          activity :a_1, :call, :endpoint1
+          activity :a_1, :call, :endpoint1, :call =>  Proc.new{ sleep 0.5 }
         end
         parallel_branch do
-          activity :a_2, :call, :endpoint1
+          activity :a_2, :call, :endpoint1, :call =>  Proc.new{ sleep 0.5 }
         end
         parallel_branch do
-          activity :a_3, :call, :endpoint1
+          activity :a_3, :call, :endpoint1, :call =>  Proc.new{ sleep 0.5 }
         end
       end
     end
-    @wf.start
-    sleep(0.1)
-    assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was not called, see message=[#{$message}]");
-    $released +="release a_1";
-    $released +="release a_2";
-    $released +="release a_3";
-    sleep(0.1)
-    assert($message.include?("Activity a_1 done"), "pos a_1 not properly ended, see $message=#{$message}");
-    assert($message.include?("Activity a_2 done"), "pos a_2 not properly ended, see $message=#{$message}");
-    assert($message.include?("Activity a_3 done"), "pos a_3 not properly ended, see $message=#{$message}");
+    wf = @wf.start
+    sleep(0.25)
+    wf_assert("CALL a_1:")
+    wf_assert("CALL a_2:")
+    wf_assert("CALL a_3:")
+    wf.join
+    wf_assert("DONE a_1")
+    wf_assert("DONE a_2")
+    wf_assert("DONE a_3")
   end
   def test_parallel_wait
-    @wf.search false
     @wf.description do
       parallel :wait do
         parallel_branch do
           activity :a_1, :call, :endpoint1
         end
         parallel_branch do
-          activity :a_2, :call, :endpoint1
+          activity :a_2, :call, :endpoint1, :call =>  Proc.new{ sleep 0.5 }
         end
       end
       activity :a_3, :call, :endpoint1
     end
-    @wf.start
-    sleep(0.1)
-
-    assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
-    $released +="release a_1";
-    sleep(0.1)
-    assert($message.include?("Activity a_1 done"), "pos a_1 not properly ended, see $message=#{$message}");
-    assert(!$message.include?("Activity a_3 done"), "pos a_3 finished to early, see $message=#{$message}");
-    $released +="release a_2";
-    sleep(0.2)
-    assert($message.include?("Activity a_2 done"), "pos a_2 not properly ended, see $message=#{$message}");
-    assert($message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was not called, see message=[#{$message}]");
+    @wf.start.join
+    wf_assert('CALL a_1')
+    wf_assert('CALL a_2')
+    wf_sassert('Da_1Da_2Ca_3Da_3Sfinished')
   end
   def test_parallel_nowait
-    @wf.search false
     @wf.description do
       parallel :wait => 1 do
         parallel_branch do
           activity :a_1, :call, :endpoint1
         end
         parallel_branch do
-          activity :a_2, :call, :endpoint1
+          activity :a_2, :call, :endpoint1, :call =>  Proc.new{ sleep 8.5 }
         end
       end
       activity :a_3, :call, :endpoint1
     end
-    @wf.start
-    sleep(0.1)
-    assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
-    $released +="release a_1";
-    sleep(0.1)
-    assert($message.include?("Activity a_1 done"), "pos a_1 not properly ended, see $message=#{$message}");
-    assert($message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was not called, see message=[#{$message}]");
+    @wf.start.join
+    wf_assert('CALL a_1')
+    wf_assert('CALL a_2')
+    wf_sassert('NLNa_2Ca_3Da_3Sfinished')
   end
   def test_parallel_no_longer_necessary
-    @wf.search false
     @wf.description do
       parallel :wait => 1 do
         parallel_branch do
           activity :a_1, :call, :endpoint1
         end
         parallel_branch do
-          activity :a_2, :call, :endpoint1
+          activity :a_2, :call, :endpoint1, :call =>  Proc.new{ sleep 0.5 }
           activity :a_2_2, :call, :endpoint1
         end
       end
       activity :a_3, :call, :endpoint1
     end
-    @wf.start
-    sleep(0.1)
-    assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
-    $released +="release a_1";
-    sleep(0.1)
-    assert($message.include?("Activity a_1 done"), "pos a_1 not properly ended, see $message=#{$message}")
-    assert($message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was not called, see message=[#{$message}]");
-    assert($message.include?("Handler: Recieved no_longer_necessary signal, deciding if stopping"), "no_longer_necessary signal was not detected, see $message=#{$message}")
-    $released +="release a_2";
-    sleep(0.1)
-    assert(!$message.include?("Handle call: position=[a_2_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2_2 was not called, see message=[#{$message}]");
-  end
-  def test_parallel_wait_partial
-    @wf.search false
-    @wf.description do
-      parallel :wait => 3 do
-        parallel_branch do
-          activity :a_1, :call, :endpoint1
-        end
-        parallel_branch do
-          activity :a_2, :call, :endpoint1
-        end
-        parallel_branch do
-          activity :a_3, :call, :endpoint1
-        end
-        parallel_branch do
-          activity :a_4, :call, :endpoint1
-        end
-        parallel_branch do
-          activity :a_5, :call, :endpoint1
-        end
-      end
-      activity :a_6, :call, :endpoint1
-    end
-    @wf.start
-    sleep(0.1)
-    assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_4] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_4 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_5] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_5 was not called, see message=[#{$message}]");
-    $released +="release a_1";
-    $released +="release a_3";
-    $released +="release a_5";
-    sleep(0.1)
-    assert($message.include?("Activity a_1 done"), "pos a_1 not properly ended, see $message=#{$message}")
-    assert($message.include?("Activity a_3 done"), "pos a_1 not properly ended, see $message=#{$message}")
-    assert($message.include?("Activity a_5 done"), "pos a_1 not properly ended, see $message=#{$message}")
-    assert($message.include?("Handle call: position=[a_6] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_6 was not called, see message=[#{$message}]");
-    assert($message.include?("Handler: Recieved no_longer_necessary signal, deciding if stopping"), "no_longer_necessary signal was not detected, see $message=#{$message}")
+    @wf.start.join
+    wf_assert('CALL a_1')
+    wf_assert('CALL a_2')
+    wf_sassert('NLNa_2Ca_3Da_3Sfinished')
   end
   def test_parallel_nested
     # |- :a_1
@@ -163,7 +88,6 @@ class TestParallel < Test::Unit::TestCase
     # |-|- :a_2_2
     # |-|- :a_2_3
     # |- => :a_3
-    @wf.search false
     @wf.description do
       parallel :wait do
         parallel_branch do activity :a_1, :call, :endpoint1 end
@@ -171,45 +95,20 @@ class TestParallel < Test::Unit::TestCase
           parallel :wait do
             parallel_branch do
               parallel :wait do
-                parallel_branch do activity :a_2_1_1, :call, :endpoint1 end
-                parallel_branch do activity :a_2_1_2, :call, :endpoint1 end
+                parallel_branch do activity :a_2_1_1, :call, :endpoint1, :call => Proc.new {sleep 0.2} end
+                parallel_branch do activity :a_2_1_2, :call, :endpoint1, :call => Proc.new {sleep 0.4}  end
               end
-              activity :a_2_1_3, :call, :endpoint1
+              activity :a_2_1_3, :call, :endpoint1, :call => Proc.new {sleep 0.8} 
             end
-            parallel_branch do activity :a_2_2, :call, :endpoint1 end
-            parallel_branch do activity :a_2_3, :call, :endpoint1 end
+            parallel_branch do activity :a_2_2, :call, :endpoint1, :call => Proc.new {sleep 0.8}  end
+            parallel_branch do activity :a_2_3, :call, :endpoint1, :call => Proc.new {sleep 1.0}  end
           end
         end
       end
       activity :a_3, :call, :endpoint1
     end
-    @wf.start
-    sleep(0.1)
-    assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_2_1_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2_1_1 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_2_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2_1_2 was not called, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a_2_1_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2_1_3 was wrongly called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_2_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2_2 was not called, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_2_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2_3 was not called, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was wrongly called, see message=[#{$message}]");
-    $released +="release a_1";
-    $released +="release a_2_2";
-    $released +="release a_2_3";
-    sleep(0.1)
-    assert($message.include?("Activity a_1 done"), "pos a_2_2 not properly ended, see $message=#{$message}")
-    assert($message.include?("Activity a_2_2 done"), "pos a_2_2 not properly ended, see $message=#{$message}")
-    assert($message.include?("Activity a_2_3 done"), "pos a_2_3 not properly ended, see $message=#{$message}")
-    assert(!$message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was wrongly called, see message=[#{$message}]");
-    $released +="release a_2_1_1";
-    $released +="release a_2_1_2";
-    sleep(0.1)
-    assert($message.include?("Activity a_2_1_1 done"), "pos a_2_1_1 not properly ended, see $message=#{$message}")
-    assert($message.include?("Activity a_2_1_2 done"), "pos a_2_1_2 not properly ended, see $message=#{$message}")
-    assert($message.include?("Handle call: position=[a_2_1_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2_1_3 was not called, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was wrongly called, see message=[#{$message}]");
-    $released +="release a_2_1_3";
-    sleep(0.1)
-    assert($message.include?("Activity a_2_1_3 done"), "pos a_2_1_3 not properly ended, see $message=#{$message}")
-    assert($message.include?("Handle call: position=[a_3] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_3 was not called, see message=[#{$message}]");
+    @wf.start.join
+    nump = $long_track.split("\n").delete_if{|e| !(e =~ /^(DONE)/)}
+    assert(nump == ["DONE a_1", "DONE a_2_1_1", "DONE a_2_1_2", "DONE a_2_2", "DONE a_2_3", "DONE a_2_1_3", "DONE a_3"], "not in the right order, sorry")
   end
 end

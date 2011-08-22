@@ -1,17 +1,9 @@
 require 'test/unit'
-require ::File.dirname(__FILE__) + '/../TestWorkflow'
+require File.expand_path(::File.dirname(__FILE__) + '/../TestWorkflow')
 
 class TestEndpoint < Test::Unit::TestCase
-  def setup
-    $message = ""
-    $released = ""
-    @wf = TestWorkflow.new
-  end
-  def teardown
-    @wf.stop
-    $message = ""
-    $released = ""
-  end
+  include TestMixin
+
   def test_check_endpoint
     ep1 = @wf.endpoints[:endpoint1]
     assert(ep1.is_a?(String), "Endpoint1 is no string but should be")

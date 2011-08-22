@@ -1,17 +1,9 @@
 require 'test/unit'
-require ::File.dirname(__FILE__) + '/../TestWorkflow'
+require File.expand_path(::File.dirname(__FILE__) + '/../TestWorkflow')
+
 # implemented as a combination of the Cancelling Structured Partial Join and the Exclusive Choice Pattern
 class TestWFPDeferredChoice < Test::Unit::TestCase
-  def setup
-    $message = ""
-    $released = ""
-    @wf = TestWorkflow.new
-  end
-  def teardown
-    @wf.stop
-    $message = ""
-    $released = ""
-  end
+  include TestMixin
 
   def test_sequence
     @wf.description do
@@ -22,7 +14,7 @@ class TestWFPDeferredChoice < Test::Unit::TestCase
           end
         end
         parallel_branch do
-          activity :a1_2, :call, :endpoint1 do
+          activity(:a1_2, :call, :endpoint1, :call => Proc.new{sleep 1.0}) do
             data.choice = 2
           end
         end
@@ -36,14 +28,11 @@ class TestWFPDeferredChoice < Test::Unit::TestCase
         end
       end
     end
-    @wf.search false
-    @wf.start
-    sleep(0.02)
-    assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a1_2]"), "Pos a1_2 should be called by now, see message=[#{$message}]");
-    $released +="release a1_1";
-    sleep(0.02)
-    assert($message.include?("Activity a1_1 done"), "pos a1_1 not properly ended, see $message=#{$message}");
-    assert($message.include?("Handle call: position=[a2_1]"), "Pos a2_1 should be called by now, see message=[#{$message}]");
+    @wf.start.join
+    wf_assert('CALL a1_1')
+    wf_assert('CALL a1_2')
+    wf_sassert('Da1_1NLNa1_2Ca2_1Da2_1Sfinished')
+    data = @wf.data
+    assert(data[:choice] == 1, "data[:choice] has not the correct value [#{data[:x]}]")
   end
 end

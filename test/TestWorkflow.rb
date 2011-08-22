@@ -1,5 +1,5 @@
-require ::File.dirname(__FILE__) + '/../lib/Wee'
-require ::File.dirname(__FILE__) + '/TestHandlerWrapper'
+require File.expand_path(::File.dirname(__FILE__) + '/../lib/Wee')
+require File.expand_path(::File.dirname(__FILE__) + '/TestHandlerWrapper')
 
 class TestWorkflow < Wee
   handlerwrapper TestHandlerWrapper

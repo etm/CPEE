@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name             = "wee"
-  s.version          = "1.0.0"
+  s.version          = "1.2.0"
   s.platform         = Gem::Platform::RUBY
   s.summary          = "workflow execution engine (wee) library"
 

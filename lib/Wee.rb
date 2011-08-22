@@ -161,22 +161,23 @@ class Wee
     end
   end # }}}
 
-  class Continue # {{{
-    def initialize
-      @thread = Thread.new{Thread.stop}
-    end  
-    def waiting?
-      @thread.alive?
-    end  
-    def continue
-      if @thread.alive?
-        @thread.wakeup
-      end   
-    end
-    def wait
-      @thread.join
-    end
-  end  # }}}
+   class Continue
+     def initialize
+       @thread = Thread.new{Thread.stop}
+     end  
+     def waiting?
+       @thread.alive?
+     end  
+     def continue
+       while @thread.status != 'sleep' && @thread.alive?
+         Thread.pass
+       end
+       @thread.wakeup if @thread.alive? 
+     end
+     def wait
+       @thread.join
+     end
+   end
 
   def self::search(wee_search)# {{{
     define_method :initialize_search do 
@@ -271,9 +272,9 @@ class Wee
               handlerwrapper.inform_activity_manipulate
               mr = ManipulateRealization.new(@__wee_data,@__wee_endpoints,@__wee_status)
               status = nil
-              parameters.delete_if do |p|
-                status = p if p.is_a?(Status)
-                p.is_a?(Status)  
+              parameters.delete_if do |para|
+                status = para if para.is_a?(Status)
+                para.is_a?(Status)
               end
               case blk.arity
                 when 1; mr.instance_exec(parameters,&blk)
@@ -342,8 +343,8 @@ class Wee
       rescue Signal::SkipManipulate, Signal::Proceed
         if self.__wee_state != :stopping && !handlerwrapper.vote_sync_after
           self.__wee_state = :stopping
+          wp.detail = :unmark
         end
-        wp.detail = :unmark
       rescue Signal::NoLongerNecessary
         @__wee_positions.delete wp
         Thread.current[:branch_position] = nil
@@ -354,8 +355,6 @@ class Wee
       rescue => err
         handlerwrapper.inform_activity_failed err
         self.__wee_state = :stopping
-      ensure  
-        Thread.current[:continue].continue
       end
     end # }}}
     
@@ -366,40 +365,37 @@ class Wee
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
 
       Thread.current[:branches] = []
+      Thread.current[:branch_finished_count] = 0
       Thread.current[:branch_event] = Continue.new
       Thread.current[:mutex] = Mutex.new
       yield
 
-      wait_count = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && (type[:wait].is_a?(Integer)) ? type[:wait] : Thread.current[:branches].size)
-      finished_threads_count = 0
-
-      while true
-        finished_threads_count = 0
-        Thread.current[:branches].each do |thread| 
-          finished_threads_count += 1 if thread[:branch_status] == true
+      Thread.current[:branch_wait_count] = (type.is_a?(Hash) && type.size == 1 && type[:wait] != nil && (type[:wait].is_a?(Integer)) ? type[:wait] : Thread.current[:branches].size)
+      Thread.current[:branches].each do |thread| 
+        while thread.status != 'sleep' && thread.alive?
+          Thread.pass
         end  
-        if finished_threads_count < wait_count && finished_threads_count < Thread.current[:branches].size && self.__wee_state != :stopping
-          Thread.current[:branch_event].wait
-        else  
-          break
-        end
+        thread.wakeup if thread.alive?
       end
-      Thread.current[:mutex].synchronize do
-        unless Thread.current[:branch_event].nil?
-          Thread.current[:branch_event].continue
-          Thread.current[:branch_event] = nil
-        end  
-      end  
+
+      Thread.current[:branch_event].wait
+      Thread.current[:branch_event] = nil
+
       Thread.current[:branch_run] = true if Thread.current[:branch_search] == false
 
       unless self.__wee_state == :stopping || self.__wee_state == :stopped
+        # first set all to to no longer neccessary
         Thread.current[:branches].each do |thread| 
           if thread.alive? 
             thread[:nolongernecessary] = true
             __wee_recursive_continue(thread)
           end  
         end
-      end  
+        # wait for all
+        Thread.current[:branches].each do |thread| 
+          __wee_recursive_join(thread)
+        end
+      end
     end # }}}
 
     # Defines a branch of a parallel-Construct
@@ -417,13 +413,15 @@ class Wee
         if branch_parent[:alternative_executed] && branch_parent[:alternative_executed].length > 0
           Thread.current[:alternative_executed] = [branch_parent[:alternative_executed].last]
         end
+
+        Thread.stop
         yield(*local)
+
         Thread.current[:branch_status] = true
         branch_parent[:mutex].synchronize do
-          pte = branch_parent[:branch_event]
-          unless pte.nil?
-            branch_parent[:branch_event] = Continue.new
-            pte.continue if pte
+          branch_parent[:branch_finished_count] += 1
+          if branch_parent[:branch_finished_count] == branch_parent[:branch_wait_count] && self.__wee_state != :stopping
+            branch_parent[:branch_event].continue
           end  
         end  
         if self.__wee_state != :stopping && self.__wee_state != :stopped
@@ -439,6 +437,7 @@ class Wee
           end  
         end  
       end
+      Thread.pass
     end # }}}
 
     # Choose DSL-Construct
@@ -515,10 +514,11 @@ class Wee
 
   private
     def __wee_recursive_continue(thread)# {{{
-      if thread && thread.alive? && thread[:continue] && thread[:continue].waiting?
+      return unless thread
+      if thread.alive? && thread[:continue] && thread[:continue].waiting?
         thread[:continue].continue
       end
-      if thread && thread.alive? && thread[:branch_event] && thread[:branch_event].waiting?
+      if thread.alive? && thread[:branch_event] && thread[:branch_event].waiting?
         thread[:mutex].synchronize do
           unless thread[:branch_event].nil?
             thread[:branch_event].continue
@@ -533,7 +533,8 @@ class Wee
       end  
     end  # }}}
     def __wee_recursive_join(thread)# {{{
-      if thread && thread.alive? && thread != Thread.current
+      return unless thread
+      if thread.alive? && thread != Thread.current
         thread.join
       end
       if thread[:branches]
@@ -693,7 +694,7 @@ public
           rescue Exception => err
             @dslr.__wee_state = :stopping
             handlerwrapper = @dslr.__wee_handlerwrapper.new @dslr.__wee_handlerwrapper_args
-            handlerwrapper.inform_syntax_error(err,code)
+            handlerwrapper.inform_syntax_error(err)
           end
           if @dslr.__wee_state == :running
             @dslr.__wee_state = :finished 

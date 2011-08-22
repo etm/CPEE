@@ -1,21 +1,10 @@
 require 'test/unit'
-require ::File.dirname(__FILE__) + '/../TestWorkflow'
+require File.expand_path(::File.dirname(__FILE__) + '/../TestWorkflow')
 
 class TestChoose < Test::Unit::TestCase
-  def setup
-    $message = ""
-    $released = ""
-    @wf = TestWorkflow.new
-  end
-
-  def teardown
-    @wf.stop
-    $message = ""
-    $released = ""
-  end
+  include TestMixin
 
   def test_choose_alternative
-    @wf.search false
     @wf.description do
       choose do
         alternative true do
@@ -29,15 +18,13 @@ class TestChoose < Test::Unit::TestCase
         end
       end
     end
-    @wf.start
-    sleep(0.4)
-    assert($message.include?("Handle call: position=[a_1] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1 was not called, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a_2]"), "Pos a_2 should not have been called, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a_3]"), "Pos a_3 should not have been called, see message=[#{$message}]");
+    @wf.start.join
+    wf_assert("CALL a_1: passthrough=[], endpoint=[http://www.heise.de], parameters=[{}]")
+    wf_assert("CALL a_2:",false)
+    wf_assert("CALL a_3:",false)
   end
 
   def test_choose_otherwise
-    @wf.search false
     @wf.description do
       choose do
         alternative false do
@@ -48,14 +35,12 @@ class TestChoose < Test::Unit::TestCase
         end
       end
     end
-    @wf.start
-    sleep(0.1)
-    assert($message.include?("Handle call: position=[a_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_2 was not called, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a_1]"), "Pos a_1 should not have been called, see message=[#{$message}]");
+    @wf.start.join
+    wf_assert("CALL a_2: passthrough=[], endpoint=[http://www.heise.de], parameters=[{}]")
+    wf_assert("CALL a_1:",false)
   end
 
   def test_choose_nested
-    @wf.search false
     @wf.description do
       choose do
         alternative true do
@@ -83,13 +68,12 @@ class TestChoose < Test::Unit::TestCase
         end
       end
     end
-    @wf.start
-    sleep(0.3)
-    assert($message.include?("Handle call: position=[a_1_1_2] passthrough=[], endpoint=[http://www.heise.de], parameters=[]. Waiting for release"), "Pos a_1_1_2 was not called, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a_1_1]"), "Pos a_1_1 should not have been called, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a_1_1_1]"), "Pos a_1_1_1 should not have been called, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a_1_3]"), "Pos a_1_3 should not have been called, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a_2]"), "Pos a_2 should not have been called, see message=[#{$message}]");
+    @wf.start.join
+    wf_assert("CALL a_1_1_2: passthrough=[], endpoint=[http://www.heise.de], parameters=[{}]",true)
+    wf_assert("CALL a_1_1:",false)
+    wf_assert("CALL a_1_1_1:",false)
+    wf_assert("CALL a_1_3:",false)
+    wf_assert("CALL a_2:",false)
   end
 
   def test_choose_searchmode
