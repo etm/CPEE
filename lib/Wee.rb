@@ -161,7 +161,7 @@ class Wee
     end
   end # }}}
 
-   class Continue
+   class Continue #{{{
      def initialize
        @thread = Thread.new{Thread.stop}
      end  
@@ -177,7 +177,7 @@ class Wee
      def wait
        @thread.join
      end
-   end
+   end #}}}
 
   def self::search(wee_search)# {{{
     define_method :initialize_search do 

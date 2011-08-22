@@ -1,5 +1,4 @@
-Have a non-directory at the top, so creating directory top_dir
-Adding /home/mangler/Projects/wee/lib/Wee.rb to top_dir
+Creating filelist for lib
 Categorizing files.
 Finding a working MD5 command....
 Found a working MD5 command.
@@ -7,22 +6,22 @@ Computing results.
 
 
 SLOC	Directory	SLOC-by-Language (Sorted)
-619     top_dir         ruby=619
+628     lib             ruby=628
 
 
 Totals grouped by language (dominant language first):
-ruby:           619 (100.00%)
+ruby:           628 (100.00%)
 
 
 
 
-Total Physical Source Lines of Code (SLOC)                = 619
-Development Effort Estimate, Person-Years (Person-Months) = 0.12 (1.45)
+Total Physical Source Lines of Code (SLOC)                = 628
+Development Effort Estimate, Person-Years (Person-Months) = 0.12 (1.47)
  (Basic COCOMO model, Person-Months = 2.4 * (KSLOC**1.05))
-Schedule Estimate, Years (Months)                         = 0.24 (2.88)
+Schedule Estimate, Years (Months)                         = 0.24 (2.90)
  (Basic COCOMO model, Months = 2.5 * (person-months**0.38))
-Estimated Average Number of Developers (Effort/Schedule)  = 0.50
-Total Estimated Cost to Develop                           = $ 16,327
+Estimated Average Number of Developers (Effort/Schedule)  = 0.51
+Total Estimated Cost to Develop                           = $ 16,577
  (average salary = $56,286/year, overhead = 2.40).
 SLOCCount, Copyright (C) 2001-2004 David A. Wheeler
 SLOCCount is Open Source Software/Free Software, licensed under the GNU GPL.

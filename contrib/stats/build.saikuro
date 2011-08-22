@@ -3,18 +3,18 @@ require 'rubygems'
 require 'xml/smart'
 
 files = {
-  'WEE'  => ['../lib/Wee.rb'],
-  'DefaultHandlerWrapper'  => '../examples/cpee/engine/handlerwrappers/default.rb',
-  'CPEE'  => ['../examples/cpee/engine/controller.rb', '../examples/cpee/engine/implementation.rb'],
-  'BPEL'  => '../optional/BPEL/lib/BPEL_Transform.rb',
-  'WSDLHandlerWrapper'  => '../examples/cpee/engine/handlerwrappers/rescue.rb'
+  'WEE'  => ['../../lib/Wee.rb'],
+  'DefaultHandlerWrapper'  => '../../server/engine/handlerwrappers/default.rb',
+  'CPEE'  => ['../../server/engine/controller.rb', '../../server/engine/implementation.rb'],
+  'BPEL'  => '../../contrib/BPEL/lib/BPEL_Transform.rb',
+  'WSDLHandlerWrapper'  => '../../server/engine/handlerwrappers/rescue.rb'
 }
 
 files.each do |k,f|
   ccn = ncss = methods = classes = 0
   f = [f] unless f.is_a? Array
   f.each do |v|
-    `/var/lib/gems/1.8/bin/saikuro -y 0 -w 0 -e 0 -c -p #{v}`
+    `/var/lib/gems/1.8/gems/Saikuro-1.1.0/bin/saikuro -y 0 -w 0 -e 0 -c -p #{v}`
     # p "/var/lib/gems/1.8/bin/saikuro -y 0 -w 0 -e 0 -c -p #{v}"
     `rm -f index_cyclo.html`
     xml = XML::Smart.open("#{v}_cyclo.html")
