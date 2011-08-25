@@ -12,9 +12,9 @@
     <costs>0</costs>
   </data-elements>
   <endpoints>
-    <bookAir>http://www.pri.univie.ac.at/~mangler/services/airline.php</bookAir>
-    <bookHotel>http://www.pri.univie.ac.at/~mangler/services/hotel.php</bookHotel>
-    <approve>http://www.pri.univie.ac.at/~mangler/services/approval.php</approve>
+    <bookAir>http://gruppe.wst.univie.ac.at/~mangler/services/airline.php</bookAir>
+    <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
+    <approve>http://gruppe.wst.univie.ac.at/~mangler/services/approval.php</approve>
   </endpoints>
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="a1" endpoint="bookAir">

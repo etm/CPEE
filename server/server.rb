@@ -1,7 +1,8 @@
 #!/usr/bin/ruby
-$url  = 'http://localhost:9298'
+$port = 9298
+$url  = 'http://localhost:' + $port.to_s
 $mode = :debug # :production
-$0 = "cpee"
+$0    = "cpee"
 
 if File.exists?(File.expand_path(File.dirname(__FILE__) + '/server.config.rb'))
   require File.expand_path(File.dirname(__FILE__) + '/server.config')
@@ -65,4 +66,9 @@ rsrv = Riddl::Server.new(::File.dirname(__FILE__) + '/server.declaration.xml') d
   end
 end
 
-Rack::Handler::Mongrel.run Rack::ShowStatus.new(rsrv), :Port => 9298
+Rack::Server.start(
+  :app => rsrv,
+  :Port => $port,
+  :environment => 'development',
+  :server => 'mongrel'
+)

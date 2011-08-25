@@ -1,3 +1,42 @@
+function sym_click_constraint(node,ind) { // {{{
+  var out = '';
+  $(node).children().each(function(i,e){
+    if (e.nodeName == "group") {
+      out += '<tr><td colspan="2">';
+      out += ind + $(e).attr('connector')+'-group';
+      out += '</td></tr>';
+      out += sym_click_constraint(e,ind + '&#160;&#160;&#160;&#160;');
+    } else {
+      out += '<tr><td colspan="2">';
+      out += ind + 'Constraint ⇒ ' + $(e).attr('xpath') + ' ' + $(e).attr('comparator') + ' ';
+      if ($(e).attr('value')) {
+        out += $(e).attr('value');
+      } else {
+         out += '@'+$(e).attr('variable');
+      }
+      out += '</td></tr>';
+    }  
+  });  
+  return out;
+} // }}}
+
+function sym_click_para(node,ind) { // {{{
+  var out = '';
+  $(node).children().each(function(i,e){
+    if ($(e).children().length == 0) {
+      out += '<tr><td colspan="2">';
+      out += ind + e.nodeName + ' ⇒ ' + $(e).text().replace(/^\s+|\s+$/g,"");
+      out += '</td></tr>';
+    } else {
+      out += '<tr><td colspan="2">';
+      out += ind + e.nodeName + ':';
+      out += '</td></tr>';
+      out += sym_click_para(e,ind + '&#160;&#160;&#160;&#160;');
+    }  
+  });  
+  return out;
+} // }}}
+
 function create_cpee_elements(adaptor) {
   var illustrator = adaptor.illustrator;
   var description = adaptor.description;
@@ -44,9 +83,64 @@ function create_cpee_elements(adaptor) {
     }
     return false;
   } // }}} 
-  cpee.events.click = function(node, e) { // {{{ 
-    console.log('PANG -> DEAD! leftclick on call with id ' + $(node).parents(':first').attr('element-id'));
-    return false;
+  cpee.events.click = function(svgnode, e) { // {{{ 
+    var table = $('#details');
+    var node  = description.get_node_by_svg_id($(svgnode).parents(':first').attr('element-id')).get(0);
+    console.log(node);
+
+    table.empty();
+    table.append('<tr><td><strong>Element:</strong></td><td class="long">' + node.nodeName + '</td></tr>');
+    switch(node.nodeName) {
+      case 'call':
+        table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
+        if ($(node).attr('lay'))
+          table.append('<tr><td><strong>Lay:</strong></td><td class="long">' + $(node).attr('lay') + '</td></tr>');
+        table.append('<tr><td><strong>Endpoint:</strong></td><td class="long">' + $(node).attr('endpoint') + '</td></tr>');
+        if ($('manipulate',node).text())
+          table.append('<tr><td><strong>Manipulate:</strong></td><td class="long">' + format_code($('manipulate',node).text(),true,false) + '</td></tr>');
+        if ($('parameters',node).length > 0)
+          table.append('<tr><td><strong>Parameters:</strong></td><td class="long"></td></tr>');
+          table.append(sym_click_para($(node).children('parameters'),'&#160;&#160;&#160;&#160;'));
+        break;
+      case 'manipulate':
+        table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
+        table.append('<tr><td><strong>Manipulate:</strong></td><td class="long">' + format_code($(node).text(),true,false) + '</td></tr>');
+        break;
+      case 'loop':
+        if ($(node).attr('pre_test'))
+          table.append('<tr><td><strong>Pre-Test:</strong></td><td class="long">' + $(node).attr('pre_test') + '</td></tr>');
+        if ($(node).attr('post_test'))
+          table.append('<tr><td><strong>Post-Test:</strong></td><td class="long">' + $(node).attr('post_test') + '</td></tr>');
+        break;
+      case 'alternative':
+        table.append('<tr><td><strong>Condition:</strong></td><td class="long">' + $(node).attr('condition') + '</td></tr>');
+        break;
+      case 'parallel':
+        var wait = $(node).attr('condition') || 'Wait for all branches';
+        table.append('<tr><td><strong>Wait:</strong></td><td class="long">' + wait + '</td></tr>');
+        break;
+      case 'parallel_branch':
+        if ($(node).attr('pass'))
+          table.append('<tr><td><strong>Pass&#160;to&#160;branch:</strong></td><td class="long">' + $(node).attr('pass') + '</td></tr>');
+        if ($(node).attr('local'))
+          table.append('<tr><td><strong>Local&#160;scope:</strong></td><td class="long">' + $(node).attr('local') + '</td></tr>');
+        break;
+      case 'group':
+          table.append('<tr><td><strong>Type:</strong></td><td class="long">' + $(node).attr('type') + '</td></tr>');
+          table.append('<tr><td><strong>Source:</strong></td><td class="long">' + $(node).attr('source') + '</td></tr>');
+          if(node.getAttribute('type') == 'injection') {
+            if ($(node).attr('result')) { table.append('<tr><td><strong>Level:</strong></td><td class="long">Class-Level</td></tr>'); }
+            else { table.append('<tr><td><strong>Level:</strong></td><td class="long">Instance-Level</td></tr>'); }
+            table.append('<tr><td><strong>Operation :</strong></td><td class="long">' + $(node).attr('serviceoperation') + '</td></tr>');
+            if ($(node).attr('result')) table.append('<tr><td><strong>Result:</strong></td><td class="long">' + $(node).attr('result') + '</td></tr>');
+            table.append('<tr><td><strong>Properties:</strong></td><td class="long">' + $(node).attr('properties') + '</td></tr>');
+            table.append(sym_click_constraint($(node).children('constraints'),'&#160;&#160;&#160;&#160;'));
+          }
+          if(node.getAttribute('type') == 'loop') {
+            table.append('<tr><td><strong>Cycle:</strong></td><td class="long">' + $(node).attr('cycle') + '</td></tr>');
+          }
+        break;
+    }
   } // }}}
   cpee.events.dblclick = function(node, e) { // {{{
     $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','none');

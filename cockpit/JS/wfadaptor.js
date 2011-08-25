@@ -87,7 +87,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
-    svg.container.attr({'height': (graph.max.row+0.1)*height, 'width':(graph.max.col+0.55)*width});
+    svg.container.attr({'height': (graph.max.row+0.1)*height, 'width':(graph.max.col+0.65)*width});
     svg.container.append(graph.svg);
   } // }}}
   // }}}
@@ -220,7 +220,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     illustrator.set_svg(graph);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
-    return description.serializeXML();
+    return description.serializePrettyXML();
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
     console.log(svg_id);
@@ -350,20 +350,3 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   illustrator = wf_illustrator;
   // }}}
 } // }}} 
-
-// serializeXML extension for jQuery by Mark Gibson {{{
-$.fn.serializeXML = function () {
-    var out = '';
-    if (typeof XMLSerializer == 'function') {
-        var xs = new XMLSerializer();
-        this.each(function() {
-            out += XML(xs.serializeToString(this)).toXMLString();;
-        });
-    } else if (this[0] && this[0].xml != 'undefined') {
-        this.each(function() {
-            out += this.xml;
-        });
-    }
-    return out;
-};
-// }}}

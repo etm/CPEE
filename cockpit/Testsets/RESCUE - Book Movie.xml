@@ -25,7 +25,7 @@
         <method>post</method>
         <info>true</info>
         <templates>
-          <!-- uri>'http://www.pri.univie.ac.at/~ralph/input-forms/cinemas.xsl'</uri -->
+          <!-- uri>'http://gruppe.wst.univie.ac.at/~ralph/input-forms/cinemas.xsl'</uri -->
           <uri>'http://gus.lan/input-forms/cinemas.xsl'</uri>
           <name>'Cinemas-Input'</name>
           <lang>'EN'</lang>

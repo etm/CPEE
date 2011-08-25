@@ -151,8 +151,7 @@ function monitor_instance() {// {{{
               subscription = b[1];
           });
           append_to_log("monitoring", "id", subscription);
-
-          ws = new WebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
+          ws = new MozWebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
           ws.onopen = function() {
             append_to_log("monitoring", "opened", "");
           };
@@ -201,7 +200,7 @@ function monitor_instance() {// {{{
     },
     error: function(a,b,c) {
       alert("This ain't no CPEE instance");
-    }  
+    }
   });      
 }// }}}
 
@@ -274,13 +273,16 @@ function monitor_instance_dsl() {// {{{
           type: "GET",
           url: url + "/properties/values/description/",
           success: function(res){
-            var container = $("#canvas").get(0);
-            var adaptor = new WfAdaptor(res, container, 'iconset');
-            var g = new WFGraph(res, res.documentElement, container);
-            var width = g.generateGraph({
-              symclick: sym_click
-            });
-            container.parentNode.parentNode.setAttribute("style", "width: " + width + "px");
+            var adaptor = new WfAdaptor();
+
+            create_cpee_elements(adaptor);
+
+            adaptor.set_svg_container($('#canvas'));
+            adaptor.set_description($(res), true);
+            adaptor.notify = function() {
+              console.log('update');
+            };
+
             monitor_instance_pos();
           }
         });
@@ -668,100 +670,6 @@ function toggle_vis_tab(moi) {// {{{
   }  
 }// }}}
 
-function sym_click(node) { // {{{
-  var table = $('#details');
-  table.empty();
-  table.append('<tr><td><strong>Element:</strong></td><td class="long">' + node.nodeName + '</td></tr>');
-  switch(node.nodeName) {
-    case 'call':
-      table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
-      if ($(node).attr('lay'))
-        table.append('<tr><td><strong>Lay:</strong></td><td class="long">' + $(node).attr('lay') + '</td></tr>');
-      table.append('<tr><td><strong>Endpoint:</strong></td><td class="long">' + $(node).attr('endpoint') + '</td></tr>');
-      if ($('manipulate',node).text())
-        table.append('<tr><td><strong>Manipulate:</strong></td><td class="long">' + format_code($('manipulate',node).text(),true,false) + '</td></tr>');
-      if ($('parameters',node).length > 0)
-        table.append('<tr><td><strong>Parameters:</strong></td><td class="long"></td></tr>');
-        table.append(sym_click_para($(node).children('parameters'),'&#160;&#160;&#160;&#160;'));
-      break;
-    case 'manipulate':
-      table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
-      table.append('<tr><td><strong>Manipulate:</strong></td><td class="long">' + format_code($(node).text(),true,false) + '</td></tr>');
-      break;
-    case 'loop':
-      if ($(node).attr('pre_test'))
-        table.append('<tr><td><strong>Pre-Test:</strong></td><td class="long">' + $(node).attr('pre_test') + '</td></tr>');
-      if ($(node).attr('post_test'))
-        table.append('<tr><td><strong>Post-Test:</strong></td><td class="long">' + $(node).attr('post_test') + '</td></tr>');
-      break;
-    case 'alternative':
-      table.append('<tr><td><strong>Condition:</strong></td><td class="long">' + $(node).attr('condition') + '</td></tr>');
-      break;
-    case 'parallel':
-      var wait = $(node).attr('condition') || 'Wait for all branches';
-      table.append('<tr><td><strong>Wait:</strong></td><td class="long">' + wait + '</td></tr>');
-      break;
-    case 'parallel_branch':
-      if ($(node).attr('pass'))
-        table.append('<tr><td><strong>Pass&#160;to&#160;branch:</strong></td><td class="long">' + $(node).attr('pass') + '</td></tr>');
-      if ($(node).attr('local'))
-        table.append('<tr><td><strong>Local&#160;scope:</strong></td><td class="long">' + $(node).attr('local') + '</td></tr>');
-      break;
-    case 'group':
-        table.append('<tr><td><strong>Type:</strong></td><td class="long">' + $(node).attr('type') + '</td></tr>');
-        table.append('<tr><td><strong>Source:</strong></td><td class="long">' + $(node).attr('source') + '</td></tr>');
-        if(node.getAttribute('type') == 'injection') {
-          if ($(node).attr('result')) { table.append('<tr><td><strong>Level:</strong></td><td class="long">Class-Level</td></tr>'); }
-          else { table.append('<tr><td><strong>Level:</strong></td><td class="long">Instance-Level</td></tr>'); }
-          table.append('<tr><td><strong>Operation :</strong></td><td class="long">' + $(node).attr('serviceoperation') + '</td></tr>');
-          if ($(node).attr('result')) table.append('<tr><td><strong>Result:</strong></td><td class="long">' + $(node).attr('result') + '</td></tr>');
-          table.append('<tr><td><strong>Properties:</strong></td><td class="long">' + $(node).attr('properties') + '</td></tr>');
-          table.append(sym_click_constraint($(node).children('constraints'),'&#160;&#160;&#160;&#160;'));
-        }
-        if(node.getAttribute('type') == 'loop') {
-          table.append('<tr><td><strong>Cycle:</strong></td><td class="long">' + $(node).attr('cycle') + '</td></tr>');
-        }
-      break;
-  }
-} // }}}
-function sym_click_constraint(node,ind) { // {{{
-  var out = '';
-  $(node).children().each(function(i,e){
-    if (e.nodeName == "group") {
-      out += '<tr><td colspan="2">';
-      out += ind + $(e).attr('connector')+'-group';
-      out += '</td></tr>';
-      out += sym_click_constraint(e,ind + '&#160;&#160;&#160;&#160;');
-    } else {
-      out += '<tr><td colspan="2">';
-      out += ind + 'Constraint ⇒ ' + $(e).attr('xpath') + ' ' + $(e).attr('comparator') + ' ';
-      if ($(e).attr('value')) {
-        out += $(e).attr('value');
-      } else {
-         out += '@'+$(e).attr('variable');
-      }
-      out += '</td></tr>';
-    }  
-  });  
-  return out;
-} // }}}
-function sym_click_para(node,ind) { // {{{
-  var out = '';
-  $(node).children().each(function(i,e){
-    if ($(e).children().length == 0) {
-      out += '<tr><td colspan="2">';
-      out += ind + e.nodeName + ' ⇒ ' + $(e).text().replace(/^\s+|\s+$/g,"");
-      out += '</td></tr>';
-    } else {
-      out += '<tr><td colspan="2">';
-      out += ind + e.nodeName + ':';
-      out += '</td></tr>';
-      out += sym_click_para(e,ind + '&#160;&#160;&#160;&#160;');
-    }  
-  });  
-  return out;
-} // }}}
-
 function format_visual_add(what,cls) {//{{{
   if (node_state[what] == undefined)
     node_state[what] = [];
@@ -781,36 +689,36 @@ function format_visual_set(what) {//{{{
     var actives = jQuery.grep(node_state[what], function(n, i){ return (n == 'active'); });
         actives = actives.length;
     if (actives > 0 && votes > 0)
-      $('#node-' + what + ' .super .colon').each(function(a,b){
+      $('g[element-id="' + what + '"] .super .colon').each(function(a,b){
         b.setAttribute('class','colon necessary');
       });
     else  
-      $('#node-' + what + ' .super .colon').each(function(a,b){
+      $('g[element-id="' + what + '"] .super .colon').each(function(a,b){
         b.setAttribute('class','colon');
       });
     if (actives > 0)
-      $('#node-' + what + ' .super .active').each(function(a,b){
+      $('g[element-id="' + what + '"] .super .active').each(function(a,b){
         b.setAttribute('class','active necessary');
         var txt = b.childNodes[0];
         txt.nodeValue = actives;
       });
     else  
-      $('#node-' + what + ' .super .active').each(function(a,b){
+      $('g[element-id="' + what + '"] .super .active').each(function(a,b){
         b.setAttribute('class','active');
       });
     if (votes > 0)
-      $('#node-' + what + ' .super .vote').each(function(a,b){
+      $('g[element-id="' + what + '"] .super .vote').each(function(a,b){
         b.setAttribute('class','vote necessary');
         var txt = b.childNodes[0];
         txt.nodeValue = votes;
       });
     else  
-      $('#node-' + what + ' .super .vote').each(function(a,b){
+      $('g[element-id="' + what + '"] .super .vote').each(function(a,b){
         b.setAttribute('class','vote');
       });
-  
-    $.each(["graph","activity"],function(i,t){
-      $('#' + t + '-' + what).each(function(a,b){ 
+
+    $.each(['#activity-' + what, 'g[element-id="' + what + '"] use'],function(i,t){
+      $(t).each(function(a,b){ 
         var vs = node_state[what].join(" ");
         if (vs.match(/active/) && vs.match(/passive/)) vs = vs.replace(/passive/,'');
         if (vs.match(/vote/) && vs.match(/passive/)) vs = vs.replace(/passive/,'');
