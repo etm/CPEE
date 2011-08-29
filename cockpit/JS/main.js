@@ -132,8 +132,8 @@ function monitor_instance() {// {{{
     type: "GET", 
     url: url + "/properties/schema/",
     success: function(res){
-      $("table.tab.hidden").removeClass("hidden");
-      $("div.tab.hidden").removeClass("hidden");
+      $(".tabbed.hidden").removeClass("hidden");
+      $(".tabbed .tab.hidden").removeClass("hidden");
       $(".fixedstatehollow").height($(".fixedstate").height());
       $("input[name=instance-url]").attr("readonly","readonly");
       $("button[name=instance]").attr("disabled","disabled");
@@ -156,6 +156,8 @@ function monitor_instance() {// {{{
             append_to_log("monitoring", "opened", "");
           };
           ws.onmessage = function(e) {
+            console.log('hallo');
+            console.log(e.data);
             data = e.data.parseXML();
             if ($('event > topic',data).length > 0) {
               switch($('event > topic',data).text()) {
@@ -639,35 +641,6 @@ function load_testset_handlers(url,testset,vals) {// {{{
       });
     }
   });
-}// }}}
-
-function tab_click(moi) { // {{{
-  var active = $(moi).attr('id').replace(/tab/,'');
-  var tab = $(moi).parent().parent().parent().parent();
-  var tabs = [];
-  $("td.tab",tab).each(function(){
-    if (!$(this).attr('class').match(/switch/))
-      tabs.push($(this).attr('id').replace(/tab/,''));
-  });  
-  $(".inactivearea",tab).removeClass("inactivearea");
-  $(".inactivetab",tab).removeClass("inactivetab");
-  $.each(tabs,function(a,b){
-    if (b != active) {
-      $("#tab" + b).addClass("inactivetab");
-      $("#area" + b).addClass("inactivearea");
-    }  
-  });
-} // }}}
-function toggle_vis_tab(moi) {// {{{
-  var tabbar = $(moi).parent().parent().parent();
-  var tab = $(tabbar).parent();
-  var fix = $(tab).parent();
-  $('h1',moi).toggleClass('margin');
-  $("tr.border",tabbar).toggleClass('hidden');
-  $("div.area",tab).toggleClass('hidden');
-  if ($(fix).attr('class') && $(fix).attr('class').match(/fixedstate/)) {
-    $(".fixedstatehollow").height($(fix).height());
-  }  
 }// }}}
 
 function format_visual_add(what,cls) {//{{{
