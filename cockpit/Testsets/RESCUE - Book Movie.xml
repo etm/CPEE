@@ -15,9 +15,9 @@
     <reservation_number/>
   </data-elements>
   <endpoints>
-    <services>http://gus.lan:9290/groups/Cinemas</services>
-    <injection_handler>http://gus.lan:9290/injection/handler</injection_handler>
-    <select>http://gus.lan:9290/select/pgwl</select>
+    <services>http://sumatra.pri.univie.ac.at:9290/groups/Cinemas/</services>
+    <injection_handler>http://sumatra.pri.univie.ac.at:9290/injection/handler</injection_handler>
+    <select>http://sumatra.pri.univie.ac.at:9290/select/pgwl</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="collect_input" endpoint="select">
@@ -25,8 +25,7 @@
         <method>post</method>
         <info>true</info>
         <templates>
-          <!-- uri>'http://www.pri.univie.ac.at/~ralph/input-forms/cinemas.xsl'</uri -->
-          <uri>'http://gus.lan/input-forms/cinemas.xsl'</uri>
+          <uri>'http://gruppe.wst.univie.ac.at/~ralph/input-forms/cinemas.xsl'</uri>
           <name>'Cinemas-Input'</name>
           <lang>'EN'</lang>
         </templates>
@@ -39,11 +38,7 @@
     </call>
     <call id="a01" endpoint="services">
       <constraints>
-          <constraint xpath="adress/city" comparator="==" variable="city"/>
-        <!-- group connector="and">
-          <constraint xpath="adress/zip" comparator="&gt;" variable="zip"/>
-        </group>
-        <constraint xpath="adress/zip" comparator="&lt;" value="1900"/ -->
+          <constraint xpath="address/city" comparator="==" variable="city"/>
       </constraints>
       <parameters><!--{{{--> 
         <info>true</info>
