@@ -1,48 +1,37 @@
 require 'test/unit'
-require ::File.dirname(__FILE__) + '/../TestWorkflow'
+require File.expand_path(::File.dirname(__FILE__) + '/../TestWorkflow')
 
 class TestWFPLocalSynchronizingMerge < Test::Unit::TestCase
-  def setup
-    $message = ""
-    $released = ""
-    @wf = TestWorkflow.new
-  end
-  def teardown
-    @wf.stop
-    $message = ""
-    $released = ""
-  end
+  include TestMixin
 
   def test_localsyncmerge
     @wf.description do
-      parallel :wait do
+      parallel do
         parallel_branch do
-          activity :a1_1, :call, :endpoint1
+          activity :a1_1, :call, :endpoint1, :call => Proc.new{sleep 0.2}
         end
         parallel_branch do
-          choose do
-            alternative(false) do
+          activity :a1_2, :call, :endpoint1, :call => Proc.new{sleep 0.4}
+        end
+        choose do
+          alternative(false) do
+            parallel_branch do
               activity :a2_1, :call, :endpoint1
-            end
-            otherwise do
-              Thread.new() do
-                activity :a2_2, :call, :endpoint1
-              end
-            end
+            end  
+          end
+          otherwise do
+            activity :a2_2, :call, :endpoint1, :call => Proc.new{sleep 0.1}
           end
         end
       end
       activity :a3, :call, :endpoint1
     end
-    @wf.search false
-    @wf.start
-    sleep(0.02)
-    assert($message.include?("Handle call: position=[a1_1]"), "Pos a1_1 should be called by now, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a2_2]"), "Pos a2_2 should be called by now, see message=[#{$message}]");
-    assert(!$message.include?("Handle call: position=[a3]"), "Pos a3 should not be called by now, see message=[#{$message}]");
-    $released +="release a1_1";
-    sleep(0.02)
-    assert($message.include?("Activity a1_1 done"), "pos a1_1 not properly ended, see $message=#{$message}");
-    assert($message.include?("Handle call: position=[a3]"), "Pos a3 should be called by now, see message=[#{$message}]");
+    @wf.start.join
+    wf_sassert('SrunningCa2_2Da2_2')
+    wf_assert('CALL a1_1:')
+    wf_assert('CALL a1_2:')
+    wf_assert('DONE a1_1')
+    wf_assert('DONE a1_2')
+    wf_sassert('Ca3Da3Sfinished')
   end
 end

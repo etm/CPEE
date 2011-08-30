@@ -1,18 +1,9 @@
 require 'test/unit'
-require ::File.dirname(__FILE__) + '/../TestWorkflow'
+require File.expand_path(::File.dirname(__FILE__) + '/../TestWorkflow')
 
 # implemented as a combination of the Cancelling Structured Partial Join and the Exclusive Choice Pattern
 class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
-  def setup
-    $message = ""
-    $released = ""
-    @wf = TestWorkflow.new
-  end
-  def teardown
-    @wf.stop
-    $message = ""
-    $released = ""
-  end
+  include TestMixin
 
   def test_loop
     @wf.description do
@@ -26,19 +17,10 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
       end
       activity :a3, :call, :endpoint1
     end
-    @wf.search false
-    @wf.start
-    sleep(0.1)
-    assert($message.include?("Handle call: position=[a2]"), "Pos a2 should be called by now, see message=[#{$message}]");
-    $released +="release a2";
-    sleep(0.1)
-    assert($message.scan("Handle call: position=[a2]").length == 2, "Pos a2 should have been called 2 times, see message=[#{$message}]");
-    $released +="release a2";
-    sleep(0.1)
-    assert($message.scan("Handle call: position=[a2]").length == 3, "Pos a2 should have been called 2 times, see message=[#{$message}]");
-    $released +="release a2";
-    sleep(0.1)
-    assert($message.include?("Handle call: position=[a3]"), "Pos a3 should be called by now, see message=[#{$message}]");
+    @wf.start.join
+    wf_sassert('SrunningDa1Ca2Da2Ca2Da2Ca2Da2Ca3Da3Sfinished');
+    data = @wf.data
+    assert(data[:x] == 3, "data[:x] has not the correct value [#{data[:x]}]")
   end
   def test_loop_search
     @wf.description do
@@ -54,18 +36,11 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
       activity :a3, :call, :endpoint1
     end
     @wf.search Wee::Position.new(:a2_2, :at)
-    @wf.data :x => 0
-    @wf.start
-    sleep(0.1)
-    assert(!$message.include?("Activity a1 done"), "pos a1 should not be done, see $message=#{$message}");
-    assert($message.include?("Activity a2_2 done"), "pos a2_2 not properly ended, see $message=#{$message}");
-    assert($message.include?("Handle call: position=[a2_1]"), "Pos a2_1 should be called by now, see message=[#{$message}]");
-    $released +="release a2_1";
-    sleep(0.1)
-    assert($message.scan("Handle call: position=[a2_1]").length == 2, "Pos a2_1 should have been called 2 times, see message=[#{$message}]");
-    $released +="release a2_1";
-    sleep(0.1)
-    assert($message.include?("Handle call: position=[a3]"), "Pos a3 should be called by now, see message=[#{$message}]");
+    @wf.data :x => 2
+    @wf.start.join
+    wf_sassert('SrunningDa2_2Ca3Da3Sfinished');
+    data = @wf.data
+    assert(data[:x] == 3, "data[:x] has not the correct value [#{data[:x]}]")
   end
   def test_loop_jump_over
     @wf.description do
@@ -82,8 +57,9 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
     end
     @wf.search Wee::Position.new(:a3, :at)
     @wf.data :x => 0
-    @wf.start
-    sleep(0.1)
-    assert($message.include?("Handle call: position=[a3]"), "Pos a3 should be called by now, see message=[#{$message}]");
+    @wf.start.join
+    wf_sassert('SrunningCa3Da3Sfinished');
+    data = @wf.data
+    assert(data[:x] == 0, "data[:x] has not the correct value [#{data[:x]}]")
   end
 end

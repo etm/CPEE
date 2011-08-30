@@ -10,24 +10,19 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
   # executes a ws-call to the given endpoint with the given parameters. the call
   # can be executed asynchron, see finished_call & return_value
   def activity_handle(passthrough, parameters)
-    $message += "Handle call: position=[#{@__myhandler_position}] passthrough=[#{passthrough}], endpoint=[#{@__myhandler_endpoint}], parameters=[#{parameters}]. Waiting for release\n"
-    t = Thread.new() {
-      released = false
-      until(released) do
-        if @__myhandler_stopped
-          $message += "activity_handle: : Received stop signal, process is stoppable =>aborting!\n"
-          return
-        end
-        if($released.include?("release #{@__myhandler_position.to_s}"))
-          released = true
-          $released["release #{@__myhandler_position.to_s}"]=""
-          $message += "Handler: Released: #{@__myhandler_position}\n"
-        end
-        Thread.pass
-      end
-      @__myhandler_returnValue = 'Handler_Dummy_Result'
+    $long_track << "CALL #{@__myhandler_position}: passthrough=[#{passthrough}], endpoint=[#{@__myhandler_endpoint}], parameters=[#{parameters.inspect}]\n"
+    $short_track << "C#{@__myhandler_position}"
+    if parameters[:call]
+      @t = Thread.new do
+        parameters[:call].call
+        @__myhandler_returnValue = parameters.has_key?(:result) ? parameters[:result] : 'Handler_Dummy_Result'
+        @__myhandler_continue.continue
+      end   
+      # give nothing back 
+    else
+      @__myhandler_returnValue = parameters.has_key?(:result) ? parameters[:result] : 'Handler_Dummy_Result'
       @__myhandler_continue.continue
-    }
+    end  
   end
  
   # returns the result of the last handled call
@@ -38,14 +33,16 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
   # with this situation is given to the handler. To provide the possibility
   # of a continue the Handler will be asked for a passthrough
   def activity_stop
-    $message += "Handler: Recieved stop signal, deciding if stopping\n"
+    $long_track += "STOPPED #{@__myhandler_position}\n"
+    $short_track << "S#{@__myhandler_position}"
+    @t.exit if @t
     @__myhandler_stopped = true
   end
   # is called from Wee after stop_call to ask for a passthrough-value that may give
   # information about how to continue the call. This passthrough-value is given
   # to activity_handle if the workflow is configured to do so.
   def activity_passthrough_value
-    nil
+    "SOME passthrough"
   end
 
   # Called if the execution of the actual activity_handle is not necessary anymore
@@ -53,24 +50,59 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
   # At this stage, this is only the case if parallel branches are not needed
   # anymore to continue the workflow
   def activity_no_longer_necessary
-    $message += "Handler: Recieved no_longer_necessary signal, deciding if stopping\n"
+    $long_track += "NO_LONGER_NECCESARY #{@__myhandler_position}\n"
+    $short_track << "NLN#{@__myhandler_position}"
+    @t.exit if @t
+    @__myhandler_returnValue = "No longer necessary"
     @__myhandler_stopped = true
   end
   # Is called if a Activity is executed correctly
   def inform_activity_done
-    $message += "Activity #{@__myhandler_position} done\n"
+    $long_track += "DONE #{@__myhandler_position}\n"
+    $short_track << "D#{@__myhandler_position}"
   end
   # Is called if a Activity is executed with an error
   def inform_activity_failed(err)
-    $message += "Activity #{@__myhandler_position} failed with error #{err}\n"
+    $long_track += "FAILED #{@__myhandler_position}: #{err}\n"
+    $short_track << "F#{@__myhandler_position}"
     raise(err)
   end
   def inform_syntax_error(err)
-    $message += "Syntax messed with error #{err}\n"
+    $long_track += "ERROR: Syntax messed with error #{err}\n"
+    $short_track << "E"
     raise(err)
   end
   def inform_state_change(newstate)
-    $message += "\n#{'-'*40}\nState changed to #{newstate}\n"
+    $long_track += "---> STATE #{newstate}\n"
+    $short_track << "S#{newstate}"
+  end
+end
+
+module TestMixin #{{{
+  def setup
+    $long_track = ""
+    $short_track = ""
+    @wf = TestWorkflow.new
   end
 
-end
+  def teardown
+    @wf.stop.join
+    $long_track = ""
+    $short_track = ""
+  end
+
+  def wf_assert(what,cond=true)
+    if cond
+      assert($long_track.include?(what),"Missing \"#{what}\":\n#{$long_track}")
+    else  
+      assert(!$long_track.include?(what),"Missing \"#{what}\":\n#{$long_track}")
+    end
+  end
+  def wf_sassert(what,cond=true)
+    if cond
+      assert($short_track.include?(what),"#{$short_track}\nNot Present \"#{what}\":\n#{$long_track}")
+    else  
+      assert(!$short_track.include?(what),"#{$short_track}\nNot Present \"#{what}\":\n#{$long_track}")
+    end
+  end
+end  #}}}

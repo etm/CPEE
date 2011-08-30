@@ -217,14 +217,14 @@ var WFGraph = function(xml, start, container) {
       var ts3 = document.createElementNS(svgNS, "tspan");
           ts3.setAttribute('class', 'vote');
           ts3.appendChild(document.createTextNode('0'));
-      var super = document.createElementNS(svgNS, "text");
-          super.setAttribute('class', 'super');
-          super.setAttribute('transform', 'translate(28.4,8.4)');
-          super.appendChild(ts1);
-          super.appendChild(ts2);
-          super.appendChild(ts3);
+      var supi = document.createElementNS(svgNS, "text");
+          supi.setAttribute('class', 'super');
+          supi.setAttribute('transform', 'translate(28.4,8.4)');
+          supi.appendChild(ts1);
+          supi.appendChild(ts2);
+          supi.appendChild(ts3);
        
-      g.appendChild(super);
+      g.appendChild(supi);
     }
     switch(node.nodeName) {
       case 'loop':

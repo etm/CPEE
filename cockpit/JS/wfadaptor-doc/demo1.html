@@ -1,0 +1,501 @@
+<html>
+  <head>
+    <title>WfAdaptor Demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <script type="text/javascript" src="../helpers/jquery.min.js"></script>
+    <script type="text/javascript" src="../helpers/jquery.svgdom.js"></script>
+    <script type="text/javascript" src="../helpers/underscore.min.js"></script>
+    <script type="text/javascript" src="../helpers/contextmenu.js"></script>
+    <script type="text/javascript" src="../graph.js"></script>
+    <script type="text/javascript" src="../wfadaptor.js"></script>
+    <script type="text/javascript" src="../wfadaptor.cpee.js"></script>
+    <link rel="stylesheet" href="../wfadaptor.css" type="text/css"/>
+    <link rel="stylesheet" href="../helpers/contextmenu.css" type="text/css"/>
+    <script type="text/javascript">
+      var adaptor = null;
+      var parser = DOMParser();
+      function click_update_graph() {
+        console.log("Demo: Graph Update");
+        var then = new Date();
+        adaptor.set_description($('#description').val());
+        $('#t_new').text((new Date()).getTime() - then.getTime() + 'ms'); 
+        then = new Date();
+        var xml = parser.parseFromString($('#description').val(),"text/xml");
+        var g = new WFGraph(xml,xml.documentElement, $("#canvas").get(0));
+        var width = g.generateGraph();
+        $('#t_old').text((new Date()).getTime() - then.getTime() + 'ms'); 
+      }
+      function update_event(element_id, operation) {
+        console.log("Demo: update notification [ID: "+element_id+ ", OP: "+operation+"]");
+      }
+    </script>
+  </head>
+  <body>
+    <table style="background: ThreeDShadow; width: 100%; height: 100%;" border="0">
+      <tr>
+        <td style="text-align:center; vertical-align:middle"><button type="button" onclick="click_update_graph();">Update Graph &gt;&gt;&gt; </button></td>
+        <td style="text-align:center; vertical-align:middle" colspan="2"><b><font size="+2">Workflow Graph</font></b></td>
+      </tr>
+      <tr height="95%">
+        <td width="40%" style="vertical-align:middle; text-align:center"><!-- {{{ -->
+          <textarea style="width:98%;height:98%" id="description">
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <call/><!--{{{-->
+  <call/>
+  <call/>
+
+<!--  Parallel {{{ -->
+  <parallel>
+    <parallel_branch>
+      <call/>
+      <call/>
+    </parallel_branch>
+    <parallel_branch>
+      <call/>
+      <call/>
+    </parallel_branch>
+  </parallel>
+
+  <parallel>
+    <parallel_branch>
+      <call/>
+      <choose>
+        <alternative>
+          <call/>
+        </alternative>
+        <otherwise>
+          <call/>
+        </otherwise>
+        <alternative>
+          <call/>
+        </alternative>
+      </choose>
+    </parallel_branch>
+    <parallel_branch>
+      <choose>
+        <alternative>
+          <call/>
+        </alternative>
+        <otherwise>
+          <call/>
+        </otherwise>
+        <alternative>
+          <call/>
+        </alternative>
+      </choose>
+      <call/>
+    </parallel_branch>
+  </parallel>
+
+  <parallel>
+    <parallel_branch>
+      <call/>
+      <parallel>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+        <parallel_branch>
+          <call/>
+          <call/>
+          <call/>
+        </parallel_branch>
+      </parallel>
+    </parallel_branch>
+    <parallel_branch>
+      <parallel>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+        <parallel_branch>
+          <call/>
+          <call/>
+          <call/>
+        </parallel_branch>
+      </parallel>
+      <call/>
+    </parallel_branch>
+  </parallel>
+
+  <parallel>
+    <parallel_branch>
+      <call/>
+      <loop>
+        <call/>
+        <call/>
+        <call/>
+      </loop>
+    </parallel_branch>
+    <parallel_branch>
+      <loop>
+        <call/>
+        <call/>
+        <call/>
+      </loop>
+      <call/>
+    </parallel_branch>
+  </parallel>
+
+  <parallel>
+    <loop>
+      <call/>
+      <parallel_branch>
+          <call/>
+      </parallel_branch>
+    </loop>
+  </parallel>
+
+  <parallel>
+    <loop>
+      <parallel_branch>
+          <call/>
+      </parallel_branch>
+      <call/>
+    </loop>
+  </parallel>
+
+  <parallel>
+    <loop>
+      <parallel_branch>
+          <call/>
+      </parallel_branch>
+    </loop>
+  </parallel>
+
+  <parallel>
+    <parallel_branch>
+      <call/>
+      <critical>
+        <call/>
+        <call/>
+        <call/>
+      </critical>
+    </parallel_branch>
+    <parallel_branch>
+      <critical>
+        <call/>
+      </critical>
+      <call/>
+    </parallel_branch>
+  </parallel>
+<!--  Parallel }}} -->
+<!--  Choose {{{ -->
+  <choose>
+    <alternative>
+      <call/>
+    </alternative>
+    <otherwise>
+      <call/>
+    </otherwise>
+    <alternative>
+      <call/>
+    </alternative>
+  </choose>
+
+  <choose>
+    <alternative>
+      <call/>
+      <choose>
+        <alternative>
+          <call/>
+        </alternative>
+        <otherwise>
+          <call/>
+        </otherwise>
+      </choose>
+    </alternative>
+    <otherwise>
+      <choose>
+        <alternative>
+          <call/>
+        </alternative>
+        <otherwise>
+          <call/>
+        </otherwise>
+      </choose>
+      <call/>
+    </otherwise>
+    <alternative>
+      <call/>
+    </alternative>
+  </choose>
+
+  <choose>
+    <alternative>
+      <call/>
+      <loop>
+        <call/>
+        <call/>
+      </loop>
+    </alternative>
+    <otherwise>
+      <loop>
+        <call/>
+        <call/>
+      </loop>
+      <call/>
+    </otherwise>
+    <alternative>
+      <call/>
+    </alternative>
+  </choose>
+
+  <choose>
+    <alternative>
+      <call/>
+      <parallel>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+      </parallel>
+    </alternative>
+    <otherwise>
+      <parallel>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+        <parallel_branch>
+          <call/>
+        </parallel_branch>
+      </parallel>
+      <call/>
+    </otherwise>
+    <alternative>
+      <call/>
+    </alternative>
+  </choose>
+
+  <choose>
+    <alternative>
+      <call/>
+      <critical>
+        <call/>
+        <call/>
+      </critical>
+    </alternative>
+    <otherwise>
+      <critical>
+        <call/>
+        <call/>
+      </critical>
+      <call/>
+    </otherwise>
+    <alternative>
+      <call/>
+    </alternative>
+  </choose>
+
+
+<!--  Choose }}} -->
+  <!-- loop  {{{ -->
+  <loop>
+    <call/>
+    <call/>
+  </loop>
+  <loop>
+    <call/>
+    <choose>
+      <alternative>
+        <call/>
+        <choose>
+          <alternative>
+            <call/>
+          </alternative>
+          <otherwise>
+            <call/>
+          </otherwise>
+        </choose>
+      </alternative>
+      <otherwise>
+        <choose>
+          <alternative>
+            <call/>
+          </alternative>
+          <otherwise>
+            <call/>
+          </otherwise>
+        </choose>
+        <call/>
+      </otherwise>
+    </choose>
+  </loop>
+  <loop>
+    <loop>
+      <call/>
+      <call/>
+    </loop>
+  </loop>
+  <loop>
+    <parallel>
+      <parallel_branch>
+        <call/>
+      </parallel_branch>
+      <parallel_branch>
+        <call/>
+      </parallel_branch>
+    </parallel>
+  </loop>
+  <loop>
+    <critical>
+      <call/>
+      <call/>
+    </critical>
+  </loop>
+  <!-- loop  }}} -->
+  <!-- Critical  {{{ -->
+  <critical>
+    <call/>
+    <call/>
+  </critical>
+  <critical>
+    <critical>
+      <call/>
+      <call/>
+    </critical>
+  </critical>
+  <critical>
+    <call/>
+    <choose>
+      <alternative>
+        <call/>
+        <choose>
+          <alternative>
+            <call/>
+          </alternative>
+          <otherwise>
+            <call/>
+          </otherwise>
+        </choose>
+      </alternative>
+      <otherwise>
+        <choose>
+          <alternative>
+            <call/>
+          </alternative>
+          <otherwise>
+            <call/>
+          </otherwise>
+        </choose>
+        <call/>
+      </otherwise>
+    </choose>
+  </critical>
+  <critical>
+    <loop>
+      <call/>
+      <call/>
+      <call/>
+    </loop>
+  </critical>
+  <critical>
+    <call/>
+    <parallel>
+      <parallel_branch>
+        <call/>
+      </parallel_branch>
+      <parallel_branch>
+        <call/>
+      </parallel_branch>
+    </parallel>
+  </critical>
+  <!-- Critical  }}} -->
+
+  <call/><!--}}}-->
+</description>
+          </textarea>
+        </td><!-- }}} --> 
+        <td style="vertical-align: top"><!-- {{{ -->
+          <h3>New Graph Version -> Built-Time:<span id="t_new">00</span></h3>
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="600" width="300" xmlns:xlink="http://www.w3.org/1999/xlink" id="drawing_area">
+          </svg>
+        </td><!-- }}} -->
+        <td style="vertical-align: top"><!-- {{{ -->
+          <h3>Old Graph Version -> Built-Time:<span id="t_old">00</span></h3>
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="600" width="300" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs><!-- {{{ --> 
+              <symbol id="call" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="stand"></circle>
+                <text class="normal" transform='translate(15,21)'>c</text>
+              </symbol><!-- }}} -->
+              <symbol id="manipulate" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="stand"></circle>
+                <text class="normal" transform='translate(15,21)'>m</text>
+              </symbol><!-- }}} -->
+              <symbol id="callinject" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="stand"></circle>
+                <text class="normal" transform='translate(15,21)'>c</text>
+                <circle cx="28" cy="27" r="9" class="stand"></circle>
+                <text class="small" transform='translate(28,32)'>i</text>
+              </symbol><!-- }}} -->
+              <symbol id="callmanipulate" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="stand"></circle>
+                <text class="normal" transform='translate(15,21)'>c</text>
+                <circle cx="28" cy="28" r="9" class="stand"></circle>
+                <text class="small" transform='translate(28,32)'>m</text>
+              </symbol><!-- }}} -->
+              <symbol id="choose" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="stand"></circle>
+                <text class="normal" transform='translate(15,21)'>σ</text>
+              </symbol><!-- }}} -->
+              <symbol id="alternative" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="standwithout"></circle>
+                <text class="normal" transform='translate(15,20)'>{..}</text>
+              </symbol><!-- }}} -->
+              <symbol id="otherwise" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="standwithout"></circle>
+                <text class="normal" transform='translate(15,20)'>{⁎}</text>
+              </symbol><!-- }}} -->
+              <symbol id="parallel" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="stand"></circle>
+                <text class="normal" transform='translate(15,21)'>||</text>
+              </symbol><!-- }}} -->
+              <symbol id="parallel_branch" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="stand"></circle>
+                <text class="normal" transform='translate(15,21)'>|</text>
+              </symbol><!-- }}} -->
+              <symbol id="critical" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="stand"></circle>
+                <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
+              </symbol><!-- }}} -->
+              <symbol id="loop" class="clickable"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="stand"></circle>
+                <text class="normallarge" transform='translate(15,23)'>↺</text>
+              </symbol><!-- }}} -->
+              <symbol id="end"><!-- {{{ -->
+                <circle cx="15" cy="15" r="14" class="stand"></circle>
+                <circle cx="15" cy="15" r="11" class="stand"></circle>
+                <text class="normal" transform='translate(15,21)'>Ω</text>
+              </symbol><!-- }}} -->
+              <marker id="arrow" viewBox="0 0 10 10" refX="24" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" markerHeight="4.5">
+                <path d="m 2 2 l 6 3 l -6 3 z"></path>
+              </marker>
+            </defs><!-- }}} -->
+            <g id="canvas">
+              <g id="blocks"></g>
+              <g id="lines"></g>
+              <g id="symbols"></g>
+            </g>
+          </svg>
+        </td><!-- }}} -->
+      </tr>
+    </table>
+    <script type="text/javascript">
+      var then = new Date();
+      adaptor = new WfAdaptor();
+      create_cpee_elements(adaptor);
+      adaptor.set_svg_container($('#drawing_area'));
+      adaptor.set_description($('#description').val(), true);
+      
+      $('#t_new').text((new Date()).getTime() - then.getTime() + 'ms'); 
+      adaptor.notify = update_event;
+      then = new Date();
+      var xml = parser.parseFromString($('#description').val(),"text/xml");
+      var g = new WFGraph(xml,xml.documentElement, $("#canvas").get(0));
+      var width = g.generateGraph();
+      $('#t_old').text((new Date()).getTime() - then.getTime() + 'ms'); 
+      //console.log(adaptor.get_description());
+    </script>
+  </body>
+</html>

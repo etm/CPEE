@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name             = "wee"
-  s.version          = "1.0.0"
+  s.version          = "1.2.0"
   s.platform         = Gem::Platform::RUBY
   s.summary          = "workflow execution engine (wee) library"
 
@@ -12,7 +12,6 @@ EOF
 
   s.files            = Dir['{lib/*,example/simple/*}'] + %w(COPYING Rakefile wee.gemspec README AUTHORS)
   s.require_path     = 'lib'
-  s.has_rdoc         = false
   s.extra_rdoc_files = ['README']
   s.test_files       = Dir['test/*/tc_*.rb']
 

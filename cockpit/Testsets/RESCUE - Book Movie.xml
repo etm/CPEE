@@ -15,9 +15,9 @@
     <reservation_number/>
   </data-elements>
   <endpoints>
-    <services>http://sumatra.pri.univie.ac.at:9290/groups/Cinemas/</services>
-    <injection_handler>http://sumatra.pri.univie.ac.at:9290/injection/handler</injection_handler>
-    <select>http://sumatra.pri.univie.ac.at:9290/select/pgwl</select>
+    <services>http://sumatra.wst.univie.ac.at:9290/groups/Cinemas/</services>
+    <injection_handler>http://sumatra.wst.univie.ac.at:9290/injection/handler</injection_handler>
+    <select>http://sumatra.wst.univie.ac.at:9290/select/pgwl</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="collect_input" endpoint="select">

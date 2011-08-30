@@ -3,53 +3,86 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>CPEE Cockpit</title>
-    <link rel="stylesheet" href="index.css" type="text/css"/>
+
     <script type="text/javascript" src="JS/helpers/jquery.min.js"></script>
+    <script type="text/javascript" src="JS/helpers/jquery.svgdom.js"></script>
+
     <script type="text/javascript" src="JS/helpers/util.js"></script>
     <script type="text/javascript" src="JS/helpers/printf.js"></script>
-    <script type="text/javascript" src="JS/helpers/strftime-min.js"></script>
+    <script type="text/javascript" src="JS/helpers/strftime.min.js"></script>
     <script type="text/javascript" src="JS/helpers/parsequery.js"></script>
-    <script type="text/javascript" src="JS/graph.js"></script>
+
+    <script type="text/javascript" src="JS/helpers/underscore.min.js"></script>
+    <script type="text/javascript" src="JS/helpers/contextmenu.js"></script>
+    <script type="text/javascript" src="JS/wfadaptor.js"></script>
+    <script type="text/javascript" src="JS/wfadaptor.cpee.js"></script>
+
+    <link rel="stylesheet" href="JS/wfadaptor.css" type="text/css"/>
+    <link rel="stylesheet" href="JS/helpers/contextmenu.css" type="text/css"/>
+
+    <link rel="stylesheet" href="index.css" type="text/css"/>
+    <link rel="stylesheet" href="ui.css" type="text/css"/>
+
     <script type="text/javascript" src="JS/main.js"></script>
+    <script type="text/javascript" src="JS/ui.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        if (!($.browser.mozilla && parseInt($.browser.version) >= 6)) {
+          $('body').children().remove();
+          $('body').append('Sorry, only Firefox >= 6.0 for now.<br/>Chrom(ium|e) support will be added as soon as websocket >= hybi-08 is working (14.x ?).');
+        }  
+      })  ;
+    </script>
   </head>
   <body>
-    <div id="instance" class="tab layout">
+
+    <div class="tabbed">
       <table class="tabbar">
         <tr>
           <td class="tab switch" onclick="toggle_vis_tab(this)"><h1></h1></td>
-          <td class="tab"><h1>CPEE Instance</h1></td>
+          <td class="tab"                    id="tabinstance"   onclick="tab_click(this)"><h1>Instance</h1></td>
+          <td class="tab inactive hidden" id="tabposition"   onclick="tab_click(this)"><h1>State &amp; Positions</h1></td>
+          <td class="tab inactive hidden" id="tabproperties" onclick="tab_click(this)"><h1>Execution Properties</h1></td>
           <td class="tabbehind"></td>
         </tr>  
-        <tr class="border hidden"><td colspan="3"></td></tr>
+        <tr class="border hidden"><td colspan="5"></td></tr>
       </table>  
-      <div class="area">
-        <div class="tabbelow" colspan="3">
-          <div id="areainstance" class='area'>
-            <table class='layout'>
-            <tr>
-              <td>Base Url:</td>
-              <td><input name="base-url" type="text" value=""/></td>
-              <td><button name="base">create new instance</button></td>
-            </tr>
-            <tr>
-              <td>Instance Url:</td>
-              <td><input name="instance-url" type="text" value=""/></td>
-              <td><button name="instance">monitor instance</button></td>
-            </tr>
-            <tr>
-              <td>Testsets:</td>
-              <td>
-                <select name="testset-names"></select>
-              </td>  
-              <td><button name="testset">load testset into instance</button></td>
-            </tr>
-            </table>
-          </div>  
+      <div class="tabbelow">
+        <div id="areainstance">
+          <table class='layout'>
+          <tr>
+            <td>Base Url:</td>
+            <td><input name="base-url" type="text" value=""/></td>
+            <td><button name="base">create new instance</button></td>
+          </tr>
+          <tr>
+            <td>Instance Url:</td>
+            <td><input name="instance-url" type="text" value=""/></td>
+            <td><button name="instance">monitor instance</button></td>
+          </tr>
+          <tr>
+            <td>Testsets:</td>
+            <td>
+              <select name="testset-names"></select>
+            </td>  
+            <td><button name="testset">load testset into instance</button></td>
+          </tr>
+          </table>
         </div>  
+        <div id="areaposition" class='inactive'>
+          <table>
+            <tbody id="state"></tbody>
+            <tbody id="votes"></tbody>
+          </table>
+        </div>
+        <div id="areaproperties" class="inactive">
+          <div><input type="checkbox" name="votecontinue"/> Vote to continue</div>
+          <div><input type="checkbox" name="votestop"/> Vote to stop</div>
+        </div>
       </div>  
     </div>  
   
-    <div class="tab hidden layout">
+    <div class="tabbed hidden">
       <table class="tabbar">
         <tr>
           <td class="tab switch" onclick="toggle_vis_tab(this)"><h1></h1></td>
@@ -58,16 +91,14 @@
         </tr>  
         <tr class="border hidden"><td colspan="3"></td></tr>
       </table>  
-      <div class="area">
-        <div class="tabbelow" colspan="3">
-          <div id="areaendpoints" class='area'>
-            <table id="endpoints"></table>
-          </div>  
+      <div class="tabbelow">
+        <div id="areaendpoints">
+          <table id="endpoints"></table>
         </div>  
       </div>  
     </div>
 
-    <div class="tab hidden layout">
+    <div class="tabbed hidden">
       <table class="tabbar">
         <tr>
           <td class="tab switch" onclick="toggle_vis_tab(this)"><h1></h1></td>
@@ -76,152 +107,46 @@
         </tr>  
         <tr class="border hidden"><td colspan="3"></td></tr>
       </table>  
-      <div class="area">
-        <div class="tabbelow" colspan="3">
-          <div id="areadata" class='area'>
-            <table id="data-elements"></table>
-          </div>
-        </div>  
-      </div>  
-    </div>  
-
-    <div id="main" class="tab hidden layout">
-      <table class="tabbar">
-        <tr>
-          <td class="tab"             id="tabgraph" onclick="tab_click(this)"><h1>Graph</h1></td>
-          <td class="tab inactivetab" id="tabdsl"   onclick="tab_click(this)"><h1>Description</h1></td>
-          <td class="tab inactivetab" id="tablog"   onclick="tab_click(this)"><h1>Log</h1></td>
-          <td class="tabbehind"></td>
-        </tr>  
-        <tr class="border hidden"><td colspan="3"></td></tr>
-      </table>  
-      <div>
-        <div class="tabbelow" colspan="4">
-          <div id="areagraph">
-            <table class='layout'>
-            <tr>
-              <td valign="top">
-                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0" xmlns:xlink="http://www.w3.org/1999/xlink"> 
-                  <defs>
-                    <symbol id="call" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="stand"></circle>
-                      <text class="normal" transform='translate(15,21)'>c</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="manipulate" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="stand"></circle>
-                      <text class="normal" transform='translate(15,21)'>m</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="manipulate_gen" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="gen"></circle>
-                      <text class="normal" transform='translate(15,21)'>m</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="callinject" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="stand"></circle>
-                      <text class="normal" transform='translate(15,21)'>c</text>
-                      <circle cx="28" cy="27" r="9" class="stand"></circle>
-                      <text class="small" transform='translate(28,32)'>i</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="callmanipulate" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="stand"></circle>
-                      <text class="normal" transform='translate(15,21)'>c</text>
-                      <circle cx="28" cy="28" r="9" class="stand"></circle>
-                      <text class="small" transform='translate(28,32)'>m</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="choose" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="stand"></circle>
-                      <text class="normal" transform='translate(15,21)'>σ</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="alternative" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="standwithout"></circle>
-                      <text class="normal" transform='translate(15,20)'>{..}</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="otherwise" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="standwithout"></circle>
-                      <text class="normal" transform='translate(15,20)'>{⁎}</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="parallel" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="stand"></circle>
-                      <text class="normal" transform='translate(15,21)'>||</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="parallel_gen" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="gen"></circle>
-                      <text class="normal" transform='translate(15,21)'>||</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="parallel_branch" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="stand"></circle>
-                      <text class="normal" transform='translate(15,21)'>|</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="parallel_branch_gen" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="gen"></circle>
-                      <text class="normal" transform='translate(15,21)'>|</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="critical" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="stand"></circle>
-                      <text class="normal" transform='translate(16.5,21.5)'>⚠</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="loop" class="clickable"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="stand"></circle>
-                      <text class="normallarge" transform='translate(15,23)'>↺</text>
-                    </symbol><!-- }}} -->
-                    <symbol id="end"><!-- {{{ -->
-                      <circle cx="15" cy="15" r="14" class="stand"></circle>
-                      <circle cx="15" cy="15" r="11" class="stand"></circle>
-                      <text class="normal" transform='translate(15,21)'>Ω</text>
-                    </symbol><!-- }}} -->
-                    <marker id="arrow" viewBox="0 0 10 10" refX="24" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" markerHeight="4.5">
-                      <path d="m 2 2 l 6 3 l -6 3 z"></path>
-                    </marker>
-                  </defs>
-                  <g id="canvas">
-                    <g id="blocks"></g>
-                    <g id="lines"></g>
-                    <g id="symbols"></g>
-                  </g>
-                </svg>
-              </td>    
-              <td class='top'>
-                <table id="details" class="layout">
-                </table>
-              </td>  
-            </tr>  
-            </table>
-          </div>  
-          <div id="areadsl" class="inactivearea"></div>
-          <div id="arealog" class="inactivearea">
-            <table id="log" class="layout">
-            </table>
-          </div>
+      <div class="tabbelow">
+        <div id="areadata">
+          <table id="data-elements"></table>
         </div>
       </div>  
     </div>  
 
-    <div class="fixedstatehollow"></div>
-    <div class="fixedstate">
-      <div id="execution" class="tab hidden layout">
-        <table class="tabbar">
+    <div id="main" class="tabbed flow hidden">
+      <table class="tabbar">
+        <tr>
+          <td class="tabbefore"></td>
+          <td class="tab"             id="tabgraph" onclick="tab_click(this)"><h1>Graph</h1></td>
+          <td class="tab inactive" id="tabdsl"   onclick="tab_click(this)"><h1>Description</h1></td>
+          <td class="tab inactive" id="tablog"   onclick="tab_click(this)"><h1>Log</h1></td>
+          <td class="tabbehind"></td>
+        </tr>  
+        <tr class="border hidden"><td colspan="3"></td></tr>
+      </table>  
+      <div class="tabbelow">
+        <div id="areagraph">
+          <table class='layout'>
           <tr>
-            <td class="tab switch"                         onclick="toggle_vis_tab(this)"><h1></h1></td>
-            <td class="tab"             id="tabposition"   onclick="tab_click(this)"><h1>State &amp; Positions</h1></td>
-            <td class="tab inactivetab" id="tabproperties" onclick="tab_click(this)"><h1>Execution Properties</h1></td>
-            <td class="tabbehind"></td>
-          </tr>  
-          <tr class="border hidden"><td colspan="4"></td></tr>
-        </table>  
-        <div class="area">
-          <div class="tabbelow" colspan="4">
-            <div id="areaposition">
-              <table>
-                <tbody id="state"></tbody>
-                <tbody id="votes"></tbody>
+            <td valign="top">
+              <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0" xmlns:xlink="http://www.w3.org/1999/xlink" id='canvas'> 
+              </svg>
+            </td>    
+            <td class='top'>
+              <table id="details" class="layout">
               </table>
-            </div>
-            <div id="areaproperties" class="inactivearea">
-              <div><input type="checkbox" name="votecontinue"/> Vote to continue</div>
-              <div><input type="checkbox" name="votestop"/> Vote to stop</div>
-            </div>
-          </div>  
+            </td>  
+          </tr>  
+          </table>
         </div>  
-      </div>  
+        <div id="areadsl" class="inactive"></div>
+        <div id="arealog" class="inactive">
+          <table id="log" class="layout">
+          </table>
+        </div>
+      </div>
     </div>  
+
   </body>
 </html>

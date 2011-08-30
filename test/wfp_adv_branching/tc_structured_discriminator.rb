@@ -1,18 +1,9 @@
 require 'test/unit'
-require ::File.dirname(__FILE__) + '/../TestWorkflow'
+require File.expand_path(::File.dirname(__FILE__) + '/../TestWorkflow')
 
 # only variant Cancelling Discriminator is implemented, but that's the coolest one 8)
 class TestWFPStructuredDiscriminator < Test::Unit::TestCase
-  def setup
-    $message = ""
-    $released = ""
-    @wf = TestWorkflow.new
-  end
-  def teardown
-    @wf.stop
-    $message = ""
-    $released = ""
-  end
+  include TestMixin
 
   def test_cancelling_discriminator
     @wf.description do
@@ -21,19 +12,17 @@ class TestWFPStructuredDiscriminator < Test::Unit::TestCase
           activity :a_1_1, :call, :endpoint1
         end
         parallel_branch do
-          activity :a_1_2, :call, :endpoint1
+          activity :a_1_2, :call, :endpoint1, :call => Proc.new{sleep 0.2}
         end
       end
       activity :a_2, :call, :endpoint1
     end
-    @wf.search false
-    @wf.start
-    sleep(0.02)
-    assert($message.include?("Handle call: position=[a_1_1]"), "Pos a_1_1 should be called by now, see message=[#{$message}]");
-    assert($message.include?("Handle call: position=[a_1_2]"), "Pos a_1_2 should not have been called by now, see message=[#{$message}]");
-    $released +="release a_1_1";
-    sleep(0.02)
-    assert($message.include?("Activity a_1_1 done"), "pos a_1_1 not properly ended, see $message=#{$message}");
-    assert($message.include?("Handle call: position=[a_2]"), "Pos a_2 should have been called by now, see message=[#{$message}]");
+    t = @wf.start.join
+    wf_assert("CALL a_1_1:")
+    wf_assert("CALL a_1_2:")
+    wf_assert("CALL a_2:")
+    wf_assert("NO_LONGER_NECCESARY a_1_2")
+    wf_assert("DONE a_1_1")
+    wf_assert("DONE a_2")
   end
 end

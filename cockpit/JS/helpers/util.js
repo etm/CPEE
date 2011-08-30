@@ -12,6 +12,20 @@ $.fn.serializeXML = function () {
     }
     return out;
 };
+$.fn.serializePrettyXML = function () {
+    var out = '';
+    if (typeof XMLSerializer == 'function') {
+        var xs = new XMLSerializer();
+        this.each(function() {
+            out += XML(xs.serializeToString(this)).toXMLString();
+        });
+    } else if (this[0] && this[0].xml != 'undefined') {
+        this.each(function() {
+            out += this.xml;
+        });
+    }
+    return out;
+};
 
 String.prototype.repeat = function(num) {
   return new Array(num + 1).join(this);
