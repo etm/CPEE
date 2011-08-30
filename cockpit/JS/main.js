@@ -156,8 +156,6 @@ function monitor_instance() {// {{{
             append_to_log("monitoring", "opened", "");
           };
           ws.onmessage = function(e) {
-            console.log('hallo');
-            console.log(e.data);
             data = e.data.parseXML();
             if ($('event > topic',data).length > 0) {
               switch($('event > topic',data).text()) {
