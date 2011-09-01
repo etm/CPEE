@@ -217,9 +217,9 @@ function monitor_instance_dataelements() {// {{{
       var temp = "";
       values.each(function(){
       if($(this).text().length < 80) {
-        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + format_text($(this).text()) + "</td></tr>";
+        temp += "<tr><td><div contentEditable='true'>" + this.nodeName  + "</div></td><td>⇒</td><td><div contentEditable='true'>" + format_text($(this).text()) + "</div></td></tr>";
       } else {
-        temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td><a href=\"" + url + "/properties/values/data-elements/" + this.nodeName  +"\" target=\"_blank\">Show data elements</a></td></tr>";
+        temp += "<tr><td><div contentEditable='true'>" + this.nodeName  + "</div></td><td>⇒</td><td><a href=\"" + url + "/properties/values/data-elements/" + this.nodeName  +"\" target=\"_blank\">⎆</a><div contentEditable='true'>" + format_text($(this).text()) + "</div></td></tr>";
       }
     });
 
@@ -243,7 +243,7 @@ $.ajax({
     var values = $("value > *",res);
     var temp = "";
     values.each(function(){
-      temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>";
+      temp += "<tr><td><div contentEditable='true'>" + this.nodeName  + "</div></td><td>⇒</td><td><div contentEditable='true'>" + $(this).text() + "</div></td></tr>";
     });
 
     if (temp != save_endpoints) {

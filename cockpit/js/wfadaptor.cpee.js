@@ -94,36 +94,36 @@ function create_cpee_elements(adaptor) {
       case 'call':
         table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
         if ($(node).attr('lay'))
-          table.append('<tr><td><strong>Lay:</strong></td><td class="long">' + $(node).attr('lay') + '</td></tr>');
-        table.append('<tr><td><strong>Endpoint:</strong></td><td class="long" contenteditable="true">' + $(node).attr('endpoint') + '</td></tr>');
+          table.append('<tr><td><strong>Lay:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('lay') + '</div></td></tr>');
+        table.append('<tr><td><strong>Endpoint:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('endpoint') + '</div></td></tr>');
         if ($('manipulate',node).text())
-          table.append('<tr><td><strong>Manipulate:</strong></td><td class="long">' + format_code($('manipulate',node).text(),true,false) + '</td></tr>');
+          table.append('<tr><td><strong>Manipulate:</strong></td><td class="long"><div contenteditable="true">' + format_code($('manipulate',node).text(),true,false) + '</div></td></tr>');
         if ($('parameters',node).length > 0)
           table.append('<tr><td><strong>Parameters:</strong></td><td class="long"></td></tr>');
           table.append(sym_click_para($(node).children('parameters'),'&#160;&#160;&#160;&#160;'));
         break;
       case 'manipulate':
         table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
-        table.append('<tr><td><strong>Manipulate:</strong></td><td class="long">' + format_code($(node).text(),true,false) + '</td></tr>');
+        table.append('<tr><td><strong>Manipulate:</strong></td><td class="long"><div contenteditable="true">' + format_code($(node).text(),true,false) + '</div></td></tr>');
         break;
       case 'loop':
         if ($(node).attr('pre_test'))
-          table.append('<tr><td><strong>Pre-Test:</strong></td><td class="long">' + $(node).attr('pre_test') + '</td></tr>');
+          table.append('<tr><td><strong>Pre-Test:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('pre_test') + '</div></td></tr>');
         if ($(node).attr('post_test'))
-          table.append('<tr><td><strong>Post-Test:</strong></td><td class="long">' + $(node).attr('post_test') + '</td></tr>');
+          table.append('<tr><td><strong>Post-Test:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('post_test') + '</div></td></tr>');
         break;
       case 'alternative':
-        table.append('<tr><td><strong>Condition:</strong></td><td class="long">' + $(node).attr('condition') + '</td></tr>');
+        table.append('<tr><td><strong>Condition:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('condition') + '</div></td></tr>');
         break;
       case 'parallel':
         var wait = $(node).attr('condition') || 'Wait for all branches';
-        table.append('<tr><td><strong>Wait:</strong></td><td class="long">' + wait + '</td></tr>');
+        table.append('<tr><td><strong>Wait:</strong></td><td class="long"><div contenteditable="true">' + wait + '</div></td></tr>');
         break;
       case 'parallel_branch':
         if ($(node).attr('pass'))
-          table.append('<tr><td><strong>Pass&#160;to&#160;branch:</strong></td><td class="long">' + $(node).attr('pass') + '</td></tr>');
+          table.append('<tr><td><strong>Pass&#160;to&#160;branch:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('pass') + '</div></td></tr>');
         if ($(node).attr('local'))
-          table.append('<tr><td><strong>Local&#160;scope:</strong></td><td class="long">' + $(node).attr('local') + '</td></tr>');
+          table.append('<tr><td><strong>Local&#160;scope:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('local') + '</div></td></tr>');
         break;
       case 'group':
           table.append('<tr><td><strong>Type:</strong></td><td class="long">' + $(node).attr('type') + '</td></tr>');
