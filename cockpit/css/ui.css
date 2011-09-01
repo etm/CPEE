@@ -57,7 +57,7 @@ span.vote {
 
 #detailcolumn { width: 50%; }
 #detailcolumn .column { padding-left: 2em; }
-#graphcolumn { border-right: 1pt solid ButtonShadow; }
+#graphcolumn { border-right: 1pt solid ButtonShadow; min-width: 12em; }
 
 .ui-resizable-handle { 
   z-index: 99999; 
@@ -69,5 +69,6 @@ span.vote {
   -moz-transform-origin: left bottom; 
   margin-top: -1em;
   margin-left: 0.3em;
+  white-space:nowrap;
 }
 .ui-resizable-w { cursor: w-resize; }
