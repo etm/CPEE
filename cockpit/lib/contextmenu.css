@@ -1,5 +1,6 @@
 
 div.contextmenu {
+  z-index: 100000;
   position: absolute;
   display:none;
   background: Menu;
