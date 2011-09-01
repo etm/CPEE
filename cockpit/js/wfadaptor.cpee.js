@@ -79,7 +79,7 @@ function create_cpee_elements(adaptor) {
                         },
                         'params': ['> manipulate', xml_node]});
       }
-      contextmenu(menu, e.pageX, e.pageY);
+      contextmenu(menu, e);
     }
     return false;
   } // }}} 

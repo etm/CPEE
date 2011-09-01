@@ -1,13 +1,22 @@
-
 div.contextmenu {
+  padding: 0;
+  margin: 0;
+  z-index: 100000;
   position: absolute;
   display:none;
   background: Menu;
-  border: 3px solid InactiveBorder;
+  border: 3p x solid InactiveBorder;
+  -moz-box-sizing:    border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing:        border-box;
 }
 
 table.contextmenu {
   border-collapse:collapse;
+  border-spacing: 0;
+  border: 0 none;
+  padding: 0;
+  margin: 0;
 }
 
 tr.contextmenuheader {
@@ -27,17 +36,23 @@ tr.contextmenuheader:not(:first-child) {
 tr.contextmenuitem {
   font-size: small;
   color: MenuText;
-  height:1.6em;
 }
 tr.contextmenuitem:hover {
   background-color:Highlight;
   color: HighlightText;
 }
 tr.contextmenuitem > td{
+  padding: 0;
   padding-left: 0.5em;
   padding-right: 1em;
+  margin: 0;
 }
 tr.contextmenuitem > .contextmenuicon{
   margin-left: 0.7em;
   padding-right: 0em;
+  vertical-align: bottom;
+}
+tr.contextmenuitem > .contextmenuicon svg{
+  height: 1.5em;
+  width: 1.5em;
 }
