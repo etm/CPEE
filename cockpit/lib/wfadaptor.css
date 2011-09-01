@@ -1,18 +1,10 @@
 /* Browser Bug, set textarea explicitly */
-textarea, input, select, button {
-  font-family: Verdana, Helvetica, sans-serif;
-  font-size: 1em;
-}
-
-
 svg {
   fill: #DDDDDD;
   fill-opacity:1;
   display:inline;
   margin:0;
   padding:0;
-  margin-top: -0.4em;
-  margin-left: -0.5em;
 }
 
 svg rect.group {
@@ -157,6 +149,7 @@ svg text.normallarge {
   stroke:none;
   font-family:Arial;
 }
+
 svg text.small {
   font-size:14px;
   font-style:normal;

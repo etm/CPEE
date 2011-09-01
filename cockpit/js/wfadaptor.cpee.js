@@ -84,7 +84,7 @@ function create_cpee_elements(adaptor) {
     return false;
   } // }}} 
   cpee.events.click = function(svgnode, e) { // {{{ 
-    var table = $('#details');
+    var table = $('#dat_details');
     var node  = description.get_node_by_svg_id($(svgnode).parents(':first').attr('element-id')).get(0);
     console.log(node);
 
@@ -95,7 +95,7 @@ function create_cpee_elements(adaptor) {
         table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
         if ($(node).attr('lay'))
           table.append('<tr><td><strong>Lay:</strong></td><td class="long">' + $(node).attr('lay') + '</td></tr>');
-        table.append('<tr><td><strong>Endpoint:</strong></td><td class="long">' + $(node).attr('endpoint') + '</td></tr>');
+        table.append('<tr><td><strong>Endpoint:</strong></td><td class="long" contenteditable="true">' + $(node).attr('endpoint') + '</td></tr>');
         if ($('manipulate',node).text())
           table.append('<tr><td><strong>Manipulate:</strong></td><td class="long">' + format_code($('manipulate',node).text(),true,false) + '</td></tr>');
         if ($('parameters',node).length > 0)

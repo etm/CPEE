@@ -25,3 +25,14 @@ function toggle_vis_tab(moi) {// {{{
     $(".fixedstatehollow").height($(fix).height());
   }  
 }// }}}
+
+$(document).ready(function() { // {{{
+  $('div.tabbed div.tabbelow').bind('DOMSubtreeModified',rest_resize);
+  $(window).resize(rest_resize);
+}); // }}}
+
+function rest_resize() {
+  var theight = $(window).height() - $('div.tabbed.rest .tabbar').offset().top - $('div.tabbed.rest .tabbar').height();
+  $('div.tabbed.rest .tabbelow').height(theight);
+  $('div.tabbed.rest .tabbelow .column').height(theight);
+}  

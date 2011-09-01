@@ -1,0 +1,16 @@
+Beware. Just a basic subset of the jquery-ui functionality.
+
+Core:
+=====
+X Core
+X Widget
+X Mouse
+
+Interactions:
+=============
+X Draggable
+X Droppable
+X Resizable
+X Selectable
+X Sortable
+

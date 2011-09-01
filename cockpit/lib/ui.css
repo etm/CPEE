@@ -8,6 +8,7 @@ body {
   padding:0;
   margin:0;
   color: #000000;
+  overflow: hidden;
 }
 
 /* Browser Bug, set textarea explicitly */
@@ -31,7 +32,7 @@ div.tabbed table.tabbar {
   border-collapse: separate; 
 }
 
-div.tabbed.flow table.tabbar { 
+div.tabbed.rest table.tabbar { 
   padding: 0; 
   margin: 0; 
   margin-left: 0em;
@@ -131,10 +132,10 @@ div.tabbed table.tabbar td.switch {
   border-bottom: 1pt solid ButtonShadow;
 }
 
-div.tabbed div.tabbelow {
+div.tabbed .tabbelow {
   margin-left: 1em;
   margin-right: 1em;
-  padding:1em;
+  padding: 1em;
   border-bottom: 1pt solid ButtonShadow;
   border-left: 1pt solid ButtonShadow;
   border-right: 1pt solid ButtonShadow;
@@ -149,23 +150,69 @@ div.tabbed div.tabbelow {
   -webkit-border-top-right-radius: 0em;
 }
 
-div.tabbed.flow div.tabbelow {
-  margin-left: 0em;
-  margin-right: 0em;
-  margin-right: 0em;
-  border: none 0;
+div.tabbed.rest .tabbelow {
+  /* to correctly set the height when resizing with changing height with $.height() -> include padding */
+  -moz-box-sizing:    border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing:        border-box;
+
+  padding: 1em;
+  margin: 0;
+  border-radius: 0;
+  border: 0 none;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+
+  overflow: auto;
+}
+
+div.tabbed.rest .tabbelow.columns {
+  padding:0;
+  overflow: hidden;
+  border-collapse:collapse;
+  border-spacing:0;
+  width:100%
+}
+div.tabbed.rest .tabbelow.columns td {
+  margin: 0;
+  padding: 0;
+  border: 0 none;
+  vertical-align: top;
+}
+div.tabbed.rest .tabbelow.columns .column {
+  -moz-box-sizing:    border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing:        border-box;
+
+  margin:0;
+  padding: 1em;
+
+  overflow: auto;
+  top: 0;
 }  
 
-div.tabbed div.tabbelow .inactive { display: none; }
-div.tabbed div.tabbelow .layout {
+div.tabbed .tabbelow.inactive, div.tabbed .tabbelow .inactive { display: none; }
+div.tabbed .tabbelow .layout {
   width: 100%;
+  border-collapse:collapse;
   border-spacing:0;
   border:0 none;
   padding:0;
   margin:0;
 }
-div.tabbed div.tabbelow .layout .fixed { white-space:nowrap; }
-div.tabbed div.tabbelow .layout .top { vertical-align: top; }
+div.tabbed .tabbelow .layout td {
+  border:0 none;
+  padding:0;
+  margin:0;
+}
+div.tabbed .tabbelow .layout tr {
+  border:0 none;
+  padding:0;
+  margin:0;
+}
+
+div.tabbed .tabbelow .layout .fixed { white-space:nowrap; }
+div.tabbed .tabbelow .layout .top { vertical-align: top; }
 
 .hidden {
   display: none;

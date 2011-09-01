@@ -46,7 +46,7 @@ $(document).ready(function() {// {{{
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=votestop]").click(check_subscription);
   $.ajax({ 
-    url: "Testsets.xml", 
+    url: "testsets/index.xml", 
     dataType: 'xml',
     success: function(res){
       $('testset',res).each(function(){
@@ -61,9 +61,8 @@ $(document).ready(function() {// {{{
   var q = $.parseQuery();
   if (q.monitor) {
     $("input[name=instance-url]").val(q.monitor);
-    monitor_instance();
     toggle_vis_tab($("#instance td.switch"));
-    toggle_vis_tab($("#execution td.switch"));
+    monitor_instance();
   }
   if (q.load) {
     load = q.load;
@@ -128,6 +127,7 @@ function create_instance() {// {{{
   
 function monitor_instance() {// {{{
   var url = $("input[name=instance-url]").val();
+
   $.ajax({
     type: "GET", 
     url: url + "/properties/schema/",
@@ -140,6 +140,8 @@ function monitor_instance() {// {{{
       $("input[name=base-url]").attr("readonly","readonly");
       $("button[name=base]").attr("disabled","disabled");
 
+      tab_click($("#tabposition")[0]);
+
       $.ajax({
         type: "POST", 
         url: url + "/notifications/subscriptions/",
@@ -147,8 +149,9 @@ function monitor_instance() {// {{{
         success: function(res){
           res = res.unserialize();
           $.each(res,function(a,b){
-            if (b[0] == 'key')
+            if (b[0] == 'key') {
               subscription = b[1];
+            }  
           });
           append_to_log("monitoring", "id", subscription);
           ws = new MozWebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
@@ -222,7 +225,7 @@ function monitor_instance_cvs() {// {{{
 
     if (temp != save_cvs) {
       save_cvs = temp;
-      var ctv = $("#data-elements");
+      var ctv = $("#dat_dataelements");
       ctv.empty();
       ctv.append(temp);
     }  
@@ -244,7 +247,7 @@ $.ajax({
 
     if (temp != save_eps) {
       save_eps = temp;
-      var ctv = $("#endpoints");
+      var ctv = $("#dat_endpoints");
       ctv.empty();
       ctv.append(temp);
     }  
@@ -277,7 +280,7 @@ function monitor_instance_dsl() {// {{{
 
             create_cpee_elements(adaptor);
 
-            adaptor.set_svg_container($('#canvas'));
+            adaptor.set_svg_container($('#graphcanvas'));
             adaptor.set_description($(res), true);
             adaptor.notify = function() {
               console.log('update');
@@ -412,7 +415,7 @@ function load_testset() {// {{{
   if (running) return;
   running  = true;
   save_dsl = null; // reload dsl and position under all circumstances
-  var table = $('#details');
+  var table = $('#dat_details');
   table.empty();
 
   var url = $("input[name=instance-url]").val();
@@ -421,7 +424,7 @@ function load_testset() {// {{{
   $.ajax({ 
     cache: false,
     dataType: 'xml',
-    url: "Testsets/" + name + ".xml",
+    url: "testsets/" + name + ".xml",
     success: function(res){ 
       var testset = res; 
       document.title = name;
@@ -766,7 +769,7 @@ function append_to_log(what,type,message) {//{{{
   message = message.replace(/:\"/g,': "');
   message = message.replace(/:\{/g,': {');
   message = message.replace(/:\[/g,': [');
-  $("#log").append("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
+  $("#dat_log").append("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
 }//}}}
 
 function report_failure(){}
