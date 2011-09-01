@@ -4,8 +4,8 @@ var subscription;
 var subscription_state = 'less';
 var save_state;
 var save_dsl;
-var save_eps;
-var save_cvs;
+var save_endpoints;
+var save_dataelements;
 var node_state = {};
 var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
@@ -61,12 +61,12 @@ $(document).ready(function() {// {{{
   var q = $.parseQuery();
   if (q.monitor) {
     $("input[name=instance-url]").val(q.monitor);
-    toggle_vis_tab($("#instance td.switch"));
+    ui_toggle_vis_tab($("#instance td.switch"));
     monitor_instance();
   }
   if (q.load) {
     load = q.load;
-    toggle_vis_tab($("#instance td.switch"));
+    ui_toggle_vis_tab($("#instance td.switch"));
     create_instance();
   }
 });// }}}
@@ -140,7 +140,7 @@ function monitor_instance() {// {{{
       $("input[name=base-url]").attr("readonly","readonly");
       $("button[name=base]").attr("disabled","disabled");
 
-      tab_click($("#tabposition")[0]);
+      ui_tab_click($("#tabposition")[0]);
 
       $.ajax({
         type: "POST", 
@@ -163,13 +163,13 @@ function monitor_instance() {// {{{
             if ($('event > topic',data).length > 0) {
               switch($('event > topic',data).text()) {
                 case 'properties/data-elements':
-                  monitor_instance_cvs();
+                  monitor_instance_dataelements();
                   break;
                 case 'properties/description':
                   monitor_instance_dsl();
                   break;
                 case 'properties/endpoints':
-                  monitor_instance_eps();
+                  monitor_instance_endpoints();
                   break;
                 case 'properties/state':
                   monitor_instance_state();
@@ -196,8 +196,8 @@ function monitor_instance() {// {{{
         }
       });
 
-      monitor_instance_cvs();
-      monitor_instance_eps();
+      monitor_instance_dataelements();
+      monitor_instance_endpoints();
       monitor_instance_dsl();
       monitor_instance_state();
     },
@@ -207,7 +207,7 @@ function monitor_instance() {// {{{
   });      
 }// }}}
 
-function monitor_instance_cvs() {// {{{
+function monitor_instance_dataelements() {// {{{
   var url = $("input[name=instance-url]").val();
   $.ajax({
     type: "GET", 
@@ -223,17 +223,18 @@ function monitor_instance_cvs() {// {{{
       }
     });
 
-    if (temp != save_cvs) {
-      save_cvs = temp;
+    if (temp != save_dataelements) {
+      save_dataelements = temp;
       var ctv = $("#dat_dataelements");
       ctv.empty();
       ctv.append(temp);
+      ui_rest_resize();
     }  
   }
 });      
 }// }}}
 
-function monitor_instance_eps() {// {{{
+function monitor_instance_endpoints() {// {{{
 var url = $("input[name=instance-url]").val();
 $.ajax({
   type: "GET", 
@@ -245,11 +246,12 @@ $.ajax({
       temp += "<tr><td>" + this.nodeName  + "</td><td>⇒</td><td>" + $(this).text() + "</td></tr>";
     });
 
-    if (temp != save_eps) {
-      save_eps = temp;
+    if (temp != save_endpoints) {
+      save_endpoints = temp;
       var ctv = $("#dat_endpoints");
       ctv.empty();
       ctv.append(temp);
+      ui_rest_resize();
     }  
   }
 });
@@ -459,13 +461,13 @@ function load_testset() {// {{{
               success: function(){
                 rcount += 1;
                 if (rcount == length)
-                  load_testset_cvs(url,testset);
+                  load_testset_dataelements(url,testset);
               },
               error: report_failure
             });  
           });
           if (length == 0)
-            load_testset_cvs(url,testset);
+            load_testset_dataelements(url,testset);
         },
         error: report_failure
       });  
@@ -485,13 +487,13 @@ function load_testset() {// {{{
               success: function(){
                 rcount += 1;
                 if (rcount == length)
-                  load_testset_eps(url,testset);
+                  load_testset_endpoints(url,testset);
               },
               error: report_failure
             });  
           });
           if (length == 0)
-            load_testset_eps(url,testset);
+            load_testset_endpoints(url,testset);
         },
         error: report_failure
       });
@@ -592,7 +594,7 @@ function load_testset_hw(url,testset) {// {{{
     });
   });
 } // }}}
-function load_testset_cvs(url,testset) {// {{{
+function load_testset_dataelements(url,testset) {// {{{
   $("testset > data-elements > *",testset).each(function(){
     var val = $(this).serializeXML();
     $.ajax({
@@ -603,7 +605,7 @@ function load_testset_cvs(url,testset) {// {{{
     });  
   });
 }// }}}
-function load_testset_eps(url,testset) {// {{{
+function load_testset_endpoints(url,testset) {// {{{
   $("testset > endpoints > *",testset).each(function(){
     var val = $(this).serializeXML();
     $.ajax({

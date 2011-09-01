@@ -1,4 +1,4 @@
-function tab_click(moi) { // {{{
+function ui_tab_click(moi) { // {{{
   var active = $(moi).attr('id').replace(/tab/,'');
   var tab = $(moi).parent().parent().parent().parent();
   var tabs = [];
@@ -13,8 +13,9 @@ function tab_click(moi) { // {{{
       $("#area" + b).addClass("inactive");
     }  
   });
+  ui_rest_resize();
 } // }}}
-function toggle_vis_tab(moi) {// {{{
+function ui_toggle_vis_tab(moi) {// {{{
   var tabbar = $(moi).parent().parent().parent();
   var tab = $(tabbar).parent();
   var fix = $(tab).parent();
@@ -24,15 +25,18 @@ function toggle_vis_tab(moi) {// {{{
   if ($(fix).attr('class') && $(fix).attr('class').match(/fixedstate/)) {
     $(".fixedstatehollow").height($(fix).height());
   }  
+  ui_rest_resize();
 }// }}}
 
-$(document).ready(function() { // {{{
-  $('div.tabbed div.tabbelow').bind('DOMSubtreeModified',rest_resize);
-  $(window).resize(rest_resize);
-}); // }}}
-
-function rest_resize() {
-  var theight = $(window).height() - $('div.tabbed.rest .tabbar').offset().top - $('div.tabbed.rest .tabbar').height();
-  $('div.tabbed.rest .tabbelow').height(theight);
-  $('div.tabbed.rest .tabbelow .column').height(theight);
+function ui_rest_resize() {
+  if ($('div.tabbed.rest .tabbar')) {
+    var theight = $(window).height() - $('div.tabbed.rest .tabbar').offset().top - $('div.tabbed.rest .tabbar').height();
+    $('div.tabbed.rest .tabbelow').height(theight);
+    $('div.tabbed.rest .tabbelow .column').height(theight);
+  }  
 }  
+
+$(document).ready(function() {
+  $(window).resize(ui_rest_resize);
+});
+
