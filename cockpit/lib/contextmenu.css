@@ -42,10 +42,8 @@ tr.contextmenuitem:hover {
   color: HighlightText;
 }
 tr.contextmenuitem > td{
-  padding: 0;
   padding-left: 0.5em;
   padding-right: 1em;
-  margin: 0;
 }
 tr.contextmenuitem > .contextmenuicon{
   margin-left: 0.7em;

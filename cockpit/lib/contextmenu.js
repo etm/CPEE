@@ -33,7 +33,8 @@ function contextmenu(items, e) {
   $('body', document).bind('mousedown',contextmenu_remove); 
 }
 
-function contextmenu_remove() {
+function contextmenu_remove(event) {
+  if($(event.target).parent('tr.contextmenuitem') && (event.button == 0)) { $(event.target).click(); } 
   $('.contextmenu:first').remove();
   $('body', document).unbind('mousedown',contextmenu_remove);
 }
