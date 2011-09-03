@@ -22,6 +22,7 @@ function ui_toggle_vis_tab(moi) {// {{{
   $('h1',moi).toggleClass('margin');
   $("tr.border",tabbar).toggleClass('hidden');
   $("div.tabbelow",tab).toggleClass('hidden');
+  $("td.tabbehind button",tabbar).toggleClass('hidden');
   if ($(fix).attr('class') && $(fix).attr('class').match(/fixedstate/)) {
     $(".fixedstatehollow").height($(fix).height());
   }  

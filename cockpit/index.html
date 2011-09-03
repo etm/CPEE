@@ -14,6 +14,7 @@
     <script type="text/javascript" src="lib/strftime.min.js"></script>
     <script type="text/javascript" src="lib/parsequery.js"></script>
     <script type="text/javascript" src="lib/underscore.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.caret.min.js"></script>
 
     <script type="text/javascript" src="lib/contextmenu.js"></script>
     <script type="text/javascript" src="lib/wfadaptor.js"></script>
@@ -79,35 +80,24 @@
       </div>  
     </div>  
   
-    <div class="tabbed hidden" id="endpoints">
+    <div class="tabbed hidden" id='parameters'>
       <table class="tabbar">
         <tr>
-          <td class="tab switch" onclick="ui_toggle_vis_tab(this)"><h1></h1></td>
-          <td class="tab"><h1>Endpoints</h1></td>
-          <td class="tabbehind"></td>
+          <td class="tab switch"                        onclick="ui_toggle_vis_tab(this)"><h1></h1></td>
+          <td class="tab"          id="tabdataelements" onclick="ui_tab_click(this)"><h1>Data Elements</h1></td>
+          <td class="tab inactive" id="tabendpoints"    onclick="ui_tab_click(this)"><h1>Endpoints</h1></td>
+          <td class="tabbehind"><button title='Ctrl-N while editing entry'>New</button> <button title='Ctrl-S while editing entry'>Save</button></td>
         </tr>  
-        <tr class="border hidden"><td colspan="3"></td></tr>
-      </table>  
-      <div class="tabbelow">
-        <div id="areaendpoints">
-          <table id="dat_endpoints"></table>
-        </div>  
-      </div>  
-    </div>
-
-    <div class="tabbed hidden" id="dataelements">
-      <table class="tabbar">
-        <tr>
-          <td class="tab switch" onclick="ui_toggle_vis_tab(this)"><h1></h1></td>
-          <td class="tab"><h1>Data Elements</h1></td>
-          <td class="tabbehind"></td>
-        </tr>  
-        <tr class="border hidden"><td colspan="3"></td></tr>
-      </table>  
+        <tr class="border hidden"><td colspan="4"></td></tr>
+      </table>
       <div class="tabbelow">
         <div id="areadataelements">
           <table id="dat_dataelements"></table>
         </div>
+        <div id="areaendpoints" class='inactive'>
+          <table id="dat_endpoints"></table>
+        </div>  
+        <span id='handle1' class="ui-resizable-handle ui-resizable-s">drag to resize</span>
       </div>  
     </div>
 
@@ -130,7 +120,7 @@
             </div>  
           </td>
           <td id="detailcolumn">
-            <span id='handle' class="ui-resizable-handle ui-resizable-w">drag to resize</span>
+            <span id='handle2' class="ui-resizable-handle ui-resizable-w">drag to resize</span>
             <div class='column'>
               <table id="dat_details"></table>
             </div>  

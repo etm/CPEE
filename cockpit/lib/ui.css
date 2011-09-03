@@ -96,7 +96,7 @@ div.tabbed table.tabbar .tab.inactive {
 
 div.tabbed table.tabbar td.tabbehind {
   vertical-align:bottom;
-  padding:0.2em 1em;
+  padding:0.2em 0em;
   border-bottom: 1pt solid buttonshadow;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
@@ -108,6 +108,12 @@ div.tabbed table.tabbar td.tabbehind {
   -webkit-border-radius: 1em;
   -webkit-border-bottom-left-radius: 0em;
   -webkit-border-bottom-right-radius: 0em;
+  text-align:right;
+}
+
+div.tabbed table.tabbar td.tabbehind button {
+  border: 1pt solid buttonshadow;
+  padding: 0;
 }
 
 div.tabbed table.tabbar td.tabbefore {

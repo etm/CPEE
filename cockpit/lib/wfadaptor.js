@@ -9,7 +9,7 @@ Handles interaction between Illustartor and Description
 e.g. Event fires to Adaptor to insert Element and Illustrator and Description do it
 */
 
-function WfAdaptor() { // Controler {{{
+function WfAdaptor() { // Controller {{{
   // Variable {{{
     // public
     this.illustrator;

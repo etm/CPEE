@@ -6,8 +6,10 @@
 #areainstance button[name=base]     { width: 100%;  }
 #areainstance button[name=instance] { width: 100%;  }
 
-#areadataelements {                                }
-#areaendpoints    {                                }
+#parameters .tabbelow { height: 9em; }
+
+#areadataelements { height: 100%; overflow: auto; }
+#areaendpoints    { height: 100%; overflow: auto; }
 #areaposition     { height: 7.2em; overflow: auto; }
 #areaproperties   { height: 7.2em; overflow: auto; }
 
@@ -27,6 +29,14 @@
   margin:0;
   padding:0;
 }
+#dat_endpoints button                  { border: 1pt solid buttonshadow; padding: 0; }
+#dat_endpoints td:nth-child(1)         { width: 2em; }
+#dat_endpoints td:nth-child(2)         { width: 8em; }
+#dat_endpoints td:nth-child(3)         { width: 0; }
+#dat_endpoints tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
+#dat_endpoints tr:nth-child(odd) input { background-color: ButtonFace; color: ButtonText; }
+#dat_endpoints input:first-child       { border: 0 none; width: 8em; }  
+#dat_endpoints input:last-child        { border: 0 none; width: 100%; }
 
 #dat_dataelements {
   border-collapse:collapse;
@@ -34,7 +44,16 @@
   border:0 none;
   margin:0;
   padding:0;
+  width:100%;
 }
+#dat_dataelements button                  { border: 1pt solid buttonshadow; padding: 0; }
+#dat_dataelements td:nth-child(1)         { width: 2em; }
+#dat_dataelements td:nth-child(2)         { width: 8em; }
+#dat_dataelements td:nth-child(3)         { width: 0; }
+#dat_dataelements tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
+#dat_dataelements tr:nth-child(odd) input { background-color: ButtonFace; color: ButtonText; }
+#dat_dataelements input:first-child       { border: 0 none; width: 8em; }  
+#dat_dataelements input:last-child        { border: 0 none; width: 100%; }
 
 #dat_dsl {
   margin: 1em;
@@ -63,12 +82,20 @@ span.vote {
   z-index: 99999; 
   color: ButtonShadow;
   position: absolute;
+  white-space:nowrap;
+}
+.ui-resizable-w { 
+  cursor: w-resize; 
   -webkit-transform: rotate(90deg); 
   -webkit-transform-origin: 0% 100%; 
   -moz-transform: rotate(90deg); 
   -moz-transform-origin: left bottom; 
   margin-top: -1em;
   margin-left: 0.3em;
-  white-space:nowrap;
 }
-.ui-resizable-w { cursor: w-resize; }
+.ui-resizable-s { 
+  right:2em;
+  cursor: s-resize; 
+  text-align: right;
+  margin-top: 1.1em;
+}

@@ -214,47 +214,52 @@ function monitor_instance_dataelements() {// {{{
     url: url + "/properties/values/data-elements/",
     success: function(res){
       var values = $("value > *",res);
-      var temp = "";
-      values.each(function(){
-      if($(this).text().length < 80) {
-        temp += "<tr><td><div contentEditable='true'>" + this.nodeName  + "</div></td><td>⇒</td><td><div contentEditable='true'>" + format_text($(this).text()) + "</div></td></tr>";
-      } else {
-        temp += "<tr><td><div contentEditable='true'>" + this.nodeName  + "</div></td><td>⇒</td><td><a href=\"" + url + "/properties/values/data-elements/" + this.nodeName  +"\" target=\"_blank\">⎆</a><div contentEditable='true'>" + format_text($(this).text()) + "</div></td></tr>";
-      }
-    });
+      var temp = {};
+      values.each(function() {
+        temp[this.nodeName] = format_text($(this).text());
+      });
 
-    if (temp != save_dataelements) {
-      save_dataelements = temp;
-      var ctv = $("#dat_dataelements");
-      ctv.empty();
-      ctv.append(temp);
-      ui_rest_resize();
-    }  
-  }
-});      
-}// }}}
+      if (temp != save_dataelements) {
+        save_dataelements = temp;
+        var ctv = $("#dat_dataelements");
+        ctv.empty();
+        $.each(save_dataelements,function(a,b){
+          var node = $("<tr><td>(<a href='' title='Delete Item (Ctrl-D)'>D</a>)</td><td><input type='text' class='pair_name' value='" + a + "'/></td><td>⇒</td><td><input class='pair_value' value=''/></td></tr>");
+          $('.pair_value',node).val(b);
+          ctv.append(node);
+        });
+        ui_rest_resize();
+      }  
+    }
+  });      
+} // }}}
 
 function monitor_instance_endpoints() {// {{{
-var url = $("input[name=instance-url]").val();
-$.ajax({
-  type: "GET", 
-  url: url + "/properties/values/endpoints/",
-  success: function(res){
-    var values = $("value > *",res);
-    var temp = "";
-    values.each(function(){
-      temp += "<tr><td><div contentEditable='true'>" + this.nodeName  + "</div></td><td>⇒</td><td><div contentEditable='true'>" + $(this).text() + "</div></td></tr>";
-    });
+  var url = $("input[name=instance-url]").val();
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/endpoints/",
+    success: function(res){
+      var values = $("value > *",res);
+      var temp = {}
+      values.each(function(){
+        temp[this.nodeName] = $(this).text();
+      });
 
-    if (temp != save_endpoints) {
-      save_endpoints = temp;
-      var ctv = $("#dat_endpoints");
-      ctv.empty();
-      ctv.append(temp);
-      ui_rest_resize();
-    }  
-  }
-});
+      if (temp != save_endpoints) {
+        save_endpoints = temp;
+        var ctv = $("#dat_endpoints");
+        ctv.empty();
+        $.each(save_endpoints,function(a,b){
+          var node = $("<tr><td>(<a href='' title='Delete Item (Ctrl-D)'>D</a>)</td><td><input type='text' class='pair_name' value='" + a + "'/></td><td>⇒</td><td><input class='pair_value' value=''/></td></tr>");
+          $('.pair_value',node).val(b);
+          ctv.append(node);
+        });
+        ctv.append(temp);
+        ui_rest_resize();
+      }  
+    }
+  });
 }// }}}
 
 function monitor_instance_dsl() {// {{{
