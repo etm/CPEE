@@ -117,7 +117,9 @@ function create_instance() {// {{{
           $("input[name=instance-url]").val((base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://"));
           if (load) monitor_instance();
         },  
-        error: report_failure
+        error: function(a,b,c) {
+          alert("No CPEE running.");
+        }
       });
     } else {
       alert("An instance name is necessary!");

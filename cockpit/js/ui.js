@@ -43,7 +43,7 @@ $(document).ready(function() {
     } //}}}
 
     if (e.which == 100 && e.ctrlKey == true) { // Ctrl-D -> Delete Entry //{{{
-      console.log('haller');
+      console.log(e.target().parent().parent());
       return false;
     } //}}}
     if (e.which == 110 && e.ctrlKey == true) { // Ctrl-N -> New Entry //{{{
