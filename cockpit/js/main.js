@@ -72,7 +72,7 @@ $(document).ready(function() {// {{{
 });// }}}
 
 function check_subscription() { // {{{
-  var url = $("input[name=instance-url]").val();
+  var url = $("input[name=current-instance]").val();
   var num = 0;
   if ($("input[name=votecontinue]").is(':checked')) num += 1;
   if ($("input[name=votestop]").is(':checked')) num += 1;
@@ -134,11 +134,14 @@ function monitor_instance() {// {{{
     success: function(res){
       $(".tabbed.hidden").removeClass("hidden");
       $(".tabbed .tab.hidden").removeClass("hidden");
-      $(".fixedstatehollow").height($(".fixedstate").height());
-      $("input[name=instance-url]").attr("readonly","readonly");
-      $("button[name=instance]").attr("disabled","disabled");
-      $("input[name=base-url]").attr("readonly","readonly");
-      $("button[name=base]").attr("disabled","disabled");
+      // $("input[name=instance-url]").attr("readonly","readonly");
+      // $("button[name=instance]").attr("disabled","disabled");
+      // $("input[name=base-url]").attr("readonly","readonly");
+      // $("button[name=base]").attr("disabled","disabled");
+
+      // Change url to return to current instance when reloading
+      $("input[name=current-instance]").val(url);
+      history.replaceState({}, '', '?monitor='+url);
 
       ui_tab_click($("#tabposition")[0]);
 
@@ -208,7 +211,7 @@ function monitor_instance() {// {{{
 }// }}}
 
 function monitor_instance_dataelements() {// {{{
-  var url = $("input[name=instance-url]").val();
+  var url = $("input[name=current-instance]").val();
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/data-elements/",
@@ -235,7 +238,7 @@ function monitor_instance_dataelements() {// {{{
 } // }}}
 
 function monitor_instance_endpoints() {// {{{
-  var url = $("input[name=instance-url]").val();
+  var url = $("input[name=current-instance]").val();
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/endpoints/",
@@ -263,7 +266,7 @@ function monitor_instance_endpoints() {// {{{
 }// }}}
 
 function monitor_instance_dsl() {// {{{
-  var url = $("input[name=instance-url]").val();
+  var url = $("input[name=current-instance]").val();
   $.ajax({
     type: "GET",
     dataType: "text",
@@ -302,7 +305,7 @@ function monitor_instance_dsl() {// {{{
 }// }}}
 
 function monitor_instance_state() {// {{{
-  var url = $("input[name=instance-url]").val();
+  var url = $("input[name=current-instance]").val();
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/state/",
@@ -333,7 +336,7 @@ function monitor_instance_state() {// {{{
 }// }}}
 
 function monitor_instance_pos() {// {{{
-  var url = $("input[name=instance-url]").val();
+  var url = $("input[name=current-instance]").val();
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/positions/",
@@ -386,7 +389,7 @@ function monitor_instance_vote_add(notification) {// {{{
   format_visual_add(parts.activity,"vote")
 }// }}}
 function monitor_instance_vote_remove(activity,callback,value) {//{{{
-  var url = $("input[name=instance-url]").val();
+  var url = $("input[name=current-instance]").val();
   $.ajax({
     type: "PUT", 
     url: url + "/callbacks/" + callback,
@@ -398,7 +401,7 @@ function monitor_instance_vote_remove(activity,callback,value) {//{{{
 }//}}}
 
 function start_instance() {// {{{
-  var url = $("input[name=instance-url]").val();
+  var url = $("input[name=current-instance]").val();
   format_visual_clear();
   $.ajax({
     type: "PUT", 
@@ -408,7 +411,7 @@ function start_instance() {// {{{
   });
 }// }}}
 function stop_instance() {// {{{
-  var url = $("input[name=instance-url]").val();
+  var url = $("input[name=current-instance]").val();
   format_visual_clear();
   $.ajax({
     type: "PUT", 
@@ -425,7 +428,10 @@ function load_testset() {// {{{
   var table = $('#dat_details');
   table.empty();
 
-  var url = $("input[name=instance-url]").val();
+  var url = $("input[name=current-instance]").val();
+  if (url == '') 
+    url = $("input[name=instance-url]").val();
+
   var name = load ? load : $("select[name=testset-names]").val();
 
   $.ajax({ 
