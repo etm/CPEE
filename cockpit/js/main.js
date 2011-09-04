@@ -134,10 +134,6 @@ function monitor_instance() {// {{{
     success: function(res){
       $(".tabbed.hidden").removeClass("hidden");
       $(".tabbed .tab.hidden").removeClass("hidden");
-      // $("input[name=instance-url]").attr("readonly","readonly");
-      // $("button[name=instance]").attr("disabled","disabled");
-      // $("input[name=base-url]").attr("readonly","readonly");
-      // $("button[name=base]").attr("disabled","disabled");
 
       // Change url to return to current instance when reloading
       $("input[name=current-instance]").val(url);
