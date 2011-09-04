@@ -41,7 +41,7 @@
           <td class="tab"                 id="tabinstance"   onclick="ui_tab_click(this)"><h1>Instance</h1></td>
           <td class="tab inactive hidden" id="tabposition"   onclick="ui_tab_click(this)"><h1>State &amp; Positions</h1></td>
           <td class="tab inactive hidden" id="tabproperties" onclick="ui_tab_click(this)"><h1>Execution Properties</h1></td>
-          <td class="tabbehind"></td>
+          <td class="tabbehind"><input name="current-instance" type="text" value="" readonly='readonly'/></td>
         </tr>  
         <tr class="border hidden"><td colspan="5"></td></tr>
       </table>  
@@ -63,7 +63,7 @@
             <td>
               <select name="testset-names"></select>
             </td>  
-            <td><button name="testset">load testset into instance</button></td>
+            <td><button name="testset" title='A testset is always loaded into the currently monitored instance. If currently no instance is monitored, it is loaded into the instance given in "Instance Url".'>load testset into instance</button></td>
           </tr>
           </table>
         </div>  
