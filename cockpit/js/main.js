@@ -225,7 +225,7 @@ function monitor_instance_dataelements() {// {{{
         var ctv = $("#dat_dataelements");
         ctv.empty();
         $.each(save_dataelements,function(a,b){
-          var node = $("<tr><td>(<a href='' title='Delete Item (Ctrl-D)'>D</a>)</td><td><input type='text' class='pair_name' value='" + a + "'/></td><td>⇒</td><td><input class='pair_value' value=''/></td></tr>");
+          var node = $("<tr><td>(<a href='#' onclick='remove_entry($(\"input\",$(this).parent().parent()).get(0),false)' title='Delete Item (Ctrl-D)'>D</a>)</td><td><input type='text' class='pair_name' value='" + a + "'/></td><td>⇒</td><td><input class='pair_value' value=''/></td></tr>");
           $('.pair_value',node).val(b);
           ctv.append(node);
         });

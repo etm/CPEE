@@ -23,7 +23,7 @@ $(document).ready(function() {
         }
         prev = this;
       });
-    } //}}}
+    } // }}}
     if (e.keyCode == 37 && $(e.target).caret().start == 0) {  //{{{
       var prev = null;
       $('#dat_dataelements input').each(function(){
@@ -43,9 +43,9 @@ $(document).ready(function() {
     } //}}}
 
     if (e.which == 100 && e.ctrlKey == true) { // Ctrl-D -> Delete Entry //{{{
-      console.log(e.target().parent().parent());
+      remove_entry(e.target,true);
       return false;
-    } //}}}
+    } //}}} 
     if (e.which == 110 && e.ctrlKey == true) { // Ctrl-N -> New Entry //{{{
       console.log('haller');
       return false;
@@ -93,7 +93,7 @@ $(document).ready(function() {
     } //}}}
 
     if (e.which == 100 && e.ctrlKey == true) { // Ctrl-D -> Delete Entry //{{{
-      console.log('haller');
+      remove_entry(e.target,false);
       return false;
     } //}}}
     if (e.which == 110 && e.ctrlKey == true) { // Ctrl-N -> New Entry //{{{
@@ -105,6 +105,19 @@ $(document).ready(function() {
       return false;
     } //}}}
   });
-
-
 });
+
+function remove_entry(target,foc) { //{{{
+  var tr = $(target).parent().parent();
+  if (foc) {
+    var par = tr.parent();
+    $('input.' + $(target).attr('class'),par).each(function(){
+      if (this == target) {
+        if (prev) prev.focus();
+        return false;
+      }
+      prev = this;
+    });
+  }  
+  tr.remove();
+}   //}}}
