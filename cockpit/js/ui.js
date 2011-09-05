@@ -3,8 +3,27 @@ $(document).ready(function() {
     $('body').children().remove();
     $('body').append('Sorry, only Firefox >= 6.0 for now.<br/>Chrom(ium|e) support will be added as soon as websocket >= hybi-08 is working (14.x ?).');
   }  
+
+  // resize areas
   $('#detailcolumn').resizable({ handles: { 'w' : '#handle2'}});
   $('#parameters .tabbelow').resizable({ handles: { 's' : '#handle1'}});
+
+  // Delete Entries
+  $('#dat_dataelements_template a').click(function(){
+    remove_entry($("input",$(this).parent().parent()).get(0),false);
+    return false;
+  });
+  $('#dat_endpoints_template a').click(function(){
+    remove_entry($("input",$(this).parent().parent()).get(0),false);
+    return false;
+  });
+
+  // Delete Entries
+  $('#parameters .tabbehind button:nth-child(1)').click(function(){
+    var tabbarconsole.log($(this).parent()
+    
+  });
+  $('#parameters .tabbehind button:nth-child(2)').click(save_entries);
 
   $('#dat_dataelements input').live('keypress',function(e){
     if (e.keyCode == 40) {  //{{{
@@ -120,4 +139,23 @@ function remove_entry(target,foc) { //{{{
     });
   }  
   tr.remove();
+}   //}}}
+
+function new_entry(target) { //{{{
+
+  var tr = $(target).parent().parent();
+  if (foc) {
+    var par = tr.parent();
+    $('input.' + $(target).attr('class'),par).each(function(){
+      if (this == target) {
+        if (prev) prev.focus();
+        return false;
+      }
+      prev = this;
+    });
+  }  
+  tr.remove();
+}   //}}}
+
+function save_entries(target,foc) { //{{{
 }   //}}}

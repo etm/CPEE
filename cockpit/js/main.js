@@ -225,7 +225,8 @@ function monitor_instance_dataelements() {// {{{
         var ctv = $("#dat_dataelements");
         ctv.empty();
         $.each(save_dataelements,function(a,b){
-          var node = $("<tr><td>(<a href='#' onclick='remove_entry($(\"input\",$(this).parent().parent()).get(0),false)' title='Delete Item (Ctrl-D)'>D</a>)</td><td><input type='text' class='pair_name' value='" + a + "'/></td><td>⇒</td><td><input class='pair_value' value=''/></td></tr>");
+          var node = $("#dat_dataelements_template tr").clone(true);
+          $('.pair_name',node).val(a);
           $('.pair_value',node).val(b);
           ctv.append(node);
         });
@@ -252,7 +253,8 @@ function monitor_instance_endpoints() {// {{{
         var ctv = $("#dat_endpoints");
         ctv.empty();
         $.each(save_endpoints,function(a,b){
-          var node = $("<tr><td>(<a href='' title='Delete Item (Ctrl-D)'>D</a>)</td><td><input type='text' class='pair_name' value='" + a + "'/></td><td>⇒</td><td><input class='pair_value' value=''/></td></tr>");
+          var node = $("#dat_endpoints_template tr").clone(true);
+          $('.pair_name',node).val(a);
           $('.pair_value',node).val(b);
           ctv.append(node);
         });

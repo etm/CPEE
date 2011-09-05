@@ -39,5 +39,6 @@ function ui_rest_resize() {
 
 $(document).ready(function() {
   $(window).resize(ui_rest_resize);
+  $('.tabbed table.tabbar td.tab.switch').click(function(){ui_toggle_vis_tab(this);});
+  $('.tabbed table.tabbar td.tab').not('.switch').click(function(){ui_tab_click(this);});
 });
-

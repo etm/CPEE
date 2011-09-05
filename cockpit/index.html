@@ -37,10 +37,10 @@
     <div class="tabbed" id="instance">
       <table class="tabbar">
         <tr>
-          <td class="tab switch"                             onclick="ui_toggle_vis_tab(this)"><h1></h1></td>
-          <td class="tab"                 id="tabinstance"   onclick="ui_tab_click(this)"><h1>Instance</h1></td>
-          <td class="tab inactive hidden" id="tabposition"   onclick="ui_tab_click(this)"><h1>State &amp; Positions</h1></td>
-          <td class="tab inactive hidden" id="tabproperties" onclick="ui_tab_click(this)"><h1>Execution Properties</h1></td>
+          <td class="tab switch"                            ><h1></h1></td>
+          <td class="tab"                 id="tabinstance"  ><h1>Instance</h1></td>
+          <td class="tab inactive hidden" id="tabposition"  ><h1>State &amp; Positions</h1></td>
+          <td class="tab inactive hidden" id="tabproperties"><h1>Execution Properties</h1></td>
           <td class="tabbehind"><input name="current-instance" type="text" value="" readonly='readonly'/></td>
         </tr>  
         <tr class="border hidden"><td colspan="5"></td></tr>
@@ -83,18 +83,34 @@
     <div class="tabbed hidden" id='parameters'>
       <table class="tabbar">
         <tr>
-          <td class="tab switch"                        onclick="ui_toggle_vis_tab(this)"><h1></h1></td>
-          <td class="tab"          id="tabdataelements" onclick="ui_tab_click(this)"><h1>Data Elements</h1></td>
-          <td class="tab inactive" id="tabendpoints"    onclick="ui_tab_click(this)"><h1>Endpoints</h1></td>
+          <td class="tab switch"                       ><h1></h1></td>
+          <td class="tab"          id="tabdataelements"><h1>Data Elements</h1></td>
+          <td class="tab inactive" id="tabendpoints"   ><h1>Endpoints</h1></td>
           <td class="tabbehind"><button title='Ctrl-N while editing entry'>New</button> <button title='Ctrl-S while editing entry'>Save</button></td>
         </tr>  
         <tr class="border hidden"><td colspan="4"></td></tr>
       </table>
       <div class="tabbelow">
         <div id="areadataelements">
+          <table id="dat_dataelements_template" class='hidden'>
+            <tr>
+              <td>(<a href='' title='Delete Item (Ctrl-D)'>D</a>)</td>
+              <td><input type='text' class='pair_name' value=''/></td>
+              <td>⇒</td>
+              <td><input class='pair_value' value=''/></td>
+            </tr>
+          </table>  
           <table id="dat_dataelements"></table>
         </div>
         <div id="areaendpoints" class='inactive'>
+          <table id="dat_endpoints_template" class='hidden'>
+            <tr>
+              <td>(<a href='' title='Delete Item (Ctrl-D)'>D</a>)</td>
+              <td><input type='text' class='pair_name' value=''/></td>
+              <td>⇒</td>
+              <td><input class='pair_value' value=''/></td>
+            </tr>
+          </table>  
           <table id="dat_endpoints"></table>
         </div>  
         <span id='handle1' class="ui-resizable-handle ui-resizable-s">drag to resize</span>
@@ -105,9 +121,9 @@
       <table class="tabbar">
         <tr>
           <td class="tabbefore"></td>
-          <td class="tab"          id="tabgraph" onclick="ui_tab_click(this)"><h1>Graph</h1></td>
-          <td class="tab inactive" id="tabdsl"   onclick="ui_tab_click(this)"><h1>Description</h1></td>
-          <td class="tab inactive" id="tablog"   onclick="ui_tab_click(this)"><h1>Log</h1></td>
+          <td class="tab"          id="tabgraph"><h1>Graph</h1></td>
+          <td class="tab inactive" id="tabdsl"  ><h1>Description</h1></td>
+          <td class="tab inactive" id="tablog"  ><h1>Log</h1></td>
           <td class="tabbehind"></td>
         </tr>  
         <tr class="border hidden"><td colspan="3"></td></tr>
