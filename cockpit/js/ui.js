@@ -18,10 +18,9 @@ $(document).ready(function() {
     return false;
   });
 
-  // Delete Entries
-  $('#parameters .tabbehind button:nth-child(1)').click(function(){
-    var tabbarconsole.log($(this).parent()
-    
+  // New Entry Entries
+  $('#parameters .tabbehind button').click(function(){
+    new_entry($(this).parent().parent().parent().parent().parent());
   });
   $('#parameters .tabbehind button:nth-child(2)').click(save_entries);
 
@@ -61,15 +60,15 @@ $(document).ready(function() {
       });
     } //}}}
 
-    if (e.which == 100 && e.ctrlKey == true) { // Ctrl-D -> Delete Entry //{{{
+    if (e.which == 100 && e.altKey == true) { // Ctrl-D -> Delete Entry //{{{
       remove_entry(e.target,true);
       return false;
     } //}}} 
-    if (e.which == 110 && e.ctrlKey == true) { // Ctrl-N -> New Entry //{{{
-      console.log('haller');
+    if (e.which == 110 && e.altKey == true) { // Ctrl-N -> New Entry //{{{
+      new_entry($(this).parent().parent().parent().parent().parent().parent().parent());
       return false;
     } //}}}
-    if (e.which == 115 && e.ctrlKey == true) { // Ctrl-S -> Save Entries //{{{
+    if (e.which == 115 && e.altKey == true) { // Ctrl-S -> Save Entries //{{{
       console.log('haller');
       return false;
     } //}}}
@@ -111,15 +110,15 @@ $(document).ready(function() {
       });
     } //}}}
 
-    if (e.which == 100 && e.ctrlKey == true) { // Ctrl-D -> Delete Entry //{{{
-      remove_entry(e.target,false);
+    if (e.which == 100 && e.altKey == true) { // Ctrl-D -> Delete Entry //{{{
+      remove_entry(e.target,true);
       return false;
     } //}}}
-    if (e.which == 110 && e.ctrlKey == true) { // Ctrl-N -> New Entry //{{{
-      console.log('haller');
+    if (e.which == 110 && e.altKey == true) { // Ctrl-N -> New Entry //{{{
+      new_entry($(this).parent().parent().parent().parent().parent().parent().parent());
       return false;
     } //}}}
-    if (e.which == 115 && e.ctrlKey == true) { // Ctrl-S -> Save Entries //{{{
+    if (e.which == 115 && e.altKey == true) { // Ctrl-S -> Save Entries //{{{
       console.log('haller');
       return false;
     } //}}}
@@ -141,21 +140,12 @@ function remove_entry(target,foc) { //{{{
   tr.remove();
 }   //}}}
 
-function new_entry(target) { //{{{
-
-  var tr = $(target).parent().parent();
-  if (foc) {
-    var par = tr.parent();
-    $('input.' + $(target).attr('class'),par).each(function(){
-      if (this == target) {
-        if (prev) prev.focus();
-        return false;
-      }
-      prev = this;
-    });
-  }  
-  tr.remove();
-}   //}}}
+function new_entry(top) { //{{{
+  var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
+  var node = $('#dat_' + visid + '_template tr').clone();
+  var vnode = $('#dat_' + visid).append(node);
+  $('.pair_name',vnode).focus();
+} //}}}
 
 function save_entries(target,foc) { //{{{
-}   //}}}
+} //}}}

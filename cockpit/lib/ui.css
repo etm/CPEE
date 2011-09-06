@@ -17,6 +17,9 @@ textarea, input, select, button {
   font-size: 1em;
 }
 
+input::-webkit-input-placeholder { color: red; }
+input:-moz-placeholder { color: red; }
+
 a:link    { color:#425d73; text-decoration:none; }
 a:visited { color:#425d73; text-decoration:none; }
 a:hover   { color:#000000; text-decoration:underline; }
