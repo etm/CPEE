@@ -32,7 +32,7 @@ input[name=current-instance] { border: 0 none; width: 100%; text-align: right; }
   border:0 none;
   margin:0;
   padding:0;
-  width:100%;
+  width: 100%;
 }
 #dat_endpoints button                  { border: 1pt solid buttonshadow; padding: 0; }
 #dat_endpoints td:nth-child(1)         { width: 2em; }
@@ -49,7 +49,7 @@ input[name=current-instance] { border: 0 none; width: 100%; text-align: right; }
   border:0 none;
   margin:0;
   padding:0;
-  width:100%;
+  width: 100%;
 }
 #dat_dataelements button                  { border: 1pt solid buttonshadow; padding: 0; }
 #dat_dataelements td:nth-child(1)         { width: 2em; }
@@ -81,7 +81,7 @@ span.vote {
 
 #detailcolumn { width: 50%; }
 #detailcolumn .column { padding-left: 2em; }
-#graphcolumn { border-right: 1pt solid ButtonShadow; min-width: 12em; }
+#graphcolumn { border-right: 1pt solid ButtonShadow; min-width: 9em; }
 
 .ui-resizable-handle { 
   z-index: 99999; 
