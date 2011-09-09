@@ -6,7 +6,17 @@
 #areainstance button[name=base]     { width: 100%;  }
 #areainstance button[name=instance] { width: 100%;  }
 
-input[name=current-instance] { border: 0 none; width: 100%; text-align: right; }
+div.tabbed table.tabbar td.tabbehind input { 
+  border: 0 none; 
+  text-align: right; 
+  width: 100%;
+}
+
+div.tabbed table.tabbar td.tabbehind button {
+  border: 1pt solid buttonshadow;
+  margin-left: 0.5em;
+}
+
 
 #parameters .tabbelow { height: 9em; }
 
@@ -39,7 +49,7 @@ input[name=current-instance] { border: 0 none; width: 100%; text-align: right; }
 #dat_endpoints td:nth-child(2)         { width: 8em; }
 #dat_endpoints td:nth-child(3)         { width: 0; }
 #dat_endpoints tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
-#dat_endpoints tr:nth-child(odd) input { background-color: ButtonFace; color: ButtonText; }
+#dat_endpoints tr:nth-child(odd) input { background-color: ButtonFace; }
 #dat_endpoints input:first-child       { border: 0 none; width: 8em; }  
 #dat_endpoints input:last-child        { border: 0 none; width: 100%; }
 
@@ -56,7 +66,7 @@ input[name=current-instance] { border: 0 none; width: 100%; text-align: right; }
 #dat_dataelements td:nth-child(2)         { width: 8em; }
 #dat_dataelements td:nth-child(3)         { width: 0; }
 #dat_dataelements tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
-#dat_dataelements tr:nth-child(odd) input { background-color: ButtonFace; color: ButtonText; }
+#dat_dataelements tr:nth-child(odd) input { background-color: ButtonFace; }
 #dat_dataelements input:first-child       { border: 0 none; width: 8em; }  
 #dat_dataelements input:last-child        { border: 0 none; width: 100%; }
 

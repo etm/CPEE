@@ -6,7 +6,12 @@ $(document).ready(function() {
 
   // resize areas
   $('#detailcolumn').resizable({ handles: { 'w' : '#handle2'}});
-  $('#parameters .tabbelow').resizable({ handles: { 's' : '#handle1'}});
+  $('#parameters .tabbelow').resizable({ 
+    handles: { 's' : '#handle1'},
+    resize: function(event, ui) { 
+      $('#parameters .tabbelow').css('width','');
+    }
+  });
 
   // Delete Entries
   $('#dat_dataelements_template a').click(function(){

@@ -160,7 +160,7 @@ class Controller
 
       @instance.data.clear
       doc.find("/p:properties/p:data-elements/p:*").each do |e|
-        @instance.data[e.name.to_s.to_sym] = ActiveSupport::JSON::decode_translate(e.text) rescue nil
+        @instance.data[e.name.to_s.to_sym] = ActiveSupport::JSON::decode(e.text) rescue nil
       end
 
       @instance.endpoints.clear

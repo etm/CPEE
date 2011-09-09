@@ -230,35 +230,35 @@ class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase 
   end
 end #}}}
 
-module ActiveSupport # {{{
-  module JSON
-    class << self
-      def translate_json_objects(obj)
-        res = nil
-        case obj
-          when Array
-            res = Array.new
-            obj.each do |e|
-              res << translate_json_objects(e)
-            end
-          when Hash
-            if obj.length == 1 && obj.keys.first =~ /!map:([A-Z][a-zA-Z0-9_]*)/
-              newobj = eval($1)
-              res = newobj.new_from_obj(translate_json_objects(obj[obj.keys.first]))
-            else
-              res = Hash.new
-              obj.each do |k,v|
-                res[k] = translate_json_objects(v)
-              end
-            end
-          else
-            res = obj
-        end
-        res
-      end
-      def decode_translate(json)
-        translate_json_objects(decode(json))
-      end
-    end
-  end
-end # }}}
+# module ActiveSupport # {{{
+#   module JSON
+#     class << self
+#       def translate_json_objects(obj)
+#         res = nil
+#         case obj
+#           when Array
+#             res = Array.new
+#             obj.each do |e|
+#               res << translate_json_objects(e)
+#             end
+#           when Hash
+#             if obj.length == 1 && obj.keys.first =~ /!map:([A-Z][a-zA-Z0-9_]*)/
+#               newobj = eval($1)
+#               res = newobj.new_from_obj(translate_json_objects(obj[obj.keys.first]))
+#             else
+#               res = Hash.new
+#               obj.each do |k,v|
+#                 res[k] = translate_json_objects(v)
+#               end
+#             end
+#           else
+#             res = obj
+#         end
+#         res
+#       end
+#       def decode_translate(json)
+#         translate_json_objects(decode(json))
+#       end
+#     end
+#   end
+# end # }}}

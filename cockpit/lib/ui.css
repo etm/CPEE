@@ -114,10 +114,8 @@ div.tabbed table.tabbar td.tabbehind {
   white-space: nowrap;
   overflow: none;
 }
-
-div.tabbed table.tabbar td.tabbehind button {
-  border: 1pt solid buttonshadow;
-  padding: 0;
+div.tabbed.rest table.tabbar td.tabbehind {
+  padding-right: 1em;
 }
 
 div.tabbed table.tabbar td.tabbefore {
