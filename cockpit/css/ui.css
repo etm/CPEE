@@ -17,8 +17,7 @@ div.tabbed table.tabbar td.tabbehind button {
   margin-left: 0.5em;
 }
 
-
-#parameters .tabbelow { height: 9em; }
+#parameters .tabbelow { height: 9em; min-height: 1.7em; }
 
 #areadataelements { height: 100%; overflow: auto; }
 #areaendpoints    { height: 100%; overflow: auto; }
