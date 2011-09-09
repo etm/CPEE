@@ -286,6 +286,8 @@ function monitor_instance_dsl() {// {{{
           type: "GET",
           url: url + "/properties/values/description/",
           success: function(res){
+            if (res == '') res = '<description xmlns="http://cpee.org/ns/description/1.0"/>'.parseXML();
+
             var adaptor = new WfAdaptor();
 
             create_cpee_elements(adaptor);
