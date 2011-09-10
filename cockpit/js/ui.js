@@ -47,7 +47,7 @@ $(document).ready(function() {
         prev = this;
       });
     } // }}}
-    if (e.keyCode == 37 && $(e.target).caret().start == 0) {  //{{{
+    if (e.keyCode == 37 && $(e.target).caret().start == 0 && $(e.target).attr('class') == 'pair_value') {  //{{{
       var prev = null;
       $('#dat_dataelements input').each(function(){
         if (this == e.target) {
@@ -57,23 +57,26 @@ $(document).ready(function() {
         prev = this;
       });
     } //}}}
-    if (e.keyCode == 39 && $(e.target).caret().end == $(e.target).val().length) {  //{{{
+    if (e.keyCode == 39 && $(e.target).caret().end == $(e.target).val().length && $(e.target).attr('class') == 'pair_name') {  //{{{
       var next = false;
       $('#dat_dataelements input').each(function(){
         if (next) { this.focus(); return false; }
         if (this == e.target) next = true;
       });
     } //}}}
+    if (e.keyCode == 13 && $(e.target).caret().end == $(e.target).val().length && $(e.target).attr('class') == 'pair_value') {  //{{{
+      new_entry($(this).parent().parent().parent().parent().parent().parent().parent());
+    } //}}}
 
-    if (e.which == 100 && e.altKey == true) { // Ctrl-D -> Delete Entry //{{{
+    if (e.which == 100 && e.ctrlKey == true) { // Ctrl-D -> Delete Entry //{{{
       remove_entry(e.target,true);
       return false;
     } //}}} 
-    if (e.which == 110 && e.altKey == true) { // Ctrl-N -> New Entry //{{{
+    if (e.which == 110 && e.ctrlKey == true) { // Ctrl-N -> New Entry //{{{
       new_entry($(this).parent().parent().parent().parent().parent().parent().parent());
       return false;
     } //}}}
-    if (e.which == 115 && e.altKey == true) { // Ctrl-S -> Save Entries //{{{
+    if (e.which == 115 && e.ctrlKey == true) { // Ctrl-S -> Save Entries //{{{
       console.log('haller');
       return false;
     } //}}}
@@ -97,7 +100,7 @@ $(document).ready(function() {
         prev = this;
       });
     } //}}}
-    if (e.keyCode == 37 && $(e.target).caret().start == 0) {  //{{{
+    if (e.keyCode == 37 && $(e.target).caret().start == 0 && $(e.target).attr('class') == 'pair_value') {  //{{{
       var prev = null;
       $('#dat_endpoints input').each(function(){
         if (this == e.target) {
@@ -107,23 +110,26 @@ $(document).ready(function() {
         prev = this;
       });
     } //}}}
-    if (e.keyCode == 39 && $(e.target).caret().end == $(e.target).val().length) {  //{{{
+    if (e.keyCode == 39 && $(e.target).caret().end == $(e.target).val().length && $(e.target).attr('class') == 'pair_name') {  //{{{
       var next = false;
       $('#dat_endpoints input').each(function(){
         if (next) { this.focus(); return false; }
         if (this == e.target) next = true;
       });
     } //}}}
+    if (e.keyCode == 13 && $(e.target).caret().end == $(e.target).val().length && $(e.target).attr('class') == 'pair_value') {  //{{{
+      new_entry($(this).parent().parent().parent().parent().parent().parent().parent());
+    } //}}}
 
-    if (e.which == 100 && e.altKey == true) { // Ctrl-D -> Delete Entry //{{{
+    if (e.which == 100 && e.ctrlKey == true) { // Ctrl-D -> Delete Entry //{{{
       remove_entry(e.target,true);
       return false;
     } //}}}
-    if (e.which == 110 && e.altKey == true) { // Ctrl-N -> New Entry //{{{
+    if (e.which == 110 && e.ctrlKey == true) { // Ctrl-N -> New Entry //{{{
       new_entry($(this).parent().parent().parent().parent().parent().parent().parent());
       return false;
     } //}}}
-    if (e.which == 115 && e.altKey == true) { // Ctrl-S -> Save Entries //{{{
+    if (e.which == 115 && e.ctrlKey == true) { // Ctrl-S -> Save Entries //{{{
       console.log('haller');
       return false;
     } //}}}
