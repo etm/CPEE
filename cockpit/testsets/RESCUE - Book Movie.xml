@@ -15,9 +15,12 @@
     <reservation_number/>
   </data-elements>
   <endpoints>
-    <services>http://sumatra.wst.univie.ac.at:9290/groups/Cinemas/</services>
-    <injection_handler>http://sumatra.wst.univie.ac.at:9290/injection/handler</injection_handler>
-    <select>http://sumatra.wst.univie.ac.at:9290/select/pgwl</select>
+    <!-- services>http://sumatra.wst.univie.ac.at:9290/groups/Cinemas/</services -->
+    <services>http://localhost:9290/groups/Cinemas/</services>
+    <!-- injection_handler>http://sumatra.wst.univie.ac.at:9290/injection/handler</injection_handler -->
+    <injection_handler>http://localhost:9290/injection/handler</injection_handler>
+    <!-- select>http://sumatra.wst.univie.ac.at:9290/select/pgwl</select -->
+    <select>http://localhost:9290/select/pgwl</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="collect_input" endpoint="select">
@@ -55,20 +58,23 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-
-        # Dirty, Dirty, Dirty Monkey-Hacking, but I coudln't figure out the JSON Problem with this Object
+       # Dirty Monkey-Hacking, but I coudln't figure out the JSON Problem with this Object
         if result[0].class.to_s == 'Hash'
           result[0] = RescueHash.new_from_obj(result[0])
         end
         properties = RescueHash.new_from_obj(properties)
 
+pp result[0]
         if result[0]['status'] == 200 
-        puts result[0].class.to_s
           data.reservation_number = result[0].value('reservation_id')
           data.starting_time = result[0].value('starting_time')
           data.selected_title = result[0].value('movie_title')
           data.selected_date = result[0].value('selected_date')
           data.hall = result[0].value('hall')
+# == Remove if JSON/YAML works again
+          perf_book = properties['call_book']['perform_book']
+          data.selected_cinema = " #{perf_book.values[0]['vendor']['name']}\n#{perf_book.values[0]['address']['street']}\n#{perf_book.values[0]['address']['zip']} #{perf_book.values[0]['address']['city']}"
+# == Remove if JSON/YAML works again
 #          data.selected_cinema = CGI::unescapeHTML("#{properties.value('perform_book')[0].value('name')}\n#{properties.value('perform_book')[0].value('street')}\n#{properties.value('perform_book')[0].value('zip')} #{properties.value('perform_book')[0].value('city')}")
         end
       </manipulate>
