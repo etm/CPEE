@@ -43,6 +43,7 @@ $(document).ready(function() {// {{{
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(monitor_instance);
   $("button[name=loadtestset]").click(load_testset);
+  $("button[name=savetestset]").click(function(){alert('We will be using dataurls for this :-). Not yet done.');});
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=votestop]").click(check_subscription);
   $.ajax({ 
