@@ -42,7 +42,7 @@ $(document).ready(function() {// {{{
   $("input[name=base-url]").val(location.protocol + "//" + location.host + ":9298/");
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(monitor_instance);
-  $("button[name=testset]").click(load_testset);
+  $("button[name=loadtestset]").click(load_testset);
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=votestop]").click(check_subscription);
   $.ajax({ 
@@ -139,9 +139,10 @@ function monitor_instance() {// {{{
 
       // Change url to return to current instance when reloading
       $("input[name=current-instance]").val(url);
+      $("#current-instance").html("<a href='" + url + "'>" + url + "</a>");
       history.replaceState({}, '', '?monitor='+url);
 
-      ui_tab_click($("#tabposition")[0]);
+      ui_tab_click($("#tabinstance")[0]);
 
       $.ajax({
         type: "POST", 
@@ -431,9 +432,6 @@ function load_testset() {// {{{
   table.empty();
 
   var url = $("input[name=current-instance]").val();
-  if (url == '') 
-    url = $("input[name=instance-url]").val();
-
   var name = load ? load : $("select[name=testset-names]").val();
 
   $.ajax({ 

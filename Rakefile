@@ -8,7 +8,7 @@ Rake::TestTask.new do |t|
   t.verbose = false
 end
 
-spec = eval(File.read('wee.gemspec'))
+spec = eval(File.read('cpee.gemspec'))
 Gem::PackageTask.new(spec) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true

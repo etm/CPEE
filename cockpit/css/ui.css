@@ -1,10 +1,9 @@
-#areainstance                       { height: 7.2em; } 
-#areainstance td:nth-child(1)       { width: 7em; padding-right: 1em; }
-#areainstance td:nth-child(3)       { width: 16em; padding-left: 1em; }
-#areainstance input                 { width: 100%;  }
-#areainstance button[name=testset]  { width: 100%;  }
-#areainstance button[name=base]     { width: 100%;  }
-#areainstance button[name=instance] { width: 100%;  }
+#areanew                       { height: 9.2em; } 
+#areanew td:nth-child(1)       { width: 7em; padding-right: 1em; }
+#areanew td:nth-child(3)       { width: 16em; padding-left: 1em; }
+#areanew input                 { width: 100%;  }
+#areanew button[name=base]     { width: 100%;  }
+#areanew button[name=instance] { width: 100%;  }
 
 div.tabbed table.tabbar td.tabbehind input { 
   border: 0 none; 
@@ -21,8 +20,15 @@ div.tabbed table.tabbar td.tabbehind button {
 
 #areadataelements { height: 100%; overflow: auto; }
 #areaendpoints    { height: 100%; overflow: auto; }
-#areaposition     { height: 7.2em; overflow: auto; }
-#areaproperties   { height: 7.2em; overflow: auto; }
+#areaexecution    { height: 9.2em; overflow: auto; }
+
+#areainstance                       { height: 9.2em; overflow: auto; }
+#areainstance td:nth-child(1)       { width: 12em; padding-right: 0.5em; }
+#areainstance td:nth-child(2)       { width: 1em; padding-right: 0.5em; }
+#areainstance input                 { padding: 0; margin:0; }
+#areainstance tr:nth-child(3) td    {                                     padding-bottom: 0.5em; }
+#areainstance tr:nth-child(4) td    { border-top: 1px solid ButtonShadow; padding-top:    0.5em; }
+#areainstance button                { width: 100% }
 
 #dat_details { width: 100%; }
 #dat_details tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
@@ -44,7 +50,7 @@ div.tabbed table.tabbar td.tabbehind button {
   width: 100%;
 }
 #dat_endpoints button                  { border: 1pt solid buttonshadow; padding: 0; }
-#dat_endpoints td:nth-child(1)         { width: 2em; }
+#dat_endpoints td:nth-child(1)         { width: 1.2em; font-size: 1.3em; font-weight: bold; }
 #dat_endpoints td:nth-child(2)         { width: 8em; }
 #dat_endpoints td:nth-child(3)         { width: 0; }
 #dat_endpoints tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
@@ -61,7 +67,7 @@ div.tabbed table.tabbar td.tabbehind button {
   width: 100%;
 }
 #dat_dataelements button                  { border: 1pt solid buttonshadow; padding: 0; }
-#dat_dataelements td:nth-child(1)         { width: 2em; }
+#dat_dataelements td:nth-child(1)         { width: 1.2em; font-size: 1.3em; font-weight: bold;}
 #dat_dataelements td:nth-child(2)         { width: 8em; }
 #dat_dataelements td:nth-child(3)         { width: 0; }
 #dat_dataelements tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }

@@ -38,15 +38,15 @@
       <table class="tabbar">
         <tr>
           <td class="tab switch"                            ><h1></h1></td>
-          <td class="tab"                 id="tabinstance"  ><h1>Instance</h1></td>
-          <td class="tab inactive hidden" id="tabposition"  ><h1>Execution</h1></td>
-          <td class="tab inactive hidden" id="tabproperties"><h1>Properties</h1></td>
+          <td class="tab"                 id="tabnew"       ><h1>New</h1></td>
+          <td class="tab inactive hidden" id="tabinstance"  ><h1>Instance</h1></td>
+          <td class="tab inactive hidden" id="tabexecution" ><h1>Execution</h1></td>
           <td class="tabbehind"><input name="current-instance" type="text" value="" readonly='readonly'/></td>
         </tr>  
         <tr class="border hidden"><td colspan="5"></td></tr>
       </table>  
       <div class="tabbelow">
-        <div id="areainstance">
+        <div id="areanew">
           <table class='layout'>
           <tr>
             <td>Base Url:</td>
@@ -58,24 +58,42 @@
             <td><input name="instance-url" type="text" value=""/></td>
             <td><button name="instance">monitor instance</button></td>
           </tr>
-          <tr>
-            <td>Testsets:</td>
-            <td>
-              <select name="testset-names"></select>
-            </td>  
-            <td><button name="testset" title='A testset is always loaded into the currently monitored instance. If currently no instance is monitored, it is loaded into the instance given in "Instance Url".'>load testset into instance</button></td>
-          </tr>
           </table>
         </div>  
-        <div id="areaposition" class='inactive'>
+        <div id="areainstance" class="inactive">
+          <table class='layout'>
+          <tr>
+            <td>Instance Url:</td>
+            <td></td>
+            <td id='current-instance'></td>
+          </tr>
+          <tr>
+            <td>Vote to Continue:</td>
+            <td></td>
+            <td><input type="checkbox" name="votecontinue"/></td>
+          </tr>
+          <tr>
+            <td>Vote to Stop:</td>
+            <td></td>
+            <td><input type="checkbox" name="votestop"/></td>
+          </tr>
+          <tr>
+            <td><button name="loadtestset">load from testset</button></td>
+            <td>⇐</td>
+            <td><select name="testset-names"></select></td>  
+          </tr>
+          <tr>
+            <td><button name="savetestset">save testset</button></td>
+            <td></td>
+            <td></td>
+          </tr>
+          </table>
+        </div>
+        <div id="areaexecution" class='inactive'>
           <table>
             <tbody id="state"></tbody>
             <tbody id="votes"></tbody>
           </table>
-        </div>
-        <div id="areaproperties" class="inactive">
-          <div><input type="checkbox" name="votecontinue"/> Vote to continue</div>
-          <div><input type="checkbox" name="votestop"/> Vote to stop</div>
         </div>
       </div>  
     </div>  
@@ -94,7 +112,7 @@
         <div id="areadataelements">
           <table id="dat_dataelements_template" class='hidden'>
             <tr>
-              <td>(<a href='' title='Delete Item (Ctrl-D)'>D</a>)</td>
+              <td><a href='' title='Delete Item (Ctrl-D)'>✖</a></td>
               <td><input placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
               <td>⇒</td>
               <td><input placeholder='fill in value...' class='pair_value' value=''/></td>
@@ -105,7 +123,7 @@
         <div id="areaendpoints" class='inactive'>
           <table id="dat_endpoints_template" class='hidden'>
             <tr>
-              <td>(<a href='' title='Delete Item (Ctrl-D)'>D</a>)</td>
+              <td><a href='' title='Delete Item (Ctrl-D)'>✖</a></td>
               <td><input placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
               <td>⇒</td>
               <td><input placeholder='fill in value...' class='pair_value' value=''/></td>
