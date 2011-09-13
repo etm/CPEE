@@ -99,7 +99,9 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       params << Riddl::Header.new("CPEE-Instance","#{$url}/#{@instance}")
       params << Riddl::Header.new("CPEE-Callback",callback)
       status, result, headers = client.request type => params
-      raise "Could not perform http-#{type} on URI: #{@handler_endpoint} - Status: #{status}" unless status == 200
+      if(not(type == "get" and status == 200) and not(type == "post" and status == 201))
+        raise "Could not perform http-#{type} on URI: #{@handler_endpoint} - Status: #{status}" 
+      end
       if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
         $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,nil,nil,:http)
         return
