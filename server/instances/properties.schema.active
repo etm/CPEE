@@ -50,11 +50,11 @@
       </element>
     </zeroOrMore>  
   </positions>  
-  <data-elements type="complex" modifiable="false" mutable="true">
+  <dataelements type="complex" modifiable="false" mutable="true">
     <zeroOrMore>
       <element><anyName/><text/></element>
     </zeroOrMore>  
-  </data-elements>  
+  </dataelements>  
   <endpoints type="complex" modifiable="false" mutable="true">
     <zeroOrMore>
       <element><anyName/><text/></element>

@@ -20,9 +20,9 @@ button.highlight { background-color: #cc0000; }
 
 #parameters .tabbelow { height: 9em; min-height: 1.7em; }
 
-#areadata-elements { height: 100%; overflow: auto; }
-#areaendpoints     { height: 100%; overflow: auto; }
-#areaexecution     { height: 9.2em; overflow: auto; }
+#areadataelements { height: 100%; overflow: auto; }
+#areaendpoints    { height: 100%; overflow: auto; }
+#areaexecution    { height: 9.2em; overflow: auto; }
 
 #areainstance                       { height: 9.2em; overflow: auto; }
 #areainstance td:nth-child(1)       { width: 12em; padding-right: 0.5em; }
@@ -60,7 +60,7 @@ button.highlight { background-color: #cc0000; }
 #dat_endpoints input:first-child       { border: 0 none; width: 8em; }  
 #dat_endpoints input:last-child        { border: 0 none; width: 100%; }
 
-#dat_data-elements {
+#dat_dataelements {
   border-collapse:collapse;
   border-spacing:0;
   border:0 none;
@@ -68,14 +68,14 @@ button.highlight { background-color: #cc0000; }
   padding:0;
   width: 100%;
 }
-#dat_data-elements button                  { border: 1pt solid buttonshadow; padding: 0; }
-#dat_data-elements td:nth-child(1)         { width: 1.2em; font-size: 1.3em; font-weight: bold;}
-#dat_data-elements td:nth-child(2)         { width: 8em; }
-#dat_data-elements td:nth-child(3)         { width: 0; }
-#dat_data-elements tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
-#dat_data-elements tr:nth-child(odd) input { background-color: ButtonFace; }
-#dat_data-elements input:first-child       { border: 0 none; width: 8em; }  
-#dat_data-elements input:last-child        { border: 0 none; width: 100%; }
+#dat_dataelements button                  { border: 1pt solid buttonshadow; padding: 0; }
+#dat_dataelements td:nth-child(1)         { width: 1.2em; font-size: 1.3em; font-weight: bold;}
+#dat_dataelements td:nth-child(2)         { width: 8em; }
+#dat_dataelements td:nth-child(3)         { width: 0; }
+#dat_dataelements tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
+#dat_dataelements tr:nth-child(odd) input { background-color: ButtonFace; }
+#dat_dataelements input:first-child       { border: 0 none; width: 8em; }  
+#dat_dataelements input:last-child        { border: 0 none; width: 100%; }
 
 #dat_dsl {
   margin: 1em;

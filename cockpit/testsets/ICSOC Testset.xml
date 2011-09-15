@@ -2,9 +2,9 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <data-elements>
+  <dataelements>
     <feedback>true</feedback>
-  </data-elements>
+  </dataelements>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>  

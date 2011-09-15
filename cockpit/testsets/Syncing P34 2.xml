@@ -2,9 +2,9 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <data-elements><!--{{{-->
+  <dataelements><!--{{{-->
     <x>""</x>
-  </data-elements><!--}}}-->
+  </dataelements><!--}}}-->
   <handlers><!--{{{-->
     <handler url="http://localhost:9299/1/events">
       <votes topic='running'>syncing_before,syncing_after</votes>

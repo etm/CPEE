@@ -6,7 +6,7 @@ var save = {};
     save['state'] = '';
     save['dsl'] = '';
     save['endpoints'] = '';
-    save['data-elements'] = '';
+    save['dataelements'] = '';
 var node_state = {};
 var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
@@ -18,7 +18,7 @@ var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/state' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/data-elements' + '&' +
+               'topic'  + '=' + 'properties/dataelements' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
@@ -32,7 +32,7 @@ var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change,error' + '&' +
                'topic'  + '=' + 'properties/state' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/data-elements' + '&' +
+               'topic'  + '=' + 'properties/dataelements' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
@@ -166,7 +166,7 @@ function monitor_instance() {// {{{
             data = e.data.parseXML();
             if ($('event > topic',data).length > 0) {
               switch($('event > topic',data).text()) {
-                case 'properties/data-elements':
+                case 'properties/dataelements':
                   monitor_instance_dataelements();
                   break;
                 case 'properties/description':
@@ -215,7 +215,7 @@ function monitor_instance_dataelements() {// {{{
   var url = $("input[name=current-instance]").val();
   $.ajax({
     type: "GET", 
-    url: url + "/properties/values/data-elements/",
+    url: url + "/properties/values/dataelements/",
     success: function(res){
       var values = $("value > *",res);
       var temp = {};
@@ -224,12 +224,12 @@ function monitor_instance_dataelements() {// {{{
       });
       var temp_xml = serialize_hash(temp);
 
-      if (temp_xml != save['data-elements']) {
-        save['data-elements'] = temp_xml;
-        var ctv = $("#dat_data-elements");
+      if (temp_xml != save['dataelements']) {
+        save['dataelements'] = temp_xml;
+        var ctv = $("#dat_dataelements");
         ctv.empty();
         $.each(temp,function(a,b){
-          var node = $("#dat_data-elements_template tr").clone(true);
+          var node = $("#dat_dataelements_template tr").clone(true);
           $('.pair_name',node).val(a);
           $('.pair_value',node).val(b);
           ctv.append(node);
@@ -461,7 +461,7 @@ function load_testset() {// {{{
 
       $.ajax({
         type: "GET", 
-        url: url + "/properties/values/data-elements/",
+        url: url + "/properties/values/dataelements/",
         success: function(res){
           var rcount = 0;
           var values = $("value > *",res);
@@ -470,7 +470,7 @@ function load_testset() {// {{{
             var name = this.nodeName;
             $.ajax({
               type: "DELETE", 
-              url: url + "/properties/values/data-elements/" + name,
+              url: url + "/properties/values/dataelements/" + name,
               success: function(){
                 rcount += 1;
                 if (rcount == length)
@@ -608,11 +608,11 @@ function load_testset_hw(url,testset) {// {{{
   });
 } // }}}
 function load_testset_dataelements(url,testset) {// {{{
-  $("testset > data-elements > *",testset).each(function(){
+  $("testset > dataelements > *",testset).each(function(){
     var val = $(this).serializeXML();
     $.ajax({
       type: "POST", 
-      url: url + "/properties/values/data-elements/",
+      url: url + "/properties/values/dataelements/",
       data: ({value: val}),
       error: report_failure
     });  

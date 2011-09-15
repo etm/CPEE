@@ -2,7 +2,7 @@
 <testset>
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
-  <data-elements>
+  <dataelements>
     <title>""</title>
     <date>""</date>
     <selected_title>""</selected_title>
@@ -13,7 +13,7 @@
     <zip>1100</zip>
     <city/>
     <reservation_number/>
-  </data-elements>
+  </dataelements>
   <endpoints>
     <!-- services>http://sumatra.wst.univie.ac.at:9290/groups/Cinemas/</services -->
     <services>http://localhost:9290/groups/Cinemas/</services>
@@ -131,7 +131,7 @@ pp result[0]
         </xsl:if>
         <xsl:if test="name()='manipulate'">
           <xsl:text>, :manipulate</xsl:text>
-          <!-- RESCUE: manipulate with data-element as result object -->
+          <!-- RESCUE: manipulate with dataelement as result object -->
           <xsl:if test="@data">
             <xsl:text>, nil,</xsl:text>
             <xsl:value-of select="@data"/>

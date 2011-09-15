@@ -2,11 +2,11 @@
 <testset>
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
-  <data-elements>
+  <dataelements>
     <input>4</input>
     <data_stores_endpoint/>
     <output/>
-  </data-elements>
+  </dataelements>
   <endpoints>
     <ep1>Somewhere over the rainbow</ep1>
   </endpoints>  
@@ -18,8 +18,8 @@
       data.data_stores_endpoint = endpoints.ep1
     </manipulate>
     <manipulate id="data">
-      data.a_new_one = "new data-element"
-      data[:input] = "data-element changed"
+      data.a_new_one = "new dataelement"
+      data[:input] = "dataelement changed"
       data.output = data[:input]
     </manipulate>
   </description>
@@ -71,7 +71,7 @@
         </xsl:if>
         <xsl:if test="name()='manipulate'">
           <xsl:text>, :manipulate</xsl:text>
-          <!-- RESCUE: manipulate with data-element as result object -->
+          <!-- RESCUE: manipulate with dataelement as result object -->
           <xsl:if test="@data">
             <xsl:text>, nil,</xsl:text>
             <xsl:value-of select="@data"/>

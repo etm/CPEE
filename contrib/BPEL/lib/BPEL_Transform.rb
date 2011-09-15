@@ -35,12 +35,12 @@ class BPEL_Transform
     end  
   end # }}}
   def transform_data # {{{
-    result = "<data-elements>\n"
+    result = "<dataelements>\n"
     @doc.find("//bpel:variables/bpel:variable").each do |v|
       result << print_spaces(@MULTI)
       result << "<" + v.attributes['name'] + "/>\n"
     end  
-    result << '</data-elements>'
+    result << '</dataelements>'
     result
   end # }}}
   def transform_endpoints # {{{

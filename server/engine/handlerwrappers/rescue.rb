@@ -205,7 +205,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def inform_manipulate_change(status,data,endpoints)
     $controller[@instance].serialize!
     $controller[@instance].notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :id => status.id, :message => status.message) unless status.nil?
-    $controller[@instance].notify("properties/data-elements/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => data) unless data.nil?
+    $controller[@instance].notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => data) unless data.nil?
     $controller[@instance].notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => endpoints) unless endpoints.nil?
   end
   def inform_position_change(ipc={})

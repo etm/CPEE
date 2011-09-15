@@ -2,13 +2,13 @@
 <testset>
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
-  <data-elements>
+  <dataelements>
     <outer>2</outer>
     <middle>2</middle>
     <inner>2</inner>
     <cons_a>10</cons_a>
     <cons_b>45</cons_b>
-  </data-elements>
+  </dataelements>
   <endpoints>
     <services>http://gus.lan:9290/groups/Interface</services>
     <injection>http://gus.lan:9290/injection/handler</injection>
@@ -134,7 +134,7 @@
         </xsl:if>
         <xsl:if test="name()='manipulate'">
           <xsl:text>, :manipulate</xsl:text>
-          <!-- RESCUE: manipulate with data-element as result object -->
+          <!-- RESCUE: manipulate with dataelement as result object -->
           <xsl:if test="@data">
             <xsl:text>, nil,</xsl:text>
             <xsl:value-of select="@data"/>

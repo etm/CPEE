@@ -179,8 +179,8 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
         $controller[id.to_i].notify('properties/description/change')
       when 'endpoints'
         $controller[id.to_i].notify('properties/endpoints/change')
-      when 'data-elements'
-        $controller[id.to_i].notify('properties/data-elements/change')
+      when 'dataelements'
+        $controller[id.to_i].notify('properties/dataelements/change')
       else
         nil
     end

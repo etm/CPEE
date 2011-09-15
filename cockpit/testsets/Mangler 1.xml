@@ -2,10 +2,10 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <data-elements>
+  <dataelements>
     <x>_begin</x>
     <nasty>What a nasty bug</nasty>
-  </data-elements>
+  </dataelements>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>  

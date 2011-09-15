@@ -28,7 +28,7 @@ def create_instance(srv,name)
           Riddl::Parameter::Simple.new("property",item)
         ]
       end
-      ["handlerwrapper","positions","data-elements","endpoints","transformation","description"].each do |item|
+      ["handlerwrapper","positions","dataelements","endpoints","transformation","description"].each do |item|
         params << Riddl::Parameter::Simple.new("name",item)
         params << Riddl::Parameter::Simple.new("content",doc.find("/testset/#{item}").first.dump)
       end  

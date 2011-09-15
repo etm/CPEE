@@ -49,7 +49,7 @@ class Controller
     XML::Smart::modify(@directory + 'properties.xml') do |doc|
       doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
       
-      node = doc.find("/p:properties/p:data-elements").first
+      node = doc.find("/p:properties/p:dataelements").first
       node.children.delete_all!
       @instance.data.each do |k,v|
         node.add(k.to_s,MultiJson::encode(v))
@@ -157,7 +157,7 @@ class Controller
       state = doc.find("string(/p:properties/p:state)")
 
       @instance.data.clear
-      doc.find("/p:properties/p:data-elements/p:*").each do |e|
+      doc.find("/p:properties/p:dataelements/p:*").each do |e|
         ### when json decode fails, just use it as a string
         @instance.data[e.name.to_s.to_sym] = begin
           MultiJson.decode(e.text)

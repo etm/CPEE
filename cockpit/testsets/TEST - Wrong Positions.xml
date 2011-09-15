@@ -2,9 +2,9 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <data-elements>
+  <dataelements>
     <wait>3</wait>
-  </data-elements>
+  </dataelements>
   <endpoints>
     <services>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</services>
     <injection>http://localhost:9290/injection/handler</injection>
@@ -205,7 +205,7 @@
         </xsl:if>
         <xsl:if test="name()='manipulate'">
           <xsl:text>, :manipulate</xsl:text>
-          <!-- RESCUE: manipulate with data-element as result object -->
+          <!-- RESCUE: manipulate with dataelement as result object -->
           <xsl:if test="@data">
             <xsl:text>, nil,</xsl:text>
             <xsl:value-of select="@data"/>

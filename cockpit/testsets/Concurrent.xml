@@ -2,11 +2,11 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <data-elements>
+  <dataelements>
     <persons>3</persons>
     <hotels>[]</hotels>
     <costs>0</costs>
-  </data-elements>
+  </dataelements>
   <endpoints>
     <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
   </endpoints>

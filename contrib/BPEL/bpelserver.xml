@@ -55,8 +55,8 @@
       <resource relative="dsl">
         <get in="*" out="dsl"/>
       </resource>
-      <resource relative="data-elements">
-        <get in="*" out="data-elements"/>
+      <resource relative="dataelements">
+        <get in="*" out="dataelements"/>
       </resource>
       <resource relative="endpoints">
         <get in="*" out="endpoints"/>
