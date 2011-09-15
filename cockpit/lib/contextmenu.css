@@ -5,10 +5,10 @@ div.contextmenu {
   position: absolute;
   display:none;
   background: Menu;
-  border: 3p x solid InactiveBorder;
+  border: 1px solid ButtonShadow;
   -moz-box-sizing:    border-box;
   -webkit-box-sizing: border-box;
-  box-sizing:        border-box;
+  box-sizing:         border-box;
 }
 
 table.contextmenu {
@@ -30,7 +30,7 @@ tr.contextmenuheader > td{
   padding-right: 1em;
 }
 tr.contextmenuheader:not(:first-child) {
-  border-top: 0.2em solid ButtonShadow;
+  border-top: 1px solid ButtonShadow;
 }
 
 tr.contextmenuitem {

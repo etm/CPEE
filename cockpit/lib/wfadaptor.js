@@ -223,7 +223,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     return description.serializePrettyXML();
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
-    console.log(svg_id);
     return $('[svg-id = \'' + svg_id + '\']', description);
   } // }}}
   var update = this.update = function() { // {{{

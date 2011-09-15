@@ -86,7 +86,6 @@ function create_cpee_elements(adaptor) {
   cpee.events.click = function(svgnode, e) { // {{{ 
     var table = $('#dat_details');
     var node  = description.get_node_by_svg_id($(svgnode).parents(':first').attr('element-id')).get(0);
-    console.log(node);
 
     table.empty();
     table.append('<tr><td><strong>Element:</strong></td><td class="long">' + node.nodeName + '</td></tr>');
@@ -159,9 +158,6 @@ function create_cpee_elements(adaptor) {
     return false;
   } // }}}
   cpee.events.dragstart = function (node, e) {
-    console.log('Dargstart!');
-    console.log(node);
-    console.log(e);
   }
   // }}}
 
@@ -263,9 +259,8 @@ function create_cpee_elements(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<call xmlns="http://cpee.org/ns/description/1.0"/>');
-        node.append($X('<parameters><bla/></parameters>'));
-        node.attr({'id-di':'super','endpoint':'besser'});
+        var node = $X('<call id="" endpoint="" xmlns="http://cpee.org/ns/description/1.0"/>');
+        node.append($X('<parameters><method>post</method><parameters/></parameters>'));
         return node;
       },
       'permissible_children': function(node) {
@@ -915,7 +910,6 @@ function create_cpee_elements(adaptor) {
   // }}}
    
   cpee.add_elements = function() { // {{{
-    console.log('Adaptor: adding cpee elements');
     for(element in cpee.elements) {
       // Illsutrator
       illustrator.elements[element] = cpee.elements[element].illustrator;
@@ -924,7 +918,6 @@ function create_cpee_elements(adaptor) {
       // Adaptor
       adaptor.elements[element] = cpee.elements[element].adaptor;
     }
-    console.log('all added');
   } // }}}
 
   cpee.add_elements();
