@@ -75,14 +75,15 @@ verbose = false
 operation = "start"
 ARGV.options { |opt|
   opt.summary_indent = ' ' * 4
-  opt.banner = "Usage:\n#{opt.summary_indent}ruby server.rb [options] start|stop|restart|info\n"
+  opt.banner = "Usage:\n#{opt.summary_indent}ruby server.rb [options] start|startclean|stop|restart|info\n"
   opt.on("Options:")
   opt.on("--verbose", "-v", "Do not daemonize. Write ouput to console.") { verbose = true }
   opt.on("--help", "-h", "This text.") { puts opt; exit }
   opt.separator(opt.summary_indent + "start|stop|restart|info".ljust(opt.summary_width+1) + "Do operation start, stop, restart or get information.")
+  opt.separator(opt.summary_indent + "startclean".ljust(opt.summary_width+1) + "Delete all instances before starting.")
   opt.parse!
 }
-unless %w{start stop restart info}.include?(ARGV[0])
+unless %w{start startclean stop restart info}.include?(ARGV[0])
   puts ARGV.options
   exit
 end
@@ -106,7 +107,7 @@ if operation == "info" && !status.empty?
   puts "CPU Time: #{stats.last}"
   exit
 end
-if operation == "start" && !status.empty?
+if %w{start startclean}.include?(operation) && !status.empty?
   puts "Server (#{$url}) already started"
   exit
 end
@@ -129,6 +130,12 @@ end
 ########################################################################################################################
 # start server
 ########################################################################################################################
+if operation == 'startclean'
+  Dir.glob(File.expand_path(File.dirname(__FILE__) + '/instances/*')).each do |d|
+    FileUtils.rm_r(d) if File.basename(d) =~ /^\d+$/
+  end
+end
+
 server = if verbose
   Rack::Server.new(
     :app => rsrv,
