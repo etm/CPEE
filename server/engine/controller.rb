@@ -1,8 +1,6 @@
 require ::File.dirname(__FILE__) + '/empty_workflow'
 require 'xml/smart'
-require 'active_support/core_ext'
-require 'active_support/dependencies'
-require 'active_support/json'
+require 'multi_json'
 
 class Controller
 
@@ -54,7 +52,7 @@ class Controller
       node = doc.find("/p:properties/p:data-elements").first
       node.children.delete_all!
       @instance.data.each do |k,v|
-        node.add(k.to_s,ActiveSupport::JSON::encode(v))
+        node.add(k.to_s,MultiJson::encode(v))
       end
       
       node = doc.find("/p:properties/p:endpoints").first
@@ -160,7 +158,12 @@ class Controller
 
       @instance.data.clear
       doc.find("/p:properties/p:data-elements/p:*").each do |e|
-        @instance.data[e.name.to_s.to_sym] = ActiveSupport::JSON::decode(e.text) rescue nil
+        ### when json decode fails, just use it as a string
+        @instance.data[e.name.to_s.to_sym] = begin
+          MultiJson.decode(e.text)
+        rescue
+          e.text
+        end
       end
 
       @instance.endpoints.clear
@@ -319,7 +322,7 @@ private
     res << ['key'         , key]
     res << ['topic'       , ::File::dirname(what)]
     res << [type          , ::File::basename(what)]
-    res << ['notification', ActiveSupport::JSON.encode(content)]
+    res << ['notification', MultiJson.encode(content)]
     res << ['uid'         , Digest::MD5.hexdigest(Kernel::rand().to_s)]
     res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
     # TODO add secret to fp

@@ -4,6 +4,7 @@ For WEE and tests:
   
 For CPEE
   * clone repository http://www.pri.univie.ac.at/communities/riddl/
+  * gem install multi_json yajl-ruby
   * see riddl/INSTALL file
 
 Run CPEE  

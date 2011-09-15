@@ -15,9 +15,11 @@ EOF
   s.extra_rdoc_files = ['README']
   s.test_files       = Dir['test/*/tc_*.rb']
 
-  s.authors          = ['Gerhard Stuermer, Juergen eTM Mangler']
+  s.authors          = [Juergen eTM Mangler','Ralph Vigne','Gerhard Stuermer]
   s.email            = 'juergen.mangler@gmail.com'
   s.homepage         = 'http://www.pri.univie.ac.at/workgroups/wee/'
 
-  s.add_development_dependency 'riddl'
+  s.add_runtime_dependency 'riddl'
+  s.add_runtime_dependency 'multi_json'
+  s.add_runtime_dependency 'yajl-ruby'
 end
