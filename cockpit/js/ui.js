@@ -19,7 +19,6 @@ $(document).ready(function() {
 
   // Delete Entries //{{{
   $('#dat_dataelements_template a').click(function(event){
-    console.log('hallo');
     var top = $(event.target).parents('div.tabbed');
     remove_entry($("input",$(event.target).parents('tr')).get(0),false);
     mark_save(top);
@@ -145,14 +144,13 @@ $(document).ready(function() {
       return false;
     } //}}}
     if (e.which == 115 && e.ctrlKey == true) { // Ctrl-S -> Save Entries //{{{
-      console.log('haller');
+      save_entries($(this).parents('div.tabbed'));
       return false;
     } //}}}
   }); //}}}
 });
 
 function remove_entry(target,foc) { //{{{
-  console.log(target);
   var tr = $(target).parents('tr');
   if (foc) {
     var par = tr.parent();
@@ -169,7 +167,7 @@ function remove_entry(target,foc) { //{{{
 
 function new_entry(top) { //{{{
   var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
-  var node = $('#dat_' + visid + '_template tr').clone();
+  var node = $('#dat_' + visid + '_template tr').clone(true);
   var vnode = $('#dat_' + visid).append(node);
   $('.pair_name',vnode).focus();
 } //}}}
@@ -178,18 +176,24 @@ function save_entries(top) { //{{{
   var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
   var table = $('#dat_' + visid);
   var serxml = serialize_inputs(table);
-  var url = $("input[name=current-instance]").val();
-  $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
-  $.ajax({
-    type: "PUT", 
-    url: url + "/properties/values/" + visid + "/",
-    data: ({'content': serxml}),
-  });
+
+  if (serxml != save[visid]) {
+    save[visid] = serxml;
+    var url = $("input[name=current-instance]").val();
+    $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
+    $.ajax({
+      type: "PUT", 
+      url: url + "/properties/values/" + visid + "/",
+      data: ({'content': serxml}),
+    });
+  }  
 } //}}}
 
 function mark_save(top) { //{{{
   var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
   var tab = $('#dat_' + visid);
+  console.log(serialize_inputs(tab));
+  console.log(save[visid]);
   if (serialize_inputs(tab) != save[visid]) {
     $('table.tabbar .tabbehind button:nth-child(2)',top).addClass('highlight');
   } else {  
