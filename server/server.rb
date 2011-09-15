@@ -79,7 +79,7 @@ ARGV.options { |opt|
   opt.on("Options:")
   opt.on("--verbose", "-v", "Do not daemonize. Write ouput to console.") { verbose = true }
   opt.on("--help", "-h", "This text.") { puts opt; exit }
-  opt.separator(opt.summary_indent + "start|stop|restart|info".ljust(opt.summary_width+1) + "Do operation start, stop, restart or get information")
+  opt.separator(opt.summary_indent + "start|stop|restart|info".ljust(opt.summary_width+1) + "Do operation start, stop, restart or get information.")
   opt.parse!
 }
 unless %w{start stop restart info}.include?(ARGV[0])
@@ -99,11 +99,11 @@ if operation == "info" && status.empty?
 end
 if operation == "info" && !status.empty?
   puts "Server (#{$url}) running as #{pid}"
-  stats = `ps -o "vsz,rss,stime,time" -p #{pid}`.split("\n")[1].strip.split(/ +/)
+  stats = `ps -o "vsz,rss,lstart,time" -p #{pid}`.split("\n")[1].strip.split(/ +/)
   puts "Virtual:  #{"%0.2f" % (stats[0].to_f/1024)} MiB"
   puts "Resident: #{"%0.2f" % (stats[1].to_f/1024)} MiB"
-  puts "Started:  #{stats[2]}"
-  puts "CPU Time: #{stats[3]}"
+  puts "Started:  #{stats[2..-2].join(' ')}"
+  puts "CPU Time: #{stats.last}"
   exit
 end
 if operation == "start" && !status.empty?
