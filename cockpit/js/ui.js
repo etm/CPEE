@@ -13,33 +13,46 @@ $(document).ready(function() {
     }
   });
 
-  // Delete Entries
-  $('#dat_dataelements_template a').click(function(){
-    remove_entry($("input",$(this).parent().parent()).get(0),false);
+  $('#parameters table.tabbar td.tab:not(.switch):not(.tabbehind)').click(function(event){
+    mark_save($(event.target).parents('div.tabbed'));
+  });  
+
+  // Delete Entries //{{{
+  $('#dat_data-elements_template a').click(function(event){
+    var top = $(event.target).parents('div.tabbed');
+    remove_entry($("input",$(event.target).parents('table')).get(0),false);
+    mark_save(top);
     return false;
   });
-  $('#dat_endpoints_template a').click(function(){
-    remove_entry($("input",$(this).parent().parent()).get(0),false);
+  $('#dat_endpoints_template a').click(function(event){
+    var top = $(event.target).parents('div.tabbed');
+    remove_entry($("input",$(event.target).parents('table')).get(0),false);
+    mark_save(top);
     return false;
-  });
+  }); //}}}
 
-  // New Entry Entries
-  $('#parameters .tabbehind button').click(function(){
-    new_entry($(this).parent().parent().parent().parent().parent());
-  });
-  $('#parameters .tabbehind button:nth-child(2)').click(save_entries);
+  // New Entry //{{{
+  $('#parameters .tabbehind button:nth-child(1)').click(function(){
+    new_entry($(this).parents('div.tabbed'));
+  }); //}}}
 
-  $('#dat_dataelements input').live('keypress',function(e){
+  // Save Entries //{{{
+  $('#parameters .tabbehind button:nth-child(2)').click(function(event){
+    save_entries($(event.target).parents('div.tabbed'));
+  }); //}}}
+
+  $('#dat_data-elements input').live('keyup',function(e){ mark_save($(e.target).parents('div.tabbed')); });
+  $('#dat_data-elements input').live('keypress',function(e){ //{{{
     if (e.keyCode == 40) {  //{{{
       var next = false;
-      $('#dat_dataelements input.' + $(e.target).attr('class')).each(function(){
+      $('#dat_data-elements input.' + $(e.target).attr('class')).each(function(){
         if (next) { this.focus(); return false; }
         if (this == e.target) next = true;
       });
     } //}}}
     if (e.keyCode == 38) {  //{{{
       var prev = null;
-      $('#dat_dataelements input.' + $(e.target).attr('class')).each(function(){
+      $('#dat_data-elements input.' + $(e.target).attr('class')).each(function(){
         if (this == e.target) {
           if (prev) prev.focus();
           return false;
@@ -49,7 +62,7 @@ $(document).ready(function() {
     } // }}}
     if (e.keyCode == 37 && $(e.target).caret().start == 0 && $(e.target).attr('class') == 'pair_value') {  //{{{
       var prev = null;
-      $('#dat_dataelements input').each(function(){
+      $('#dat_data-elements input').each(function(){
         if (this == e.target) {
           if (prev) prev.focus();
           return false;
@@ -59,13 +72,13 @@ $(document).ready(function() {
     } //}}}
     if (e.keyCode == 39 && $(e.target).caret().end == $(e.target).val().length && $(e.target).attr('class') == 'pair_name') {  //{{{
       var next = false;
-      $('#dat_dataelements input').each(function(){
+      $('#dat_data-elements input').each(function(){
         if (next) { this.focus(); return false; }
         if (this == e.target) next = true;
       });
     } //}}}
     if (e.keyCode == 13 && $(e.target).caret().end == $(e.target).val().length && $(e.target).attr('class') == 'pair_value') {  //{{{
-      new_entry($(this).parent().parent().parent().parent().parent().parent().parent());
+      new_entry($(this).parents('div.tabbed'));
     } //}}}
 
     if (e.which == 100 && e.ctrlKey == true) { // Ctrl-D -> Delete Entry //{{{
@@ -73,16 +86,17 @@ $(document).ready(function() {
       return false;
     } //}}} 
     if (e.which == 110 && e.ctrlKey == true) { // Ctrl-N -> New Entry //{{{
-      new_entry($(this).parent().parent().parent().parent().parent().parent().parent());
+      new_entry($(this).parents('div.tabbed'));
       return false;
     } //}}}
     if (e.which == 115 && e.ctrlKey == true) { // Ctrl-S -> Save Entries //{{{
-      console.log('haller');
+      save_entries($(this).parents('div.tabbed'));
       return false;
-    } //}}}
-  });
+    } //}}} 
+  }); //}}}
 
-  $('#dat_endpoints input').live('keypress',function(e){
+  $('#dat_endpoints input').live('keyup',function(e){ mark_save($(e.target).parents('div.tabbed')); });
+  $('#dat_endpoints input').live('keypress',function(e){ //{{{
     if (e.keyCode == 40) {  //{{{
       var next = false;
       $('#dat_endpoints input.' + $(e.target).attr('class')).each(function(){
@@ -118,7 +132,7 @@ $(document).ready(function() {
       });
     } //}}}
     if (e.keyCode == 13 && $(e.target).caret().end == $(e.target).val().length && $(e.target).attr('class') == 'pair_value') {  //{{{
-      new_entry($(this).parent().parent().parent().parent().parent().parent().parent());
+      new_entry($(this).parents('div.tabbed'));
     } //}}}
 
     if (e.which == 100 && e.ctrlKey == true) { // Ctrl-D -> Delete Entry //{{{
@@ -126,18 +140,18 @@ $(document).ready(function() {
       return false;
     } //}}}
     if (e.which == 110 && e.ctrlKey == true) { // Ctrl-N -> New Entry //{{{
-      new_entry($(this).parent().parent().parent().parent().parent().parent().parent());
+      new_entry($(this).parents('div.tabbed'));
       return false;
     } //}}}
     if (e.which == 115 && e.ctrlKey == true) { // Ctrl-S -> Save Entries //{{{
       console.log('haller');
       return false;
     } //}}}
-  });
+  }); //}}}
 });
 
 function remove_entry(target,foc) { //{{{
-  var tr = $(target).parent().parent();
+  var tr = $(target).parents('tr');
   if (foc) {
     var par = tr.parent();
     $('input.' + $(target).attr('class'),par).each(function(){
@@ -158,5 +172,50 @@ function new_entry(top) { //{{{
   $('.pair_name',vnode).focus();
 } //}}}
 
-function save_entries(target,foc) { //{{{
+function save_entries(top) { //{{{
+  var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
+  var table = $('#dat_' + visid);
+  var serxml = serialize_inputs(table);
+  var url = $("input[name=current-instance]").val();
+  $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/" + visid + "/",
+    data: ({'content': serxml}),
+  });
 } //}}}
+
+function mark_save(top) { //{{{
+  var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
+  var tab = $('#dat_' + visid);
+  console.log(serialize_inputs(tab));
+  console.log(save[visid]);
+  if (serialize_inputs(tab) != save[visid]) {
+    $('table.tabbar .tabbehind button:nth-child(2)',top).addClass('highlight');
+  } else {  
+    $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
+  }
+} //}}}
+
+function serialize_hash(ary) { //{{{
+  var xml = $X('<content/>');
+  $.each(ary,function(k,v) {
+    if (k.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)) {
+      xml.append($X('<' + k + '>' + v + '</' + k + '>'));
+    }
+  });
+  return xml.serializeXML();
+} //}}}
+function serialize_inputs(parent) { //{{{
+  var xml = $X('<content/>');
+  var fields = $('input',parent);
+  for (var i=0;i<fields.length; i+=2) {
+    var k = $(fields[i]).val();
+    var v = $(fields[i+1]).val();
+    if (k.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)) {
+      xml.append($X('<' + k + '>' + v + '</' + k + '>'));
+    }   
+  }
+  return xml.serializeXML();
+} //}}}
+

@@ -2,10 +2,11 @@ var running = false;
 var load;
 var subscription;
 var subscription_state = 'less';
-var save_state;
-var save_dsl;
-var save_endpoints;
-var save_dataelements;
+var save = {};
+    save['state'] = '';
+    save['dsl'] = '';
+    save['endpoints'] = '';
+    save['data-elements'] = '';
 var node_state = {};
 var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
@@ -140,7 +141,7 @@ function monitor_instance() {// {{{
 
       // Change url to return to current instance when reloading
       $("input[name=current-instance]").val(url);
-      $("#current-instance").html("<a href='" + url + "'>" + url + "</a>");
+      $("#current-instance").html("<a href='" + url + "' target='_blank'>" + url + "</a>");
       history.replaceState({}, '', '?monitor='+url);
 
       ui_tab_click($("#tabinstance")[0]);
@@ -221,18 +222,18 @@ function monitor_instance_dataelements() {// {{{
       values.each(function() {
         temp[this.nodeName] = format_text($(this).text());
       });
+      var temp_xml = serialize_hash(temp);
 
-      if (temp != save_dataelements) {
-        save_dataelements = temp;
-        var ctv = $("#dat_dataelements");
+      if (temp_xml != save['data-elements']) {
+        save['data-elements'] = temp_xml;
+        var ctv = $("#dat_data-elements");
         ctv.empty();
-        $.each(save_dataelements,function(a,b){
-          var node = $("#dat_dataelements_template tr").clone(true);
+        $.each(temp,function(a,b){
+          var node = $("#dat_data-elements_template tr").clone(true);
           $('.pair_name',node).val(a);
           $('.pair_value',node).val(b);
           ctv.append(node);
         });
-        ui_rest_resize();
       }  
     }
   });      
@@ -249,19 +250,19 @@ function monitor_instance_endpoints() {// {{{
       values.each(function(){
         temp[this.nodeName] = $(this).text();
       });
+      var temp_xml = serialize_hash(temp);
 
-      if (temp != save_endpoints) {
-        save_endpoints = temp;
+      if (temp_xml != save['endpoints']) {
+        save['endpoints'] = temp_xml;
         var ctv = $("#dat_endpoints");
         ctv.empty();
-        $.each(save_endpoints,function(a,b){
+        $.each(temp,function(a,b){
           var node = $("#dat_endpoints_template tr").clone(true);
           $('.pair_name',node).val(a);
           $('.pair_value',node).val(b);
           ctv.append(node);
         });
         ctv.append(temp);
-        ui_rest_resize();
       }  
     }
   });
@@ -274,8 +275,8 @@ function monitor_instance_dsl() {// {{{
     dataType: "text",
     url: url + "/properties/values/dsl/",
     success: function(res){
-      if (res != save_dsl) {
-        save_dsl = res;
+      if (res != save['dsl']) {
+        save['dsl'] = res;
         var ctv = $("#areadsl");
         ctv.empty();
 
@@ -315,8 +316,8 @@ function monitor_instance_state() {// {{{
     url: url + "/properties/values/state/",
     dataType: "text",
     success: function(res){
-      if (res != save_state) {
-        save_state = res;
+      if (res != save['state']) {
+        save['state'] = res;
 
         var ctv = $("#state");
         ctv.empty();
@@ -357,7 +358,7 @@ function monitor_instance_pos() {// {{{
 }// }}}
 
 function monitor_instance_running(notification,event) {// {{{
-  if (save_state == "stopping") return;
+  if (save['state'] == "stopping") return;
   var parts = JSON.parse(notification);
   if (event == "activity_calling")
     format_visual_add(parts.activity,"active")
@@ -428,7 +429,7 @@ function stop_instance() {// {{{
 function load_testset() {// {{{
   if (running) return;
   running  = true;
-  save_dsl = null; // reload dsl and position under all circumstances
+  save['dsl'] = null; // reload dsl and position under all circumstances
   var table = $('#dat_details');
   table.empty();
 

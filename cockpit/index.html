@@ -101,30 +101,30 @@
     <div class="tabbed hidden" id='parameters'>
       <table class="tabbar">
         <tr>
-          <td class="tab switch"                       ><h1></h1></td>
-          <td class="tab"          id="tabdataelements"><h1>Data Elements</h1></td>
-          <td class="tab inactive" id="tabendpoints"   ><h1>Endpoints</h1></td>
+          <td class="tab switch"                        ><h1></h1></td>
+          <td class="tab"          id="tabdata-elements"><h1>Data Elements</h1></td>
+          <td class="tab inactive" id="tabendpoints"    ><h1>Endpoints</h1></td>
           <td class="tabbehind"><button title='Ctrl-N while editing entry'>New</button><button title='Ctrl-S while editing entry'>Save</button></td>
         </tr>  
         <tr class="border hidden"><td colspan="4"></td></tr>
       </table>
       <div class="tabbelow">
-        <div id="areadataelements">
-          <table id="dat_dataelements_template" class='hidden'>
+        <div id="areadata-elements">
+          <table id="dat_data-elements_template" class='hidden'>
             <tr>
               <td><a href='' title='Delete Item (Ctrl-D)'>✖</a></td>
-              <td><input placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
+              <td><input pattern="[a-zA-Z][a-zA-Z0-9_]*" placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
               <td>⇒</td>
               <td><input placeholder='fill in value...' class='pair_value' value=''/></td>
             </tr>
           </table>  
-          <table id="dat_dataelements"></table>
+          <table id="dat_data-elements"></table>
         </div>
         <div id="areaendpoints" class='inactive'>
           <table id="dat_endpoints_template" class='hidden'>
             <tr>
               <td><a href='' title='Delete Item (Ctrl-D)'>✖</a></td>
-              <td><input placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
+              <td><input pattern="[a-zA-Z][a-zA-Z0-9_]*" placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
               <td>⇒</td>
               <td><input placeholder='fill in value...' class='pair_value' value=''/></td>
             </tr>
