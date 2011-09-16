@@ -192,8 +192,6 @@ function save_entries(top) { //{{{
 function mark_save(top) { //{{{
   var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
   var tab = $('#dat_' + visid);
-  console.log(serialize_inputs(tab));
-  console.log(save[visid]);
   if (serialize_inputs(tab) != save[visid]) {
     $('table.tabbar .tabbehind button:nth-child(2)',top).addClass('highlight');
   } else {  
@@ -222,4 +220,3 @@ function serialize_inputs(parent) { //{{{
   }
   return xml.serializeXML();
 } //}}}
-
