@@ -19,7 +19,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     (parameters[:parameters] || {}).each do |h|
       if h.class == Hash
         h.each do |k,v|
-          params <<  Riddl::Parameter::Simple.new("#{k}",ActiveSupport::JSON::encode(v))
+          params <<  Riddl::Parameter::Simple.new("#{k}",MultiJson::encode(v))
         end  
       end  
     end

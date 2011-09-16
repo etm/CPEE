@@ -17,7 +17,7 @@ def to_json(options = nil) #:nodoc:
 
   result = '{ "!map:RescueHash": {'
   result << hash.map do |key, value|
-    "#{ActiveSupport::JSON.encode(key.to_s)}:#{ActiveSupport::JSON.encode(value, options)}"
+    "#{MultiJson.encode(key.to_s)}:#{MultiJson.encode(value, options)}"
   end * ','
   result << '}}'
 end
