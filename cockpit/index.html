@@ -33,6 +33,34 @@
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
   </head>
   <body>
+    <!-- The following four are templates that get used during ui generation, change them carefully -->
+    <table id="dat_template_pair" class='hidden'> <!--{{{-->
+      <tr>
+        <td class='del'><a href='' title='Delete Item (Ctrl-D)'>✖</a></td>
+        <td class='pname'><input pattern="[a-zA-Z][a-zA-Z0-9_]*" placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
+        <td class='sep'>⇒</td>
+        <td class='value'><input placeholder='fill in value...' class='pair_value' value=''/></td>
+      </tr>
+    </table> <!--}}}-->
+    <table id="prop_template_input" class='hidden'> <!--{{{-->
+      <tr>
+        <td class='cname' colspan='2'><strong class="prop_name"></strong></td>
+        <td class='sep'>⇒</td>
+        <td class='value'><input type="text" class="prop_value" value=""/></td>
+      </tr>
+    </table> <!--}}}-->
+    <table id="prop_template_area" class='hidden'> <!--{{{-->
+      <tr>
+        <td class='cname' colspan='2'><strong class="prop_name"></strong></td>
+        <td class='sep'>⇒</td>
+        <td class='value'><textarea rows='3' class="prop_value"></textarea></td>
+      </tr>
+    </table> <!--}}}-->
+    <table id="prop_template_header" class='hidden'> <!--{{{-->
+      <tr class='header'>
+        <td colspan='4'><strong class="header_value"></strong></td>
+      </tr>
+    </table> <!--}}}-->
 
     <div class="tabbed" id="instance">
       <table class="tabbar">
@@ -42,9 +70,9 @@
           <td class="tab inactive hidden" id="tabinstance"  ><h1>Instance</h1></td>
           <td class="tab inactive hidden" id="tabexecution" ><h1>Execution</h1></td>
           <td class="tabbehind"><input name="current-instance" type="text" value="" readonly='readonly'/></td>
-        </tr>  
+        </tr>
         <tr class="border hidden"><td colspan="5"></td></tr>
-      </table>  
+      </table>
       <div class="tabbelow">
         <div id="areanew">
           <table class='layout'>
@@ -59,7 +87,7 @@
             <td><button name="instance">monitor instance</button></td>
           </tr>
           </table>
-        </div>  
+        </div>
         <div id="areainstance" class="inactive">
           <table class='layout'>
           <tr>
@@ -80,7 +108,7 @@
           <tr>
             <td><button name="loadtestset">load from testset</button></td>
             <td>⇐</td>
-            <td><select name="testset-names"></select></td>  
+            <td><select name="testset-names"></select></td>
           </tr>
           <tr>
             <td><button name="savetestset">save testset</button></td>
@@ -95,9 +123,9 @@
             <tbody id="votes"></tbody>
           </table>
         </div>
-      </div>  
-    </div>  
-  
+      </div>
+    </div>
+
     <div class="tabbed hidden" id='parameters'>
       <table class="tabbar">
         <tr>
@@ -105,34 +133,18 @@
           <td class="tab"          id="tabdataelements"><h1>Data Elements</h1></td>
           <td class="tab inactive" id="tabendpoints"    ><h1>Endpoints</h1></td>
           <td class="tabbehind"><button title='Ctrl-N while editing entry'>New</button><button title='Ctrl-S while editing entry'>Save</button></td>
-        </tr>  
+        </tr>
         <tr class="border hidden"><td colspan="4"></td></tr>
       </table>
       <div class="tabbelow">
         <div id="areadataelements">
-          <table id="dat_dataelements_template" class='hidden'>
-            <tr>
-              <td><a href='' title='Delete Item (Ctrl-D)'>✖</a></td>
-              <td><input pattern="[a-zA-Z][a-zA-Z0-9_]*" placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
-              <td>⇒</td>
-              <td><input placeholder='fill in value...' class='pair_value' value=''/></td>
-            </tr>
-          </table>  
           <table id="dat_dataelements"></table>
         </div>
         <div id="areaendpoints" class='inactive'>
-          <table id="dat_endpoints_template" class='hidden'>
-            <tr>
-              <td><a href='' title='Delete Item (Ctrl-D)'>✖</a></td>
-              <td><input pattern="[a-zA-Z][a-zA-Z0-9_]*" placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
-              <td>⇒</td>
-              <td><input placeholder='fill in value...' class='pair_value' value=''/></td>
-            </tr>
-          </table>  
           <table id="dat_endpoints"></table>
-        </div>  
+        </div>
         <span id='handle1' class="ui-resizable-handle ui-resizable-s">drag to resize</span>
-      </div>  
+      </div>
     </div>
 
     <div id="main" class="tabbed rest hidden">
@@ -143,24 +155,24 @@
           <td class="tab inactive" id="tabdsl"  ><h1>Description</h1></td>
           <td class="tab inactive" id="tablog"  ><h1>Log</h1></td>
           <td class="tabbehind"><button title='Ctrl-N while editing entry'>New</button><button title='Ctrl-S while editing entry'>Save</button></td>
-        </tr>  
+        </tr>
         <tr class="border hidden"><td colspan="3"></td></tr>
-      </table>  
+      </table>
       <table class="tabbelow columns" id="areagraph">
         <tr>
           <td id='graphcolumn'>
             <div class='column'>
               <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
-            </div>  
+            </div>
           </td>
           <td id="detailcolumn">
             <span id='handle2' class="ui-resizable-handle ui-resizable-w">drag to resize</span>
             <div class='column'>
               <table id="dat_details"></table>
-            </div>  
+            </div>
           </td>
         </tr>
-      </table>  
+      </table>
       <div class="tabbelow">
         <div id="areadsl" class="inactive"></div>
         <div id="arealog" class="inactive">
@@ -168,7 +180,7 @@
           </table>
         </div>
       </div>
-    </div>  
+    </div>
 
   </body>
 </html>

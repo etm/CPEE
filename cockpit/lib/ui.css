@@ -15,6 +15,7 @@ body {
 textarea, input, select, button {
   font-family: Verdana, Helvetica, sans-serif;
   font-size: 1em;
+  resize: none;
 }
 
 input::-webkit-input-placeholder { color: red; }
@@ -177,7 +178,7 @@ div.tabbed.rest .tabbelow.columns {
   border-spacing:0;
   width:100%
 }
-div.tabbed.rest .tabbelow.columns td {
+div.tabbed.rest .tabbelow.columns > tbody > tr > td {
   margin: 0;
   padding: 0;
   border: 0 none;

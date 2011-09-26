@@ -19,7 +19,7 @@ require 'riddl/utils/notifications_producer'
 require 'riddl/utils/properties'
 require 'riddl/utils/fileserve'
 require 'riddl/utils/declaration'
-require './engine/implementation'
+require File.expand_path(File.dirname(__FILE__) + '/engine/implementation')
 
 rsrv = Riddl::Server.new(::File.dirname(__FILE__) + '/server.declaration.xml',File.expand_path(::File.dirname(__FILE__))) do
   accessible_description true

@@ -3,40 +3,34 @@ $(document).ready(function() {
     $('body').children().remove();
     $('body').append('Sorry, only Firefox >= 6.0 for now.<br/>Chrom(ium|e) support will be added as soon as websocket >= hybi-08 is working (14.x ?).');
   }  
-
-  // resize areas
+  // Resize areas //{{{
   $('#detailcolumn').resizable({ handles: { 'w' : '#handle2'}});
   $('#parameters .tabbelow').resizable({ 
     handles: { 's' : '#handle1'},
     resize: function(event, ui) { 
       $('#parameters .tabbelow').css('width','');
     }
-  });
+  }); //}}}
 
+  // Color of save buttons for parameter area //{{{
   $('#parameters table.tabbar td.tab:not(.switch):not(.tabbehind)').click(function(event){
     mark_save($(event.target).parents('div.tabbed'));
-  });  
+  });   //}}}
 
-  // Delete Entries //{{{
-  $('#dat_dataelements_template a').click(function(event){
-    var top = $(event.target).parents('div.tabbed');
-    remove_entry($("input",$(event.target).parents('tr')).get(0),false);
-    mark_save(top);
-    return false;
-  });
-  $('#dat_endpoints_template a').click(function(event){
+  // Delete entries //{{{
+  $('#dat_template_pair a').click(function(event){
     var top = $(event.target).parents('div.tabbed');
     remove_entry($("input",$(event.target).parents('tr')).get(0),false);
     mark_save(top);
     return false;
   }); //}}}
 
-  // New Entry //{{{
+  // New entry //{{{
   $('#parameters .tabbehind button:nth-child(1)').click(function(){
     new_entry($(this).parents('div.tabbed'));
   }); //}}}
 
-  // Save Entries //{{{
+  // Save entries //{{{
   $('#parameters .tabbehind button:nth-child(2)').click(function(event){
     save_entries($(event.target).parents('div.tabbed'));
   }); //}}}
@@ -167,7 +161,7 @@ function remove_entry(target,foc) { //{{{
 
 function new_entry(top) { //{{{
   var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
-  var node = $('#dat_' + visid + '_template tr').clone(true);
+  var node = $('#dat_template_pair tr').clone(true);
   var vnode = $('#dat_' + visid).append(node);
   $('.pair_name',vnode).focus();
 } //}}}

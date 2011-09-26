@@ -1,41 +1,46 @@
-function sym_click_constraint(node,ind) { // {{{
-  var out = '';
-  $(node).children().each(function(i,e){
-    if (e.nodeName == "group") {
-      out += '<tr><td colspan="2">';
-      out += ind + $(e).attr('connector')+'-group';
-      out += '</td></tr>';
-      out += sym_click_constraint(e,ind + '&#160;&#160;&#160;&#160;');
-    } else {
-      out += '<tr><td colspan="2">';
-      out += ind + 'Constraint ⇒ ' + $(e).attr('xpath') + ' ' + $(e).attr('comparator') + ' ';
-      if ($(e).attr('value')) {
-        out += $(e).attr('value');
-      } else {
-         out += '@'+$(e).attr('variable');
-      }
-      out += '</td></tr>';
-    }  
-  });  
-  return out;
-} // }}}
-
-function sym_click_para(node,ind) { // {{{
-  var out = '';
-  $(node).children().each(function(i,e){
-    if ($(e).children().length == 0) {
-      out += '<tr><td colspan="2">';
-      out += ind + e.nodeName + ' ⇒ ' + $(e).text().replace(/^\s+|\s+$/g,"");
-      out += '</td></tr>';
-    } else {
-      out += '<tr><td colspan="2">';
-      out += ind + e.nodeName + ':';
-      out += '</td></tr>';
-      out += sym_click_para(e,ind + '&#160;&#160;&#160;&#160;');
-    }  
-  });  
-  return out;
-} // }}}
+function create_header(value){ //{{{
+  var tmp = $("#prop_template_header tr").clone(true);
+  $('.header_value',tmp).text(value);
+  return tmp;
+} //}}}
+function create_readonly_property(name,content){ //{{{
+  var tmp = $("#prop_template_input tr").clone(true);
+  $('.prop_name',tmp).text(name);
+  $('.prop_value',tmp).val(content);
+  $('.prop_value',tmp).attr('readonly','readonly');
+  return tmp;
+} //}}}
+function create_input_property(name,cls,content){ //{{{
+  var tmp = $("#prop_template_input tr").clone(true);
+  tmp.addClass(cls);
+  $('.prop_name',tmp).text(name);
+  $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
+  $('.prop_value',tmp).val(content);
+  return tmp;
+} //}}}
+function create_select_property(name,cls,content,alts){ //{{{
+  var tmp = $("#prop_template_select tr").clone(true);
+  tmp.addClass(cls);
+  $('.prop_name',tmp).text(name);
+  $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
+  $('.prop_value',tmp).val(content);
+  return tmp;
+} //}}}
+function create_area_property(name,cls,content){ //{{{
+  var tmp = $("#prop_template_area tr").clone(true);
+  tmp.addClass(cls);
+  $('.prop_name',tmp).text(name);
+  $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
+  $('.prop_value',tmp).text(content);
+  return tmp;
+} //}}}
+function create_input_pair(name,cls,content){ //{{{
+  var tmp = $("#dat_template_pair tr").clone(true);
+  tmp.addClass(cls);
+  $('.pair_name',tmp).val(name);
+  $('.pair_value',tmp).val(content);
+  return tmp;
+} //}}}
 
 function create_cpee_elements(adaptor) {
   var illustrator = adaptor.illustrator;
@@ -88,57 +93,54 @@ function create_cpee_elements(adaptor) {
     var node  = description.get_node_by_svg_id($(svgnode).parents(':first').attr('element-id')).get(0);
 
     table.empty();
-    table.append('<tr><td><strong>Element:</strong></td><td class="long">' + node.nodeName + '</td></tr>');
+    table.append(create_readonly_property('Element',node.nodeName));
     switch(node.nodeName) {
       case 'call':
-        table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
-        if ($(node).attr('lay'))
-          table.append('<tr><td><strong>Lay:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('lay') + '</div></td></tr>');
-        table.append('<tr><td><strong>Endpoint:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('endpoint') + '</div></td></tr>');
-        if ($('manipulate',node).text())
-          table.append('<tr><td><strong>Manipulate:</strong></td><td class="long"><div contenteditable="true">' + format_code($('manipulate',node).text(),true,false) + '</div></td></tr>');
-        if ($('parameters',node).length > 0)
-          table.append('<tr><td><strong>Parameters:</strong></td><td class="long"></td></tr>');
-          table.append(sym_click_para($(node).children('parameters'),'&#160;&#160;&#160;&#160;'));
+        table.append(create_input_property('ID','',$(node).attr('id')));
+        table.append(create_input_property('Lay','',$(node).attr('lay')));
+        table.append(create_input_property('Endpoint','',$(node).attr('endpoint')));
+
+        if ($('manipulate',node).length > 0)
+          table.append(create_area_property('Manipulate','',format_text_skim($('manipulate',node).text())));
+
+        table.append(create_header('Parameters:'));
+
+        table.append(create_input_property('Method','indent',$('parameters method',node).text()));
+        $.each($('parameters parameters *',node),function(){
+          table.append(create_input_pair(this.nodeName,'indent',$(this).text()));
+        });
         break;
       case 'manipulate':
-        table.append('<tr><td><strong>ID:</strong></td><td class="long">' + $(node).attr('id') + '</td></tr>');
-        table.append('<tr><td><strong>Manipulate:</strong></td><td class="long"><div contenteditable="true">' + format_code($(node).text(),true,false) + '</div></td></tr>');
+        table.append(create_input_property('ID','',$(node).attr('id')));
+        table.append(create_input_property('Lay','',$(node).attr('lay')));
+        table.append(create_area_property('Manipulate','',format_text_skim($(node).text())));
+        $('td[colspan]',table).removeAttr('colspan');
         break;
       case 'loop':
         if ($(node).attr('pre_test'))
-          table.append('<tr><td><strong>Pre-Test:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('pre_test') + '</div></td></tr>');
+          var mode = 'pre_test';
         if ($(node).attr('post_test'))
-          table.append('<tr><td><strong>Post-Test:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('post_test') + '</div></td></tr>');
+          var mode = 'pre_test';
+        table.append(create_select_property('Mode','',mode,['pre_test','post_test']));
+        table.append(create_input_property('Condition','',$(node).attr(mode)));
+        $('td[colspan]',table).removeAttr('colspan');
         break;
       case 'alternative':
-        table.append('<tr><td><strong>Condition:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('condition') + '</div></td></tr>');
+        table.append(create_input_property('Condition','',$(node).attr(condition)));
+        $('td[colspan]',table).removeAttr('colspan');
         break;
       case 'parallel':
-        var wait = $(node).attr('condition') || 'Wait for all branches';
-        table.append('<tr><td><strong>Wait:</strong></td><td class="long"><div contenteditable="true">' + wait + '</div></td></tr>');
+        var wait = $(node).attr('condition') || '-1';
+        table.append(create_line('Help:','-1 to wait for all branches'));
+        table.append(create_input_property('Wait','',wait));
+        $('td[colspan]',table).removeAttr('colspan');
         break;
       case 'parallel_branch':
-        if ($(node).attr('pass'))
-          table.append('<tr><td><strong>Pass&#160;to&#160;branch:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('pass') + '</div></td></tr>');
-        if ($(node).attr('local'))
-          table.append('<tr><td><strong>Local&#160;scope:</strong></td><td class="long"><div contenteditable="true">' + $(node).attr('local') + '</div></td></tr>');
+        table.append(create_input_property('Pass to branch','',$(node).attr('pass')));
+        table.append(create_input_property('Local scope','',$(node).attr('local')));
+        $('td[colspan]',table).removeAttr('colspan');
         break;
-      case 'group':
-          table.append('<tr><td><strong>Type:</strong></td><td class="long">' + $(node).attr('type') + '</td></tr>');
-          table.append('<tr><td><strong>Source:</strong></td><td class="long">' + $(node).attr('source') + '</td></tr>');
-          if(node.getAttribute('type') == 'injection') {
-            if ($(node).attr('result')) { table.append('<tr><td><strong>Level:</strong></td><td class="long">Class-Level</td></tr>'); }
-            else { table.append('<tr><td><strong>Level:</strong></td><td class="long">Instance-Level</td></tr>'); }
-            table.append('<tr><td><strong>Operation :</strong></td><td class="long">' + $(node).attr('serviceoperation') + '</td></tr>');
-            if ($(node).attr('result')) table.append('<tr><td><strong>Result:</strong></td><td class="long">' + $(node).attr('result') + '</td></tr>');
-            table.append('<tr><td><strong>Properties:</strong></td><td class="long">' + $(node).attr('properties') + '</td></tr>');
-            table.append(sym_click_constraint($(node).children('constraints'),'&#160;&#160;&#160;&#160;'));
-          }
-          if(node.getAttribute('type') == 'loop') {
-            table.append('<tr><td><strong>Cycle:</strong></td><td class="long">' + $(node).attr('cycle') + '</td></tr>');
-          }
-        break;
+      // TODO group
     }
   } // }}}
   cpee.events.dblclick = function(node, e) { // {{{

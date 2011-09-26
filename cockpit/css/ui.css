@@ -32,11 +32,6 @@ button.highlight { background-color: #cc0000; }
 #areainstance tr:nth-child(4) td    { border-top: 1px solid ButtonShadow; padding-top:    0.5em; }
 #areainstance button                { width: 100% }
 
-#dat_details { width: 100%; }
-#dat_details tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
-#dat_details td:nth-child(1) { width: 1em; white-space: nowrap; }
-#dat_details td { vertical-align: top; }
-
 #dat_log { width:100%; }
 #dat_log td { vertical-align: top; }
 #dat_log tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
@@ -121,3 +116,27 @@ span.vote {
   text-align: right;
   margin-top: 1.1em;
 }
+
+#dat_details {
+  border-collapse:collapse;
+  border-spacing:0;
+  border:0 none;
+  margin:0;
+  padding:0;
+  width: 100%;
+}
+#dat_details td.del                     { width: 1.2em; }
+#dat_details td.del a                   { font-size: 1.3em; font-weight: bold; }
+#dat_details td.pname                   { width: 7em;    vertical-align: top; }
+#dat_details td.cname                   { width: 10.2em; vertical-align: top; padding-top:0.25em; }
+#dat_details td.sep                     { width: 0;      vertical-align: top; padding-top:0.25em; }
+#dat_details tr.indent td:nth-child(1)  { padding-left: 2em;}
+#dat_details tr:nth-child(odd) input    { background-color: ButtonFace; }
+#dat_details tr:nth-child(odd) textarea { background-color: ButtonFace; }
+#dat_details input:first-child          { border: 0 none; width: 7em; }  
+#dat_details input:last-child           { border: 0 none; width: 100%; }
+#dat_details textarea                   { border: 0 none; width: 100%; }
+#dat_details tr.header td               { padding-bottom:0.2em; padding-top: 0.6em; }
+
+#dat_details tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
+

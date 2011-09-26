@@ -44,9 +44,10 @@ $(document).ready(function() {// {{{
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(monitor_instance);
   $("button[name=loadtestset]").click(load_testset);
-  $("button[name=savetestset]").click(function(){alert('We will be using dataurls for this :-). Not yet done.');});
+  $("button[name=savetestset]").click(function(){alert('We will be using FileWrite API for this :-). Unfortunately it is not working yet in FF.');});
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=votestop]").click(check_subscription);
+
   $.ajax({ 
     url: "testsets/index.xml", 
     dataType: 'xml',
@@ -229,7 +230,7 @@ function monitor_instance_dataelements() {// {{{
         var ctv = $("#dat_dataelements");
         ctv.empty();
         $.each(temp,function(a,b){
-          var node = $("#dat_dataelements_template tr").clone(true);
+          var node = $("#dat_template_pair tr").clone(true);
           $('.pair_name',node).val(a);
           $('.pair_value',node).val(b);
           ctv.append(node);
@@ -257,7 +258,7 @@ function monitor_instance_endpoints() {// {{{
         var ctv = $("#dat_endpoints");
         ctv.empty();
         $.each(temp,function(a,b){
-          var node = $("#dat_endpoints_template tr").clone(true);
+          var node = $("#dat_template_pair tr").clone(true);
           $('.pair_name',node).val(a);
           $('.pair_value',node).val(b);
           ctv.append(node);
@@ -745,11 +746,7 @@ function format_code(res,skim,lnums) {// {{{
   res = res.replace(/^(\s*\n)*/m,'');
 
   if (res.match(/\S/)) {
-    if (skim) {
-      var l = res.match(/^ */);
-      l = l[0].length;
-      res = res.replace(new RegExp("^ {" + l + "}",'mg'),'');
-    }
+    if (skim) format_text_skim(res);
 
     var m;
     var l = 1;
@@ -773,6 +770,12 @@ function format_text(res) {// {{{
   res = res.replace(/&/g,'&amp;');
   res = res.replace(/</g,'&lt;');
   res = res.replace(/>/g,'&gt;');
+  return res;
+}// }}}
+function format_text_skim(res) {// {{{
+  var l = res.match(/^ */);
+  l = l[0].length;
+  res = res.replace(new RegExp("^ {" + l + "}",'mg'),'');
   return res;
 }// }}}
 
