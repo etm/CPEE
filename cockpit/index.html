@@ -33,13 +33,21 @@
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
   </head>
   <body>
-    <!-- The following four are templates that get used during ui generation, change them carefully -->
+    <!-- The following six are templates that get used during ui generation, change them carefully -->
     <table id="dat_template_pair" class='hidden'> <!--{{{-->
       <tr>
         <td class='del'><a href='' title='Delete Item (Ctrl-D)'>✖</a></td>
         <td class='pname'><input pattern="[a-zA-Z][a-zA-Z0-9_]*" placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
         <td class='sep'>⇒</td>
         <td class='value'><input placeholder='fill in value...' class='pair_value' value=''/></td>
+      </tr>
+    </table> <!--}}}-->
+    <table id="prop_template_sizer" class='hidden'> <!--{{{-->
+      <tr class='sizer'>
+        <td class='del'></td>
+        <td class='pname'></td>
+        <td class='sep'></td>
+        <td class='value'></td>
       </tr>
     </table> <!--}}}-->
     <table id="prop_template_input" class='hidden'> <!--{{{-->
@@ -58,7 +66,21 @@
     </table> <!--}}}-->
     <table id="prop_template_header" class='hidden'> <!--{{{-->
       <tr class='header'>
-        <td colspan='4'><strong class="header_value"></strong></td>
+        <td colspan='4'><strong class="header_value"></strong> <button title='Ctrl-N while editing entry'>New</button></td>
+      </tr>
+    </table> <!--}}}-->
+    <table id="prop_template_line" class='hidden'> <!--{{{-->
+      <tr>
+        <td class='cname' colspan='2'></td>
+        <td class='sep'>⇒</td>
+        <td class='value'><em class="line_main"></em><em>:</em> <span class='line_text'></span></td>
+      </tr>
+    </table> <!--}}}-->
+    <table id="prop_template_select" class='hidden'> <!--{{{-->
+      <tr>
+        <td class='cname' colspan='2'><strong class="prop_name"></strong></td>
+        <td class='sep'>⇒</td>
+        <td class='value'><select class="prop_value"></select></td>
       </tr>
     </table> <!--}}}-->
 
@@ -74,7 +96,7 @@
         <tr class="border hidden"><td colspan="5"></td></tr>
       </table>
       <div class="tabbelow">
-        <div id="areanew">
+        <div id="areanew"> <!--{{{-->
           <table class='layout'>
           <tr>
             <td>Base Url:</td>
@@ -87,8 +109,8 @@
             <td><button name="instance">monitor instance</button></td>
           </tr>
           </table>
-        </div>
-        <div id="areainstance" class="inactive">
+        </div> <!--}}}-->
+        <div id="areainstance" class="inactive"> <!--{{{-->
           <table class='layout'>
           <tr>
             <td>Instance Url:</td>
@@ -116,13 +138,13 @@
             <td></td>
           </tr>
           </table>
-        </div>
-        <div id="areaexecution" class='inactive'>
+        </div> <!--}}}-->
+        <div id="areaexecution" class='inactive'> <!--{{{-->
           <table>
             <tbody id="state"></tbody>
             <tbody id="votes"></tbody>
           </table>
-        </div>
+        </div> <!--}}}-->
       </div>
     </div>
 
@@ -137,12 +159,12 @@
         <tr class="border hidden"><td colspan="4"></td></tr>
       </table>
       <div class="tabbelow">
-        <div id="areadataelements">
+        <div id="areadataelements"> <!--{{{-->
           <table id="dat_dataelements"></table>
-        </div>
-        <div id="areaendpoints" class='inactive'>
+        </div> <!--}}}-->
+        <div id="areaendpoints" class='inactive'> <!--{{{-->
           <table id="dat_endpoints"></table>
-        </div>
+        </div> <!--}}}-->
         <span id='handle1' class="ui-resizable-handle ui-resizable-s">drag to resize</span>
       </div>
     </div>
@@ -151,34 +173,34 @@
       <table class="tabbar">
         <tr>
           <td class="tabbefore"></td>
-          <td class="tab"          id="tabgraph"><h1>Graph</h1></td>
-          <td class="tab inactive" id="tabdsl"  ><h1>Description</h1></td>
-          <td class="tab inactive" id="tablog"  ><h1>Log</h1></td>
-          <td class="tabbehind"><button title='Ctrl-N while editing entry'>New</button><button title='Ctrl-S while editing entry'>Save</button></td>
+          <td class="tab"          id="tabdetails"><h1>Graph</h1></td>
+          <td class="tab inactive" id="tabdsl"    ><h1>Description</h1></td>
+          <td class="tab inactive" id="tablog"    ><h1>Log</h1></td>
+          <td class="tabbehind"><button title='Ctrl-S while editing entry'>Save</button></td>
         </tr>
         <tr class="border hidden"><td colspan="3"></td></tr>
       </table>
-      <table class="tabbelow columns" id="areagraph">
+      <table class="tabbelow columns" id="areadetails">
         <tr>
-          <td id='graphcolumn'>
+          <td id='graphcolumn'> <!--{{{-->
             <div class='column'>
               <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
             </div>
-          </td>
-          <td id="detailcolumn">
+          </td> <!--}}}-->
+          <td id="detailcolumn"> <!--{{{-->
             <span id='handle2' class="ui-resizable-handle ui-resizable-w">drag to resize</span>
             <div class='column'>
               <table id="dat_details"></table>
             </div>
-          </td>
+          </td> <!--}}}-->
         </tr>
       </table>
       <div class="tabbelow">
         <div id="areadsl" class="inactive"></div>
-        <div id="arealog" class="inactive">
+        <div id="arealog" class="inactive"> <!--{{{-->
           <table id="dat_log" class="layout">
           </table>
-        </div>
+        </div> <!--}}}-->
       </div>
     </div>
 

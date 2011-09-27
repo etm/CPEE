@@ -159,7 +159,7 @@ div.tabbed.rest .tabbelow {
   /* to correctly set the height when resizing with changing height with $.height() -> include padding */
   -moz-box-sizing:    border-box;
   -webkit-box-sizing: border-box;
-  box-sizing:        border-box;
+  box-sizing:         border-box;
 
   padding: 1em;
   margin: 0;

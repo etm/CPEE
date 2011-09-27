@@ -129,14 +129,17 @@ span.vote {
 #dat_details td.del a                   { font-size: 1.3em; font-weight: bold; }
 #dat_details td.pname                   { width: 7em;    vertical-align: top; }
 #dat_details td.cname                   { width: 10.2em; vertical-align: top; padding-top:0.25em; }
-#dat_details td.sep                     { width: 0;      vertical-align: top; padding-top:0.25em; }
+#dat_details td.sep                     { width: 1em;    vertical-align: top; padding-top:0.25em; }
 #dat_details tr.indent td:nth-child(1)  { padding-left: 2em;}
 #dat_details tr:nth-child(odd) input    { background-color: ButtonFace; }
 #dat_details tr:nth-child(odd) textarea { background-color: ButtonFace; }
-#dat_details input:first-child          { border: 0 none; width: 7em; }  
-#dat_details input:last-child           { border: 0 none; width: 100%; }
+#dat_details tr:nth-child(odd) select   { background-color: ButtonFace; }
+#dat_details tr:nth-child(even) select  { background-color: white; }
+#dat_details input                      { border: 0 none; width: 100%; }
+#dat_details select                     { border: 0 none; width: 100%; }
 #dat_details textarea                   { border: 0 none; width: 100%; }
 #dat_details tr.header td               { padding-bottom:0.2em; padding-top: 0.6em; }
+#dat_details tr.sizer td                { padding:0; margin:0; }
 
 #dat_details tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
-
+#dat_details .header button { border: 1pt solid buttonshadow; }

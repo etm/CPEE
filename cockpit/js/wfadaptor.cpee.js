@@ -1,17 +1,27 @@
 function create_header(value){ //{{{
-  var tmp = $("#prop_template_header tr").clone(true);
+  var tmp = $("#prop_template_header tr").clone();
   $('.header_value',tmp).text(value);
   return tmp;
 } //}}}
+function create_sizer(){ //{{{
+  var tmp = $("#prop_template_sizer tr").clone();
+  return tmp;
+} //}}}
+function create_line(main,text){ //{{{
+  var tmp = $("#prop_template_line tr").clone();
+  $('.line_main',tmp).text(main);
+  $('.line_text',tmp).text(text);
+  return tmp;
+} //}}}
 function create_readonly_property(name,content){ //{{{
-  var tmp = $("#prop_template_input tr").clone(true);
+  var tmp = $("#prop_template_input tr").clone();
   $('.prop_name',tmp).text(name);
   $('.prop_value',tmp).val(content);
   $('.prop_value',tmp).attr('readonly','readonly');
   return tmp;
 } //}}}
 function create_input_property(name,cls,content){ //{{{
-  var tmp = $("#prop_template_input tr").clone(true);
+  var tmp = $("#prop_template_input tr").clone();
   tmp.addClass(cls);
   $('.prop_name',tmp).text(name);
   $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
@@ -19,15 +29,19 @@ function create_input_property(name,cls,content){ //{{{
   return tmp;
 } //}}}
 function create_select_property(name,cls,content,alts){ //{{{
-  var tmp = $("#prop_template_select tr").clone(true);
+  var tmp = $("#prop_template_select tr").clone();
   tmp.addClass(cls);
   $('.prop_name',tmp).text(name);
   $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
-  $('.prop_value',tmp).val(content);
+  $.each(alts,function(a,b){
+    var o = $('<option value="' + b + '">' + b + '</option>');
+    if (b == content) o.attr('selected','selected');
+    $('.prop_value',tmp).append(o);
+  });  
   return tmp;
 } //}}}
 function create_area_property(name,cls,content){ //{{{
-  var tmp = $("#prop_template_area tr").clone(true);
+  var tmp = $("#prop_template_area tr").clone();
   tmp.addClass(cls);
   $('.prop_name',tmp).text(name);
   $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
@@ -35,7 +49,7 @@ function create_area_property(name,cls,content){ //{{{
   return tmp;
 } //}}}
 function create_input_pair(name,cls,content){ //{{{
-  var tmp = $("#dat_template_pair tr").clone(true);
+  var tmp = $("#dat_template_pair tr").clone();
   tmp.addClass(cls);
   $('.pair_name',tmp).val(name);
   $('.pair_value',tmp).val(content);
@@ -114,34 +128,33 @@ function create_cpee_elements(adaptor) {
         table.append(create_input_property('ID','',$(node).attr('id')));
         table.append(create_input_property('Lay','',$(node).attr('lay')));
         table.append(create_area_property('Manipulate','',format_text_skim($(node).text())));
-        $('td[colspan]',table).removeAttr('colspan');
         break;
       case 'loop':
         if ($(node).attr('pre_test'))
           var mode = 'pre_test';
         if ($(node).attr('post_test'))
           var mode = 'pre_test';
-        table.append(create_select_property('Mode','',mode,['pre_test','post_test']));
+        table.append(create_select_property('Mode','',mode,['post_test','pre_test']));
         table.append(create_input_property('Condition','',$(node).attr(mode)));
-        $('td[colspan]',table).removeAttr('colspan');
+        break;
+      case 'choose':
         break;
       case 'alternative':
-        table.append(create_input_property('Condition','',$(node).attr(condition)));
-        $('td[colspan]',table).removeAttr('colspan');
+        table.append(create_input_property('Condition','',$(node).attr('condition')));
         break;
       case 'parallel':
         var wait = $(node).attr('condition') || '-1';
-        table.append(create_line('Help:','-1 to wait for all branches'));
         table.append(create_input_property('Wait','',wait));
-        $('td[colspan]',table).removeAttr('colspan');
+        table.append(create_line('Hint','-1 to wait for all branches'));
         break;
       case 'parallel_branch':
         table.append(create_input_property('Pass to branch','',$(node).attr('pass')));
         table.append(create_input_property('Local scope','',$(node).attr('local')));
-        $('td[colspan]',table).removeAttr('colspan');
         break;
       // TODO group
     }
+    // add the sizer in order for colspan to work
+    table.append(create_sizer());
   } // }}}
   cpee.events.dblclick = function(node, e) { // {{{
     $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','none');
