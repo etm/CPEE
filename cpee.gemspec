@@ -15,7 +15,7 @@ EOF
   s.extra_rdoc_files = ['README']
   s.test_files       = Dir['test/*/tc_*.rb']
 
-  s.authors          = [Juergen eTM Mangler','Ralph Vigne','Gerhard Stuermer]
+  s.authors          = ['Juergen eTM Mangler','Ralph Vigne','Gerhard Stuermer']
   s.email            = 'juergen.mangler@gmail.com'
   s.homepage         = 'http://www.pri.univie.ac.at/workgroups/wee/'
 
