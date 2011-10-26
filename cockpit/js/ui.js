@@ -311,14 +311,52 @@ function serialize_inputs(parent) { //{{{
   return xml.serializeXML();
 } //}}}
 function serialize_details(parent) { //{{{
-  var xml = $X('<content/>');
-  var fields = $('input',parent);
-  for (var i=0;i<fields.length; i+=2) {
-    var k = $(fields[i]).val();
-    var v = $(fields[i+1]).val();
-    if (k.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)) {
-      xml.append($X('<' + k + '>' + v + '</' + k + '>'));
-    }   
-  }
+  var ele = $('input.pname_element');
+  var xml = $X('<' + ele + />');
+  switch(ele) {
+    case 'call':
+        xml.attr('id',$('input.pname_id').val());
+        xml.attr('endpoint',$('input.pname_endpoint').val());
+
+        if ($('manipulate',node).length > 0)
+          table.append(create_area_property('Manipulate','',format_text_skim($('manipulate',node).text())));
+
+        table.append(create_header('Parameters:'));
+
+        table.append(create_input_property('Method','indent',$('parameters method',node).text()));
+        $.each($('parameters parameters *',node),function(){
+          table.append(create_input_pair(this.nodeName,'indent',$(this).text()));
+        });
+      break;
+    case 'manipulate':
+      table.append(create_input_property('ID','',$(node).attr('id')));
+      table.append(create_input_property('Lay','',$(node).attr('lay')));
+      table.append(create_area_property('Manipulate','',format_text_skim($(node).text())));
+      break;
+    case 'loop':
+      if ($(node).attr('pre_test'))
+        var mode = 'pre_test';
+      if ($(node).attr('post_test'))
+        var mode = 'pre_test';
+      table.append(create_select_property('Mode','',mode,['post_test','pre_test']));
+      table.append(create_input_property('Condition','',$(node).attr(mode)));
+      reak;
+    case 'choose':
+      break;
+    case 'alternative':
+      table.append(create_input_property('Condition','',$(node).attr('condition')));
+      break;
+    case 'parallel':
+      var wait = $(node).attr('condition') || '-1';
+      table.append(create_input_property('Wait','',wait));
+      table.append(create_line('Hint','-1 to wait for all branches'));
+      break;
+    case 'parallel_branch':
+      table.append(create_input_property('Pass to branch','',$(node).attr('pass')));
+      table.append(create_input_property('Local scope','',$(node).attr('local')));
+      break;
+    // TODO group
+  }  
+
   return xml.serializeXML();
 } //}}}

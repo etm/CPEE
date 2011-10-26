@@ -16,7 +16,9 @@ function create_line(main,text){ //{{{
 function create_readonly_property(name,content){ //{{{
   var tmp = $("#prop_template_input tr").clone();
   $('.prop_name',tmp).text(name);
+  $('.prop_name',tmp).text(name);
   $('.prop_value',tmp).val(content);
+  $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
   $('.prop_value',tmp).attr('readonly','readonly');
   return tmp;
 } //}}}
@@ -111,7 +113,6 @@ function create_cpee_elements(adaptor) {
     switch(node.nodeName) {
       case 'call':
         table.append(create_input_property('ID','',$(node).attr('id')));
-        table.append(create_input_property('Lay','',$(node).attr('lay')));
         table.append(create_input_property('Endpoint','',$(node).attr('endpoint')));
 
         if ($('manipulate',node).length > 0)
