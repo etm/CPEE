@@ -1,4 +1,4 @@
-#areanew                       { height: 9.2em; } 
+#areanew                       { height: 9.6em; } 
 #areanew td:nth-child(1)       { width: 7em; padding-right: 1em; }
 #areanew td:nth-child(3)       { width: 16em; padding-left: 1em; }
 #areanew input                 { width: 100%;  }
@@ -22,9 +22,9 @@ button.highlight { background-color: #cc0000; }
 
 #areadataelements { height: 100%; overflow: auto; }
 #areaendpoints    { height: 100%; overflow: auto; }
-#areaexecution    { height: 9.2em; overflow: auto; }
+#areaexecution    { height: 9.6em; overflow: auto; }
 
-#areainstance                       { height: 9.2em; overflow: auto; }
+#areainstance                       { height: 9.6em; overflow: auto; }
 #areainstance td:nth-child(1)       { width: 12em; padding-right: 0.5em; }
 #areainstance td:nth-child(2)       { width: 1em; padding-right: 0.5em; }
 #areainstance input                 { padding: 0; margin:0; }
