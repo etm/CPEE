@@ -1,15 +1,12 @@
-/* TODO: changes in svg-script:
-  1) drawing frunctions
-  2) creation of svg-container (Bug: arrows on lines)
-  3) after-function to insert using namespace of description
-*/
+// TODO: changes in svg-script:
+// 1) drawing frunctions
+// 2) creation of svg-container (Bug: arrows on lines)
+// 3) after-function to insert using namespace of description
 
-/* WfAdaptor: 
-Handles interaction between Illustartor and Description 
-e.g. Event fires to Adaptor to insert Element and Illustrator and Description do it
-*/
-
-function WfAdaptor() { // Controller {{{
+// WfAdaptor: 
+// Handles interaction between Illustartor and Description 
+// e.g. Event fires to Adaptor to insert Element and Illustrator and Description do it
+function WfAdaptor(base) { // Controller {{{
   // Variable {{{
     // public
     this.illustrator;
@@ -39,16 +36,24 @@ function WfAdaptor() { // Controller {{{
   // Helper Functions {{{ 
   // }}}
 
-  // Initialze {{{
+  // Initialze
   this.illustrator = illustrator = new WfIllustrator(this);
   this.description = description = new WfDescription(this, this.illustrator);
-  // }}}
+
+  console.log(base);
+
+  for(element in base.elements) {
+    // Illustrator
+    this.illustrator.elements[element] = base.elements[element].illustrator;
+    // Description
+    this.description.elements[element] = base.elements[element].description;
+    // Adaptor
+    this.elements[element] = base.elements[element].adaptor;
+  }
 }  // }}}
 
-/* WfIllustrator: 
-Is in charge of displaying the Graph. It is further able insert and remove elements with given ID's from the illsutration.
-*/
-
+// WfIllustrator: 
+// Is in charge of displaying the Graph. It is further able insert and remove elements with given ID's from the illsutration.
 function WfIllustrator(wf_adaptor) { // View  {{{
   // Variable {{{
     // public
@@ -107,7 +112,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     // Binding events for symbol
     for(event_name in adaptor.elements[sym_name]) {
-      g.children('use:first').bind(event_name, {'function_call':adaptor.elements[sym_name][event_name]}, function(e) { e.data.function_call(this,e)});
+      g.children('use:first').bind(event_name, {'function_call':adaptor.elements[sym_name][event_name]}, function(e) { e.data.function_call($(this).parents(':first').attr('element-id'),e)});
       if(event_name == 'mousedown') g.children('use:first').bind('contextmenu', false);
     }
     if(group) {group.append(g);}
@@ -188,21 +193,18 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // }}}
 } // }}}
 
-/* WfDescription: 
-Manages the description. Is is further able to add/remove elements from the controlflow description.
-*/
-
+// WfDescription: 
+// Manages the description. Is is further able to add/remove elements from the controlflow description.
 function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
-  // Variable {{{ 
-    // public
-    var elements = this.elements = {};
-    // private
-    var adaptor;
-    var illustrator;
-    var description;
-    var id_counter = {};
-    var update_illustrator = true;
-  // }}} 
+  // public variables
+  var elements = this.elements = {};
+  // private variables
+  var adaptor;
+  var illustrator;
+  var description;
+  var id_counter = {};
+  var update_illustrator = true; 
+
   // Generic Functions {{{
   this.set_description = function(desc, auto_update) { // public {{{
     if(auto_update != undefined)  update_illustrator = auto_update;
@@ -225,6 +227,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[svg-id = \'' + svg_id + '\']', description);
   } // }}}
+  this.get_free_id = function() { // {{{
+    var existing = new Array();
+    $('*[id]', description).each(function(){existing.push($(this).attr('id'))});
+    var id = 1;
+    while ($.inArray('a' + id,existing) != -1) {
+      id += 1; 
+    }
+    return 'a' + id;
+  } // }}}
   var update = this.update = function() { // {{{
     id_counter = {};
     if(update_illustrator ){
@@ -232,23 +243,32 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
       illustrator.set_svg(graph);
     }
-    adaptor.notify();
+    adaptor.notify($('*[new=true]',description).attr('svg-id'));
   } // }}}
   // }}}
   // Adaption functions {{{
   this.insert_after = function(new_node, target) { // {{{
-    if(typeof(new_node) == 'function') {target.after(new_node(target));}
-    else {target.after(new_node);}
+    var nn;
+    if(typeof(new_node) == 'function') {nn = new_node(target);}
+    else {nn = new_node;}
+    target.after(nn);
+    nn.attr('new','true');
     update();
   } // }}}
   this.insert_first_into = function(new_node, target, selector) { // {{{
-    if(typeof(new_node) == 'function') {target.prepend(new_node(target));}
-    else {target.prepend(new_node);}
+    var nn;
+    if(typeof(new_node) == 'function') {nn = new_node(target);}
+    else {nn = new_node;}
+    target.prepend(nn);
+    nn.attr('new','true');
     update();
   } // }}}
   this.insert_last_into = function(new_node, target, selector) { // {{{
-    if(typeof(new_node) == 'function') {target.append(new_node(target));}
-    else {target.append(new_node);}
+    var nn;
+    if(typeof(new_node) == 'function') {nn = new_node(target);}
+    else {nn = new_node;}
+    target.append(nn);
+    nn.attr('new','true');
     update();
   } // }}}
   this.remove = function(selector, target) {//{{{

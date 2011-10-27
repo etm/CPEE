@@ -1,5 +1,6 @@
 var running = false;
 var load;
+var adaptor;
 var subscription;
 var subscription_state = 'less';
 var save = {};
@@ -7,6 +8,7 @@ var save = {};
     save['dsl'] = '';
     save['endpoints'] = '';
     save['dataelements'] = '';
+    save['details'] = '';
 var node_state = {};
 var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
@@ -292,14 +294,11 @@ function monitor_instance_dsl() {// {{{
           success: function(res){
             if (res == '') res = '<description xmlns="http://cpee.org/ns/description/1.0"/>'.parseXML();
 
-            var adaptor = new WfAdaptor();
-
-            create_cpee_elements(adaptor);
-
+            adaptor = new WfAdaptor(cpee);
             adaptor.set_svg_container($('#graphcanvas'));
             adaptor.set_description($(res), true);
-            adaptor.notify = function() {
-              console.log('update');
+            adaptor.notify = function(svgid) {
+              cpee.events.click(svgid,undefined);
             };
 
             monitor_instance_pos();
@@ -778,6 +777,16 @@ function format_text_skim(res) {// {{{
   res = res.replace(new RegExp("^ {" + l + "}",'mg'),'');
   return res;
 }// }}}
+
+function serialize_hash(ary) { //{{{
+  var xml = $X('<content/>');
+  $.each(ary,function(k,v) {
+    if (k.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)) {
+      xml.append($X('<' + k + '>' + v + '</' + k + '>'));
+    }
+  });
+  return xml.serializeXML();
+} //}}}
 
 function append_to_log(what,type,message) {//{{{
   var d = new Date();

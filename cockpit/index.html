@@ -26,20 +26,22 @@
 
     <!-- custom stuff, play arround  -->
 
-    <script type="text/javascript" src="js/wfadaptor.cpee.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
     <script type="text/javascript" src="js/ui.js"></script>
+    <script type="text/javascript" src="js/instance.js"></script>
+    <script type="text/javascript" src="js/details.js"></script>
+    <script type="text/javascript" src="js/parameters.js"></script>
+    <script type="text/javascript" src="js/wfadaptor.cpee.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
   </head>
   <body>
     <!-- The following six are templates that get used during ui generation, change them carefully -->
     <table id="dat_template_pair" class='hidden'> <!--{{{-->
-      <tr>
+      <tr class="pair">
         <td class='del'><a href='' title='Delete Item (Ctrl-D)'>✖</a></td>
         <td class='pname'><input pattern="[a-zA-Z][a-zA-Z0-9_]*" placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
         <td class='sep'>⇒</td>
-        <td class='value'><input placeholder='fill in value...' class='pair_value' value=''/></td>
+        <td class='pvalue'><input placeholder='fill in value...' class='pair_value' value=''/></td>
       </tr>
     </table> <!--}}}-->
     <table id="prop_template_sizer" class='hidden'> <!--{{{-->

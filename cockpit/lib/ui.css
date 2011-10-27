@@ -113,7 +113,7 @@ div.tabbed table.tabbar td.tabbehind {
   -webkit-border-bottom-right-radius: 0em;
   text-align:right;
   white-space: nowrap;
-  overflow: none;
+  overflow: hidden;
 }
 div.tabbed.rest table.tabbar td.tabbehind {
   padding-right: 1em;
