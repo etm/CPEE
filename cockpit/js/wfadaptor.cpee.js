@@ -110,6 +110,7 @@ cpee.events.click = function(svgid, e) { // {{{
   switch(node.nodeName) {
     case 'call':
       table.append(create_input_property('ID','',$(node).attr('id')));
+      table.append(create_input_property('Lay','',$(node).attr('lay')));
       table.append(create_input_property('Endpoint','',$(node).attr('endpoint')));
 
       if ($('manipulate',node).length > 0)
