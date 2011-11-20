@@ -3,8 +3,8 @@ For WEE and tests:
   * rake test
   
 For CPEE
-  * clone repository http://www.pri.univie.ac.at/communities/riddl/
-  * gem install multi_json yajl-ruby
+  * git clone  http://gaubatp4@donatello.pri.univie.ac.at/repositories/8/Data/
+  * sudo gem install multi_json yajl-ruby
   * see riddl/INSTALL file
 
 Run CPEE  

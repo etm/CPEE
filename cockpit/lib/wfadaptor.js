@@ -6,17 +6,20 @@
 // WfAdaptor: 
 // Handles interaction between Illustartor and Description 
 // e.g. Event fires to Adaptor to insert Element and Illustrator and Description do it
-function WfAdaptor(base) { // Controller {{{
-  // Variable {{{
-    // public
+function WfAdaptor(manifesto) { // Controller {{{
+ 
+ // public variables {{{
     this.illustrator;
     this.description;
     this.elements = {};
-    //private
+  // }}}
+
+  // public variables {{{
     var illustrator;
     var description;
   // }}}
-  // Generic Functions {{{
+  
+  // helper funtions
   this.set_description = function(desc) { // public {{{
     this.description.set_description(desc);
   } // }}}
@@ -28,27 +31,16 @@ function WfAdaptor(base) { // Controller {{{
   this.set_svg_container = function (container) { // {{{
     illustrator.set_container(container); // TODO: shadowing the container element
   } // }}}
-  // }}}
 
-  // Adaption funcions {{{
-  // }}}
-
-  // Helper Functions {{{ 
-  // }}}
-
-  // Initialze
+  // initialze
   this.illustrator = illustrator = new WfIllustrator(this);
   this.description = description = new WfDescription(this, this.illustrator);
 
-  console.log(base);
-
-  for(element in base.elements) {
-    // Illustrator
-    this.illustrator.elements[element] = base.elements[element].illustrator;
-    // Description
-    this.description.elements[element] = base.elements[element].description;
-    // Adaptor
-    this.elements[element] = base.elements[element].adaptor;
+  manifestation = new manifesto(this);
+  for(element in manifestation.elements) {
+    this.illustrator.elements[element] = manifestation.elements[element].illustrator;
+    this.description.elements[element] = manifestation.elements[element].description;
+    this.elements[element] = manifestation.elements[element].adaptor;
   }
 }  // }}}
 

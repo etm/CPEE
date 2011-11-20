@@ -1,6 +1,6 @@
 var running = false;
 var load;
-var adaptor;
+var graphrealization;
 var subscription;
 var subscription_state = 'less';
 var save = {};
@@ -294,11 +294,11 @@ function monitor_instance_dsl() {// {{{
           success: function(res){
             if (res == '') res = '<description xmlns="http://cpee.org/ns/description/1.0"/>'.parseXML();
 
-            adaptor = new WfAdaptor(cpee);
-            adaptor.set_svg_container($('#graphcanvas'));
-            adaptor.set_description($(res), true);
-            adaptor.notify = function(svgid) {
-              cpee.events.click(svgid,undefined);
+            graphrealization = new WfAdaptor(CPEE);
+            graphrealization.set_svg_container($('#graphcanvas'));
+            graphrealization.set_description($(res), true);
+            graphrealization.notify = function(svgid) {
+              manifestation.events.click(svgid,undefined);
             };
 
             monitor_instance_pos();

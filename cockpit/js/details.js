@@ -85,10 +85,11 @@ $(document).ready(function() {
 });
 
 function mark_main_save(top) { //{{{
+  console.log('hallo');
   var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
   var tab = $('#dat_' + visid);
-  console.log(serialize_details(tab));
-  if (serialize_details(tab) != save[visid]) {
+  var details = serialize_details(tab).serializeXML();
+  if (details != save[visid]) {
     $('table.tabbar .tabbehind button:nth-child(2)',top).addClass('highlight');
   } else {  
     $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
@@ -96,8 +97,11 @@ function mark_main_save(top) { //{{{
 } //}}}
 function save_main(top) { //{{{
   var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
-  var tab = $('#dat_' + visid);
-  console.log(serialize_details(tab));
+  var tab  = $('#dat_' + visid);
+  var node = graphrealization.description.get_node_by_svg_id($('input.pname_svgid').val());
+  var newn = serialize_details(tab).attr('svg-id',$('input.pname_svgid').val());
+  console.log(newn.children);
+  node.replaceWith(newn);
 } //}}}
 
 function serialize_details(parent) { //{{{
@@ -167,5 +171,5 @@ function serialize_details(parent) { //{{{
     // TODO group
   }  
 
-  return xml.serializeXML();
+  return xml;
 } //}}}
