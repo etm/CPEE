@@ -427,6 +427,57 @@ function stop_instance() {// {{{
   });
 }// }}}
 
+function get_testset() {// {{{
+  var url = $("input[name=current-instance]").val();
+
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/dataelements/",
+    success: function(res){
+    },
+    error: report_failure
+  });  
+      
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/endpoints/",
+    success: function(res){
+    },
+    error: report_failure
+  });
+
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/handlerwrapper/",
+    success: function(res){
+    },
+    error: report_failure
+  });
+      
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/positions/",
+    success: function(res){
+    },
+    error: report_failure
+  });
+
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/description/",
+    success: function(res){
+    },  
+    error: report_failure
+  });
+
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/transformation/",
+    success: function(res){
+    },  
+    error: report_failure
+  });
+}// }}}
 function load_testset() {// {{{
   if (running) return;
   running  = true;
