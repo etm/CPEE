@@ -100,7 +100,9 @@ function save_main(top) { //{{{
   var tab  = $('#dat_' + visid);
   var node = graphrealization.description.get_node_by_svg_id($('input.pname_svgid').val());
   var newn = serialize_details(tab).attr('svg-id',$('input.pname_svgid').val());
-  console.log(newn.children);
+  if (newn.children().length == 0) {
+    newn.append(node.children());
+  }  
   node.replaceWith(newn);
 } //}}}
 
@@ -154,10 +156,8 @@ function serialize_details(parent) { //{{{
       xml.attr('condition',$('input.pname_condition').val());
       break;
     case 'parallel':
-      if ($('input.pname_pass',parent).length > 0) {
-        if (parseInt($('input.pname_wait').val()) > -1) {
-          xml.attr('wait',$('input.pname_wait').val());
-        }  
+      if (parseInt($('input.pname_wait').val()) > -1) {
+        xml.attr('wait',$('input.pname_wait').val());
       }  
       break;
     case 'parallel_branch':

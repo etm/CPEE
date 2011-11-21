@@ -143,7 +143,7 @@ function CPEE(adaptor) {
         if ($(node).attr('pre_test'))
           var mode = 'pre_test';
         if ($(node).attr('post_test'))
-          var mode = 'pre_test';
+          var mode = 'post_test';
         table.append(create_select_property('Mode','',mode,['post_test','pre_test']));
         table.append(create_input_property('Condition','',$(node).attr(mode)));
         break;
@@ -153,7 +153,7 @@ function CPEE(adaptor) {
         table.append(create_input_property('Condition','',$(node).attr('condition')));
         break;
       case 'parallel':
-        var wait = $(node).attr('condition') || '-1';
+        var wait = $(node).attr('wait') || '-1';
         table.append(create_input_property('Wait','',wait));
         table.append(create_line('Hint','-1 to wait for all branches'));
         break;

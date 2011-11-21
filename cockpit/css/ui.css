@@ -20,7 +20,7 @@ button.highlight { background-color: #cc0000; }
 
 #parameters .tabbelow { height: 9em; min-height: 1.7em; }
 
-#areadataelements { height: 100%; overflow: auto; }
+#areadataelements { height: 100%; overflow-x: hidden; overflow-y: scroll; }
 #areaendpoints    { height: 100%; overflow: auto; }
 #areaexecution    { height: 9.6em; overflow: auto; }
 
@@ -49,7 +49,7 @@ button.highlight { background-color: #cc0000; }
 #dat_endpoints button                  { border: 1pt solid buttonshadow; padding: 0; }
 #dat_endpoints td:nth-child(1)         { width: 1.2em; font-size: 1.3em; font-weight: bold; }
 #dat_endpoints td:nth-child(2)         { width: 8em; }
-#dat_endpoints td:nth-child(3)         { width: 0; }
+#dat_endpoints td:nth-child(3)         { width: 1em; }
 #dat_endpoints tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
 #dat_endpoints tr:nth-child(odd) input { background-color: ButtonFace; }
 #dat_endpoints input:first-child       { border: 0 none; width: 8em; }  
@@ -66,7 +66,7 @@ button.highlight { background-color: #cc0000; }
 #dat_dataelements button                  { border: 1pt solid buttonshadow; padding: 0; }
 #dat_dataelements td:nth-child(1)         { width: 1.2em; font-size: 1.3em; font-weight: bold;}
 #dat_dataelements td:nth-child(2)         { width: 8em; }
-#dat_dataelements td:nth-child(3)         { width: 0; }
+#dat_dataelements td:nth-child(3)         { width: 1em; }
 #dat_dataelements tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
 #dat_dataelements tr:nth-child(odd) input { background-color: ButtonFace; }
 #dat_dataelements input:first-child       { border: 0 none; width: 8em; }  

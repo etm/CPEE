@@ -161,7 +161,8 @@ function monitor_instance() {// {{{
             }  
           });
           append_to_log("monitoring", "id", subscription);
-          ws = new MozWebSocket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
+          var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+          ws = new Socket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
           ws.onopen = function() {
             append_to_log("monitoring", "opened", "");
           };

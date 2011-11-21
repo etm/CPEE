@@ -1,11 +1,18 @@
 $(document).ready(function() {
-  if (!($.browser.mozilla && parseInt($.browser.version) >= 6)) {
+  if (!($.browser.mozilla && parseInt($.browser.version) >= 6) && !($.browser.webkit && parseInt($.browser.version) >= 535)) {
     $('body').children().remove();
-    $('body').append('Sorry, only Firefox >= 6.0 for now.<br/>Chrom(ium|e) support will be added as soon as websocket >= hybi-08 is working (14.x ?).');
+    $('body').append('Sorry, only Firefox >= 6.0 and Chrom(e|ium) >= 14 for now.');
   }  
 
   // Resize areas
-  $('#detailcolumn').resizable({ handles: { 'w' : '#handle2'}});
+  $('#detailcolumn').resizable({ 
+    handles: { 'w' : '#handle2'},
+    resize: function(event, ui) { 
+      if ($.browser.webkit) {
+        $('#handle2').offset({ left: ui.helper.offset().left+3 });
+      }  
+    }
+  });
   $('#parameters .tabbelow').resizable({ 
     handles: { 's' : '#handle1'},
     resize: function(event, ui) { 
