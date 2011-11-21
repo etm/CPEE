@@ -214,7 +214,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     illustrator.set_svg(graph);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
-    return description.serializePrettyXML();
+    var serxml = $(description.get(0).documentElement).clone(true);
+    serxml.removeAttr('svg-id');
+    $('*[svg-id]',serxml).each(function(){
+      $(this).removeAttr('svg-id');
+    });
+    return serxml.serializePrettyXML();
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[svg-id = \'' + svg_id + '\']', description);

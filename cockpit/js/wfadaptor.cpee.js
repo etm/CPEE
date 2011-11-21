@@ -113,6 +113,8 @@ function CPEE(adaptor) {
     return false;
   } // }}} 
   this.events.click = function(svgid, e) { // {{{ 
+    $('#main .tabbehind button').show();
+
     var table = $('#dat_details');
     var node  = adaptor.description.get_node_by_svg_id(svgid).get(0);
   

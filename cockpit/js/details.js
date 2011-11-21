@@ -1,4 +1,6 @@
 $(document).ready(function() {
+  $('#main .tabbehind button').hide();
+
   // save buttons shown or not //{{{
   $('#main table.tabbar td.tab:not(.switch):not(.tabbehind)').click(function(event){
     var me = $(event.target).parents('td.tab');
@@ -104,6 +106,15 @@ function save_main(top) { //{{{
     newn.append(node.children());
   }  
   node.replaceWith(newn);
+
+  var serxml = graphrealization.description.get_description();
+  var url = $("input[name=current-instance]").val();
+  $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/description/",
+    data: ({'content': '<content>' + serxml + '</content>'}),
+  });
 } //}}}
 
 function serialize_details(parent) { //{{{

@@ -431,8 +431,9 @@ function load_testset() {// {{{
   if (running) return;
   running  = true;
   save['dsl'] = null; // reload dsl and position under all circumstances
-  var table = $('#dat_details');
-  table.empty();
+  
+  $('#main .tabbehind button').hide();
+  $('#dat_details').empty();
 
   var url = $("input[name=current-instance]").val();
   var name = load ? load : $("select[name=testset-names]").val();
