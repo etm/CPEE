@@ -30,91 +30,44 @@ $(document).ready(function() {
     save_main($(event.target).parents('div.tabbed'));
   }); //}}}
 
-  $('#dat_details input.pair_name, #dat_details input.pair_value').live('keyup',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
-  $('#dat_details input.pair_name, #dat_details input.pair_value').live('keypress',function(e){ //{{{
-    if (e.keyCode == 40) {  //{{{
-      var next = false;
-      $('#dat_details input.' + $(e.target).attr('class')).each(function(){
-        if (next) { this.focus(); return false; }
-        if (this == e.target) next = true;
-      });
-    } //}}}
-    if (e.keyCode == 38) {  //{{{
-      var prev = null;
-      $('#dat_details input.' + $(e.target).attr('class')).each(function(){
-        if (this == e.target) {
-          if (prev) prev.focus();
-          return false;
-        }
-        prev = this;
-      });
-    } // }}}
-    if (e.keyCode == 37 && $(e.target).caret().start == 0 && $(e.target).attr('class') == 'pair_value') {  //{{{
-      var prev = null;
-      $('#dat_details input').each(function(){
-        if (this == e.target) {
-          if (prev) prev.focus();
-          return false;
-        }
-        prev = this;
-      });
-    } //}}}
-    if (e.keyCode == 39 && $(e.target).caret().end == $(e.target).val().length && $(e.target).attr('class') == 'pair_name') {  //{{{
-      var next = false;
-      $('#dat_details input').each(function(){
-        if (next) { this.focus(); return false; }
-        if (this == e.target) next = true;
-      });
-    } //}}}
-    if (e.keyCode == 13 && $(e.target).caret().end == $(e.target).val().length && $(e.target).attr('class') == 'pair_value') {  //{{{
-      var node = new_entry($(this).parents('div.tabbed'));
-      node.addClass('indent');
-    } //}}}
-
-    if (e.which == 100 && e.ctrlKey == true) { // Ctrl-D -> Delete Entry //{{{
-      remove_entry(e.target,true);
-      return false;
-    } //}}} 
-    if (e.which == 110 && e.ctrlKey == true) { // Ctrl-N -> New Entry //{{{
-      var node = new_entry($(this).parents('div.tabbed'));
-      node.addClass('indent');
-      return false;
-    } //}}}
-    if (e.which == 115 && e.ctrlKey == true) { // Ctrl-S -> Save Entries
-      return false;
-    }
-  }); //}}}
+  $('#dat_details input.pair_name, #dat_details input.prop_value, #dat_details textarea.prop_value,  #dat_details select.prop_value, #dat_details input.pair_value').live('keyup',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
 });
 
 function mark_main_save(top) { //{{{
-  console.log('hallo');
   var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
-  var tab = $('#dat_' + visid);
+  var tab  = $('#dat_' + visid);
   var details = serialize_details(tab).serializeXML();
+
   if (details != save[visid]) {
-    $('table.tabbar .tabbehind button:nth-child(2)',top).addClass('highlight');
+    $('table.tabbar .tabbehind button',top).addClass('highlight');
   } else {  
-    $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
+    $('table.tabbar .tabbehind button',top).removeClass('highlight');
   }
 } //}}}
 function save_main(top) { //{{{
-  var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
-  var tab  = $('#dat_' + visid);
-  var node = graphrealization.description.get_node_by_svg_id($('input.pname_svgid').val());
-  var newn = serialize_details(tab).attr('svg-id',$('input.pname_svgid').val());
-  if (newn.children().length == 0) {
-    newn.append(node.children());
-  }  
-  node.replaceWith(newn);
+  var visid   = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
+  var tab     = $('#dat_' + visid);
+  var node    = graphrealization.description.get_node_by_svg_id($('input.pname_svgid').val());
+  var details = serialize_details(tab).serializeXML();
+  if (details != save[visid]) {
+    save[visid] = details;
+    $('table.tabbar .tabbehind button',top).removeClass('highlight');
 
-  var serxml = graphrealization.description.get_description();
-  var url = $("input[name=current-instance]").val();
-  $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
-  $.ajax({
-    type: "PUT", 
-    url: url + "/properties/values/description/",
-    data: ({'content': '<content>' + serxml + '</content>'}),
-  });
+    var newn = serialize_details(tab).attr('svg-id',$('input.pname_svgid').val());
+    if (newn.children().length == 0) {
+      newn.append(node.children());
+    }  
+    node.replaceWith(newn);
+
+    var serxml = graphrealization.description.get_description();
+    var url = $("input[name=current-instance]").val();
+    $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
+    $.ajax({
+      type: "PUT", 
+      url: url + "/properties/values/description/",
+      data: ({'content': '<content>' + serxml + '</content>'}),
+    });
+  }  
 } //}}}
 
 function serialize_details(parent) { //{{{

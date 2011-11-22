@@ -14,20 +14,18 @@ function create_line(main,text){ //{{{
   return tmp;
 } //}}}
 function create_element(content,svgid){ //{{{
-  var tmp = $("#prop_template_input tr").clone();
+  var tmp = $("#prop_template_readonly tr").clone();
   $('.prop_name',tmp).text('Element');
   $('.prop_value',tmp).val(content);
   $('.prop_value',tmp).addClass('pname_element');
-  $('.prop_value',tmp).attr('readonly','readonly');
   $('.prop_value',tmp).parent().append($("<input type='hidden' class='pname_svgid' value='" + svgid + "'>"));
   return tmp;
 } //}}}
 function create_readonly_property(name,content){ //{{{
-  var tmp = $("#prop_template_input tr").clone();
+  var tmp = $("#prop_template_readonly tr").clone();
   $('.prop_name',tmp).text(name);
   $('.prop_value',tmp).val(content);
   $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
-  $('.prop_value',tmp).attr('readonly','readonly');
   return tmp;
 } //}}}
 function create_input_property(name,cls,content){ //{{{
@@ -114,59 +112,68 @@ function CPEE(adaptor) {
   } // }}} 
   this.events.click = function(svgid, e) { // {{{ 
     $('#main .tabbehind button').show();
+    if ($('#main .tabbehind button').hasClass('highlight')) {
+      var check = confirm("Discard changes?");
+      if (check)
+        $('#main .tabbehind button').removeClass('highlight');
+      else  
+        return;
+    }  
 
-    var table = $('#dat_details');
+    var visid = 'details';
+    var tab   = $('#dat_' + visid);
     var node  = adaptor.description.get_node_by_svg_id(svgid).get(0);
   
-    table.empty();
-    table.append(create_element(node.nodeName,svgid));
+    tab.empty();
+    tab.append(create_element(node.nodeName,svgid));
     switch(node.nodeName) {
       case 'call':
-        table.append(create_readonly_property('ID',$(node).attr('id')));
-        table.append(create_input_property('Lay','',$(node).attr('lay')));
-        table.append(create_input_property('Endpoint','',$(node).attr('endpoint')));
+        tab.append(create_readonly_property('ID',$(node).attr('id')));
+        tab.append(create_input_property('Lay','',$(node).attr('lay')));
+        tab.append(create_input_property('Endpoint','',$(node).attr('endpoint')));
   
         if ($('manipulate',node).length > 0)
-          table.append(create_area_property('Manipulate','',format_text_skim($('manipulate',node).text())));
+          tab.append(create_area_property('Manipulate','',format_text_skim($('manipulate',node).text())));
   
-        table.append(create_header('Parameters:'));
+        tab.append(create_header('Parameters:'));
   
-        table.append(create_input_property('Method','indent',$('parameters method',node).text()));
+        tab.append(create_input_property('Method','indent',$('parameters method',node).text()));
         $.each($('parameters parameters *',node),function(){
-          table.append(create_input_pair(this.nodeName,'indent',$(this).text()));
+          tab.append(create_input_pair(this.nodeName,'indent',$(this).text()));
         });
         break;
       case 'manipulate':
-        table.append(create_readonly_property('ID',$(node).attr('id')));
-        table.append(create_input_property('Lay','',$(node).attr('lay')));
-        table.append(create_area_property('Manipulate','',format_text_skim($(node).text())));
+        tab.append(create_readonly_property('ID',$(node).attr('id')));
+        tab.append(create_input_property('Lay','',$(node).attr('lay')));
+        tab.append(create_area_property('Manipulate','',format_text_skim($(node).text())));
         break;
       case 'loop':
         if ($(node).attr('pre_test'))
           var mode = 'pre_test';
         if ($(node).attr('post_test'))
           var mode = 'post_test';
-        table.append(create_select_property('Mode','',mode,['post_test','pre_test']));
-        table.append(create_input_property('Condition','',$(node).attr(mode)));
+        tab.append(create_select_property('Mode','',mode,['post_test','pre_test']));
+        tab.append(create_input_property('Condition','',$(node).attr(mode)));
         break;
       case 'choose':
         break;
       case 'alternative':
-        table.append(create_input_property('Condition','',$(node).attr('condition')));
+        tab.append(create_input_property('Condition','',$(node).attr('condition')));
         break;
       case 'parallel':
         var wait = $(node).attr('wait') || '-1';
-        table.append(create_input_property('Wait','',wait));
-        table.append(create_line('Hint','-1 to wait for all branches'));
+        tab.append(create_input_property('Wait','',wait));
+        tab.append(create_line('Hint','-1 to wait for all branches'));
         break;
       case 'parallel_branch':
-        table.append(create_input_property('Pass to branch','',$(node).attr('pass')));
-        table.append(create_input_property('Local scope','',$(node).attr('local')));
+        tab.append(create_input_property('Pass to branch','',$(node).attr('pass')));
+        tab.append(create_input_property('Local scope','',$(node).attr('local')));
         break;
       // TODO group
     }
     // add the sizer in order for colspan to work
-    table.append(create_sizer());
+    tab.append(create_sizer());
+    save['details'] = serialize_details(tab).serializeXML();
   } // }}}
   this.events.dblclick = function(node, e) { // {{{
     $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','none');
