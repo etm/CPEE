@@ -72,35 +72,35 @@ function save_main(top) { //{{{
 
 function serialize_details(parent) { //{{{
   var ele = $('input.pname_element',parent).val();
-  var xml = $X('<' + ele + '/>');
+  var xml = $X('<' + ele + ' xmlns="http://cpee.org/ns/description/1.0"/>');
   switch(ele) {
     case 'call':
         xml.attr('id',$('input.pname_id').val());
-        if ($('input.pname_lay',parent).length > 0) {
+        if ($('input.pname_lay',parent).length > 0 && $.trim($('input.pname_lay').val())!='') {
           xml.attr('lay',$('input.pname_lay').val());
         }  
         xml.attr('endpoint',$('input.pname_endpoint').val());
 
-        var para = $X('<parameters/>');
+        var para = $X('<parameters xmlns="http://cpee.org/ns/description/1.0"/>');
         xml.append(para);
         
         if ($('input.pname_method',parent).length > 0) {
-          var pars = $X('<parameters/>');
-          var meth = $X('<method/>');
+          var pars = $X('<parameters xmlns="http://cpee.org/ns/description/1.0"/>');
+          var meth = $X('<method xmlns="http://cpee.org/ns/description/1.0"/>');
               meth.text($('input.pname_method',parent).val());
           para.append(meth);
           para.append(pars);
           $('tr.pair',parent).each(function(){
             var nam = $('input.pair_name',this).val();
             var val = $('input.pair_value',this).val();
-            var par = $X('<' + nam + '/>');
+            var par = $X('<' + nam + ' xmlns="http://cpee.org/ns/description/1.0"/>');
             par.text(val);
             pars.append(par);
           });
         }
 
         if ($('textarea.pname_manipulate',parent).length > 0) {
-          var mani = $X('<manipulate/>');
+          var mani = $X('<manipulate xmlns="http://cpee.org/ns/description/1.0"/>');
               mani.text($('textarea.pname_manipulate',parent).val());
           xml.append(mani);
         }
