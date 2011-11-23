@@ -8,6 +8,9 @@
   <interface name="notifications">
     <xi:include href="http://www.riddl.org/ns/common-patterns/notifications-producer/1.0/producer.xml"/>
   </interface>
+  <interface name="downloadify">
+    <xi:include href="http://www.riddl.org/ns/common-patterns/downloadify/1.0/downloadify.xml"/>
+  </interface>
 
   <facade>
     <tile>
@@ -18,6 +21,9 @@
       <layer name="notifications">
         <apply-to>/{}</apply-to>
       </layer>  
+      <layer name="downloadify">
+        <apply-to>/downloadify</apply-to>
+      </layer>
     </tile>
   </facade>
 </declaration>

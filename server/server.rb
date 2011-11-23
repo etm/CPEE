@@ -60,6 +60,9 @@ rsrv = Riddl::Server.new(::File.dirname(__FILE__) + '/server.declaration.xml',Fi
         end  
       end  
     end  
+    on resource 'downloadify' do
+      run Riddl::Utils::FileServe, "xsls" if get
+    end
     on resource 'xsls' do
       on resource do
         run Riddl::Utils::FileServe, "xsls" if get
