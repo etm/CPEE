@@ -240,7 +240,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
       illustrator.set_svg(graph);
     }
-    adaptor.notify($('*[new=true]',description).attr('svg-id'));
+    var newn = $('*[new=true]',description);
+        newn.removeAttr('new');
+    adaptor.notify(newn.attr('svg-id'));
   } // }}}
   // }}}
   // Adaption functions {{{

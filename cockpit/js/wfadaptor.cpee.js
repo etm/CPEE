@@ -214,7 +214,7 @@ function CPEE(adaptor) {
   'description' : {//{{{
     'create':  function(target) {
       var node = null;
-      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><method>post</method><parameters/></parameters><manipulate/></call>');
+      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://cpee.org/ns/description/1.0"><parameters><method>post</method><parameters/></parameters><manipulate/></call>');
       return node;
     },
     'permissible_children': function(node) {
@@ -257,8 +257,8 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<call id="" endpoint="" xmlns="http://this.org/ns/description/1.0"/>');
-        node.append($X('<parameters><method>post</method><parameters/></parameters>'));
+        var node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://cpee.org/ns/description/1.0"/>');
+        node.append($X('<parameters xmlns="http://cpee.org/ns/description/1.0"><method>post</method><parameters/></parameters>'));
         return node;
       },
       'permissible_children': function(node) {
@@ -293,8 +293,7 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        // if(target.get(0).tagName == 'call') ... means a manipukate block is requested
-        var node = $X('<manipulate xmlns="http://this.org/ns/description/1.0"/>');
+        var node = $X('<manipulate id="' + adaptor.description.get_free_id() + '" xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -330,7 +329,7 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<choose xmlns="http://this.org/ns/description/1.0"><otherwise/></choose>');
+        var node = $X('<choose xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
         return node;
       },
       'insertable' : function(parent_node, index) {
@@ -394,7 +393,7 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<otherwise xmlns="http://this.org/ns/description/1.0"/>');
+        var node = $X('<otherwise xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'insertable' : function(parent_node, index) {
@@ -468,7 +467,7 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<alternative xmlns="http://this.org/ns/description/1.0"/>');
+        var node = $X('<alternative condition="" xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'insertable' : function(parent_node, index) {
@@ -545,7 +544,7 @@ function CPEE(adaptor) {
     },// }}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<loop xmlns="http://this.org/ns/description/1.0"/>');
+        var node = $X('<loop pre_test="" xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -627,7 +626,7 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<parallel xmlns="http://this.org/ns/description/1.0"/>');
+        var node = $X('<parallel xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -701,7 +700,7 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<parallel_branch xmlns="http://this.org/ns/description/1.0"/>');
+        var node = $X('<parallel_branch xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
@@ -779,7 +778,7 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<critical xmlns="http://this.org/ns/description/1.0"/>');
+        var node = $X('<critical xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
