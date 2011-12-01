@@ -10,6 +10,7 @@ require 'riddl/utils/notifications_producer'
 require 'riddl/utils/properties'
 require 'riddl/utils/fileserve'
 require 'riddl/utils/declaration'
+require 'riddl/utils/downloadify'
 require File.expand_path(File.dirname(__FILE__) + '/engine/implementation')
 
 ### sets $basepath
@@ -60,6 +61,7 @@ Riddl::Server.new($basepath + '/server.declaration.xml') do
     on resource 'downloadify' do
       on resource do
         run Riddl::Utils::Downloadify if get 'dfin'
+        run Riddl::Utils::Downloadify if post 'dfin'
       end
     end
     on resource 'xsls' do

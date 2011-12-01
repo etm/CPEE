@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
-  s.name             = "wee"
+  s.name             = "cpee"
   s.version          = "1.2.0"
   s.platform         = Gem::Platform::RUBY
-  s.summary          = "workflow execution engine (wee) library"
+  s.summary          = "cloud process execution engine (cpee) + workflow execution engine (wee) library"
 
   s.description = <<-EOF
 Write useful stuff.

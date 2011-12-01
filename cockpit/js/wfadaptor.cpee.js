@@ -111,6 +111,10 @@ function CPEE(adaptor) {
     return false;
   } // }}} 
   this.events.click = function(svgid, e) { // {{{ 
+    if (adaptor.description.get_node_by_svg_id(svgid).length == 0) {
+      return;
+    }
+
     $('#main .tabbehind button').show();
     if ($('#main .tabbehind button').hasClass('highlight')) {
       var check = confirm("Discard changes?");

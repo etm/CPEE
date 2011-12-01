@@ -25,12 +25,16 @@ button.highlight { background-color: #cc0000; }
 #areaexecution    { height: 9.6em; overflow: auto; }
 
 #areainstance                       { height: 9.6em; overflow: auto; }
-#areainstance td:nth-child(1)       { width: 12em; padding-right: 0.5em; }
-#areainstance td:nth-child(2)       { width: 1em; padding-right: 0.5em; }
+#areainstance td:nth-child(1)       { padding-right: 0.5em; }
+#areainstance td:nth-child(2)       { padding-right: 0.5em; }
 #areainstance input                 { padding: 0; margin:0; }
-#areainstance tr:nth-child(3) td    {                                     padding-bottom: 0.5em; }
-#areainstance tr:nth-child(4) td    { border-top: 1px solid ButtonShadow; padding-top:    0.5em; }
-#areainstance button                { width: 100% }
+#areainstance table.compact.loadsave td:nth-child(4) { padding-left: 0.5em; }
+#areainstance table.compact.loadsave td:nth-child(5) { padding-left: 0.5em; border-left: 1px solid ButtonShadow; }
+#areainstance table.compact.loadsave tr:nth-child(1) td { padding-top: 0.5em; }
+#areainstance hr { height: 1px; color: ButtonShadow; background-color: ButtonShadow; border: 0 none; padding-bottom: 0; margin-bottom: 0; }
+#areainstance select                { width: 100% }
+#areainstance input[type=file]      { width: 100% }
+#areainstance table.compact.loadsave td:nth-child(5) button { height: 4em; }
 
 #dat_log { width:100%; }
 #dat_log td { vertical-align: top; }

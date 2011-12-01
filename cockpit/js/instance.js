@@ -4,11 +4,11 @@ var graphrealization;
 var subscription;
 var subscription_state = 'less';
 var save = {};
-    save['state'] = '';
-    save['dsl'] = '';
-    save['endpoints'] = '';
-    save['dataelements'] = '';
-    save['details'] = '';
+    save['state']= undefined;
+    save['dsl'] = undefined;
+    save['endpoints'] = undefined;
+    save['dataelements'] = undefined;
+    save['details'] = undefined;
 var node_state = {};
 var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
@@ -46,7 +46,8 @@ $(document).ready(function() {// {{{
   $("button[name=base]").click(create_instance);
   $("button[name=instance]").click(monitor_instance);
   $("button[name=loadtestset]").click(load_testset);
-  $("button[name=savetestset]").click(function(){alert('We will be using FileWrite API for this :-). Unfortunately it is not working yet in FF.');});
+  $("button[name=loadtestsetfile]").click(load_testsetfile);
+  $("button[name=savetestset]").click(function(){ get_testset(); });
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=votestop]").click(check_subscription);
 
@@ -134,6 +135,9 @@ function create_instance() {// {{{
   
 function monitor_instance() {// {{{
   var url = $("input[name=instance-url]").val();
+
+  $('#main .tabbehind button').hide();
+  $('#dat_details').empty();
 
   $.ajax({
     type: "GET", 
@@ -293,12 +297,11 @@ function monitor_instance_dsl() {// {{{
           type: "GET",
           url: url + "/properties/values/description/",
           success: function(res){
-            if (res == '') res = '<description xmlns="http://cpee.org/ns/description/1.0"/>'.parseXML();
-
             graphrealization = new WfAdaptor(CPEE);
             graphrealization.set_svg_container($('#graphcanvas'));
             graphrealization.set_description($(res), true);
             graphrealization.notify = function(svgid) {
+              save_description();
               manifestation.events.click(svgid,undefined);
             };
 
@@ -317,6 +320,9 @@ function monitor_instance_state() {// {{{
     url: url + "/properties/values/state/",
     dataType: "text",
     success: function(res){
+      if (res == "ready" || res == "stopped" || res == "running") {
+        $("#state button").removeAttr('disabled');
+      }  
       if (res != save['state']) {
         save['state'] = res;
 
@@ -430,43 +436,166 @@ function stop_instance() {// {{{
 function get_testset() {// {{{
   var url = $("input[name=current-instance]").val();
 
+  var testset = $X('<testset/>');
+
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/dataelements/",
     success: function(res){
+      var pars = $X('<dataelements/>');
+      pars.append($(res.documentElement).children());
+      testset.append(pars);
+      $.ajax({
+        type: "GET", 
+        url: url + "/properties/values/handlerwrapper/",
+        success: function(res){
+          var pars = $X('<handlerwrapper>' + res + '</handlerwrapper>');
+          testset.append(pars);
+          $.ajax({
+            type: "GET", 
+            url: url + "/properties/values/endpoints/",
+            success: function(res){
+              var pars = $X('<endpoints/>');
+              pars.append($(res.documentElement).children());
+              testset.append(pars);
+              $.ajax({
+                type: "GET", 
+                url: url + "/properties/values/positions/",
+                success: function(res){
+                  var pars = $X('<positions/>');
+                  pars.append($(res.documentElement).children());
+                  testset.append(pars);
+                  $.ajax({
+                    type: "GET", 
+                    url: url + "/properties/values/description/",
+                    success: function(res){
+                      testset.append($(res.documentElement));
+                      $.ajax({
+                        type: "GET", 
+                        url: url + "/properties/values/transformation/",
+                        success: function(res){
+                          var pars = $X('<transformation/>');
+                          pars.append($(res.documentElement));
+                          testset.append(pars);
+
+                          var base = $("input[name=current-instance]").val().replace(/[^\/]+\/?$/,'');
+                          var params = { mimetype: 'text/xml' };
+
+                          $('#savetestsetform').attr('action',base + 'downloadify/testset.xml?' + $.param(params));
+                          $('#savetestsetform input').val(testset.serializeXML());
+                          $('#savetestsetform').submit();
+                        },  
+                        error: report_failure
+                      });
+                    },  
+                    error: report_failure
+                  });
+                },
+                error: report_failure
+              });
+            },
+            error: report_failure
+          });
+        },
+        error: report_failure
+      });
     },
     error: report_failure
   });  
-      
+}// }}}
+function set_testset(testset) {// {{{
+  var url = $("input[name=current-instance]").val();
+
+  $.ajax({
+    type: "GET", 
+    url: url + "/notifications/subscriptions/",
+    success: function(res){
+      var rcount = 0;
+      var values = $("subscriptions > subscription[url]",res);
+      var vals = [];
+      values.each(function(){
+        vals.push($(this).attr('url'));
+      });
+      load_testset_handlers(url,testset,vals);
+    },
+    error: report_failure
+  });  
+
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/dataelements/",
+    success: function(res){
+      var rcount = 0;
+      var values = $("value > *",res);
+      var length = values.length;
+      values.each(function(){
+        var name = this.nodeName;
+        $.ajax({
+          type: "DELETE", 
+          url: url + "/properties/values/dataelements/" + name,
+          success: function(){
+            rcount += 1;
+            if (rcount == length)
+              load_testset_dataelements(url,testset);
+          },
+          error: report_failure
+        });  
+      });
+      if (length == 0)
+        load_testset_dataelements(url,testset);
+    },
+    error: report_failure
+  });  
+  
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/endpoints/",
     success: function(res){
+      var rcount = 0;
+      var values = $("value > *",res);
+      var length = values.length;
+      values.each(function(){
+        var name = this.nodeName;
+        $.ajax({
+          type: "DELETE", 
+          url: url + "/properties/values/endpoints/" + name,
+          success: function(){
+            rcount += 1;
+            if (rcount == length)
+              load_testset_endpoints(url,testset);
+          },
+          error: report_failure
+        });  
+      });
+      if (length == 0)
+        load_testset_endpoints(url,testset);
     },
     error: report_failure
   });
-
-  $.ajax({
-    type: "GET", 
-    url: url + "/properties/values/handlerwrapper/",
-    success: function(res){
-    },
-    error: report_failure
-  });
-      
+  
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/positions/",
     success: function(res){
+      var rcount = 0;
+      var values = $("value > *",res);
+      var length = values.length;
+      values.each(function(){
+        var name = this.nodeName;
+        $.ajax({
+          type: "DELETE", 
+          url: url + "/properties/values/positions/" + name,
+          success: function(){
+            rcount += 1;
+            if (rcount == length)
+              load_testset_pos(url,testset);
+          },
+          error: report_failure
+        });  
+      });
+      if (length == 0)
+        load_testset_pos(url,testset);
     },
-    error: report_failure
-  });
-
-  $.ajax({
-    type: "GET", 
-    url: url + "/properties/values/description/",
-    success: function(res){
-    },  
     error: report_failure
   });
 
@@ -474,10 +603,63 @@ function get_testset() {// {{{
     type: "GET", 
     url: url + "/properties/values/transformation/",
     success: function(res){
+      var values = $("not-existing",res);
+      $("testset > transformation > *",testset).each(function(){
+        var val = "<content>" + $(this).serializeXML() + "</content>";
+        if (values.length > 0) {
+          $.ajax({
+            type: "POST", 
+            url: url + "/properties/values/",
+            data: ({property: "transformation"}),
+            success: function() { 
+              $.ajax({ 
+                type: "PUT", 
+                data: ({content: val}),
+                url: url + "/properties/values/transformation",
+                success: function() {
+                  load_testset_des(url,testset); 
+                },  
+              });
+            },
+            error: report_failure
+          });
+        } else {
+          $.ajax({
+            type: "PUT", 
+            url: url + "/properties/values/transformation",
+            data: ({content: val}),
+            success: function() { load_testset_des(url,testset); },
+            error: report_failure
+          });
+        }
+      });
     },  
     error: report_failure
   });
+  
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/handlerwrapper",
+    success: function() { load_testset_hw(url,testset); },
+    error: report_failure
+  });
 }// }}}
+function load_testsetfile() { //{{{
+  if (running) return;
+  if (typeof window.FileReader !== 'function') {
+    alert('FileReader not yet supportet');
+    return;
+  }  
+  var files = $('#testsetfile').get(0).files;
+  var reader = new FileReader();
+  reader.onload = function(){
+    set_testset(reader.result.parseXML());
+    running  = false;
+  }  
+  reader.onerror = function(){ running  = false; }  
+  reader.onabort = function(){ running  = false; }  
+  reader.readAsText(files[0]);
+} //}}}
 function load_testset() {// {{{
   if (running) return;
   running  = true;
@@ -486,7 +668,6 @@ function load_testset() {// {{{
   $('#main .tabbehind button').hide();
   $('#dat_details').empty();
 
-  var url = $("input[name=current-instance]").val();
   var name = load ? load : $("select[name=testset-names]").val();
 
   $.ajax({ 
@@ -494,150 +675,13 @@ function load_testset() {// {{{
     dataType: 'xml',
     url: "testsets/" + name + ".xml",
     success: function(res){ 
-      var testset = res; 
       document.title = name;
-
-      $.ajax({
-        type: "GET", 
-        url: url + "/notifications/subscriptions/",
-        success: function(res){
-          var rcount = 0;
-          var values = $("subscriptions > subscription[url]",res);
-          var vals = [];
-          values.each(function(){
-            vals.push($(this).attr('url'));
-          });
-          load_testset_handlers(url,testset,vals);
-        },
-        error: report_failure
-      });  
-
-      $.ajax({
-        type: "GET", 
-        url: url + "/properties/values/dataelements/",
-        success: function(res){
-          var rcount = 0;
-          var values = $("value > *",res);
-          var length = values.length;
-          values.each(function(){
-            var name = this.nodeName;
-            $.ajax({
-              type: "DELETE", 
-              url: url + "/properties/values/dataelements/" + name,
-              success: function(){
-                rcount += 1;
-                if (rcount == length)
-                  load_testset_dataelements(url,testset);
-              },
-              error: report_failure
-            });  
-          });
-          if (length == 0)
-            load_testset_dataelements(url,testset);
-        },
-        error: report_failure
-      });  
-      
-      $.ajax({
-        type: "GET", 
-        url: url + "/properties/values/endpoints/",
-        success: function(res){
-          var rcount = 0;
-          var values = $("value > *",res);
-          var length = values.length;
-          values.each(function(){
-            var name = this.nodeName;
-            $.ajax({
-              type: "DELETE", 
-              url: url + "/properties/values/endpoints/" + name,
-              success: function(){
-                rcount += 1;
-                if (rcount == length)
-                  load_testset_endpoints(url,testset);
-              },
-              error: report_failure
-            });  
-          });
-          if (length == 0)
-            load_testset_endpoints(url,testset);
-        },
-        error: report_failure
-      });
-      
-      $.ajax({
-        type: "GET", 
-        url: url + "/properties/values/positions/",
-        success: function(res){
-          var rcount = 0;
-          var values = $("value > *",res);
-          var length = values.length;
-          values.each(function(){
-            var name = this.nodeName;
-            $.ajax({
-              type: "DELETE", 
-              url: url + "/properties/values/positions/" + name,
-              success: function(){
-                rcount += 1;
-                if (rcount == length)
-                  load_testset_pos(url,testset);
-              },
-              error: report_failure
-            });  
-          });
-          if (length == 0)
-            load_testset_pos(url,testset);
-        },
-        error: report_failure
-      });
-
-      $.ajax({
-        type: "GET", 
-        url: url + "/properties/values/transformation/",
-        success: function(res){
-          var values = $("not-existing",res);
-          $("testset > transformation > *",testset).each(function(){
-            var val = "<content>" + $(this).serializeXML() + "</content>";
-            if (values.length > 0) {
-              $.ajax({
-                type: "POST", 
-                url: url + "/properties/values/",
-                data: ({property: "transformation"}),
-                success: function() { 
-                  $.ajax({ 
-                    type: "PUT", 
-                    data: ({content: val}),
-                    url: url + "/properties/values/transformation",
-                    success: function() {
-                      load_testset_des(url,testset); 
-                    },  
-                  });
-                },
-                error: report_failure
-              });
-            } else {
-              $.ajax({
-                type: "PUT", 
-                url: url + "/properties/values/transformation",
-                data: ({content: val}),
-                success: function() { load_testset_des(url,testset); },
-                error: report_failure
-              });
-            }
-          });
-        },  
-        error: report_failure
-      });
-      
-      $.ajax({
-        type: "PUT", 
-        url: url + "/properties/values/handlerwrapper",
-        success: function() { load_testset_hw(url,testset); },
-        error: report_failure
-      });
+      set_testset(res);
     }
   });
   running  = false;
 }// }}}
+
 function load_testset_des(url,testset) {// {{{
   $("testset > description",testset).each(function(){
     var val = "<content>" + $(this).serializeXML() + "</content>";

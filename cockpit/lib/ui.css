@@ -215,7 +215,24 @@ div.tabbed .tabbelow .layout tr {
   padding:0;
   margin:0;
 }
+div.tabbed .tabbelow .compact {
+  border-collapse:collapse;
+  border-spacing:0;
+  border:0 none;
+  padding:0;
+  margin:0;
+}
 
+div.tabbed .tabbelow .compact td {
+  border:0 none;
+  padding:0;
+  margin:0;
+}
+div.tabbed .tabbelow .compact tr {
+  border:0 none;
+  padding:0;
+  margin:0;
+}
 div.tabbed .tabbelow .layout .fixed { white-space:nowrap; }
 div.tabbed .tabbelow .layout .top { vertical-align: top; }
 
