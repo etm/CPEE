@@ -15,7 +15,7 @@ require File.expand_path(File.dirname(__FILE__) + '/engine/implementation')
 
 ### sets $basepath
 ### defaults $host => localhost, $port => 9298, $mode => debug
-### reads server.config.rb, so this file can be use to change these values
+### reads server.config, so this file can be use to change these values
 Riddl::Server::config!(File.expand_path(File.dirname(__FILE__)))
 
 ### construct and run server
