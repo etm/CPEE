@@ -1,8 +1,7 @@
 $(document).ready(function() {
-  console.info($.browser.version);
   if (!($.browser.mozilla && parseInt($.browser.version) >= 8) && !($.browser.webkit && parseInt($.browser.version) >= 535)) {
     $('body').children().remove();
-    $('body').append('Sorry, only Firefox >= 8.0 and Chrom(e|ium) >= 14 for now.');
+    $('body').append('Sorry, only Firefox >= 8.0 and Chrom(e|ium) >= 17 for now.');
   }  
 
   // Resize areas
