@@ -48,6 +48,7 @@ $(document).ready(function() {// {{{
   $("button[name=loadtestset]").click(load_testset);
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=savetestset]").click(function(){ get_testset(); });
+  $("button[name=savesvg]").click(function(){ get_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=votestop]").click(check_subscription);
 
@@ -482,9 +483,9 @@ function get_testset() {// {{{
                           var base = $("input[name=current-instance]").val().replace(/[^\/]+\/?$/,'');
                           var params = { mimetype: 'text/xml' };
 
-                          $('#savetestsetform').attr('action',base + 'downloadify/testset.xml?' + $.param(params));
-                          $('#savetestsetform input').val(testset.serializeXML());
-                          $('#savetestsetform').submit();
+                          $('#savetform').attr('action',base + 'downloadify/testset.xml?' + $.param(params));
+                          $('#savetform input').val(testset.serializeXML());
+                          $('#savetform').submit();
                         },  
                         error: report_failure
                       });
