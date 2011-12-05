@@ -164,6 +164,11 @@ function CPEE(adaptor) {
       case 'alternative':
         tab.append(create_input_property('Condition','',$(node).attr('condition')));
         break;
+      case 'critical':
+        var sid = $(node).attr('sid') || 'section';
+        tab.append(create_input_property('SID','',sid));
+        tab.append(create_line('Hint','Identical SID\'s shared by between differnt "critical" elements define mutual exclusive areas'));
+        break;
       case 'parallel':
         var wait = $(node).attr('wait') || '-1';
         tab.append(create_input_property('Wait','',wait));
@@ -778,7 +783,7 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<critical xmlns="http://cpee.org/ns/description/1.0"/>');
+        var node = $X('<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {

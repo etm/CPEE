@@ -123,6 +123,9 @@ function serialize_details(parent) { //{{{
     case 'alternative':
       xml.attr('condition',$('input.pname_condition').val());
       break;
+    case 'critical':
+      xml.attr('sid',$('input.pname_sid').val());
+      break;
     case 'parallel':
       if (parseInt($('input.pname_wait').val()) > -1) {
         xml.attr('wait',$('input.pname_wait').val());

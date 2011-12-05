@@ -483,9 +483,9 @@ function get_testset() {// {{{
                           var base = $("input[name=current-instance]").val().replace(/[^\/]+\/?$/,'');
                           var params = { mimetype: 'text/xml' };
 
-                          $('#savetform').attr('action',base + 'downloadify/testset.xml?' + $.param(params));
-                          $('#savetform input').val(testset.serializeXML());
-                          $('#savetform').submit();
+                          $('#saveform').attr('action',base + 'downloadify/testset.xml?' + $.param(params));
+                          $('#saveform input').val(testset.serializeXML());
+                          $('#saveform').submit();
                         },  
                         error: report_failure
                       });
@@ -506,16 +506,22 @@ function get_testset() {// {{{
   });  
 }// }}}
 function get_svg() {// {{{
-
-
   var base = $("input[name=current-instance]").val().replace(/[^\/]+\/?$/,'');
-  var params = { mimetype: 'text/xml' };
+  var params = { mimetype: 'image/svg+xml' };
 
-  $('#savetform').attr('action',base + 'downloadify/testset.xml?' + $.param(params));
-  $('#savetform input').val(testset.serializeXML());
-  $('#savetform').submit();
+  $('#saveform').attr('action',base + 'downloadify/graph.svg?' + $.param(params));
+  var gc = $('#graphcanvas').clone();
+  $.ajax({
+    type: "GET", 
+    url: "lib/wfadaptor.css",
+    success: function(res){
+      gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
+      $('#saveform input').val(gc.serializeXML());
+      $('#saveform').submit();
+    }  
+  });
 }// }}}
-function set_testset(testset) {// {{{
+function set_testset (testset) {// {{{
   var url = $("input[name=current-instance]").val();
 
   $.ajax({
