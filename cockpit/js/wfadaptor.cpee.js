@@ -832,7 +832,7 @@ function CPEE(adaptor) {
     'mouseout': events.mouseout,
    }//}}}
   };  /*}}}*/
-  this.elements.end = this.elements.description = { /*{{{*/
+  this.elements.start = this.elements.description = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'description',
       'endnodes' : 'passthrough',
@@ -845,16 +845,15 @@ function CPEE(adaptor) {
       },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
-                    '<circle cx="15" cy="15" r="11" class="stand"/>' + 
-                    '<text transform="translate(15,21)" class="normal">Ω</text>' +
+                    '<circle cx="15" cy="15" r="11" class="black"/>' + 
+                    '<text transform="translate(15,21)" class="inverted">α</text>' +
                   '</svg>');
       }
     },//}}}
     'description' : {//{{{
       'permissible_children': function(node) {
         var func = null;
-        if(node.get(0).tagName == 'description') { func = adaptor.description.insert_last_into }
+        if(node.get(0).tagName == 'description') { func = adaptor.description.insert_first_into }
         else { func = adaptor.description.insert_after }
         return [
           {'label': 'Service Call with Manipulate Block', 
