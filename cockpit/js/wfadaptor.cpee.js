@@ -80,7 +80,7 @@ function CPEE(adaptor) {
   
       if(child) {
         group = elements[xml_node.get(0).tagName].description.permissible_children(xml_node);
-        if(group.length > 0) menu['Inster into'] = group;
+        if(group.length > 0) menu['Insert into'] = group;
       }
       if(sibling) {
         group = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
@@ -152,9 +152,9 @@ function CPEE(adaptor) {
         tab.append(create_area_property('Manipulate','',format_text_skim($(node).text())));
         break;
       case 'loop':
-        if ($(node).attr('pre_test'))
+        if ($(node).attr('pre_test') != undefined)
           var mode = 'pre_test';
-        if ($(node).attr('post_test'))
+        if ($(node).attr('post_test') != undefined)
           var mode = 'post_test';
         tab.append(create_select_property('Mode','',mode,['post_test','pre_test']));
         tab.append(create_input_property('Condition','',$(node).attr(mode)));
@@ -165,12 +165,12 @@ function CPEE(adaptor) {
         tab.append(create_input_property('Condition','',$(node).attr('condition')));
         break;
       case 'critical':
-        var sid = $(node).attr('sid') || 'section';
+        var sid = ($(node).attr('sid') == '' ? 'section' : $(node).attr('sid'));
         tab.append(create_input_property('SID','',sid));
         tab.append(create_line('Hint','Identical SID\'s shared by between differnt "critical" elements define mutual exclusive areas'));
         break;
       case 'parallel':
-        var wait = $(node).attr('wait') || '-1';
+        var sid = ($(node).attr('wait') == '' ? '-1' : $(node).attr('wait'));
         tab.append(create_input_property('Wait','',wait));
         tab.append(create_line('Hint','-1 to wait for all branches'));
         break;
@@ -777,7 +777,7 @@ function CPEE(adaptor) {
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
-                    '<text transform="translate(16.5,21.5)" class="normal">⚠</text>' +
+                    '<text transform="translate(15,21)" class="normal">⚠</text>' +
                   '</svg>');
       }
     },//}}}
@@ -845,7 +845,7 @@ function CPEE(adaptor) {
       },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="11" class="black"/>' + 
+                    '<circle cx="15" cy="15" r="14" class="black"/>' + 
                     '<text transform="translate(15,21)" class="inverted">α</text>' +
                   '</svg>');
       }
