@@ -170,7 +170,7 @@ function CPEE(adaptor) {
         tab.append(create_line('Hint','Identical SID\'s shared by between differnt "critical" elements define mutual exclusive areas'));
         break;
       case 'parallel':
-        var sid = ($(node).attr('wait') == '' ? '-1' : $(node).attr('wait'));
+        var wait = ($(node).attr('wait') == '' || $(node).attr('wait') == undefined ? '-1' : $(node).attr('wait'));
         tab.append(create_input_property('Wait','',wait));
         tab.append(create_line('Hint','-1 to wait for all branches'));
         break;
