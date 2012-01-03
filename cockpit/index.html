@@ -120,7 +120,7 @@
           </table>
         </div> <!--}}}-->
         <div id="areainstance" class="inactive"> <!--{{{-->
-          <table class='layout'>
+          <table class='compact info'>
           <tr>
             <td>Instance Url:</td>
             <td></td>
@@ -136,17 +136,25 @@
             <td></td>
             <td><input type="checkbox" name="votestop"/></td>
           </tr>
+          </table>
+          <hr></hr>
+          <table class='compact loadsave'>
           <tr>
-            <td><button name="loadtestset">load from testset</button></td>
-            <td>⇐</td>
             <td><select name="testset-names"></select></td>
+            <td><button name="loadtestset">load from testset</button></td>
+            <td rowspan='3'></td>
+            <td rowspan='3'><button name="savetestset">save testset</button></td>
+            <td rowspan='3'></td>
+            <td rowspan='3'><button name="savesvg">save svg graph</button></td>
           </tr>
           <tr>
-            <td><button name="savetestset">save testset</button></td>
-            <td></td>
-            <td></td>
+            <td><input type='file' id='testsetfile'/></td>
+            <td><button name="loadtestsetfile">load from testset</button></td>
           </tr>
           </table>
+          <form id='saveform' method='post' target='_blank' action=''>
+            <input type='hidden' name='content' content=''/>
+          </form>
         </div> <!--}}}-->
         <div id="areaexecution" class='inactive'> <!--{{{-->
           <table>
@@ -160,9 +168,9 @@
     <div class="tabbed hidden" id='parameters'>
       <table class="tabbar">
         <tr>
-          <td class="tab switch"                        ><h1></h1></td>
+          <td class="tab switch"                       ><h1></h1></td>
           <td class="tab"          id="tabdataelements"><h1>Data Elements</h1></td>
-          <td class="tab inactive" id="tabendpoints"    ><h1>Endpoints</h1></td>
+          <td class="tab inactive" id="tabendpoints"   ><h1>Endpoints</h1></td>
           <td class="tabbehind"><button title='Ctrl-N while editing entry'>New</button><button title='Ctrl-S while editing entry'>Save</button></td>
         </tr>
         <tr class="border hidden"><td colspan="4"></td></tr>

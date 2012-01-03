@@ -176,6 +176,27 @@
           <xsl:text>end</xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
+        <xsl:if test="name()='group'">
+          <xsl:apply-templates>
+            <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:apply-templates>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
+        <xsl:if test="name()='critical'">
+          <xsl:text>critical :</xsl:text>
+          <xsl:value-of select="@sid"/>
+          <xsl:text> do</xsl:text>
+          <xsl:call-template name="print-newline"/>
+          <xsl:apply-templates>
+            <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:apply-templates>
+          <xsl:call-template name="print-space">
+            <xsl:with-param name="i">1</xsl:with-param>
+            <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:call-template>
+          <xsl:text>end</xsl:text>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
       </xsl:template>
       
       <xsl:template match="d:alternative">
@@ -262,9 +283,16 @@
             <xsl:text>]</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>"</xsl:text>
-            <xsl:value-of select="text()"/>
-            <xsl:text>"</xsl:text>
+            <xsl:choose>
+              <xsl:when test="@type = 'symbolic'">
+                <xsl:value-of select="text()"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>"</xsl:text>
+                <xsl:value-of select="text()"/>
+                <xsl:text>"</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>  
           </xsl:otherwise>
         </xsl:choose>  
       </xsl:template>
@@ -333,5 +361,5 @@
       </xsl:template>
 
     </xsl:stylesheet>
-  </transformation>  
+  </transformation>
 </testset>

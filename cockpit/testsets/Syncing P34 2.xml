@@ -43,7 +43,7 @@
       <manipulate output="result">  data.x += "a3,"</manipulate>  
     </call>  
   </description><!--}}}-->
-  <transformation><!--{{{-->
+  <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
       <xsl:output method="text"/>
       <xsl:strip-space elements="*"/>
@@ -155,6 +155,21 @@
           <xsl:apply-templates>
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
           </xsl:apply-templates>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
+        <xsl:if test="name()='critical'">
+          <xsl:text>critical :</xsl:text>
+          <xsl:value-of select="@sid"/>
+          <xsl:text> do</xsl:text>
+          <xsl:call-template name="print-newline"/>
+          <xsl:apply-templates>
+            <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:apply-templates>
+          <xsl:call-template name="print-space">
+            <xsl:with-param name="i">1</xsl:with-param>
+            <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:call-template>
+          <xsl:text>end</xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
       </xsl:template>
@@ -321,5 +336,5 @@
       </xsl:template>
 
     </xsl:stylesheet>
-  </transformation>  <!--}}}-->
+  </transformation>
 </testset>

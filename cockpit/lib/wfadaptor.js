@@ -84,7 +84,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
-    svg.container.attr({'height': (graph.max.row+0.1)*height, 'width':(graph.max.col+0.65)*width});
+    svg.container.attr({'height': (graph.max.row+0.3)*height, 'width':(graph.max.col+0.65)*width});
     svg.container.append(graph.svg);
   } // }}}
   // }}}
@@ -240,7 +240,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
       illustrator.set_svg(graph);
     }
-    adaptor.notify($('*[new=true]',description).attr('svg-id'));
+    var newn = $('*[new=true]',description);
+        newn.removeAttr('new');
+    adaptor.notify(newn.attr('svg-id'));
   } // }}}
   // }}}
   // Adaption functions {{{
@@ -290,6 +292,14 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(root_expansion == 'horizontal') pos.row++; 
     if(illustrator.elements[root.tagName].col_shift(root) == true && root_expansion != 'horizontal') pos.col++; 
 
+    if(root.tagName == 'description') { // First parsing {{{
+      pos.row++;
+      max.row++;
+      $(root).attr('svg-id','description');
+      group.attr('element-id','group-description');
+      illustrator.draw.draw_symbol('start', 'description', pos.row, pos.col, group);
+    } // }}}
+
     $(root).children().each(function() { 
       // Set SVG-ID {{{
       if($(this).attr('id') == undefined) {
@@ -330,8 +340,11 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].endnodes != 'this')  { 
         for(i in block.endnodes) endnodes.push(block.endnodes[i]); // collects all endpoints from different childs e.g. alternatives from choose 
       } else { endnodes = [jQuery.extend(true, {}, pos)]; } // sets this element as only endpoint
-      if(prev[0].row != 0 || prev[0].col != 0) // this if avoids the connection from description to the first element
+      if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
+        illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos);
+      } else {
         for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos);
+      }  
       // }}}
       // Prepare next iteration {{{
       if(root_expansion == 'vertical') { prev = jQuery.extend(true, {}, endnodes); pos.row = block.max.row;} // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
@@ -346,16 +359,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       max.row = parent_pos.row;
       max.col = parent_pos.col;
     }
-    if(root.tagName == 'description') { // Finsished parsing {{{
-      pos.row++;
-      max.row++;
-      $(root).attr('svg-id','description');
-      group.attr('element-id','group-description');
-      if(prev[0].row != 0 || prev[0].col != 0) // this if avoids the connection from description to the first element
-        for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos);
-      illustrator.draw.draw_symbol('end', 'description', pos.row, pos.col, group);
-      if(max.col < 1) max.col = 1;
-    } // }}}
     if(illustrator.elements[root.tagName].endnodes == 'this' && illustrator.elements[root.tagName].closeblock == false) {endnodes = [prev];} // closeblock == false, allows loop to close himselfe
     return {'endnodes': endnodes, 'max':max, 'svg':group};
   } // }}}

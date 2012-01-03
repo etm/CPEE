@@ -58,17 +58,21 @@ function save_main(top) { //{{{
       newn.append(node.children());
     }  
     node.replaceWith(newn);
-
-    var serxml = graphrealization.description.get_description();
-    var url = $("input[name=current-instance]").val();
     $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
-    $.ajax({
-      type: "PUT", 
-      url: url + "/properties/values/description/",
-      data: ({'content': '<content>' + serxml + '</content>'}),
-    });
+
+    save_description();
   }  
 } //}}}
+
+function save_description() {
+  var serxml = graphrealization.description.get_description();
+  var url = $("input[name=current-instance]").val();
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/description/",
+    data: ({'content': '<content>' + serxml + '</content>'}),
+  });
+}
 
 function serialize_details(parent) { //{{{
   var ele = $('input.pname_element',parent).val();
@@ -118,6 +122,9 @@ function serialize_details(parent) { //{{{
       break;
     case 'alternative':
       xml.attr('condition',$('input.pname_condition').val());
+      break;
+    case 'critical':
+      xml.attr('sid',$('input.pname_sid').val());
       break;
     case 'parallel':
       if (parseInt($('input.pname_wait').val()) > -1) {
