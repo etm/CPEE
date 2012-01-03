@@ -864,16 +864,16 @@ function format_code(res,skim,lnums) {// {{{
 
     var m;
     var l = 1;
-    while (m = res.match(/^ +|^(?!<div style=)|^\z/m)) {
+    while (m = res.match(/^ +|^(?!<div style=)|^$/m)) {
       m = m[0];
       var tm = (m.length + 2) * 0.6 + 2 * 0.6 + 4 * 0.6;
       var ln = (lnums ? $.sprintf("%03d",l) + ':&#160;' : '');
-      res = res.replace(/^ +|^(?!<div style=)|^\z/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + ln + "&#160;".repeat(m.length));
+      res = res.replace(/^ +|^(?!<div style=)|^$/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + ln + "&#160;".repeat(m.length));
       l++;
     }
     res = res.replace(/  /g," &#160;");
-    res = res.replace(/\n\z/g,"\n<div>&#160;");
-    res = res.replace(/\n|\z/g,"</div>\n");
+    res = res.replace(/\n$/g,"\n<div>&#160;");
+    res = res.replace(/\n|$/g,"</div>\n");
   }  
   } catch(e) {
     alert(e.toString());

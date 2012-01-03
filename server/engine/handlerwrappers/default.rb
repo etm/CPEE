@@ -72,11 +72,9 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   end # }}}
 
   def inform_syntax_error(err,code)# {{{
-    puts code
-    puts "------"
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :code => code, :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message)
   end# }}}
   def inform_manipulate_change(status,data,endpoints) # {{{
     $controller[@instance].serialize!

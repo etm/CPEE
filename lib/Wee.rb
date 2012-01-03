@@ -694,7 +694,7 @@ public
           rescue Exception => err
             @dslr.__wee_state = :stopping
             handlerwrapper = @dslr.__wee_handlerwrapper.new @dslr.__wee_handlerwrapper_args
-            handlerwrapper.inform_syntax_error(err)
+            handlerwrapper.inform_syntax_error(err,code)
           end
           if @dslr.__wee_state == :running
             @dslr.__wee_state = :finished 
