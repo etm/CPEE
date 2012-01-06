@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 require 'rubygems'
-require '../../../../riddl/lib/ruby/client'
+require 'riddl/client'
 require 'xml/smart'
 require 'pp'
 
