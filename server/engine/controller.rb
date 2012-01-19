@@ -19,7 +19,7 @@ class Controller
       key = ::File::basename(::File::dirname(sub))
       self.unserialize_event!(:cre,key)
     end
-    unless ['stopped','ready'].include?(self.unserialize_data!)
+    unless ['stopped','ready','finished'].include?(self.unserialize_data!)
       XML::Smart::modify(@directory + 'properties.xml') do |doc|
         doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
         doc.find("/p:properties/p:state").first.text = 'stopped'
