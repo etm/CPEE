@@ -204,6 +204,42 @@ function CPEE(adaptor) {
   } //}}}
   
   // Primitive Elements
+  this.elements.callinjection = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'abstract', 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<text transform="translate(15,21)" class="normal">c</text>' +
+                    '<circle cx="28" cy="27" r="9" class="stand"/>' + 
+                    '<text transform="translate(28,31)" class="small">i</text>' +
+                  '</svg>');
+      }
+    },//}}}
+  'description' : {//{{{
+    'create':  function(target) {
+      var node = null;
+      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+      return node;
+    },
+    'permissible_children': function(node) {
+      if(node.children('manipulate').lenght < 1)
+        return [
+         {'label': 'Manipulate Block', 
+          'function_call': adaptor.description.insert_last_into, 
+          'menu_icon': elements.callmanipulate.illustrator.svg, 
+          'params': [adaptor.description.elements.manipulate.create, node]}
+        ];
+      return [];
+    }
+  },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      events.mousedown(node,e,true, true);
+    },
+    'click': events.click,
+   }//}}}
+  }; /*}}}*/
   this.elements.callmanipulate = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract', 
@@ -245,7 +281,12 @@ function CPEE(adaptor) {
       'type' : 'primitive', 
       'endnodes' : 'this',
       'resolve_symbol' : function(node) { 
-        if($(node).children('manipulate').length > 0) {
+        //if($(node).children('service').length > 0) {
+        if($('parameters > service', node).length > 0) {
+          return 'callinjection'; 
+          return illustrator.elements.callinjection.draw(node, pos, block);
+        } else if($('manipulate', node).length > 0) {
+        //} else if($(node).children('manipulate').length > 0) {
           return 'callmanipulate'; 
           return illustrator.elements.callmanipulate.draw(node, pos, block);
         } else {
@@ -294,6 +335,30 @@ function CPEE(adaptor) {
                     '<circle cx="15" cy="15" r="14" class="stand"/>' + 
                     '<text transform="translate(15,21)" class="normal">m</text>' +
                   '</svg>');
+      }
+    },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = $X('<manipulate id="' + adaptor.description.get_free_id() + '" xmlns="http://cpee.org/ns/description/1.0"/>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        return [];
+      }
+    },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      events.mousedown(node,e,false, true);
+    },
+    'click': events.click,
+   }//}}}
+  }; /*}}}*/
+  this.elements.constraints = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'primitive',
+      'endnodes' : 'this',
+      'svg': function() {
+        return false;
       }
     },//}}}
     'description' : {//{{{
@@ -819,6 +884,45 @@ function CPEE(adaptor) {
            'function_call': func, 
            'menu_icon': elements.critical.illustrator.svg, 
            'params': [adaptor.description.elements.critical.create, node]},
+        ];
+      }
+    },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      events.mousedown(node,e,true, true);
+    },
+    'click': events.click,
+    'dblclick': events.dblclick, 
+    'mouseover': events.mouseover,
+    'mouseout': events.mouseout,
+   }//}}}
+  };  /*}}}*/
+  this.elements.group = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'complex',
+      'endnodes' : 'aggregate',
+      'closeblock' : false,
+      'border': 'injectiongroup', // other value than true,false inidcates the used class for the svg-object
+      'expansion' : function(node) {
+        return 'vertical';
+      },
+      'col_shift' : function(node) {
+        return true;
+      },
+      'svg': function() {
+        return false;
+      }
+    },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = $X('<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        var func = null;
+        if(node.get(0).tagName == 'group') { func = adaptor.description.insert_first_into }
+        else { func = adaptor.description.insert_after }
+        return [
         ];
       }
     },//}}}
