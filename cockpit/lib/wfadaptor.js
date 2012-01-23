@@ -306,7 +306,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       // Set SVG-ID {{{
       if($(this).attr('id') == undefined) {
         if(id_counter[this.tagName] == undefined) id_counter[this.tagName] = -1;
-         $(this).attr('svg-id', this.tagName + '_' + (++id_counter[this.tagName]));
+        $(this).attr('svg-id', this.tagName + '_' + (++id_counter[this.tagName]));
       } else { $(this).attr('svg-id',  $(this).attr('id'));}  // }}}
       // Calculate next position {{{
       if($(this).attr('collapsed') == undefined || $(this).attr('collapsed') == 'false') { collapsed = false; }

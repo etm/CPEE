@@ -184,23 +184,23 @@ function CPEE(adaptor) {
     tab.append(create_sizer());
     save['details'] = serialize_details(tab).serializeXML();
   } // }}}
-  this.events.dblclick = function(node, e) { // {{{
-    $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','none');
-    var xml_node = adaptor.description.get_node_by_svg_id($(node).parents(':first').attr('element-id'));
+  this.events.dblclick = function(svgid, e) { // {{{
+    $('.tile[element-id = "' + svgid + '"]').css('display','none');
+    var xml_node = adaptor.description.get_node_by_svg_id(svgid);
     if(xml_node.attr('collapsed') == undefined || xml_node.attr('collapsed') == 'false') {xml_node.attr('collapsed','true');}
     else {xml_node.attr('collapsed','false');}
     adaptor.description.update();
     return false;
   } // }}}
-  this.events.mouseover = function(node, e) { // {{{
-    $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','block');
+  this.events.mouseover = function(svgid, e) { // {{{
+    $('.tile[element-id = "' + svgid + '"]').css('display','block');
     return false;
   } // }}}
-  this.events.mouseout = function(node, e) { // {{{
-    $('.tile[element-id = "' + $(node).parents(':first').attr('element-id') + '"]').css('display','none');
+  this.events.mouseout = function(svgid, e) { // {{{
+    $('.tile[element-id = "' + svgid + '"]').css('display','none');
     return false;
   } // }}}
-  this.events.dragstart = function (node, e) { //{{{
+  this.events.dragstart = function (svgid, e) { //{{{
   } //}}}
   
   // Primitive Elements
