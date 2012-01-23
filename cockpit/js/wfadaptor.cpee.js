@@ -353,6 +353,30 @@ function CPEE(adaptor) {
     'click': events.click,
    }//}}}
   }; /*}}}*/
+  this.elements.constraints = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'primitive',
+      'endnodes' : 'this',
+      'svg': function() {
+        return false;
+      }
+    },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = $X('<manipulate id="' + adaptor.description.get_free_id() + '" xmlns="http://cpee.org/ns/description/1.0"/>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        return [];
+      }
+    },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      events.mousedown(node,e,false, true);
+    },
+    'click': events.click,
+   }//}}}
+  }; /*}}}*/
   
   // Complex Elements
   this.elements.choose = { /*{{{*/
@@ -860,6 +884,45 @@ function CPEE(adaptor) {
            'function_call': func, 
            'menu_icon': elements.critical.illustrator.svg, 
            'params': [adaptor.description.elements.critical.create, node]},
+        ];
+      }
+    },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      events.mousedown(node,e,true, true);
+    },
+    'click': events.click,
+    'dblclick': events.dblclick, 
+    'mouseover': events.mouseover,
+    'mouseout': events.mouseout,
+   }//}}}
+  };  /*}}}*/
+  this.elements.group = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'complex',
+      'endnodes' : 'aggregate',
+      'closeblock' : false,
+      'border': 'injectiongroup', // other value than true,false inidcates the used class for the svg-object
+      'expansion' : function(node) {
+        return 'vertical';
+      },
+      'col_shift' : function(node) {
+        return true;
+      },
+      'svg': function() {
+        return false;
+      }
+    },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = $X('<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        var func = null;
+        if(node.get(0).tagName == 'group') { func = adaptor.description.insert_first_into }
+        else { func = adaptor.description.insert_after }
+        return [
         ];
       }
     },//}}}

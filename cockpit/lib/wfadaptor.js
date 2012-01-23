@@ -72,7 +72,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     svg.container.append(svg.defs);
     //svg_structure();
     for(element in elements) 
-      if(elements[element].svg) {
+      if(elements[element].svg() != false) {
         var sym = $X('<symbol id="' + element + '" xmlns="http://www.w3.org/2000/svg"/>').append(elements[element].svg().children()); // append all children to symbol
         $.each(elements[element].svg().attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
         svg.defs.append(sym);
@@ -162,8 +162,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         );
       }
     }
-    if(group) {group.prepend(line);}
-    else {svg.container.append(line);}
+    // Seems to solve injection groups-line problem, but I guess it will caus problem when collapsing elements
+    //if(group) {group.prepend(line);}
+    //else 
+    {svg.container.append(line);}
   } //  }}}
   var svg_structure = function() { // {{{
     svg.container.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
@@ -312,15 +314,19 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(root_expansion == 'vertical')  pos.row++;
       if(root_expansion == 'horizontal')  pos.col++;
       if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].type == 'complex' && !collapsed) {
+        if(illustrator.elements[this.tagName] != undefined && !illustrator.elements[this.tagName].svg()) pos.row--;
+// TODO: Remaining problem is the order insode the svg. Thats why the connection is above the icon
         block = parse(this, jQuery.extend(true, {}, pos));
         group.append(block.svg);
         block.svg.attr('id', 'group-' + $(this).attr('svg-id')); 
         if(illustrator.elements[this.tagName].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive 
       } else {
-        block.max.row = pos.row;
-        block.max.col = pos.col;
-        block.endnodes = (!collapsed ? [pos] : [jQuery.extend(true, {}, pos)]);
-        block.svg = group;
+        if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].type == 'primitive'  && illustrator.elements[this.tagName].svg()) { // This enables "invisble" elements, by returning false in the SVG function (e.g. constraints)
+          block.max.row = pos.row;
+          block.max.col = pos.col;
+          block.endnodes = (!collapsed ? [pos] : [jQuery.extend(true, {}, pos)]);
+          block.svg = group;
+        }
       }
       // }}}
       // Draw symbol {{{
@@ -329,7 +335,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       else if(typeof illustrator.elements[this.tagName].resolve_symbol == 'function') {sym_name = illustrator.elements[this.tagName].resolve_symbol(this);}
       else if(typeof illustrator.elements[this.tagName].resolve_symbol == 'string')   {sym_name = illustrator.elements[this.tagName].resolve_symbol;}
       else                                                                            {sym_name = this.tagName;}
-      illustrator.draw.draw_symbol(sym_name, $(this).attr('svg-id'), pos.row, pos.col, block.svg).addClass(illustrator.elements[this.tagName] ? illustrator.elements[this.tagName].type : 'primitive unknown');
+      if((illustrator.elements[this.tagName] && illustrator.elements[this.tagName].svg()) || sym_name == 'unknown') { 
+        illustrator.draw.draw_symbol(sym_name, $(this).attr('svg-id'), pos.row, pos.col, block.svg).addClass(illustrator.elements[this.tagName] ? illustrator.elements[this.tagName].type : 'primitive unknown');
+      } else { console.log("no icon "+ this.tagName);}
       if(illustrator.elements[this.tagName] && illustrator.elements[this.tagName].border) illustrator.draw.draw_border($(this).attr('svg-id'), pos, block.max, block.svg);
       if(illustrator.elements[this.tagName] && illustrator.elements[this.tagName].type == 'complex') illustrator.draw.draw_tile($(this).attr('svg-id'), pos, block.max, block.svg);
       // }}}
@@ -339,7 +347,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       }
       if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].endnodes != 'this')  { 
         for(i in block.endnodes) endnodes.push(block.endnodes[i]); // collects all endpoints from different childs e.g. alternatives from choose 
-      } else { endnodes = [jQuery.extend(true, {}, pos)]; } // sets this element as only endpoint
+      } else { endnodes = [jQuery.extend(true, {}, pos)]; } // sets this element as only endpoint (aggreagte)
       if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
         illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos);
       } else {
