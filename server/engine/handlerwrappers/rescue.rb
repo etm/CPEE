@@ -110,7 +110,12 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,nil,nil,:http)
         return
       end
+# Make rescue-hash here
       @handler_returnValue = [result, status]# }}}
+# TODO
+# Georg: Check log if color freeze (unmark)
+# When stopping the unmark command may be ignored
+# instance.js at the beginning (moz-websocket)
     elsif parameters.key?(:soap_operation)# {{{
       # Bulding SAOP-Envelope {{{
       wsdl_client = Riddl::Client.new(parameters[:wsdl].split('?')[0])
