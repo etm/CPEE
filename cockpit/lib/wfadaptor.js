@@ -237,12 +237,20 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   } // }}}
   var update = this.update = function(svgid) { // {{{
     id_counter = {};
-    if(update_illustrator ){
+    if(update_illustrator){
       illustrator.clear();
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
       illustrator.set_svg(graph);
     }
-    adaptor.notify(svgid);
+    var newn = $('*[new=true]',description);
+    newn.removeAttr('new');
+
+    if (newn.attr('svg-id') != undefined)
+      adaptor.notify(newn.attr('svg-id'));
+    else if (svgid != undefined)
+      adaptor.notify(svgid);
+    else
+      console.info('Something went horribly wrong');
   } // }}}
   // }}}
   // Adaption functions {{{
@@ -251,14 +259,16 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(typeof(new_node) == 'function') {nn = new_node(target);}
     else {nn = new_node;}
     target.after(nn);
-    update(nn.attr('svg-id'));
+    nn.attr('new','true');
+    update();
   } // }}}
   this.insert_first_into = function(new_node, target, selector) { // {{{
     var nn;
     if(typeof(new_node) == 'function') {nn = new_node(target);}
     else {nn = new_node;}
     target.prepend(nn);
-    update(nn.attr('svg-id'));
+    nn.attr('new','true');
+    update();
   } // }}}
   this.insert_last_into = function(new_node, target, selector) { // {{{
     var nn;
@@ -266,12 +276,18 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     else {nn = new_node;}
     target.append(nn);
     nn.attr('new','true');
-    update(nn.attr('svg-id'));
+    update();
   } // }}}
   this.remove = function(selector, target) {//{{{
-    if(selector == undefined) {target.remove()}
-    else { $(selector, target).remove();}
-    update(nn.attr('svg-id'));
+    var svgid;
+    if(selector == undefined) {
+      svgid = target.attr('svg-id');
+      target.remove()
+    } else { 
+      svgid = $(selector, target).attr('svg-id');
+      $(selector, target).remove();
+    }
+    update(svgid);
   }
   // }}}
   // }}}
