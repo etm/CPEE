@@ -18,7 +18,7 @@
     <!-- services>http://sumatra.wst.univie.ac.at:9290/groups/Cinemas/</services -->
     <services>http://localhost:9290/groups/Cinemas/</services>
     <!-- injection_handler>http://sumatra.wst.univie.ac.at:9290/injection/handler</injection_handler -->
-    <injection_handler>http://localhost:9290/injection/handler</injection_handler>
+    <injection_handler>http://localhost:9291/</injection_handler>
     <!-- select>http://sumatra.wst.univie.ac.at:9290/select/pgwl</select -->
     <select>http://localhost:9290/select/pgwl</select>
   </endpoints>  
