@@ -235,16 +235,14 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     return 'a' + id;
   } // }}}
-  var update = this.update = function() { // {{{
+  var update = this.update = function(svgid) { // {{{
     id_counter = {};
     if(update_illustrator ){
       illustrator.clear();
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
       illustrator.set_svg(graph);
     }
-    var newn = $('*[new=true]',description);
-        newn.removeAttr('new');
-    adaptor.notify(newn.attr('svg-id'));
+    adaptor.notify(svgid);
   } // }}}
   // }}}
   // Adaption functions {{{
@@ -253,16 +251,14 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(typeof(new_node) == 'function') {nn = new_node(target);}
     else {nn = new_node;}
     target.after(nn);
-    nn.attr('new','true');
-    update();
+    update(nn.attr('svg-id'));
   } // }}}
   this.insert_first_into = function(new_node, target, selector) { // {{{
     var nn;
     if(typeof(new_node) == 'function') {nn = new_node(target);}
     else {nn = new_node;}
     target.prepend(nn);
-    nn.attr('new','true');
-    update();
+    update(nn.attr('svg-id'));
   } // }}}
   this.insert_last_into = function(new_node, target, selector) { // {{{
     var nn;
@@ -270,12 +266,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     else {nn = new_node;}
     target.append(nn);
     nn.attr('new','true');
-    update();
+    update(nn.attr('svg-id'));
   } // }}}
   this.remove = function(selector, target) {//{{{
     if(selector == undefined) {target.remove()}
     else { $(selector, target).remove();}
-    update();
+    update(nn.attr('svg-id'));
   }
   // }}}
   // }}}

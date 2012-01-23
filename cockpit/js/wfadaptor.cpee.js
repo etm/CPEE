@@ -189,7 +189,7 @@ function CPEE(adaptor) {
     var xml_node = adaptor.description.get_node_by_svg_id(svgid);
     if(xml_node.attr('collapsed') == undefined || xml_node.attr('collapsed') == 'false') {xml_node.attr('collapsed','true');}
     else {xml_node.attr('collapsed','false');}
-    adaptor.description.update();
+    adaptor.description.update(svgid);
     return false;
   } // }}}
   this.events.mouseover = function(svgid, e) { // {{{
