@@ -3,42 +3,18 @@ require 'date'
 require 'cgi'
 
 class RescueHash < Hash
-def self::new_from_obj(obj)
-  RescueHash.new.merge(obj)
-end
-
-def value(key)
-  results = []
-  self.each do |k,v|
-    results << v.value(key) if v.class == RescueHash
-    results << v if k == key
+  def self::new_from_obj(obj)
+    RescueHash.new.merge(obj)
   end
-  results.length != 1 ? results.flatten : results[0]
-end
 
-def to_json(options = nil) #:nodoc:
-  hash = as_json(options)
-
-  result = '{ "!map:RescueHash": {'
-  result << hash.map do |key, value|
-    "#{MultiJson.encode(key.to_s)}:#{MultiJson.encode(value, options)}"
-  end * ','
-  result << '}}'
-end
-
-def as_json(options = nil) #:nodoc:
-  if options
-    if attrs = options[:except]
-      except(*Array.wrap(attrs))
-    elsif attrs = options[:only]
-      slice(*Array.wrap(attrs))
-    else
-      self
+  def value(key)
+    results = []
+    self.each do |k,v|
+      results << v.value(key) if v.class == RescueHash
+      results << v if k == key
     end
-  else
-    self
+    results.length != 1 ? results.flatten : results[0]
   end
-end
 end
 
 module Kernel
@@ -46,6 +22,8 @@ module Kernel
     self != value
   end
 end
+
+Result = Struct.new(:data, :status)
 
 class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,lay=nil,continue=nil)
@@ -111,7 +89,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         return
       end
 # Make rescue-hash here
-      @handler_returnValue = [result, status]# }}}
+      @handler_returnValue = Result.new(result, status)# }}}
 # TODO
 # Georg: Check log if color freeze (unmark)
 # When stopping the unmark command may be ignored
@@ -125,7 +103,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       end
       status, resp = wsdl_client.get params
       unless status == 200
-        @handler_returnValue = [resp, status]
+        @handler_returnValue = Result.new(resp, status)
         @handler_continue.continue
         return
       end
@@ -148,11 +126,11 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       if out.find("//s:Fault", {"s" => "http://schemas.xmlsoap.org/soap/envelope/"}).any?
         node = out.find("//s:Fault", {"s"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
         node.namespaces['soap'] = out.root.namespaces['soap']
-        @handler_returnValue = [node.to_doc, 500]
+        @handler_returnValue = Result.new(node.to_doc, 500)
       else 
         node = out.find("//s:Body", {"s"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
         node.namespaces['soap'] = out.root.namespaces['soap']
-        @handler_returnValue = [node.to_doc, 200]
+        @handler_returnValue = Result.new(node.to_doc, 200)
       end
     end# }}}  
     @handler_continue.continue
@@ -163,7 +141,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def callback(result)
-    @handler_returnValue = [result,nil]
+    @handler_returnValue = Result.new(result,nil)
     @handler_continue.continue
   end
  

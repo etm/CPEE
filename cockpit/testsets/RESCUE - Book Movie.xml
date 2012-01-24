@@ -31,9 +31,9 @@
         </templates>
       </parameters>
       <manipulate output="result">
-        data.title = result[0].value('title')
-        data.date = result[0].value('date')
-        data.city = result[0].value('city')
+        data.title = result.data.value('title')
+        data.date = result.data.value('date')
+        data.city = result.data.value('city')
       </manipulate>
     </call>
     <call id="use_repo_cinemas" endpoint="services">
@@ -55,14 +55,14 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-        if result[0]['status'] == 200 
-          pp result
+      res = result[0]
+        if res['status'] == 200 
           # Computing service responses
-          data.reservation_number = result[0]['reservation_id']
-          data.starting_time = result[0]['starting_time']
-          data.selected_title = result[0]['movie_title']
-          data.selected_date = result[0]['selected_date']
-          data.hall = result[0]['hall']
+          data.reservation_number = res['reservation_id']
+          data.starting_time = res['starting_time']
+          data.selected_title = res['movie_title']
+          data.selected_date = res['selected_date']
+          data.hall = res['hall']
           # Computing properties of executed services
           perf_book = properties['call_book']['perform_book']
           data.selected_cinema = " #{perf_book.values[0]['vendor']['name']}\n#{perf_book.values[0]['address']['street']}\n#{perf_book.values[0]['address']['zip']} #{perf_book.values[0]['address']['city']}"
