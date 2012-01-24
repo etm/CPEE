@@ -15,11 +15,8 @@
     <reservation_number/>
   </dataelements>
   <endpoints>
-    <!-- services>http://sumatra.wst.univie.ac.at:9290/groups/Cinemas/</services -->
     <services>http://localhost:9290/groups/Cinemas/</services>
-    <!-- injection_handler>http://sumatra.wst.univie.ac.at:9290/injection/handler</injection_handler -->
     <injection_handler>http://localhost:9291/</injection_handler>
-    <!-- select>http://sumatra.wst.univie.ac.at:9290/select/pgwl</select -->
     <select>http://localhost:9293/pgwl</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
@@ -39,7 +36,7 @@
         data.city = result[0].value('city')
       </manipulate>
     </call>
-    <call id="a01" endpoint="services">
+    <call id="use_repo_cinemas" endpoint="services">
       <constraints>
           <constraint xpath="address/city" comparator="==" variable="city"/>
       </constraints>
@@ -79,6 +76,26 @@ pp result[0]
         end
       </manipulate>
     </call>  
+    <call id="confirm" endpoint="select">
+      <parameters>
+        <method>post</method>
+        <info>true</info>
+        <templates>
+          <uri>'http://gruppe.wst.univie.ac.at/~ralph/input-forms/cinemas.xsl'</uri>
+          <!-- uri>'http://gus.lan/input-forms/cinemas.xsl'</uri -->
+          <name>'Cinemas-Output'</name>
+          <lang>'EN'</lang>
+        </templates>
+        <parameters>
+          <title>data.selected_title</title>
+          <date>data.selected_date</date>
+          <time>data.starting_time</time>
+          <hall>data.hall</hall>
+          <res_nr>data.reservation_number</res_nr>
+          <cinema>data.selected_cinema</cinema>
+        </parameters>
+      </parameters>
+    </call>
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
