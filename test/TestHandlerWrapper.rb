@@ -67,7 +67,7 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
     $short_track << "F#{@__myhandler_position}"
     raise(err)
   end
-  def inform_syntax_error(err)
+  def inform_syntax_error(err,code)
     $long_track += "ERROR: Syntax messed with error #{err}\n"
     $short_track << "E"
     raise(err)
