@@ -31,7 +31,7 @@ class TestWFPDeferredChoice < Test::Unit::TestCase
     @wf.start.join
     wf_assert('CALL a1_1')
     wf_assert('CALL a1_2')
-    wf_sassert('Da1_1NLNa1_2Ca2_1Da2_1Sfinished')
+    wf_sassert('Da1_1NLNa1_2Ca2_1Da2_1|finished|')
     data = @wf.data
     assert(data[:choice] == 1, "data[:choice] has not the correct value [#{data[:x]}]")
   end

@@ -1,5 +1,5 @@
 class TestHandlerWrapper < Wee::HandlerWrapperBase
-  def initialize(args,endpoint=nil,position=nil,lay=nil,continue=nil)
+  def initialize(args,endpoint=nil,position=nil,continue=nil)
     @__myhandler_stopped = false
     @__myhandler_position = position
     @__myhandler_continue = continue
@@ -57,6 +57,11 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
     @__myhandler_stopped = true
   end
   # Is called if a Activity is executed correctly
+  def inform_activity_manipulate
+    $long_track += "MANIPULATE #{@__myhandler_position}\n"
+    $short_track << "M#{@__myhandler_position}"
+  end
+  # Is called if a Activity is executed correctly
   def inform_activity_done
     $long_track += "DONE #{@__myhandler_position}\n"
     $short_track << "D#{@__myhandler_position}"
@@ -74,7 +79,7 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
   end
   def inform_state_change(newstate)
     $long_track += "---> STATE #{newstate}\n"
-    $short_track << "S#{newstate}"
+    $short_track << "|#{newstate}|"
   end
 end
 
@@ -104,5 +109,8 @@ module TestMixin #{{{
     else  
       assert(!$short_track.include?(what),"#{$short_track}\nNot Present \"#{what}\":\n#{$long_track}")
     end
+  end
+  def wf_rsassert(pat='')
+    assert($short_track =~ /#{pat}/,"Somehow executed different #{$short_track} should be '#{pat}'")
   end
 end  #}}}

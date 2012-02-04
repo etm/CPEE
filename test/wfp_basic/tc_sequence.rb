@@ -11,6 +11,6 @@ class TestWFPSequence < Test::Unit::TestCase
       activity :a1_3, :call, :endpoint1
     end
     @wf.start.join
-    wf_sassert('SrunningCa1_1Da1_1Ca1_2Da1_2Ca1_3Da1_3Sfinished')
+    wf_sassert('|running|Ca1_1Da1_1Ca1_2Da1_2Ca1_3Da1_3|finished|')
   end
 end

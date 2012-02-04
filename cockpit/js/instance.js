@@ -393,7 +393,7 @@ function monitor_instance_vote_add(notification) {// {{{
   var parts = JSON.parse(notification);
   var ctv = $("#votes");
 
-  var astr = "<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + (parts.lay ? ", " + parts.lay : '') + "</td><td>⇒</td>";
+  var astr = "<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + "</td><td>⇒</td>";
   if ($("input[name=votecontinue]").is(':checked'))
     astr += "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>vote to continue</button></td>";
   if ($("input[name=votestop]").is(':checked'))

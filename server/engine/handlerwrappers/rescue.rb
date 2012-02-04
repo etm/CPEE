@@ -26,20 +26,19 @@ end
 Result = Struct.new(:data, :status)
 
 class RescueHandlerWrapper < Wee::HandlerWrapperBase
-  def initialize(arguments,endpoint=nil,position=nil,lay=nil,continue=nil)
+  def initialize(arguments,endpoint=nil,position=nil,continue=nil)
     @instance = arguments[0].to_i
     @url = arguments[1]
     @handler_stopped = false
     @handler_continue = continue
     @handler_endpoint = endpoint
     @handler_position = position
-    @handler_lay = lay
     @handler_returnValue = nil
   end
 
 # executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, parameters)
-    $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
+    $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
     cpee_instance = "#{@url}/#{@instance}"
 
     params = []
@@ -48,7 +47,6 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
       parameters[:parameters] << {'call-instance-uri' => cpee_instance}
       parameters[:parameters] << {'call-activity' => @handler_position}
       parameters[:parameters] << {'call-endpoint' => @handler_endpoint}
-      parameters[:parameters] << {'call-lay' => @handler_lay}
       parameters[:parameters] << {'call-oid' => parameters[:'call-oid']} if parameters.include?(:'call-oid')
     end # }}}
      if parameters.include?(:templates) # {{{
@@ -85,7 +83,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         raise "Could not perform http-#{type} on URI: #{@handler_endpoint} - Status: #{status}" 
       end
       if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
-        $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}#{@handler_lay.nil? ? '': ", #{@handler_lay}"}",self,:callback,nil,nil,:http)
+        $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
         return
       end
 # Make rescue-hash here
@@ -172,15 +170,15 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def inform_activity_done
-    $controller[@instance].notify("running/activity_done", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
+    $controller[@instance].notify("running/activity_done", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position)
   end
   def inform_activity_manipulate
-    $controller[@instance].notify("running/activity_manipulating", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
+    $controller[@instance].notify("running/activity_manipulating", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position)
   end
   def inform_activity_failed(err)
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end
   def inform_syntax_error(err,code)
     puts code
@@ -191,9 +189,9 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
   def inform_manipulate_change(status,data,endpoints)
     $controller[@instance].serialize!
-    $controller[@instance].notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :id => status.id, :message => status.message) unless status.nil?
-    $controller[@instance].notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => data) unless data.nil?
-    $controller[@instance].notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay, :changed => endpoints) unless endpoints.nil?
+    $controller[@instance].notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :id => status.id, :message => status.message) unless status.nil?
+    $controller[@instance].notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :changed => data) unless data.nil?
+    $controller[@instance].notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :changed => endpoints) unless endpoints.nil?
   end
   def inform_position_change(ipc={})
     $controller[@instance].serialize_position!
@@ -208,9 +206,9 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def vote_sync_after
-    $controller[@instance].call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
+    $controller[@instance].call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position)
   end
   def vote_sync_before
-    $controller[@instance].call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :lay => @handler_lay)
+    $controller[@instance].call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position)
   end
 end

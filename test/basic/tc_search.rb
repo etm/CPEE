@@ -12,7 +12,7 @@ class TestSearch < Test::Unit::TestCase
     end
     @wf.search Wee::Position.new(:a1_2, :at)
     @wf.start.join
-    wf_sassert("SrunningCa1_2Da1_2Ca1_3Da1_3Sfinished")
+    wf_sassert("|running|Ca1_2Da1_2Ca1_3Da1_3|finished|")
   end
   def test_search_impact_dual
     @wf.description do

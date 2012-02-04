@@ -33,13 +33,13 @@ class TestWFPLocalSynchronizingMerge < Test::Unit::TestCase
       activity :a3, :call, :endpoint1
     end
     @wf.start.join
-    wf_sassert('SrunningCa2_decideDa2_decide')
+    wf_sassert('|running|Ca2_decideDa2_decide')
     wf_assert('CALL a1_1:')
     wf_assert('CALL a1_2:')
     wf_assert('CALL a2_1:')
     wf_assert('DONE a1_1')
     wf_assert('DONE a1_2')
     wf_assert('DONE a2_1')
-    wf_sassert('Ca3Da3Sfinished')
+    wf_sassert('Ca3Da3|finished|')
   end
 end

@@ -21,6 +21,6 @@ class TestWFPParallel < Test::Unit::TestCase
     wf_assert('CALL a1_2')
     wf_assert('DONE a1_1')
     wf_assert('DONE a1_2')
-    wf_sassert('Ca2Da2Sfinished')
+    wf_sassert('Ca2Da2|finished|')
   end
 end

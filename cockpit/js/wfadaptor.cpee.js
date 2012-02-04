@@ -133,7 +133,6 @@ function CPEE(adaptor) {
     switch(node.nodeName) {
       case 'call':
         tab.append(create_readonly_property('ID',$(node).attr('id')));
-        tab.append(create_input_property('Lay','',$(node).attr('lay')));
         tab.append(create_input_property('Endpoint','',$(node).attr('endpoint')));
   
         if ($('manipulate',node).length > 0)
@@ -148,7 +147,6 @@ function CPEE(adaptor) {
         break;
       case 'manipulate':
         tab.append(create_readonly_property('ID',$(node).attr('id')));
-        tab.append(create_input_property('Lay','',$(node).attr('lay')));
         tab.append(create_area_property('Manipulate','',format_text_skim($(node).text())));
         break;
       case 'loop':

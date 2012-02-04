@@ -44,7 +44,7 @@ class TestParallel < Test::Unit::TestCase
     wf_assert('CALL a_1')
     wf_assert('DONE a_1')
     wf_assert('CALL a_2')
-    wf_sassert('Da_2Ca_3Da_3Sfinished')
+    wf_sassert('Da_2Ca_3Da_3|finished|')
   end
   def test_parallel_nowait
     @wf.description do
@@ -61,7 +61,7 @@ class TestParallel < Test::Unit::TestCase
     @wf.start.join
     wf_assert('CALL a_1')
     wf_assert('CALL a_2')
-    wf_sassert('NLNa_2Ca_3Da_3Sfinished')
+    wf_sassert('NLNa_2Ca_3Da_3|finished|')
   end
   def test_parallel_no_longer_necessary
     @wf.description do
@@ -79,7 +79,7 @@ class TestParallel < Test::Unit::TestCase
     @wf.start.join
     wf_assert('CALL a_1')
     wf_assert('CALL a_2')
-    wf_sassert('NLNa_2Ca_3Da_3Sfinished')
+    wf_sassert('NLNa_2Ca_3Da_3|finished|')
   end
   def test_parallel_nested
     # |- :a_1
