@@ -1,5 +1,5 @@
 html, body {
-  font-family: sans-serif,Verdana, Helvetica;
+  font-family: sans-serif,Arial,Verdana,Helvetica;
   font-size: 0.85em;
 }
 
@@ -54,11 +54,12 @@ div.tabbed table.tabbar h1 {
 }  
 
 div.tabbed table.tabbar .switch h1:before {
-  content: "⬇";
+  content: "▽";
+  vertical-align:top;
   color: ButtonText;
 }  
 div.tabbed table.tabbar .switch h1.margin:before {
-  content: "➡";
+  content: "▶";
   color: ButtonText;
   vertical-align:top;
 }  
