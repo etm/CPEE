@@ -384,7 +384,7 @@ class Wee
       end
 
       Thread.current[:branch_event].wait
-      Thread.current[:branch_event] = nil
+      #Thread.current[:branch_event] = nil
 
       unless self.__wee_state == :stopping || self.__wee_state == :stopped
         # first set all to no_longer_neccessary
@@ -406,18 +406,20 @@ class Wee
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
       branch_parent = Thread.current
       Thread.current[:branches] << Thread.new(*vars) do |*local|
-        Thread.current.abort_on_exception = true
-        Thread.current[:branch_status] = false
-        Thread.current[:branch_parent] = branch_parent
-        if branch_parent[:alternative_executed] && branch_parent[:alternative_executed].length > 0
-          Thread.current[:alternative_executed] = [branch_parent[:alternative_executed].last]
-        end
+        branch_parent[:mutex].synchronize do
+          Thread.current.abort_on_exception = true
+          Thread.current[:branch_status] = false
+          Thread.current[:branch_parent] = branch_parent
+          if branch_parent[:alternative_executed] && branch_parent[:alternative_executed].length > 0
+            Thread.current[:alternative_executed] = [branch_parent[:alternative_executed].last]
+          end
+        end  
 
         Thread.stop
         yield(*local)
 
-        Thread.current[:branch_status] = true
         branch_parent[:mutex].synchronize do
+          Thread.current[:branch_status] = true
           branch_parent[:branch_finished_count] += 1
           if branch_parent[:branch_finished_count] == branch_parent[:branch_wait_count] && self.__wee_state != :stopping
             branch_parent[:branch_event].continue
@@ -523,7 +525,7 @@ class Wee
         thread[:mutex].synchronize do
           unless thread[:branch_event].nil?
             thread[:branch_event].continue
-            thread[:branch_event] = nil
+            # thread[:branch_event] = nil
           end  
         end  
       end  

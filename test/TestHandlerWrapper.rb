@@ -12,6 +12,10 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
   def activity_handle(passthrough, parameters)
     $long_track << "CALL #{@__myhandler_position}: passthrough=[#{passthrough}], endpoint=[#{@__myhandler_endpoint}], parameters=[#{parameters.inspect}]\n"
     $short_track << "C#{@__myhandler_position}"
+
+    if @__myhandler_endpoint == 'stop it'
+      raise Wee::Signal::Stop
+    end
     if parameters[:call]
       @t = Thread.new do
         parameters[:call].call

@@ -5,6 +5,7 @@ class TestWorkflow < Wee
   handlerwrapper TestHandlerWrapper
 
   endpoint :endpoint1 => 'http://www.heise.de'
+  endpoint :stop => 'stop it'
   data :x => 'begin_'
   
   control flow do
