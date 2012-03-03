@@ -29,7 +29,7 @@ class TestChoose < Test::Unit::TestCase
         end
       end
       choose do
-        alternative data.costs > 700 do
+        alternative data.costs > 400 do
           activity :a4, :call, :endpoint1
         end
       end

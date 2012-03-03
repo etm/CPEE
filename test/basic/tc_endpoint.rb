@@ -33,7 +33,7 @@ class TestEndpoint < Test::Unit::TestCase
     @wf.endpoints[:endpoint1]="http://www.test2.com" # asure that ep1 has original value
     eps = @wf.endpoints
     assert(eps.is_a?(Hash), "Endpoints should result a Hash but returns a #{eps.class}")
-    assert(eps.size == 2, "Endpoints should have two entries: #{eps.inspect}")
+    assert(eps.size == 3, "Endpoints should have two entries: #{eps.inspect}")
     assert(eps[:endpoint1] == "http://www.test2.com", "Endpoint 1 has wrong value or does not exist: #{eps.inspect}")
     assert(eps[:endpoint2] == "http://www.test.at", "Endpoint 2 has wrong value or does not exist: #{eps.inspect}")
   end
