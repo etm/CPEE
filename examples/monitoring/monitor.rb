@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
 require 'pp'
 require 'fileutils'
+
 require 'rubygems'
+gem 'riddl', '>=0.99.30'
 require 'riddl/client'
-require 'eventmachine'
-require 'em-websocket-client'
 
 srv = Riddl::Client.new("http://localhost:9298/")
 res = srv.resource("/")
@@ -19,34 +19,17 @@ unless ins.empty?
   puts "Monitoring Instance #{ins}"
   res = srv.resource("/#{ins}/notifications/subscriptions/")
   status, response = res.post [ 
-    Riddl::Parameter::Simple.new("topic","running"),
-    Riddl::Parameter::Simple.new("events","after_push,call"),
+    Riddl::Parameter::Simple.new("topic","properties/description"),
+    Riddl::Parameter::Simple.new("events","change"),
+    Riddl::Parameter::Simple.new("topic","properties/state"),
+    Riddl::Parameter::Simple.new("events","change"),
   ]
   key = response.first.value
 
-  EM.run do
-    conn = EventMachine::WebSocketClient.connect("ws://localhost:9299/#{ins}/notifications/subscriptions/#{key}/ws/")
-
-    conn.callback do
-      conn.send_msg "Hello!"
-      conn.send_msg "done"
-    end
-
-    conn.errback do |e|
-      puts "Got error: #{e}"
-    end
-
+  res = srv.resource("/#{ins}/notifications/subscriptions/#{key}/ws/").ws do |conn|
     conn.stream do |msg|
-      puts "<#{msg}>"
-      if msg == "done"
-        conn.close_connection
-      end
+      puts msg
+      puts '--------------'
     end
-
-    conn.disconnect do
-      puts "gone"
-      EM::stop_event_loop
-    end
-  end
-
+  end  
 end
