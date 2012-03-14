@@ -80,9 +80,6 @@ function serialize_details(parent) { //{{{
   switch(ele) {
     case 'call':
         xml.attr('id',$('input.pname_id').val());
-        if ($('input.pname_lay',parent).length > 0 && $.trim($('input.pname_lay').val())!='') {
-          xml.attr('lay',$('input.pname_lay').val());
-        }  
         xml.attr('endpoint',$('input.pname_endpoint').val());
 
         var para = $X('<parameters xmlns="http://cpee.org/ns/description/1.0"/>');

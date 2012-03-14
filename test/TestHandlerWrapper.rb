@@ -1,5 +1,5 @@
 class TestHandlerWrapper < Wee::HandlerWrapperBase
-  def initialize(args,endpoint=nil,position=nil,lay=nil,continue=nil)
+  def initialize(args,endpoint=nil,position=nil,continue=nil)
     @__myhandler_stopped = false
     @__myhandler_position = position
     @__myhandler_continue = continue
@@ -12,6 +12,10 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
   def activity_handle(passthrough, parameters)
     $long_track << "CALL #{@__myhandler_position}: passthrough=[#{passthrough}], endpoint=[#{@__myhandler_endpoint}], parameters=[#{parameters.inspect}]\n"
     $short_track << "C#{@__myhandler_position}"
+
+    if @__myhandler_endpoint == 'stop it'
+      raise Wee::Signal::Stop
+    end
     if parameters[:call]
       @t = Thread.new do
         parameters[:call].call
@@ -57,6 +61,11 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
     @__myhandler_stopped = true
   end
   # Is called if a Activity is executed correctly
+  def inform_activity_manipulate
+    $long_track += "MANIPULATE #{@__myhandler_position}\n"
+    $short_track << "M#{@__myhandler_position}"
+  end
+  # Is called if a Activity is executed correctly
   def inform_activity_done
     $long_track += "DONE #{@__myhandler_position}\n"
     $short_track << "D#{@__myhandler_position}"
@@ -67,14 +76,14 @@ class TestHandlerWrapper < Wee::HandlerWrapperBase
     $short_track << "F#{@__myhandler_position}"
     raise(err)
   end
-  def inform_syntax_error(err)
+  def inform_syntax_error(err,code)
     $long_track += "ERROR: Syntax messed with error #{err}\n"
     $short_track << "E"
     raise(err)
   end
   def inform_state_change(newstate)
     $long_track += "---> STATE #{newstate}\n"
-    $short_track << "S#{newstate}"
+    $short_track << "|#{newstate}|"
   end
 end
 
@@ -104,5 +113,8 @@ module TestMixin #{{{
     else  
       assert(!$short_track.include?(what),"#{$short_track}\nNot Present \"#{what}\":\n#{$long_track}")
     end
+  end
+  def wf_rsassert(pat='')
+    assert($short_track =~ /#{pat}/,"Somehow executed different #{$short_track} should be '#{pat}'")
   end
 end  #}}}

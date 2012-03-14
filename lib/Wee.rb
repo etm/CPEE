@@ -126,7 +126,7 @@ class Wee
   end # }}}
 
   class HandlerWrapperBase # {{{
-    def initialize(arguments,endpoint=nil,position=nil,lay=nil,continue=nil); end
+    def initialize(arguments,endpoint=nil,position=nil,continue=nil); end
 
     def activity_handle(passthrough, endpoint, parameters); end
 
@@ -240,13 +240,13 @@ class Wee
     # endpoint: (only with :call) ep of the service
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters, &blk)# {{{
-      position, lay = __wee_position_test position
+      position = __wee_position_test position
       return if __wee_is_in_search_mode(position)
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
 
       Thread.current[:continue] = Continue.new
       begin
-        handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, lay, Thread.current[:continue]
+        handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, Thread.current[:continue]
         ipc = {}
         if Thread.current[:branch_parent] && Thread.current[:branch_parent][:branch_position]
           @__wee_positions.delete Thread.current[:branch_parent][:branch_position]
@@ -374,17 +374,20 @@ class Wee
       Thread.current[:branches].each do |thread| 
         while thread.status != 'sleep' && thread.alive?
           Thread.pass
+        end
+        # decide after executing block in parallel cause for coopis
+        # it goes out of search mode while dynamically counting branches
+        if Thread.current[:branch_search] == false
+          thread[:branch_search] = false
         end  
         thread.wakeup if thread.alive?
       end
 
       Thread.current[:branch_event].wait
-      Thread.current[:branch_event] = nil
-
-      Thread.current[:branch_run] = true if Thread.current[:branch_search] == false
+      #Thread.current[:branch_event] = nil
 
       unless self.__wee_state == :stopping || self.__wee_state == :stopped
-        # first set all to to no longer neccessary
+        # first set all to no_longer_neccessary
         Thread.current[:branches].each do |thread| 
           if thread.alive? 
             thread[:nolongernecessary] = true
@@ -403,22 +406,20 @@ class Wee
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
       branch_parent = Thread.current
       Thread.current[:branches] << Thread.new(*vars) do |*local|
-        Thread.current.abort_on_exception = true
-        if branch_parent.key?(:branch_run)
-          Thread.current[:branch_search] = false
-          Thread.current[:branch_run] = true
+        branch_parent[:mutex].synchronize do
+          Thread.current.abort_on_exception = true
+          Thread.current[:branch_status] = false
+          Thread.current[:branch_parent] = branch_parent
+          if branch_parent[:alternative_executed] && branch_parent[:alternative_executed].length > 0
+            Thread.current[:alternative_executed] = [branch_parent[:alternative_executed].last]
+          end
         end  
-        Thread.current[:branch_status] = false
-        Thread.current[:branch_parent] = branch_parent
-        if branch_parent[:alternative_executed] && branch_parent[:alternative_executed].length > 0
-          Thread.current[:alternative_executed] = [branch_parent[:alternative_executed].last]
-        end
 
         Thread.stop
         yield(*local)
 
-        Thread.current[:branch_status] = true
         branch_parent[:mutex].synchronize do
+          Thread.current[:branch_status] = true
           branch_parent[:branch_finished_count] += 1
           if branch_parent[:branch_finished_count] == branch_parent[:branch_wait_count] && self.__wee_state != :stopping
             branch_parent[:branch_event].continue
@@ -485,8 +486,10 @@ class Wee
         raise "condition must be called pre_test{} or post_test{}"
       end
       return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
-      yield if __wee_is_in_search_mode
-      return if __wee_is_in_search_mode
+      if __wee_is_in_search_mode
+        yield
+        return if __wee_is_in_search_mode
+      end  
       case condition[1]
         when :pre_test
           yield while condition[0].call && self.__wee_state != :stopping && self.__wee_state != :stopped
@@ -522,7 +525,7 @@ class Wee
         thread[:mutex].synchronize do
           unless thread[:branch_event].nil?
             thread[:branch_event].continue
-            thread[:branch_event] = nil
+            # thread[:branch_event] = nil
           end  
         end  
       end  
@@ -547,20 +550,11 @@ class Wee
     def __wee_position_test(position)# {{{
       pos = false
       if position.is_a?(Symbol) && position.to_s =~ /[a-zA-Z][a-zA-Z0-9_]*/
-        pos = true
-        lay = nil
-      end   
-      if position.is_a?(Array) && position.length != 0 && position[0].is_a?(Symbol) && position[0].to_s =~ /[a-zA-Z][a-zA-Z0-9_]*/
-        pos = true
-        lay = position[1..-1]
-        position = position[0]
-      end  
-      if pos
-        [position, lay]
+        position
       else   
         self.__wee_state = :stopping
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
-        handlerwrapper.inform_syntax_error(Exception.new("position (#{position}) and lay (#{lay.inspect}) not valid"),nil)
+        handlerwrapper.inform_syntax_error(Exception.new("position (#{position}) not valid"),nil)
       end
     end # }}}
 
@@ -570,7 +564,6 @@ class Wee
 
       if position && @__wee_search_positions.include?(position) # matching searchpos => start execution from here
         branch[:branch_search] = false # execute all activities in THIS branch (thread) after this point
-        branch[:branch_run] = true # new threads (branches) spawned by this branch (thread) should inherit that we no longer want to search
         while branch.key?(:branch_parent) # also all parent branches should execute activities after this point, additional branches spawned by parent branches should still be in search mode
           branch = branch[:branch_parent]
           branch[:branch_search] = false

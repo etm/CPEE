@@ -15,12 +15,9 @@
     <reservation_number/>
   </dataelements>
   <endpoints>
-    <!-- services>http://sumatra.wst.univie.ac.at:9290/groups/Cinemas/</services -->
     <services>http://localhost:9290/groups/Cinemas/</services>
-    <!-- injection_handler>http://sumatra.wst.univie.ac.at:9290/injection/handler</injection_handler -->
-    <injection_handler>http://localhost:9290/injection/handler</injection_handler>
-    <!-- select>http://sumatra.wst.univie.ac.at:9290/select/pgwl</select -->
-    <select>http://localhost:9290/select/pgwl</select>
+    <injection_handler>http://localhost:9291/</injection_handler>
+    <select>http://localhost:9293/pgwl</select>
   </endpoints>  
   <description xmlns="http://cpee.org/ns/description/1.0">
     <call id="collect_input" endpoint="select">
@@ -34,12 +31,12 @@
         </templates>
       </parameters>
       <manipulate output="result">
-        data.title = result[0].value('title')
-        data.date = result[0].value('date')
-        data.city = result[0].value('city')
+        data.title = result.data.value('title')
+        data.date = result.data.value('date')
+        data.city = result.data.value('city')
       </manipulate>
     </call>
-    <call id="a01" endpoint="services">
+    <call id="use_repo_cinemas" endpoint="services">
       <constraints>
           <constraint xpath="address/city" comparator="==" variable="city"/>
       </constraints>
@@ -58,27 +55,40 @@
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">
-       # Dirty Monkey-Hacking, but I coudln't figure out the JSON Problem with this Object
-        if result[0].class.to_s == 'Hash'
-          result[0] = RescueHash.new_from_obj(result[0])
-        end
-        properties = RescueHash.new_from_obj(properties)
-
-pp result[0]
-        if result[0]['status'] == 200 
-          data.reservation_number = result[0].value('reservation_id')
-          data.starting_time = result[0].value('starting_time')
-          data.selected_title = result[0].value('movie_title')
-          data.selected_date = result[0].value('selected_date')
-          data.hall = result[0].value('hall')
-# == Remove if JSON/YAML works again
+      res = result[0]
+        if res['status'] == 200 
+          # Computing service responses
+          data.reservation_number = res['reservation_id']
+          data.starting_time = res['starting_time']
+          data.selected_title = res['movie_title']
+          data.selected_date = res['selected_date']
+          data.hall = res['hall']
+          # Computing properties of executed services
           perf_book = properties['call_book']['perform_book']
           data.selected_cinema = " #{perf_book.values[0]['vendor']['name']}\n#{perf_book.values[0]['address']['street']}\n#{perf_book.values[0]['address']['zip']} #{perf_book.values[0]['address']['city']}"
-# == Remove if JSON/YAML works again
-#          data.selected_cinema = CGI::unescapeHTML("#{properties.value('perform_book')[0].value('name')}\n#{properties.value('perform_book')[0].value('street')}\n#{properties.value('perform_book')[0].value('zip')} #{properties.value('perform_book')[0].value('city')}")
         end
       </manipulate>
     </call>  
+    <call id="confirm" endpoint="select">
+      <parameters>
+        <method>post</method>
+        <info>true</info>
+        <templates>
+          <uri>'http://gruppe.wst.univie.ac.at/~ralph/input-forms/cinemas.xsl'</uri>
+          <!-- uri>'http://gus.lan/input-forms/cinemas.xsl'</uri -->
+          <name>'Cinemas-Output'</name>
+          <lang>'EN'</lang>
+        </templates>
+        <parameters>
+          <title>data.selected_title</title>
+          <date>data.selected_date</date>
+          <time>data.starting_time</time>
+          <hall>data.hall</hall>
+          <res_nr>data.reservation_number</res_nr>
+          <cinema>data.selected_cinema</cinema>
+        </parameters>
+      </parameters>
+    </call>
   </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
@@ -103,19 +113,8 @@ pp result[0]
           <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
         </xsl:call-template>
         <xsl:if test="name()='call' or name()='manipulate'">
-          <xsl:choose>  
-            <xsl:when test="@lay">
-              <xsl:text>activity [:</xsl:text>
-              <xsl:value-of select="@id"/>
-              <xsl:text>,</xsl:text>
-              <xsl:value-of select="@lay"/>
-              <xsl:text>]</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:text>activity :</xsl:text>
-              <xsl:value-of select="@id"/>
-            </xsl:otherwise>
-          </xsl:choose>
+          <xsl:text>activity :</xsl:text>
+          <xsl:value-of select="@id"/>
         </xsl:if>
         <xsl:if test="name()='call'">
           <xsl:text>, :call, :</xsl:text>

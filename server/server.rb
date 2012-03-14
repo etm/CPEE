@@ -1,5 +1,7 @@
 #!/usr/bin/ruby
 $0    = "CPEE"
+$mode = :production
+$port = 9298
 
 require 'pp'
 require 'fileutils'

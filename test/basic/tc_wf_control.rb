@@ -51,7 +51,7 @@ class TestWorkflowControl < Test::Unit::TestCase
     @wf.search @wf.positions
 
     @wf.start.join
-    wf_sassert('SrunningCa_test_1_1Da_test_1_1Ca_test_1_2SstoppingSa_test_1_2SstoppedSrunningCa_test_1_2Da_test_1_2Ca_test_1_3Da_test_1_3Sfinished')
+    wf_sassert('|running|Ca_test_1_1Da_test_1_1Ca_test_1_2|stopping|Sa_test_1_2|stopped||running|Ca_test_1_2Da_test_1_2Ca_test_1_3Da_test_1_3|finished|')
   end
   
   def test_continue_after
@@ -63,6 +63,6 @@ class TestWorkflowControl < Test::Unit::TestCase
     @wf.search [Wee::Position.new(:c_test_1_1, :after)]
     @wf.start.join
 
-    wf_sassert('SrunningCc_test_1_2Dc_test_1_2Cc_test_1_3Dc_test_1_3Sfinished')
+    wf_sassert('|running|Cc_test_1_2Dc_test_1_2Cc_test_1_3Dc_test_1_3|finished|')
   end
 end

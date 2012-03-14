@@ -18,7 +18,7 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
       activity :a3, :call, :endpoint1
     end
     @wf.start.join
-    wf_sassert('SrunningDa1Ca2Da2Ca2Da2Ca2Da2Ca3Da3Sfinished');
+    wf_sassert('|running|Ma1Da1Ca2Ma2Da2Ca2Ma2Da2Ca2Ma2Da2Ca3Da3|finished|');
     data = @wf.data
     assert(data[:x] == 3, "data[:x] has not the correct value [#{data[:x]}]")
   end
@@ -38,7 +38,7 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
     @wf.search Wee::Position.new(:a2_2, :at)
     @wf.data :x => 2
     @wf.start.join
-    wf_sassert('SrunningDa2_2Ca3Da3Sfinished');
+    wf_sassert('|running|Ma2_2Da2_2Ca3Da3|finished|');
     data = @wf.data
     assert(data[:x] == 3, "data[:x] has not the correct value [#{data[:x]}]")
   end
@@ -58,7 +58,7 @@ class TestWFPInterleavedParallelRouting < Test::Unit::TestCase
     @wf.search Wee::Position.new(:a3, :at)
     @wf.data :x => 0
     @wf.start.join
-    wf_sassert('SrunningCa3Da3Sfinished');
+    wf_sassert('|running|Ca3Da3|finished|');
     data = @wf.data
     assert(data[:x] == 0, "data[:x] has not the correct value [#{data[:x]}]")
   end

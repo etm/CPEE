@@ -18,7 +18,7 @@ class TestWFPMultiChoice < Test::Unit::TestCase
       activity :a2, :call, :endpoint1
     end
     @wf.start.join
-    wf_sassert('SrunningCa1_1Da1_1Ca1_2Da1_2Ca2Da2Sfinished')
+    wf_sassert('|running|Ca1_1Da1_1Ca1_2Da1_2Ca2Da2|finished|')
   end
   def test_multichoice_parallel
     @wf.data :x => 1
@@ -42,6 +42,6 @@ class TestWFPMultiChoice < Test::Unit::TestCase
     @wf.start.join
     wf_assert('CALL a1_1')
     wf_assert('CALL a1_2')
-    wf_sassert('Da1_1Da1_2Ca2Da2Sfinished')
+    wf_sassert('Da1_1Da1_2Ca2Da2|finished|')
   end
 end
