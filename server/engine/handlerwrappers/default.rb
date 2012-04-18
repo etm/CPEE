@@ -1,11 +1,11 @@
 class DefaultHandlerWrapper < Wee::HandlerWrapperBase
-  def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
+  def  initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @instance = arguments[0].to_i
     @url = arguments[1]
-    @handler_stopped = false
     @handler_continue = continue
     @handler_endpoint = endpoint
     @handler_position = position
+    @handler_passthrough = nil
     @handler_returnValue = nil
   end # }}}
 
@@ -13,26 +13,33 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
     cpee_instance = "#{@url}/#{@instance}"
 
-    params = []
-    callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
-    (parameters[:parameters] || {}).each do |h|
-      if h.class == Hash
-        h.each do |k,v|
-          params <<  Riddl::Parameter::Simple.new("#{k}",MultiJson::encode(v))
+    if passthrough.nil?
+      params = []
+      callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
+      (parameters[:parameters] || {}).each do |h|
+        if h.class == Hash
+          h.each do |k,v|
+            params <<  Riddl::Parameter::Simple.new("#{k}",MultiJson::encode(v))
+          end  
         end  
-      end  
-    end
-    params << Riddl::Header.new("CPEE-Instance",cpee_instance)
-    params << Riddl::Header.new("CPEE-Callback",callback)
+      end
+      params << Riddl::Header.new("CPEE-Instance",cpee_instance)
+      params << Riddl::Header.new("CPEE-Callback",callback)
 
-    type = parameters[:method] || 'post'
-    client = Riddl::Client.new(@handler_endpoint)
-    status, result, headers = client.request type => params
-    raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
+      type = parameters[:method] || 'post'
+      client = Riddl::Client.new(@handler_endpoint)
+      status, result, headers = client.request type => params
+      raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
 
-    @handler_returnValue = ''
-    if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
-      $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+      @handler_returnValue = ''
+      if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
+        $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+        @handler_passthrough = callback
+        return
+      end
+    else
+      $controller[@instance].callbacks[passthrough] = Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+      @handler_passthrough = callback
       return
     end
 
@@ -48,14 +55,16 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   end # }}}
 
   def activity_stop # {{{
-    @handler_stopped = true
+    unless @handler_passthrough.nil?
+      $controller[@instance].callbacks.delete(@handler_passthrough)
+    end
   end # }}}
   def activity_passthrough_value # {{{
-    nil
+    @handler_passthrough
   end # }}}
 
   def activity_no_longer_necessary # {{{
-    @handler_stopped = true
+    true
   end # }}}
 
   def inform_activity_done # {{{
@@ -102,6 +111,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
   def callback(result)
     @handler_returnValue = [result,nil]
+    $controller[@instance].callbacks.delete(@handler_passthrough)
     @handler_continue.continue
   end
 end
