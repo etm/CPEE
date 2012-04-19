@@ -6,7 +6,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     @handler_endpoint = endpoint
     @handler_position = position
     @handler_passthrough = nil
-    @handler_returnValue = [nil,nil]
+    @handler_returnValue = nil
   end # }}}
 
   def activity_handle(passthrough, parameters) # {{{
@@ -34,7 +34,6 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
       status, result, headers = client.request type => params
       raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
 
-      @handler_returnValue = ''
       if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
         $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
         @handler_passthrough = callback
@@ -113,7 +112,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   end # }}}
 
   def callback(result)
-    @handler_returnValue = [result,nil]
+    @handler_returnValue = result
     # puts "CB pt: #{@handler_passthrough.inspect}"
     # puts "CB ep: #{@handler_endpoint.inspect}"
     $controller[@instance].callbacks.delete(@handler_passthrough)
