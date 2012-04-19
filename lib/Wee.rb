@@ -149,6 +149,8 @@ class Wee
     
     def vote_sync_before; true; end
     def vote_sync_after; true; end
+
+    def callback(result); end
   end  # }}}
 
   class Position # {{{

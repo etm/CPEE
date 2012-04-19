@@ -41,8 +41,8 @@ class Controller
   def stop # {{{
     t = @instance.stop
     t.run
-    @callbacks.delete_if{|k,c| c.callback(nil); true}
     @thread.join if !@thread.nil? && @thread.alive?
+    @callback = []
   end # }}}
 
   def serialize! # {{{

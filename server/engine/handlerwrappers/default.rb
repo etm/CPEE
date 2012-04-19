@@ -1,12 +1,12 @@
 class DefaultHandlerWrapper < Wee::HandlerWrapperBase
-  def  initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
+  def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @instance = arguments[0].to_i
     @url = arguments[1]
     @handler_continue = continue
     @handler_endpoint = endpoint
     @handler_position = position
     @handler_passthrough = nil
-    @handler_returnValue = nil
+    @handler_returnValue = [nil,nil]
   end # }}}
 
   def activity_handle(passthrough, parameters) # {{{
@@ -114,11 +114,12 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
   def callback(result)
     @handler_returnValue = [result,nil]
-    puts "CB pt: #{@handler_passthrough.inspect}"
-    puts "CB ep: #{@handler_endpoint.inspect}"
+    # puts "CB pt: #{@handler_passthrough.inspect}"
+    # puts "CB ep: #{@handler_endpoint.inspect}"
     $controller[@instance].callbacks.delete(@handler_passthrough)
     @handler_passthrough = nil
-    p 'continue ....'
+    # puts "CB pt: #{@handler_passthrough.inspect}"
+    # p 'continue ....'
     @handler_continue.continue
   end
 end
