@@ -16,7 +16,7 @@ class Callback #{{{
     @method = method.class == Symbol ? method : :callback
   end
 
-  attr_reader :info, :protocol
+  attr_reader :info, :protocol, :method
 
   def delete_if!(event,key)
     @handler.send @method, :DELETE, *@data if @key == key && @event == event

@@ -243,31 +243,43 @@ class Wee
     # parameters: (only with :call) service parameters
     def activity(position, type, endpoint=nil, *parameters, &blk)# {{{
       position = __wee_position_test position
-      return if __wee_is_in_search_mode(position)
-      return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
-
-      Thread.current[:continue] = Continue.new
       begin
+        searchmode = __wee_is_in_search_mode(position)
+        return if searchmode == true
+        return if self.__wee_state == :stopping || self.__wee_state == :stopped || Thread.current[:nolongernecessary]
+
+        Thread.current[:continue] = Continue.new
         handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args, @__wee_endpoints[endpoint], position, Thread.current[:continue]
+
         ipc = {}
-        if Thread.current[:branch_parent] && Thread.current[:branch_parent][:branch_position]
-          @__wee_positions.delete Thread.current[:branch_parent][:branch_position]
-          ipc[:unmark] ||= []
-          ipc[:unmark] << Thread.current[:branch_parent][:branch_position].position rescue nil
-          Thread.current[:branch_parent][:branch_position] = nil
-        end  
-        if Thread.current[:branch_position]
-          @__wee_positions.delete Thread.current[:branch_position]
-          ipc[:unmark] ||= []
-          ipc[:unmark] << Thread.current[:branch_position].position rescue nil
-        end  
-        wp = Wee::Position.new(position, :at, nil)
-        Thread.current[:branch_position] = wp
+        if searchmode == :after
+          wp = Wee::Position.new(position, :after, nil)
+          ipc[:after] = [wp.position]
+        else  
+          if Thread.current[:branch_parent] && Thread.current[:branch_parent][:branch_position]
+            @__wee_positions.delete Thread.current[:branch_parent][:branch_position]
+            ipc[:unmark] ||= []
+            ipc[:unmark] << Thread.current[:branch_parent][:branch_position].position rescue nil
+            Thread.current[:branch_parent][:branch_position] = nil
+          end  
+          if Thread.current[:branch_position]
+            @__wee_positions.delete Thread.current[:branch_position]
+            ipc[:unmark] ||= []
+            ipc[:unmark] << Thread.current[:branch_position].position rescue nil
+          end  
+          wp = Wee::Position.new(position, :at, nil)
+          ipc[:at] = [wp.position]
+        end
         @__wee_positions << wp
-        ipc[:at] = [wp.position]
+        Thread.current[:branch_position] = wp
+
         handlerwrapper.inform_position_change(ipc)
 
+        # searchmode position is after, jump directly to vote_sync_after
+        raise Signal::Proceed if searchmode == :after
+
         raise Signal::Stop unless handlerwrapper.vote_sync_before
+
         case type
           when :manipulate
             if block_given?
@@ -550,7 +562,6 @@ class Wee
     end  # }}}
 
     def __wee_position_test(position)# {{{
-      pos = false
       if position.is_a?(Symbol) && position.to_s =~ /[a-zA-Z][a-zA-Z0-9_]*/
         position
       else   
@@ -570,7 +581,7 @@ class Wee
           branch = branch[:branch_parent]
           branch[:branch_search] = false
         end
-        @__wee_search_positions[position].detail == :after
+        @__wee_search_positions[position].detail == :after ? :after : false
       else  
         branch[:branch_search] = true
       end  

@@ -41,8 +41,18 @@ class Controller
   def stop # {{{
     t = @instance.stop
     t.run
+    @callbacks.delete_if do |k,c| 
+      # only remove vote_callbacks, the other stuff is removed by
+      # the instance stopping cleanup
+      if c.method == :vote_callback
+        c.callback(nil)
+        true
+      else  
+        false
+      end
+    end  
     @thread.join if !@thread.nil? && @thread.alive?
-    @callback = []
+    @callback = [] # everything should be empty now
   end # }}}
 
   def serialize! # {{{
