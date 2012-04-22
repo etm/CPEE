@@ -10,9 +10,6 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
   end # }}}
 
   def activity_handle(passthrough, parameters) # {{{
-    puts "Before pt: #{passthrough.inspect}"
-    puts "Before ep: #{@handler_endpoint.inspect}"
-
     $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
     cpee_instance = "#{@url}/#{@instance}"
 
@@ -113,12 +110,8 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
 
   def callback(result)
     @handler_returnValue = result
-    # puts "CB pt: #{@handler_passthrough.inspect}"
-    # puts "CB ep: #{@handler_endpoint.inspect}"
     $controller[@instance].callbacks.delete(@handler_passthrough)
     @handler_passthrough = nil
-    # puts "CB pt: #{@handler_passthrough.inspect}"
-    # p 'continue ....'
     @handler_continue.continue
   end
 end

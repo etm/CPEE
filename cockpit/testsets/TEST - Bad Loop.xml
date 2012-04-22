@@ -367,7 +367,7 @@
         <xsl:value-of select="text()"/>
         <xsl:text> }</xsl:text>
         <xsl:choose>  
-          <xsl:when test=". = ../*[last()]">
+          <xsl:when test="generate-id(.) = generate-id(../*[last()])">
             <xsl:text> </xsl:text>
           </xsl:when>
           <xsl:otherwise>
