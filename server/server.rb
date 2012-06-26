@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 $0    = "CPEE"
-$mode = :production
+$mode = :debug
 $port = 9298
 
 require 'pp'

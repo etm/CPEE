@@ -331,11 +331,15 @@ function monitor_instance_state() {// {{{
         var ctv = $("#state");
         ctv.empty();
 
-        var but = "";
         if (res == "stopped") {
           format_visual_clear();
           monitor_instance_pos();
         }  
+        if (res == "running") {
+          format_visual_clear();
+        }  
+
+        var but = "";
         if (res == "ready" || res == "stopped") {
           but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
         }
@@ -359,8 +363,7 @@ function monitor_instance_pos() {// {{{
       format_visual_clear();
       values.each(function(){
         var what = this.nodeName;
-        format_visual_add(what,"active");
-        format_visual_set(what);
+        format_visual_add(what,"passive");
       });
     }
   });
@@ -416,7 +419,6 @@ function monitor_instance_vote_remove(activity,callback,value) {//{{{
 
 function start_instance() {// {{{
   var url = $("input[name=current-instance]").val();
-  format_visual_clear();
   $.ajax({
     type: "PUT", 
     url: url + "/properties/values/state",
@@ -426,7 +428,6 @@ function start_instance() {// {{{
 }// }}}
 function stop_instance() {// {{{
   var url = $("input[name=current-instance]").val();
-  format_visual_clear();
   $.ajax({
     type: "PUT", 
     url: url + "/properties/values/state",
@@ -776,22 +777,30 @@ function load_testset_handlers(url,testset,vals) {// {{{
 
 function format_visual_add(what,cls) {//{{{
   if (node_state[what] == undefined)
-    node_state[what] = [];
-  node_state[what].push(cls);
+    node_state[what] = {};
+  if (node_state[what][cls] == undefined)
+    node_state[what][cls] = 0;
+  node_state[what][cls] += 1;
   format_visual_set(what);
 }//}}}
 function format_visual_remove(what,cls) {//{{{
-  c = node_state[what];
-  if ($.inArray(cls,c) != -1)
-    c.splice($.inArray(cls,c),1);
+  if (node_state[what] == undefined)
+    node_state[what] = {};
+  if (node_state[what][cls] == undefined)
+    node_state[what][cls] = 0;
+  node_state[what][cls] -= 1;
   format_visual_set(what);
 }//}}}
 function format_visual_set(what) {//{{{
   if (node_state[what] != undefined) {
-    var votes = jQuery.grep(node_state[what], function(n, i){ return (n == 'vote'); });
-        votes = votes.length;
-    var actives = jQuery.grep(node_state[what], function(n, i){ return (n == 'active'); });
-        actives = actives.length;
+    if (node_state[what]['vote'] == undefined) node_state[what]['vote'] = 0; 
+    if (node_state[what]['active'] == undefined) node_state[what]['active'] = 0; 
+    if (node_state[what]['passive'] == undefined) node_state[what]['passive'] = 0; 
+
+    var votes = node_state[what]['vote'];
+    var actives = node_state[what]['active'];
+    var passives = node_state[what]['passive'];
+
     if (actives > 0 && votes > 0)
       $('g[element-id="' + what + '"] .super .colon').each(function(a,b){
         b.setAttribute('class','colon necessary');
@@ -823,10 +832,10 @@ function format_visual_set(what) {//{{{
 
     $.each(['#activity-' + what, 'g[element-id="' + what + '"] use'],function(i,t){
       $(t).each(function(a,b){ 
-        var vs = node_state[what].join(" ");
-        if (vs.match(/active/) && vs.match(/passive/)) vs = vs.replace(/passive/,'');
-        if (vs.match(/vote/) && vs.match(/passive/)) vs = vs.replace(/passive/,'');
-        if (vs.match(/active/) && vs.match(/vote/)) vs = vs.replace(/active/,'');
+        if      (actives > 0)  vs = 'active';
+        else if (votes > 0)    vs = 'vote';
+        else if (passives > 0) vs = 'passive';
+        else                   vs = '';
         b.setAttribute("class",'activities ' + vs);
       });
     });

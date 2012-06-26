@@ -43,7 +43,7 @@ button.highlight { background-color: #cc0000; }
 #dat_log td { vertical-align: top; }
 #dat_log tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
 
-#areagraph { }
+#areadetails { table-layout: fixed; }
 
 #dat_endpoints {
   border-collapse:collapse;
