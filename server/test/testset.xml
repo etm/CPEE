@@ -1,48 +1,17 @@
 <?xml version="1.0"?>
 <testset>
-  <positions><!--{{{-->
-    <a1>after</a1>
-  </positions><!--}}}-->
+  <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <dataelements><!--{{{-->
-    <x>""</x>
+    <input>""</input>
+    <return>"%s World"</return>
   </dataelements><!--}}}-->
-  <handlers/><!--{{{-->
-  <endpoints><!--{{{-->
-    <timeout>http://www.pri.univie.ac.at/~mangler/services/timeout.php</timeout>
-  </endpoints>  <!--}}}-->
-  <description>
-    <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
-      <call id="a1" endpoint="timeout">
-        <parameters><!--{{{-->
-          <method>post</method>
-          <parameters>
-            <timeout>2</timeout>
-          </parameters>
-        </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "a1,"</manipulate>  
-      </call>  
-      <call id="a2" endpoint="timeout">
-        <parameters><!--{{{-->
-          <method>post</method>
-          <parameters>
-            <timeout>4</timeout>
-          </parameters>
-        </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "a2,"</manipulate>  
-      </call>  
-      <call id="a3" endpoint="timeout">
-        <parameters><!--{{{-->
-          <method>post</method>
-          <parameters>
-            <timeout>4</timeout>
-          </parameters>
-        </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "a3,"</manipulate>  
-      </call>  
-    </description><!--}}}-->
-  </description>  
-  <transformation><!--{{{-->
+  <handlers/>
+  <endpoints/>
+  <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
+    <manipulate id="a1">data.return = data.return % data.input</manipulate>
+  </description><!--}}}-->
+  <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
       <xsl:output method="text"/>
       <xsl:strip-space elements="*"/>
@@ -143,6 +112,21 @@
           <xsl:apply-templates>
             <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
           </xsl:apply-templates>
+          <xsl:call-template name="print-newline"/>
+        </xsl:if>
+        <xsl:if test="name()='critical'">
+          <xsl:text>critical :</xsl:text>
+          <xsl:value-of select="@sid"/>
+          <xsl:text> do</xsl:text>
+          <xsl:call-template name="print-newline"/>
+          <xsl:apply-templates>
+            <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:apply-templates>
+          <xsl:call-template name="print-space">
+            <xsl:with-param name="i">1</xsl:with-param>
+            <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
+          </xsl:call-template>
+          <xsl:text>end</xsl:text>
           <xsl:call-template name="print-newline"/>
         </xsl:if>
       </xsl:template>
@@ -252,7 +236,7 @@
         <xsl:value-of select="text()"/>
         <xsl:text> }</xsl:text>
         <xsl:choose>  
-          <xsl:when test=". = ../*[last()]">
+          <xsl:when test="generate-id(.) = generate-id(../*[last()])">
             <xsl:text> </xsl:text>
           </xsl:when>
           <xsl:otherwise>
@@ -309,5 +293,5 @@
       </xsl:template>
 
     </xsl:stylesheet>
-  </transformation>  <!--}}}-->
+  </transformation>
 </testset>
