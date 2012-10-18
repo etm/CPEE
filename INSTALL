@@ -1,14 +1,23 @@
+BEWARE - PRELIMINARY VERSION
+----------------------------
+
 For WEE and tests:
   * No dependencies required
   * rake test
   
 For CPEE
   * git clone  http://gaubatp4@donatello.pri.univie.ac.at/repositories/8/Data/
-  * sudo gem install multi_json yajl-ruby
-  * see riddl/INSTALL file
+  * sudo gem install multi_json yajl-ruby savon
+  * sudo gem install xml-smart-*.gem
+  * sudo gem install riddl-*.gem
 
 Run CPEE  
   cd server
   ./server.rb
 
   CPEE runs under localhost:9298  
+
+Run webbased CPEE Cockpit (presuming webserver is installed)
+  * symlink (ln -s) directory cockpit/ to the webserver directory
+    e.g. ln -s `readlink -f cockpit` /var/www/
+  * goto http://localhost/cockpit in browser
