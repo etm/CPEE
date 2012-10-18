@@ -21,7 +21,7 @@ class Controller
     end
     unless ['stopped','ready','finished'].include?(self.unserialize_data!)
       XML::Smart::modify(@directory + 'properties.xml') do |doc|
-        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
         doc.find("/p:properties/p:state").first.text = 'stopped'
       end
     end
@@ -57,7 +57,7 @@ class Controller
 
   def serialize! # {{{
     XML::Smart::modify(@directory + 'properties.xml') do |doc|
-      doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+      doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
       
       node = doc.find("/p:properties/p:dataelements").first
       node.children.delete_all!
@@ -82,7 +82,7 @@ class Controller
   end # }}}
   def serialize_position! # {{{
     XML::Smart::modify(@directory + 'properties.xml') do |doc|
-      doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+      doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
       pos = doc.find("/p:properties/p:positions").first
       pos.children.delete_all!
       @positions = @instance.positions
@@ -115,7 +115,7 @@ class Controller
           @events.each { |e,v| evs << e }
           @votes.each { |e,v| vos << e }
           XML::Smart::open(@directory + 'notifications/' + key + '/subscription.xml') do |doc|
-            doc.namespaces = { 'n' => 'http://riddl.org/ns/common-patterns/notifications-producer/1.0' }
+            doc.register_namespace 'n', 'http://riddl.org/ns/common-patterns/notifications-producer/1.0'
             turl = doc.find('string(/n:subscription/@url)') 
             url = turl == '' ? url : turl
             @communication[key] = url
@@ -140,7 +140,7 @@ class Controller
         end  
       when :cre
         XML::Smart::open(@directory + 'notifications/' + key + '/subscription.xml') do |doc|
-          doc.namespaces = { 'n' => 'http://riddl.org/ns/common-patterns/notifications-producer/1.0' }
+          doc.register_namespace 'n', 'http://riddl.org/ns/common-patterns/notifications-producer/1.0'
           turl = doc.find('string(/n:subscription/@url)') 
           url = turl == '' ? nil : turl
           @communication[key] = url
@@ -162,14 +162,14 @@ class Controller
     state = nil
 
     XML::Smart::open(@directory + 'properties.xml') do |doc|
-      doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+      doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
 
       state = doc.find("string(/p:properties/p:state)")
 
       @instance.data.clear
       doc.find("/p:properties/p:dataelements/p:*").each do |e|
         ### when json decode fails, just use it as a string
-        @instance.data[e.name.to_s.to_sym] = begin
+        @instance.data[e.qname.to_sym] = begin
           MultiJson.decode(e.text)
         rescue
           e.text
@@ -178,7 +178,7 @@ class Controller
 
       @instance.endpoints.clear
       doc.find("/p:properties/p:endpoints/p:*").each do |e|
-        @instance.endpoints[e.name.to_s.to_sym] = e.text
+        @instance.endpoints[e.qname.to_sym] = e.text
       end
       
       begin
@@ -191,7 +191,7 @@ class Controller
       @positions = []
       doc.find("/p:properties/p:positions/p:*").each do |e|
         val = e.text.split(';')
-        @positions << ::Wee::Position.new(e.name.to_s.to_sym,val[0].to_sym,val[1])
+        @positions << ::Wee::Position.new(e.qname.to_s.to_sym,val[0].to_sym,val[1])
       end
 
       @instance.description doc.find("string(/p:properties/p:dsl)")
@@ -199,7 +199,7 @@ class Controller
 
     if hw != @instance.handlerwrapper
       XML::Smart::modify(@directory + 'properties.xml') do |doc|
-        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
         node = doc.find("/p:properties/p:handlerwrapper").first
         node.text = @instance.handlerwrapper.to_s
       end 

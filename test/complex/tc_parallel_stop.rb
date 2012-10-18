@@ -1,7 +1,7 @@
 require 'test/unit'
 require File.expand_path(::File.dirname(__FILE__) + '/../TestWorkflow')
 
-class TestChoose < Test::Unit::TestCase
+class TestParallelStop < Test::Unit::TestCase
   include TestMixin
 
   def test_coopis

@@ -530,6 +530,14 @@ class Wee
     end # }}}
 
   private
+    def __wee_recursive_print(thread,indent='')# {{{
+      p "#{indent}#{thread}"
+      if thread[:branches]
+        thread[:branches].each do |b|
+          __wee_recursive_print(b,indent+'  ')
+        end
+      end  
+    end  # }}}
     def __wee_recursive_continue(thread)# {{{
       return unless thread
       if thread.alive? && thread[:continue] && thread[:continue].waiting?
@@ -588,22 +596,26 @@ class Wee
     end # }}}
   
   public
+    def __wee_finalize
+      __wee_recursive_join(@__wee_main)
+      @__wee_state = :stopped
+      handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
+      handlerwrapper.inform_state_change @__wee_state
+    end
+
     def __wee_state=(newState)# {{{
       return @__wee_state if newState == @__wee_state
       @__wee_positions = Array.new if @__wee_state != newState && newState == :running
       handlerwrapper = @__wee_handlerwrapper.new @__wee_handlerwrapper_args
       @__wee_state = newState
-  
-      handlerwrapper.inform_state_change @__wee_state
 
       if newState == :stopping
         __wee_recursive_continue(@__wee_main)
-        __wee_recursive_join(@__wee_main)
-        @__wee_state = :stopped
-        handlerwrapper.inform_state_change @__wee_state
       end
-      @__wee_state
+  
+      handlerwrapper.inform_state_change @__wee_state
     end # }}}
+
   end # }}}
 
 public
@@ -709,7 +721,10 @@ public
             @dslr.__wee_positions.clear
             handlerwrapper = @dslr.__wee_handlerwrapper.new @dslr.__wee_handlerwrapper_args
             handlerwrapper.inform_position_change(ipc)
-          end  
+          end 
+          if @dslr.__wee_state == :stopping
+            @dslr.__wee_finalize
+          end
         end
       end
       bgiven ? blk : code
@@ -720,6 +735,7 @@ public
   def stop # {{{
     Thread.new do
       @dslr.__wee_state = :stopping
+      @dslr.__wee_main.join if @dslr.__wee_main
     end  
   end # }}}
   # Start the workflow execution
