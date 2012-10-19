@@ -185,7 +185,7 @@ function monitor_instance() {// {{{
                   monitor_instance_endpoints();
                   break;
                 case 'properties/state':
-                  monitor_instance_state();
+                  monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
                   break;
                 case 'properties/position':
                   monitor_instance_pos_change($('event > notification',data).text());
@@ -302,7 +302,6 @@ function monitor_instance_dsl() {// {{{
             graphrealization.set_svg_container($('#graphcanvas'));
             graphrealization.set_description($(res), true);
             graphrealization.notify = function(svgid) {
-              console.info(svgid);
               save_description();
               manifestation.events.click(svgid,undefined);
             };
@@ -322,33 +321,7 @@ function monitor_instance_state() {// {{{
     url: url + "/properties/values/state/",
     dataType: "text",
     success: function(res){
-      if (res == "ready" || res == "stopped" || res == "running") {
-        $("#state button").removeAttr('disabled');
-      }  
-      if (res != save['state']) {
-        save['state'] = res;
-
-        var ctv = $("#state");
-        ctv.empty();
-
-        if (res == "stopped") {
-          format_visual_clear();
-          monitor_instance_pos();
-        }  
-        if (res == "running") {
-          format_visual_clear();
-        }  
-
-        var but = "";
-        if (res == "ready" || res == "stopped") {
-          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
-        }
-        if (res == "running") {
-          but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
-        }
-
-        ctv.append("<tr><td>State:</td><td>" + res + "</td>" + but + "</tr>");
-      }  
+      monitor_instance_state_change(res);
     }
   });
 }// }}}
@@ -377,7 +350,35 @@ function monitor_instance_running(notification,event) {// {{{
   if (event == "activity_done")
     format_visual_remove(parts.activity,"active")
 } // }}}
+function monitor_instance_state_change(notification) { //{{{
+  if (notification == "ready" || notification == "stopped" || notification == "running") {
+    $("#state button").removeAttr('disabled');
+  }  
+  if (notification != save['state']) {
+    save['state'] = notification;
 
+    var ctv = $("#state");
+    ctv.empty();
+
+    if (notification == "stopped") {
+      format_visual_clear();
+      monitor_instance_pos();
+    }  
+    if (notification == "running") {
+      format_visual_clear();
+    }  
+
+    var but = "";
+    if (notification == "ready" || notification == "stopped") {
+      but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
+    }
+    if (notification == "running") {
+      but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
+    }
+
+    ctv.append("<tr><td>State:</td><td>" + notification + "</td>" + but + "</tr>");
+  }
+}   //}}}
 function monitor_instance_pos_change(notification) {// {{{
   var parts = JSON.parse(notification);
   if (parts['unmark']) {
