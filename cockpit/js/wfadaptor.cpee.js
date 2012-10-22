@@ -94,7 +94,7 @@ function CPEE(adaptor) {
                         'function_call': adaptor.description.remove, 
                         'menu_icon': function() {
                           var icon =  elements[xml_node.get(0).tagName].illustrator.svg();
-                          icon.children('circle').css({'fill':'red','fill-opacity':'0.5'});
+                          icon.children('.rfill').css({'fill':'red','fill-opacity':'0.5'});
                           return icon;
                         },
                         'params': [null, xml_node]}];
@@ -103,7 +103,7 @@ function CPEE(adaptor) {
                         'function_call': adaptor.description.remove, 
                         'menu_icon': function() {
                           var icon =  elements.callmanipulate.illustrator.svg();
-                          icon.children('circle:last').css({'fill':'red','fill-opacity':'0.5'});
+                          icon.children('.rfill:last').css({'fill':'red','fill-opacity':'0.5'});
                           return icon;
                         },
                         'params': ['> manipulate', xml_node]});
@@ -210,9 +210,9 @@ function CPEE(adaptor) {
       'type' : 'abstract', 
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<circle cx="15" cy="15" r="14" class="rfill stand"/>' + 
                     '<text transform="translate(15,21)" class="normal">c</text>' +
-                    '<circle cx="28" cy="27" r="9" class="stand"/>' + 
+                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
                     '<text transform="translate(28,31)" class="small">i</text>' +
                   '</svg>');
       }
@@ -248,7 +248,7 @@ function CPEE(adaptor) {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
                     '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
-                    '<circle cx="28" cy="27" r="9" class="stand"/>' + 
+                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
                     '<text transform="translate(28,31)" class="small">c</text>' +
                   '</svg>');
       }
@@ -284,7 +284,7 @@ function CPEE(adaptor) {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
                     '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
-                    '<circle cx="28" cy="27" r="9" class="stand"/>' + 
+                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
                     '<text transform="translate(28,32)" class="small">i</text>' +
                   '</svg>');
       }
@@ -320,7 +320,7 @@ function CPEE(adaptor) {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
                     '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
-                    '<circle cx="28" cy="27" r="9" class="stand"/>' + 
+                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
                     '<text transform="translate(28,31)" class="small">s</text>' +
                   '</svg>');
       }
