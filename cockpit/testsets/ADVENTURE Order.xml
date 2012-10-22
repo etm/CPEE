@@ -1,49 +1,140 @@
 <?xml version="1.0"?>
 <testset>
   <positions/>
-  <handlerwrapper>XMPPHandlerWrapper</handlerwrapper>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <dataelements><!--{{{-->
-    <x>""</x>
+    <test>''</test>
   </dataelements><!--}}}-->
-  <handlers><!--{{{-->
-    <handler url="xmpp:adventure_processmonitoring@fp7-adventure.eu">
-      <votes topic='running'>syncing_before,syncing_after</votes>
-    </handler>
-  </handlers><!--}}}-->
+  <handlers/>
   <endpoints><!--{{{-->
-    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <timeouts>http://gruppe.wst.univie.ac.at/~mangler/services/timeout-sync.php</timeouts>
+    <gateway>http://localhost/services/timeout.php</gateway>
   </endpoints>  <!--}}}-->
   <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
-    <call id="a1" endpoint="timeout">
+    <parallel>
+      <parallel_branch>
+        <call id="a9" endpoint="gateway">
+          <parameters><!--{{{-->
+            <label>Produce Headcap Subsystem</label>
+            <method>post</method>
+            <parameters>
+              <timeout>2</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>
+        <call id="a10" endpoint="gateway">
+          <parameters><!--{{{-->
+            <label>Delivery</label>
+            <method>post</method>
+            <parameters>
+              <timeout>2</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>
+      </parallel_branch>
+      <parallel_branch>
+        <call id="a5" endpoint="gateway">
+          <parameters><!--{{{-->
+            <label>Supply Mechanical Parts</label>
+            <method>post</method>
+            <parameters>
+              <timeout>2</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>
+        <call id="a6" endpoint="gateway">
+          <parameters><!--{{{-->
+            <label>Produce Mechanical Parts (A-Z)</label>
+            <method>post</method>
+            <parameters>
+              <timeout>2</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>
+        <call id="a7" endpoint="gateway">
+          <parameters><!--{{{-->
+            <label>Perform Surface Treatment</label>
+            <method>post</method>
+            <parameters>
+              <timeout>2</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>
+        <call id="a8" endpoint="gateway">
+          <parameters><!--{{{-->
+            <label>Mechanical Parts Assembly</label>
+            <method>post</method>
+            <parameters>
+              <timeout>2</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>
+      </parallel_branch>
+      <parallel_branch>
+        <parallel>
+          <parallel_branch>
+            <call id="a2" endpoint="gateway">
+              <parameters><!--{{{-->
+                <label>Supply Electric Parts</label>
+                <method>post</method>
+                <parameters>
+                  <timeout>2</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>
+            <call id="a3" endpoint="gateway">
+              <parameters><!--{{{-->
+                <label>Delivery</label>
+                <method>post</method>
+                <parameters>
+                  <timeout>2</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>
+          </parallel_branch>
+          <parallel_branch>
+            <call id="a1" endpoint="gateway">
+              <parameters><!--{{{-->
+                <label>Develop Control System</label>
+                <method>post</method>
+                <parameters>
+                  <timeout>2</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>
+          </parallel_branch>
+        </parallel>
+        <call id="a4" endpoint="gateway">
+          <parameters><!--{{{-->
+            <label>Electric Board Assembly</label>
+            <method>post</method>
+            <parameters>
+              <timeout>2</timeout>
+            </parameters>
+          </parameters><!--}}}-->
+        </call>
+      </parallel_branch>
+    </parallel>  
+    <call id="a11" endpoint="gateway">
       <parameters><!--{{{-->
+        <label>Systems Integration</label>
         <method>post</method>
         <parameters>
           <timeout>2</timeout>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate output="result">  data.x += "a1,"</manipulate>  
-    </call>  
-    <call id="a2" endpoint="timeouts">
+    </call>
+    <call id="a12" endpoint="gateway">
       <parameters><!--{{{-->
+        <label>Test</label>
         <method>post</method>
         <parameters>
-          <timeout>4</timeout>
+          <timeout>2</timeout>
         </parameters>
       </parameters><!--}}}-->
-      <manipulate output="result">  data.x += "a2,"</manipulate>  
-    </call>  
-    <call id="a3" endpoint="timeout">
-      <parameters><!--{{{-->
-        <method>post</method>
-        <parameters>
-          <timeout>4</timeout>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">  data.x += "a3,"</manipulate>  
-    </call>  
+      <manipulate output="result">  data.test = "success"</manipulate>
+    </call>
   </description><!--}}}-->
-  <transformation>
+  <transformation><!--{{{-->
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
       <xsl:output method="text"/>
       <xsl:strip-space elements="*"/>
@@ -325,5 +416,5 @@
       </xsl:template>
 
     </xsl:stylesheet>
-  </transformation>
+  </transformation><!--}}}-->
 </testset>

@@ -89,6 +89,9 @@ function serialize_details(parent) { //{{{
           var pars = $X('<parameters xmlns="http://cpee.org/ns/description/1.0"/>');
           var meth = $X('<method xmlns="http://cpee.org/ns/description/1.0"/>');
               meth.text($('input.pname_method',parent).val());
+          var labl = $X('<label xmlns="http://cpee.org/ns/description/1.0"/>');
+              labl.text($('input.pname_label',parent).val());
+          para.append(labl);
           para.append(meth);
           para.append(pars);
           $('tr.pair',parent).each(function(){
