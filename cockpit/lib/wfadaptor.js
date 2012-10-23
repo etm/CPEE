@@ -94,7 +94,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   var draw_symbol = this.draw.draw_symbol = function (sym_name, id, title, row, col, group) { // {{{
     if(elements[sym_name] == undefined || elements[sym_name].svg == undefined) sym_name = 'unknown';
     var g = $X('<g class="element" element-id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg" xmlns:x="http://www.w3.org/1999/xlink">' + 
-                  '<text class="super" transform="translate(28.4,8.4)">' +
+                  '<text class="super" transform="translate(30,8.4)">' +
                     '<tspan class="active">0</tspan>' +
                     '<tspan class="colon">,</tspan>' +
                     '<tspan class="vote">0</tspan>' +
@@ -188,7 +188,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 */
   } // }}}
   // }}}
-  // Initialze {{{
+  // Initialize {{{
     adaptor = wf_adaptor;
   // }}}
 } // }}}
