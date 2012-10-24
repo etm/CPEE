@@ -6,32 +6,36 @@
     <last>-1</last>
   </dataelements><!--}}}-->
   <handlers><!--{{{-->
-    <handler url="xmpp:adventure_processmonitoring@fp7-adventure.eu">
-      <votes topic='running'>syncing_before,syncing_after</votes>
+    <handler url="http://localhost:9299/events">
+      <events topic='running'>call,manipulate</events>
     </handler>
   </handlers><!--}}}-->
   <endpoints><!--{{{-->
     <correlation>http://localhost:9299/wait</correlation>
-    <instantiation>http://localhost:9299/automatic</instantiation>
+    <instantiation>http://localhost:9299/instantiate</instantiation>
   </endpoints>  <!--}}}-->
   <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
     <loop pre_test='true'>
       <call id="wait" endpoint="correlation">
         <parameters><!--{{{-->
-          <method>get</method>
+          <label>Wait for Order</label>
+          <method>post</method>
           <parameters>
-            <what>Order Message</what>
+            <what>"Order Message"</what>
           </parameters>
         </parameters><!--}}}-->
+        <manipulate output="result">    p result</manipulate>  
       </call>  
       <call id="instantiate" endpoint="instantiation">
         <parameters><!--{{{-->
+          <label>Instantiate Process ADVENTURE Order</label>
           <method>post</method>
           <parameters>
-            <process>Order</process>
+            <name>'ADVENTURE Order'</name>
+            <mode>'automatic'</mode>
           </parameters>
         </parameters><!--}}}-->
-        <manipulate output="result">    data.last = result.data.value('id')</manipulate>  
+        <manipulate output="result">    data.last = result.first.value</manipulate>  
       </call>  
     </loop>
   </description><!--}}}-->

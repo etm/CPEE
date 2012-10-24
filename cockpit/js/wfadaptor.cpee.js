@@ -471,7 +471,7 @@ function CPEE(adaptor) {
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
-                    '<text transform="translate(15,21)" class="normal">σ</text>' +
+                    '<circle cx="15.5" cy="15.5" r="7" class="stand"/>' + 
                   '</svg>');
       }
     },//}}}
@@ -686,7 +686,8 @@ function CPEE(adaptor) {
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
                     '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
-                    '<text transform="translate(16,22)" class="normallarge">x</text>' +
+                    '<line x1="10.5" y1="20.5" x2="20.5" y2="10.5" class="stand"/>' +
+                    '<line x1="10.5" y1="10.5" x2="20.5" y2="20.5" class="stand"/>' +
                   '</svg>');
       }
     },// }}}
@@ -1079,4 +1080,4 @@ function CPEE(adaptor) {
     'mouseout': events.mouseout,
    }//}}}
   }; /*}}}*/
-}
+.5}

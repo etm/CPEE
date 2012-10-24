@@ -5,9 +5,13 @@
   <dataelements><!--{{{-->
     <test>''</test>
   </dataelements><!--}}}-->
-  <handlers/>
+  <handlers><!--{{{-->
+    <handler url="http://localhost:9299/events">
+      <events topic='running'>call,manipulate</events>
+    </handler>
+  </handlers><!--}}}-->
   <endpoints><!--{{{-->
-    <gateway>http://localhost/services/timeout.php</gateway>
+    <gateway>http://localhost/gateways/timeout.php</gateway>
   </endpoints>  <!--}}}-->
   <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
     <parallel>
@@ -17,7 +21,7 @@
             <label>Produce Headcap Subsystem</label>
             <method>post</method>
             <parameters>
-              <timeout>2</timeout>
+              <timeout>4</timeout>
             </parameters>
           </parameters><!--}}}-->
         </call>
@@ -26,7 +30,7 @@
             <label>Delivery</label>
             <method>post</method>
             <parameters>
-              <timeout>2</timeout>
+              <timeout>4</timeout>
             </parameters>
           </parameters><!--}}}-->
         </call>
@@ -37,7 +41,7 @@
             <label>Supply Mechanical Parts</label>
             <method>post</method>
             <parameters>
-              <timeout>2</timeout>
+              <timeout>4</timeout>
             </parameters>
           </parameters><!--}}}-->
         </call>
@@ -46,7 +50,7 @@
             <label>Produce Mechanical Parts (A-Z)</label>
             <method>post</method>
             <parameters>
-              <timeout>2</timeout>
+              <timeout>4</timeout>
             </parameters>
           </parameters><!--}}}-->
         </call>
@@ -55,7 +59,7 @@
             <label>Perform Surface Treatment</label>
             <method>post</method>
             <parameters>
-              <timeout>2</timeout>
+              <timeout>4</timeout>
             </parameters>
           </parameters><!--}}}-->
         </call>
@@ -64,7 +68,7 @@
             <label>Mechanical Parts Assembly</label>
             <method>post</method>
             <parameters>
-              <timeout>2</timeout>
+              <timeout>4</timeout>
             </parameters>
           </parameters><!--}}}-->
         </call>
@@ -77,7 +81,7 @@
                 <label>Supply Electric Parts</label>
                 <method>post</method>
                 <parameters>
-                  <timeout>2</timeout>
+                  <timeout>4</timeout>
                 </parameters>
               </parameters><!--}}}-->
             </call>
@@ -86,7 +90,7 @@
                 <label>Delivery</label>
                 <method>post</method>
                 <parameters>
-                  <timeout>2</timeout>
+                  <timeout>4</timeout>
                 </parameters>
               </parameters><!--}}}-->
             </call>
@@ -97,7 +101,7 @@
                 <label>Develop Control System</label>
                 <method>post</method>
                 <parameters>
-                  <timeout>2</timeout>
+                  <timeout>4</timeout>
                 </parameters>
               </parameters><!--}}}-->
             </call>
@@ -108,7 +112,7 @@
             <label>Electric Board Assembly</label>
             <method>post</method>
             <parameters>
-              <timeout>2</timeout>
+              <timeout>4</timeout>
             </parameters>
           </parameters><!--}}}-->
         </call>
@@ -119,7 +123,7 @@
         <label>Systems Integration</label>
         <method>post</method>
         <parameters>
-          <timeout>2</timeout>
+          <timeout>4</timeout>
         </parameters>
       </parameters><!--}}}-->
     </call>
@@ -128,7 +132,7 @@
         <label>Test</label>
         <method>post</method>
         <parameters>
-          <timeout>2</timeout>
+          <timeout>4</timeout>
         </parameters>
       </parameters><!--}}}-->
       <manipulate output="result">  data.test = "success"</manipulate>

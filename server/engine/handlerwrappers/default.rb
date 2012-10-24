@@ -23,8 +23,9 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
           end  
         end  
       end
-      params << Riddl::Header.new("CPEE-Instance",cpee_instance)
-      params << Riddl::Header.new("CPEE-Callback",callback)
+      params << Riddl::Header.new("CPEE_BASE",@url)
+      params << Riddl::Header.new("CPEE_INSTANCE",cpee_instance)
+      params << Riddl::Header.new("CPEE_CALLBACK",callback)
 
       type = parameters[:method] || 'post'
       client = Riddl::Client.new(@handler_endpoint)

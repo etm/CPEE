@@ -65,7 +65,9 @@ class Instances < Riddl::Implementation #{{{
     Riddl::Parameter::Complex.new("wis","text/xml") do
       ins = XML::Smart::string('<?xml-stylesheet href="./xsls/instances.xsl" type="text/xsl"?><instances/>')
       Dir['instances/*/properties.xml'].each do |i|
-        name = XML::Smart::open(i).find("string(/p:properties/p:name)",{'p'=>'http://riddl.org/ns/common-patterns/properties/1.0'})
+        doc = XML::Smart::open(i)
+        doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
+        name = doc.find("string(/p:properties/p:name)")
         ins.root.add('instance',name,'id'=>File::basename(File::dirname(i)))
       end
       ins.to_s
