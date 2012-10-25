@@ -2,43 +2,71 @@
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <dataelements><!--{{{-->
-    <last>-1</last>
-  </dataelements><!--}}}-->
+  <dataelements>
+    <quantity>3</quantity>
+    <bolts>null</bolts>
+    <boards>[]</boards>
+    <specA>High Quality</specA>
+    <specB>X3 Certification</specB>
+    <costs>0</costs>
+  </dataelements>
   <handlers><!--{{{-->
     <handler url="http://localhost:9299/events">
       <events topic='properties/state'>change</events>
     </handler>
   </handlers><!--}}}-->
-  <endpoints><!--{{{-->
-    <correlation>http://localhost:9299/wait</correlation>
-    <instantiation>http://localhost:9299/instantiate</instantiation>
-  </endpoints>  <!--}}}-->
-  <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
-    <loop pre_test='true'>
-      <call id="wait" endpoint="correlation">
-        <parameters><!--{{{-->
-          <label>Wait for Order</label>
-          <method>post</method>
+  <endpoints>
+    <bolts>http://localhost/gateways/bolts.php</bolts>
+    <boards>http://localhost/gateways/board.php</boards>
+    <controlling>http://localhost/gateways/controlling.php</controlling>
+  </endpoints>
+  <description xmlns="http://cpee.org/ns/description/1.0">
+    <call id="a1" endpoint="bolts">
+      <parameters>
+        <label>Buy Bolts from a Partner</label>
+        <method>post</method>
+        <parameters>
+          <specA>data.specA</specA>
+          <specB>data.specB</specB>
+          <quantity>data.quantity</quantity>
+        </parameters>
+      </parameters>
+      <manipulate output="result">  data.bolts = result.value('id')
+  data.costs += result.value('costs').to_f
+  status.update 1, 'Bolts'</manipulate>
+    </call>
+    <parallel>
+      <loop pre_test="data.quantity > 0">
+        <parallel_branch pass="data.quantity" local="p">
+          <call id="a2" endpoint="boards">
+            <parameters>
+              <label>Buy Board from a Partner</label>
+              <method>post</method>
+              <parameters>
+                <specB>data.specB</specB>
+              </parameters>
+            </parameters>
+            <manipulate output="result">        data.boards &lt;&lt; result.value('id')
+        data.costs += result.value('costs').to_f</manipulate>
+          </call>
+        </parallel_branch>
+        <manipulate id="a3">      data.quantity -= 1</manipulate>  
+      </loop>  
+    </parallel>  
+    <choose>
+      <alternative condition="data.costs > 700">
+        <call id="a4" endpoint="controlling">
           <parameters>
-            <what>"Order Message"</what>
+            <method>post</method>
+            <parameters>
+              <costs>data.costs</costs>
+            </parameters>
           </parameters>
-        </parameters><!--}}}-->
-        <manipulate output="result">    p result</manipulate>  
-      </call>  
-      <call id="instantiate" endpoint="instantiation">
-        <parameters><!--{{{-->
-          <label>Instantiate Process ADVENTURE Order</label>
-          <method>post</method>
-          <parameters>
-            <name>'ADVENTURE Order'</name>
-            <mode>'automatic'</mode>
-          </parameters>
-        </parameters><!--}}}-->
-        <manipulate output="result">    data.last = result.first.value</manipulate>  
-      </call>  
-    </loop>
-  </description><!--}}}-->
+        </call>  
+      </alternative>
+      <otherwise/>
+    </choose>
+  </description>
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
       <xsl:output method="text"/>

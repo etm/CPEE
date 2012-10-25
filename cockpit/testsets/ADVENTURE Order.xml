@@ -7,7 +7,7 @@
   </dataelements><!--}}}-->
   <handlers><!--{{{-->
     <handler url="http://localhost:9299/events">
-      <events topic='running'>call,manipulate</events>
+      <events topic='properties/state'>change</events>
     </handler>
   </handlers><!--}}}-->
   <endpoints><!--{{{-->
