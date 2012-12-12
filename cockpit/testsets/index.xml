@@ -1,4 +1,6 @@
 <testsets>
+  <testset>SOPROMO Test Sonification</testset>
+  <testset>ADVENTURE Performance Test</testset>
   <testset>ADVENTURE Demo 1</testset>
   <testset>Linear</testset>
   <testset>Coopis Testset</testset>
