@@ -3,13 +3,41 @@
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <dataelements><!--{{{-->
-    <input>""</input>
-    <return>"%s World"</return>
+    <last>-1</last>
   </dataelements><!--}}}-->
-  <handlers/>
-  <endpoints/>
+  <handlers><!--{{{-->
+    <handler url="http://localhost:9299/events">
+      <events topic='properties/state'>change</events>
+    </handler>
+  </handlers><!--}}}-->
+  <endpoints><!--{{{-->
+    <correlation>http://localhost:9299/wait</correlation>
+    <instantiation>http://localhost:9299/instantiate</instantiation>
+  </endpoints>  <!--}}}-->
   <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
-    <manipulate id="a1">data.return = data.return % data.input</manipulate>
+    <loop pre_test='true'>
+      <call id="wait" endpoint="correlation">
+        <parameters><!--{{{-->
+          <label>Wait for Order</label>
+          <method>post</method>
+          <parameters>
+            <what>"Order Message"</what>
+          </parameters>
+        </parameters><!--}}}-->
+        <manipulate output="result">    p result</manipulate>  
+      </call>  
+      <call id="instantiate" endpoint="instantiation">
+        <parameters><!--{{{-->
+          <label>Instantiate Process ADVENTURE Order</label>
+          <method>post</method>
+          <parameters>
+            <name>'ADVENTURE Order'</name>
+            <mode>'automatic'</mode>
+          </parameters>
+        </parameters><!--}}}-->
+        <manipulate output="result">    data.last = result.first.value</manipulate>  
+      </call>  
+    </loop>
   </description><!--}}}-->
   <transformation>
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">

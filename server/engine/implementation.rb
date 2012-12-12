@@ -65,7 +65,9 @@ class Instances < Riddl::Implementation #{{{
     Riddl::Parameter::Complex.new("wis","text/xml") do
       ins = XML::Smart::string('<?xml-stylesheet href="./xsls/instances.xsl" type="text/xsl"?><instances/>')
       Dir['instances/*/properties.xml'].each do |i|
-        name = XML::Smart::open(i).find("string(/p:properties/p:name)",{'p'=>'http://riddl.org/ns/common-patterns/properties/1.0'})
+        doc = XML::Smart::open(i)
+        doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
+        name = doc.find("string(/p:properties/p:name)")
         ins.root.add('instance',name,'id'=>File::basename(File::dirname(i)))
       end
       ins.to_s
@@ -89,7 +91,8 @@ class NewInstance < Riddl::Implementation #{{{
     FileUtils.cp('instances/properties.init',"instances/#{id}/properties.xml")
     FileUtils.cp_r('instances/notifications.init',"instances/#{id}/notifications")
     XML::Smart.modify("instances/#{id}/properties.xml") do |doc|
-      doc.find("/p:properties/p:name",{'p'=>'http://riddl.org/ns/common-patterns/properties/1.0'}).first.text = name
+      doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
+      doc.find("/p:properties/p:name").first.text = name
     end
 
     $controller[id.to_i] = Controller.new(id,url)
@@ -133,7 +136,7 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
   def sync
     if @property == 'description'
       XML::Smart::modify(@properties) do |doc|
-        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
         dsl   = doc.find("/p:properties/p:dsl").first
         trans = doc.find("/p:properties/p:transformation").first
         desc  = doc.find("/p:properties/p:description").first
@@ -150,7 +153,7 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
     if @property == 'state'
       state = nil
       XML::Smart::open(@properties) do |doc|
-        doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+        doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
         state = doc.find("string(/p:properties/p:state)")
       end  
       if $controller[id.to_i].call_vote("properties/state/change", :instance => id, :newstate => state)
@@ -160,7 +163,7 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase #{{{
         end
       else
         XML::Smart::open(@properties) do |doc|
-          doc.namespaces = { 'p' => 'http://riddl.org/ns/common-patterns/properties/1.0' }
+          doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
           if node = doc.find("/p:properties/p:state").first
             case state
               when 'stopping'; node.text = 'running'

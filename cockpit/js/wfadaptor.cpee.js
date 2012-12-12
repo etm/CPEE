@@ -69,6 +69,8 @@ function CPEE(adaptor) {
   this.elements = elements = {};
   this.events = events = {};
 
+  this.noarrow = noarrow = ['alternative', 'otherwise'];
+
   // Events
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
     if(e.button == 0) {  // left-click
@@ -92,7 +94,7 @@ function CPEE(adaptor) {
                         'function_call': adaptor.description.remove, 
                         'menu_icon': function() {
                           var icon =  elements[xml_node.get(0).tagName].illustrator.svg();
-                          icon.children('circle').css({'fill':'red','fill-opacity':'0.5'});
+                          icon.children('.rfill').css({'fill':'red','fill-opacity':'0.5'});
                           return icon;
                         },
                         'params': [null, xml_node]}];
@@ -101,7 +103,7 @@ function CPEE(adaptor) {
                         'function_call': adaptor.description.remove, 
                         'menu_icon': function() {
                           var icon =  elements.callmanipulate.illustrator.svg();
-                          icon.children('circle:last').css({'fill':'red','fill-opacity':'0.5'});
+                          icon.children('.rfill:last').css({'fill':'red','fill-opacity':'0.5'});
                           return icon;
                         },
                         'params': ['> manipulate', xml_node]});
@@ -140,6 +142,7 @@ function CPEE(adaptor) {
   
         tab.append(create_header('Parameters:'));
   
+        tab.append(create_input_property('Label','indent',$('parameters label',node).text()));
         tab.append(create_input_property('Method','indent',$('parameters method',node).text()));
         $.each($('parameters parameters *',node),function(){
           tab.append(create_input_pair(this.nodeName,'indent',$(this).text()));
@@ -207,9 +210,9 @@ function CPEE(adaptor) {
       'type' : 'abstract', 
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
+                    '<circle cx="15" cy="15" r="14" class="rfill stand"/>' + 
                     '<text transform="translate(15,21)" class="normal">c</text>' +
-                    '<circle cx="28" cy="27" r="9" class="stand"/>' + 
+                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
                     '<text transform="translate(28,31)" class="small">i</text>' +
                   '</svg>');
       }
@@ -217,7 +220,79 @@ function CPEE(adaptor) {
   'description' : {//{{{
     'create':  function(target) {
       var node = null;
-      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+      return node;
+    },
+    'permissible_children': function(node) {
+      if(node.children('manipulate').lenght < 1)
+        return [
+         {'label': 'Manipulate Block', 
+          'function_call': adaptor.description.insert_last_into, 
+          'menu_icon': elements.callmanipulate.illustrator.svg, 
+          'params': [adaptor.description.elements.manipulate.create, node]}
+        ];
+      return [];
+    }
+  },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      events.mousedown(node,e,true, true);
+    },
+    'click': events.click,
+   }//}}}
+  }; /*}}}*/
+  this.elements.callcorrelation = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'abstract', 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
+                    '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
+                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
+                    '<text transform="translate(28,31)" class="small">c</text>' +
+                  '</svg>');
+      }
+    },//}}}
+  'description' : {//{{{
+    'create':  function(target) {
+      var node = null;
+      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="correlation" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+      return node;
+    },
+    'permissible_children': function(node) {
+      if(node.children('manipulate').lenght < 1)
+        return [
+         {'label': 'Manipulate Block', 
+          'function_call': adaptor.description.insert_last_into, 
+          'menu_icon': elements.callmanipulate.illustrator.svg, 
+          'params': [adaptor.description.elements.manipulate.create, node]}
+        ];
+      return [];
+    }
+  },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      events.mousedown(node,e,true, true);
+    },
+    'click': events.click,
+   }//}}}
+  }; /*}}}*/
+  this.elements.callinstantiation = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'abstract', 
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
+                    '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
+                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
+                    '<text transform="translate(28,32)" class="small">i</text>' +
+                  '</svg>');
+      }
+    },//}}}
+  'description' : {//{{{
+    'create':  function(target) {
+      var node = null;
+      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="instantiate" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
       return node;
     },
     'permissible_children': function(node) {
@@ -243,17 +318,17 @@ function CPEE(adaptor) {
       'type' : 'abstract', 
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
-                    '<text transform="translate(15,21)" class="normal">c</text>' +
-                    '<circle cx="28" cy="27" r="9" class="stand"/>' + 
-                    '<text transform="translate(28,31)" class="small">m</text>' +
+                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
+                    '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
+                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
+                    '<text transform="translate(28,31)" class="small">s</text>' +
                   '</svg>');
       }
     },//}}}
   'description' : {//{{{
     'create':  function(target) {
       var node = null;
-      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
       return node;
     },
     'permissible_children': function(node) {
@@ -279,12 +354,17 @@ function CPEE(adaptor) {
       'type' : 'primitive', 
       'endnodes' : 'this',
       'resolve_symbol' : function(node) { 
-        //if($(node).children('service').length > 0) {
-        if($('parameters > service', node).length > 0) {
+        console.info();
+        if($(node).attr('endpoint') == 'instantiation') {
+          return 'callinstantiation'; 
+          return illustrator.elements.callinstantiation.draw(node, pos, block);
+        } else if($(node).attr('endpoint') == 'correlation') {
+          return 'callcorrelation'; 
+          return illustrator.elements.callcorrelation.draw(node, pos, block);
+        } else if($('parameters > service', node).length > 0) {
           return 'callinjection'; 
           return illustrator.elements.callinjection.draw(node, pos, block);
         } else if($('manipulate', node).length > 0) {
-        //} else if($(node).children('manipulate').length > 0) {
           return 'callmanipulate'; 
           return illustrator.elements.callmanipulate.draw(node, pos, block);
         } else {
@@ -294,15 +374,15 @@ function CPEE(adaptor) {
       },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
-                    '<text transform="translate(15,21)" class="normal">c</text>' +
+                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
+                    '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
                   '</svg>');
       }
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
         var node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://cpee.org/ns/description/1.0"/>');
-        node.append($X('<parameters xmlns="http://cpee.org/ns/description/1.0"><method>post</method><parameters/></parameters>'));
+        node.append($X('<parameters xmlns="http://cpee.org/ns/description/1.0"><label></label><method>post</method><parameters/></parameters>'));
         return node;
       },
       'permissible_children': function(node) {
@@ -330,8 +410,8 @@ function CPEE(adaptor) {
       'endnodes' : 'this',
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
-                    '<text transform="translate(15,21)" class="normal">m</text>' +
+                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
+                    '<text transform="translate(15,21)" class="normal">s</text>' +
                   '</svg>');
       }
     },//}}}
@@ -390,8 +470,8 @@ function CPEE(adaptor) {
       },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
-                    '<text transform="translate(15,21)" class="normal">σ</text>' +
+                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
+                    '<circle cx="15.5" cy="15.5" r="7" class="stand"/>' + 
                   '</svg>');
       }
     },//}}}
@@ -454,8 +534,8 @@ function CPEE(adaptor) {
       },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="standwithout"/>' + 
-                    '<text transform="translate(15,20)" class="normal">{⁎}</text>' +
+                    '<line x1="15" y1="0" x2="15" y2="28" class="standwithout"/>' +
+                    '<line x1="9" y1="21" x2="21" y2="9" class="stand"/>' +
                   '</svg>');
       }
     },//}}}
@@ -605,8 +685,9 @@ function CPEE(adaptor) {
       },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
-                    '<text transform="translate(15,23)" class="normallarge">↺</text>' +
+                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
+                    '<line x1="10.5" y1="20.5" x2="20.5" y2="10.5" class="stand"/>' +
+                    '<line x1="10.5" y1="10.5" x2="20.5" y2="20.5" class="stand"/>' +
                   '</svg>');
       }
     },// }}}
@@ -687,8 +768,9 @@ function CPEE(adaptor) {
       },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
-                    '<text transform="translate(15,21)" class="normal">||</text>' +
+                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
+                    '<text transform="translate(12,25)" class="normallarge">+</text>' +
+                    '<text transform="translate(18,16)" class="small">=</text>' +
                   '</svg>');
       }
     },//}}}
@@ -761,8 +843,8 @@ function CPEE(adaptor) {
       },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' + 
-                    '<text transform="translate(15,20)" class="normal">|</text>' +
+                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
+                    '<text transform="translate(15,20)" class="small">+|</text>' +
                   '</svg>');
       }
     },//}}}
@@ -947,8 +1029,7 @@ function CPEE(adaptor) {
       },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="black"/>' + 
-                    '<text transform="translate(15,21)" class="inverted">α</text>' +
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' +
                   '</svg>');
       }
     },//}}}
@@ -999,4 +1080,4 @@ function CPEE(adaptor) {
     'mouseout': events.mouseout,
    }//}}}
   }; /*}}}*/
-}
+.5}

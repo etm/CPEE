@@ -13,15 +13,15 @@ svg rect.group {
 }
 svg .clickable { cursor: pointer; }
 
-svg use.passive circle {
+svg use.passive .rfill {
   fill: #729fcf;
   fill-opacity:1;
 }  
-svg use.active circle {
+svg use.active .rfill {
   fill: #ef2929;
   fill-opacity:1;
 }  
-svg use.vote circle {
+svg use.vote .rfill {
   fill: #8ae234;
   fill-opacity:1;
 }  

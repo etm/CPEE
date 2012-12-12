@@ -1,4 +1,10 @@
-class DefaultHandlerWrapper < Wee::HandlerWrapperBase
+require 'savon'
+Savon.configure do |config|
+  config.log = false
+  config.log_level = :info                                                                                                                                      
+end
+
+class SOAPHandlerWrapper < Wee::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @instance = arguments[0].to_i
     @url = arguments[1]
@@ -14,25 +20,26 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     cpee_instance = "#{@url}/#{@instance}"
 
     if passthrough.nil?
-      params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      (parameters[:parameters] || {}).each do |h|
-        if h.class == Hash
-          h.each do |k,v|
-            params <<  Riddl::Parameter::Simple.new("#{k}",MultiJson::encode(v))
+      begin
+        client = Savon.client(@handler_endpoint)
+        client.http.headers["CPEE-Instance"] = cpee_instance
+        client.http.headers["CPEE-Callback"] = callback
+        params = {}
+        (parameters[:parameters] || {}).each do |h|
+          if h.class == Hash
+            h.each do |k,v|
+              params[k] = MultiJson::encode(v)
+            end  
           end  
-        end  
+        end
+        response = client.request parameters[:method].to_sym, params
+        result = response.body.first[1].first[1]
+      rescue Savon::Error => error
+        raise "Could not soap #{@handler_endpoint}->#{parameters[:method].to_sym}'s back: #{error.to_s}"
       end
-      params << Riddl::Header.new("CPEE_BASE",@url)
-      params << Riddl::Header.new("CPEE_INSTANCE",cpee_instance)
-      params << Riddl::Header.new("CPEE_CALLBACK",callback)
-
-      type = parameters[:method] || 'post'
-      client = Riddl::Client.new(@handler_endpoint)
-      status, result, headers = client.request type => params
-      raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
-
-      if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
+      
+      if response.http.headers["CPEE_CALLBACK"] && response.http.headers["CPEE_CALLBACK"] == 'true'
         $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
         @handler_passthrough = callback
         return

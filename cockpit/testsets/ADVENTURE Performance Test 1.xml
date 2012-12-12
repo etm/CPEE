@@ -1,17 +1,31 @@
 <?xml version="1.0"?>
 <testset>
   <positions/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <handlerwrapper>SOAPHandlerWrapper</handlerwrapper>
   <dataelements><!--{{{-->
-    <input>""</input>
-    <return>"%s World"</return>
+    <timing>0</timing>
+    <counter>0</counter>
+    <data></data>
   </dataelements><!--}}}-->
   <handlers/>
-  <endpoints/>
+  <endpoints><!--{{{-->
+    <perf>http://donatello.pri.univie.ac.at/tools/perfData.wsdl</perf>
+  </endpoints>  <!--}}}-->
   <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
-    <manipulate id="a1">data.return = data.return % data.input</manipulate>
+    <manipulate id="a1">data.timing = Time.now.to_f</manipulate>
+    <loop pre_test='data.counter &lt; 1000'>
+      <call id="a2" endpoint="perf">
+        <parameters>
+          <method>getPerfData</method>
+          <parameters/>
+        </parameters>
+        <manipulate output="result">  data.data = result
+data.counter += 1</manipulate>
+      </call> 
+    </loop>
+    <manipulate id="a3">data.timing = "#{(Time.now.to_f - data.timing)} seconds"</manipulate>
   </description><!--}}}-->
-  <transformation>
+  <transformation><!--{{{-->
     <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
       <xsl:output method="text"/>
       <xsl:strip-space elements="*"/>
@@ -293,5 +307,5 @@
       </xsl:template>
 
     </xsl:stylesheet>
-  </transformation>
+  </transformation><!--}}}-->
 </testset>
