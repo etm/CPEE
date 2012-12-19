@@ -12,6 +12,7 @@
   <testset>Mangler 2</testset>
   <testset>Concurrent</testset>
   <testset>Endpoints and Data Manipulation</testset>
+  <testset>RESCUE - Book Movie - Local</testset>
   <testset>RESCUE - Book Movie</testset>
   <testset>RESCUE - Loop-Parallel Injection</testset>
   <testset>TEST - Wrong Positions</testset>

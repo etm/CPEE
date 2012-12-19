@@ -3,7 +3,7 @@ require 'rubygems'
 require 'xml/smart'
 
 files = {
-  'WEE'  => ['../../lib/Wee.rb'],
+  'WEE'  => ['../../../weel/lib/weel.rb'],
   'DefaultHandlerWrapper'  => '../../server/engine/handlerwrappers/default.rb',
   'CPEE'  => ['../../server/engine/controller.rb', '../../server/engine/implementation.rb'],
   'BPEL'  => '../../contrib/BPEL/lib/BPEL_Transform.rb',

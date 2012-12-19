@@ -25,7 +25,7 @@ end
 
 Result = Struct.new(:data, :status)
 
-class RescueHandlerWrapper < Wee::HandlerWrapperBase
+class RescueHandlerWrapper < WEEL::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,continue=nil)
     @instance = arguments[0].to_i
     @url = arguments[1]
@@ -64,7 +64,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         Riddl::Parameter::Simple.new('instance', cpee_instance)
       ] # here could be consumer, producer secrets
       raise "Subscription to injection-handler at #{injection_handler_uri} failed with status #{status}" unless status == 200
-      raise Wee::Signal::SkipManipulate # }}}
+      raise WEEL::Signal::SkipManipulate # }}}
     elsif parameters.key?(:method) #{{{
       client = Riddl::Client.new(@handler_endpoint)
       type = parameters[:method]
@@ -76,8 +76,9 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
         end
       end 
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      params << Riddl::Header.new("CPEE-Instance","#{$url}/#{@instance}")
-      params << Riddl::Header.new("CPEE-Callback",callback)
+      params << Riddl::Header.new("CPEE_BASE",@url)
+      params << Riddl::Header.new("CPEE_INSTANCE","#{$url}/#{@instance}")
+      params << Riddl::Header.new("CPEE_CALLBACK",callback)
       status, result, headers = client.request type => params
       if(not(type == "get" and status == 200) and not(type == "post" and status == 201))
         raise "Could not perform http-#{type} on URI: #{@handler_endpoint} - Status: #{status}" 
@@ -135,7 +136,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   end
 
   def activity_result_status
-    Wee::Status.new(1, "everything okay")
+    WEEL::Status.new(1, "everything okay")
   end
 
   def callback(result)
@@ -154,7 +155,7 @@ class RescueHandlerWrapper < Wee::HandlerWrapperBase
   def activity_stop
     @handler_stopped = true
   end
-  # is called from Wee after stop_call to ask for a passthrough-value that may give
+  # is called from WEEL after stop_call to ask for a passthrough-value that may give
   # information about how to continue the call. This passthrough-value is given
   # to activity_handle if the workflow is configured to do so.
   def activity_passthrough_value

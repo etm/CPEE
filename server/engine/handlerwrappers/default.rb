@@ -1,4 +1,4 @@
-class DefaultHandlerWrapper < Wee::HandlerWrapperBase
+class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @instance = arguments[0].to_i
     @url = arguments[1]
@@ -51,7 +51,7 @@ class DefaultHandlerWrapper < Wee::HandlerWrapperBase
     @handler_returnValue
   end # }}}
   def activity_result_status # {{{
-    Wee::Status.new(1, "everything okay")
+    WEEL::Status.new(1, "everything okay")
   end # }}}
 
   def activity_stop # {{{

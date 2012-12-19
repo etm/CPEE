@@ -99,7 +99,7 @@ function CPEE(adaptor) {
                         },
                         'params': [null, xml_node]}];
       if($('> manipulate', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
-        menu['Remove Element'].push({'label': 'Remove Manipulate Block', 
+        menu['Remove Element'].push({'label': 'Remove Script Block', 
                         'function_call': adaptor.description.remove, 
                         'menu_icon': function() {
                           var icon =  elements.callmanipulate.illustrator.svg();
@@ -138,7 +138,7 @@ function CPEE(adaptor) {
         tab.append(create_input_property('Endpoint','',$(node).attr('endpoint')));
   
         if ($('manipulate',node).length > 0)
-          tab.append(create_area_property('Manipulate','',format_text_skim($('manipulate',node).text())));
+          tab.append(create_area_property('Script','',format_text_skim($('manipulate',node).text())));
   
         tab.append(create_header('Parameters:'));
   
@@ -150,7 +150,7 @@ function CPEE(adaptor) {
         break;
       case 'manipulate':
         tab.append(create_readonly_property('ID',$(node).attr('id')));
-        tab.append(create_area_property('Manipulate','',format_text_skim($(node).text())));
+        tab.append(create_area_property('Script','',format_text_skim($(node).text())));
         break;
       case 'loop':
         if ($(node).attr('pre_test') != undefined)
@@ -226,7 +226,7 @@ function CPEE(adaptor) {
     'permissible_children': function(node) {
       if(node.children('manipulate').lenght < 1)
         return [
-         {'label': 'Manipulate Block', 
+         {'label': 'Script Block', 
           'function_call': adaptor.description.insert_last_into, 
           'menu_icon': elements.callmanipulate.illustrator.svg, 
           'params': [adaptor.description.elements.manipulate.create, node]}
@@ -262,7 +262,7 @@ function CPEE(adaptor) {
     'permissible_children': function(node) {
       if(node.children('manipulate').lenght < 1)
         return [
-         {'label': 'Manipulate Block', 
+         {'label': 'Script Block', 
           'function_call': adaptor.description.insert_last_into, 
           'menu_icon': elements.callmanipulate.illustrator.svg, 
           'params': [adaptor.description.elements.manipulate.create, node]}
@@ -298,7 +298,7 @@ function CPEE(adaptor) {
     'permissible_children': function(node) {
       if(node.children('manipulate').lenght < 1)
         return [
-         {'label': 'Manipulate Block', 
+         {'label': 'Script Block', 
           'function_call': adaptor.description.insert_last_into, 
           'menu_icon': elements.callmanipulate.illustrator.svg, 
           'params': [adaptor.description.elements.manipulate.create, node]}
@@ -334,7 +334,7 @@ function CPEE(adaptor) {
     'permissible_children': function(node) {
       if(node.children('manipulate').lenght < 1)
         return [
-         {'label': 'Manipulate Block', 
+         {'label': 'Script Block', 
           'function_call': adaptor.description.insert_last_into, 
           'menu_icon': elements.callmanipulate.illustrator.svg, 
           'params': [adaptor.description.elements.manipulate.create, node]}
@@ -388,7 +388,7 @@ function CPEE(adaptor) {
       'permissible_children': function(node) {
         if(node.children('manipulate').length < 1) 
           return [
-           {'label': 'Manipulate Block', 
+           {'label': 'Script Block', 
             'function_call': adaptor.description.insert_last_into, 
             'menu_icon': elements.callmanipulate.illustrator.svg, 
             'params': [adaptor.description.elements.manipulate.create, node]}
@@ -554,7 +554,7 @@ function CPEE(adaptor) {
         if(node.get(0).tagName == 'otherwise') { func = adaptor.description.insert_first_into }
         else { func = adaptor.description.insert_after }
         return [
-          {'label': 'Service Call with Manipulate Block', 
+          {'label': 'Service Call with Script Block', 
            'function_call': func, 
            'menu_icon': elements.callmanipulate.illustrator.svg, 
            'params': [adaptor.description.elements.callmanipulate.create, node]},
@@ -562,7 +562,7 @@ function CPEE(adaptor) {
            'function_call': func, 
            'menu_icon': elements.call.illustrator.svg, 
            'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Manipulate', 
+          {'label': 'Script', 
            'function_call': func, 
            'menu_icon': elements.manipulate.illustrator.svg, 
            'params': [adaptor.description.elements.manipulate.create, node]},
@@ -631,7 +631,7 @@ function CPEE(adaptor) {
            'menu_icon': elements.parallel_branch.illustrator.svg, 
            'params': [adaptor.description.elements.parallel_branch.create, node]}];
         return [
-          {'label': 'Service Call with Manipulate Block', 
+          {'label': 'Service Call with Script Block', 
            'function_call': func, 
            'menu_icon': elements.callmanipulate.illustrator.svg, 
            'params': [adaptor.description.elements.callmanipulate.create, node]},
@@ -639,7 +639,7 @@ function CPEE(adaptor) {
            'function_call': func, 
            'menu_icon': elements.call.illustrator.svg, 
            'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Manipulate', 
+          {'label': 'Script', 
            'function_call': func, 
            'menu_icon': elements.manipulate.illustrator.svg, 
            'params': [adaptor.description.elements.manipulate.create, node]},
@@ -701,7 +701,7 @@ function CPEE(adaptor) {
         if(node.get(0).tagName == 'loop') { func = adaptor.description.insert_first_into }
         else { func = adaptor.description.insert_after }
         var childs = [
-          {'label': 'Service Call with Manipulate Block', 
+          {'label': 'Service Call with Script Block', 
            'function_call': func, 
            'menu_icon': elements.callmanipulate.illustrator.svg, 
            'params': [adaptor.description.elements.callmanipulate.create, node]},
@@ -781,7 +781,7 @@ function CPEE(adaptor) {
       },
       'permissible_children': function(node) {
         var childs =  [
-          {'label': 'Service Call with Manipulate Block', 
+          {'label': 'Service Call with Script Block', 
            'function_call': adaptor.description.insert_last_into, 
            'menu_icon': elements.callmanipulate.illustrator.svg, 
            'params': [adaptor.description.elements.callmanipulate.create, node]},
@@ -859,7 +859,7 @@ function CPEE(adaptor) {
         if(node.get(0).tagName == 'parallel_branch') { func = adaptor.description.insert_first_into }
         else { func = adaptor.description.insert_after }
         childs =  [
-          {'label': 'Service Call with Manipulate Block', 
+          {'label': 'Service Call with Script Block', 
            'function_call': func, 
            'menu_icon': elements.callmanipulate.illustrator.svg, 
            'params': [adaptor.description.elements.callmanipulate.create, node]},
@@ -867,7 +867,7 @@ function CPEE(adaptor) {
            'function_call': func, 
            'menu_icon': elements.call.illustrator.svg, 
            'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Manipulate', 
+          {'label': 'Script', 
            'function_call': func, 
            'menu_icon': elements.manipulate.illustrator.svg, 
            'params': [adaptor.description.elements.manipulate.create, node]},
@@ -936,7 +936,7 @@ function CPEE(adaptor) {
         if(node.get(0).tagName == 'critical') { func = adaptor.description.insert_first_into }
         else { func = adaptor.description.insert_after }
         return [
-          {'label': 'Service Call with Manipulate Block', 
+          {'label': 'Service Call with Script Block', 
            'function_call': func, 
            'menu_icon': elements.callmanipulate.illustrator.svg, 
            'params': [adaptor.description.elements.callmanipulate.create, node]},
@@ -944,7 +944,7 @@ function CPEE(adaptor) {
            'function_call': func, 
            'menu_icon': elements.call.illustrator.svg, 
            'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Manipulate', 
+          {'label': 'Script', 
            'function_call': func, 
            'menu_icon': elements.manipulate.illustrator.svg, 
            'params': [adaptor.description.elements.manipulate.create, node]},
@@ -1039,7 +1039,7 @@ function CPEE(adaptor) {
         if(node.get(0).tagName == 'description') { func = adaptor.description.insert_first_into }
         else { func = adaptor.description.insert_after }
         return [
-          {'label': 'Service Call with Manipulate Block', 
+          {'label': 'Service Call with Script Block', 
            'function_call': func, 
            'menu_icon': elements.callmanipulate.illustrator.svg, 
            'params': [adaptor.description.elements.callmanipulate.create, node]},
@@ -1047,7 +1047,7 @@ function CPEE(adaptor) {
            'function_call': func, 
            'menu_icon': elements.call.illustrator.svg, 
            'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Manipulate', 
+          {'label': 'Script Task', 
            'function_call': func, 
            'menu_icon': elements.manipulate.illustrator.svg, 
            'params': [adaptor.description.elements.manipulate.create, node]},

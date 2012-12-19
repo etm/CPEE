@@ -4,7 +4,7 @@ Savon.configure do |config|
   config.log_level = :info                                                                                                                                      
 end
 
-class SOAPHandlerWrapper < Wee::HandlerWrapperBase
+class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @instance = arguments[0].to_i
     @url = arguments[1]
@@ -58,7 +58,7 @@ class SOAPHandlerWrapper < Wee::HandlerWrapperBase
     @handler_returnValue
   end # }}}
   def activity_result_status # {{{
-    Wee::Status.new(1, "everything okay")
+    WEEL::Status.new(1, "everything okay")
   end # }}}
 
   def activity_stop # {{{

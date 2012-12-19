@@ -1,9 +1,9 @@
-require ::File.dirname(__FILE__) + '/../../lib/Wee'
+require 'weel'
 Dir[::File.dirname(__FILE__) + "/handlerwrappers/*"].each do |h|
   require h
 end  
 
-class EmptyWorkflow < Wee
+class EmptyWorkflow < WEEL
   handlerwrapper DefaultHandlerWrapper
 
   control flow do

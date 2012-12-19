@@ -191,7 +191,7 @@ class Controller
       @positions = []
       doc.find("/p:properties/p:positions/p:*").each do |e|
         val = e.text.split(';')
-        @positions << ::Wee::Position.new(e.qname.to_s.to_sym,val[0].to_sym,val[1])
+        @positions << ::WEEL::Position.new(e.qname.to_s.to_sym,val[0].to_sym,val[1])
       end
 
       @instance.description doc.find("string(/p:properties/p:dsl)")
@@ -233,7 +233,7 @@ class Controller
     voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
     item = @votes[what]
     if item && item.length > 0
-      continue = Wee::Continue.new
+      continue = WEEL::Continue.new
       @votes_results[voteid] = []
       inum = 0
       item.each do |key,url|
