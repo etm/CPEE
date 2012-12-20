@@ -8,6 +8,12 @@ Rake::TestTask.new do |t|
   t.verbose = false
 end
 
+Rake::TestTask.new do |t|
+  t.libs << "test"
+  t.test_files = FileList['./test/tc_*.rb']
+  t.verbose = false
+end
+
 spec = eval(File.read('cpee.gemspec'))
 Gem::PackageTask.new(spec) do |pkg|
   pkg.need_zip = true
