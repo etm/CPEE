@@ -62,22 +62,21 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // Generic Functions {{{
   this.set_container = function(con) { // {{{
     svg.container = con;
-    svg.defs = $X('<defs xmlns="http://www.w3.org/2000/svg">' +
+    svg.container.append($X('<defs xmlns="http://www.w3.org/2000/svg">' +
         '<marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
           '<path d="m 2 2 l 6 3 l -6 3 z"/>' +
         '</marker>' +
-        '<symbol id="unknown" class="unknown">' +
-          '<circle cx="15" cy="15" r="14" class="unkown"/>' +
-          '<text transform="translate(15,20)" class="normal">?</text>' +
-        '</symbol>' +
-      '</defs>');
-    svg.container.append(svg.defs);
-    //svg_structure();
+      '</defs>'));
+    svg.defs = {};
+    svg.defs['unknown'] = $X('<g xmlns="http://www.w3.org/2000/svg" class="unknown">' +
+        '<circle cx="15" cy="15" r="14" class="unkown"/>' +
+        '<text transform="translate(15,20)" class="normal">?</text>' +
+      '</g>');
     for(element in elements) 
       if(elements[element].svg() != false) {
-        var sym = $X('<symbol id="' + element + '" xmlns="http://www.w3.org/2000/svg"/>').append(elements[element].svg().children()); // append all children to symbol
+        var sym = $X('<g xmlns="http://www.w3.org/2000/svg"/>').append(elements[element].svg().children()); // append all children to symbol
         $.each(elements[element].svg().attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
-        svg.defs.append(sym);
+        svg.defs[element] = sym;
       }
   }  // }}}
   var clear = this.clear = function() { // {{{
@@ -93,21 +92,22 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // Helper Functions {{{
   var draw_symbol = this.draw.draw_symbol = function (sym_name, id, title, row, col, group) { // {{{
     if(elements[sym_name] == undefined || elements[sym_name].svg == undefined) sym_name = 'unknown';
-    var g = $X('<g class="element" element-id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg" xmlns:x="http://www.w3.org/1999/xlink">' + 
+    var g = $X('<g class="element" element-id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' + 
                   '<text class="super" transform="translate(30,8.4)">' +
                     '<tspan class="active">0</tspan>' +
                     '<tspan class="colon">,</tspan>' +
                     '<tspan class="vote">0</tspan>' +
                   '</text>' +
-                  '<use class="activities" x:href="#' + sym_name  + '">' +
-                    '<title>' + title  + '</title>' +
-                  '</use>' +
                '</g>'); 
+    var sym = svg.defs[sym_name].clone();
+    sym.prepend($X('<title xmlns="http://www.w3.org/2000/svg">' + title  + '</title>'));
+    sym.attr('class','activities');
+    g.append(sym);
 
     // Binding events for symbol
     for(event_name in adaptor.elements[sym_name]) {
-      g.children('use:first').bind(event_name, {'function_call':adaptor.elements[sym_name][event_name]}, function(e) { e.data.function_call($(this).parents(':first').attr('element-id'),e)});
-      if(event_name == 'mousedown') g.children('use:first').bind('contextmenu', false);
+      sym.bind(event_name, {'function_call':adaptor.elements[sym_name][event_name]}, function(e) { e.data.function_call($(this).parents(':first').attr('element-id'),e)});
+      if(event_name == 'mousedown') sym.bind('contextmenu', false);
     }
     if(group) {group.append(g);}
     else {svg.container.children('g:first').append(g);} 
@@ -173,20 +173,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     //else 
     {svg.container.append(line);}
   } //  }}}
-  var svg_structure = function() { // {{{
-    svg.container.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
-/* DUMM!!!!
-    var canvas = $('g:first', svg.container);
-    svg.tiles = canvas.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
-    svg.tiles = $('g:last',canvas);
-    svg.blocks = canvas.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
-    svg.blocks = $('g:last',canvas);
-    svg.lines = canvas.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
-    svg.lines = $('g:last',canvas);
-    svg.symbols = canvas.append($X('<g xmlns="http://www.w3.org/2000/svg"/>'));
-    svg.symbols = $('g:last',canvas);
-*/
-  } // }}}
   // }}}
   // Initialize {{{
     adaptor = wf_adaptor;

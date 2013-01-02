@@ -354,7 +354,6 @@ function CPEE(adaptor) {
       'type' : 'primitive', 
       'endnodes' : 'this',
       'resolve_symbol' : function(node) { 
-        console.info();
         if($(node).attr('endpoint') == 'instantiation') {
           return 'callinstantiation'; 
           return illustrator.elements.callinstantiation.draw(node, pos, block);

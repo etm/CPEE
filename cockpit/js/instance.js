@@ -831,7 +831,7 @@ function format_visual_set(what) {//{{{
         b.setAttribute('class','vote');
       });
 
-    $.each(['#activity-' + what, 'g[element-id="' + what + '"] use'],function(i,t){
+    $.each(['#activity-' + what, 'g[element-id="' + what + '"] g'],function(i,t){
       $(t).each(function(a,b){ 
         if      (actives > 0)  vs = 'active';
         else if (votes > 0)    vs = 'vote';
