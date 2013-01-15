@@ -102,7 +102,10 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
       end
       status, resp = wsdl_client.get params
       unless status == 200
-        @handler_returnValue = Result.new(resp, status)
+        puts "ERROR HandlerWrapper: Unable to parse/get WSDL from #{parameters[:wsdl].split('?')[0]}"
+        error_str = resp[0].value.read
+        puts error_str
+        @handler_returnValue = Result.new(error_str, status)
         @handler_continue.continue
         return
       end
@@ -122,16 +125,27 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
       end #}}} 
       service = Riddl::Client.new(@handler_endpoint)
       status, result = service.post [Riddl::Parameter::Complex.new("", "text/xml", envelope.to_s)]
-      out = XML::Smart.string(result[0].value.read)
-      out.register_namespace 's', "http://schemas.xmlsoap.org/soap/envelope/"
-      if out.find("//s:Fault").any?
-        node = out.find("//s:Fault").first
-        node.namespaces['soap'] = out.root.namespaces['soap']
-        @handler_returnValue = Result.new(node.to_doc, 500)
-      else 
-        node = out.find("//s:Body").first
-        node.namespaces['soap'] = out.root.namespaces['soap']
-        @handler_returnValue = Result.new(node.to_doc, 200)
+      begin
+        out = XML::Smart.string(result[0].value.read)
+        out.register_namespace 's', "http://schemas.xmlsoap.org/soap/envelope/"
+        if out.find("//s:Fault").any?
+          puts "INFO HandlerWrapper: Soap Fault Responded by #{@handler_endpoint}"
+          puts out
+          node = out.find("//s:Fault").first
+          node.namespaces['soap'] = out.root.namespaces['soap']
+          @handler_returnValue = Result.new(node.to_doc, 500)
+        else 
+          node = out.find("//s:Body").first
+          node.namespaces['soap'] = out.root.namespaces['soap']
+          @handler_returnValue = Result.new(node.to_doc, 200)
+        end
+      rescue
+        puts "ERROR HandlerWrapper: Unable to parse response from #{@handler_endpoint}"
+        error_str = esp[0].value.read
+        puts error_str
+        @handler_returnValue = Result.new(error_str, 500)
+        @handler_continue.continue
+        return
       end
     end# }}}  
     @handler_continue.continue
