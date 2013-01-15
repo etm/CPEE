@@ -1,8 +1,4 @@
 require 'savon'
-Savon.configure do |config|
-  config.log = false
-  config.log_level = :info                                                                                                                                      
-end
 
 class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
@@ -22,9 +18,16 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
     if passthrough.nil?
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
       begin
-        client = Savon.client(@handler_endpoint)
-        client.http.headers["CPEE-Instance"] = cpee_instance
-        client.http.headers["CPEE-Callback"] = callback
+        client = Savon.client do 
+          wsdl @handler_endpoint
+          log false
+          log_level :info
+          soap_header(
+            "CPEE_BASE" => @url, 
+            "CPEE_INSTANCE" => cpee_instance, 
+            "CPEE_CALLBACK" => callback
+          )
+        end 
         params = {}
         (parameters[:parameters] || {}).each do |h|
           if h.class == Hash
@@ -33,7 +36,7 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
             end  
           end  
         end
-        response = client.request parameters[:method].to_sym, params
+        response = client.call parameters[:method].to_sym, params
         result = response.body.first[1].first[1]
       rescue Savon::Error => error
         raise "Could not soap #{@handler_endpoint}->#{parameters[:method].to_sym}'s back: #{error.to_s}"
