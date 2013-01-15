@@ -107,7 +107,8 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
         return
       end
       wsdl = XML::Smart.string(resp[0].value.read)
-      msg = wsdl.find("//wsdl:portType/wsdl:operation[@name = '#{parameters[:soap_operation]}']/wsdl:input/@message", {"wsdl"=>"http://schemas.xmlsoap.org/wsdl/"}).first
+      wsdl.register_namespace "wsdl", "http://schemas.xmlsoap.org/wsdl/"
+      msg = wsdl.find("//wsdl:portType/wsdl:operation[@name = '#{parameters[:soap_operation]}']/wsdl:input/@message").first
       envelope = XML::Smart.string("<Envelope/>")
       ns1 = envelope.root.namespaces.add("ns1", wsdl.root.attributes['targetNamespace']) 
       ns_soap = envelope.root.namespaces.add("soap", "http://schemas.xmlsoap.org/soap/envelope/")
@@ -122,12 +123,13 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
       service = Riddl::Client.new(@handler_endpoint)
       status, result = service.post [Riddl::Parameter::Complex.new("", "text/xml", envelope.to_s)]
       out = XML::Smart.string(result[0].value.read)
-      if out.find("//s:Fault", {"s" => "http://schemas.xmlsoap.org/soap/envelope/"}).any?
-        node = out.find("//s:Fault", {"s"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
+      out.register_namespace 's', "http://schemas.xmlsoap.org/soap/envelope/"
+      if out.find("//s:Fault").any?
+        node = out.find("//s:Fault").first
         node.namespaces['soap'] = out.root.namespaces['soap']
         @handler_returnValue = Result.new(node.to_doc, 500)
       else 
-        node = out.find("//s:Body", {"s"=>"http://schemas.xmlsoap.org/soap/envelope/"}).first
+        node = out.find("//s:Body").first
         node.namespaces['soap'] = out.root.namespaces['soap']
         @handler_returnValue = Result.new(node.to_doc, 200)
       end
