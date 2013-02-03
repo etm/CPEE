@@ -1,6 +1,7 @@
 require 'time'
 require 'date'
 require 'cgi'
+require 'savon'
 
 class RescueHash < Hash
   def self::new_from_obj(obj)
@@ -94,44 +95,29 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
 # When stopping the unmark command may be ignored
 # instance.js at the beginning (moz-websocket)
     elsif parameters.key?(:soap_operation)# {{{
-      # Bulding SAOP-Envelope {{{
-      wsdl_client = Riddl::Client.new(parameters[:wsdl].split('?')[0])
-      params = []
-      parameters[:wsdl].split('?')[1].split('&').each do |p|
-        params << Riddl::Parameter::Simple.new(p.split('=')[0], p.split('=')[1], :query)
-      end
-      status, resp = wsdl_client.get params
-      unless status == 200
-        @handler_returnValue = Result.new(resp, status)
-        @handler_continue.continue
-        return
-      end
-      wsdl = XML::Smart.string(resp[0].value.read)
-      wsdl.register_namespace "wsdl", "http://schemas.xmlsoap.org/wsdl/"
-      msg = wsdl.find("//wsdl:portType/wsdl:operation[@name = '#{parameters[:soap_operation]}']/wsdl:input/@message").first
-      envelope = XML::Smart.string("<Envelope/>")
-      ns1 = envelope.root.namespaces.add("ns1", wsdl.root.attributes['targetNamespace']) 
-      ns_soap = envelope.root.namespaces.add("soap", "http://schemas.xmlsoap.org/soap/envelope/")
-      body = envelope.root.add("Body")
-      soap_params = body.add("#{parameters[:soap_operation]}")
-      soap_params.namespace = ns1
-      parameters[:parameters].each do |hash|
-        hash.each do |k,v|
-          soap_params.add("#{k}","#{v}") # used #{} to get implicit escaping of XML
+      begin
+        pp parameters
+        client = Savon.client do 
+          wsdl parameters[:wsdl]
+          log false
+          log_level :info
+          soap_header(
+            "CPEE_BASE" => @url, 
+            "CPEE_INSTANCE" => cpee_instance, 
+          )
+        end 
+        params = {}
+        (parameters[:parameters] || {}).each do |h|
+          if h.class == Hash
+            h.each do |k,v|
+              params[k] = v
+            end  
+          end  
         end
-      end #}}} 
-      service = Riddl::Client.new(@handler_endpoint)
-      status, result = service.post [Riddl::Parameter::Complex.new("", "text/xml", envelope.to_s)]
-      out = XML::Smart.string(result[0].value.read)
-      out.register_namespace 's', "http://schemas.xmlsoap.org/soap/envelope/"
-      if out.find("//s:Fault").any?
-        node = out.find("//s:Fault").first
-        node.namespaces['soap'] = out.root.namespaces['soap']
-        @handler_returnValue = Result.new(node.to_doc, 500)
-      else 
-        node = out.find("//s:Body").first
-        node.namespaces['soap'] = out.root.namespaces['soap']
-        @handler_returnValue = Result.new(node.to_doc, 200)
+        response = client.call parameters[:soap_operation].to_sym, params
+        @handler_returnValue = Result.new(XML::Smart.new(response.to_doc), 200)
+      rescue Savon::Error => error
+        @handler_returnValue = error.to_s
       end
     end# }}}  
     @handler_continue.continue
