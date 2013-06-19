@@ -12,6 +12,9 @@
       <attribute name='id'>
         <data type="integer"/>
       </attribute>
+      <attribute name='state'>
+        <data type="string"/>
+      </attribute>
       <data type="string"/>
     </element>
   </define>  

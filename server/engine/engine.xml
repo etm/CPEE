@@ -40,11 +40,6 @@
   <resource>
     <get in="*" out="list-of-workflow-instances"/>
     <post in="instance-name" out="instance-id"/>
-    <resource relative='xsls'>
-      <resource>
-        <get in="*" out="xsl"/>
-      </resource>  
-    </resource>
     <resource>
       <get in="*" out="instance-info"/>
       <delete in="*"/>
