@@ -5,35 +5,35 @@ require ::File.dirname(__FILE__) + '/handler_notifications'
 module CPEE
 
   def self::implementation(opts)
-    opts[:instances] ||= File.expand_path(File.dirname(__FILE__) + '/instances')
-    opts[:handlerwrappers] ||= File.expand_path(File.dirname(__FILE__) + '/handlerwrappers')
-    opts[:topics] ||= File.expand_path(File.dirname(__FILE__) + '/resource/topics.xml')
-    opts[:properties_init] ||= File.expand_path(File.dirname(__FILE__) + '/resource/properties.init')
-    opts[:properties_schema_active] ||= File.expand_path(File.dirname(__FILE__) + '/resource/properties.schema.active')
-    opts[:properties_schema_finished] ||= File.expand_path(File.dirname(__FILE__) + '/resource/properties.schema.finished')
-    opts[:properties_schema_inactive] ||= File.expand_path(File.dirname(__FILE__) + '/resource/properties.schema.inactive')
+    opts[:instances]                  ||= File.expand_path(File.dirname(__FILE__) + '/../instances')
+    opts[:handlerwrappers]            ||= File.expand_path(File.dirname(__FILE__) + '/../handlerwrappers')
+    opts[:topics]                     ||= File.expand_path(File.dirname(__FILE__) + '/../resources/topics.xml')
+    opts[:properties_init]            ||= File.expand_path(File.dirname(__FILE__) + '/../resources/properties.init')
+    opts[:properties_schema_active]   ||= File.expand_path(File.dirname(__FILE__) + '/../resources/properties.schema.active')
+    opts[:properties_schema_finished] ||= File.expand_path(File.dirname(__FILE__) + '/../resources/properties.schema.finished')
+    opts[:properties_schema_inactive] ||= File.expand_path(File.dirname(__FILE__) + '/../resources/properties.schema.inactive')
 
     Proc.new do
       controller = {}
       Dir[opts[:instances] + '/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.each do |id|
-        controller[id.to_i] = Controller.new(id,opts[:url],opts)
+        controller[id.to_i] = Controller.new(id,opts)
       end
 
       interface 'properties' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use Riddl::Utils::Properties::implementation(controller[id].backend_properties, PropertiesHandler, opts[:mode])
+        use Riddl::Utils::Properties::implementation(controller[id].properties, PropertiesHandler, opts[:mode])
       end  
 
       interface 'main' do
         run CPEE::Instances, controller if get '*'
-        run CPEE::NewInstance, opts[:url] if post 'instance-name'
+        run CPEE::NewInstance, controller, opts if post 'instance-name'
         on resource do |r|
-          run CPEE::Info if get
-          run CPEE::DeleteInstance if delete
+          run CPEE::Info, controller if get
+          run CPEE::DeleteInstance, controller, opts if delete
           on resource 'callbacks' do
-            run CPEE::Callbacks, opts[:mode] if get
+            run CPEE::Callbacks, controller, opts if get
             on resource do
-              run CPEE::ExCallback if get || put || post || delete
+              run CPEE::ExCallback, controller if get || put || post || delete
             end  
           end  
         end  
@@ -71,12 +71,13 @@ module CPEE
 
   class ExCallback < Riddl::Implementation #{{{
     def response
-      id = @r[0]  
+      controller = @a[0]
+      id = @r[0].to_i
       callback = @r[2]
-      $controller[id.to_i].mutex.synchronize do
-        if $controller[id.to_i].callbacks.has_key?(callback) then
-          $controller[id.to_i].callbacks[callback].callback(@p)
-          $controller[id.to_i].callbacks.delete(callback)
+      controller[id].mutex.synchronize do
+        if controller[id].callbacks.has_key?(callback) then
+          controller[id].callbacks[callback].callback(@p)
+          controller[id].callbacks.delete(callback)
         end
       end  
     end
@@ -84,15 +85,17 @@ module CPEE
 
   class Callbacks < Riddl::Implementation #{{{
     def response
-      unless File.exists?("instances/#{@r[0]}")
+      controller = @a[0]
+      opts = @a[1]
+      id = @r[0].to_i
+      unless controller[id]
         @status = 400
         return
       end
       Riddl::Parameter::Complex.new("info","text/xml") do
-        cb = XML::Smart::string("<callbacks details='#{@a[0]}'/>")
-        if @a[0] == :debug
-          id = @r[0]
-          $controller[id.to_i].callbacks.each do |k,v|
+        cb = XML::Smart::string("<callbacks details='#{opts[:mode]}'/>")
+        if opts[:mode] == :debug
+          controller[id].callbacks.each do |k,v|
             cb.root.add("callback",{"id" => k},"[#{v.protocol.to_s}] #{v.info}")
           end  
         end
@@ -107,8 +110,8 @@ module CPEE
       Riddl::Parameter::Complex.new("wis","text/xml") do
         ins = XML::Smart::string('<instances/>')
         controller.each do |k,v|
-          name = v.backend_properties.properties.find("string(/p:properties/p:name)")
-          state = v.backend_properties.properties.find("string(/p:properties/p:state)")
+          name = v.properties.data.find("string(/p:properties/p:name)")
+          state = v.properties.data.find("string(/p:properties/p:state)")
           ins.root.add('instance',name, 'id' => k, 'state' => state)
         end
         ins.to_s
@@ -118,25 +121,17 @@ module CPEE
 
   class NewInstance < Riddl::Implementation #{{{
     def response
-      url = @a[0]
+      controller = @a[0]
+      opts = @a[1]
       name = @p[0].value
-      id = Dir['instances/*/properties.xml'].map{|e|File::basename(File::dirname(e)).to_i}.sort.last.to_i
+      id = controller.keys.sort.last.to_i
       while true
         id += 1
-        begin
-          Dir.mkdir("instances/#{id}")
-          break
-        rescue => details
-        end
+        Dir.mkdir(opts[:instances] + "/#{id}") rescue nil
+        break
       end  
-      FileUtils.cp('instances/properties.init',"instances/#{id}/properties.xml")
-      FileUtils.cp_r('instances/notifications.init',"instances/#{id}/notifications")
-      XML::Smart.modify("instances/#{id}/properties.xml") do |doc|
-        doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
-        doc.find("/p:properties/p:name").first.text = name
-      end
-
-      $controller[id.to_i] = Controller.new(id,url)
+      controller[id] = Controller.new(id,opts)
+      controller[id].properties.data.find("/p:properties/p:name").first.text = name
 
       Riddl::Parameter::Simple.new("id", id)
     end
@@ -144,7 +139,9 @@ module CPEE
 
   class Info < Riddl::Implementation #{{{
     def response
-      unless File.exists?("instances/#{@r[0]}")
+      controller = @a[0]
+      id = @r[0].to_i
+      unless controller[id]
         @status = 400
         return
       end
@@ -163,12 +160,15 @@ module CPEE
 
   class DeleteInstance < Riddl::Implementation #{{{
     def response
-      unless File.exists?("instances/#{@r[0]}")
+      controller = @a[0]
+      opts = @a[1]
+      id = @r[0].to_i
+      unless controller[id]
         @status = 400
         return
       end
-      FileUtils.rm_r("instances/#{@r[0]}")
-      $controller.delete(@r[0])
+      controller.delete(id)
+      FileUtils.rm_r(opts[:instances] + "/#{@r[0]}")
     end
   end #}}}
 

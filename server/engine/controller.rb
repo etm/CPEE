@@ -18,15 +18,16 @@ module CPEE
       @thread = nil
       @mutex = Mutex.new
 
-      @backend_properties = Riddl::Utils::Properties::Backend.new( 
+      @properties = Riddl::Utils::Properties::Backend.new( 
         {
-          :active => opts[:properties_schema_active],
+          :active   => opts[:properties_schema_active],
           :finished => opts[:properties_schema_finished],
           :inactive => opts[:properties_schema_inactive]
         },
-        @directory + '/properties.xml'
+        @directory + '/properties.xml',
+        opts[:properties_init]
       )
-      @backend_notifications =  Riddl::Utils::Notifications::Producer::Backend.new(
+      @notifications =  Riddl::Utils::Notifications::Producer::Backend.new(
         opts[:topics],
         @directory + '/notifications/'
       )
@@ -43,6 +44,8 @@ module CPEE
       #end
     end
 
+    attr_reader :properties
+    attr_reader :notifications
     attr_reader :callbacks
     attr_reader :mutex
 
