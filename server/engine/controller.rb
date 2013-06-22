@@ -1,6 +1,6 @@
+require 'json'
 require ::File.dirname(__FILE__) + '/empty_workflow'
 require 'xml/smart'
-require 'multi_json'
 
 module CPEE
 
@@ -8,12 +8,13 @@ module CPEE
 
     def initialize(id,opts)
       @directory = opts[:instances] + "/#{id}/"
+      @id = id
       @events = {}
       @votes = {}
       @votes_results = {}
       @communication = {}
       @callbacks = {}
-      @instance = EmptyWorkflow.new(id,self)
+      @instance = EmptyWorkflow.new(self,opts[:url])
       @positions = []
       @thread = nil
       @mutex = Mutex.new
@@ -81,7 +82,7 @@ module CPEE
         node = doc.find("/p:properties/p:dataelements").first
         node.children.delete_all!
         @instance.data.each do |k,v|
-          node.add(k.to_s,MultiJson::encode(v))
+          node.add(k.to_s,JSON::generate(v))
         end
         
         node = doc.find("/p:properties/p:endpoints").first
@@ -189,7 +190,7 @@ module CPEE
         doc.find("/p:properties/p:dataelements/p:*").each do |e|
           ### when json decode fails, just use it as a string
           @instance.data[e.qname.to_sym] = begin
-            MultiJson.decode(e.text)
+            JSON::parse(e.text)
           rescue
             e.text
           end
@@ -351,7 +352,7 @@ module CPEE
       res << ['key'         , key]
       res << ['topic'       , ::File::dirname(what)]
       res << [type          , ::File::basename(what)]
-      res << ['notification', MultiJson.encode(content)]
+      res << ['notification', JSON::generate(content)]
       res << ['uid'         , Digest::MD5.hexdigest(Kernel::rand().to_s)]
       res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
       # TODO add secret to fp

@@ -28,7 +28,7 @@ Result = Struct.new(:data, :status)
 
 class RescueHandlerWrapper < WEEL::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,continue=nil)
-    @instance = arguments[0].to_i
+    @controller = arguments[0]
     @url = arguments[1]
     @handler_stopped = false
     @handler_continue = continue
@@ -39,13 +39,12 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
 
 # executes a ws-call to the given endpoint with the given parameters. the call
   def activity_handle(passthrough, parameters)
-    $controller[@instance].notify("running/activity_calling", :instance => "#{$url}/#{@instance}", :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
-    cpee_instance = "#{@url}/#{@instance}"
+    @controller.notify("running/activity_calling", :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
 
     params = []
     if parameters.key?(:info) && parameters[:info] == 'true' # {{{
       parameters[:parameters] = Array.new if (parameters.include?(:parameters) == false) || parameters[:parameters].nil?
-      parameters[:parameters] << {'call-instance-uri' => cpee_instance}
+      parameters[:parameters] << {'call-instance-uri' => "#{@url}/#{@controller.id}"}
       parameters[:parameters] << {'call-activity' => @handler_position}
       parameters[:parameters] << {'call-endpoint' => @handler_endpoint}
       parameters[:parameters] << {'call-oid' => parameters[:'call-oid']} if parameters.include?(:'call-oid')
@@ -62,7 +61,7 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
       injection_handler = Riddl::Client.new(injection_handler_uri)
       status, resp = injection_handler.post [
         Riddl::Parameter::Simple.new('activity', @handler_position), 
-        Riddl::Parameter::Simple.new('instance', cpee_instance)
+        Riddl::Parameter::Simple.new('instance', "#{@url}/#{@controller.id}")
       ] # here could be consumer, producer secrets
       raise "Subscription to injection-handler at #{injection_handler_uri} failed with status #{status}" unless status == 200
       raise WEEL::Signal::SkipManipulate # }}}
@@ -78,14 +77,14 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
       end 
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
       params << Riddl::Header.new("CPEE_BASE",@url)
-      params << Riddl::Header.new("CPEE_INSTANCE","#{$url}/#{@instance}")
+      params << Riddl::Header.new("CPEE_INSTANCE","#{@url}/#{@controller.id}")
       params << Riddl::Header.new("CPEE_CALLBACK",callback)
       status, result, headers = client.request type => params
       if(not(type == "get" and status == 200) and not(type == "post" and status == 201))
         raise "Could not perform http-#{type} on URI: #{@handler_endpoint} - Status: #{status}" 
       end
       if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
-        $controller[@instance].callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+        @controller.callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
         return
       end
 # Make rescue-hash here
@@ -103,7 +102,7 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
           log_level :info
           soap_header(
             "CPEE_BASE" => @url, 
-            "CPEE_INSTANCE" => cpee_instance, 
+            "CPEE_INSTANCE" => "#{@url}/#{@controller.id}", 
           )
         end 
         params = {}
@@ -159,45 +158,45 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
   end
 
   def inform_activity_done
-    $controller[@instance].notify("running/activity_done", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position)
+    @controller.notify("running/activity_done", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end
   def inform_activity_manipulate
-    $controller[@instance].notify("running/activity_manipulating", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position)
+    @controller.notify("running/activity_manipulating", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end
   def inform_activity_failed(err)
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    @controller.notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end
   def inform_syntax_error(err,code)
     puts code
     puts "------"
     puts err.message
     puts err.backtrace
-    $controller[@instance].notify("properties/description/error", :instance => "#{$url}/#{@instance}", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :code => code, :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    @controller.notify("properties/description/error", :instance => "#{@url}/#{@controller.id}", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :code => code, :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end
   def inform_manipulate_change(status,data,endpoints)
-    $controller[@instance].serialize!
-    $controller[@instance].notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :id => status.id, :message => status.message) unless status.nil?
-    $controller[@instance].notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :changed => data) unless data.nil?
-    $controller[@instance].notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position, :changed => endpoints) unless endpoints.nil?
+    @controller.serialize!
+    @controller.notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :id => status.id, :message => status.message) unless status.nil?
+    @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => data) unless data.nil?
+    @controller.notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => endpoints) unless endpoints.nil?
   end
   def inform_position_change(ipc={})
-    $controller[@instance].serialize_position!
-    ipc[:instance] = "#{$url}/#{@instance}"
-    $controller[@instance].notify("properties/position/change", ipc)
+    @controller.serialize_position!
+    ipc[:instance] = "#{@url}/#{@controller.id}"
+    @controller.notify("properties/position/change", ipc)
   end
   def inform_state_change(newstate)
-    if $controller[@instance]
-      $controller[@instance].serialize!
-      $controller[@instance].notify("properties/state/change", :instance => "#{$url}/#{@instance}", :state => newstate)
+    if @controller
+      @controller.serialize!
+      @controller.notify("properties/state/change", :instance => "#{@url}/#{@controller.id}", :state => newstate)
     end
   end
 
   def vote_sync_after
-    $controller[@instance].call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position)
+    @controller.call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end
   def vote_sync_before
-    $controller[@instance].call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{$url}/#{@instance}", :activity => @handler_position)
+    @controller.call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end
 end

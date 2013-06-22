@@ -1,7 +1,5 @@
 require 'weel'
-Dir[::File.dirname(__FILE__) + "/handlerwrappers/*"].each do |h|
-  require h
-end  
+require ::File.dirname(__FILE__) + '/../handlerwrappers/default'
 
 class EmptyWorkflow < WEEL
   handlerwrapper DefaultHandlerWrapper
@@ -10,4 +8,3 @@ class EmptyWorkflow < WEEL
     # control flow will be set externally
   end
 end
-

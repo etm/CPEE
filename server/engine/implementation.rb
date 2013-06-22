@@ -18,6 +18,9 @@ module CPEE
       Dir[opts[:instances] + '/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.each do |id|
         controller[id.to_i] = Controller.new(id,opts)
       end
+      Dir[opts[:handlerwrappers] + "/*.rb"].each do |h|
+        require h
+      end
 
       interface 'properties' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i

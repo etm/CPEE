@@ -1,7 +1,7 @@
 class PropertiesHandler < Riddl::Utils::Properties::HandlerBase
   def sync
     if @property == 'description'
-      @backend.modify do |doc|
+      @data.properties.modify do |doc|
         dsl   = doc.find("/p:properties/p:dsl").first
         trans = doc.find("/p:properties/p:transformation").first
         desc  = doc.find("/p:properties/p:description").first
@@ -15,14 +15,14 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase
       end
     end  
     if @property == 'state'
-      state = @backend.properties.find("string(/p:properties/p:state)")
-      if $controller[@backend.id].call_vote("properties/state/change", :instance => @backend.id, :newstate => state)
+      state = @data.properties.data.find("string(/p:properties/p:state)")
+      if @data.call_vote("properties/state/change", :instance => @data.id, :newstate => state)
         case state
-          when 'stopping'; $controller[@backend.id].stop
-          when 'running'; $controller[@backend.id].start
+          when 'stopping'; @data.stop
+          when 'running'; @data.start
         end
       else
-        if node = @backend.properties.find("/p:properties/p:state").first
+        if node = @data.properties.data.find("/p:properties/p:state").first
           case state
             when 'stopping'; node.text = 'running'
             when 'running'; node.text = 'stopped'
@@ -30,17 +30,17 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase
         end
       end
     else
-      $controller[@backend.id].unserialize_data!
+      @data.unserialize_data!
     end
     case @property
       when 'handlerwrapper'
-        $controller[@backend.id].notify('properties/description/handlerwrapper')
+        @data.notify('properties/description/handlerwrapper')
       when 'description'
-        $controller[@backend.id].notify('properties/description/change')
+        @data.notify('properties/description/change')
       when 'endpoints'
-        $controller[@backend.id].notify('properties/endpoints/change')
+        @data.notify('properties/endpoints/change')
       when 'dataelements'
-        $controller[@backend.id].notify('properties/dataelements/change')
+        @data.notify('properties/dataelements/change')
       else
         nil
     end

@@ -24,8 +24,6 @@ EOF
   s.homepage         = 'http://www.wst.univie.ac.at/workgroups/wee/'
 
   s.add_runtime_dependency 'riddl'
-  s.add_runtime_dependency 'savon'
-  s.add_runtime_dependency 'multi_json'
-  s.add_runtime_dependency 'yajl-ruby'
   s.add_runtime_dependency 'weel'
+  s.add_runtime_dependency 'savon'
 end
