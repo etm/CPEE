@@ -18,15 +18,15 @@ class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase
   end
 
   def create
-    @data.unserialize_event!(:cre,@key)
+    @data.unserialize_notifications!(:cre,@key)
     @data.notify('properties/handlers/change')
   end
   def delete
-    @data.unserialize_event!(:del,@key)
+    @data.unserialize_notifications!(:del,@key)
     @data.notify('properties/handlers/change')
   end
   def update
-    @data.unserialize_event!(:upd,@key)
+    @data.unserialize_notifications!(:upd,@key)
     @data.notify('properties/handlers/change')
   end
 end

@@ -42,12 +42,12 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
       end
       
       if response.http.headers["CPEE_CALLBACK"] && response.http.headers["CPEE_CALLBACK"] == 'true'
-        @controller.callbacks[callback] = Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+        @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
         @handler_passthrough = callback
         return
       end
     else
-      @controller.callbacks[passthrough] = Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+      @controller.callbacks[passthrough] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
       @handler_passthrough = passthrough
       return
     end
@@ -93,20 +93,28 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
     puts err.backtrace
     @controller.notify("properties/description/error", :instance => "#{@url}/#{@controller.id}", :message => err.message)
   end# }}}
-  def inform_manipulate_change(status,data,endpoints) # {{{
-    @controller.serialize!
-    @controller.notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :id => status.id, :message => status.message) unless status.nil?
-    @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => data) unless data.nil?
-    @controller.notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => endpoints) unless endpoints.nil?
+  def inform_manipulate_change(status,dataelements,endpoints) # {{{
+    unless status.nil?
+      @controller.serialize_status!
+      @controller.notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :id => status.id, :message => status.message)
+    end  
+    unless datalements.nil?
+      @controller.serialize_dataelements!
+      @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => datalements)
+    end
+    unless endpoints.nil?
+      @controller.serialize_endpoints!
+      @controller.notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => endpoints)
+    end  
   end # }}}
   def inform_position_change(ipc={}) # {{{
-    @controller.serialize_position!
+    @controller.serialize_positions!
     ipc[:instance] = "#{@url}/#{@controller.id}"
     @controller.notify("properties/position/change", ipc)
   end # }}}
   def inform_state_change(newstate) # {{{
     if @controller
-      @controller.serialize!
+      @controller.serialize_state!
       @controller.notify("properties/state/change", :instance => "#{@url}/#{@controller.id}", :state => newstate)
     end
   end # }}}

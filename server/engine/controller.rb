@@ -1,6 +1,8 @@
 require 'json'
+require ::File.dirname(__FILE__) + '/handler_properties'
+require ::File.dirname(__FILE__) + '/handler_notifications'
+require ::File.dirname(__FILE__) + '/callback'
 require ::File.dirname(__FILE__) + '/empty_workflow'
-require 'xml/smart'
 
 module CPEE
 
@@ -33,16 +35,19 @@ module CPEE
         @directory + '/notifications/'
       )
 
-      #Dir[@directory + 'notifications/*/subscription.xml'].each do |sub|
-      #  key = ::File::basename(::File::dirname(sub))
-      #  self.unserialize_event!(:cre,key)
-      #end
-      #unless ['stopped','ready','finished'].include?(self.unserialize_data!)
-      #  XML::Smart::modify(@directory + 'properties.xml') do |doc|
-      #    doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
-      #    doc.find("/p:properties/p:state").first.text = 'stopped'
-      #  end
-      #end
+      @notifications.subscriptions.keys.each do |key|
+        self.unserialize_notifications!(:cre,key)
+      end
+      unless ['stopped','ready','finished'].include?(@properties.data.find("string(/p:properties/p:state)"))
+        @properties.modify do |doc|
+          doc.find("/p:properties/p:state").first.text = 'stopped'
+        end  
+      end
+      unserialize_handlerwrapper!
+      unserialize_dataelements!
+      unserialize_endpoints!
+      unserialize_dsl!
+      unserialize_positions!
     end
 
     attr_reader :properties
@@ -75,34 +80,32 @@ module CPEE
       @callback = [] # everything should be empty now
     end # }}}
 
-    def serialize! # {{{
-      XML::Smart::modify(@directory + 'properties.xml') do |doc|
-        doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
-        
+    def serialize_dataelements! #{{{
+      @properties.modify do |doc|
         node = doc.find("/p:properties/p:dataelements").first
         node.children.delete_all!
         @instance.data.each do |k,v|
           node.add(k.to_s,JSON::generate(v))
         end
-        
+      end
+    end #}}}
+    def serialize_endpoints! #{{{
+      @properties.modify do |doc|
         node = doc.find("/p:properties/p:endpoints").first
         node.children.delete_all!
         @instance.endpoints.each do |k,v|
           node.add(k.to_s,v)
         end
-        
-        node = doc.find("/p:properties/p:status/p:id").first
-        node.text = @instance.status.id
-        node = doc.find("/p:properties/p:status/p:message").first
-        node.text = @instance.status.message
-
+      end
+    end #}}}
+    def serialize_state! # {{{
+      @properties.modify do |doc|
         node = doc.find("/p:properties/p:state").first
         node.text = @instance.state
       end 
     end # }}}
-    def serialize_position! # {{{
-      XML::Smart::modify(@directory + 'properties.xml') do |doc|
-        doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
+    def serialize_positions! # {{{
+      @properties.modify do |doc|
         pos = doc.find("/p:properties/p:positions").first
         pos.children.delete_all!
         @positions = @instance.positions
@@ -111,8 +114,16 @@ module CPEE
         end
       end
     end # }}}
+    def serialize_status! #{{{
+      @properties.modify do |doc|
+        node = doc.find("/p:properties/p:status/p:id").first
+        node.text = @instance.status.id
+        node = doc.find("/p:properties/p:status/p:message").first
+        node.text = @instance.status.message
+      end
+    end #}}}
 
-    def unserialize_event!(op,key)# {{{
+    def unserialize_notifications!(op,key)# {{{
       case op
         when :del
           @communication.delete(key)
@@ -134,8 +145,7 @@ module CPEE
             vos = []
             @events.each { |e,v| evs << e }
             @votes.each { |e,v| vos << e }
-            XML::Smart::open(@directory + 'notifications/' + key + '/subscription.xml') do |doc|
-              doc.register_namespace 'n', 'http://riddl.org/ns/common-patterns/notifications-producer/1.0'
+            @notifications.subscriptions[key].view do |doc|
               turl = doc.find('string(/n:subscription/@url)') 
               url = turl == '' ? url : turl
               @communication[key] = url
@@ -159,8 +169,7 @@ module CPEE
             end  
           end  
         when :cre
-          XML::Smart::open(@directory + 'notifications/' + key + '/subscription.xml') do |doc|
-            doc.register_namespace 'n', 'http://riddl.org/ns/common-patterns/notifications-producer/1.0'
+          @notifications.subscriptions[key].view do |doc|
             turl = doc.find('string(/n:subscription/@url)') 
             url = turl == '' ? nil : turl
             @communication[key] = url
@@ -177,17 +186,10 @@ module CPEE
           end  
       end    
     end # }}} 
-    def unserialize_data! # {{{
-      hw = nil
-      state = nil
-
-      XML::Smart::open(@directory + 'properties.xml') do |doc|
-        doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
-
-        state = doc.find("string(/p:properties/p:state)")
-
+    
+    def unserialize_dataelements! #{{{
         @instance.data.clear
-        doc.find("/p:properties/p:dataelements/p:*").each do |e|
+        @properties.data.find("/p:properties/p:dataelements/p:*").each do |e|
           ### when json decode fails, just use it as a string
           @instance.data[e.qname.to_sym] = begin
             JSON::parse(e.text)
@@ -195,38 +197,70 @@ module CPEE
             e.text
           end
         end
-
+    end #}}}
+    def unserialize_endpoints! #{{{
         @instance.endpoints.clear
-        doc.find("/p:properties/p:endpoints/p:*").each do |e|
+        @properties.data.find("/p:properties/p:endpoints/p:*").each do |e|
           @instance.endpoints[e.qname.to_sym] = e.text
         end
-        
-        begin
-          hw = eval(doc.find("string(/p:properties/p:handlerwrapper)"))
-          @instance.handlerwrapper = hw
-        rescue => e  
-          @instance.handlerwrapper = DefaultHandlerWrapper
-        end  
-
-        @positions = []
-        doc.find("/p:properties/p:positions/p:*").each do |e|
-          val = e.text.split(';')
-          @positions << ::WEEL::Position.new(e.qname.to_s.to_sym,val[0].to_sym,val[1])
+    end #}}}
+    def unserialize_state! #{{{ 
+      state = @properties.data.find("string(/p:properties/p:state)")
+      if call_vote("properties/state/change", :instance => @id, :newstate => state)
+        case state
+          when 'stopping'; stop
+          when 'running'; start
         end
-
-        @instance.description doc.find("string(/p:properties/p:dsl)")
+      else
+        if node = @properties.data.find("/p:properties/p:state").first
+          case state
+            when 'stopping'; node.text = 'running'
+            when 'running'; node.text = 'stopped'
+          end
+        end
       end
-
+    end #}}}
+    def unserialize_handlerwrapper! #{{{
+      hw = nil
+      begin
+        hw = eval(@properties.data.find("string(/p:properties/p:handlerwrapper)"))
+        @instance.handlerwrapper = hw
+      rescue => e  
+        @instance.handlerwrapper = DefaultHandlerWrapper
+      end  
       if hw != @instance.handlerwrapper
-        XML::Smart::modify(@directory + 'properties.xml') do |doc|
-          doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
+        @properties.modify do |doc|
           node = doc.find("/p:properties/p:handlerwrapper").first
           node.text = @instance.handlerwrapper.to_s
         end 
       end
-
-      state
-    end # }}}
+    end #}}}
+    def unserialize_positions! #{{{
+      @positions = []
+      @properties.data.find("/p:properties/p:positions/p:*").each do |e|
+        val = e.text.split(';')
+        @positions << ::WEEL::Position.new(e.qname.to_s.to_sym,val[0].to_sym,val[1])
+      end
+    end #}}}
+    def unserialize_dsl! #{{{
+      @instance.description = @properties.data.find("string(/p:properties/p:dsl)")
+    end #}}}
+    def unserialize_description! #{{{
+      dsl = nil
+      @properties.modify do |doc|
+        dsl   = doc.find("/p:properties/p:dsl").first
+        trans = doc.find("/p:properties/p:transformation").first
+        desc  = doc.find("/p:properties/p:description").first
+        if trans.nil?
+          dsl.text = desc.to_s
+        else
+          trans = XML::Smart::string(trans.children.empty? ? trans.to_s : trans.children.first.dump)
+          desc  = XML::Smart::string(desc.children.empty? ? desc.to_s : desc.children.first.dump)
+          dsl.text = desc.transform_with(trans)
+        end
+      end
+      @instance.description dsl.text
+    end #}}}
 
     def notify(what,content={})# {{{
       item = @events[what]
@@ -340,10 +374,6 @@ module CPEE
         end
       end
     end # }}}
-
-    def state
-      @instance.state
-    end  
 
   private
 
