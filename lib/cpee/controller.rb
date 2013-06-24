@@ -23,9 +23,9 @@ module CPEE
 
       @properties = Riddl::Utils::Properties::Backend.new( 
         {
+          :inactive => opts[:properties_schema_inactive],
           :active   => opts[:properties_schema_active],
-          :finished => opts[:properties_schema_finished],
-          :inactive => opts[:properties_schema_inactive]
+          :finished => opts[:properties_schema_finished]
         },
         @directory + '/properties.xml',
         opts[:properties_init]
@@ -99,10 +99,15 @@ module CPEE
       end
     end #}}}
     def serialize_state! # {{{
-      @properties.modify do |doc|
-        node = doc.find("/p:properties/p:state").first
-        node.text = @instance.state
-      end 
+      @properties.activate_schema(:finished) if @instance.state == :finished
+      @properties.activate_schema(:inactive) if @instance.state == :stopped
+      @properties.activate_schema(:active)   if @instance.state == :running || @instance.state == :stopping
+      if [:finished, :stopped].includes?(@instance.state)
+        @properties.modify do |doc|
+          node = doc.find("/p:properties/p:state").first
+          node.text = @instance.state
+        end 
+      end  
     end # }}}
     def serialize_positions! # {{{
       @properties.modify do |doc|
@@ -208,8 +213,10 @@ module CPEE
       state = @properties.data.find("string(/p:properties/p:state)")
       if call_vote("properties/state/change", :instance => @id, :newstate => state)
         case state
-          when 'stopping'; stop
-          when 'running'; start
+          when 'stopping'
+            stop
+          when 'running'
+            start
         end
       else
         if node = @properties.data.find("/p:properties/p:state").first
