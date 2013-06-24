@@ -2,14 +2,17 @@ require ::File.dirname(__FILE__) + '/controller'
 
 module CPEE
 
+  SERVER = File.expand_path(File.dirname(__FILE__) + '/../cpee.xml')
+
   def self::implementation(opts)
-    opts[:instances]                  ||= File.expand_path(File.dirname(__FILE__) + '/../instances')
-    opts[:handlerwrappers]            ||= File.expand_path(File.dirname(__FILE__) + '/../handlerwrappers')
-    opts[:topics]                     ||= File.expand_path(File.dirname(__FILE__) + '/../resources/topics.xml')
-    opts[:properties_init]            ||= File.expand_path(File.dirname(__FILE__) + '/../resources/properties.init')
-    opts[:properties_schema_active]   ||= File.expand_path(File.dirname(__FILE__) + '/../resources/properties.schema.active')
-    opts[:properties_schema_finished] ||= File.expand_path(File.dirname(__FILE__) + '/../resources/properties.schema.finished')
-    opts[:properties_schema_inactive] ||= File.expand_path(File.dirname(__FILE__) + '/../resources/properties.schema.inactive')
+    opts[:instances]                  ||= File.expand_path(File.dirname(__FILE__) + '/../../server/instances')
+    opts[:handlerwrappers]            ||= File.expand_path(File.dirname(__FILE__) + '/../../server/handlerwrappers')
+    opts[:topics]                     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/topics.xml')
+    opts[:properties_init]            ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.init')
+    opts[:properties_schema_active]   ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.active')
+    opts[:properties_schema_finished] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.finished')
+    opts[:properties_schema_inactive] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.inactive')
+    p opts[:handlerwrappers]
 
     Proc.new do
       controller = {}

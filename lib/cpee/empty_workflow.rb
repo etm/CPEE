@@ -1,5 +1,5 @@
 require 'weel'
-require ::File.dirname(__FILE__) + '/../handlerwrappers/default'
+require ::File.dirname(__FILE__) + '/../../server/handlerwrappers/default'
 
 class EmptyWorkflow < WEEL
   handlerwrapper DefaultHandlerWrapper

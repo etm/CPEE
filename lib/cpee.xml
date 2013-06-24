@@ -1,6 +1,6 @@
 <declaration xmlns="http://riddl.org/ns/declaration/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
   <interface name="main">
-    <xi:include href="engine/engine.xml"/>
+    <xi:include href="engine.xml"/>
   </interface>
   <interface name="properties">
     <xi:include href="http://www.riddl.org/ns/common-patterns/properties/1.0/properties.xml"/>

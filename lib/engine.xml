@@ -2,7 +2,7 @@
 
   <message name="list-of-workflow-instances">
     <parameter name="wis" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="rngs/instances.rng"/>
+      <xi:include href="engine/instances.rng"/>
     </parameter>
   </message>
 
@@ -16,12 +16,12 @@
   
   <message name="instance-info">
     <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="rngs/instance-info.rng"/>
+      <xi:include href="engine/instance-info.rng"/>
     </parameter>
   </message>
   <message name="callbacks">
     <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="rngs/callbacks.rng"/>
+      <xi:include href="engine/callbacks.rng"/>
     </parameter>
   </message>
   <message name="xsl">
