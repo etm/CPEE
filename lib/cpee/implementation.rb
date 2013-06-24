@@ -12,7 +12,6 @@ module CPEE
     opts[:properties_schema_active]   ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.active')
     opts[:properties_schema_finished] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.finished')
     opts[:properties_schema_inactive] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.inactive')
-    p opts[:handlerwrappers]
 
     Proc.new do
       controller = {}
@@ -25,7 +24,7 @@ module CPEE
 
       interface 'properties' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use Riddl::Utils::Properties::implementation(controller[id].properties, PropertiesHandler, opts[:mode])
+        use Riddl::Utils::Properties::implementation(controller[id].properties, PropertiesHandler.new(controller[id]), opts[:mode])
       end  
 
       interface 'main' do
@@ -45,7 +44,7 @@ module CPEE
 
       interface 'notifications' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use Riddl::Utils::Notifications::Producer::implementation(controller[id].backend_notifications, NotificationsHandler, opts[:mode])
+        use Riddl::Utils::Notifications::Producer::implementation(controller[id].notifications, NotificationsHandler.new(controller[id]), opts[:mode])
       end
     end  
   end  

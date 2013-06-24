@@ -259,7 +259,7 @@ module CPEE
           dsl.text = desc.transform_with(trans)
         end
       end
-      @instance.description dsl.text
+      @instance.description = dsl.text
     end #}}}
 
     def notify(what,content={})# {{{
