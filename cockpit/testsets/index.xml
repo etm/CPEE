@@ -1,10 +1,5 @@
 <testsets>
   <testset>SOPROMO Test Sonification</testset>
-  <testset>ADVENTURE Main Loop</testset>
-  <testset>ADVENTURE Order</testset>
-  <testset>ADVENTURE Dynamic Order</testset>
-  <testset>ADVENTURE Performance Test 1</testset>
-  <testset>ADVENTURE Performance Test 2</testset>
   <testset>Linear</testset>
   <testset>Coopis Testset</testset>
   <testset>ICSOC Testset</testset>

@@ -21,17 +21,15 @@
       </parameters><!--}}}-->
       <manipulate output="result">  data.x += "a1,"</manipulate>  
     </call>  
-    <critical sid="section">
-      <call id="a2" endpoint="timeout">
-        <parameters><!--{{{-->
-          <method>post</method>
-          <parameters>
-            <timeout>4</timeout>
-          </parameters>
-        </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "a2,"</manipulate>
-      </call>
-    </critical>
+    <call id="a2" endpoint="timeout">
+      <parameters><!--{{{-->
+        <method>post</method>
+        <parameters>
+          <timeout>4</timeout>
+        </parameters>
+      </parameters><!--}}}-->
+      <manipulate output="result">  data.x += "a2,"</manipulate>
+    </call>
     <call id="a3" endpoint="timeout">
       <parameters><!--{{{-->
         <method>post</method>
