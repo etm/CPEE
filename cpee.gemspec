@@ -5,8 +5,6 @@ Gem::Specification.new do |s|
   s.license          = "LGPL-3"
   s.summary          = "Preliminary release of cloud process execution engine (cpee). If you just need workflow execution, without a rest/xmpp service exposing it, then use WEEL"
 
-  s.description      = "Preliminary release of cloud process execution engine (cpee). If you just need workflow execution, without a rest/xmpp service exposing it, then use WEEL"
-
   s.files            = Dir['{example/**/*,server/**/*,lib/**/*,cockpit/**/*,contrib/logo*,contrib/Screen*}'] + %w(COPYING FEATURES INSTALL Rakefile cpee.gemspec README AUTHORS)
   s.require_path     = 'lib'
   s.extra_rdoc_files = ['README']
