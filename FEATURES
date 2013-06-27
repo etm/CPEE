@@ -16,8 +16,10 @@ CPEE Technical Details
 * Reuses an existing virtual machine for executing control flow
 * Supports BPEL and other languages through transformation to a directly
   executable DSL.
-* Has a core size of ~ 700 LOC.
-* Uses ~ 2 MiB of RAM per instance.
+* The engine (named WEEL and available as a separate package) has a core size
+  of ~ 700 LOC.
+* Uses ~ 2 MiB of RAM per instance (depending on storage backend and data
+  available in instance)
 * Can utilize multiple threads per instance.
 * Cold starts an instance in less than 50ms.
 
