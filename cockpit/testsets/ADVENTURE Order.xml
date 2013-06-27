@@ -3,7 +3,7 @@
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <dataelements><!--{{{-->
-    <test>''</test>
+    <test></test>
   </dataelements><!--}}}-->
   <handlers><!--{{{-->
     <handler url="http://localhost:9299/events">

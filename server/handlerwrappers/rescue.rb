@@ -1,3 +1,19 @@
+<!--
+  This file is part of CPEE.
+
+  CPEE is free software: you can redistribute it and/or modify it under the terms
+  of the GNU General Public License as published by the Free Software Foundation,
+  either version 3 of the License, or (at your option) any later version.
+
+  CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along with
+  CPEE (file COPYING in the main directory).  If not, see
+  <http://www.gnu.org/licenses/>.
+-->
+
 require 'time'
 require 'date'
 require 'cgi'
@@ -74,7 +90,7 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
             params <<  (parameters[:method].downcase == 'get' ? Riddl::Parameter::Simple.new("#{k}","#{v}", :query) : Riddl::Parameter::Simple.new("#{k}","#{v}"))
           end
         end
-      end 
+      end
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
       params << Riddl::Header.new("CPEE_BASE",@url)
       params << Riddl::Header.new("CPEE_INSTANCE","#{@url}/#{@controller.id}")
@@ -126,33 +142,18 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
     WEEL::Status.new(1, "everything okay")
   end
 
-  def callback(result)
-    @handler_returnValue = Result.new(result,nil)
-    @handler_continue.continue
-  end
- 
   # returns the result of the last handled call
   def activity_result_value
     @handler_returnValue
   end
 
-  # Called if the WS-Call should be interrupted. The decision how to deal
-  # with this situation is given to the handler. To provide the possibility
-  # of a continue the Handler will be asked for a passthrough
   def activity_stop
     @handler_stopped = true
   end
-  # is called from WEEL after stop_call to ask for a passthrough-value that may give
-  # information about how to continue the call. This passthrough-value is given
-  # to activity_handle if the workflow is configured to do so.
   def activity_passthrough_value
     nil
   end
   
-  # Called if the execution of the actual activity_handle is not necessary anymore
-  # It is definit that the call will not be continued.
-  # At this stage, this is only the case if parallel branches are not needed
-  # anymore to continue the workflow
   def activity_no_longer_necessary
     @handler_stopped = true
   end
@@ -168,9 +169,8 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
     puts err.backtrace
     @controller.notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end
+
   def inform_syntax_error(err,code)
-    puts code
-    puts "------"
     puts err.message
     puts err.backtrace
     @controller.notify("properties/description/error", :instance => "#{@url}/#{@controller.id}", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :code => code, :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
@@ -180,9 +180,9 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
       @controller.serialize_status!
       @controller.notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :id => status.id, :message => status.message)
     end  
-    unless datalements.nil?
+    unless dataelements.nil?
       @controller.serialize_dataelements!
-      @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => datalements)
+      @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => dataelements)
     end
     unless endpoints.nil?
       @controller.serialize_endpoints!
@@ -207,4 +207,10 @@ class RescueHandlerWrapper < WEEL::HandlerWrapperBase
   def vote_sync_before
     @controller.call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end
+
+  def callback(result)
+    @handler_returnValue = Result.new(result,nil)
+    @handler_continue.continue
+  end
+
 end

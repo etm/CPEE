@@ -1,3 +1,19 @@
+<!--
+  This file is part of CPEE.
+
+  CPEE is free software: you can redistribute it and/or modify it under the terms
+  of the GNU General Public License as published by the Free Software Foundation,
+  either version 3 of the License, or (at your option) any later version.
+
+  CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along with
+  CPEE (file COPYING in the main directory).  If not, see
+  <http://www.gnu.org/licenses/>.
+-->
+
 require 'savon'
 
 class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
@@ -56,11 +72,12 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
     @handler_continue.continue
   end # }}}
 
-  def activity_result_value # {{{
-    @handler_returnValue
-  end # }}}
   def activity_result_status # {{{
     WEEL::Status.new(1, "everything okay")
+  end # }}}
+
+  def activity_result_value # {{{
+    @handler_returnValue
   end # }}}
 
   def activity_stop # {{{
@@ -98,9 +115,9 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
       @controller.serialize_status!
       @controller.notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :id => status.id, :message => status.message)
     end  
-    unless datalements.nil?
+    unless dataelements.nil?
       @controller.serialize_dataelements!
-      @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => datalements)
+      @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => dataelements)
     end
     unless endpoints.nil?
       @controller.serialize_endpoints!

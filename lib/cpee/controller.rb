@@ -1,3 +1,17 @@
+# This file is part of CPEE.
+# 
+# CPEE is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+# 
+# CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along with
+# CPEE (file COPYING in the main directory).  If not, see
+# <http://www.gnu.org/licenses/>.
+
 require 'json'
 require ::File.dirname(__FILE__) + '/handler_properties'
 require ::File.dirname(__FILE__) + '/handler_notifications'
@@ -5,6 +19,36 @@ require ::File.dirname(__FILE__) + '/callback'
 require ::File.dirname(__FILE__) + '/empty_workflow'
 
 module CPEE
+
+  class ValueHelper
+    def self::generate(value)
+      if [String, Integer, Float, TrueClass, FalseClass, Date].include? value.class
+        value.to_s
+      elsif  [Hash, Array].include? value.class
+        JSON::generate(value)
+      elsif value.respond_to?(:to_s)
+        value.to_s
+      end  
+    end
+
+    def self::parse(value)
+      case value.downcase
+        when 'true'
+          true
+        when 'false'
+          false
+        when 'nil', 'null'
+          nil
+        else  
+          begin
+            JSON::parse(value)
+          rescue
+            (Integer value rescue nil) || (Float value rescue nil) || value.to_s rescue nil || ''
+          end
+      end    
+    end
+  end
+
 
   class Controller
 
@@ -50,6 +94,7 @@ module CPEE
       unserialize_positions!
     end
 
+    attr_reader :id
     attr_reader :properties
     attr_reader :notifications
     attr_reader :callbacks
@@ -85,7 +130,7 @@ module CPEE
         node = doc.find("/p:properties/p:dataelements").first
         node.children.delete_all!
         @instance.data.each do |k,v|
-          node.add(k.to_s,JSON::generate(v))
+          node.add(k.to_s,ValueHelper::generate(v))
         end
       end
     end #}}}
@@ -102,7 +147,7 @@ module CPEE
       @properties.activate_schema(:finished) if @instance.state == :finished
       @properties.activate_schema(:inactive) if @instance.state == :stopped
       @properties.activate_schema(:active)   if @instance.state == :running || @instance.state == :stopping
-      if [:finished, :stopped].includes?(@instance.state)
+      if [:finished, :stopped].include?(@instance.state)
         @properties.modify do |doc|
           node = doc.find("/p:properties/p:state").first
           node.text = @instance.state
@@ -195,12 +240,7 @@ module CPEE
     def unserialize_dataelements! #{{{
         @instance.data.clear
         @properties.data.find("/p:properties/p:dataelements/p:*").each do |e|
-          ### when json decode fails, just use it as a string
-          @instance.data[e.qname.to_sym] = begin
-            JSON::parse(e.text)
-          rescue
-            e.text
-          end
+          @instance.data[e.qname.to_sym] = ValueHelper::parse(e.text)
         end
     end #}}}
     def unserialize_endpoints! #{{{
@@ -277,13 +317,13 @@ module CPEE
             ev = build_notification(key,what,content,'event')
             if url.class == String
               client = Riddl::Client.new(url)
-              client.post ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)}
+              client.post ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)} rescue nil
             elsif url.class == Riddl::Utils::Notifications::Producer::WS
               e = XML::Smart::string("<event/>")
               ev.each do |k,v|
                 e.root.add(k,v)
               end
-              url.send(e.to_s)
+              url.send(e.to_s) rescue nil
             end  
           end
         end
@@ -389,7 +429,7 @@ module CPEE
       res << ['key'         , key]
       res << ['topic'       , ::File::dirname(what)]
       res << [type          , ::File::basename(what)]
-      res << ['notification', JSON::generate(content)]
+      res << ['notification', ValueHelper::generate(content)]
       res << ['uid'         , Digest::MD5.hexdigest(Kernel::rand().to_s)]
       res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
       # TODO add secret to fp

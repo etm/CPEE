@@ -1,3 +1,22 @@
+# This file is part of CPEE.
+# 
+# CPEE is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+# 
+# CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along with
+# CPEE (file COPYING in the main directory).  If not, see
+# <http://www.gnu.org/licenses/>.
+
+require 'fileutils'
+require 'riddl/server'
+require 'riddl/client'
+require 'riddl/utils/notifications_producer'
+require 'riddl/utils/properties'
 require ::File.dirname(__FILE__) + '/controller'
 
 module CPEE
@@ -24,7 +43,7 @@ module CPEE
 
       interface 'properties' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use Riddl::Utils::Properties::implementation(controller[id].properties, PropertiesHandler.new(controller[id]), opts[:mode])
+        use Riddl::Utils::Properties::implementation(controller[id].properties, PropertiesHandler.new(controller[id]), opts[:mode]) if controller[id]
       end  
 
       interface 'main' do
@@ -44,7 +63,7 @@ module CPEE
 
       interface 'notifications' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use Riddl::Utils::Notifications::Producer::implementation(controller[id].notifications, NotificationsHandler.new(controller[id]), opts[:mode])
+        use Riddl::Utils::Notifications::Producer::implementation(controller[id].notifications, NotificationsHandler.new(controller[id]), opts[:mode]) if controller[id]
       end
     end  
   end  
