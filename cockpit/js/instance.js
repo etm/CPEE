@@ -47,8 +47,8 @@ $(document).ready(function() {// {{{
   $("button[name=instance]").click(monitor_instance);
   $("button[name=loadtestset]").click(load_testset);
   $("button[name=loadtestsetfile]").click(load_testsetfile);
-  $("button[name=savetestset]").click(function(){ get_testset(); });
-  $("button[name=savesvg]").click(function(){ get_svg(); });
+  $("button[name=savetestset]").click(function(){ save_testset(); });
+  $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=votestop]").click(check_subscription);
 
@@ -437,57 +437,61 @@ function stop_instance() {// {{{
   });
 }// }}}
 
-function get_testset() {// {{{
-  var url = $("input[name=current-instance]").val();
-
+function save_testset() {// {{{
+  var base = $("input[name=current-instance]").val();
   var testset = $X('<testset/>');
 
   $.ajax({
     type: "GET", 
-    url: url + "/properties/values/dataelements/",
+    url: base + "/properties/values/dataelements/",
     success: function(res){
       var pars = $X('<dataelements/>');
       pars.append($(res.documentElement).children());
       testset.append(pars);
       $.ajax({
         type: "GET", 
-        url: url + "/properties/values/handlerwrapper/",
+        url: base + "/properties/values/handlerwrapper/",
         success: function(res){
           var pars = $X('<handlerwrapper>' + res + '</handlerwrapper>');
           testset.append(pars);
           $.ajax({
             type: "GET", 
-            url: url + "/properties/values/endpoints/",
+            url: base + "/properties/values/endpoints/",
             success: function(res){
               var pars = $X('<endpoints/>');
               pars.append($(res.documentElement).children());
               testset.append(pars);
               $.ajax({
                 type: "GET", 
-                url: url + "/properties/values/positions/",
+                url: base + "/properties/values/positions/",
                 success: function(res){
                   var pars = $X('<positions/>');
                   pars.append($(res.documentElement).children());
                   testset.append(pars);
                   $.ajax({
                     type: "GET", 
-                    url: url + "/properties/values/description/",
+                    url: base + "/properties/values/description/",
                     success: function(res){
                       testset.append($(res.documentElement));
                       $.ajax({
                         type: "GET", 
-                        url: url + "/properties/values/transformation/",
+                        url: base + "/properties/values/transformation/",
                         success: function(res){
                           var pars = $X('<transformation/>');
                           pars.append($(res.documentElement));
                           testset.append(pars);
+                          $.ajax({
+                            type: "GET", 
+                            url: base + "/properties/values/name/",
+                            success: function(res){
+                              var name = res;
 
-                          var base = $("input[name=current-instance]").val().replace(/[^\/]+\/?$/,'');
-                          var params = { mimetype: 'text/xml' };
-
-                          $('#saveform').attr('action',base + 'downloadify/testset.xml?' + $.param(params));
-                          $('#saveform input').val(testset.serializeXML());
-                          $('#saveform').submit();
+                              $('#savetestset').attr('download',name + '.xml');
+                              $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializeXML()));
+                              document.getElementById('savetestset').click();
+                            },  
+                            error: report_failure
+                          });
                         },  
                         error: report_failure
                       });
@@ -507,19 +511,28 @@ function get_testset() {// {{{
     error: report_failure
   });  
 }// }}}
-function get_svg() {// {{{
-  var base = $("input[name=current-instance]").val().replace(/[^\/]+\/?$/,'');
+function save_svg() {// {{{
+  var base = $("input[name=current-instance]").val();
   var params = { mimetype: 'image/svg+xml' };
 
-  $('#saveform').attr('action',base + 'downloadify/graph.svg?' + $.param(params));
   var gc = $('#graphcanvas').clone();
   $.ajax({
     type: "GET", 
     url: "lib/wfadaptor.css",
     success: function(res){
       gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
-      $('#saveform input').val(gc.serializeXML());
-      $('#saveform').submit();
+      $.ajax({
+        type: "GET", 
+        url: base + "/properties/values/name/",
+        success: function(res){
+          var name = res;
+
+          $('#savesvg').attr('download',name + '.svg');
+          $('#savesvg').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(gc.serializeXML()));
+          document.getElementById('savesvg').click();
+        },  
+        error: report_failure
+      });
     }  
   });
 }// }}}
