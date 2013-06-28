@@ -33,16 +33,19 @@
   <state type="state" modifiable="true">
     <ready>
       <running putable="true"/>
+      <simulating putable="true"/>
     </ready>  
     <running>
       <stopping putable="true"/>
       <finished putable="false"/>
     </running>
+    <simulating/>
     <stopping>
       <stopped putable="false"/>
     </stopping>
     <stopped>
       <running putable="true"/>
+      <simulating putable="true"/>
     </stopped>  
     <finished/>
   </state>  

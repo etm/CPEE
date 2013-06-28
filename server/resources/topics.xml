@@ -52,4 +52,7 @@
     <event>debug</event>
     <event>info</event>
   </topic>
+  <topic id='simulating'>
+    <event>step</event>
+  </topic>
 </topics>

@@ -99,6 +99,11 @@ module CPEE
     attr_reader :notifications
     attr_reader :callbacks
     attr_reader :mutex
+    
+    def start # {{{
+      @thread.join if !@thread.nil? && @thread.alive?
+      @thread = @instance.sim
+    end # }}}
 
     def start # {{{
       @thread.join if !@thread.nil? && @thread.alive?
@@ -257,6 +262,8 @@ module CPEE
             stop
           when 'running'
             start
+          when 'simulating'  
+            sim
         end
       else
         if node = @properties.data.find("/p:properties/p:state").first
