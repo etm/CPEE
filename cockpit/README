@@ -1,0 +1,4 @@
+This directory contains a copy of the CPEE cockpit. The CPEE cockpit itself is
+freely available and distributable, but containts some libraries, that either
+user APACHE 2, LGPL-3, or MIT-License. Please check the files in the
+subdirectories, for particular licenses of files.
