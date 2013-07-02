@@ -13,6 +13,7 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'json'
+require 'pp'
 require ::File.dirname(__FILE__) + '/handler_properties'
 require ::File.dirname(__FILE__) + '/handler_notifications'
 require ::File.dirname(__FILE__) + '/callback'
@@ -49,7 +50,6 @@ module CPEE
     end
   end
 
-
   class Controller
 
     def initialize(id,opts)
@@ -64,6 +64,7 @@ module CPEE
       @positions = []
       @thread = nil
       @mutex = Mutex.new
+      @opts = opts
 
       @properties = Riddl::Utils::Properties::Backend.new( 
         {
@@ -323,7 +324,7 @@ module CPEE
           Thread.new(ke,ur) do |key,url|
             ev = build_notification(key,what,content,'event')
             if url.class == String
-              client = Riddl::Client.new(url)
+              client = Riddl::Client.new(url,nil,:xmpp => @opts[:xmpp])
               client.post ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)} rescue nil
             elsif url.class == Riddl::Utils::Notifications::Producer::WS
               e = XML::Smart::string("<event/>")
@@ -357,11 +358,10 @@ module CPEE
           Thread.new(key,url,content.dup) do |k,u,c|
             callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
             c['callback'] = callback
-            notf = build_notification(k,what,c,'vote')
+            notf = build_notification(k,what,c,'vote',callback)
             if u.class == String
               client = Riddl::Client.new(u)
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
-              params << Riddl::Header.new("CPEE-Callback",callback)
               @mutex.synchronize do
                 status, result, headers = client.post params
                 if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
@@ -431,14 +431,14 @@ module CPEE
 
   private
 
-    def build_notification(key,what,content,type)# {{{
+    def build_notification(key,what,content,type,callback=nil)# {{{
       res = []
-      res << ['key'         , key]
-      res << ['topic'       , ::File::dirname(what)]
-      res << [type          , ::File::basename(what)]
-      res << ['notification', ValueHelper::generate(content)]
-      res << ['uid'         , Digest::MD5.hexdigest(Kernel::rand().to_s)]
-      res << ['fp'          , Digest::MD5.hexdigest(res.join(''))]
+      res << ['key'                             , key]
+      res << ['topic'                           , ::File::dirname(what)]
+      res << [type                              , ::File::basename(what)]
+      res << ['notification'                    , ValueHelper::generate(content)]
+      res << ['callback'                        , callback] unless callback.nil?
+      res << ['fingerprint-with-consumer-secret', Digest::MD5.hexdigest(res.join(''))]
       # TODO add secret to fp
     end # }}}
 
