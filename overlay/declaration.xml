@@ -1,0 +1,25 @@
+<declaration xmlns="http://riddl.org/ns/declaration/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <interface name="cpee" location="http://cpee.org:9298/">
+    <xi:include href="http://cpee.org:9298/?riddl-description=1"/>
+  </interface>
+  <interface name="xsls">
+    <xi:include href="xsls.xml"/>
+  </interface>  
+  <interface name="xsloverlay">
+    <xi:include href="xsloverlay.xml"/>
+  </interface>  
+
+  <facade>
+    <tile>
+      <layer name="cpee"/>
+      <layer name="xsls">
+        <apply-to>/xsls</apply-to>
+      </layer>
+      <layer name="xsloverlay">
+        <apply-to>/</apply-to>
+        <apply-to>/{}</apply-to>
+        <apply-to>/{}/properties</apply-to>
+      </layer>
+    </tile>
+  </facade>
+</declaration>
