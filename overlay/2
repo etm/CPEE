@@ -8,22 +8,15 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>   
         <script class="jsbin" src="http://datatables.net/download/build/jquery.dataTables.nightly.js"></script>
 		<script type="text/javascript">
-    function counterforrealz(counter,timout,urli,otable){
-    setTimeout(function(){test(urli,otable,counter);},timout);
 
-
-    }
     function test(status,otable,counter) {
-       var data = null;
+       console.log(counter);
        $.ajax({
           url: status,
           type: 'get',
           dataType: 'html',
           success: function(data) {
-            otable.fnUpdate(data,counter,2);
-            if(data!="finished"){
-              setTimeout(function(){test(status,otable,counter);},30000);
-             }
+            otable.fnUpdate(data, counter, 2 );
           } 
       });
     }
@@ -36,22 +29,18 @@
       "bInfo": false,
 	  	"aaSorting": [[ 1, "desc" ]]
    	} );
-    running_sushi(otable);
-    });
-  function running_sushi(otable){
     var idd = $("#solo").find('tbody').children();
     var counter = 0;
     idd.each(function() {
       $(this).find('#id').css('color', 'green');
       var status = $(this).children('#state').text();
-      var tempi = $(this).children('#id').text();
-      var urli = "./"+tempi+"/properties/values/state";        
+      var tempi = $(this).children('#id').text();         
       if (status!="finished"){
-        counterforrealz(counter,30000,urli,otable);
+        setTimeout(test("./"+tempi+"/properties/values/state",otable,counter);,6);
       }
       counter++;
       });
-  }
+	} );
 		</script>
       </head>
       <body>

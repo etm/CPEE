@@ -16,21 +16,24 @@
               var chi =$("#lagiacrus").children();
               chi.each(function(){ replacing($(this)); });
             }
-            function replacing(han){
-                var parent = han;
-                var taggl = parent.children('#jacen');
-                if (taggl.children().length>0){ 
-                  taggl.children().each(function(){ replacing($(this));});
+            function replacing(leia){
+                
+                var jacen = leia.children('#manly').children('#jacen');
+                if (jacen.children().length>0){ 
+                  jacen.children().each(function(){ replacing($(this));});
                 }
-                var temp = taggl.html().split("gt");
-                var replacement = "&lt;solo id=anakin&gt;"+temp[0]+"gt;&lt;/solo&gt;"; 
-                parent.children('#anakin').replaceWith(replacement);
-                var anakin = parent.children('#anakin');
-                anakin.toggle();
-                var real_one ="&lt;solo id=jacen&gt;"+taggl.html()+"&lt;/solo&gt;";
-                parent.children('#jaina').click(function(){
-                  taggl.toggle();
+                var temp = jacen.html().split("gt");
+                var replacement = "&lt;div id=anakin&gt;"+temp[0]+"gt;&lt;/div&gt;"; 
+                var anakin = leia.children('#manly').children('#anakin');  
+                anakin.replaceWith(replacement);
+                anakin = leia.children('#manly').children('#anakin');
+                jacen.toggle();
+                var real_one ="&lt;div id=jacen&gt;"+jacen.html()+"&lt;/div&gt;";
+                leia.children('#jaina').click(function(){
+                  jacen.toggle();
                   anakin.toggle();
+                  if($(this).text()!="▽") $(this).text("▽");
+                  else $(this).text("▶");
                 });
               }
           </script>
@@ -89,6 +92,7 @@
     <xsl:choose>
       <xsl:when test="count(./*) &gt; 0">
         <xsl:element name="div">
+          <xsl:attribute name="id">leia</xsl:attribute>
           <xsl:element name ="a">
             <xsl:attribute name="style">vertical-align: top;</xsl:attribute>
             <xsl:attribute name="href">#stay</xsl:attribute>
@@ -98,6 +102,7 @@
           </xsl:element> 
           <xsl:text>&#32;</xsl:text>
           <xsl:element name="div">
+            <xsl:attribute name="id">manly</xsl:attribute>
             <xsl:attribute name="style">display: inline-block;</xsl:attribute>
             <xsl:element name="div"><xsl:attribute name="id">anakin</xsl:attribute></xsl:element>
             <xsl:element name="div">
@@ -130,6 +135,7 @@
         </xsl:element>
       </xsl:when>
       <xsl:otherwise>
+        <xsl:text>&#32;</xsl:text><xsl:text>&#32;</xsl:text>
         <xsl:value-of select="concat($indent, $LT, name())" />
         <xsl:apply-templates select="@*" mode="XmlEscape" />
         <xsl:variable name="HasChildNode" select="node()[not(self::text())]" />
