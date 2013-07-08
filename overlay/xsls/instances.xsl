@@ -8,24 +8,25 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>   
         <script class="jsbin" src="http://datatables.net/download/build/jquery.dataTables.nightly.js"></script>
 		<script type="text/javascript">
-    function counterforrealz(counter,timout,urli,otable){
-    setTimeout(function(){test(urli,otable,counter);},timout);
+    function counterforrealz(counter,timout,urli,otable,state_node){
+    setTimeout(function(){test(urli,otable,counter,state_node);},timout);
 
 
     }
-    function test(status,otable,counter) {
-       var data = null;
+    function test(status,otable,counter,state_node) {
+      console.log(state_node.text());
        $.ajax({
           url: status,
           type: 'get',
           dataType: 'html',
           success: function(data) {
-            otable.fnUpdate(data,counter,2);
+            state_node.html(data);
             if(data!="finished"){
-              setTimeout(function(){test(status,otable,counter);},30000);
+              setTimeout(function(){test(status,otable,counter,state_node);},30000);
              }
           } 
       });
+      otable.fnDraw();
     }
 	$(document).ready(function(){
     var otable = $('#solo').dataTable({
@@ -43,11 +44,12 @@
     var counter = 0;
     idd.each(function() {
       $(this).find('#id').css('color', 'green');
-      var status = $(this).children('#state').text();
+      var state_node = $(this).children('#state');
+      var status = state_node.text();
       var tempi = $(this).children('#id').text();
       var urli = "./"+tempi+"/properties/values/state";        
       if (status!="finished"){
-        counterforrealz(counter,30000,urli,otable);
+        counterforrealz(counter,30000,urli,otable,state_node);
       }
       counter++;
       });
