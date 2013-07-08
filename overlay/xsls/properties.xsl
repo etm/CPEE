@@ -88,68 +88,73 @@
     <xsl:param name="indent" select="''" />
     <xsl:choose>
       <xsl:when test="count(./*) &gt; 0">
-      <xsl:element name="div">
-      <xsl:element name ="a">
-        <xsl:attribute name="href">#stay</xsl:attribute>
-        <xsl:attribute name="id">jaina</xsl:attribute>
-        <xsl:element name="span">▶</span>
-        <!--xsl:element name="span">▽</span-->
-      </xsl:element> 
-      <xsl:element name="solo"><xsl:attribute name="id">anakin</xsl:attribute></xsl:element>
-      <xsl:element name="solo"><xsl:attribute name="id">jacen</xsl:attribute>
-    <xsl:value-of select="concat($indent, $LT, name())" />
-    <xsl:apply-templates select="@*" mode="XmlEscape" />
-    <xsl:variable name="HasChildNode" select="node()[not(self::text())]" />
-    <xsl:variable name="HasChildText" select="text()[normalize-space()]" />
-    <xsl:choose>
-      <xsl:when test="$HasChildNode or $HasChildText">
-        <xsl:value-of select="$GT" />
-        <xsl:if test="not($HasChildText)">
-          <xsl:value-of select="$NL" />
-        </xsl:if>
-        <!-- render child nodes -->
-        <xsl:apply-templates mode="XmlEscape" select="node()">
-          <xsl:with-param name="indent" select="concat($INDENTSEQ, $indent)" />
-        </xsl:apply-templates>
-        <xsl:if test="not($HasChildText)">
-          <xsl:value-of select="$indent" />
-        </xsl:if>
-        <xsl:value-of select="concat($LT, '/', name(), $GT, $NL)" />
+        <xsl:element name="div">
+          <xsl:element name ="a">
+            <xsl:attribute name="style">vertical-align: top;</xsl:attribute>
+            <xsl:attribute name="href">#stay</xsl:attribute>
+            <xsl:attribute name="id">jaina</xsl:attribute>
+            <xsl:text>▶</xsl:text>
+            <!--xsl:element name="span">▽</xsl:element-->
+          </xsl:element> 
+          <xsl:text>&#32;</xsl:text>
+          <xsl:element name="div">
+            <xsl:attribute name="style">display: inline-block;</xsl:attribute>
+            <xsl:element name="div"><xsl:attribute name="id">anakin</xsl:attribute></xsl:element>
+            <xsl:element name="div">
+              <xsl:attribute name="id">jacen</xsl:attribute>
+              <xsl:value-of select="concat($indent, $LT, name())" />
+              <xsl:apply-templates select="@*" mode="XmlEscape" />
+              <xsl:variable name="HasChildNode" select="node()[not(self::text())]" />
+              <xsl:variable name="HasChildText" select="text()[normalize-space()]" />
+              <xsl:choose>
+                <xsl:when test="$HasChildNode or $HasChildText">
+                  <xsl:value-of select="$GT" />
+                  <xsl:if test="not($HasChildText)">
+                    <xsl:value-of select="$NL" />
+                  </xsl:if>
+                  <!-- render child nodes -->
+                  <xsl:apply-templates mode="XmlEscape" select="node()">
+                    <xsl:with-param name="indent" select="concat($INDENTSEQ, $indent)" />
+                  </xsl:apply-templates>
+                  <xsl:if test="not($HasChildText)">
+                    <xsl:value-of select="$indent" />
+                  </xsl:if>
+                  <xsl:value-of select="concat($LT, '/', name(), $GT, $NL)" />
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="concat(' /', $GT, $NL)" />
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:element>
+          </xsl:element>
+        </xsl:element>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="concat(' /', $GT, $NL)" />
+        <xsl:value-of select="concat($indent, $LT, name())" />
+        <xsl:apply-templates select="@*" mode="XmlEscape" />
+        <xsl:variable name="HasChildNode" select="node()[not(self::text())]" />
+        <xsl:variable name="HasChildText" select="text()[normalize-space()]" />
+        <xsl:choose>
+          <xsl:when test="$HasChildNode or $HasChildText">
+            <xsl:value-of select="$GT" />
+            <xsl:if test="not($HasChildText)">
+              <xsl:value-of select="$NL" />
+            </xsl:if>
+            <!-- render child nodes -->
+            <xsl:apply-templates mode="XmlEscape" select="node()">
+              <xsl:with-param name="indent" select="concat($INDENTSEQ, $indent)" />
+            </xsl:apply-templates>
+            <xsl:if test="not($HasChildText)">
+              <xsl:value-of select="$indent" />
+            </xsl:if>
+            <xsl:value-of select="concat($LT, '/', name(), $GT, $NL)" />
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="concat(' /', $GT, $NL)" />
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
-    </xsl:element>
-    </xsl:element>
-  </xsl:when>
-  <xsl:otherwise>
-    <xsl:value-of select="concat($indent, $LT, name())" />
-    <xsl:apply-templates select="@*" mode="XmlEscape" />
-    <xsl:variable name="HasChildNode" select="node()[not(self::text())]" />
-    <xsl:variable name="HasChildText" select="text()[normalize-space()]" />
-    <xsl:choose>
-      <xsl:when test="$HasChildNode or $HasChildText">
-        <xsl:value-of select="$GT" />
-        <xsl:if test="not($HasChildText)">
-          <xsl:value-of select="$NL" />
-        </xsl:if>
-        <!-- render child nodes -->
-        <xsl:apply-templates mode="XmlEscape" select="node()">
-          <xsl:with-param name="indent" select="concat($INDENTSEQ, $indent)" />
-        </xsl:apply-templates>
-        <xsl:if test="not($HasChildText)">
-          <xsl:value-of select="$indent" />
-        </xsl:if>
-        <xsl:value-of select="concat($LT, '/', name(), $GT, $NL)" />
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="concat(' /', $GT, $NL)" />
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:otherwise>
-  </xsl:choose>
-
   </xsl:template>
 
   <!-- comments will be handled here -->
