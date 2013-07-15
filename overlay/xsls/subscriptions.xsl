@@ -12,8 +12,8 @@
                 $.ajax({
                   url: uri,
                   type: 'DELETE',
-                  success: function(data){
-                    location.reload();
+                  error: function(){
+                          window.location.reload();
                   }
                 });
               }
