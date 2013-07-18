@@ -137,4 +137,18 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @handler_passthrough = nil
     @handler_continue.continue
   end
+
+   def simulate(type,nesting,tid,parent,parameters={}) #{{{
+    pp "#{type} - #{nesting} - #{tid} - #{parent} - #{parameters.inspect}"
+
+    @controller.call_vote("simulating/step", 
+      :endpoint => @handler_endpoint, 
+      :instance => "#{@url}/#{@controller.id}", 
+      :activity => tid, 
+      :type => type, 
+      :nesting => nesting,
+      :parent => parent,
+      :parameters => parameters
+    )
+  end #}}}
 end

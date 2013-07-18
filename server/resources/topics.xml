@@ -18,6 +18,7 @@
   <topic id='running'>
     <event>activity_calling</event>
     <event>activity_failed</event>
+    <event>activity_status</event>
     <event>activity_manipulating</event>
     <event>activity_done</event>
     <vote>syncing_before</vote>

@@ -14,13 +14,16 @@
 
 class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase
   def ws_open(socket)
+    p 'rrrr00'
     @data.add_ws(@key,socket)
   end
   def ws_close
     @data.del_ws(@key)
+    p 'rrrr'
   end
   def ws_message(data)
     begin
+    p 'rrrr2'
       doc = XML::Smart::string(data)
       callback = doc.find("string(/vote/@id)")
       result = doc.find("string(/vote)")
@@ -32,12 +35,14 @@ class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase
   end
 
   def create
+    p 'rrrr2'
     @data.unserialize_notifications!(:cre,@key)
     @data.notify('properties/handlers/change')
   end
   def delete
     @data.unserialize_notifications!(:del,@key)
     @data.notify('properties/handlers/change')
+    p 'rrrr1'
   end
   def update
     @data.unserialize_notifications!(:upd,@key)
