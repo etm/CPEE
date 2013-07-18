@@ -8,12 +8,12 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>   
         <script class="jsbin" src="http://datatables.net/download/build/jquery.dataTables.nightly.js"></script>
 		<script type="text/javascript">
-    function counterforrealz(counter,timout,urli,otable,state_node){
-    setTimeout(function(){test(urli,otable,counter,state_node);},timout);
+    function counterforrealz(timout,urli,otable,state_node,trid){
+    setTimeout(function(){test(urli,otable,state_node,trid);},timout);
 
 
     }
-    function test(status,otable,counter,state_node) {
+    function test(status,otable,state_node,trid) {
       console.log(state_node.text());
        $.ajax({
           url: status,
@@ -22,11 +22,11 @@
           success: function(data) {
             state_node.html(data);
             if(data!="finished"){
-              setTimeout(function(){test(status,otable,counter,state_node);},30000);
+              setTimeout(function(){test(status,otable,state_node);},30000);
              }
+             otable.fnDraw(true);  
           } 
       });
-      otable.fnDraw();
     }
 	$(document).ready(function(){
     var otable = $('#solo').dataTable({
@@ -38,10 +38,19 @@
 	  	"aaSorting": [[ 1, "desc" ]]
    	} );
     running_sushi(otable);
+    $.ajax({
+      url: "./?riddl-description-request",
+      type: 'get',
+      dataType: 'html',
+      success: function(data){
+        console.log("START");
+        console.log(data);
+        console.log("ENDE");
+      }
     });
+  });
   function running_sushi(otable){
     var idd = $("#solo").find('tbody').children();
-    var counter = 0;
     idd.each(function() {
       $(this).find('#id').css('color', 'green');
       var state_node = $(this).children('#state');
@@ -49,9 +58,8 @@
       var tempi = $(this).children('#id').text();
       var urli = "./"+tempi+"/properties/values/state";        
       if (status!="finished"){
-        counterforrealz(counter,30000,urli,otable,state_node);
+        counterforrealz(30000,urli,otable,state_node,tempi);
       }
-      counter++;
       });
   }
 		</script>
@@ -72,20 +80,21 @@
 		</thead>
 		<tbody>
           <xsl:for-each select="instance">
-              	<tr>
-			<td>
-              <xsl:element name="a">
-                <xsl:attribute name="href"><xsl:value-of select="@id"/>/</xsl:attribute>
-                <xsl:value-of select="text()"/>
-              </xsl:element>
-			</td>
+              	<xsl:element name="tr">
+                <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
+			            <td>
+                    <xsl:element name="a">
+                      <xsl:attribute name="href"><xsl:value-of select="@id"/>/</xsl:attribute>
+                      <xsl:value-of select="text()"/>
+                      </xsl:element>
+			            </td>
 			<td id="id">
 		 <xsl:value-of select="@id"/>
 			</td>
       <td id="state">
         <xsl:value-of select="@state"/>
       </td>
-           	 </tr>  
+                </xsl:element>  
           </xsl:for-each>
         	</tbody>
 	</table>

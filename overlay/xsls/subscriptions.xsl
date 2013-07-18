@@ -12,7 +12,9 @@
                 $.ajax({
                   url: uri,
                   type: 'DELETE',
-                  dataType: 'html'
+                  error: function(){
+                          window.location.reload();
+                  }
                 });
               }
             </script>
@@ -54,7 +56,8 @@
              </xsl:element>
              <xsl:element name="button">
               <xsl:attribute name="type">button</xsl:attribute>
-              <xsl:attribute name="onclick">test("./<xsl:value-of select="@id"/>")</xsl:attribute>
+              <xsl:variable name="uri">"./<xsl:value-of select="@id"/>"</xsl:variable>
+              <xsl:attribute name="onclick">test(<xsl:copy-of select="$uri" />)</xsl:attribute>
               DELETE
             </xsl:element>
             </li>  
