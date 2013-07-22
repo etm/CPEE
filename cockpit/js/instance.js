@@ -370,7 +370,7 @@ function monitor_instance_state_change(notification) { //{{{
 
     var but = "";
     if (notification == "ready" || notification == "stopped") {
-      but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();'>simulate</button></td>";
+      but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button></td>";
     }
     if (notification == "running") {
       but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
@@ -424,15 +424,6 @@ function start_instance() {// {{{
     type: "PUT", 
     url: url + "/properties/values/state",
     data: ({value: "running"}),
-    error: report_failure
-  });
-}// }}}
-function sim_instance() {// {{{
-  var url = $("input[name=current-instance]").val();
-  $.ajax({
-    type: "PUT", 
-    url: url + "/properties/values/state",
-    data: ({value: "simulating"}),
     error: report_failure
   });
 }// }}}

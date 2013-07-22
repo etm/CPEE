@@ -101,7 +101,7 @@ module CPEE
     attr_reader :callbacks
     attr_reader :mutex
     
-    def sim # {{{
+    def start # {{{
       @thread.join if !@thread.nil? && @thread.alive?
       @thread = @instance.sim
     end # }}}
@@ -151,9 +151,9 @@ module CPEE
     end #}}}
     def serialize_state! # {{{
       @properties.activate_schema(:finished) if @instance.state == :finished
-      @properties.activate_schema(:inactive) if @instance.state == :stopped || @instance.state == :ready
-      @properties.activate_schema(:active)   if @instance.state == :running || @instance.state == :simulating
-      if [:finished, :stopped, :ready].include?(@instance.state)
+      @properties.activate_schema(:inactive) if @instance.state == :stopped
+      @properties.activate_schema(:active)   if @instance.state == :running || @instance.state == :stopping
+      if [:finished, :stopped].include?(@instance.state)
         @properties.modify do |doc|
           node = doc.find("/p:properties/p:state").first
           node.text = @instance.state
@@ -195,7 +195,7 @@ module CPEE
             end
           end  
         when :upd 
-          if @notifications.subscriptions[key]
+          if File.exists?(@directory + 'notifications/' + key + '/subscription.xml')
             url = @communication[key]
             evs = []
             vos = []
