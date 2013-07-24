@@ -17,6 +17,14 @@
                   }
                 });
               }
+              $(document).ready(function(){
+                var chi = $("#ul_id").children();
+                chi.each(function(){
+                  $(this).children('#delete_button').click(function(){
+                    test($(this).attr('value'));
+                  });
+                });
+              });
             </script>
           </head>
           <body>
@@ -44,7 +52,7 @@
               </nav>
             </div>
            <h1>List of Subscriptions</h1>
-           <ul>
+           <ul id="ul_id">
             <xsl:for-each select="*">
             <li>
               <xsl:element name="a">
@@ -55,9 +63,9 @@
                <xsl:value-of select="@id"/>
              </xsl:element>
              <xsl:element name="button">
+              <xsl:attribute name="id">delete_button</xsl:attribute>
               <xsl:attribute name="type">button</xsl:attribute>
-              <xsl:variable name="uri">"./<xsl:value-of select="@id"/>"</xsl:variable>
-              <xsl:attribute name="onclick">test(<xsl:copy-of select="$uri" />)</xsl:attribute>
+              <xsl:attribute name="value">./<xsl:value-of select="@id"/></xsl:attribute>
               DELETE
             </xsl:element>
             </li>  
