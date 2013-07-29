@@ -19,6 +19,7 @@
         <apply-to>/</apply-to>
         <apply-to>/{}</apply-to>
         <apply-to>/{}/properties</apply-to>
+        <apply-to>/{}/properties/values</apply-to>
         <apply-to>/{}/notifications</apply-to>
         <apply-to>/{}/notifications/subscriptions</apply-to>
       </layer>
