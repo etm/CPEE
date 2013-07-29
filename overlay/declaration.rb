@@ -5,6 +5,7 @@ require 'riddl/utils/xsloverlay'
 require 'riddl/utils/fileserve'
 
 Riddl::Server.new(File.dirname(__FILE__) + '/declaration.xml', :port => 9297) do
+  accessible_description true
 
   interface 'xsloverlay' do
     run Riddl::Utils::XSLOverlay, "/xsls/instances.xsl"     if get && declaration_resource == '/'
