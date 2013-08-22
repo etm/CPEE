@@ -9,23 +9,23 @@
       </head>
       <body>
         <div id="brot">
-              <nav>
-                <xsl:element name="a">
-                  <xsl:attribute name="href"> ../../ </xsl:attribute>
-                  Main
-                </xsl:element>
-                &gt;
-               <xsl:element name="a">
-                <xsl:attribute name="href">../</xsl:attribute>
-                  Instanz                                                                                                                                                        
-                </xsl:element>
-                &gt;
-                <xsl:element name="a">
-                  <xsl:attribute name="href">./</xsl:attribute>
-                  Notifications
-                </xsl:element>
-              </nav>
-            </div>
+          <nav>
+            <xsl:element name="a">
+              <xsl:attribute name="href"> ../../ </xsl:attribute>
+              Main
+            </xsl:element>
+            &gt;
+            <xsl:element name="a">
+              <xsl:attribute name="href">../</xsl:attribute>
+              Instanz                                                                                                                                                        
+            </xsl:element>
+            &gt;
+            <xsl:element name="a">
+              <xsl:attribute name="href">./</xsl:attribute>
+              Notifications
+            </xsl:element>
+          </nav>
+        </div>
         <h1>Overview Notifications</h1>
         <ul>
           <xsl:for-each select="*">
