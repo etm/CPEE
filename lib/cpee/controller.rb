@@ -304,17 +304,52 @@ module CPEE
       dsl = nil
       @properties.modify do |doc|
         dsl   = doc.find("/p:properties/p:dsl").first
-        trans = doc.find("/p:properties/p:transformation").first
+        dslx  = doc.find("/p:properties/p:dslx").first
         desc  = doc.find("/p:properties/p:description").first
-        if trans.nil?
-          dsl.text = desc.to_s
+        tdesc = doc.find("/p:properties/p:transformation/p:description").first
+        tdata = doc.find("/p:properties/p:transformation/p:datalements").first
+        tendp = doc.find("/p:properties/p:transformation/p:endpoints").first
+        addit = if tdesc.attributes['type'] == 'copy' || tdesc.empty?
+          desc.children
+        elsif tdesc.attributes['type'] == 'rest' && !tdesc.empty?
+          srv = Riddl::Client.interface(tdesc.text,@opts[:transformation_service])
+          status, res = src.post [ Riddl::Parameter::Complex.new("desc","application/xml",desc.dump) ]
+          XML::Smart::string(res[0].value.read) if status == 200
+        elsif tdesc.attributes['type'] == 'xslt' && !tdesc.empty?
+          trans = XML::Smart::open_unprotected(tdesc.text)
+          desc.children.first.to_doc.transform_with(trans)
         else
-          trans = XML::Smart::string(trans.children.empty? ? trans.to_s : trans.children.first.dump)
-          desc  = XML::Smart::string(desc.children.empty? ? desc.to_s : desc.children.first.dump)
-          dsl.text = desc.transform_with(trans)
+          nil
         end
+        unless addit.nil?
+          dslx.children.delete_all!
+          dslx.add addit
+          trans = XML::Smart::open_unprotected(@opts[:dslx_to_dsl])
+          dsl.text = dslx.to_doc.transform_with(trans)
+          @instance.description = dsl.text
+        end
+
+        addit = if tdata.attributes['type'] == 'rest' && !tdesc.empty?
+          srv = Riddl::Client.interface(tdata.text,@opts[:transformation_service])
+          status, res = src.post [ Riddl::Parameter::Complex.new("data","application/xml",desc.dump) ]
+          XML::Smart::string(res[0].value.read) if status == 200
+        elsif tdata.attributes['type'] == 'xslt' && !tdesc.empty?
+          trans = XML::Smart::open_unprotected(tdata.text)
+          desc.children.first.to_doc.transform_with(trans)
+        else
+          nil
+        end  
+        unless addit.nil?
+          node = doc.find("/p:properties/p:dataelements").first
+          @instance.data.clear
+
+          node.children.delete_all!
+          node.add 
+          @instance.data.each do |k,v|
+            node.add(k.to_s,ValueHelper::generate(v))
+          end
+        end  
       end
-      @instance.description = dsl.text
     end #}}}
 
     def notify(what,content={})# {{{

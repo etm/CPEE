@@ -31,6 +31,7 @@ module CPEE
     opts[:properties_schema_active]   ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.active')
     opts[:properties_schema_finished] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.finished')
     opts[:properties_schema_inactive] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.inactive')
+    opts[:dslx_to_dsl]                ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/dslx_to_dsl.xsl')
 
     Proc.new do
       controller = {}
@@ -48,7 +49,7 @@ module CPEE
 
       interface 'main' do
         run CPEE::Instances, controller if get '*'
-        run CPEE::NewInstance, controller, opts if post 'instance-name'
+        run CPEE::NewInstance, controller, opts if post 'instance-info'
         on resource do |r|
           run CPEE::Info, controller if get
           run CPEE::DeleteInstance, controller, opts if delete
@@ -109,7 +110,7 @@ module CPEE
       Riddl::Parameter::Complex.new("wis","text/xml") do
         ins = XML::Smart::string('<instances/>')
         controller.each do |k,v|
-          name = v.properties.data.find("string(/p:properties/p:name)")
+          name = v.properties.data.find("string(/p:properties/p:info)")
           state = v.properties.data.find("string(/p:properties/p:state)")
           ins.root.add('instance',name, 'id' => k, 'state' => state)
         end
@@ -124,13 +125,15 @@ module CPEE
       opts = @a[1]
       name = @p[0].value
       id = controller.keys.sort.last.to_i
+
+      p name
       while true
         id += 1
         Dir.mkdir(opts[:instances] + "/#{id}") rescue nil
         break
       end  
       controller[id] = Controller.new(id,opts)
-      controller[id].properties.data.find("/p:properties/p:name").first.text = name
+      controller[id].properties.data.find("/p:properties/p:info").first.text = name
 
       Riddl::Parameter::Simple.new("id", id)
     end

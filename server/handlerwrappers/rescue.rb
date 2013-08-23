@@ -15,7 +15,7 @@
 require 'time'
 require 'date'
 require 'cgi'
-require 'savon'
+# require 'savon'
 
 class RescueHash < Hash
   def self::new_from_obj(obj)

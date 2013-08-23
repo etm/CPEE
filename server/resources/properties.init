@@ -34,7 +34,7 @@
     <description xmlns="http://cpee.org/ns/description/1.0"/>
   </description>
   <transformation type="xslt">
-    <description type='xslt' target="dslx">http://cpee.org/transformation/wee_dslx-1.0.xsl</description>
+    <description type='copy'/>
     <dataelements type='xslt'/>
     <endpoints type='xslt'/>
   </transformation>

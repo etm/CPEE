@@ -28,43 +28,36 @@
   </dsl>
   <dslx type="arbitrary" modifiable="false" mutable="false"/>
   <description type="arbitrary" modifiable="false" mutable="false"/>
-  <optional>
-    <transformation type="complex" modifiable="false" mutable="false">
-      <element name='description'>
-        <attribute name='type'>
-          <choice>
-            <value>xslt</value>
-            <value>external</value>
-          </choice>  
-        </attribute>
-        <attribute name='target'>
-          <choice>
-            <value>dslx</value>
-            <value>dsl</value>
-          </choice>  
-        </attribute>
-        <data type="anyURI"/>
-      </element>
-      <element name='dataelements'>
-        <attribute name='type'>
-          <choice>
-            <value>xslt</value>
-            <value>external</value>
-          </choice>  
-        </attribute>
-        <data type="anyURI"/>
-      </element>
-      <element name='endpoints'>
-        <attribute name='type'>
-          <choice>
-            <value>xslt</value>
-            <value>external</value>
-          </choice>  
-        </attribute>
-        <data type="anyURI"/>
-      </element>
-    </transformation>
-  </optional>  
+  <transformation type="complex" modifiable="false" mutable="false">
+    <element name='description'>
+      <attribute name='type'>
+        <choice>
+          <value>copy</value>
+          <value>xslt</value>
+          <value>external</value>
+        </choice>  
+      </attribute>
+      <data type="anyURI"/>
+    </element>
+    <element name='dataelements'>
+      <attribute name='type'>
+        <choice>
+          <value>xslt</value>
+          <value>external</value>
+        </choice>  
+      </attribute>
+      <data type="anyURI"/>
+    </element>
+    <element name='endpoints'>
+      <attribute name='type'>
+        <choice>
+          <value>xslt</value>
+          <value>external</value>
+        </choice>  
+      </attribute>
+      <data type="anyURI"/>
+    </element>
+  </transformation>
   <state type="state" modifiable="false" mutable="false">
     <ready>
       <running putable="true"/>
