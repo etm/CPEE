@@ -15,6 +15,9 @@
                     type: 'DELETE',
                     error: function(){
                       window.location.reload();
+                    },
+                    success: function(){
+                      window.location.reload();
                     }
                   });
                 }
@@ -38,8 +41,8 @@
                       rc_chi.each(function(){
                         var tr_yn=1;
                         var naga_siren = new Object;
-                        naga_siren.tstring = "<table border=\"1\"><thead><th>Methode</th><th>Messagename</th><th>I/O</th><th>Parameter</th></thead><tbody><tr><td rowspan=\"%ROWSPAN%\" align=\"center\">%METHODE%</td><td rowspan=\"%ROWSPAN%\" align=\"center\">%MSG_NAME%</td><td rowspan=\"%IROWSPAN%\" align=\"center\">Input</td>";
-                        naga_siren.spanne = 0;
+                      naga_siren.tstring = "<table border=\"1\"><thead><th colspan=\"4\">Parameterinfos</th></thead><tbody><tr><td colspan=\"2\" align=\"center\">Methode: <b>%METHODE%</b></td></tr><tr><td align=\"center\" colspan=\"2\">Message: <b>%MSG_NAME%</b></td></tr><tr><td rowspan=\"%IROWSPAN%\" align=\"center\">Input</td>";
+                      naga_siren.spanne = 0;
                         var msg_name = $(this).attr('in');
                         var msg_search = "message[name='"+msg_name+"']";
                         var method_name = $(this).prop('tagName');
@@ -93,8 +96,6 @@
                     {
                       case "parameter":
                       naga_siren.tstring=naga_siren.tstring+params(knoten,spacing,tr_yn);
-                      naga_siren.spanne++;
-                      naga_siren.spanne++;
                       tr_yn = 0;
                       break;
                       default:
@@ -112,10 +113,10 @@
                 var placeholder = "";
                 for(var i=0;i<spacing;i++) placeholder = placeholder + "-";
                 if(tr_yn != 1){
-                  templat = "<tr charoff=\""+spacing+"\"><td>"+placeholder+"Parametername: %PARAMETERNAME%</td></tr><tr charoff=\""+spacing+"\"><td>"+placeholder+"Parameter%MIME%type: %PARATYPE%</td></tr><tr charoff=\""+spacing+"\"><td>"+placeholder+"Parameterpattern: %PATTERN%</td></tr>";
+                  templat = "<tr><td>"+placeholder+"Parametername: %PARAMETERNAME%<br />"+placeholder+"Parameter%MIME%type: %PARATYPE%<br />"+placeholder+"Parameterpattern: %PATTERN%</td></tr>";
                 }
                 else{
-                  templat = "<td>"+placeholder+"Parametername: %PARAMETERNAME%</td></tr><tr charoff=\""+spacing+"\"><td>"+placeholder+"Parameter%MIME%type: %PARATYPE%</td></tr><tr charoff=\""+spacing+"\"><td>"+placeholder+"Parameterpattern: %PATTERN%</td></tr>";
+                  templat = "<td>"+placeholder+"Parametername: %PARAMETERNAME%<br />"+placeholder+"Parameter%MIME%type: %PARATYPE%<br />"+placeholder+"Parameterpattern: %PATTERN%</td></tr>";
                 }
                 templat = templat.replace(/%PARAMETERNAME%/,knoten.attr('name'));
                 if(typeof knoten.attr('type') == "undefined"){
@@ -141,10 +142,10 @@
                   for(var i=0;i<spacing;i++) placeholder = placeholder + "-";
 
                   if(tr_yn!=1){
-                    templat.tstring = "<tr charoff=\""+spacing+"\"><td>"+placeholder+"OPTION: %OPTION%</td></tr>";
+                    templat.tstring = "<tr><td>"+placeholder+"<b>%OPTION%</b></td></tr>";
                   }
                   else{
-                    templat.tstring = "<td>"+placeholder+"OPTION: %OPTION%</td></tr>";
+                    templat.tstring = "<td>"+placeholder+"<b>%OPTION%</b></td></tr>";
                   }
                   spacing = spacing + 5 ;
                   templat.tstring = templat.tstring.replace(/%OPTION%/,knoten.prop('tagName'));
