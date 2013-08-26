@@ -15,9 +15,9 @@
 -->
 
 <properties xmlns="http://riddl.org/ns/common-patterns/properties/1.0">
-  <name type="simple" modifiable="false" mutable="false">
+  <info type="simple" modifiable="false" mutable="false">
     <text/>
-  </name>
+  </info>
   <handlerwrapper type="simple" modifiable="true">
     <data type="string">
       <param name="pattern">[A-Z][a-zA-Z]*</param>
@@ -26,10 +26,38 @@
   <dsl type="simple" modifiable="false" mutable="false">
     <text/>
   </dsl>
+  <dslx type="arbitrary" modifiable="false" mutable="false"/>
   <description type="arbitrary" modifiable="true"/>
-  <optional>
-    <transformation type="arbitrary" modifiable="true"/>
-  </optional>  
+  <transformation type="complex" modifiable="true">
+    <element name='description'>
+      <attribute name='type'>
+        <choice>
+          <value>copy</value>
+          <value>xslt</value>
+          <value>external</value>
+        </choice>  
+      </attribute>
+      <data type="anyURI"/>
+    </element>
+    <element name='dataelements'>
+      <attribute name='type'>
+        <choice>
+          <value>xslt</value>
+          <value>external</value>
+        </choice>  
+      </attribute>
+      <data type="anyURI"/>
+    </element>
+    <element name='endpoints'>
+      <attribute name='type'>
+        <choice>
+          <value>xslt</value>
+          <value>external</value>
+        </choice>  
+      </attribute>
+      <data type="anyURI"/>
+    </element>
+  </transformation>
   <state type="state" modifiable="true">
     <ready>
       <running putable="true"/>

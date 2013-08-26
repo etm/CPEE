@@ -111,15 +111,15 @@ function check_subscription() { // {{{
 }// }}}
 
 function create_instance() {// {{{
-  var name = load ? load : prompt("Instance name?", "Enter name here");
-  if (name != null) {
-    if (name.match(/\S/)) {
+  var info = load ? load : prompt("Instance info?", "Enter info here");
+  if (info != null) {
+    if (info.match(/\S/)) {
       var base = $("input[name=base-url]").val();
       $.ajax({
         type: "POST", 
         url: base,
         dataType: "text",
-        data: "name=" + name, 
+        data: "info=" + info, 
         success: function(res){
           $("input[name=instance-url]").val((base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://"));
           if (load) monitor_instance();
@@ -129,7 +129,7 @@ function create_instance() {// {{{
         }
       });
     } else {
-      alert("An instance name is necessary!");
+      alert("An instance info is necessary!");
     }
   }  
 }// }}}

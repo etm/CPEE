@@ -12,7 +12,7 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
-require 'savon'
+# require 'savon'
 
 class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{

@@ -26,8 +26,8 @@
     <parameter name="id" type="integer"/>
   </message>
 
-  <message name="instance-name">
-    <parameter name="name" type="string"/>
+  <message name="instance-info">
+    <parameter name="info" type="string"/>
   </message>
   
   <message name="instance-info">
@@ -55,7 +55,7 @@
 
   <resource>
     <get in="*" out="list-of-workflow-instances"/>
-    <post in="instance-name" out="instance-id"/>
+    <post in="instance-info" out="instance-id"/>
     <resource>
       <get in="*" out="instance-info"/>
       <delete in="*"/>
