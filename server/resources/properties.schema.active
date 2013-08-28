@@ -34,7 +34,7 @@
         <choice>
           <value>copy</value>
           <value>xslt</value>
-          <value>external</value>
+          <value>rest</value>
         </choice>  
       </attribute>
       <data type="anyURI"/>
@@ -43,7 +43,7 @@
       <attribute name='type'>
         <choice>
           <value>xslt</value>
-          <value>external</value>
+          <value>rest</value>
         </choice>  
       </attribute>
       <data type="anyURI"/>
@@ -52,7 +52,7 @@
       <attribute name='type'>
         <choice>
           <value>xslt</value>
-          <value>external</value>
+          <value>rest</value>
         </choice>  
       </attribute>
       <data type="anyURI"/>

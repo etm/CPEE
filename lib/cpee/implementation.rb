@@ -31,7 +31,8 @@ module CPEE
     opts[:properties_schema_active]   ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.active')
     opts[:properties_schema_finished] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.finished')
     opts[:properties_schema_inactive] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.inactive')
-    opts[:dslx_to_dsl]                ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/dslx_to_dsl.xsl')
+    opts[:transformation_dslx]        ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation_dslx.xsl')
+    opts[:transformation_service]     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation.xml')
 
     Proc.new do
       controller = {}
