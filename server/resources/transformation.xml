@@ -34,15 +34,15 @@
 
   <message name="dedesc">
     <parameter name="description" mimetype="text/xml"/>
-    <parameter name="name" fixed="description"/>
+    <parameter name="type" fixed="description"/>
   </message>
   <message name="dadesc">
     <parameter name="description" mimetype="text/xml"/>
-    <parameter name="name" fixed="dataelements"/>
+    <parameter name="type" fixed="dataelements"/>
   </message>
   <message name="endesc">
     <parameter name="description" mimetype="text/xml"/>
-    <parameter name="name" fixed="endpoints"/>
+    <parameter name="type" fixed="endpoints"/>
   </message>
 
   <resource>

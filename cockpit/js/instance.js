@@ -563,83 +563,9 @@ function set_testset (testset) {// {{{
     error: report_failure
   });  
 
-  $.ajax({
-    type: "GET", 
-    url: url + "/properties/values/dataelements/",
-    success: function(res){
-      var rcount = 0;
-      var values = $("value > *",res);
-      var length = values.length;
-      values.each(function(){
-        var name = this.nodeName;
-        $.ajax({
-          type: "DELETE", 
-          url: url + "/properties/values/dataelements/" + name,
-          success: function(){
-            rcount += 1;
-            if (rcount == length)
-              load_testset_dataelements(url,testset);
-          },
-          error: report_failure
-        });  
-      });
-      if (length == 0)
-        load_testset_dataelements(url,testset);
-    },
-    error: report_failure
-  });  
-  
-  $.ajax({
-    type: "GET", 
-    url: url + "/properties/values/endpoints/",
-    success: function(res){
-      var rcount = 0;
-      var values = $("value > *",res);
-      var length = values.length;
-      values.each(function(){
-        var name = this.nodeName;
-        $.ajax({
-          type: "DELETE", 
-          url: url + "/properties/values/endpoints/" + name,
-          success: function(){
-            rcount += 1;
-            if (rcount == length)
-              load_testset_endpoints(url,testset);
-          },
-          error: report_failure
-        });  
-      });
-      if (length == 0)
-        load_testset_endpoints(url,testset);
-    },
-    error: report_failure
-  });
-  
-  $.ajax({
-    type: "GET", 
-    url: url + "/properties/values/positions/",
-    success: function(res){
-      var rcount = 0;
-      var values = $("value > *",res);
-      var length = values.length;
-      values.each(function(){
-        var name = this.nodeName;
-        $.ajax({
-          type: "DELETE", 
-          url: url + "/properties/values/positions/" + name,
-          success: function(){
-            rcount += 1;
-            if (rcount == length)
-              load_testset_pos(url,testset);
-          },
-          error: report_failure
-        });  
-      });
-      if (length == 0)
-        load_testset_pos(url,testset);
-    },
-    error: report_failure
-  });
+  load_testset_dataelements(url,testset);
+  load_testset_endpoints(url,testset);
+  load_testset_pos(url,testset);
 
   var ser = '';
   $("testset > transformation > *",testset).each(function(){
@@ -724,37 +650,43 @@ function load_testset_hw(url,testset) {// {{{
   });
 } // }}}
 function load_testset_dataelements(url,testset) {// {{{
+  var ser = '';
   $("testset > dataelements > *",testset).each(function(){
-    var val = $(this).serializeXML();
-    $.ajax({
-      type: "POST", 
-      url: url + "/properties/values/dataelements/",
-      data: ({value: val}),
-      error: report_failure
-    });  
+    ser += $(this).serializeXML() + "\n";
+  });
+  var val = "<content>" + ser + "</content>";
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/dataelements",
+    data: ({content: val}),
+    error: report_failure
   });
 }// }}}
 function load_testset_endpoints(url,testset) {// {{{
+  var ser = '';
   $("testset > endpoints > *",testset).each(function(){
-    var val = $(this).serializeXML();
-    $.ajax({
-      type: "POST", 
-      url: url + "/properties/values/endpoints/",
-      data: ({value: val}),
-      error: report_failure
-    });  
+    ser += $(this).serializeXML() + "\n";
   });
+  var val = "<content>" + ser + "</content>";
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/endpoints/",
+    data: ({content: val}),
+    error: report_failure
+  });  
 }// }}}
 function load_testset_pos(url,testset) {// {{{
+  var ser = '';
   $("testset > positions > *",testset).each(function(){
-    var val = $(this).serializeXML();
-    $.ajax({
-      type: "POST", 
-      url: url + "/properties/values/positions/",
-      data: ({value: val}),
-      error: report_failure
-    });  
+    ser += $(this).serializeXML() + "\n";
   });
+  var val = "<content>" + ser + "</content>";
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/positions/",
+    data: ({content: val}),
+    error: report_failure
+  });  
 }// }}}
 function load_testset_handlers(url,testset,vals) {// {{{
   $("testset > handlers > *",testset).each(function(){

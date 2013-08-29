@@ -307,19 +307,22 @@ module CPEE
         dslx  = doc.find("/p:properties/p:dslx").first
         desc  = doc.find("/p:properties/p:description").first
         tdesc = doc.find("/p:properties/p:transformation/p:description").first
-        tdata = doc.find("/p:properties/p:transformation/p:datalements").first
+        tdata = doc.find("/p:properties/p:transformation/p:dataelements").first
         tendp = doc.find("/p:properties/p:transformation/p:endpoints").first
 
         ### description transformation, including dslx to dsl
         addit = if tdesc.attributes['type'] == 'copy' || tdesc.empty?
-          desc.children
+          desc.children.first.to_doc.root
         elsif tdesc.attributes['type'] == 'rest' && !tdesc.empty?
           srv = Riddl::Client.interface(tdesc.text,@opts[:transformation_service])
-          status, res = src.post [ Riddl::Parameter::Complex.new("description","application/xml",desc.dump) ]
-          XML::Smart::string(res[0].value.read) if status == 200
+          status, res = srv.post [
+            Riddl::Parameter::Complex.new("description","application/xml",desc.dump),
+            Riddl::Parameter::Simple.new("type","description")
+          ]
+          XML::Smart::string(res[0].value.read).root if status == 200
         elsif tdesc.attributes['type'] == 'xslt' && !tdesc.empty?
           trans = XML::Smart::open_unprotected(tdesc.text)
-          desc.children.first.to_doc.transform_with(trans)
+          desc.children.first.to_doc.transform_with(trans).root
         else
           nil
         end
@@ -332,11 +335,14 @@ module CPEE
         end
 
         ### dataelements extraction
-        addit = if tdata.attributes['type'] == 'rest' && !tdesc.empty?
+        addit = if tdata.attributes['type'] == 'rest' && !tdata.empty?
           srv = Riddl::Client.interface(tdata.text,@opts[:transformation_service])
-          status, res = src.post [ Riddl::Parameter::Complex.new("dataelements","application/xml",desc.dump) ]
+          status, res = srv.post [ 
+            Riddl::Parameter::Complex.new("dataelements","application/xml",desc.dump),
+            Riddl::Parameter::Simple.new("type","description")
+          ]
           XML::Smart::string(res[0].value.read) if status == 200
-        elsif tdata.attributes['type'] == 'xslt' && !tdesc.empty?
+        elsif tdata.attributes['type'] == 'xslt' && !tdata.empty?
           trans = XML::Smart::open_unprotected(tdata.text)
           desc.children.first.to_doc.transform_with(trans)
         else
@@ -353,11 +359,14 @@ module CPEE
         end  
 
         ### enpoints extraction
-        addit = if tendp.attributes['type'] == 'rest' && !tdesc.empty?
+        addit = if tendp.attributes['type'] == 'rest' && !tdata.empty?
           srv = Riddl::Client.interface(tendp.text,@opts[:transformation_service])
-          status, res = src.post [ Riddl::Parameter::Complex.new("dataelements","application/xml",desc.dump) ]
+          status, res = srv.post [ 
+            Riddl::Parameter::Complex.new("dataelements","application/xml",desc.dump),
+            Riddl::Parameter::Simple.new("type","description")
+          ]
           XML::Smart::string(res[0].value.read) if status == 200
-        elsif tendp.attributes['type'] == 'xslt' && !tdesc.empty?
+        elsif tendp.attributes['type'] == 'xslt' && !tdata.empty?
           trans = XML::Smart::open_unprotected(tendp.text)
           desc.children.first.to_doc.transform_with(trans)
         else

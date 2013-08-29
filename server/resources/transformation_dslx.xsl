@@ -252,7 +252,7 @@
           </xsl:if>
         </xsl:when>  
         <xsl:otherwise>
-          <xsl:text> <<-end </xsl:text>
+          <xsl:text> &lt;&lt;-end </xsl:text>
         </xsl:otherwise>
       </xsl:choose>
       <xsl:call-template name="print-newline"/>
