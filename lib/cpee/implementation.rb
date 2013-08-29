@@ -50,7 +50,7 @@ module CPEE
 
       interface 'main' do
         run CPEE::Instances, controller if get '*'
-        run CPEE::NewInstance, controller, opts if post 'instance-info'
+        run CPEE::NewInstance, controller, opts if post 'instance-new'
         on resource do |r|
           run CPEE::Info, controller if get
           run CPEE::DeleteInstance, controller, opts if delete
@@ -122,12 +122,14 @@ module CPEE
 
   class NewInstance < Riddl::Implementation #{{{
     def response
+      p 'rrr'
       controller = @a[0]
       opts = @a[1]
       name = @p[0].value
       id = controller.keys.sort.last.to_i
-
+      p 'rrr'
       p name
+
       while true
         id += 1
         Dir.mkdir(opts[:instances] + "/#{id}") rescue nil

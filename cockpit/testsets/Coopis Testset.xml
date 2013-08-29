@@ -61,8 +61,8 @@
     </choose>
   </dslx>
   <transformation>
-    <description type='external'/>
-    <dataelements type='external'/>
-    <endpoints type='external'/>
+    <description type='copy'/>
+    <dataelements type='rest'/>
+    <endpoints type='rest'/>
   </transformation>
 </testset>

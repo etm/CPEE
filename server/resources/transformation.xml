@@ -32,22 +32,22 @@
     </zeroOrMore>
   </message>
 
-  <message name="desc1">
+  <message name="dedesc">
     <parameter name="description" mimetype="text/xml"/>
+    <parameter name="name" fixed="description"/>
   </message>
-  <message name="desc2">
+  <message name="dadesc">
     <parameter name="description" mimetype="text/xml"/>
+    <parameter name="name" fixed="dataelements"/>
   </message>
-  <message name="desc3">
+  <message name="endesc">
     <parameter name="description" mimetype="text/xml"/>
-  </message>
-  <message name="desc4 desc5">
-    <parameter name="description" mimetype="text/xml"/>
+    <parameter name="name" fixed="endpoints"/>
   </message>
 
   <resource>
-    <post in="desc1" out="description"/>
-    <post in="desc2" out="dataelements"/>
-    <post in="desc3" out="endpoints"/>
+    <post in="dedesc" out="description"/>
+    <post in="dadesc" out="dataelements"/>
+    <post in="endesc" out="endpoints"/>
   </resource>
 </description>

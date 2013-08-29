@@ -351,6 +351,27 @@ module CPEE
             node.add(k.to_s,ValueHelper::generate(v.read))
           end  
         end  
+
+        ### enpoints extraction
+        addit = if tendp.attributes['type'] == 'rest' && !tdesc.empty?
+          srv = Riddl::Client.interface(tendp.text,@opts[:transformation_service])
+          status, res = src.post [ Riddl::Parameter::Complex.new("dataelements","application/xml",desc.dump) ]
+          XML::Smart::string(res[0].value.read) if status == 200
+        elsif tendp.attributes['type'] == 'xslt' && !tdesc.empty?
+          trans = XML::Smart::open_unprotected(tendp.text)
+          desc.children.first.to_doc.transform_with(trans)
+        else
+          nil
+        end  
+        unless addit.nil?
+          node = doc.find("/p:properties/p:endpoints").first
+          node.children.delete_all!
+          @instance.endpoints.clear
+          addit.each_slice(2).each do |k,v|
+            @instance.endpoints[k.read] = ValueHelper::parse(v.read)
+            node.add(k.to_s,ValueHelper::generate(v.read))
+          end  
+        end  
       end
     end #}}}
 

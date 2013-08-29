@@ -641,43 +641,16 @@ function set_testset (testset) {// {{{
     error: report_failure
   });
 
-  $.ajax({
-    type: "GET", 
-    url: url + "/properties/values/transformation/",
-    success: function(res){
-      var values = $("not-existing",res);
-      $("testset > transformation > *",testset).each(function(){
-        var val = "<content>" + $(this).serializeXML() + "</content>";
-        if (values.length > 0) {
-          $.ajax({
-            type: "POST", 
-            url: url + "/properties/values/",
-            data: ({property: "transformation"}),
-            success: function() { 
-              $.ajax({ 
-                type: "PUT", 
-                data: ({content: val}),
-                url: url + "/properties/values/transformation",
-                success: function() {
-                  load_testset_des(url,testset); 
-                },  
-              });
-            },
-            error: report_failure
-          });
-        } else {
-          $.ajax({
-            type: "PUT", 
-            url: url + "/properties/values/transformation",
-            data: ({content: val}),
-            success: function() { load_testset_des(url,testset); },
-            error: report_failure
-          });
-        }
-      });
-    },  
-    error: report_failure
-  });
+  $("testset > transformation > *",testset).each(function(){
+    var val = "<content>" + $(this).serializeXML() + "</content>";
+    $.ajax({
+      type: "PUT", 
+      url: url + "/properties/values/transformation",
+      data: ({content: val}),
+      success: function() { load_testset_des(url,testset); },
+      error: report_failure
+    });
+  }
   
   $.ajax({
     type: "PUT", 
