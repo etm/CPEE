@@ -641,16 +641,20 @@ function set_testset (testset) {// {{{
     error: report_failure
   });
 
+  var ser = '';
   $("testset > transformation > *",testset).each(function(){
-    var val = "<content>" + $(this).serializeXML() + "</content>";
-    $.ajax({
-      type: "PUT", 
-      url: url + "/properties/values/transformation",
-      data: ({content: val}),
-      success: function() { load_testset_des(url,testset); },
-      error: report_failure
-    });
-  }
+    ser += $(this).serializeXML() + "\n";
+  });
+  var val = "<content>" + ser + "</content>";
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/transformation",
+    data: ({content: val}),
+    success: function() { 
+      load_testset_des(url,testset); 
+    },
+    error: report_failure
+  });
   
   $.ajax({
     type: "PUT", 
