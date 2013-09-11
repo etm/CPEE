@@ -279,16 +279,16 @@
             </xsl:element>                                                        
           </nav>
         </div>
-        <h1>Navigation </h1>
+        <h1>Properties</h1>
         <ul>
           <li><a href='schema/'>Schema</a></li>  
           <li><a href='values/'>Values</a></li>  
         </ul>
-        <h1>RAW</h1>
+        <h1>Serialized Instance Info</h1>
         <pre id="lagiacrus">
           <xsl:apply-templates select="node()" mode="XmlEscape"/>
         </pre>
-        <h1>DOC</h1>
+        <h1>Documentation</h1>
         <div id="test_id"> </div>
       </body>
     </html>

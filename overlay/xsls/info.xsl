@@ -249,7 +249,7 @@
           </xsl:element>                                                                    
         </nav>
       </div>
-        <h1>Uebersicht</h1>
+        <h1>Instance</h1>
         <ul>
           <xsl:for-each select="*">
             <li>
@@ -260,20 +260,20 @@
               <xsl:variable name="first" select="name()"/>
               <div id="descr">
                 <xsl:if test="contains($first, 'properties')">
-                  Eigenschaft. 
+                  Properties of process instance like state, process instance model, thread of control, ... 
                 </xsl:if>
                 <xsl:if test="contains($first, 'noti')">
-                  Subscriptions von Entitaeten um Aenderungen zu erfahren
+                  Subscriptions to events or votes sent/conducted by the engine.
                 </xsl:if>
                 <xsl:if test="contains($first, 'callb')">
-                  URIs fuer Async-Methoden (z.B. Post,Puts,Delete) welche aufgeruft werden wenn fertig welche von den Methoden aufgerufen wird, wenn diese abgeschlossen sind.
+                  Callback resources (paths). POST, PUT, DELETE to these, as the result of votes, or when you can't immediately answer.
                 </xsl:if>
               </div>
             </li>  
           </xsl:for-each>
         </ul>
-        <h1> DOCU</h1>
-        <div id="test_id"> </div>
+        <h1>Documentation</h1>
+        <div id="test_id"></div>
       </body>
     </html>
   </xsl:template>

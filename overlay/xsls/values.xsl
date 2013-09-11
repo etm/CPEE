@@ -259,7 +259,7 @@
           </xsl:element>   
           </nav>
         </div>
-        <h1>Pikachu</h1>
+        <h1>List of Properties</h1>
         <ul>
             <xsl:for-each select="*">
             <li>

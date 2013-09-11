@@ -266,7 +266,7 @@
             </li>  
           </xsl:for-each>
         </ul>
-        <h1> DOCU</h1>
+        <h1>Documentation</h1>
         <div id="test_id"> </div>
       </body>
     </html>
