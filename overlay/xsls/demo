@@ -1,0 +1,142 @@
+//<![CDATA[
+    function test(uri) {
+      $.ajax({
+        url: uri,
+        type: 'DELETE',
+        error: function(){
+          window.location.reload();
+        },
+        success: function(){
+          window.location.reload();
+        }
+      });
+    }
+    function create_docu(){
+      var chi = $("#ul_id").children();
+      chi.each(function(){
+        $(this).children('#delete_button').click(function(){
+          test($(this).attr('value'));
+        });
+      });
+
+    // HERE TABLE
+      var doc_table = $('#test_id');
+      var table_end_temp = "</tbody></table><br />";
+      // Not the most beatiful strings anymore.
+      $.ajax({
+        url: "?riddl-resource-description",
+        dataType: 'xml',
+        success: function(data){
+          var rc = $(data).find('resource');
+          var rc_chi = rc.children();
+          rc_chi.each(function(){
+            var tr_yn=1;
+            var naga_siren = new Object;
+            naga_siren.tstring = "<table class='operation'><tbody><tr><td class='name'>Method</td><td><strong>%METHOD%</strong></td></tr><tr><td class='name'>Message-ID</td><td><strong>%MSG_NAME%</strong></td></tr><tr><td rowspan=\"%IROWSPAN%\" class='name'>Inputparameter(s)</td>";
+            naga_siren.spanne = 0;
+            var msg_name = $(this).attr('in');
+            var msg_search = "message[name='"+msg_name+"']";
+            var method_name = $(this).prop('tagName');
+            var templat = "";
+            if($(data).find(msg_search).children().length >0){
+              $(data).find(msg_search).children().each(function(){
+                  var spacing = 0;
+                  naga_siren = timbersaw($(this),spacing,naga_siren,tr_yn);
+                  tr_yn = 0;
+              });
+            }
+            else{
+              naga_siren.tstring = naga_siren.tstring + "<td>*</td></tr>"
+              naga_siren.spanne++;
+            }
+            var tr_yn = 1;
+            naga_siren.tstring = naga_siren.tstring + "<tr><td rowspan=\"%OROWSPAN%\" class='name'> Output</td>";
+            naga_siren.isp = naga_siren.spanne;
+            naga_siren.tstring = naga_siren.tstring.replace(/%IROWSPAN%/,naga_siren.isp);
+            naga_siren.tstring = naga_siren.tstring.replace(/%METHOD%/,$(this).prop('tagName'));
+            naga_siren.tstring = naga_siren.tstring.replace(/%MSG_NAME%/,msg_name);
+
+            msg_name = $(this).attr('out');
+            msg_search = "message[name='"+msg_name+"']";
+            var templat = "";
+            if($(data).find(msg_search).children().length>0){
+              $(data).find(msg_search).children().each(function(){
+                  var spacing = 0;
+                  naga_siren = timbersaw($(this),spacing,naga_siren,tr_yn);
+                  tr_yn = 0;
+              });
+            } else {
+              naga_siren.tstring = naga_siren.tstring + "<td> - - - </td></tr>";
+              naga_siren.spanne++;
+            }
+
+            naga_siren.tstring = naga_siren.tstring.replace(/%OROWSPAN%/,(naga_siren.spanne-naga_siren.isp));
+            naga_siren.tstring = naga_siren.tstring.replace(/%ROWSPAN%/g,naga_siren.spanne);
+
+            naga_siren.tstring = naga_siren.tstring+table_end_temp;
+            doc_table.append(naga_siren.tstring);
+          });
+        }  
+      });
+    }
+    function timbersaw(knoten,spacing,naga_siren,tr_yn){
+      var tag_n = knoten.prop('tagName');
+      naga_siren.spanne++;
+      switch(tag_n) {
+        case "parameter":
+          naga_siren.tstring=naga_siren.tstring+params(knoten,spacing,tr_yn);
+          tr_yn = 0;
+          break;
+        default:
+          var temp = naga_siren.tstring;
+          naga_siren=options(knoten,spacing,tr_yn,naga_siren);
+          naga_siren.tstring = temp + naga_siren.tstring;
+          tr_yn = 0;
+          break;
+      }
+      return naga_siren;
+    }
+    function params(knoten,spacing,tr_yn){
+      var templat = "";
+
+      if (tr_yn != 1)
+        templat = "<tr>";
+      templat += "<td style='padding-left: " + spacing +"ex'>" +
+        "<table>" +
+          "<tr><td>Parametername:</td><td>%PARAMETERNAME%</td></tr>" +
+          "<tr><td>Parameter%MIME%type:</td><td>%PARATYPE%</td></tr>" +
+          "<tr><td>Parameterpattern:</td><td>%PATTERN%</td></tr>" +
+        "</table>" +
+      "</td></tr>";
+      templat = templat.replace(/%PARAMETERNAME%/,knoten.attr('name'));
+      if(typeof knoten.attr('type') == "undefined"){
+        templat = templat.replace(/%PARATYPE%/,knoten.attr('mimetype'));
+        templat = templat.replace(/%MIME%/,"mime");
+      } else {
+        templat = templat.replace(/%PARATYPE%/,knoten.attr('type'));
+        templat = templat.replace(/%MIME%/,"");
+      }
+      if(knoten.children().length >0 && knoten.children(':first-child').prop('tagName') == "param"){
+        templat = templat.replace(/%PATTERN%/,knoten.children(':first-child').text());
+      } else {
+        templat = templat.replace(/%PATTERN%/,"*");
+      }
+      return templat;
+    }
+    function options(knoten,spacing,tr_yn,naga_siren){
+      var templat = new Object;
+      templat.spanne=naga_siren.spanne;
+      if(tr_yn!=1){
+        templat.tstring = "<tr><td style='white-space:nowrap; padding-left: " + spacing +"ex'><em>%OPTION%</em></td></tr>";
+      } else {
+        templat.tstring = "<td style='white-space:nowrap; padding-left: " + spacing +"ex'><em>%OPTION%</em></td></tr>";
+      }
+      spacing = spacing + 2 ;
+      templat.tstring = templat.tstring.replace(/%OPTION%/,knoten.prop('tagName'));
+      knoten.children().each(function(){
+        templat = timbersaw($(this),spacing,templat); 
+      });
+      return templat;
+    }
+
+//]]>  

@@ -1,0 +1,28 @@
+table.operation {
+  border-style: outset; 
+  border-width: 1px; 
+  border-spacing: 2px; 
+  width:100%;
+}
+table.operation table {
+  margin:0px; 
+  border: 0 none;
+  padding: 0; 
+  border-collapse:collapse; 
+}
+table.operation table td {
+  margin:0px; 
+  border: 0 none;
+  padding: 0; 
+}
+table.operation table td:first-child {
+  padding-right: 1em; 
+}
+table.operation td {
+  border-style: outset; 
+  border-width: 1px; 
+  border-spacing: 2px; 
+}
+table.operation td.name {
+  width: 18ex;
+}

@@ -21,7 +21,10 @@
         <apply-to>/{}/properties</apply-to>
         <apply-to>/{}/properties/values</apply-to>
         <apply-to>/{}/notifications</apply-to>
+        <apply-to>/{}/notifications/topics</apply-to>
         <apply-to>/{}/notifications/subscriptions</apply-to>
+        <apply-to>/{}/notifications/subscriptions/{}</apply-to>
+        <apply-to>/{}/callbacks</apply-to>
       </layer>
     </tile>
   </facade>
