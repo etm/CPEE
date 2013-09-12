@@ -270,7 +270,7 @@
             &gt;
             <xsl:element name="a">
               <xsl:attribute name="href">../</xsl:attribute>
-              Instanz
+              Instance
             </xsl:element>
             &gt;
             <xsl:element name="a">
