@@ -6,24 +6,68 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>CPEE - List of Instances</title>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script class="jsbin" src="http://datatables.net/download/build/jquery.dataTables.nightly.js"></script>
         <script src="//sumatra.wst.univie.ac.at/libs/cpee_doc.js" />
         <link rel="stylesheet" href="http://sumatra.wst.univie.ac.at/libs/cpee_doc.css" type="text/css" />
         <script type="text/javascript">
-            function test(uri) {
-              $.ajax({
-                url: uri,
-                type: 'DELETE',
-                error: function(){
-                  window.location.reload();
-                },
-                success: function(){
-                  window.location.reload();
+          function counterforrealz(timout,urli,otable,state_node,trid){
+            setTimeout(function(){test(urli,otable,state_node,trid);},timout);
+          }
+          function test(status,otable,state_node,trid) {
+            console.log(state_node.text());
+            $.ajax({
+              url: status,
+              type: 'get',
+              dataType: 'html',
+              success: function(data) {
+                state_node.html(data);
+                if(data!="finished"){
+                  setTimeout(function(){test(status,otable,state_node);},30000);
                 }
-              });
-            }
-            $(document).ready(function(){
-              rathalos();
+                otable.fnDraw(true);  
+              } 
             });
+          }
+ 
+          function test(uri) {
+            $.ajax({
+              url: uri,
+              type: 'DELETE',
+              error: function(){
+                window.location.reload();
+              },
+              success: function(){
+                window.location.reload();
+              }
+            });
+          }
+          $(document).ready(function(){
+            var otable = $('#solo').dataTable({
+            "oLanguage": {
+              "sSearch": "Filter"
+            },
+            "bPaginate": false,
+            "bInfo": false,
+                      "aaSorting": [[ 1, "desc" ]]
+              } );
+            running_sushi(otable);
+            rathalos();
+          });
+
+          function running_sushi(otable){
+            var idd = $("#solo").find('tbody').children();
+            idd.each(function() {
+              $(this).find('#id').css('color', 'green');
+              var state_node = $(this).children('#state');
+              var status = state_node.text();
+              var tempi = $(this).children('#id').text();
+              var urli = "./"+tempi+"/properties/values/state";        
+              if (status!="finished"){
+                counterforrealz(30000,urli,otable,state_node,tempi);
+              }
+            });
+          }
+
         </script>
       </head>
       <body>
