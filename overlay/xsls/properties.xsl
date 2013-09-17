@@ -23,8 +23,33 @@
               });
             }
             $(document).ready(function(){
+              troublesome();
               rathalos();
             });
+            function troublesome(){
+              var chi =$("#lagiacrus").children();
+              chi.each(function(){ replacing($(this)); });
+            }
+            function replacing(leia){
+              var jacen = leia.children('#manly').children('#jacen');
+              if (jacen.children().length>0){ 
+                jacen.children().each(function(){ replacing($(this));});
+              }
+              var temp = jacen.html().split("gt");
+              var replacement = "&lt;div id=anakin&gt;"+temp[0]+"gt;&lt;/div&gt;"; 
+              var anakin = leia.children('#manly').children('#anakin');  
+              anakin.replaceWith(replacement);
+              anakin = leia.children('#manly').children('#anakin');
+              jacen.toggle();
+              var real_one ="&lt;div id=jacen&gt;"+jacen.html()+"&lt;/div&gt;";
+              leia.children('#jaina').click(function(){
+                jacen.toggle();
+                anakin.toggle();
+                if($(this).text()!="▽") $(this).text("▽");
+                else $(this).text("▶");
+               });
+            }
+ 
         </script>
       </head>
       <body>
