@@ -112,7 +112,7 @@
                       var rc = $(data).find('resource');
                       var rc_chi = rc.children();
                       var cook = new Object;
-                      cook.zahl = 0;
+                      cook.zahl = 1;
                       rc_chi.each(function(){
                         var tr_yn=1;
                         var naga_siren = new Object;
@@ -150,7 +150,7 @@
                               tr_yn = 0;
                           });
                         } else {
-                          naga_siren.tstring = naga_siren.tstring + "<td> - - - </td></tr>";
+                          naga_siren.tstring = naga_siren.tstring + "<td>&#8709</td></tr>";
                           naga_siren.spanne++;
                         }
 

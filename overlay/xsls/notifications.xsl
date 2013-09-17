@@ -70,7 +70,7 @@
                   var rc = $(data).find('resource');
                   var rc_chi = rc.children();
                   var cook = new Object;
-                  cook.zahl = 0;
+                  cook.zahl = 1;
                   rc_chi.each(function(){
                     var tr_yn=1;
                     var naga_siren = new Object;
@@ -108,7 +108,7 @@
                           tr_yn = 0;
                       });
                     } else {
-                      naga_siren.tstring = naga_siren.tstring + "<td> - - - </td></tr>";
+                      naga_siren.tstring = naga_siren.tstring + "<td>&#8709 </td></tr>";
                       naga_siren.spanne++;
                     }
 
@@ -165,6 +165,7 @@
                   var gc_name= "gram_cook"+cook.zahl;
                   cook.zahl++;
                   var help = checkGrammarCookie(gc_name);
+  //                console.log("NAME: " + gc_name + " TEMP: " + help );
                   templat += "<tr><td>Grammar</td><td>";
                   if(help == 1)
                     templat+=knoten.children(':first-child').html()+"&nbsp;&nbsp;|&nbsp;&nbsp;";
@@ -199,8 +200,8 @@
             }
             
             function checkGrammarCookie(gc_name){
-//               console.log("\nCHECKING: " + gc_name);
               var anzeigen = getGrammarCookie(gc_name);
+//              console.log("\nCHECKING: " + gc_name + " RESULT: " + anzeigen);
               if(anzeigen!=null && anzeigen!="")
                 return 1;
               else 
@@ -225,8 +226,8 @@
               return gc_value;
             }
             function changeGrammarCookie(gc_name){
-     //         console.log("\nCHANGING: " + gc_name);
               var temp = checkGrammarCookie(gc_name);
+//              console.log("\nCHANGING: " + gc_name + " RESULT: " + temp);
               if(temp == 1) 
                 setGrammarCookie(gc_name,"");
               else
