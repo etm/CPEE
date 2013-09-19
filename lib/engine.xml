@@ -14,10 +14,11 @@
   <http://www.gnu.org/licenses/>.
 -->
 
-<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:doc="http://cpee.org/ns/documentation">
 
   <message name="list-of-workflow-instances">
     <parameter name="wis" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <doc:documentation>d</doc:documentation>
       <xi:include href="engine/instances.rng"/>
     </parameter>
   </message>
@@ -54,7 +55,10 @@
   </message>
 
   <resource>
-    <get in="*" out="list-of-workflow-instances"/>
+    <doc:documentation>b</doc:documentation>
+    <get in="*" out="list-of-workflow-instances">
+      <doc:documentation>a</doc:documentation>
+    </get>
     <post in="instance-new" out="instance-id"/>
     <resource>
       <get in="*" out="instance-info"/>
