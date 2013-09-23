@@ -28,7 +28,9 @@
     <xsl:if test="name()='call'">
       <xsl:text>, :</xsl:text>
       <xsl:value-of select="@endpoint"/>
+      <xsl:text>, { </xsl:text>
       <xsl:apply-templates select="d:parameters"/>
+      <xsl:text> }</xsl:text>
       <xsl:apply-templates select="d:manipulate" mode="part-of-call">
         <xsl:with-param name="myspace"><xsl:value-of select="$myspace"/></xsl:with-param>
       </xsl:apply-templates>
@@ -192,14 +194,21 @@
   </xsl:template>
     
   <xsl:template match="d:*" mode="parameter">
-    <xsl:text>, :</xsl:text>
+    <xsl:choose>
+      <xsl:when test="position() = 1">
+        <xsl:text>:</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>, :</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>  
     <xsl:value-of select="name()"/>
     <xsl:text> => </xsl:text>
     <xsl:choose>  
       <xsl:when test="count(*) > 0">
-        <xsl:text>[</xsl:text>
+        <xsl:text>{</xsl:text>
         <xsl:apply-templates select="d:*" mode="sub-parameter"/>
-        <xsl:text>]</xsl:text>
+        <xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
@@ -217,11 +226,10 @@
   </xsl:template>
   
   <xsl:template match="d:*" mode="sub-parameter">
-    <xsl:text> { :</xsl:text>
+    <xsl:text> :</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text> => </xsl:text>
     <xsl:value-of select="text()"/>
-    <xsl:text> }</xsl:text>
     <xsl:choose>  
       <xsl:when test="generate-id(.) = generate-id(../*[last()])">
         <xsl:text> </xsl:text>
@@ -252,7 +260,7 @@
           </xsl:if>
         </xsl:when>  
         <xsl:otherwise>
-          <xsl:text> &lt;&lt;-end </xsl:text>
+          <xsl:text>, &lt;&lt;-end </xsl:text>
         </xsl:otherwise>
       </xsl:choose>
       <xsl:call-template name="print-newline"/>

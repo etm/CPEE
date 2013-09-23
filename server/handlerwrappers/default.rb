@@ -29,12 +29,8 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     if passthrough.nil?
       params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      (parameters[:parameters] || {}).each do |h|
-        if h.class == Hash
-          h.each do |k,v|
-            params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v))
-          end
-        end
+      (parameters[:parameters] || {}).each do |k,v|
+        params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v))
       end
       params << Riddl::Header.new("CPEE_BASE",@url)
       params << Riddl::Header.new("CPEE_INSTANCE","#{@url}/#{@controller.id}")
@@ -42,6 +38,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
       type = parameters[:method] || 'post'
       client = Riddl::Client.new(@handler_endpoint)
+
       status, result, headers = client.request type => params
       raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
 
@@ -127,7 +124,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def vote_sync_after # {{{
     @controller.call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end # }}}
-  def vote_sync_before # {{{
+  def vote_sync_before(parameters=nil) # {{{
     @controller.call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end # }}}
 
