@@ -18,7 +18,17 @@ spec = eval(File.read('cpee.gemspec'))
 Gem::PackageTask.new(spec) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
+  `rm pkg/* -rf`
+  `ln -sf #{pkg.name}.gem pkg/cpee.gem`
 end
+
+task :push => :gem do |r|
+  `gem push pkg/cpee.gem`
+end  
+
+task :install => :gem do |r|
+  `sudo gem install pkg/cpee.gem`
+end  
 
 desc "Clean instances"
 task :clean do
