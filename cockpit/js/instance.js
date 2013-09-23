@@ -289,8 +289,11 @@ function monitor_instance_dsl() {// {{{
         var ctv = $("#areadsl");
         ctv.empty();
 
+        res = format_code(res,false,true);
+        res = res.replace(/activity\s+:([A-Za-z][a-zA-Z0-9_]+)/g,"<span class='activities' id=\"activity-$1\">activity :$1</span>");
+        res = res.replace(/activity\s+\[:([A-Za-z][a-zA-Z0-9_]+)([^\]]*\])/g,"<span class='activities' id=\"activity-$1\">activity [:$1$2</span>");
+
         ctv.append(res);
-        ctv.each(function(i, e) {hljs.highlightBlock(e)});
 
         $.ajax({
           type: "GET",
