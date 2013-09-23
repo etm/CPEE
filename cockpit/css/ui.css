@@ -81,7 +81,7 @@ button.highlight { background-color: #cc0000; }
 #dat_dataelements input:first-child       { border: 0 none; width: 8em; }  
 #dat_dataelements input:last-child        { border: 0 none; width: 100%; }
 
-#dat_dsl {
+#areadsl pre {
   margin: 1em;
   font-family: monospace; 
   font-size:1.3em;
