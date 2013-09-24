@@ -30,6 +30,10 @@
           var cook = new Object;
           cook.zahl = 1;
           rc_chi.each(function(){
+            var ns_uri = this.namespaceURI;
+            if(ns_uri!="http://riddl.org/ns/description/1.0")
+              return true;
+            console.log(this.namespaceURI);
             var tr_yn=1;
             var naga_siren = new Object;
             naga_siren.tstring = "<table class='operation'><tbody><tr><td class='name'>Method</td><td><strong>%METHOD%</strong></td></tr><tr><td class='name'>Input-Message-ID</td><td><strong>%MSG_NAME%</strong></td></tr><tr><td rowspan=\"%IROWSPAN%\" class='name'>Inputparameter(s)</td>";
@@ -145,9 +149,11 @@
           var help = checkGrammarCookie(gc_name);
 //                console.log("NAME: " + gc_name + " TEMP: " + help );
           templat += "<tr><td>Grammar</td><td>";
-          if(help == 1)
-            templat+=knoten.children(':first-child').html()+"&nbsp;&nbsp;|&nbsp;&nbsp;";
-          templat+="<a onClick=\"changeGrammarCookie('"+gc_name+"')\">&#931;</a>";
+          if(help == 1){
+            templat = grammar_f(knoten,templat);
+            templat+="&nbsp;&nbsp;|&nbsp;&nbsp;";
+          } 
+          templat+="&nbsp;<a onClick=\"changeGrammarCookie('"+gc_name+"')\">&#931;</a>";
           templat+="</td></tr>";
           templat = templat.replace(/%PATTERN%/,"*");
         }
@@ -157,7 +163,12 @@
       }
       return templat;
     }
+    function grammar_f(knoten,templat){
+      
+      templat += knoten.children('grammar').prop('tagName');
+      return templat;
 
+    }
     function options(knoten,spacing,tr_yn,naga_siren,cook){
       var templat = new Object;
       templat.spanne=naga_siren.spanne;
