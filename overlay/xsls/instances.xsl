@@ -7,7 +7,8 @@
         <title>CPEE - List of Instances</title>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script class="jsbin" src="http://datatables.net/download/build/jquery.dataTables.nightly.js"></script>
-        <script src="//sumatra.wst.univie.ac.at/libs/cpee_doc.js" />
+        <script src="//sumatra.wst.univie.ac.at/libs/table_methods.js" />
+        <script src="//sumatra.wst.univie.ac.at/libs/docu.js" />
         <link rel="stylesheet" href="http://sumatra.wst.univie.ac.at/libs/cpee_doc.css" type="text/css" />
         <script type="text/javascript">
           function counterforrealz(timout,urli,otable,state_node,trid){
@@ -28,19 +29,6 @@
               } 
             });
           }
- 
-          function test(uri) {
-            $.ajax({
-              url: uri,
-              type: 'DELETE',
-              error: function(){
-                window.location.reload();
-              },
-              success: function(){
-                window.location.reload();
-              }
-            });
-          }
           $(document).ready(function(){
             var otable = $('#solo').dataTable({
             "oLanguage": {
@@ -52,6 +40,7 @@
               } );
             running_sushi(otable);
             rathalos();
+            rathian();
           });
 
           function running_sushi(otable){
@@ -76,11 +65,12 @@
             <a href="/.">Main</a>
           </nav>
         </div>
-        <h1>List of Instances</h1>
-	      <table id="solo">
+        <div id="resource_doc">
+	      </div>
+        <table id="solo">
 	        <thead>
 		        <tr>
-		          <th>Name</th>
+		          <th>Info</th>
 			        <th>ID</th>
               <th>State</th>
 		        </tr>
