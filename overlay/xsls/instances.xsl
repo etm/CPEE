@@ -9,6 +9,7 @@
         <script class="jsbin" src="http://datatables.net/download/build/jquery.dataTables.nightly.js"></script>
         <script src="//sumatra.wst.univie.ac.at/libs/table_methods.js" />
         <script src="//sumatra.wst.univie.ac.at/libs/docu.js" />
+        <script src="//sumatra.wst.univie.ac.at/libs/showdown.js" />
         <link rel="stylesheet" href="http://sumatra.wst.univie.ac.at/libs/cpee_doc.css" type="text/css" />
         <script type="text/javascript">
           function counterforrealz(timout,urli,otable,state_node,trid){

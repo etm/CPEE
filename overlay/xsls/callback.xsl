@@ -7,7 +7,8 @@
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
             <title>List of Subscriptions</title>
             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-            <script src="//sumatra.wst.univie.ac.at/libs/cpee_doc.js" />
+            <script src="//sumatra.wst.univie.ac.at/libs/table_methods.js" />
+            <script src="//sumatra.wst.univie.ac.at/libs/showdown.js" />
             <link rel="stylesheet" href="http://sumatra.wst.univie.ac.at/libs/cpee_doc.css" type="text/css" />
             <script type="text/javascript">
                 function test(uri) {
