@@ -41,7 +41,7 @@
             var converter = new Showdown.converter();
             if(maybe_doc.length>0){
               naga_siren.tstring = naga_siren.tstring.replace(/%DOCUMENTATION%/,"<tr><td class='name'>Dokumentation</td><td>"+converter.makeHtml(maybe_doc.item(0).innerHTML)+"</td></tr>"); 
-              console.log(converter.makeHtml(maybe_doc.item(0).innerHTML));
+          //    console.log(converter.makeHtml(maybe_doc.item(0).innerHTML));
               }
             else
               naga_siren.tstring = naga_siren.tstring.replace(/%DOCUMENTATION%/,"");
@@ -94,7 +94,7 @@
       naga_siren.spanne++;
       switch(tag_n) {
         case "parameter":
-          naga_siren.tstring=naga_siren.tstring+params(knoten,spacing,tr_yn,cook);
+          naga_siren.tstring=naga_siren.tstring+params(knoten,spacing,tr_yn,naga_siren,cook);
           tr_yn = 0;
           break;
         case "header":
@@ -126,7 +126,7 @@
       return templat;
     }
     
-    function params(knoten,spacing,tr_yn,cook){
+    function params(knoten,spacing,tr_yn,naga_siren,cook){
       var templat = "";
       if (tr_yn != 1)
         templat = "<tr>";
@@ -143,42 +143,64 @@
         templat = templat.replace(/%PARATYPE%/,knoten.attr('type'));
         templat = templat.replace(/%MIME%/,"");
       }
+      if(typeof knoten.attr('handler') != "undefined")
+        templat += "<tr><td>Handler:</td><td>" + knoten.attr('handler') + "</td></tr>";
       if(knoten.children().length >0) {
-        if(knoten.children(':first-child').prop('tagName') == "param"){
-        templat = templat.replace(/%PATTERN%/,knoten.children(':first-child').text());
-        } else {
-          var location = window.location.href;
-          var gc_name= location+cook.zahl;
-          cook.zahl++;
-          var help = checkGrammarCookie(gc_name);
-          templat += "<tr><td rowspan='%GROWSPAN%'>Grammar</td><td>ON/OFF&nbsp;&nbsp;<a onClick=\"changeGrammarCookie('"+gc_name+"')\">&#931;</a></td>";
-          var gspan = 1;
-          if(help == 1){
-            templat = grammar_f(knoten,templat);
-            gspan++;
-          } 
-          templat+="</tr>";
-          templat = templat.replace(/%GROWSPAN%/,gspan);
-          templat = templat.replace(/%PATTERN%/,"*");
-        }
+        knoten.children().each(function(){
+          var knoten_chil = this;
+          var tn_name =  $(this).prop('tagName');
+          if(this.namespaceURI=="http://cpee.org/ns/documentation"){
+            var converter = new Showdown.converter();
+            templat += "<tr><td>Dokumentation</td><td>" + converter.makeHtml(knoten_chil.innerHTML) + "</td></tr>";
+          }
+          switch(tn_name) {
+            case "param":
+              templat = templat.replace(/%PATTERN%/,knoten_chil.text());
+              break;
+            case "grammar":
+              var location = window.location.href;
+              var gc_name= location+cook.zahl;
+              cook.zahl++;
+              var help = checkGrammarCookie(gc_name);
+              templat += "<tr><td rowspan='%GROWSPAN%'>Grammar</td><td>ON/OFF&nbsp;&nbsp;<a onClick=\"changeGrammarCookie('"+gc_name+"')\">&#931;</a></td></tr>";
+              var gspan = 1;
+              if(help == 1){
+                templat = grammar_f(knoten,templat,0);
+              } 
+              templat = templat.replace(/%GROWSPAN%/,gspan);
+              templat = templat.replace(/%PATTERN%/,"*");
+              break;
+            default:
+              break;
+          }
+        });
       }
-      else {
-        templat = templat.replace(/%PATTERN%/,"*");
+        templat = templat.replace(/%PATTERN%/g,"*");
+        templat +=  "</table>" +
+          "</td></tr>";
+        return templat;
       }
-
-      templat +=  "</table>" +
-        "</td></tr>";
-      return templat;
-    }
-    function grammar_f(knoten,templat){
-      knoten.children().each(function(){
-        if(this.namespaceURI == "http://cpee.org/ns/documentation"){
-          templat += "<tr><td>"+this.innerHTML+"</td></tr>";
-        }
+        function grammar_f(knoten,templat,spacing){
+        knoten.children().each(function(){
+        var solo = $(this);
+        solo.children().each(function(){
+          var temp = $(this);
+          templat += "<tr><td></td><td style='white-space:nowrap; padding-left: " + spacing+"ex'>"+temp.prop('tagName')+"</td></tr>";
+          templat = grammar_table(temp,templat,spacing+2);
+        });
       });
       return templat;
+      }
 
+    function grammar_table(knoten,templat,spacing){
+      knoten.children().each(function(){
+        var temp = $(this);
+        templat += "<tr><td></td><td style='white-space:nowrap; padding-left: " + spacing+"ex'>"+temp.prop('tagName')+"</td></tr>";
+        templat = grammar_table(temp,templat,spacing+2);    
+      });
+      return templat;
     }
+
     function options(knoten,spacing,tr_yn,naga_siren,cook){
       var templat = new Object;
       templat.spanne=naga_siren.spanne;
