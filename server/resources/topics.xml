@@ -30,6 +30,7 @@
   <topic id='properties/description'>
     <event>change</event>
     <event>error</event>
+    <vote>modify</vote>
   </topic>
   <topic id='properties/state'>
     <event>change</event>
