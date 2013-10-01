@@ -7,9 +7,9 @@
         <title>CPEE - List of Instances</title>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script class="jsbin" src="http://datatables.net/download/build/jquery.dataTables.nightly.js"></script>
-        <script src="//sumatra.wst.univie.ac.at/libs/table_methods.js" />
-        <script src="//sumatra.wst.univie.ac.at/libs/docu.js" />
-        <script src="//sumatra.wst.univie.ac.at/libs/showdown.js" />
+        <script src="//sumatra.wst.univie.ac.at/libs/showdown.js"></script>
+        <script src="//sumatra.wst.univie.ac.at/libs/table_methods.js"></script>
+        <script src="//sumatra.wst.univie.ac.at/libs/docu.js"></script>
         <link rel="stylesheet" href="http://sumatra.wst.univie.ac.at/libs/cpee_doc.css" type="text/css" />
         <script type="text/javascript">
           function counterforrealz(timout,urli,otable,state_node,trid){
@@ -98,6 +98,13 @@
 	      </table>
         <h1> Documentation</h1>
         <div id="test_id"> </div>
+        <script type="text/javascript">
+          $(document).ready(function(){
+
+            console.log($('#gramma_pa'));
+
+          });
+        </script>
       </body>
     </html>
   </xsl:template>

@@ -10,7 +10,7 @@ table.operation table {
   padding: 0; 
   border-collapse:collapse; 
 }
-table.operation table td {
+table.operation table td th {
   margin:0px; 
   border: 0 none;
   padding: 0; 
@@ -19,6 +19,11 @@ table.operation table td:first-child {
   padding-right: 1em; 
 }
 table.operation td {
+  border-style: outset; 
+  border-width: 1px; 
+  border-spacing: 2px; 
+}
+table.operation th {
   border-style: outset; 
   border-width: 1px; 
   border-spacing: 2px; 

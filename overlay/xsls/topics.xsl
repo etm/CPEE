@@ -53,7 +53,7 @@
               </nav>
             </div>
             <h1>List of Subscriptions</h1>
-            <table border="1">
+            <table class='operation'>
               <thead>
                 <th>TYPE</th>
                 <th>TOPIC</th>
