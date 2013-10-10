@@ -5,7 +5,7 @@
   </positions><!--}}}-->
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <dataelements><!--{{{-->
-    <x>""</x>
+    <x/>
   </dataelements><!--}}}-->
   <handlers/>
   <endpoints><!--{{{-->
