@@ -30,7 +30,7 @@ $(document).ready(function() {
     save_main($(event.target).parents('div.tabbed'));
   }); //}}}
 
-  $('#dat_details input.pair_name, #dat_details input.prop_value, #dat_details textarea.prop_value,  #dat_details select.prop_value, #dat_details input.pair_value').live('keyup',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
+  $('#dat_details input.pair_name, #dat_details input.prop_value, #dat_details textarea.prop_value, #dat_details select.prop_value, #dat_details input.pair_value').live('keyup',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
 });
 
 function mark_main_save(top) { //{{{
@@ -103,16 +103,16 @@ function serialize_details(parent) { //{{{
           });
         }
 
-        if ($('textarea.pname_manipulate',parent).length > 0) {
+        if ($('textarea.pname_script',parent).length > 0) {
           var mani = $X('<manipulate xmlns="http://cpee.org/ns/description/1.0"/>');
-              mani.text($('textarea.pname_manipulate',parent).val());
+              mani.text($('textarea.pname_script',parent).val());
           xml.append(mani);
         }
       break;
     case 'manipulate':
       xml.attr('id',$('input.pname_id').val());
-      if ($('textarea.pname_manipulate',parent).length > 0) {
-        xml.text($('textarea.pname_manipulate',parent).val());
+      if ($('textarea.pname_script',parent).length > 0) {
+        xml.text($('textarea.pname_script',parent).val());
       }
       break;
     case 'loop':
