@@ -122,13 +122,10 @@ module CPEE
 
   class NewInstance < Riddl::Implementation #{{{
     def response
-      p 'rrr'
       controller = @a[0]
       opts = @a[1]
       name = @p[0].value
       id = controller.keys.sort.last.to_i
-      p 'rrr'
-      p name
 
       while true
         id += 1
