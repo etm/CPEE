@@ -314,9 +314,9 @@ module CPEE
         addit = if tdesc.attributes['type'] == 'copy' || tdesc.empty?
           desc.children.first.to_doc.root
         elsif tdesc.attributes['type'] == 'rest' && !tdesc.empty?
-          srv = Riddl::Client.interface(tdesc.text,@opts[:transformation_service])
+          srv = Riddl::Client.interface(tdesc.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
           status, res = srv.post [
-            Riddl::Parameter::Complex.new("description","application/xml",desc.dump),
+            Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
             Riddl::Parameter::Simple.new("type","description")
           ]
           XML::Smart::string(res[0].value.read).root if status == 200
@@ -336,12 +336,12 @@ module CPEE
 
         ### dataelements extraction
         addit = if tdata.attributes['type'] == 'rest' && !tdata.empty?
-          srv = Riddl::Client.interface(tdata.text,@opts[:transformation_service])
+          srv = Riddl::Client.interface(tdata.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
           status, res = srv.post [ 
-            Riddl::Parameter::Complex.new("dataelements","application/xml",desc.dump),
-            Riddl::Parameter::Simple.new("type","description")
+            Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
+            Riddl::Parameter::Simple.new("type","dataelements")
           ]
-          XML::Smart::string(res[0].value.read) if status == 200
+          res
         elsif tdata.attributes['type'] == 'xslt' && !tdata.empty?
           trans = XML::Smart::open_unprotected(tdata.text)
           desc.children.first.to_doc.transform_with(trans)
@@ -353,19 +353,19 @@ module CPEE
           node.children.delete_all!
           @instance.data.clear
           addit.each_slice(2).each do |k,v|
-            @instance.data[k.read] = ValueHelper::parse(v.read)
-            node.add(k.to_s,ValueHelper::generate(v.read))
+            @instance.data[k.value] = ValueHelper::parse(v.value)
+            node.add(k.value,ValueHelper::generate(v.value))
           end  
         end  
 
         ### enpoints extraction
         addit = if tendp.attributes['type'] == 'rest' && !tdata.empty?
-          srv = Riddl::Client.interface(tendp.text,@opts[:transformation_service])
+          srv = Riddl::Client.interface(tendp.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
           status, res = srv.post [ 
-            Riddl::Parameter::Complex.new("dataelements","application/xml",desc.dump),
-            Riddl::Parameter::Simple.new("type","description")
+            Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
+            Riddl::Parameter::Simple.new("type","endpoints")
           ]
-          XML::Smart::string(res[0].value.read) if status == 200
+          res
         elsif tendp.attributes['type'] == 'xslt' && !tdata.empty?
           trans = XML::Smart::open_unprotected(tendp.text)
           desc.children.first.to_doc.transform_with(trans)
@@ -377,8 +377,8 @@ module CPEE
           node.children.delete_all!
           @instance.endpoints.clear
           addit.each_slice(2).each do |k,v|
-            @instance.endpoints[k.read] = ValueHelper::parse(v.read)
-            node.add(k.to_s,ValueHelper::generate(v.read))
+            @instance.endpoints[k.value] = ValueHelper::parse(v.value)
+            node.add(k.value,ValueHelper::generate(v.value))
           end  
         end  
       end
