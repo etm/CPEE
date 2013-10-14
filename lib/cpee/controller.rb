@@ -306,6 +306,7 @@ module CPEE
     end #}}}
     def unserialize_description! #{{{
       dsl = nil
+      nots = []
       @properties.modify do |doc|
         dsl   = doc.find("/p:properties/p:dsl").first
         dslx  = doc.find("/p:properties/p:dslx").first
@@ -360,7 +361,7 @@ module CPEE
             @instance.data[k.value] = ValueHelper::parse(v.value)
             node.add(k.value,ValueHelper::generate(v.value))
           end  
-          notify("properties/dataelements/change", :instance => instance_url, :changed => JSON::generate(@instance.data))
+          nots << ["properties/dataelements/change", {:instance => instance_url, :changed => JSON::generate(@instance.data)}]
         end  
 
         ### enpoints extraction
@@ -385,9 +386,10 @@ module CPEE
             @instance.endpoints[k.value] = ValueHelper::parse(v.value)
             node.add(k.value,ValueHelper::generate(v.value))
           end  
-          notify("properties/endpoints/change", :instance => instance_url, :changed => JSON::generate(@instance.endpoints))
+          nots << ["properties/endpoints/change", {:instance => instance_url, :changed => JSON::generate(@instance.endpoints)}]
         end  
       end
+      nots
     end #}}}
 
     def notify(what,content={})# {{{
