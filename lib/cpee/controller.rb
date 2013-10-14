@@ -279,9 +279,10 @@ module CPEE
       hw = nil
       begin
         hw = eval(@properties.data.find("string(/p:properties/p:handlerwrapper)"))
+        p hw
         @instance.handlerwrapper = hw
-      rescue => e
-        p 'xxxxx'
+      rescue => e  
+        p 'xxx'
         @instance.handlerwrapper = DefaultHandlerWrapper
       end  
       if hw != @instance.handlerwrapper
@@ -357,6 +358,7 @@ module CPEE
             @instance.data[k.value] = ValueHelper::parse(v.value)
             node.add(k.value,ValueHelper::generate(v.value))
           end  
+          notify("properties/dataelements/change", :instance => "#{@opts[:url]}/#{@id}", :changed => JSON::generate(@instance.data))
         end  
 
         ### enpoints extraction
@@ -381,6 +383,7 @@ module CPEE
             @instance.endpoints[k.value] = ValueHelper::parse(v.value)
             node.add(k.value,ValueHelper::generate(v.value))
           end  
+          notify("properties/endpoints/change", :instance => "#{@opts[:url]}/#{@id}", :changed => JSON::generate(@instance.endpoints))
         end  
       end
     end #}}}
