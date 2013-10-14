@@ -61,6 +61,7 @@
   <state type="state" modifiable="true">
     <ready>
       <running putable="true"/>
+      <ready putable="true"/>
       <simulating putable="true"/>
     </ready>  
     <running>
@@ -72,6 +73,7 @@
       <stopped putable="false"/>
     </stopping>
     <stopped>
+      <stopped putable="true"/>
       <running putable="true"/>
       <simulating putable="true"/>
     </stopped>  
