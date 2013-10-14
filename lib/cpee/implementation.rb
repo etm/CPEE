@@ -35,12 +35,13 @@ module CPEE
     opts[:transformation_service]     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation.xml')
 
     Proc.new do
+      Dir[opts[:handlerwrappers] + "/*.rb"].each do |h|
+        require h
+      end
+
       controller = {}
       Dir[opts[:instances] + '/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.each do |id|
         controller[id.to_i] = Controller.new(id,opts)
-      end
-      Dir[opts[:handlerwrappers] + "/*.rb"].each do |h|
-        require h
       end
 
       interface 'properties' do |r|

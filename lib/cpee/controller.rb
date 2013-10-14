@@ -280,7 +280,8 @@ module CPEE
       begin
         hw = eval(@properties.data.find("string(/p:properties/p:handlerwrapper)"))
         @instance.handlerwrapper = hw
-      rescue => e  
+      rescue => e
+        p 'xxxxx'
         @instance.handlerwrapper = DefaultHandlerWrapper
       end  
       if hw != @instance.handlerwrapper
