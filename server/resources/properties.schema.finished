@@ -68,7 +68,10 @@
       <stopping putable="true"/>
       <finished putable="false"/>
     </running>
-    <simulating/>
+    <simulating>
+      <ready putable="false"/>
+      <stopped putable="false"/>
+    </simulating>
     <stopping>
       <stopped putable="false"/>
     </stopping>
