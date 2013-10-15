@@ -361,7 +361,7 @@ module CPEE
           node.children.delete_all!
           @instance.data.clear
           addit.each_slice(2).each do |k,v|
-            @instance.data[k.value] = ValueHelper::parse(v.value)
+            @instance.data[k.value.to_sym] = ValueHelper::parse(v.value)
             node.add(k.value,ValueHelper::generate(v.value))
           end  
           nots << ["properties/dataelements/change", {:instance => instance_url, :changed => JSON::generate(@instance.data)}]
