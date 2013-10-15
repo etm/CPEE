@@ -104,6 +104,9 @@ module CPEE
     def instance_url 
       "#{@opts[:url]}/#{@id}"
     end
+    def xmpp 
+      @opts[:xmpp]
+    end
     
     def sim # {{{
       @thread.join if !@thread.nil? && @thread.alive?
@@ -383,7 +386,7 @@ module CPEE
           node.children.delete_all!
           @instance.endpoints.clear
           addit.each_slice(2).each do |k,v|
-            @instance.endpoints[k.value] = ValueHelper::parse(v.value)
+            @instance.endpoints[k.value.to_sym] = ValueHelper::parse(v.value)
             node.add(k.value,ValueHelper::generate(v.value))
           end  
           nots << ["properties/endpoints/change", {:instance => instance_url, :changed => JSON::generate(@instance.endpoints)}]
