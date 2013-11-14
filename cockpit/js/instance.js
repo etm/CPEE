@@ -50,7 +50,6 @@ $(document).ready(function() {// {{{
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
-  $("input[name=votestop]").click(check_subscription);
 
   $.ajax({ 
     url: "testsets/index.xml", 
@@ -82,7 +81,6 @@ function check_subscription() { // {{{
   var url = $("input[name=current-instance]").val();
   var num = 0;
   if ($("input[name=votecontinue]").is(':checked')) num += 1;
-  if ($("input[name=votestop]").is(':checked')) num += 1;
   if (num > 0 && subscription_state == 'less') {
     $.ajax({
       type: "PUT", 
@@ -149,7 +147,8 @@ function monitor_instance() {// {{{
 
       // Change url to return to current instance when reloading
       $("input[name=current-instance]").val(url);
-      $("#current-instance").html("<a href='" + url + "' target='_blank'>" + url + "</a>");
+      $("#current-instance").text(url);
+      $("#current-instance").attr('href',url);
       history.replaceState({}, '', '?monitor='+url);
 
       ui_tab_click($("#tabinstance")[0]);
@@ -371,13 +370,13 @@ function monitor_instance_state_change(notification) { //{{{
 
     var but = "";
     if (notification == "ready" || notification == "stopped") {
-      but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();'>simulate</button></td>";
+      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();'>simulate</button>";
     }
     if (notification == "running") {
-      but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
+      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button>";
     }
 
-    ctv.append("<tr><td>State:</td><td>" + notification + "</td>" + but + "</tr>");
+    ctv.append(notification + but);
   }
 }   //}}}
 function monitor_instance_pos_change(notification) {// {{{
@@ -398,12 +397,9 @@ function monitor_instance_vote_add(notification) {// {{{
   var parts = JSON.parse(notification);
   var ctv = $("#votes");
 
-  var astr = "<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + "</td><td>⇒</td>";
+  astr = '';
   if ($("input[name=votecontinue]").is(':checked'))
-    astr += "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>vote to continue</button></td>";
-  if ($("input[name=votestop]").is(':checked'))
-    astr += "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"false\");'>vote to stop</button></td>";
-  astr += "</tr>";
+    astr += "<button id='vote_to_continue-" + parts.activity + "-" + parts.callback + "' onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>" + parts.activity + "</button>";
   ctv.append(astr);
   format_visual_add(parts.activity,"vote")
 }// }}}
@@ -492,7 +488,7 @@ function save_testset() {// {{{
                           testset.append(pars);
                           $.ajax({
                             type: "GET", 
-                            url: base + "/properties/values/name/",
+                            url: base + "/properties/values/info/",
                             success: function(res){
                               var name = res;
 
@@ -533,7 +529,7 @@ function save_svg() {// {{{
       gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
       $.ajax({
         type: "GET", 
-        url: base + "/properties/values/name/",
+        url: base + "/properties/values/info/",
         success: function(res){
           var name = res;
 

@@ -1,4 +1,4 @@
-#areanew                       { height: 9.6em; } 
+#areanew                       { height: 6.8em; } 
 #areanew td:nth-child(1)       { width: 7em; padding-right: 1em; }
 #areanew td:nth-child(3)       { width: 16em; padding-left: 1em; }
 #areanew input                 { width: 100%;  }
@@ -22,22 +22,41 @@ button.highlight { background-color: #cc0000; }
 
 #areadataelements { height: 100%; overflow-x: hidden; overflow-y: scroll; }
 #areaendpoints    { height: 100%; overflow: auto; }
-#areaexecution    { height: 9.6em; overflow: auto; }
 
-#areainstance                       { height: 9.6em; overflow: hidden; }
-#areainstance td:nth-child(1)       { padding-right: 0.5em; }
-#areainstance td:nth-child(2)       { padding-right: 0.5em; }
+#areainstance                       { height: 6.8em; overflow: hidden; }
 #areainstance input                 { padding: 0; margin:0; }
 #areainstance button                { white-space:nowrap; }
-#areainstance table.compact.loadsave td:nth-child(4) { padding-left: 0.5em; border-left: 1px solid ButtonShadow; }
-#areainstance table.compact.loadsave td:nth-child(5) { padding-left: 0.5em; }
-#areainstance table.compact.loadsave td:nth-child(6) { padding-left: 0.5em; border-left: 1px solid ButtonShadow; }
-#areainstance table.compact.loadsave tr:nth-child(1) td { padding-top: 0.5em; }
-#areainstance hr { height: 1px; color: ButtonShadow; background-color: ButtonShadow; border: 0 none; padding-bottom: 0; margin-bottom: 0; }
-#areainstance select                { width: 28em; }
-#areainstance input[type=file]      { width: 28em; }
-#areainstance table.compact.loadsave td:nth-child(4) button { height: 4em; }
-#areainstance table.compact.loadsave td:nth-child(6) button { height: 4em; }
+#areainstance select                { width: 18em; }
+#areainstance input[type=file]      { width: 18em; }
+
+#areainstance table.compact { width: 100% }
+
+#areainstance table.compact tbody.loadsave td:nth-child(2)        { padding-right: 0.5em; }
+#areainstance table.compact tbody.loadsave td:nth-child(3)        { padding: 0 0.5em; border-left: 1px solid ButtonShadow; }
+#areainstance table.compact tbody.loadsave td:nth-child(3) button { height: 5em; width: 15ex; }
+#areainstance table.compact tbody.loadsave td:nth-child(4)        { padding: 0 0.5em; border-left: 1px solid ButtonShadow; }
+#areainstance table.compact tbody.loadsave td:nth-child(4) button { height: 5em; width: 15ex; }
+
+#areainstance table.compact button[name=loadtestsetfile]   { width: 12em; }
+#areainstance table.compact button[name=loadtestset]       { width: 12em; }
+#areainstance table.compact button[name=loadmodelfile]     { width: 12em; }
+
+#areainstance table.compact:first-child tr td:nth-child(1) { width: 15ex; }
+
+#areainstance table.compact:last-child tr td:nth-child(1) { width: 18em; }
+#areainstance table.compact:last-child tr td:nth-child(2) { width: 12em; }
+#areainstance table.compact:last-child tr td:nth-child(3) { width: 15ex; }
+
+#areaexecution { height: 6.8em; overflow: auto; }
+#areaexecution input { padding: 0; margin:0; }
+#areaexecution table.compact { width: 100%; }
+#areaexecution table.compact tr td:nth-child(1) { width: 15ex; }
+
+#areaexecution table.compact tbody.debug tr:last-child td { padding-bottom: 0.5em; }
+#areaexecution table.compact tbody.exe tr:first-child td { padding-top: 0.5em; }
+#areaexecution table.compact tbody.exe { 1em; border-top: 1px solid ButtonShadow; }
+
+#areaexecution table.compact tbody.exe td { height: 2.2em; }
 
 #dat_log { width:100%; }
 #dat_log td { vertical-align: top; }
