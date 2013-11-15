@@ -480,13 +480,15 @@ function save_testset() {// {{{
                     type: "GET", 
                     url: base + "/properties/values/description/",
                     success: function(res){
-                      testset.append($(res.documentElement));
+                      var pars = $X('<description/>');
+                      pars.append($(res.documentElement));
+                      testset.append(pars);
                       $.ajax({
                         type: "GET", 
                         url: base + "/properties/values/transformation/",
                         success: function(res){
                           var pars = $X('<transformation/>');
-                          pars.append($(res.documentElement));
+                          pars.append($(res.documentElement).children());
                           testset.append(pars);
                           $.ajax({
                             type: "GET", 
