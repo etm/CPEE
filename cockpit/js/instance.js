@@ -153,6 +153,8 @@ function monitor_instance() {// {{{
 
       ui_tab_click($("#tabinstance")[0]);
 
+      // Change url to return to current instance when reloading (because new subscription is made)
+      $("input[name=votecontinue]").removeAttr('checked');
       $.ajax({
         type: "POST", 
         url: url + "/notifications/subscriptions/",
