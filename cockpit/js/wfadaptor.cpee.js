@@ -117,7 +117,8 @@ function CPEE(adaptor) {
       return;
     }
 
-    $('#main .tabbehind button').show();
+    if ($('#state').text() != 'finished')
+      $('#main .tabbehind button').show();
     if ($('#main .tabbehind button').hasClass('highlight')) {
       var check = confirm("Discard changes?");
       if (check)

@@ -1,3 +1,4 @@
+var ws;
 var running = false;
 var load;
 var graphrealization;
@@ -135,7 +136,7 @@ function create_instance() {// {{{
 function monitor_instance() {// {{{
   var url = $("input[name=instance-url]").val();
 
-  $('#main .tabbehind button').hide();
+  $('.tabbehind button').hide();
   $('#dat_details').empty();
 
   $.ajax({
@@ -155,6 +156,8 @@ function monitor_instance() {// {{{
 
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").removeAttr('checked');
+      subscription_state = 'less';
+
       $.ajax({
         type: "POST", 
         url: url + "/notifications/subscriptions/",
@@ -168,6 +171,7 @@ function monitor_instance() {// {{{
           });
           append_to_log("monitoring", "id", subscription);
           var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+          if (ws) ws.close();
           ws = new Socket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
           ws.onopen = function() {
             append_to_log("monitoring", "opened", "");
@@ -377,6 +381,12 @@ function monitor_instance_state_change(notification) { //{{{
     if (notification == "running") {
       but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button>";
     }
+
+    if (notification == "finished") {
+      $('.tabbehind button').hide();
+    } else {
+      $('#parameters .tabbehind button').show();
+    }  
 
     ctv.append(notification + but);
   }

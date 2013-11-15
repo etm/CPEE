@@ -4,11 +4,12 @@ $(document).ready(function() {
   // save buttons shown or not //{{{
   $('#main table.tabbar td.tab:not(.switch):not(.tabbehind)').click(function(event){
     var me = $(event.target).parents('td.tab');
-    if (me.attr('id') == 'tabdetails') {
-      $('#main .tabbehind button').show();
-    } else {
-      $('#main .tabbehind button').hide();
-    }  
+    if ($('#state').text() != 'finished')
+      if (me.attr('id') == 'tabdetails') {
+        $('#main .tabbehind button').show();
+      } else {
+        $('#main .tabbehind button').hide();
+      }  
   }); //}}}
 
   // New entry //{{{
