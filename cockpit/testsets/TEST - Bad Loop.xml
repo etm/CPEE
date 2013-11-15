@@ -8,139 +8,141 @@
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>  
-  <description xmlns="http://cpee.org/ns/description/1.0">
-    <parallel>
-      <parallel_branch>
-        <loop pre_test='data.feedback'>
-          <call id="publish" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>1</timeout>
-              </parameters>
-            </parameters><!--}}}-->
-          </call>  
-          <choose>
-            <alternative condition="data.x != nil">
-              <call id="a4_1" endpoint="timeout">
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <parallel>
+        <parallel_branch>
+          <loop pre_test='data.feedback'>
+            <call id="publish" endpoint="timeout">
                 <parameters><!--{{{-->
-                  <method>post</method>
-                  <parameters>
-                    <timeout>4</timeout>
-                  </parameters>
-                </parameters><!--}}}-->
-              </call>  
-            </alternative>
-            <otherwise>
-              <call id="a4_2" endpoint="timeout">
-                <parameters><!--{{{-->
-                  <method>post</method>
-                  <parameters>
-                    <timeout>10</timeout>
-                  </parameters>
-                </parameters><!--}}}-->
-              </call>  
-            </otherwise>
-          </choose>
-          <choose>
-            <alternative condition="data.x != nil">
-              <call id="a4_1" endpoint="timeout">
-                <parameters><!--{{{-->
-                  <method>post</method>
-                  <parameters>
-                    <timeout>4</timeout>
-                  </parameters>
-                </parameters><!--}}}-->
-              </call>  
-            </alternative>
-            <otherwise>
-              <call id="a4_2" endpoint="timeout">
-                <parameters><!--{{{-->
-                  <method>post</method>
-                  <parameters>
-                    <timeout>10</timeout>
-                  </parameters>
-                </parameters><!--}}}-->
-              </call>  
-            </otherwise>
-          </choose>
-        </loop>
-        <call id="a4_1" endpoint="timeout">
-          <parameters><!--{{{-->
-            <method>post</method>
-            <parameters>
-              <timeout>4</timeout>
-            </parameters>
-          </parameters><!--}}}-->
-        </call>  
-      </parallel_branch>
-      <parallel_branch>
-        <loop pre_test='data.feedback'>
-          <call id="prepare" endpoint="timeout">
-              <parameters><!--{{{-->
+                <method>post</method>
+                <parameters>
+                  <timeout>1</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>  
+            <choose>
+              <alternative condition="data.x != nil">
+                <call id="a4_1" endpoint="timeout">
+                  <parameters><!--{{{-->
+                    <method>post</method>
+                    <parameters>
+                      <timeout>4</timeout>
+                    </parameters>
+                  </parameters><!--}}}-->
+                </call>  
+              </alternative>
+              <otherwise>
+                <call id="a4_2" endpoint="timeout">
+                  <parameters><!--{{{-->
+                    <method>post</method>
+                    <parameters>
+                      <timeout>10</timeout>
+                    </parameters>
+                  </parameters><!--}}}-->
+                </call>  
+              </otherwise>
+            </choose>
+            <choose>
+              <alternative condition="data.x != nil">
+                <call id="a4_1" endpoint="timeout">
+                  <parameters><!--{{{-->
+                    <method>post</method>
+                    <parameters>
+                      <timeout>4</timeout>
+                    </parameters>
+                  </parameters><!--}}}-->
+                </call>  
+              </alternative>
+              <otherwise>
+                <call id="a4_2" endpoint="timeout">
+                  <parameters><!--{{{-->
+                    <method>post</method>
+                    <parameters>
+                      <timeout>10</timeout>
+                    </parameters>
+                  </parameters><!--}}}-->
+                </call>  
+              </otherwise>
+            </choose>
+          </loop>
+          <call id="a4_1" endpoint="timeout">
+            <parameters><!--{{{-->
               <method>post</method>
               <parameters>
                 <timeout>4</timeout>
               </parameters>
             </parameters><!--}}}-->
-          </call>
-          <parallel>
-            <choose>
-              <parallel_branch>
-                <alternative condition="data.x != nil">
-                  <call id="a4_1" endpoint="timeout">
-                    <parameters><!--{{{-->
-                      <method>post</method>
-                      <parameters>
-                        <timeout>4</timeout>
-                      </parameters>
-                    </parameters><!--}}}-->
-                  </call>  
-                </alternative>
-              </parallel_branch>
-              <parallel_branch>
-                <alternative condition="data.x.nil?">
-                  <call id="a4_2" endpoint="timeout">
-                    <parameters><!--{{{-->
-                      <method>post</method>
-                      <parameters>
-                        <timeout>10</timeout>
-                      </parameters>
-                    </parameters><!--}}}-->
-                  </call>  
-                </alternative>
-              </parallel_branch>
-            </choose>
-            <choose>
-              <parallel_branch>
-                <alternative condition="data.x != nil">
-                  <call id="a4_1" endpoint="timeout">
-                    <parameters><!--{{{-->
-                      <method>post</method>
-                      <parameters>
-                        <timeout>4</timeout>
-                      </parameters>
-                    </parameters><!--}}}-->
-                  </call>  
-                </alternative>
-              </parallel_branch>
-              <parallel_branch>
-                <alternative condition="data.x.nil?">
-                  <call id="a4_2" endpoint="timeout">
-                    <parameters><!--{{{-->
-                      <method>post</method>
-                      <parameters>
-                        <timeout>10</timeout>
-                      </parameters>
-                    </parameters><!--}}}-->
-                  </call>  
-                </alternative>
-              </parallel_branch>
-            </choose>
-          </parallel>
-        </loop>  
-      </parallel_branch>
-    </parallel>  
+          </call>  
+        </parallel_branch>
+        <parallel_branch>
+          <loop pre_test='data.feedback'>
+            <call id="prepare" endpoint="timeout">
+                <parameters><!--{{{-->
+                <method>post</method>
+                <parameters>
+                  <timeout>4</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>
+            <parallel>
+              <choose>
+                <parallel_branch>
+                  <alternative condition="data.x != nil">
+                    <call id="a4_1" endpoint="timeout">
+                      <parameters><!--{{{-->
+                        <method>post</method>
+                        <parameters>
+                          <timeout>4</timeout>
+                        </parameters>
+                      </parameters><!--}}}-->
+                    </call>  
+                  </alternative>
+                </parallel_branch>
+                <parallel_branch>
+                  <alternative condition="data.x.nil?">
+                    <call id="a4_2" endpoint="timeout">
+                      <parameters><!--{{{-->
+                        <method>post</method>
+                        <parameters>
+                          <timeout>10</timeout>
+                        </parameters>
+                      </parameters><!--}}}-->
+                    </call>  
+                  </alternative>
+                </parallel_branch>
+              </choose>
+              <choose>
+                <parallel_branch>
+                  <alternative condition="data.x != nil">
+                    <call id="a4_1" endpoint="timeout">
+                      <parameters><!--{{{-->
+                        <method>post</method>
+                        <parameters>
+                          <timeout>4</timeout>
+                        </parameters>
+                      </parameters><!--}}}-->
+                    </call>  
+                  </alternative>
+                </parallel_branch>
+                <parallel_branch>
+                  <alternative condition="data.x.nil?">
+                    <call id="a4_2" endpoint="timeout">
+                      <parameters><!--{{{-->
+                        <method>post</method>
+                        <parameters>
+                          <timeout>10</timeout>
+                        </parameters>
+                      </parameters><!--}}}-->
+                    </call>  
+                  </alternative>
+                </parallel_branch>
+              </choose>
+            </parallel>
+          </loop>  
+        </parallel_branch>
+      </parallel>  
+    </description>
   </description>
   <transformation>
     <description type='copy'/>

@@ -13,30 +13,16 @@
     <services>http://localhost:9290/groups/Interface</services>
     <injection>http://localhost:9291/</injection>
   </endpoints>  
-  <description xmlns="http://cpee.org/ns/description/1.0">
-    <loop post_test="data.outer &gt; 0">
-      <parallel>
-        <parallel_branch>
-          <loop post_test="data.middle &gt; 0">
-            <parallel>
-              <parallel_branch>
-                <manipulate id="m01"/>
-                <call id="branch_x" endpoint="services">
-                  <constraints>
-                      <constraint xpath="property_B" comparator="&gt;" variable="cons_b"/>
-                  </constraints>
-                  <parameters><!--{{{--> 
-                    <service>
-                      <serviceoperation>"no_params"</serviceoperation>
-                      <injection_handler>endpoints.injection</injection_handler>
-                    </service>
-                  </parameters><!--}}}-->
-                </call> 
-              </parallel_branch>
-              <parallel_branch>
-                <manipulate id="m02"/>
-                <loop post_test="data.inner &gt; 0">
-                  <call id="branch_y" endpoint="services">
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <loop post_test="data.outer &gt; 0">
+        <parallel>
+          <parallel_branch>
+            <loop post_test="data.middle &gt; 0">
+              <parallel>
+                <parallel_branch>
+                  <manipulate id="m01"/>
+                  <call id="branch_x" endpoint="services">
                     <constraints>
                         <constraint xpath="property_B" comparator="&gt;" variable="cons_b"/>
                     </constraints>
@@ -47,41 +33,57 @@
                       </service>
                     </parameters><!--}}}-->
                   </call> 
-                  <manipulate id="reduce_inner">
-                    data.cons_b += 5
-                    data.inner -= 1
-                  </manipulate>
-                </loop>
-              </parallel_branch>
-            </parallel>
-            <manipulate id="reduce_middle">
-              data.middle -= 1
-              data.inner = data.middle
-            </manipulate>
-          </loop>
-        </parallel_branch>
-        <parallel_branch>
-          <manipulate id="m03"/>
-          <call id="branch_z" endpoint="services">
-            <constraints>
-                <constraint xpath="property_A" comparator="&gt;" variable="cons_a"/>
-            </constraints>
-            <parameters><!--{{{--> 
-              <service>
-                <serviceoperation>"no_params"</serviceoperation>
-                <injection_handler>endpoints.injection</injection_handler>
-              </service>
-            </parameters><!--}}}-->
-          </call> 
-        </parallel_branch>
-      </parallel>
-      <manipulate id="reduce_outer">
-        data.cons_a += 50
-        data.outer -= 1
-        data.inner = data.outer 
-        data.middle = data.outer
-      </manipulate>
-    </loop>
+                </parallel_branch>
+                <parallel_branch>
+                  <manipulate id="m02"/>
+                  <loop post_test="data.inner &gt; 0">
+                    <call id="branch_y" endpoint="services">
+                      <constraints>
+                          <constraint xpath="property_B" comparator="&gt;" variable="cons_b"/>
+                      </constraints>
+                      <parameters><!--{{{--> 
+                        <service>
+                          <serviceoperation>"no_params"</serviceoperation>
+                          <injection_handler>endpoints.injection</injection_handler>
+                        </service>
+                      </parameters><!--}}}-->
+                    </call> 
+                    <manipulate id="reduce_inner">
+                      data.cons_b += 5
+                      data.inner -= 1
+                    </manipulate>
+                  </loop>
+                </parallel_branch>
+              </parallel>
+              <manipulate id="reduce_middle">
+                data.middle -= 1
+                data.inner = data.middle
+              </manipulate>
+            </loop>
+          </parallel_branch>
+          <parallel_branch>
+            <manipulate id="m03"/>
+            <call id="branch_z" endpoint="services">
+              <constraints>
+                  <constraint xpath="property_A" comparator="&gt;" variable="cons_a"/>
+              </constraints>
+              <parameters><!--{{{--> 
+                <service>
+                  <serviceoperation>"no_params"</serviceoperation>
+                  <injection_handler>endpoints.injection</injection_handler>
+                </service>
+              </parameters><!--}}}-->
+            </call> 
+          </parallel_branch>
+        </parallel>
+        <manipulate id="reduce_outer">
+          data.cons_a += 50
+          data.outer -= 1
+          data.inner = data.outer 
+          data.middle = data.outer
+        </manipulate>
+      </loop>
+    </description>
   </description>
   <transformation>
     <description type='xslt'>http://cpee.org/~demo/rescue-1.0.xslt</description>

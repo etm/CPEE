@@ -298,7 +298,7 @@ function monitor_instance_dsl() {// {{{
 
         $.ajax({
           type: "GET",
-          url: url + "/properties/values/description/",
+          url: url + "/properties/values/dslx/",
           success: function(res){
             graphrealization = new WfAdaptor(CPEE);
             graphrealization.set_svg_container($('#graphcanvas'));
@@ -581,11 +581,19 @@ function set_testset (testset) {// {{{
     error: report_failure
   });
   
+  load_testset_hw(url,testset);
   $.ajax({
-    type: "PUT", 
-    url: url + "/properties/values/handlerwrapper",
-    success: function() { load_testset_hw(url,testset); },
-    error: report_failure
+    type: "GET", 
+    url: url + "/properties/values/state/",
+    dataType: "text",
+    success: function(res){
+      $.ajax({
+        type: "PUT", 
+        url: url + "/properties/values/state",
+        data: ({value: res}),
+        error: report_failure
+      });
+    }
   });
 }// }}}
 function load_testsetfile() { //{{{
@@ -627,14 +635,16 @@ function load_testset() {// {{{
 }// }}}
 
 function load_testset_des(url,testset) {// {{{
-  $("testset > description",testset).each(function(){
-    var val = "<content>" + $(this).serializeXML() + "</content>";
-    $.ajax({
-      type: "PUT", 
-      url: url + "/properties/values/description",
-      data: ({content: val}),
-      error: report_failure
-    });
+  var ser = '';
+  $("testset > description > *",testset).each(function(){
+    ser += $(this).serializeXML() + "\n";
+  });
+  var val = "<content>" + ser + "</content>";
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/description",
+    data: ({content: val}),
+    error: report_failure
   });
 } // }}}
 function load_testset_hw(url,testset) {// {{{
