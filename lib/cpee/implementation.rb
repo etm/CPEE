@@ -65,7 +65,6 @@ module CPEE
       end
 
       interface 'notifications' do |r|
-        run CPEE::Instances, controller if get '*'
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
         use Riddl::Utils::Notifications::Producer::implementation(controller[id].notifications, NotificationsHandler.new(controller[id]), opts[:mode]) if controller[id]
       end
