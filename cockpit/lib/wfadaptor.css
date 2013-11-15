@@ -112,6 +112,10 @@ svg .standwithout {
   fill:#ffffff;
   fill-opacity:1;
 }
+svg .standtrans {
+  fill:#ffffff;
+  fill-opacity:0;
+}
 svg text.normal {
   font-size:20px;
   font-style:normal;
