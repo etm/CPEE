@@ -215,6 +215,9 @@
           <xsl:when test="@type = 'symbolic'">
             <xsl:value-of select="text()"/>
           </xsl:when>
+          <xsl:when test="not(node())">
+            <xsl:text>nil</xsl:text>
+          </xsl:when>
           <xsl:otherwise>
             <xsl:text>"</xsl:text>
             <xsl:value-of select="text()"/>

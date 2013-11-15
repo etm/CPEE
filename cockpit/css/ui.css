@@ -1,4 +1,4 @@
-#areanew                       { height: 6.8em; } 
+#areanew                       { height: 7em; } 
 #areanew td:nth-child(1)       { width: 7em; padding-right: 1em; }
 #areanew td:nth-child(3)       { width: 16em; padding-left: 1em; }
 #areanew input                 { width: 100%;  }
@@ -23,7 +23,7 @@ button.highlight { background-color: #cc0000; }
 #areadataelements { height: 100%; overflow-x: hidden; overflow-y: scroll; }
 #areaendpoints    { height: 100%; overflow: auto; }
 
-#areainstance                       { height: 6.8em; overflow: hidden; }
+#areainstance                       { height: 7em; overflow: hidden; }
 #areainstance input                 { padding: 0; margin:0; }
 #areainstance button                { white-space:nowrap; }
 #areainstance select                { width: 18em; }
@@ -47,7 +47,7 @@ button.highlight { background-color: #cc0000; }
 #areainstance table.compact:last-child tr td:nth-child(2) { width: 12em; }
 #areainstance table.compact:last-child tr td:nth-child(3) { width: 15ex; }
 
-#areaexecution { height: 6.8em; overflow: auto; }
+#areaexecution { height: 7em; overflow: auto; }
 #areaexecution input { padding: 0; margin:0; }
 #areaexecution table.compact { width: 100%; }
 #areaexecution table.compact tr td:nth-child(1) { width: 15ex; }
@@ -172,3 +172,11 @@ span.vote {
 
 #dat_details tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
 #dat_details .header button { border: 1pt solid buttonshadow; }
+
+#disclaimer {
+  margin: 1em;
+}
+
+#disclaimer p {
+  max-width: 80ex;
+}

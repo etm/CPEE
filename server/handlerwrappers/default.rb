@@ -42,9 +42,9 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       status, result, headers = client.request type => params
       raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
       if result.length == 1
-        if result[0].is_a? && Riddl::Parameter::Simple
+        if result[0].is_a? Riddl::Parameter::Simple
           result = result[0]
-        elsif result[0].is_a? && Riddl::Parameter::Complex
+        elsif result[0].is_a? Riddl::Parameter::Complex
           if result[0].mimetype == 'application/json' 
             result = JSON::parse(result[0].value.read)
           elsif result[0].mimetype == 'application/xml' || result[0].mimetype == 'text/xml'
