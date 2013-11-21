@@ -31,6 +31,7 @@
     <script type="text/javascript" src="lib/parsequery.js"></script>
     <script type="text/javascript" src="lib/underscore.min.js"></script>
     <script type="text/javascript" src="lib/jquery.caret.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.cookie.js"></script>
 
     <script type="text/javascript" src="lib/contextmenu.js"></script>
     <script type="text/javascript" src="lib/wfadaptor.js"></script>
@@ -51,6 +52,52 @@
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
   </head>
   <body>
+     <div id='disclaimer' class='hidden'>
+       <p>
+         We use reasonable care in creating and presenting the functionality
+         found in this demonstrator. It is provided purely for demonstration purposes
+         and you should seek further guidance and make independent enquiries
+         before relying upon it.
+       </p>
+       
+       <p>
+         All functionality included in this demonstrator is subject to change
+         without notice. We make no representation or warranty whatsoever
+         regarding the completeness, accuracy, adequacy, suitability or
+         operation of this demonstrator, or of the results it produces.
+       </p>
+       
+       <p>
+         We assume no responsibility for process instances created with this
+         demonstrator and disclaim all liability arising from negligence or
+         otherwise in respect of such process instances. We will not be liable
+         for any damages (including, without limitation, damages for any
+         consequential loss or loss of business opportunities or projects, or
+         loss of profits) howsoever arising from use of or inability to use
+         this demonstrator, or from any action or omission taken as a result of
+         using this demonstrator.
+       </p>
+       
+       <p>
+         This demonstrator was created in Austria. All liability is excluded to the extent
+         permitted by law including any implied terms. Any interpretation of its
+         content, claims or disputes (of whatever nature and not limited to contractual
+         issues) shall be subject to the exclusive jurisdiction of the Austrian Courts
+         under Austrian law.
+       </p>
+
+
+       <p>
+         All actions performed while using this demonstrator will be logged, including
+         the IP address of the user.
+       </p>
+
+       <p>
+        <button id='iagree'>OK, I Agree with this terms. I will be a happy person, and do no evil.</button>
+       </p>
+    </div>
+       
+
     <!-- The following six are templates that get used during ui generation, change them carefully -->
     <table id="dat_template_pair" class='hidden'> <!--{{{-->
       <tr class="pair">
@@ -116,7 +163,7 @@
           <td class="tab"                 id="tabnew"       ><h1>New</h1></td>
           <td class="tab inactive hidden" id="tabinstance"  ><h1>Instance</h1></td>
           <td class="tab inactive hidden" id="tabexecution" ><h1>Execution</h1></td>
-          <td class="tabbehind"><input name="current-instance" type="text" value="" readonly='readonly'/></td>
+          <td class="tabbehind"><input name="current-instance" type="text" value="" readonly='readonly' style='display:none'/><a id='current-instance'></a></td>
         </tr>
         <tr class="border hidden"><td colspan="5"></td></tr>
       </table>
@@ -136,43 +183,43 @@
           </table>
         </div> <!--}}}-->
         <div id="areainstance" class="inactive"> <!--{{{-->
-          <table class='compact info'>
-          <tr>
-            <td>Instance Url:</td>
-            <td></td>
-            <td id='current-instance'></td>
-          </tr>
-          <tr>
-            <td>Vote to Continue:</td>
-            <td></td>
-            <td><input type="checkbox" name="votecontinue"/></td>
-          </tr>
-          <tr>
-            <td>Vote to Stop:</td>
-            <td></td>
-            <td><input type="checkbox" name="votestop"/></td>
-          </tr>
-          </table>
-          <hr></hr>
-          <table class='compact loadsave'>
-          <tr>
-            <td><select name="testset-names"></select></td>
-            <td><button name="loadtestset">load from testset</button></td>
-            <td rowspan='3'></td>
-            <td rowspan='3'><button name="savetestset">save testset</button><a id="savetestset" href="" download=""></a></td>
-            <td rowspan='3'></td>
-            <td rowspan='3'><button name="savesvg">save svg graph</button><a id="savesvg" href="" download=""></a></td>
-          </tr>
-          <tr>
-            <td><input type='file' id='testsetfile'/></td>
-            <td><button name="loadtestsetfile">load from testset</button></td>
-          </tr>
+          <table class='compact'>
+            <tbody class='loadsave'>
+              <tr>
+                <td><select title='a testset includes various setting, subscriptions and a model' name="testset-names"></select></td>
+                <td><button title='a testset includes various setting, subscriptions and a model' name="loadtestset">load from testset</button></td>
+                <td rowspan='3'><button title='a testset includes various setting, subscriptions and a model' name="savetestset">save testset</button><a id="savetestset" href="" download=""></a></td>
+                <td rowspan='3'><button title='a testset includes various setting, subscriptions and a model' name="savesvg">save svg graph</button><a id="savesvg" href="" download=""></a></td>
+              </tr>
+              <tr>
+                <td><input title='a testset includes various setting, subscriptions and a model' type='file' id='testsetfile'/></td>
+                <td><button title='a testset includes various setting, subscriptions and a model' name="loadtestsetfile">load from testset</button></td>
+              </tr>
+              <tr>
+                <td><input title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' type='file' id='modelfile'/></td>
+                <td><button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">load model</button></td>
+              </tr>
+            </tbody>
           </table>
         </div> <!--}}}-->
         <div id="areaexecution" class='inactive'> <!--{{{-->
-          <table>
-            <tbody id="state"></tbody>
-            <tbody id="votes"></tbody>
+          <table class='compact'>
+            <tbody class='debug'>
+              <tr>
+                <td>Vote to continue:</td>
+                <td><input type="checkbox" name="votecontinue"/></td>
+              </tr>
+            </tbody>  
+            <tbody class='exe'>
+              <tr>
+                <td>Execution State:</td>
+                <td id='state'></td>
+              </tr>
+              <tr>
+                <td>Continue:</td>
+                <td id='votes'></td>
+              </tr>
+            </tbody>
           </table>
         </div> <!--}}}-->
       </div>

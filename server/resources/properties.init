@@ -25,7 +25,9 @@
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>
   <dsl/>
-  <dslx/>
+  <dslx>
+    <description xmlns="http://cpee.org/ns/description/1.0"/>
+  </dslx>  
   <status>
     <id>0</id>
     <message>undefined</message>

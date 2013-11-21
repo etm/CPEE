@@ -89,7 +89,7 @@ function CPEE(adaptor) {
         if(group.length > 0) menu['Insert after'] = group;
       }
   
-      if(xml_node.get(0).tagName != 'description')
+      if(xml_node.get(0).tagName != 'description' && !elements[xml_node.get(0).tagName].description.deleteable)
         menu['Remove Element'] = [{'label': 'Actual Element', 
                         'function_call': adaptor.description.remove, 
                         'menu_icon': function() {
@@ -117,7 +117,8 @@ function CPEE(adaptor) {
       return;
     }
 
-    $('#main .tabbehind button').show();
+    if ($('#state').text() != 'finished')
+      $('#main .tabbehind button').show();
     if ($('#main .tabbehind button').hasClass('highlight')) {
       var check = confirm("Discard changes?");
       if (check)
@@ -186,12 +187,6 @@ function CPEE(adaptor) {
     save['details'] = serialize_details(tab).serializeXML();
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
-    $('.tile[element-id = "' + svgid + '"]').css('display','none');
-    var xml_node = adaptor.description.get_node_by_svg_id(svgid);
-    if(xml_node.attr('collapsed') == undefined || xml_node.attr('collapsed') == 'false') {xml_node.attr('collapsed','true');}
-    else {xml_node.attr('collapsed','false');}
-    adaptor.description.update(svgid);
-    return false;
   } // }}}
   this.events.mouseover = function(svgid, e) { // {{{
     $('.tile[element-id = "' + svgid + '"]').css('display','block');
@@ -479,10 +474,6 @@ function CPEE(adaptor) {
         var node = $X('<choose xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
         return node;
       },
-      'insertable' : function(parent_node, index) {
-        return true;
-        return false;
-      },
       'permissible_children': function(node) {
         var func = null;
         if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
@@ -533,7 +524,7 @@ function CPEE(adaptor) {
       },
       'svg': function() {
         return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<line x1="15" y1="0" x2="15" y2="28" class="standwithout"/>' +
+                    '<circle cx="15" cy="15" r="9" class="standtrans"/>' + 
                     '<line x1="9" y1="21" x2="21" y2="9" class="stand"/>' +
                   '</svg>');
       }
@@ -543,10 +534,7 @@ function CPEE(adaptor) {
         var node = $X('<otherwise xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
-      'insertable' : function(parent_node, index) {
-        return true;
-        return false;
-      },
+      'deleteable': true,
       'permissible_children': function(node) {
         var func = null;
         var childs = null;
@@ -616,10 +604,6 @@ function CPEE(adaptor) {
       'create':  function(target) {
         var node = $X('<alternative condition="" xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
-      },
-      'insertable' : function(parent_node, index) {
-        return true;
-        return false;
       },
       'permissible_children': function(node) {
         if(node.get(0).tagName == 'alternative') { func = adaptor.description.insert_first_into }
