@@ -14,10 +14,10 @@
 
 class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase
   def ws_open(socket)
-    @data.add_ws(@key,socket)
+    @data.add_websocket(@key,socket)
   end
   def ws_close
-    @data.del_ws(@key)
+    @data.unserialize_notifications!(:del,@key)
   end
   def ws_message(data)
     begin
