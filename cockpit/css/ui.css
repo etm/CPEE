@@ -181,10 +181,6 @@ span.vote {
 #dat_details tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
 #dat_details .header button { border: 1pt solid buttonshadow; }
 
-#disclaimer {
-  margin: 1em;
-}
-
-#disclaimer p {
-  max-width: 80ex;
-}
+#disclaimer { margin: 1em; }
+#disclaimer p { max-width: 80ex; text-align: justify; }
+#disclaimer input { margin:0; padding:0; vertical-align:bottom; margin-right: 0.5em; }
