@@ -208,7 +208,7 @@ module CPEE
             vos = []
             @events.each { |e,v| evs << e }
             @votes.each { |e,v| vos << e }
-            @notifications.subscriptions[key].view do |doc|
+            @notifications.subscriptions[key].read do |doc|
               turl = doc.find('string(/n:subscription/@url)') 
               url = turl == '' ? url : turl
               @communication[key] = url
@@ -232,7 +232,7 @@ module CPEE
             end  
           end  
         when :cre
-          @notifications.subscriptions[key].view do |doc|
+          @notifications.subscriptions[key].read do |doc|
             turl = doc.find('string(/n:subscription/@url)') 
             url = turl == '' ? nil : turl
             @communication[key] = url
@@ -479,7 +479,7 @@ module CPEE
       end  
     end # }}}
 
-    def add_ws(key,socket)# {{{
+    def add_websocket(key,socket)# {{{
       @communication[key] = socket
       @events.each do |a|
         if a[1].has_key?(key)
@@ -490,20 +490,6 @@ module CPEE
         if a[1].has_key?(key)
           a[1][key] = socket
         end  
-      end
-    end # }}}
-
-    def del_ws(key)# {{{
-      @communication[key] = nil
-      @events.each do |a|
-        if a[1].has_key?(key)
-          a[1][key] = nil
-        end  
-      end
-      @votes.each do |a|
-        if a[1].has_key?(key)
-          a[1][key] = nil
-        end
       end
     end # }}}
 
