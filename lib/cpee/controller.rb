@@ -189,6 +189,9 @@ module CPEE
     def unserialize_notifications!(op,key)# {{{
       case op
         when :del
+          if @notifications.subscriptions.include?(key)
+            @notifications.subscriptions[key].delete
+          end  
           @communication.delete(key)
           @events.each do |eve,keys|
             keys.delete_if{|k,v| key == k}
@@ -202,7 +205,7 @@ module CPEE
             end
           end  
         when :upd 
-          if @notifications.subscriptions[key]
+          if @notifications.subscriptions.include?(key)
             url = @communication[key]
             evs = []
             vos = []

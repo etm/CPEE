@@ -18,6 +18,7 @@ class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase
   end
   def ws_close
     @data.unserialize_notifications!(:del,@key)
+    @data.notify('properties/handlers/change', :instance => @data.instance_url)
   end
   def ws_message(data)
     begin
