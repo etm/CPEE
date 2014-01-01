@@ -4,7 +4,7 @@ require 'riddl/server'
 require 'riddl/utils/xsloverlay'
 require 'riddl/utils/fileserve'
 
-Riddl::Server.new(File.dirname(__FILE__) + '/declaration.xml', :port => 9297) do
+Riddl::Server.new(File.dirname(__FILE__) + '/server.xml', :port => 9297) do
   accessible_description false
 
   interface 'xsloverlay' do

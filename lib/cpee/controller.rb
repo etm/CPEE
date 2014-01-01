@@ -189,10 +189,11 @@ module CPEE
     def unserialize_notifications!(op,key)# {{{
       case op
         when :del
-          if @notifications.subscriptions.include?(key)
-            @notifications.subscriptions[key].delete
-          end  
+          @notifications.subscriptions[key].delete if @notifications.subscriptions.include?(key)
+            
+          @communication[key].io.close_connection if @communication[key].class == Riddl::Utils::Notifications::Producer::WS
           @communication.delete(key)
+
           @events.each do |eve,keys|
             keys.delete_if{|k,v| key == k}
           end  
