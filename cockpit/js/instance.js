@@ -48,6 +48,7 @@ $(document).ready(function() {// {{{
   $("button[name=instance]").click(monitor_instance);
   $("button[name=loadtestset]").click(load_testset);
   $("button[name=loadtestsetfile]").click(load_testsetfile);
+  $("button[name=loadmodelfile]").click(load_modelfile);
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
@@ -556,7 +557,7 @@ function save_svg() {// {{{
     }  
   });
 }// }}}
-function set_testset (testset) {// {{{
+function set_testset(testset) {// {{{
   var url = $("input[name=current-instance]").val();
 
   $.ajax({
@@ -607,7 +608,7 @@ function set_testset (testset) {// {{{
       });
     }
   });
-}// }}}
+ }// }}}
 function load_testsetfile() { //{{{
   if (running) return;
   if (typeof window.FileReader !== 'function') {
@@ -618,6 +619,23 @@ function load_testsetfile() { //{{{
   var reader = new FileReader();
   reader.onload = function(){
     set_testset(reader.result.parseXML());
+    running  = false;
+  }  
+  reader.onerror = function(){ running  = false; }  
+  reader.onabort = function(){ running  = false; }  
+  reader.readAsText(files[0]);
+} //}}}
+function load_modelfile() { //{{{
+  if (running) return;
+  if (typeof window.FileReader !== 'function') {
+    alert('FileReader not yet supportet');
+    return;
+  }  
+  var files = $('#modelfile').get(0).files;
+  var reader = new FileReader();
+  reader.onload = function(){
+    var url = $("input[name=current-instance]").val();
+    load_des(url,reader.result);
     running  = false;
   }  
   reader.onerror = function(){ running  = false; }  
@@ -646,18 +664,23 @@ function load_testset() {// {{{
   running  = false;
 }// }}}
 
-function load_testset_des(url,testset) {// {{{
-  var ser = '';
-  $("testset > description > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  var val = "<content>" + ser + "</content>";
+function load_des(url,model) { //{{{
+  model = model.replace(/<\?[^\?]+\?>/,'');
+  var val = "<content>" + model + "</content>";
   $.ajax({
     type: "PUT", 
     url: url + "/properties/values/description",
     data: ({content: val}),
     error: report_failure
   });
+}   //}}}
+
+function load_testset_des(url,testset) {// {{{
+  var ser = '';
+  $("testset > description > *",testset).each(function(){
+    ser += $(this).serializeXML() + "\n";
+  });
+  load_des(url,ser);
 } // }}}
 function load_testset_hw(url,testset) {// {{{
   $("testset > handlerwrapper",testset).each(function(){
