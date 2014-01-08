@@ -3,7 +3,7 @@
    <itemDefinition id="a_value"/>
    <process id="sid-5750bd94-a1c1-4c70-9c98-b7295b95b8f3" isClosed="false" isExecutable="true" processType="None">
       <property id="sid-94899760-756a-463b-83f4-53288b70b433" itemSubjectRef="timeout">
-         <dataState id="sid-9ba400ae-88f9-4593-8a7f-3f5ace6bc802" name="cpee:timeout"/>
+         <dataState id="sid-9ba400ae-88f9-4593-8a7f-3f5ace6bc802" name="cpee:endpoint"/>
       </property>
       <property id="sid-092178e9-fb9b-40d0-a551-e513735ef806" itemSubjectRef="a_value" name="a">
          <dataState id="sid-ceab771f-612f-4639-8f97-1342c6bbca1c" name="cpee:dataelement"/>

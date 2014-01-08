@@ -29,34 +29,29 @@ class ExtractDescription < Riddl::Implementation
 
     doc = XML::Smart.string(@p[0].value.read)
     doc.register_namespace 'bm',  "http://www.omg.org/spec/BPMN/20100524/MODEL" 
-    doc.register_namespace 'dr',  "http://www.jboss.org/drools" 
 
-    prop = []
-    doc.find("/bm:definitions/bm:process/bm:property").each do |e|
-      prop << e.attributes['id']
-    end
+    des = []
+    doc.find("/bm:definitions/bm:process/bm:property[bm:dataState/@name='cpee:dataelement']").each do |ref|
+      des << ref.attributes['name']
+    end  
 
     # assign all important nodes to nodes
     doc.find("/bm:definitions/bm:process/bm:*[@id and @name]").each do |e|
       n = Node.new(e.attributes['id'],e.qname.name.to_sym,e.attributes['name'],e.find('count(bm:incoming)'),e.find('count(bm:outgoing)'))
 
-      e.find("bm:extensionElements/dr:metadata/dr:metaentry[dr:name='company']/dr:value").each do |comps|
-        comps = JSON::parse(comps.text)
-        comps.each do |comp|
-          n.endpoints << comp['orgName'].gsub(/[^a-zA-Z]/,'') + "_" + comp['serviceOperationLabel']
-        end 
+      e.find("bm:property[@name='cpee:endpoint']/@itemSubjectRef").each do |ep|
+        n.endpoints << ep
       end
-      e.find("bm:extensionElements/dr:metadata/dr:metaentry[dr:name='script']/dr:value").each do |s|
+      e.find("bm:script").each do |s|
         n.script << s.text
       end
-      e.find("bm:extensionElements/dr:metadata/dr:metaentry[dr:name='assignments']/dr:value").each do |a|
-        a.text.split(',').each do |kv|
-          kv = kv.split('=')
-          if prop.include?(kv[1])
-            n.parameters[kv[0]] = 'data.' + kv[1]
-          else  
-            n.parameters[kv[0]] = '"' + kv[1] + '"'
-          end
+      e.find("bm:ioSpecification/bm:dataInput").each do |a|
+        name = a.attributes['name']
+        value = a.attributes['itemSubjectRef']
+        if des.include?(value)
+          n.parameters[name] = 'data.' + value
+        else  
+          n.parameters[name] = value
         end
       end
 
@@ -82,22 +77,18 @@ class ExtractDataelements < Riddl::Implementation
   def response
     doc = XML::Smart.string(@p[0].value.read)
     doc.register_namespace 'bm',  "http://www.omg.org/spec/BPMN/20100524/MODEL" 
-    doc.register_namespace 'dr',  "http://www.jboss.org/drools" 
 
     ret = []
-    doc.find("/bm:definitions/bm:process/bm:property").each do |e|
-      ret << Riddl::Parameter::Simple.new("name",e.attributes['id'])
-      ret << Riddl::Parameter::Simple.new("value","")
+    doc.find("/bm:definitions/bm:process/bm:property[bm:dataState/@name='cpee:dataelement']").each do |ref|
+      ret << Riddl::Parameter::Simple.new("name",ref.attributes['name'])
+      if ref.attributes['itemSubjectRef']
+        doc.find("/bm:definitions/bm:itemDefinition[@id=\"" + ref.attributes['itemSubjectRef'] + "\"]").each do |sref|
+          ret << Riddl::Parameter::Simple.new("value",sref.attributes['structureRef'].to_s)
+        end 
+      else
+        ret << Riddl::Parameter::Simple.new("value",'')
+      end  
     end
-    coll = {}
-    doc.find("/bm:definitions/bm:process/bm:extensionElements/dr:metadata/dr:metaentry[dr:name='vardefs']/dr:value").each do |anns|
-      anns.text.split(',').each do |ann|
-        a = ann.split(':')
-        coll[a[0]] = a[2]
-      end
-    end
-    ret << Riddl::Parameter::Simple.new("name",'ANNOTATIONS')
-    ret << Riddl::Parameter::Simple.new("value",JSON::generate(coll))
     ret
   end
 end
@@ -106,19 +97,13 @@ class ExtractEndpoints < Riddl::Implementation
   def response
     doc = XML::Smart.string(@p[0].value.read)
     doc.register_namespace 'bm',  "http://www.omg.org/spec/BPMN/20100524/MODEL" 
-    doc.register_namespace 'dr',  "http://www.jboss.org/drools" 
 
     ret = []
-    coll = {}
-    doc.find("/bm:definitions/bm:process/bm:task/bm:extensionElements/dr:metadata/dr:metaentry[dr:name='company']/dr:value").each do |comps|
-      comps = JSON::parse(comps.text)
-      comps.each do |comp|
-        coll[comp['orgName'].gsub(/[^a-zA-Z]/,'') + "_" + comp['serviceOperationLabel']] = comp['serviceEndpoint'] + "#" + comp['serviceOperationLabel']
-      end 
-    end
-    coll.each do |k,v|
-      ret << Riddl::Parameter::Simple.new("name",k)
-      ret << Riddl::Parameter::Simple.new("value",v)
+    doc.find("/bm:definitions/bm:process/bm:property[bm:dataState/@name='cpee:endpoint']/@itemSubjectRef").each do |ref|
+      doc.find("/bm:definitions/bm:itemDefinition[@id=\"" + ref.value + "\"]/@structureRef").each do |sref|
+        ret << Riddl::Parameter::Simple.new("name",ref.value)
+        ret << Riddl::Parameter::Simple.new("value",sref.value)
+      end  
     end
     ret
   end

@@ -9,21 +9,38 @@ Dir.chdir(File.expand_path(File.dirname(__FILE__)))
 srv = Riddl::Client.new("http://localhost:9295",'../translation.xml',:jid => 'jürgen@fp7-adventure.eu',:pass => 'mangler')
 res = srv.resource("/")
 
-#status, response = res.post [
-#  Riddl::Parameter::Complex.new("description","text/xml",File.read('base5.xml')),
-#  Riddl::Parameter::Simple.new("type","description")
-#]
-#puts response[0].value.read
+puts '### ENDPOINTS ####################' #{{{
+### all endpoints
+Dir['*.bpmn'].each do |f|
+  status, response = res.post [
+    Riddl::Parameter::Complex.new("description","text/xml",File.read(f)),
+    Riddl::Parameter::Simple.new("type","endpoints")
+  ]
+  response.each_slice(2) do |k,v| 
+    puts "#{f}: #{k.value} => #{v.value}"
+  end
+end #}}}
 
-#status, response = res.post [
-#  Riddl::Parameter::Complex.new("description","text/xml",File.read('base5.xml')),
-#  Riddl::Parameter::Simple.new("type","dataelements")
-#]
-#pp response
+puts '### DATAELEMENTS ####################' #{{{
+### all dataelements
+Dir['*.bpmn'].each do |f|
+  status, response = res.post [
+    Riddl::Parameter::Complex.new("description","text/xml",File.read(f)),
+    Riddl::Parameter::Simple.new("type","dataelements")
+  ]
+  response.each_slice(2) do |k,v| 
+    puts "#{f}: #{k.value} => #{v.value}"
+  end
+end #}}}
 
-status, response = res.post [
-  Riddl::Parameter::Complex.new("description","text/xml",File.read('Test 1.bpmn')),
-  Riddl::Parameter::Simple.new("type","endpoints")
-]
-pp response.first.value.read
-
+puts '### DESCRIPTIONS ####################'
+### all descriptions
+Dir['*1.bpmn'].each do |f|
+  status, response = res.post [
+    Riddl::Parameter::Complex.new("description","text/xml",File.read(f)),
+    Riddl::Parameter::Simple.new("type","description")
+  ]
+  puts "#{f}:"
+  puts response.first.value.read
+  puts "======================================"
+end
