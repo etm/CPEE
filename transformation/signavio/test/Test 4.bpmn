@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="7.6.0" expressionLanguage="http://www.w3.org/1999/XPath" id="sid-4bbffd89-d26e-4b6f-b867-33a474a1b2d3" targetNamespace="http://www.signavio.com/bpmn20" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
+<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="7.6.0" expressionLanguage="http://www.w3.org/1999/XPath" id="sid-0fe53b24-eca3-4416-952c-308d7968af2c" targetNamespace="http://www.signavio.com/bpmn20" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
    <itemDefinition id="timeout" isCollection="false" structureRef="http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php"/>
    <itemDefinition id="a_value"/>
-   <process id="sid-5750bd94-a1c1-4c70-9c98-b7295b95b8f3" isClosed="false" isExecutable="true" processType="None">
-      <property id="sid-94899760-756a-463b-83f4-53288b70b433" itemSubjectRef="timeout">
-         <dataState id="sid-9ba400ae-88f9-4593-8a7f-3f5ace6bc802" name="cpee:endpoint"/>
+   <process id="sid-be21dee4-8859-4e71-84dd-4f046e3215b7" isClosed="false" isExecutable="true" processType="None">
+      <property id="sid-863bd660-b934-4b5b-8f82-2fd3939279e4" itemSubjectRef="timeout">
+         <dataState id="sid-b8aa31d7-6efc-40cf-a989-445de2deae56" name="cpee:endpoint"/>
       </property>
-      <property id="sid-092178e9-fb9b-40d0-a551-e513735ef806" itemSubjectRef="a_value" name="a">
-         <dataState id="sid-ceab771f-612f-4639-8f97-1342c6bbca1c" name="cpee:dataelement"/>
+      <property id="sid-976b2175-cbae-4abf-82ff-d6eff066861d" itemSubjectRef="a_value" name="a">
+         <dataState id="sid-8ff59f63-0b7d-4360-a0e2-a17ee70bef89" name="cpee:dataelement"/>
       </property>
       <endEvent id="sid-A9E292EC-7A6E-477C-9FB7-CBBF0FCEB65A" name="">
          <extensionElements>
@@ -38,11 +38,12 @@
          </extensionElements>
          <incoming>sid-87996D95-4FE3-4410-8159-A688FC959F76</incoming>
          <outgoing>sid-ADE6D5C0-ECAA-4D38-9342-0F07C3E0FC5C</outgoing>
-         <ioSpecification id="sid-b6299df6-5249-4b91-a4b4-b39591d7cf95">
+         <ioSpecification id="sid-7daaa611-77a2-4366-96e1-fb4d1f66c5f0">
+            <dataInput id="sid-676d94ff-e44b-433c-ac12-4d43e123690b" itemSubjectRef="1" name="timeout"/>
             <dataOutput id="result" isCollection="true" name="result"/>
          </ioSpecification>
-         <property id="sid-6a6c3f91-ce0a-493f-af36-2c8395a4cbb7" itemSubjectRef="timeout" name="cpee:endpoint"/>
-         <dataOutputAssociation id="sid-4b0286af-b64d-4c17-b7db-3afdabaa3ed5">
+         <property id="sid-2cab9c10-237b-4ddc-8186-70965c952577" itemSubjectRef="timeout" name="cpee:endpoint"/>
+         <dataOutputAssociation id="sid-7978f423-b7a2-4155-86ac-3ed749383a2e">
             <sourceRef>result</sourceRef>
             <targetRef>sid-DBA910B8-CDCF-4E0E-8552-4BD6560CC17C</targetRef>
          </dataOutputAssociation>
@@ -66,11 +67,12 @@
          </extensionElements>
          <incoming>sid-8471658A-DD81-472E-8A15-02A3889A47C1</incoming>
          <outgoing>sid-68AC4A75-A596-48E1-ACB5-9D92EED2AC64</outgoing>
-         <ioSpecification id="sid-522c3a04-889c-46df-92eb-20ac4d1850ab">
+         <ioSpecification id="sid-bc4d5465-11c2-4d17-b9bd-030c92c10913">
+            <dataInput id="sid-ee55c426-7bc0-4895-ac58-16a97d3c6909" itemSubjectRef="2" name="timeout"/>
             <dataOutput id="result" isCollection="true" name="result"/>
          </ioSpecification>
-         <property id="sid-08c0422a-32d8-45fd-86bb-167e5bf1bdd3" itemSubjectRef="timeout" name="cpee:endpoint"/>
-         <dataOutputAssociation id="sid-1c6f1442-531e-484e-8192-bd3e65af30b7">
+         <property id="sid-d220c9ed-fc45-4b6f-a10e-8485c3c4623e" itemSubjectRef="timeout" name="cpee:endpoint"/>
+         <dataOutputAssociation id="sid-68d3b6db-eee4-4edc-a4b8-c9e0f8dfbeba">
             <sourceRef>result</sourceRef>
             <targetRef>sid-404FC883-08AB-4F7C-832C-76E8D1A7BB31</targetRef>
          </dataOutputAssociation>
@@ -98,15 +100,15 @@
       <sequenceFlow id="sid-9E851D48-E7D9-4C60-B71C-BB8869FB622B" name="" sourceRef="sid-DBA910B8-CDCF-4E0E-8552-4BD6560CC17C" targetRef="sid-17BE9736-6536-470F-A485-99D535C73F99"/>
       <sequenceFlow id="sid-28F228E2-0473-4424-ADAC-D6ADFC998EE2" name="" sourceRef="sid-404FC883-08AB-4F7C-832C-76E8D1A7BB31" targetRef="sid-17BE9736-6536-470F-A485-99D535C73F99"/>
       <sequenceFlow id="sid-8471658A-DD81-472E-8A15-02A3889A47C1" name="" sourceRef="sid-064BEFBF-9EE9-4A1A-A28C-6EAA877E6551" targetRef="sid-126C0EE2-98B6-4D69-9585-35AB1E90E4B8">
-         <conditionExpression id="sid-b57d9433-1f80-4f9b-9b5d-c107dd9a8eda" xsi:type="tFormalExpression">data.a &lt; 4</conditionExpression>
+         <conditionExpression id="sid-c93a28a6-cdf3-4fd3-a24b-9d6e58b2811a" xsi:type="tFormalExpression">data.a &lt; 4</conditionExpression>
       </sequenceFlow>
       <sequenceFlow id="sid-E0A8753F-548F-4A86-B55C-FE3D5CACB017" name="" sourceRef="sid-D523A2E4-7FFD-43AB-A7B1-7BA313C536AD" targetRef="sid-064BEFBF-9EE9-4A1A-A28C-6EAA877E6551"/>
       <sequenceFlow id="sid-87996D95-4FE3-4410-8159-A688FC959F76" name="" sourceRef="sid-064BEFBF-9EE9-4A1A-A28C-6EAA877E6551" targetRef="sid-6CFA8542-1FF6-4BB8-957E-5C9806CD90C6">
-         <conditionExpression id="sid-ee72d60d-e654-47d3-9fa9-4cc136564bcd" xsi:type="tFormalExpression">data.a &lt; 3</conditionExpression>
+         <conditionExpression id="sid-7e160b7a-16b4-46dc-8257-57207c4d6d6b" xsi:type="tFormalExpression">data.a &lt; 3</conditionExpression>
       </sequenceFlow>
    </process>
-   <bpmndi:BPMNDiagram id="sid-2f860420-a34a-4c31-b967-fe1a91fab96f">
-      <bpmndi:BPMNPlane bpmnElement="sid-5750bd94-a1c1-4c70-9c98-b7295b95b8f3" id="sid-9f3d26df-220b-4b49-b3c4-ed26da9b7676">
+   <bpmndi:BPMNDiagram id="sid-7222dc80-6775-4715-afea-a89074f8df89">
+      <bpmndi:BPMNPlane bpmnElement="sid-be21dee4-8859-4e71-84dd-4f046e3215b7" id="sid-eff263a6-c800-4f85-a3ff-50747383eed4">
          <bpmndi:BPMNShape bpmnElement="sid-A9E292EC-7A6E-477C-9FB7-CBBF0FCEB65A" id="sid-A9E292EC-7A6E-477C-9FB7-CBBF0FCEB65A_gui">
             <omgdc:Bounds height="28.0" width="28.0" x="580.0" y="118.5"/>
          </bpmndi:BPMNShape>

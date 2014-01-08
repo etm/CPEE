@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="7.6.0" expressionLanguage="http://www.w3.org/1999/XPath" id="sid-d090cbe8-ef4c-4a73-bb58-07cf49cd1db8" targetNamespace="http://www.signavio.com/bpmn20" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
+<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="7.6.0" expressionLanguage="http://www.w3.org/1999/XPath" id="sid-52a89326-1675-4afc-bfec-11d76d689334" targetNamespace="http://www.signavio.com/bpmn20" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
    <itemDefinition id="timeout" structureRef="http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php"/>
    <itemDefinition id="a_value" structureRef="0"/>
-   <process id="sid-b6216a43-a393-4905-a788-2ec9b86bb95d" isClosed="false" isExecutable="true" processType="None">
-      <property id="sid-4c4cf569-6291-420d-8a82-1e08fd2dd644" itemSubjectRef="timeout">
-         <dataState id="sid-3b69c8a9-73a0-44f1-bc72-3bffd162e032" name="cpee:endpoint"/>
+   <process id="sid-3fd9f563-8afe-4ec2-8766-a7dfad9fcbbb" isClosed="false" isExecutable="true" processType="None">
+      <property id="sid-eed897dd-d14a-4b75-9ba7-72df9d1ceb88" itemSubjectRef="timeout">
+         <dataState id="sid-a299784d-19a3-4b0c-8ad5-ab12bea7e5a9" name="cpee:endpoint"/>
       </property>
-      <property id="sid-17bb6625-4b6a-4a04-b0ba-b178116b973a" itemSubjectRef="a_value" name="a">
-         <dataState id="sid-0c05aef2-7489-493b-b847-8d09a41c2df4" name="cpee:dataelement"/>
+      <property id="sid-45428dd4-6d72-49e8-b83a-b5a5c13587f7" itemSubjectRef="a_value" name="a">
+         <dataState id="sid-b04fdfd6-0c46-4022-9da4-03f42003aeb1" name="cpee:dataelement"/>
       </property>
       <exclusiveGateway default="sid-7D00A496-E8C3-4DA7-B9B2-54669A78DB9C" gatewayDirection="Diverging" id="sid-13A34C12-BE7A-4B17-A6C9-064F97F5C720" name="">
          <extensionElements>
@@ -44,11 +44,12 @@
          </extensionElements>
          <incoming>sid-97656D49-9706-4081-8A02-AEF541A7B537</incoming>
          <outgoing>sid-F7CAD394-5990-45AA-8304-8EE769B1CDF0</outgoing>
-         <ioSpecification id="sid-a932b937-570d-4dad-8848-dfb0ad4a0adf">
+         <ioSpecification id="sid-7dd2f4e8-06ab-4ea7-ae32-9c1b1265b198">
+            <dataInput id="sid-9eb5b7cc-72dc-450a-bb96-331b96060b3b" itemSubjectRef="1" name="timeout"/>
             <dataOutput id="result" isCollection="true" name="result"/>
          </ioSpecification>
-         <property id="sid-b8e7b8b8-0727-4f70-8bff-3b03d9560214" itemSubjectRef="timeout" name="cpee:endpoint"/>
-         <dataOutputAssociation id="sid-44e99787-be18-4f61-88f9-ae9f5cb7ce6f">
+         <property id="sid-78bcdfab-f9b6-4e1f-9b13-db4d01e6719a" itemSubjectRef="timeout" name="cpee:endpoint"/>
+         <dataOutputAssociation id="sid-5a82c15d-090e-4977-994d-c5930b287410">
             <sourceRef>result</sourceRef>
             <targetRef>sid-981C5F80-0149-432D-AA04-7E1FA437F96E</targetRef>
          </dataOutputAssociation>
@@ -72,11 +73,12 @@
          </extensionElements>
          <incoming>sid-7D00A496-E8C3-4DA7-B9B2-54669A78DB9C</incoming>
          <outgoing>sid-E3B65666-82F8-4C13-9B6B-BD61518C1BEA</outgoing>
-         <ioSpecification id="sid-e29873c7-1c4c-4655-8c34-aa220a76b9b2">
+         <ioSpecification id="sid-ba0755d7-7786-4c75-b9db-564c5af1be76">
+            <dataInput id="sid-fcf26859-fca0-446d-8a5f-39e9ee73f84e" itemSubjectRef="1" name="timeout"/>
             <dataOutput id="result" isCollection="true" name="result"/>
          </ioSpecification>
-         <property id="sid-6732977c-b5f3-41a3-8b81-edbe20011eb7" itemSubjectRef="timeout" name="cpee:endpoint"/>
-         <dataOutputAssociation id="sid-e810f97d-530b-463a-a508-f690f55d2668">
+         <property id="sid-a739a67d-292b-485a-839e-f89faa1f011e" itemSubjectRef="timeout" name="cpee:endpoint"/>
+         <dataOutputAssociation id="sid-fbef0734-7db5-4060-8db3-2ecf94214581">
             <sourceRef>result</sourceRef>
             <targetRef>sid-0DEA608C-DF12-496F-B609-E2B530C1748A</targetRef>
          </dataOutputAssociation>
@@ -99,12 +101,12 @@
       <sequenceFlow id="sid-F2D752A0-82BD-4158-86A4-D4C5B7D5CDA2" name="" sourceRef="sid-981C5F80-0149-432D-AA04-7E1FA437F96E" targetRef="sid-CFB2D00B-19A3-457E-9712-40CD1EE3FA27"/>
       <sequenceFlow id="sid-E954269F-0343-40A2-BD45-1AD55B1D9558" name="" sourceRef="sid-0DEA608C-DF12-496F-B609-E2B530C1748A" targetRef="sid-CFB2D00B-19A3-457E-9712-40CD1EE3FA27"/>
       <sequenceFlow id="sid-97656D49-9706-4081-8A02-AEF541A7B537" name="" sourceRef="sid-13A34C12-BE7A-4B17-A6C9-064F97F5C720" targetRef="sid-C4915A51-F57C-44E7-8BA7-AC5247998430">
-         <conditionExpression id="sid-572b9298-9b69-4cc2-9c9e-025026014e6e" xsi:type="tFormalExpression">data.a &lt; 3</conditionExpression>
+         <conditionExpression id="sid-b1ca81f6-6424-4611-af1c-16e1be11ddec" xsi:type="tFormalExpression">data.a &lt; 3</conditionExpression>
       </sequenceFlow>
       <sequenceFlow id="sid-7D00A496-E8C3-4DA7-B9B2-54669A78DB9C" name="" sourceRef="sid-13A34C12-BE7A-4B17-A6C9-064F97F5C720" targetRef="sid-4F7DC368-C233-43DF-862A-28FC41919D18"/>
    </process>
-   <bpmndi:BPMNDiagram id="sid-f11b591f-0067-4fe3-a730-abbed920d013">
-      <bpmndi:BPMNPlane bpmnElement="sid-b6216a43-a393-4905-a788-2ec9b86bb95d" id="sid-8d0c9e2f-d714-4f5a-9a1a-05c0de72b102">
+   <bpmndi:BPMNDiagram id="sid-db082de8-0359-476a-afa1-7d692190da7c">
+      <bpmndi:BPMNPlane bpmnElement="sid-3fd9f563-8afe-4ec2-8766-a7dfad9fcbbb" id="sid-eb9d5f6a-651a-42df-badc-fcb677a55d45">
          <bpmndi:BPMNShape bpmnElement="sid-13A34C12-BE7A-4B17-A6C9-064F97F5C720" id="sid-13A34C12-BE7A-4B17-A6C9-064F97F5C720_gui" isMarkerVisible="true">
             <omgdc:Bounds height="40.0" width="40.0" x="165.0" y="95.0"/>
          </bpmndi:BPMNShape>
