@@ -35,7 +35,7 @@ end #}}}
 
 puts '### DESCRIPTIONS ####################'
 ### all descriptions
-Dir['*1.bpmn'].each do |f|
+Dir['*2.bpmn'].each do |f|
   status, response = res.post [
     Riddl::Parameter::Complex.new("description","text/xml",File.read(f)),
     Riddl::Parameter::Simple.new("type","description")
