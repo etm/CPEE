@@ -1,1 +1,1 @@
-map <F10> :!./servertest.rb -v start<CR>
+map <F10> :!./test.rb<CR>
