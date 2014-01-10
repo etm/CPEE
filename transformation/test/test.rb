@@ -8,6 +8,7 @@ Dir.chdir(File.expand_path(File.dirname(__FILE__)))
 
 Dir['*3.bpmn'].each do |f|
   bpmn2 = ProcessTransformation::Source::BPMN2.new(File.read(f))
-  #xml = bpmn2.model(ProcessTransformation::Target::CPEE)
+  xml = bpmn2.model(ProcessTransformation::Target::CPEE)
+  puts xml
 end
 

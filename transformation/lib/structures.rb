@@ -1,29 +1,32 @@
 module ProcessTransformation
 
 class Link #{{{
-  attr_reader :from, :to
-  def initialize(from,to)
+  attr_reader :from, :to, :condition
+  def initialize(from,to,cond=nil)
     @from  = from
     @to = to
+    @condition = cond
   end
 end #}}}
 
 class Node #{{{ 
   @@niceid = -1
   attr_reader :id, :type, :label, :niceid, :incoming, :outgoing
-  attr_reader :endpoints, :script, :parameters
+  attr_reader :endpoints, :methods, :parameters
+  attr_accessor :script
   def initialize(id,type,label,incoming,outgoing)
     @id = id
     @niceid = (@@niceid += 1)
     @type = type
     @label = label
     @endpoints = []
+    @methods = []
     @script = ''
     @parameters = {}
     @incoming = incoming
     @outgoing = outgoing
   end
-end #}}}
+end # }}}
 
 class Graph #{{{
   attr_reader :flow, :nodes
@@ -37,21 +40,17 @@ class Graph #{{{
     @nodes[n.id] = n
   end  
 
+  def incoming_condition(n)
+    @flow.find_all { |x| x.to == n.id }
+  end
+
   def add_flow(l)
     @flow << l
   end
 
   def next_nodes(from)
-    nodes = []
-    @flow.delete_if do |x| 
-      if x.from == from.id
-        nodes << x 
-        true
-      else
-        false
-      end
-    end  
-    nodes.map{|x| @nodes[x.to] }
+    links = @flow.find_all { |x| x.from == from.id }
+    links.map{|x| @nodes[x.to] }
   end
 
   def next_node(from)
@@ -63,7 +62,7 @@ class Graph #{{{
   end
 end #}}}
 
-class PStructure #{{{
+class Parallel #{{{
   attr_reader :id, :sub
   def initialize(id)
     @id = id
@@ -72,17 +71,25 @@ class PStructure #{{{
   def new_branch
     (@sub << []).last
   end
-end #}}} 
+end  #}}}
 
-class Parallel < PStructure #{{{
+class Alternative < Array #{{{
+  attr_reader :condition
+  def initialize(cond)
+    @condition = cond
+  end
 end #}}}
 
-class Conditional < PStructure #{{{
-  attr_reader :type
+class Conditional #{{{
+  attr_reader :id, :sub, :type
   def initialize(id,type)
-    super id
+    @id = id
+    @sub = []
     @type = type
   end  
+  def new_branch(cond)
+    (@sub << Alternative.new(cond)).last
+  end
 end #}}}
 
 class Loop #{{{

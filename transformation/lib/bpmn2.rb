@@ -13,17 +13,14 @@ module ProcessTransformation
       class StructureMapping #{{{
         def self.new(node)
           case node.type
-            when :parallelGateway
-              Parallel.new(node.id)
             when :exclusiveGateway
-              Conditional.new(node.id,:exclusive)
             when :inclusiveGateway
               Conditional.new(node.id,:inclusive)
           end
         end
       end #}}}
 
-      def initialize(xml)
+      def initialize(xml) #{{{
         @graph = Graph.new
         @tree = []
         start = nil
@@ -51,13 +48,16 @@ module ProcessTransformation
 
         # assign all important nodes to nodes
         doc.find("/bm:definitions/bm:process/bm:*[@id and @name]").each do |e|
-          n = Node.new(e.attributes['id'],e.qname.name.to_sym,e.attributes['name'],e.find('count(bm:incoming)'),e.find('count(bm:outgoing)'))
+          n = Node.new(e.attributes['id'],e.qname.name.to_sym,e.attributes['name'].strip,e.find('count(bm:incoming)'),e.find('count(bm:outgoing)'))
 
           e.find("bm:property[@name='cpee:endpoint']/@itemSubjectRef").each do |ep|
             n.endpoints << ep
           end
+          e.find("bm:property[@name='cpee:method']/@itemSubjectRef").each do |m|
+            n.methods << m
+          end
           e.find("bm:script").each do |s|
-            n.script << s.text
+            n.script << s.text.strip
           end
           e.find("bm:ioSpecification/bm:dataInput").each do |a|
             name = a.attributes['name']
@@ -77,21 +77,21 @@ module ProcessTransformation
         doc.find("/bm:definitions/bm:process/bm:sequenceFlow").each do |e|
           source = e.attributes['sourceRef']
           target = e.attributes['targetRef']
-          @graph.add_flow Link.new(source, target)
+          cond = e.find('bm:conditionExpression')
+          @graph.add_flow Link.new(source, target, cond.empty? ? nil : cond.first.text.strip)
         end
 
         build_tree @tree, start
-      end
+      end #}}}
 
       def build_tree(branch,node,because_of=[])
         while node
-          p node.type
           case node.type
-            when :parallelGateway, :exclusiveGateway
+            when :parallelGateway
               return node if node.incoming > 1 
               if node.incoming == 1 && node.outgoing > 1
-                branch << (x = StructureMapping.new(node))
-                ncollect = graph.next_nodes(node).map do |n|
+                branch << (x = Parallel.new(node.id))
+                ncollect = @graph.next_nodes(node).map do |n|
                   build_tree(x.new_branch,n)
                 end.flatten
                 if ncollect.uniq.length == 1
@@ -107,10 +107,30 @@ module ProcessTransformation
                   raise "#{x.pretty_inspect}-----> no common end node"
                 end  
               end
-            #when :exclusiveGateway
+            when :exclusiveGateway
               # check if a branch is part of a loop -> branch and condition is a loop (also works for multiple)
               # if more than one branch reaches end its an exclusive
               # if one branch reaches the end continue as normal
+              return node if node.incoming > 1 
+              if node.incoming == 1 && node.outgoing > 1
+                branch << (x = Conditional.new(node.id,:exclusive))
+                ncollect = @graph.next_nodes(node).map do |n|
+                  cond = @graph.incoming_condition(n).first.condition
+                  build_tree(x.new_branch(cond),n)
+                end.flatten
+                if ncollect.uniq.length == 1
+                  ### e.g. multiple nested parallels share one parallel end node, i.e. not wellformed (see test/base4.xml)
+                  if ncollect.length < ncollect.first.incoming 
+                    return ncollect
+                  ### a wellformed (start and end) structure   
+                  else
+                    node = ncollect.first
+                  end  
+                else  
+                  ### shit hits the fan, some syntax error in modelling
+                  raise "#{x.pretty_inspect}-----> no common end node"
+                end  
+              end
             when :task, :callActivity, :serviceTask
               branch << node
             when :endEvent
@@ -124,13 +144,13 @@ module ProcessTransformation
 
           node = @graph.next_node(node) if node
         end
-        private :build_tree
-
-        def model(formater) #{{{
-          formater.new(@tree).generate
-        end #}}}
 
       end
+      private :build_tree
+
+      def model(formater) #{{{
+        formater.new(@tree).generate
+      end #}}}
 
     end  
 
