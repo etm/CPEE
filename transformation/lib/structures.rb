@@ -77,6 +77,14 @@ end #}}}
 class Parallel < PStructure #{{{
 end #}}}
 
+class Conditional < PStructure #{{{
+  attr_reader :type
+  def initialize(id,type)
+    super id
+    @type = type
+  end  
+end #}}}
+
 class Loop #{{{
   attr_reader :id, :sub, :type
   def initialize(id,type)
