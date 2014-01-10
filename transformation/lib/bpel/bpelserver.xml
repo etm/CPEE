@@ -1,0 +1,70 @@
+<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <message name="list-of-workflow-instances">
+    <parameter name="wis" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="rngs/instances.rng"/>
+    </parameter>
+  </message>
+
+  <message name="instance-id">
+    <parameter name="id" type="integer"/>
+  </message>
+
+  <message name="instance-name">
+    <parameter name="name" type="string"/>
+  </message>
+  
+  <message name="instance-info">
+    <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="rngs/instance-info.rng"/>
+    </parameter>
+  </message>
+  <message name="callbacks">
+    <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="rngs/callbacks.rng"/>
+    </parameter>
+  </message>
+  <message name="xsl">
+    <parameter name="xsl" mimetype="application/xml"/>
+  </message>
+
+  <message name="message">
+    <parameter name="type" type="integer"/>
+    <parameter name="message" type="string"/>
+    <optional>
+      <parameter name="details" mimetype="text/xml"/>
+      <parameter name="details" mimetype="text/yaml"/>
+    </optional>  
+  </message>
+
+  <resource>
+    <get in="*" out="list-of-bpel-schemas"/>
+    <resource relative='xsls'>
+      <resource>
+        <get in="*" out="xsl"/>
+      </resource>  
+    </resource>
+    <resource relative="cpee">
+      <get in="*" out="cpee-base"/>
+    </resource>
+    <resource>
+      <get in="*" out="schema-info"/>
+      <resource relative="instances">
+        <get in="*" out="instances"/>
+      </resource>
+      <resource relative="dsl">
+        <get in="*" out="dsl"/>
+      </resource>
+      <resource relative="dataelements">
+        <get in="*" out="dataelements"/>
+      </resource>
+      <resource relative="endpoints">
+        <get in="*" out="endpoints"/>
+      </resource>
+      <resource relative="invocation">
+        <get in="*" out="invocation"/>
+      </resource>
+      <post in="*"/>
+      <put in="*"/>
+  </resource>
+</description>

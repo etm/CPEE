@@ -1,0 +1,53 @@
+<!--
+  This file is part of CPEE.
+
+  CPEE is free software: you can redistribute it and/or modify it under the terms
+  of the GNU General Public License as published by the Free Software Foundation,
+  either version 3 of the License, or (at your option) any later version.
+
+  CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along with
+  CPEE (file COPYING in the main directory).  If not, see
+  <http://www.gnu.org/licenses/>.
+-->
+
+<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <message name="description">
+    <parameter name="description" mimetype="text/xml"/>
+  </message>
+  <message name="dataelements">
+    <zeroOrMore>
+      <parameter name="name" type="string"/>
+      <parameter name="value" type="string"/>
+    </zeroOrMore>
+  </message>
+  <message name="endpoints">
+    <zeroOrMore>
+      <parameter name="name" type="string"/>
+      <parameter name="value" type="string"/>
+    </zeroOrMore>
+  </message>
+
+  <message name="dedesc">
+    <parameter name="description" mimetype="text/xml"/>
+    <parameter name="type" fixed="description"/>
+  </message>
+  <message name="dadesc">
+    <parameter name="description" mimetype="text/xml"/>
+    <parameter name="type" fixed="dataelements"/>
+  </message>
+  <message name="endesc">
+    <parameter name="description" mimetype="text/xml"/>
+    <parameter name="type" fixed="endpoints"/>
+  </message>
+
+  <resource>
+    <post in="dedesc" out="description"/>
+    <post in="dadesc" out="dataelements"/>
+    <post in="endesc" out="endpoints"/>
+  </resource>
+</description>
