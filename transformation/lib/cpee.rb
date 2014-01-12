@@ -33,7 +33,7 @@ module ProcessTransformation
           par.add(k,v)
         end
         unless node.script.strip == ''
-          n.add('manipulate',node.script,'output' => 'result')
+          n.add('manipulate',node.script,'output' => node.script_var)
         end
       end
       private :print_Node

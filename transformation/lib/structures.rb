@@ -1,7 +1,8 @@
 module ProcessTransformation
 
 class Link #{{{
-  attr_reader :from, :to, :condition
+  attr_accessor :from, :to
+  attr_reader :condition
   def initialize(from,to,cond=nil)
     @from  = from
     @to = to
@@ -13,7 +14,7 @@ class Node #{{{
   @@niceid = -1
   attr_reader :id, :type, :label, :niceid, :incoming, :outgoing
   attr_reader :endpoints, :methods, :parameters
-  attr_accessor :script
+  attr_accessor :script, :script_id, :script_var
   def initialize(id,type,label,incoming,outgoing)
     @id = id
     @niceid = (@@niceid += 1)
@@ -22,11 +23,13 @@ class Node #{{{
     @endpoints = []
     @methods = []
     @script = ''
+    @script_id = nil
+    @script_var = 'result'
     @parameters = {}
     @incoming = incoming
     @outgoing = outgoing
   end
-end # }}}
+end # }}} 
 
 class Graph #{{{
   attr_reader :flow, :nodes
@@ -34,6 +37,35 @@ class Graph #{{{
   def initialize
     @nodes = {}
     @flow = []
+  end
+
+  def clean_up(&bl)
+    selnodes = []
+    @nodes.each do |k,n|
+      ret = bl.call(n)
+      selnodes << n if ret
+    end
+    selnodes.each do |n|
+      if n.incoming > 1 || n.outgoing > 1
+        raise "#{n.inspect} - not a simple node to remove"
+      end  
+      to,from = nil
+      @flow.each do |f|
+        to = f if f.to == n.id
+        from = f if f.from == n.id
+      end
+      if to && from
+        to.to = from.to
+        @flow.delete(from)
+        @nodes.delete(n.id)
+      else
+        raise "#{n.inspect} - could not remove flow"
+      end  
+    end
+  end
+
+  def find_script_id(s)
+    @nodes.find_all{|k,n| n.script_id == s}
   end
 
   def add_node(n)

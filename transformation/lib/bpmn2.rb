@@ -10,16 +10,6 @@ module ProcessTransformation
     class BPMN2
       attr_reader :dataelements, :endpoints
 
-      class StructureMapping #{{{
-        def self.new(node)
-          case node.type
-            when :exclusiveGateway
-            when :inclusiveGateway
-              Conditional.new(node.id,:inclusive)
-          end
-        end
-      end #}}}
-
       def initialize(xml) #{{{
         @graph = Graph.new
         @tree = []
@@ -51,10 +41,10 @@ module ProcessTransformation
           n = Node.new(e.attributes['id'],e.qname.name.to_sym,e.attributes['name'].strip,e.find('count(bm:incoming)'),e.find('count(bm:outgoing)'))
 
           e.find("bm:property[@name='cpee:endpoint']/@itemSubjectRef").each do |ep|
-            n.endpoints << ep
+            n.endpoints << ep.value
           end
           e.find("bm:property[@name='cpee:method']/@itemSubjectRef").each do |m|
-            n.methods << m
+            n.methods << m.value
           end
           e.find("bm:script").each do |s|
             n.script << s.text.strip
@@ -66,6 +56,13 @@ module ProcessTransformation
               n.parameters[name] = 'data.' + value
             else  
               n.parameters[name] = value
+            end
+          end
+          e.find("bm:ioSpecification/bm:dataOutput").each do |a|
+            ref = a.attributes['id']
+            e.find("bm:dataOutputAssociation[bm:sourceRef=\"#{ref}\"]").each do |d|
+              n.script_var = ref
+              n.script_id = d.find("string(bm:targetRef)")
             end
           end
 
@@ -81,11 +78,24 @@ module ProcessTransformation
           @graph.add_flow Link.new(source, target, cond.empty? ? nil : cond.first.text.strip)
         end
 
+        @graph.clean_up do |node|
+          if node.type == :scriptTask && (x = @graph.find_script_id(node.id))
+            x.each do |k,n|
+              n.script = node.script
+            end
+            true
+          else
+            false
+          end  
+        end
+
         build_tree @tree, start
       end #}}}
 
       def build_tree(branch,node,because_of=[])
         while node
+          if node.incoming > 1 # Loop ?
+          end  
           case node.type
             when :parallelGateway
               return node if node.incoming > 1 
