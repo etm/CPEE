@@ -8,12 +8,13 @@ module ProcessTransformation
   module Source
 
     class BPMN2
-      attr_reader :dataelements, :endpoints
+      attr_reader :dataelements, :endpoints, :start
+      attr_reader 
 
       def initialize(xml) #{{{
         @graph = Graph.new
         @tree = []
-        start = nil
+        @start = nil
 
         doc = XML::Smart.string(xml)
         doc.register_namespace 'bm',  "http://www.omg.org/spec/BPMN/20100524/MODEL" 
@@ -37,7 +38,7 @@ module ProcessTransformation
         end
 
         # assign all important nodes to nodes
-        doc.find("/bm:definitions/bm:process/bm:*[@id and @name]").each do |e|
+        doc.find("/bm:definitions/bm:process/bm:*[@id and @name and not(@itemSubjectRef) and not(name()='sequenceFlow')]").each do |e|
           n = Node.new(e.attributes['id'],e.qname.name.to_sym,e.attributes['name'].strip,e.find('count(bm:incoming)'),e.find('count(bm:outgoing)'))
 
           e.find("bm:property[@name='cpee:endpoint']/@itemSubjectRef").each do |ep|
@@ -67,7 +68,7 @@ module ProcessTransformation
           end
 
           @graph.add_node n
-          start = n if n.type == :startEvent && start == nil
+          @start = n if n.type == :startEvent && @start == nil
         end
 
         # extract all sequences to a links
@@ -89,10 +90,37 @@ module ProcessTransformation
           end  
         end
 
-        build_tree @tree, start
+        @traces = [[@start.niceid]]
       end #}}}
 
-      def build_tree(branch,node,because_of=[])
+      def traces
+        build_extraces @traces, @start
+        @traces
+      end
+      def tree
+        build_tree @tree, @start
+        @tree
+      end
+  
+      def build_extraces(traces, node)
+        dupt = nil
+        @graph.next_nodes(node).each do |n|
+          if dupt.nil?
+            dupt = traces.last.dup
+          else  
+            traces << dupt.dup
+          end
+          if traces.last.include?(n.niceid)
+            traces.last << n.niceid
+          else  
+            traces.last << n.niceid
+            build_extraces(traces,n)
+          end
+        end
+      end
+      private :build_extraces
+
+      def build_tree(branch,node,because_of=[]) #{{{
         while node
           if node.incoming > 1 # Loop ?
           end  
@@ -155,7 +183,7 @@ module ProcessTransformation
           node = @graph.next_node(node) if node
         end
 
-      end
+      end #}}}
       private :build_tree
 
       def model(formater) #{{{
