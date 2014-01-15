@@ -103,13 +103,9 @@ module ProcessTransformation
       end
   
       def build_extraces(traces, node)
-        dupt = nil
-        @graph.next_nodes(node).each do |n|
-          if dupt.nil?
-            dupt = traces.last.dup
-          else  
-            traces << dupt.dup
-          end
+        dupt = traces.last.dup
+        @graph.next_nodes(node).each_with_index do |n,i|
+          traces << dupt.dup if i > 0
           if traces.last.include?(n.niceid)
             traces.last << n.niceid
           else  
@@ -120,7 +116,10 @@ module ProcessTransformation
       end
       private :build_extraces
 
-      def build_tree(branch,node,because_of=[]) #{{{
+      def build_ttree(branch,node)
+      end
+
+      def build_tree(branch,node) #{{{
         while node
           if node.incoming > 1 # Loop ?
           end  
