@@ -31,6 +31,46 @@ class Node #{{{
   end
 end # }}} 
 
+class Parallel #{{{
+  attr_reader :id, :sub
+  def initialize(id)
+    @id = id
+    @sub = []
+  end
+  def new_branch
+    (@sub << []).last
+  end
+end  #}}}
+
+class Alternative < Array #{{{
+  attr_reader :condition
+  def initialize(cond)
+    @condition = cond
+  end
+end #}}}
+
+class Conditional #{{{
+  attr_reader :id, :sub, :type
+  def initialize(id,type)
+    @id = id
+    @sub = []
+    @type = type
+  end  
+  def new_branch(cond)
+    (@sub << Alternative.new(cond)).last
+  end
+end #}}}
+
+class Loop #{{{
+  attr_reader :sub
+  attr_accessor :id, :type
+  def initialize(id,type)
+    @id = id
+    @type = type
+    @sub = []
+  end  
+end #}}}
+
 class Graph #{{{
   attr_reader :flow, :nodes
 
@@ -94,43 +134,35 @@ class Graph #{{{
   end
 end #}}}
 
-class Parallel #{{{
-  attr_reader :id, :sub
-  def initialize(id)
-    @id = id
-    @sub = []
-  end
-  def new_branch
-    (@sub << []).last
-  end
-end  #}}}
+  class Traces
+    def initialize(start)
+      @sub = [[start]]
+    end
 
-class Alternative < Array #{{{
-  attr_reader :condition
-  def initialize(cond)
-    @condition = cond
-  end
-end #}}}
+    def initialize_copy(other)
+     super
+     @sub.map{ |t| t.dup }
+    end
 
-class Conditional #{{{
-  attr_reader :id, :sub, :type
-  def initialize(id,type)
-    @id = id
-    @sub = []
-    @type = type
-  end  
-  def new_branch(cond)
-    (@sub << Alternative.new(cond)).last
-  end
-end #}}}
+    def last
+      @sub.last
+    end
 
-class Loop #{{{
-  attr_reader :id, :sub, :type
-  def initialize(id,type)
-    @id = id
-    @type = type
-    @sub = []
-  end  
-end #}}}
+    def <<(e)
+      @sub << e
+    end
+
+    def to_s
+      @sub.collect { |t| t.map{|n| n.niceid }.inspect }.join("\n")
+    end
+
+    def finished?
+      @sub.reduce(0){|sum,t| sum += t.length} == 0
+    end
+
+    def group_by_first
+      @sub.group_by{|t| t.first}
+    end
+  end
 
 end

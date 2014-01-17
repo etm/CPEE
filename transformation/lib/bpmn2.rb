@@ -90,33 +90,69 @@ module ProcessTransformation
           end  
         end
 
-        @traces = [[@start.niceid]]
-      end #}}}
+        @traces = Traces.new @start
+       end #}}}
 
       def traces
         build_extraces @traces, @start
         @traces
       end
       def tree
-        build_tree @tree, @start
+        p '----'
+        build_ttree @tree, @traces.dup
         @tree
       end
   
-      def build_extraces(traces, node)
+      def build_extraces(traces, node) #{{{
         dupt = traces.last.dup
         @graph.next_nodes(node).each_with_index do |n,i|
           traces << dupt.dup if i > 0
-          if traces.last.include?(n.niceid)
-            traces.last << n.niceid
+          if traces.last.include?(n)
+            traces.last << n
           else  
-            traces.last << n.niceid
+            traces.last << n
             build_extraces(traces,n)
           end
         end
       end
+      private :build_extraces #}}}
       private :build_extraces
 
-      def build_ttree(branch,node)
+      def map_node(node)
+        ret = []
+        ret << Loop.new(nil, :post_test) if node.incoming > 1
+        ret << case node.type
+          when :parallelGateway
+            Parallel.new(node.id))
+          when :exclusiveGateway
+            if node.incoming == 1
+              Conditional.new(node.id,:exclusive)
+            else
+              ret.last.id = node.id
+              ret.last.type = :pre_test
+            end
+          when :inclusiveGateway
+            Conditional.new(node.id,:inclusive)
+          when :endEvent, :startEvent
+            nil
+          else
+            node
+        end
+        ret.compact
+      end
+
+      def build_ttree(branch,traces)
+        while not traces.finished?
+          group = traces.group_by_first
+          if group.length == 1
+            branch << map_node(group.keys.first)
+          else
+            group.values.each do |trcs|
+              build_ttree branch.last.new_branch, trcs
+            end
+          end
+          exit
+        end
       end
 
       def build_tree(branch,node) #{{{
