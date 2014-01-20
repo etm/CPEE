@@ -12,9 +12,9 @@ end #}}}
 
 class Node #{{{ 
   @@niceid = -1
-  attr_reader :id, :type, :label, :niceid, :incoming, :outgoing
+  attr_reader :id, :label, :niceid, :outgoing
   attr_reader :endpoints, :methods, :parameters
-  attr_accessor :script, :script_id, :script_var
+  attr_accessor :script, :script_id, :script_var, :incoming, :type
   def initialize(id,type,label,incoming,outgoing)
     @id = id
     @niceid = (@@niceid += 1)
@@ -52,21 +52,25 @@ end #}}}
 class Parallel < Struct #{{{
   include Enumerable
   attr_reader :id, :sub
-  def initialize(id)
+  attr_accessor :type
+  def initialize(id,type)
     @id = id
+    @type = type
     @sub = []
   end
-  def new_branch
+  def new_branch(cond)
     (@sub << Branch.new).last
   end
 end  #}}}
 
-class Conditional < Struct#{{{
+class Conditional < Struct #{{{
   include Enumerable
-  attr_reader :id, :sub, :type
-  def initialize(id,type)
+  attr_reader :id, :sub, :mode
+  attr_accessor :type
+  def initialize(id,mode,type)
     @id = id
     @sub = []
+    @mode = mode
     @type = type
   end  
   def new_branch(cond)
@@ -77,9 +81,10 @@ end #}}}
 class Loop < Struct #{{{
   include Enumerable
   attr_reader :sub
-  attr_accessor :id, :type
-  def initialize(id,type)
+  attr_accessor :id, :mode, :type
+  def initialize(id,mode,type)
     @id = id
+    @mode = mode
     @type = type
     @sub = []
   end  
@@ -169,46 +174,58 @@ end #}}}
     private :print_tree
   end
 
-  class Traces
-    def initialize(start)
-      @sub = start
-    end
-
+  class Traces < Array
     def initialize_copy(other)
      super
-     @sub.map{ |t| t.dup }
+     self.map{ |t| t.dup }
     end
 
     def first_node
-      @sub.first.first
-    end
-
-    def first
-      @sub.first
-    end
-
-    def last
-      @sub.last
-    end
-
-    def shift
-      @sub.each{ |tr| tr.shift }
-    end
-
-    def <<(e)
-      @sub << e
+      self.first.first
     end
 
     def to_s
-      @sub.collect { |t| t.map{|n| n.niceid }.inspect }.join("\n")
+      self.collect { |t| t.map{|n| n.niceid }.inspect }.join("\n")
     end
+
+    def shift_all
+      self.each{ |tr| tr.shift }
+    end  
 
     def finished?
-      @sub.reduce(0){|sum,t| sum += t.length} == 0
+      self.reduce(0){|sum,t| sum += t.length} == 0
     end
 
-    def group_by_first
-      @sub.group_by{|t| t.first}.map{|k,v| Traces.new(v) }
+    def same_first
+      (n = self.map{|t| t.first }.uniq).length == 1 ? n.first : nil
+    end
+
+    def segment_by(&c)
+      # supress loops
+      trcs = self.dup
+      trcs.delete_if { |t| t.uniq.length < t.length }
+
+      # find common node (except loops)
+      enode = nil
+      trcs.first.each do |n|
+        if c.call(n)
+          existcheck = trcs.map{ |s| s.include?(n) }
+          if existcheck.uniq.length == 1 # all true
+            enode = n
+            break
+          end  
+        end  
+      end
+
+      # cut shit until common node, return the shit you cut away
+      tracesgroup = self.group_by{|t| t.first}.map do |k,trace|
+        coltrace = trace.map do |t|
+          # slice upto common node, collect the sliced away part
+          (len = t.index(enode)) ? t.slice!(0...len) : t
+        end.uniq
+        Traces.new(coltrace)
+      end
+      [tracesgroup,enode]
     end
   end
 

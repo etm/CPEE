@@ -2,6 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/structures')
 require File.expand_path(File.dirname(__FILE__) + '/cpee')
 require 'rubygems'
 require 'xml/smart'
+require 'highline'
 
 module ProcessTransformation
 
@@ -97,7 +98,7 @@ module ProcessTransformation
         @traces
       end #}}}
       def tree(debug=false) #{{{
-        build_ttree @tree, @traces.dup, debug
+        build_ttree @tree, @traces.dup, nil, debug
         @tree
       end #}}}
   
@@ -120,17 +121,17 @@ module ProcessTransformation
         ret << Loop.new(nil, :post_test) if node.incoming > 1
         ret << case node.type
           when :parallelGateway
-            Parallel.new(node.id)
+            Parallel.new(node.id,node.type)
           when :exclusiveGateway
             if node.incoming == 1
-              Conditional.new(node.id,:exclusive)
+              Conditional.new(node.id,:exclusive,node.type)
             else
               ret.last.id = node.id
               ret.last.type = :pre_test
             end
           when :inclusiveGateway
-            Conditional.new(node.id,:inclusive)
-          when :endEvent, :startEvent
+            Conditional.new(node.id,:inclusive,node.type)
+          when :endEvent, :startEvent, nil
             nil
           else
             node
@@ -138,23 +139,29 @@ module ProcessTransformation
         ret.compact
       end
 
-      def build_ttree(branch,traces,debug=false)
+      def build_ttree(branch,traces,endnode=nil,debug=false)
+        fnode = nil
         while not traces.finished?
-          group = traces.group_by_first
-          if group.length == 1
-            map_node(group.first.first_node).each do |n|
+          puts traces.to_s if debug
+          if node = traces.same_first
+            map_node(node).each do |n|
               branch << n
             end  
-            traces.shift
+            traces.shift_all
           else
-            group.each do |trcs|
-              build_ttree branch.last.new_branch, trcs, debug
+            tracesgroup,enode = traces.segment_by { |n| n.type == branch.last.type }
+            enode ||= endnode
+            enode.type = nil
+            tracesgroup.each do |trcs|
+              cond = @graph.incoming_condition(trcs.first_node).first.condition
+              build_ttree branch.last.new_branch(cond), trcs, enode, debug
+              enode.incoming -= 1
             end
           end
           if debug
-            puts traces.to_s
+            HighLine.new.ask('Continue ...'){ |q| q.echo = false; q.character = true }
             puts @tree.to_s
-            STDIN.getc
+            puts '-----'
           end  
         end
       end
