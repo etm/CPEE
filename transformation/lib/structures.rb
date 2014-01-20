@@ -31,16 +31,14 @@ class Node #{{{
   end
 end # }}} 
 
-class Parallel #{{{
-  attr_reader :id, :sub
-  def initialize(id)
-    @id = id
-    @sub = []
+class Struct #{{{
+  def each(&a)
+    @sub.each{|s| a.call(s)}
   end
-  def new_branch
-    (@sub << []).last
-  end
-end  #}}}
+  def length
+    @sub.length
+  end  
+end #}}}
 
 class Alternative < Array #{{{
   attr_reader :condition
@@ -48,8 +46,23 @@ class Alternative < Array #{{{
     @condition = cond
   end
 end #}}}
+class Branch < Array #{{{
+end #}}}
 
-class Conditional #{{{
+class Parallel < Struct #{{{
+  include Enumerable
+  attr_reader :id, :sub
+  def initialize(id)
+    @id = id
+    @sub = []
+  end
+  def new_branch
+    (@sub << Branch.new).last
+  end
+end  #}}}
+
+class Conditional < Struct#{{{
+  include Enumerable
   attr_reader :id, :sub, :type
   def initialize(id,type)
     @id = id
@@ -61,7 +74,8 @@ class Conditional #{{{
   end
 end #}}}
 
-class Loop #{{{
+class Loop < Struct #{{{
+  include Enumerable
   attr_reader :sub
   attr_accessor :id, :type
   def initialize(id,type)
@@ -134,9 +148,30 @@ class Graph #{{{
   end
 end #}}}
 
+  class Tree < Array
+    def to_s
+      "ROOT\n" << print_tree(self)
+    end
+
+    def print_tree(ele,indent=2,last=false)
+      ret = ''
+      ele.each_with_index do |e,i|
+        pchar = i == ele.length - 1 ? '└' : '├'
+        if e.is_a?(Node)
+          ret << (' ' * indent) + pchar + ' ' + e.niceid.to_s + "\n"
+        else
+          ret << (' ' * indent) + pchar + ' ' + e.class.to_s + "\n"
+          ret << print_tree(e,indent+2,i == ele.length - 1)
+        end
+      end
+      ret
+    end
+    private :print_tree
+  end
+
   class Traces
     def initialize(start)
-      @sub = [[start]]
+      @sub = start
     end
 
     def initialize_copy(other)
@@ -144,8 +179,20 @@ end #}}}
      @sub.map{ |t| t.dup }
     end
 
+    def first_node
+      @sub.first.first
+    end
+
+    def first
+      @sub.first
+    end
+
     def last
       @sub.last
+    end
+
+    def shift
+      @sub.each{ |tr| tr.shift }
     end
 
     def <<(e)
@@ -161,7 +208,7 @@ end #}}}
     end
 
     def group_by_first
-      @sub.group_by{|t| t.first}
+      @sub.group_by{|t| t.first}.map{|k,v| Traces.new(v) }
     end
   end
 

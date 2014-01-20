@@ -9,11 +9,10 @@ module ProcessTransformation
 
     class BPMN2
       attr_reader :dataelements, :endpoints, :start
-      attr_reader 
 
       def initialize(xml) #{{{
         @graph = Graph.new
-        @tree = []
+        @tree = Tree.new
         @start = nil
 
         doc = XML::Smart.string(xml)
@@ -90,18 +89,17 @@ module ProcessTransformation
           end  
         end
 
-        @traces = Traces.new @start
+        @traces = Traces.new [[@start]]
        end #}}}
 
-      def traces
+      def traces #{{{
         build_extraces @traces, @start
         @traces
-      end
-      def tree
-        p '----'
-        build_ttree @tree, @traces.dup
+      end #}}}
+      def tree(debug=false) #{{{
+        build_ttree @tree, @traces.dup, debug
         @tree
-      end
+      end #}}}
   
       def build_extraces(traces, node) #{{{
         dupt = traces.last.dup
@@ -114,8 +112,7 @@ module ProcessTransformation
             build_extraces(traces,n)
           end
         end
-      end
-      private :build_extraces #}}}
+      end #}}}
       private :build_extraces
 
       def map_node(node)
@@ -123,7 +120,7 @@ module ProcessTransformation
         ret << Loop.new(nil, :post_test) if node.incoming > 1
         ret << case node.type
           when :parallelGateway
-            Parallel.new(node.id))
+            Parallel.new(node.id)
           when :exclusiveGateway
             if node.incoming == 1
               Conditional.new(node.id,:exclusive)
@@ -141,17 +138,24 @@ module ProcessTransformation
         ret.compact
       end
 
-      def build_ttree(branch,traces)
+      def build_ttree(branch,traces,debug=false)
         while not traces.finished?
           group = traces.group_by_first
           if group.length == 1
-            branch << map_node(group.keys.first)
+            map_node(group.first.first_node).each do |n|
+              branch << n
+            end  
+            traces.shift
           else
-            group.values.each do |trcs|
-              build_ttree branch.last.new_branch, trcs
+            group.each do |trcs|
+              build_ttree branch.last.new_branch, trcs, debug
             end
           end
-          exit
+          if debug
+            puts traces.to_s
+            puts @tree.to_s
+            STDIN.getc
+          end  
         end
       end
 
