@@ -14,6 +14,7 @@ module ProcessTransformation
       def initialize(xml) #{{{
         @graph = Graph.new
         @tree = Tree.new
+        @hl = HighLine.new
         @start = nil
 
         doc = XML::Smart.string(xml)
@@ -76,7 +77,7 @@ module ProcessTransformation
           source = e.attributes['sourceRef']
           target = e.attributes['targetRef']
           cond = e.find('bm:conditionExpression')
-          @graph.add_flow Link.new(source, target, cond.empty? ? nil : cond.first.text.strip)
+          @graph.add_link Link.new(source, target, cond.empty? ? nil : cond.first.text.strip)
         end
 
         @graph.clean_up do |node|
@@ -139,98 +140,31 @@ module ProcessTransformation
         ret.compact
       end
 
-      def build_ttree(branch,traces,endnode=nil,debug=false)
-        fnode = nil
+      def build_ttree(branch,traces,enode=nil,debug=false)
         while not traces.finished?
-          puts traces.to_s if debug
+          debug_print debug, traces
           if node = traces.same_first
-            map_node(node).each do |n|
-              branch << n
-            end  
+            map_node(node).each { |n| branch << n }
             traces.shift_all
           else
-            tracesgroup,enode = traces.segment_by { |n| n.type == branch.last.type }
-            enode ||= endnode
-            enode.type = nil
+            tracesgroup, endnode = traces.segment_by(enode) { |n| n.type == branch.last.type }
             tracesgroup.each do |trcs|
-              cond = @graph.incoming_condition(trcs.first_node).first.condition
-              build_ttree branch.last.new_branch(cond), trcs, enode, debug
-              enode.incoming -= 1
+              cond = @graph.link(branch.last.id,trcs.first_node.id).condition
+              build_ttree branch.last.new_branch(cond), trcs, endnode, debug
+              endnode.incoming -= 1
             end
           end
-          if debug
-            HighLine.new.ask('Continue ...'){ |q| q.echo = false; q.character = true }
-            puts @tree.to_s
-            puts '-----'
-          end  
         end
       end
 
-      def build_tree(branch,node) #{{{
-        while node
-          if node.incoming > 1 # Loop ?
-          end  
-          case node.type
-            when :parallelGateway
-              return node if node.incoming > 1 
-              if node.incoming == 1 && node.outgoing > 1
-                branch << (x = Parallel.new(node.id))
-                ncollect = @graph.next_nodes(node).map do |n|
-                  build_tree(x.new_branch,n)
-                end.flatten
-                if ncollect.uniq.length == 1
-                  ### e.g. multiple nested parallels share one parallel end node, i.e. not wellformed (see test/base4.xml)
-                  if ncollect.length < ncollect.first.incoming 
-                    return ncollect
-                  ### a wellformed (start and end) structure   
-                  else
-                    node = ncollect.first
-                  end  
-                else  
-                  ### shit hits the fan, some syntax error in modelling
-                  raise "#{x.pretty_inspect}-----> no common end node"
-                end  
-              end
-            when :exclusiveGateway
-              # check if a branch is part of a loop -> branch and condition is a loop (also works for multiple)
-              # if more than one branch reaches end its an exclusive
-              # if one branch reaches the end continue as normal
-              return node if node.incoming > 1 
-              if node.incoming == 1 && node.outgoing > 1
-                branch << (x = Conditional.new(node.id,:exclusive))
-                ncollect = @graph.next_nodes(node).map do |n|
-                  cond = @graph.incoming_condition(n).first.condition
-                  build_tree(x.new_branch(cond),n)
-                end.flatten
-                if ncollect.uniq.length == 1
-                  ### e.g. multiple nested parallels share one parallel end node, i.e. not wellformed (see test/base4.xml)
-                  if ncollect.length < ncollect.first.incoming 
-                    return ncollect
-                  ### a wellformed (start and end) structure   
-                  else
-                    node = ncollect.first
-                  end  
-                else  
-                  ### shit hits the fan, some syntax error in modelling
-                  raise "#{x.pretty_inspect}-----> no common end node"
-                end  
-              end
-            when :task, :callActivity, :serviceTask
-              branch << node
-            when :endEvent
-              node = nil
-            when :scriptTask
-              puts 'nooooow'
-            when :startEvent
-            else
-              raise "#{node.type} not supported yet"
-          end
-
-          node = @graph.next_node(node) if node
-        end
-
+      def debug_print(debug,traces) #{{{
+        if debug
+          puts '-' * @hl.output_cols, @tree.to_s
+          puts traces.to_s
+          @hl.ask('Continue ... '){ |q| q.echo = false }
+        end  
       end #}}}
-      private :build_tree
+      private :debug_print
 
       def model(formater) #{{{
         formater.new(@tree).generate

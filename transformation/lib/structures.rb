@@ -61,7 +61,7 @@ class Parallel < Struct #{{{
   def new_branch(cond)
     (@sub << Branch.new).last
   end
-end  #}}}
+end #}}}
 
 class Conditional < Struct #{{{
   include Enumerable
@@ -95,7 +95,7 @@ class Graph #{{{
 
   def initialize
     @nodes = {}
-    @flow = []
+    @links = []
   end
 
   def clean_up(&bl)
@@ -109,13 +109,13 @@ class Graph #{{{
         raise "#{n.inspect} - not a simple node to remove"
       end  
       to,from = nil
-      @flow.each do |f|
+      @links.each do |f|
         to = f if f.to == n.id
         from = f if f.from == n.id
       end
       if to && from
         to.to = from.to
-        @flow.delete(from)
+        @links.delete(from)
         @nodes.delete(n.id)
       else
         raise "#{n.inspect} - could not remove flow"
@@ -131,16 +131,16 @@ class Graph #{{{
     @nodes[n.id] = n
   end  
 
-  def incoming_condition(n)
-    @flow.find_all { |x| x.to == n.id }
+  def link(f,t)
+    @links.find{ |x| x.from == f && x.to == t }
   end
 
-  def add_flow(l)
-    @flow << l
+  def add_link(l)
+    @links << l
   end
 
   def next_nodes(from)
-    links = @flow.find_all { |x| x.from == from.id }
+    links = @links.find_all { |x| x.from == from.id }
     links.map{|x| @nodes[x.to] }
   end
 
@@ -153,28 +153,29 @@ class Graph #{{{
   end
 end #}}}
 
-  class Tree < Array
+  class Tree < Array #{{{
     def to_s
-      "ROOT\n" << print_tree(self)
+      "TREE:\n" << print_tree(self)
     end
 
-    def print_tree(ele,indent=2,last=false)
+    def print_tree(ele,indent='  ')
       ret = ''
       ele.each_with_index do |e,i|
-        pchar = i == ele.length - 1 ? '└' : '├'
+        last  = (i == ele.length - 1)
+        pchar = last ? '└' : '├'
         if e.is_a?(Node)
-          ret << (' ' * indent) + pchar + ' ' + e.niceid.to_s + "\n"
+          ret << indent + pchar + ' ' + e.niceid.to_s + "\n"
         else
-          ret << (' ' * indent) + pchar + ' ' + e.class.to_s + "\n"
-          ret << print_tree(e,indent+2,i == ele.length - 1)
+          ret << indent + pchar + ' ' + e.class.to_s.gsub(/[^:]*::/,'') + "\n"
+          ret << print_tree(e,indent + (last ? '  ' : '│ '))
         end
       end
       ret
     end
     private :print_tree
-  end
+  end #}}}
 
-  class Traces < Array
+  class Traces < Array #{{{
     def initialize_copy(other)
      super
      self.map{ |t| t.dup }
@@ -185,7 +186,7 @@ end #}}}
     end
 
     def to_s
-      self.collect { |t| t.map{|n| n.niceid }.inspect }.join("\n")
+      "TRACES: " + self.collect { |t| t.collect{|n| "%2d" % n.niceid }.join('→ ') }.join("\n        ")
     end
 
     def shift_all
@@ -200,7 +201,7 @@ end #}}}
       (n = self.map{|t| t.first }.uniq).length == 1 ? n.first : nil
     end
 
-    def segment_by(&c)
+    def segment_by(endnode,&c)
       # supress loops
       trcs = self.dup
       trcs.delete_if { |t| t.uniq.length < t.length }
@@ -216,6 +217,7 @@ end #}}}
           end  
         end  
       end
+      enode.type = nil if enode
 
       # cut shit until common node, return the shit you cut away
       tracesgroup = self.group_by{|t| t.first}.map do |k,trace|
@@ -225,8 +227,8 @@ end #}}}
         end.uniq
         Traces.new(coltrace)
       end
-      [tracesgroup,enode]
+      [tracesgroup,enode||endnode]
     end
-  end
+  end #}}}
 
 end
