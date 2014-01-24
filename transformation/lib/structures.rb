@@ -31,7 +31,7 @@ class Node #{{{
   end
 end # }}} 
 
-class Struct #{{{
+module Struct #{{{
   def each(&a)
     @sub.each{|s| a.call(s)}
   end
@@ -41,15 +41,34 @@ class Struct #{{{
 end #}}}
 
 class Alternative < Array #{{{
-  attr_reader :condition
-  def initialize(cond)
-    @condition = cond
+  attr_accessor :condition
+  attr_reader :id
+  def condition?; true; end
+  def initialize(id)
+    @id = id
+    @condition = []
   end
 end #}}}
 class Branch < Array #{{{
+  attr_reader :id
+  def condition?; false; end
+  def initialize(id)
+    @id = id
+  end
+end #}}}
+class Loop < Array #{{{
+  attr_accessor :id, :mode, :type, :condition
+  def condition?; true; end
+  def initialize(id,mode)
+    @id = id
+    @mode = mode
+    @type = :loop
+    @condition = []
+  end  
 end #}}}
 
-class Parallel < Struct #{{{
+class Parallel #{{{
+  include Struct
   include Enumerable
   attr_reader :id, :sub
   attr_accessor :type
@@ -58,12 +77,13 @@ class Parallel < Struct #{{{
     @type = type
     @sub = []
   end
-  def new_branch(cond)
-    (@sub << Branch.new).last
+  def new_branch
+    (@sub << Branch.new(@id)).last
   end
 end #}}}
 
-class Conditional < Struct #{{{
+class Conditional #{{{
+  include Struct
   include Enumerable
   attr_reader :id, :sub, :mode
   attr_accessor :type
@@ -73,21 +93,9 @@ class Conditional < Struct #{{{
     @mode = mode
     @type = type
   end  
-  def new_branch(cond)
-    (@sub << Alternative.new(cond)).last
+  def new_branch
+    (@sub << Alternative.new(@id)).last
   end
-end #}}}
-
-class Loop < Struct #{{{
-  include Enumerable
-  attr_reader :sub
-  attr_accessor :id, :mode, :type
-  def initialize(id,mode,type)
-    @id = id
-    @mode = mode
-    @type = type
-    @sub = []
-  end  
 end #}}}
 
 class Graph #{{{
@@ -154,6 +162,8 @@ class Graph #{{{
 end #}}}
 
   class Tree < Array #{{{
+    def condition?; false; end
+
     def to_s
       "TREE:\n" << print_tree(self)
     end
@@ -181,12 +191,16 @@ end #}}}
      self.map{ |t| t.dup }
     end
 
+    def cleanup
+      self.delete_if { |t| t.compact.empty? }
+    end
+
     def first_node
       self.first.first
     end
 
     def to_s
-      "TRACES: " + self.collect { |t| t.collect{|n| "%2d" % n.niceid }.join('→ ') }.join("\n        ")
+      "TRACES: " + self.collect { |t| t.empty? ? '∅' : t.collect{|n| "%2d" % n.niceid }.join('→ ') }.join("\n        ")
     end
 
     def shift_all
@@ -199,6 +213,26 @@ end #}}}
 
     def same_first
       (n = self.map{|t| t.first }.uniq).length == 1 ? n.first : nil
+    end
+
+    def loops
+      Traces.new self.find_all{ |t| t.first == t.last }
+    end
+
+    def unloop
+      self.each { |t| t.pop }
+    end
+
+    def eliminate(loops)
+      loops.each do |l|
+        l.each do |n|
+          self.each do |t|
+            unless l == t
+              t.shift if t.first == n
+            end  
+          end
+        end
+      end
     end
 
     def segment_by(endnode,&c)

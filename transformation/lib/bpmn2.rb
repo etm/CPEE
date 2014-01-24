@@ -81,7 +81,7 @@ module ProcessTransformation
         end
 
         @graph.clean_up do |node|
-          if node.type == :scriptTask && (x = @graph.find_script_id(node.id))
+          if node.type == :scriptTask && (x = @graph.find_script_id(node.id)).any?
             x.each do |k,n|
               n.script = node.script
             end
@@ -94,12 +94,20 @@ module ProcessTransformation
         @traces = Traces.new [[@start]]
        end #}}}
 
+      def graph
+        @graph
+      end
+
       def traces #{{{
         build_extraces @traces, @start
+        #@traces.each do |t|
+        #  t.pop if t.uniq.length == t.length
+        #end  
         @traces
       end #}}}
       def tree(debug=false) #{{{
         build_ttree @tree, @traces.dup, nil, debug
+        debug_print debug, 'Tree finished'
         @tree
       end #}}}
   
@@ -117,19 +125,14 @@ module ProcessTransformation
       end #}}}
       private :build_extraces
 
-      def map_node(node)
-        ret = []
-        ret << Loop.new(nil, :post_test) if node.incoming > 1
-        ret << case node.type
+      def map_node(node) #{{{
+        case node.type
           when :parallelGateway
             Parallel.new(node.id,node.type)
           when :exclusiveGateway
-            if node.incoming == 1
-              Conditional.new(node.id,:exclusive,node.type)
-            else
-              ret.last.id = node.id
-              ret.last.type = :pre_test
-            end
+            Conditional.new(node.id,:exclusive,node.type)
+          when :eventBasedGateway
+            Conditional.new(node.id,:event,node.type)
           when :inclusiveGateway
             Conditional.new(node.id,:inclusive,node.type)
           when :endEvent, :startEvent, nil
@@ -137,21 +140,36 @@ module ProcessTransformation
           else
             node
         end
-        ret.compact
-      end
+      end #}}}
 
       def build_ttree(branch,traces,enode=nil,debug=false)
         while not traces.finished?
           debug_print debug, traces
           if node = traces.same_first
-            map_node(node).each { |n| branch << n }
-            traces.shift_all
+            if branch.condition?
+              li = @graph.link(branch.id,traces.first_node.id)
+              branch.condition << li.condition unless li.nil?
+            end  
+            if node.incoming <= 1
+              (branch << map_node(node)).compact!
+              traces.shift_all
+            else
+              loops = traces.loops
+              if node.type == :exclusiveGateway
+                branch << Loop.new(node.id, :pre_test)
+                traces.shift_all
+                build_ttree branch.last, loops, nil, debug
+              else
+                branch << Loop.new(node.id, :post_test)
+                node.incoming -= loops.length
+                build_ttree branch.last, traces, nil, debug
+              end
+            end
           else
             tracesgroup, endnode = traces.segment_by(enode) { |n| n.type == branch.last.type }
             tracesgroup.each do |trcs|
-              cond = @graph.link(branch.last.id,trcs.first_node.id).condition
-              build_ttree branch.last.new_branch(cond), trcs, endnode, debug
-              endnode.incoming -= 1
+              build_ttree branch.last.new_branch, trcs, endnode, debug
+              endnode.incoming -= 1 unless endnode.nil?
             end
           end
         end

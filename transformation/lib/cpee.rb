@@ -51,7 +51,7 @@ module ProcessTransformation
         s1 = res.add('d:choose')
         node.sub.each do |branch|
           s2 = if branch.condition
-            s1.add('d:alternative','condition' => branch.condition)
+            s1.add('d:alternative','condition' => branch.condition.join(' or '))
           else
             s1.add('d:otherwise')
           end  
