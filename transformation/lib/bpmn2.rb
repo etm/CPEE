@@ -162,6 +162,7 @@ module ProcessTransformation
               else
                 branch << Loop.new(node.id, :post_test)
                 node.incoming -= loops.length
+                traces.segment_by_loops loops
                 build_ttree branch.last, traces, nil, debug
               end
             end
