@@ -235,6 +235,9 @@ end #}}}
       end
     end
 
+    def segment_by_loop(loops)
+      traces = self.dup
+
     def segment_by(endnode,&c)
       # supress loops
       trcs = self.dup
