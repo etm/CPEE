@@ -235,8 +235,15 @@ end #}}}
       end
     end
 
-    def segment_by_loop(loops)
-      traces = self.dup
+    def segment_by_loops(loops)
+      # supress loops
+      trcs = self.dup
+      trcs.delete_if { |t| t.first < t.last }
+      trcs.eliminate(loops)
+
+      puts trcs.to_s
+      exit
+    end  
 
     def segment_by(endnode,&c)
       # supress loops
