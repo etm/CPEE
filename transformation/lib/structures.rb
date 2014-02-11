@@ -224,24 +224,28 @@ end #}}}
     end
 
     def eliminate(loops)
-      loops.each do |l|
-        l.each do |n|
-          self.each do |t|
-            unless l == t
-              t.shift if t.first == n
-            end  
+      diffs = self.dup
+      self.each_with_index do |t,i|
+        loops.each do |l|
+          l.each do |n|
+            t.shift if t.first == n 
           end
         end
+        t.each do |n|
+          diffs[i].delete(n)
+        end
       end
+      diffs
     end
 
     def segment_by_loops(loops)
       # supress loops
       trcs = self.dup
-      trcs.delete_if { |t| t.first < t.last }
-      trcs.eliminate(loops)
-
+      trcs.delete_if { |t| t.first == t.last }
+      diffs = trcs.eliminate(loops)
       puts trcs.to_s
+      puts diffs.to_s
+
       exit
     end  
 
