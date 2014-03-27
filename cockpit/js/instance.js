@@ -312,6 +312,7 @@ function monitor_instance_dsl() {// {{{
               save_description();
               manifestation.events.click(svgid,undefined);
             };
+            $('#graphcanvas').redraw();
 
             monitor_instance_pos();
           }
