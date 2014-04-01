@@ -123,7 +123,8 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
   def inform_position_change(ipc={}) # {{{
     @controller.serialize_positions!
-    @controller.notify("properties/position/change", :instance => @controller.instance_url)
+    ipc[:instance] = @controller.instance_url
+    @controller.notify("properties/position/change", ipc)
   end # }}}
   def inform_state_change(newstate) # {{{
     if @controller
