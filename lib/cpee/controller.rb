@@ -60,7 +60,7 @@ module CPEE
       @votes_results = {}
       @communication = {}
       @callbacks = {}
-      @instance = EmptyWorkflow.new(self,opts[:url])
+      @instance = EmptyWorkflow.new(self)
       @positions = []
       @thread = nil
       @mutex = Mutex.new
@@ -101,6 +101,9 @@ module CPEE
     attr_reader :callbacks
     attr_reader :mutex
 
+    def base_url 
+      @opts[:url]
+    end
     def instance_url 
       "#{@opts[:url]}/#{@id}"
     end
