@@ -104,8 +104,14 @@ module CPEE
     def base_url 
       @opts[:url]
     end
+    def base_jid
+      @opts[:jid]
+    end
     def instance_url 
       "#{@opts[:url]}/#{@id}"
+    end
+    def instance_jid
+      "#{@opts[:jid]}/#{@id}"
     end
     def xmpp 
       @opts[:xmpp]
