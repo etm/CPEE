@@ -116,6 +116,12 @@ module CPEE
     def xmpp 
       @opts[:xmpp]
     end
+    def base
+      @opts[:jid] ? base_url + "," + base_jid : base_url
+    end
+    def instance
+      @opts[:jid] ? instance_url + "," + instance_jid : instance_url
+    end
     
     def sim # {{{
       @thread.join if !@thread.nil? && @thread.alive?
@@ -377,7 +383,7 @@ module CPEE
             @instance.data[k.value.to_sym] = ValueHelper::parse(v.value)
             node.add(k.value,ValueHelper::generate(v.value))
           end  
-          nots << ["properties/dataelements/change", {:instance => instance_url, :changed => JSON::generate(@instance.data)}]
+          nots << ["properties/dataelements/change", {:instance => instance, :changed => JSON::generate(@instance.data)}]
         end  
 
         ### enpoints extraction
@@ -402,7 +408,7 @@ module CPEE
             @instance.endpoints[k.value.to_sym] = ValueHelper::parse(v.value)
             node.add(k.value,ValueHelper::generate(v.value))
           end  
-          nots << ["properties/endpoints/change", {:instance => instance_url, :changed => JSON::generate(@instance.endpoints)}]
+          nots << ["properties/endpoints/change", {:instance => instance, :changed => JSON::generate(@instance.endpoints)}]
         end  
       end
       nots
