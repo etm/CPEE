@@ -1,6 +1,5 @@
 var ws;
 var running = false;
-var load;
 var graphrealization;
 var subscription;
 var subscription_state = 'less';
@@ -44,14 +43,15 @@ var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
 
 $(document).ready(function() {// {{{
   $("input[name=base-url]").val(location.protocol + "//" + location.host + ":9298/");
-  $("button[name=base]").click(create_instance);
-  $("button[name=instance]").click(monitor_instance);
+  $("button[name=base]").click(function(){ create_instance(null); });
+  $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
   $("button[name=loadtestset]").click(load_testset);
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodelfile]").click(load_modelfile);
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
+
 
   $.ajax({ 
     url: "testsets/index.xml", 
@@ -63,20 +63,24 @@ $(document).ready(function() {// {{{
           $("<option></option>").attr("value",ts).text(ts)
         );
       });
+      var q = $.parseQuery();
+      if (q.monitor && q.load) {
+        $("input[name=instance-url]").val(q.monitor);
+        $("select[name=testset-names]").val(q.load)
+        ui_tab_click("#tabexecution");
+        monitor_instance(true);
+      } else if (q.load) {
+        $("select[name=testset-names]").val(q.load)
+        ui_tab_click("#tabexecution");
+        create_instance(q.load);
+      } else if (q.monitor) {
+        $("input[name=instance-url]").val(q.monitor);
+        ui_tab_click("#tabexecution");
+        // ui_toggle_vis_tab($("#instance td.switch"));
+        monitor_instance(false);
+      }  
     }
   });
-  
-  var q = $.parseQuery();
-  if (q.monitor) {
-    $("input[name=instance-url]").val(q.monitor);
-    ui_toggle_vis_tab($("#instance td.switch"));
-    monitor_instance();
-  }
-  if (q.load) {
-    load = q.load;
-    ui_toggle_vis_tab($("#instance td.switch"));
-    create_instance();
-  }
 });// }}}
 
 function check_subscription() { // {{{
@@ -110,8 +114,8 @@ function check_subscription() { // {{{
   }  
 }// }}}
 
-function create_instance() {// {{{
-  var info = load ? load : prompt("Instance info?", "Enter info here");
+function create_instance(ask) {// {{{
+  var info = ask ? ask: prompt("Instance info?", "Enter info here");
   if (info != null) {
     if (info.match(/\S/)) {
       var base = $("input[name=base-url]").val();
@@ -122,7 +126,7 @@ function create_instance() {// {{{
         data: "info=" + info, 
         success: function(res){
           $("input[name=instance-url]").val((base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://"));
-          if (load) monitor_instance();
+          if (ask) monitor_instance(true);
         },  
         error: function(a,b,c) {
           alert("No CPEE running.");
@@ -134,7 +138,7 @@ function create_instance() {// {{{
   }  
 }// }}}
   
-function monitor_instance() {// {{{
+function monitor_instance(load) {// {{{
   var url = $("input[name=instance-url]").val();
 
   $('.tabbehind button').hide();
@@ -152,8 +156,6 @@ function monitor_instance() {// {{{
       $("#current-instance").text(url);
       $("#current-instance").attr('href',url);
       history.replaceState({}, '', '?monitor='+url);
-
-      ui_tab_click($("#tabinstance")[0]);
 
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").removeAttr('checked');
@@ -222,6 +224,7 @@ function monitor_instance() {// {{{
     },
     error: function(a,b,c) {
       alert("This ain't no CPEE instance");
+      ui_tab_click("#tabnew");
     }
   });      
 }// }}}
@@ -369,7 +372,6 @@ function monitor_instance_state_change(notification) { //{{{
     ctv.empty();
 
     if (notification == "stopped") {
-      format_visual_clear();
       monitor_instance_pos();
     }  
     if (notification == "running") {
@@ -651,7 +653,7 @@ function load_testset() {// {{{
   $('#main .tabbehind button').hide();
   $('#dat_details').empty();
 
-  var name = load ? load : $("select[name=testset-names]").val();
+  var name = $("select[name=testset-names]").val();
 
   $.ajax({ 
     cache: false,
