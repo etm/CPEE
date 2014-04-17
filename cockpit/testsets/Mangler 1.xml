@@ -9,62 +9,64 @@
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>  
-  <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="a1" endpoint="timeout">
-      <parameters><!--{{{-->
-        <method>post</method>
-        <parameters>
-          <timeout>4</timeout>
-          <bug>data.nasty</bug>
-        </parameters>
-      </parameters><!--}}}-->
-      <manipulate output="result">  data.x += "done"</manipulate>  
-    </call>  
-    <parallel wait="2">
-      <parallel_branch>
-        <call id="a2_1" endpoint="timeout">
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="timeout">
+        <parameters><!--{{{-->
+          <method>post</method>
+          <parameters>
+            <timeout>4</timeout>
+            <bug>data.nasty</bug>
+          </parameters>
+        </parameters><!--}}}-->
+        <manipulate output="result">  data.x += "done"</manipulate>  
+      </call>  
+      <parallel wait="2">
+        <parallel_branch>
+          <call id="a2_1" endpoint="timeout">
+              <parameters><!--{{{-->
+              <method>post</method>
+              <parameters>
+                <timeout>6</timeout>
+              </parameters>
+            </parameters><!--}}}-->
+          </call>  
+        </parallel_branch>
+        <parallel_branch>
+          <call id="a2_2" endpoint="timeout">
             <parameters><!--{{{-->
-            <method>post</method>
-            <parameters>
-              <timeout>6</timeout>
-            </parameters>
-          </parameters><!--}}}-->
-        </call>  
-      </parallel_branch>
-      <parallel_branch>
-        <call id="a2_2" endpoint="timeout">
-          <parameters><!--{{{-->
-            <method>post</method>
-            <parameters>
-              <timeout>2</timeout>
-            </parameters>
-          </parameters><!--}}}-->
-        </call>  
-      </parallel_branch>
-    </parallel>  
-    <manipulate id="a3">  data.x += '_end'</manipulate>  
-    <choose>
-      <alternative condition="data.x != nil">
-        <call id="a4_1" endpoint="timeout">
-          <parameters><!--{{{-->
-            <method>post</method>
-            <parameters>
-              <timeout>4</timeout>
-            </parameters>
-          </parameters><!--}}}-->
-        </call>  
-      </alternative>
-      <otherwise>
-        <call id="a4_2" endpoint="timeout">
-          <parameters><!--{{{-->
-            <method>post</method>
-            <parameters>
-              <timeout>10</timeout>
-            </parameters>
-          </parameters><!--}}}-->
-        </call>  
-      </otherwise>
-    </choose>
+              <method>post</method>
+              <parameters>
+                <timeout>2</timeout>
+              </parameters>
+            </parameters><!--}}}-->
+          </call>  
+        </parallel_branch>
+      </parallel>  
+      <manipulate id="a3">  data.x += '_end'</manipulate>  
+      <choose>
+        <alternative condition="data.x != nil">
+          <call id="a4_1" endpoint="timeout">
+            <parameters><!--{{{-->
+              <method>post</method>
+              <parameters>
+                <timeout>4</timeout>
+              </parameters>
+            </parameters><!--}}}-->
+          </call>  
+        </alternative>
+        <otherwise>
+          <call id="a4_2" endpoint="timeout">
+            <parameters><!--{{{-->
+              <method>post</method>
+              <parameters>
+                <timeout>10</timeout>
+              </parameters>
+            </parameters><!--}}}-->
+          </call>  
+        </otherwise>
+      </choose>
+    </description>
   </description>
   <transformation>
     <description type='copy'/>

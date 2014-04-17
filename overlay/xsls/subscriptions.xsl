@@ -56,12 +56,15 @@
             <ul id="ul_id">
               <xsl:for-each select="*">
                 <li>
+                  <xsl:text>[</xsl:text>
                   <xsl:element name="a">
                     <xsl:attribute name="href">#stay</xsl:attribute>
                     <xsl:attribute name="id">delete_button</xsl:attribute>
                     <xsl:attribute name="value">./<xsl:value-of select="@id"/></xsl:attribute>
-                    ☠
+                    <xsl:text>✖</xsl:text>
                   </xsl:element>
+                  <xsl:text>]</xsl:text>
+                  <xsl:text> </xsl:text>
                   <xsl:element name="a">
                     <xsl:attribute name="href"><xsl:value-of select="@id"/>/</xsl:attribute>
                     <xsl:if test="@url">

@@ -60,7 +60,7 @@ module CPEE
       @votes_results = {}
       @communication = {}
       @callbacks = {}
-      @instance = EmptyWorkflow.new(self,opts[:url])
+      @instance = EmptyWorkflow.new(self)
       @positions = []
       @thread = nil
       @mutex = Mutex.new
@@ -101,11 +101,26 @@ module CPEE
     attr_reader :callbacks
     attr_reader :mutex
 
+    def base_url 
+      @opts[:url]
+    end
+    def base_jid
+      @opts[:jid]
+    end
     def instance_url 
       "#{@opts[:url]}/#{@id}"
     end
+    def instance_jid
+      "#{@opts[:jid]}/#{@id}"
+    end
     def xmpp 
       @opts[:xmpp]
+    end
+    def base
+      @opts[:jid] ? base_url + "," + base_jid : base_url
+    end
+    def instance
+      @opts[:jid] ? instance_url + "," + instance_jid : instance_url
     end
     
     def sim # {{{
@@ -189,7 +204,11 @@ module CPEE
     def unserialize_notifications!(op,key)# {{{
       case op
         when :del
+          @notifications.subscriptions[key].delete if @notifications.subscriptions.include?(key)
+            
+          @communication[key].io.close_connection if @communication[key].class == Riddl::Utils::Notifications::Producer::WS
           @communication.delete(key)
+
           @events.each do |eve,keys|
             keys.delete_if{|k,v| key == k}
           end  
@@ -202,13 +221,13 @@ module CPEE
             end
           end  
         when :upd 
-          if @notifications.subscriptions[key]
+          if @notifications.subscriptions.include?(key)
             url = @communication[key]
             evs = []
             vos = []
             @events.each { |e,v| evs << e }
             @votes.each { |e,v| vos << e }
-            @notifications.subscriptions[key].view do |doc|
+            @notifications.subscriptions[key].read do |doc|
               turl = doc.find('string(/n:subscription/@url)') 
               url = turl == '' ? url : turl
               @communication[key] = url
@@ -232,7 +251,7 @@ module CPEE
             end  
           end  
         when :cre
-          @notifications.subscriptions[key].view do |doc|
+          @notifications.subscriptions[key].read do |doc|
             turl = doc.find('string(/n:subscription/@url)') 
             url = turl == '' ? nil : turl
             @communication[key] = url
@@ -361,10 +380,10 @@ module CPEE
           node.children.delete_all!
           @instance.data.clear
           addit.each_slice(2).each do |k,v|
-            @instance.data[k.value] = ValueHelper::parse(v.value)
+            @instance.data[k.value.to_sym] = ValueHelper::parse(v.value)
             node.add(k.value,ValueHelper::generate(v.value))
           end  
-          nots << ["properties/dataelements/change", {:instance => instance_url, :changed => JSON::generate(@instance.data)}]
+          nots << ["properties/dataelements/change", {:instance => instance, :changed => JSON::generate(@instance.data)}]
         end  
 
         ### enpoints extraction
@@ -389,7 +408,7 @@ module CPEE
             @instance.endpoints[k.value.to_sym] = ValueHelper::parse(v.value)
             node.add(k.value,ValueHelper::generate(v.value))
           end  
-          nots << ["properties/endpoints/change", {:instance => instance_url, :changed => JSON::generate(@instance.endpoints)}]
+          nots << ["properties/endpoints/change", {:instance => instance, :changed => JSON::generate(@instance.endpoints)}]
         end  
       end
       nots
@@ -479,7 +498,7 @@ module CPEE
       end  
     end # }}}
 
-    def add_ws(key,socket)# {{{
+    def add_websocket(key,socket)# {{{
       @communication[key] = socket
       @events.each do |a|
         if a[1].has_key?(key)
@@ -490,20 +509,6 @@ module CPEE
         if a[1].has_key?(key)
           a[1][key] = socket
         end  
-      end
-    end # }}}
-
-    def del_ws(key)# {{{
-      @communication[key] = nil
-      @events.each do |a|
-        if a[1].has_key?(key)
-          a[1][key] = nil
-        end  
-      end
-      @votes.each do |a|
-        if a[1].has_key?(key)
-          a[1][key] = nil
-        end
       end
     end # }}}
 

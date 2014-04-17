@@ -15,7 +15,6 @@
 class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @controller = arguments[0]
-    @url = arguments[1]
     @handler_continue = continue
     @handler_endpoint = endpoint
     @handler_position = position
@@ -24,7 +23,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def activity_handle(passthrough, parameters) # {{{
-    @controller.notify("running/activity_calling", :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
+    @controller.notify("running/activity_calling", :instance => @controller.instance, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
 
     if passthrough.nil?
       params = []
@@ -32,8 +31,8 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       (parameters[:parameters] || {}).each do |k,v|
         params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v))
       end
-      params << Riddl::Header.new("CPEE_BASE",@url)
-      params << Riddl::Header.new("CPEE_INSTANCE","#{@url}/#{@controller.id}")
+      params << Riddl::Header.new("CPEE_BASE",@controller.base_url)
+      params << Riddl::Header.new("CPEE_INSTANCE",@controller.instance_url)
       params << Riddl::Header.new("CPEE_CALLBACK",callback)
 
       type = parameters[:method] || 'post'
@@ -41,6 +40,19 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
       status, result, headers = client.request type => params
       raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
+      if result.length == 1
+        if result[0].is_a? Riddl::Parameter::Simple
+          result = result[0]
+        elsif result[0].is_a? Riddl::Parameter::Complex
+          if result[0].mimetype == 'application/json' 
+            result = JSON::parse(result[0].value.read)
+          elsif result[0].mimetype == 'application/xml' || result[0].mimetype == 'text/xml'
+            result = XML::Smart::string(result[0].value.read)
+          else
+            result = result[0]
+          end
+        end
+      end  
 
       if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
         @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
@@ -79,56 +91,69 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def inform_activity_done # {{{
-    @controller.notify("running/activity_done", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
+    @controller.notify("running/activity_done", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position)
   end # }}}
   def inform_activity_manipulate # {{{
-    @controller.notify("running/activity_manipulating", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
+    @controller.notify("running/activity_manipulating", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position)
   end # }}}
   def inform_activity_failed(err) # {{{
     puts err.message
     puts err.backtrace
-    @controller.notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    @controller.notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end # }}}
 
   def inform_syntax_error(err,code)# {{{
     puts err.message
     puts err.backtrace
-    @controller.notify("properties/description/error", :instance => "#{@url}/#{@controller.id}", :message => err.message)
+    @controller.notify("properties/description/error", :instance => @controller.instance, :message => err.message)
   end# }}}
   def inform_manipulate_change(status,dataelements,endpoints) # {{{
     unless status.nil?
       @controller.serialize_status!
-      @controller.notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :id => status.id, :message => status.message)
+      @controller.notify("properties/status/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :id => status.id, :message => status.message)
     end  
     unless dataelements.nil?
       @controller.serialize_dataelements!
-      @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => dataelements)
+      @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => dataelements)
     end
     unless endpoints.nil?
       @controller.serialize_endpoints!
-      @controller.notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => endpoints)
+      @controller.notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => endpoints)
     end  
   end # }}}
   def inform_position_change(ipc={}) # {{{
     @controller.serialize_positions!
-    ipc[:instance] = "#{@url}/#{@controller.id}"
+    ipc[:instance] = @controller.instance
     @controller.notify("properties/position/change", ipc)
   end # }}}
   def inform_state_change(newstate) # {{{
     if @controller
       @controller.serialize_state!
-      @controller.notify("properties/state/change", :instance => "#{@url}/#{@controller.id}", :state => newstate)
+      @controller.notify("properties/state/change", :instance => @controller.instance, :state => newstate)
     end
   end # }}}
 
   def vote_sync_after # {{{
-    @controller.call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
+    @controller.call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position)
   end # }}}
   def vote_sync_before(parameters=nil) # {{{
-    @controller.call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
+    @controller.call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position)
   end # }}}
 
   def callback(result)
+    if result.length == 1
+      if result[0].is_a? Riddl::Parameter::Simple
+        result = result[0]
+      elsif result[0].is_a? Riddl::Parameter::Complex
+        if result[0].mimetype == 'application/json' 
+          result = JSON::parse(result[0].value.read)
+        elsif result[0].mimetype == 'application/xml' || result[0].mimetype == 'text/xml'
+          result = XML::Smart::string(result[0].value.read)
+        else
+          result = result[0]
+        end
+      end
+    end  
     @handler_returnValue = result
     @controller.callbacks.delete(@handler_passthrough)
     @handler_passthrough = nil
@@ -140,7 +165,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
     @controller.call_vote("simulating/step", 
       :endpoint => @handler_endpoint, 
-      :instance => "#{@url}/#{@controller.id}", 
+      :instance => @controller.instance, 
       :activity => tid, 
       :type => type, 
       :nesting => nesting,

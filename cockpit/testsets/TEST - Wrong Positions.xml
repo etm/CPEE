@@ -9,153 +9,155 @@
     <services>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</services>
     <injection>http://localhost:9290/injection/handler</injection>
   </endpoints>  
-  <description xmlns="http://cpee.org/ns/description/1.0">
-    <parallel>
-      <parallel_branch>
-        <call id="b1_a01" endpoint="services">
-          <parameters><!--{{{--> 
-            <service/>
-            <parameters>
-              <op1>data.wait</op1>
-            </parameters>
-          </parameters><!--}}}-->
-          <manipulate output="result">
-            data.wait -= 1
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <parallel>
+        <parallel_branch>
+          <call id="b1_a01" endpoint="services">
+            <parameters><!--{{{--> 
+              <service/>
+              <parameters>
+                <op1>data.wait</op1>
+              </parameters>
+            </parameters><!--}}}-->
+            <manipulate output="result">
+              data.wait -= 1
+            </manipulate>
+          </call> 
+          <manipulate id="b1_a02">
+            data.wait += 1
           </manipulate>
-        </call> 
-        <manipulate id="b1_a02">
-          data.wait += 1
-        </manipulate>
-        <parallel>
-          <parallel_branch>
-            <call id="b1_a03" endpoint="services">
-              <parameters><!--{{{--> 
-                <service/>
-                <parameters>
-                  <op1>data.wait</op1>
-                </parameters>
-              </parameters><!--}}}-->
-              <manipulate output="result">
-                data.wait -= 1
+          <parallel>
+            <parallel_branch>
+              <call id="b1_a03" endpoint="services">
+                <parameters><!--{{{--> 
+                  <service/>
+                  <parameters>
+                    <op1>data.wait</op1>
+                  </parameters>
+                </parameters><!--}}}-->
+                <manipulate output="result">
+                  data.wait -= 1
+                </manipulate>
+              </call> 
+              <call id="b1_a04" endpoint="services">
+                <parameters><!--{{{--> 
+                  <service/>
+                  <parameters>
+                    <op1>data.wait</op1>
+                  </parameters>
+                </parameters><!--}}}-->
+                <manipulate output="result">
+                  data.wait -= 1
+                </manipulate>
+              </call> 
+              <manipulate id="b1_a05">
+                data.wait += 1
               </manipulate>
-            </call> 
-            <call id="b1_a04" endpoint="services">
-              <parameters><!--{{{--> 
-                <service/>
-                <parameters>
-                  <op1>data.wait</op1>
-                </parameters>
-              </parameters><!--}}}-->
-              <manipulate output="result">
-                data.wait -= 1
+            </parallel_branch>
+            <parallel_branch>
+              <call id="b1_a06" endpoint="services">
+                <parameters><!--{{{--> 
+                  <service/>
+                  <parameters>
+                    <op1>data.wait</op1>
+                  </parameters>
+                </parameters><!--}}}-->
+                <manipulate output="result">
+                  data.wait -= 1
+                </manipulate>
+              </call> 
+              <manipulate id="b1_a07">
+                data.wait += 1
               </manipulate>
-            </call> 
-            <manipulate id="b1_a05">
-              data.wait += 1
+              <call id="b1_a08" endpoint="services">
+                <parameters><!--{{{--> 
+                  <service/>
+                  <parameters>
+                    <op1>data.wait</op1>
+                  </parameters>
+                </parameters><!--}}}-->
+                <manipulate output="result">
+                  data.wait -= 1
+                </manipulate>
+              </call> 
+            </parallel_branch>
+          </parallel>
+        </parallel_branch>
+        <parallel_branch>
+          <call id="b2_a01" endpoint="services">
+            <parameters><!--{{{--> 
+              <service/>
+              <parameters>
+                <op1>data.wait</op1>
+              </parameters>
+            </parameters><!--}}}-->
+            <manipulate output="result">
+              data.wait -= 1
             </manipulate>
-          </parallel_branch>
-          <parallel_branch>
-            <call id="b1_a06" endpoint="services">
-              <parameters><!--{{{--> 
-                <service/>
-                <parameters>
-                  <op1>data.wait</op1>
-                </parameters>
-              </parameters><!--}}}-->
-              <manipulate output="result">
-                data.wait -= 1
-              </manipulate>
-            </call> 
-            <manipulate id="b1_a07">
-              data.wait += 1
-            </manipulate>
-            <call id="b1_a08" endpoint="services">
-              <parameters><!--{{{--> 
-                <service/>
-                <parameters>
-                  <op1>data.wait</op1>
-                </parameters>
-              </parameters><!--}}}-->
-              <manipulate output="result">
-                data.wait -= 1
-              </manipulate>
-            </call> 
-          </parallel_branch>
-        </parallel>
-      </parallel_branch>
-      <parallel_branch>
-        <call id="b2_a01" endpoint="services">
-          <parameters><!--{{{--> 
-            <service/>
-            <parameters>
-              <op1>data.wait</op1>
-            </parameters>
-          </parameters><!--}}}-->
-          <manipulate output="result">
-            data.wait -= 1
+          </call> 
+          <manipulate id="b2_a02">
+            data.wait += 1
           </manipulate>
-        </call> 
-        <manipulate id="b2_a02">
-          data.wait += 1
-        </manipulate>
-        <parallel>
-          <parallel_branch>
-            <call id="b2_a03" endpoint="services">
-              <parameters><!--{{{--> 
-                <service/>
-                <parameters>
-                  <op1>data.wait</op1>
-                </parameters>
-              </parameters><!--}}}-->
-              <manipulate output="result">
-                data.wait -= 1
+          <parallel>
+            <parallel_branch>
+              <call id="b2_a03" endpoint="services">
+                <parameters><!--{{{--> 
+                  <service/>
+                  <parameters>
+                    <op1>data.wait</op1>
+                  </parameters>
+                </parameters><!--}}}-->
+                <manipulate output="result">
+                  data.wait -= 1
+                </manipulate>
+              </call> 
+              <call id="b2_a04" endpoint="services">
+                <parameters><!--{{{--> 
+                  <service/>
+                  <parameters>
+                    <op1>data.wait</op1>
+                  </parameters>
+                </parameters><!--}}}-->
+                <manipulate output="result">
+                  data.wait -= 1
+                </manipulate>
+              </call> 
+              <manipulate id="b2_a05">
+                data.wait += 1
               </manipulate>
-            </call> 
-            <call id="b2_a04" endpoint="services">
-              <parameters><!--{{{--> 
-                <service/>
-                <parameters>
-                  <op1>data.wait</op1>
-                </parameters>
-              </parameters><!--}}}-->
-              <manipulate output="result">
-                data.wait -= 1
+            </parallel_branch>
+            <parallel_branch>
+              <call id="b2_a06" endpoint="services">
+                <parameters><!--{{{--> 
+                  <service/>
+                  <parameters>
+                    <op1>data.wait</op1>
+                  </parameters>
+                </parameters><!--}}}-->
+                <manipulate output="result">
+                  data.wait -= 1
+                </manipulate>
+              </call> 
+              <manipulate id="b2_a07">
+                data.wait += 1
               </manipulate>
-            </call> 
-            <manipulate id="b2_a05">
-              data.wait += 1
-            </manipulate>
-          </parallel_branch>
-          <parallel_branch>
-            <call id="b2_a06" endpoint="services">
-              <parameters><!--{{{--> 
-                <service/>
-                <parameters>
-                  <op1>data.wait</op1>
-                </parameters>
-              </parameters><!--}}}-->
-              <manipulate output="result">
-                data.wait -= 1
-              </manipulate>
-            </call> 
-            <manipulate id="b2_a07">
-              data.wait += 1
-            </manipulate>
-            <call id="b2_a08" endpoint="services">
-              <parameters><!--{{{--> 
-                <service/>
-                <parameters>
-                  <op1>data.wait</op1>
-                </parameters>
-              </parameters><!--}}}-->
-              <manipulate output="result">
-                data.wait -= 1
-              </manipulate>
-            </call> 
-          </parallel_branch>
-        </parallel>
-      </parallel_branch>
-    </parallel>
+              <call id="b2_a08" endpoint="services">
+                <parameters><!--{{{--> 
+                  <service/>
+                  <parameters>
+                    <op1>data.wait</op1>
+                  </parameters>
+                </parameters><!--}}}-->
+                <manipulate output="result">
+                  data.wait -= 1
+                </manipulate>
+              </call> 
+            </parallel_branch>
+          </parallel>
+        </parallel_branch>
+      </parallel>
+    </description>
   </description>
   <transformation>
     <description type='copy'/>

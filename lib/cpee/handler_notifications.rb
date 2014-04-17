@@ -14,10 +14,11 @@
 
 class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase
   def ws_open(socket)
-    @data.add_ws(@key,socket)
+    @data.add_websocket(@key,socket)
   end
   def ws_close
-    @data.del_ws(@key)
+    @data.unserialize_notifications!(:del,@key)
+    @data.notify('properties/handlers/change', :instance => @data.instance)
   end
   def ws_message(data)
     begin
@@ -33,14 +34,14 @@ class NotificationsHandler < Riddl::Utils::Notifications::Producer::HandlerBase
 
   def create
     @data.unserialize_notifications!(:cre,@key)
-    @data.notify('properties/handlers/change', :instance => @data.instance_url)
+    @data.notify('properties/handlers/change', :instance => @data.instance)
   end
   def delete
     @data.unserialize_notifications!(:del,@key)
-    @data.notify('properties/handlers/change', :instance => @data.instance_url)
+    @data.notify('properties/handlers/change', :instance => @data.instance)
   end
   def update
     @data.unserialize_notifications!(:upd,@key)
-    @data.notify('properties/handlers/change', :instance => @data.instance_url)
+    @data.notify('properties/handlers/change', :instance => @data.instance)
   end
 end

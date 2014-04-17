@@ -64,9 +64,15 @@ tr.contextmenuitem > td{
 tr.contextmenuitem > .contextmenuicon{
   margin-left: 0.7em;
   padding-right: 0em;
-  vertical-align: bottom;
 }
-tr.contextmenuitem > .contextmenuicon svg{
+tr.contextmenuitem > .contextmenuicon div {
   height: 1.5em;
   width: 1.5em;
+  vertical-align:bottom;
 }
+tr.contextmenuitem > .contextmenuicon div svg {
+  height: 1.5em;
+  width: 1.5em;
+  vertical-align:bottom;
+}
+

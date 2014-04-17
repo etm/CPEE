@@ -8,65 +8,67 @@
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>  
-  <description xmlns="http://cpee.org/ns/description/1.0">
-    <parallel>
-      <parallel_branch>
-        <loop pre_test='data.feedback'>
-          <call id="design" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>4</timeout>
-              </parameters>
-            </parameters><!--}}}-->
-          </call>  
-          <call id="validate" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>2</timeout>
-              </parameters>
-            </parameters><!--}}}-->
-          </call>  
-          <call id="publish" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>1</timeout>
-              </parameters>
-            </parameters><!--}}}-->
-          </call>  
-        </loop>
-      </parallel_branch>
-      <parallel_branch>
-        <loop pre_test='data.feedback'>
-          <call id="prepare" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>4</timeout>
-              </parameters>
-            </parameters><!--}}}-->
-          </call>  
-          <call id="fab" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>4</timeout>
-              </parameters>
-            </parameters><!--}}}-->
-          </call>
-          <call id="evaluate" endpoint="timeout">
-              <parameters><!--{{{-->
-              <method>post</method>
-              <parameters>
-                <timeout>4</timeout>
-              </parameters>
-            </parameters><!--}}}-->
-          </call>
-        </loop>  
-      </parallel_branch>
-    </parallel>  
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <parallel>
+        <parallel_branch>
+          <loop pre_test='data.feedback'>
+            <call id="design" endpoint="timeout">
+                <parameters><!--{{{-->
+                <method>post</method>
+                <parameters>
+                  <timeout>4</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>  
+            <call id="validate" endpoint="timeout">
+                <parameters><!--{{{-->
+                <method>post</method>
+                <parameters>
+                  <timeout>2</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>  
+            <call id="publish" endpoint="timeout">
+                <parameters><!--{{{-->
+                <method>post</method>
+                <parameters>
+                  <timeout>1</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>  
+          </loop>
+        </parallel_branch>
+        <parallel_branch>
+          <loop pre_test='data.feedback'>
+            <call id="prepare" endpoint="timeout">
+                <parameters><!--{{{-->
+                <method>post</method>
+                <parameters>
+                  <timeout>4</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>  
+            <call id="fab" endpoint="timeout">
+                <parameters><!--{{{-->
+                <method>post</method>
+                <parameters>
+                  <timeout>4</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>
+            <call id="evaluate" endpoint="timeout">
+                <parameters><!--{{{-->
+                <method>post</method>
+                <parameters>
+                  <timeout>4</timeout>
+                </parameters>
+              </parameters><!--}}}-->
+            </call>
+          </loop>  
+        </parallel_branch>
+      </parallel>  
+    </description>
   </description>
   <transformation>
     <description type='copy'/>

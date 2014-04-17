@@ -26,49 +26,51 @@
     <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
     <approve>http://gruppe.wst.univie.ac.at/~mangler/services/approval.php</approve>
   </endpoints>
-  <description xmlns="http://cpee.org/ns/description/1.0">
-    <call id="a1" endpoint="bookAir">
-      <parameters>
-        <method>post</method>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="bookAir">
         <parameters>
-          <from>data.from</from>
-          <to>data.to</to>
-          <persons>data.persons</persons>
+          <method>post</method>
+          <parameters>
+            <from>data.from</from>
+            <to>data.to</to>
+            <persons>data.persons</persons>
+          </parameters>
         </parameters>
-      </parameters>
-      <manipulate output="result">  data.airline = result.value('id')
-  data.costs += result.value('costs').to_f
-  status.update 1, 'Hotel'</manipulate>
-    </call>
-    <parallel>
-      <loop pre_test="data.persons > 0">
-        <parallel_branch pass="data.persons" local="p">
-          <call id="a2" endpoint="bookHotel">
+        <manipulate output="result">  data.airline = result.value('id')
+    data.costs += result.value('costs').to_f
+    status.update 1, 'Hotel'</manipulate>
+      </call>
+      <parallel>
+        <loop pre_test="data.persons > 0">
+          <parallel_branch pass="data.persons" local="p">
+            <call id="a2" endpoint="bookHotel">
+              <parameters>
+                <method>post</method>
+                <parameters>
+                  <to>data.to</to>
+                </parameters>
+              </parameters>
+              <manipulate output="result">        data.hotels &lt;&lt; result.value('id')
+          data.costs += result.value('costs').to_f</manipulate>
+            </call>
+          </parallel_branch>
+          <manipulate id="a3">      data.persons -= 1</manipulate>  
+        </loop>  
+      </parallel>  
+      <choose>
+        <alternative condition="data.costs > 700">
+          <call id="a4" endpoint="approve">
             <parameters>
               <method>post</method>
               <parameters>
-                <to>data.to</to>
+                <costs>data.costs</costs>
               </parameters>
             </parameters>
-            <manipulate output="result">        data.hotels &lt;&lt; result.value('id')
-        data.costs += result.value('costs').to_f</manipulate>
-          </call>
-        </parallel_branch>
-        <manipulate id="a3">      data.persons -= 1</manipulate>  
-      </loop>  
-    </parallel>  
-    <choose>
-      <alternative condition="data.costs > 700">
-        <call id="a4" endpoint="approve">
-          <parameters>
-            <method>post</method>
-            <parameters>
-              <costs>data.costs</costs>
-            </parameters>
-          </parameters>
-        </call>  
-      </alternative>
-    </choose>
+          </call>  
+        </alternative>
+      </choose>
+    </description>
   </description>
   <transformation>
     <description type='copy'/>

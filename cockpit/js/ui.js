@@ -3,6 +3,31 @@ $(document).ready(function() {
     $('body').children().remove();
     $('body').append('Sorry, only Firefox >= 20.0 and Chrom(e|ium) >= 17 for now.');
   }  
+  if (!($.cookie('cpee_iagree'))) {
+    var skip = false;
+
+    $('body').children().each(function(key,c){
+      if (skip) {
+        $(c).remove(); 
+        console.log($(c));
+      } else {
+        $(c).removeClass('hidden');
+      }  
+      skip = true;
+    });
+
+    $("#iagree").click(function(){
+      if($(this).is(':checked')){
+        $("#icontinue").prop("disabled", false);
+      } else {  
+        $("#icontinue").prop("disabled", true);
+      }
+    });
+    $("#icontinue").click(function(){
+      $.cookie('cpee_iagree','yes');
+      location.reload();
+    });
+  }  
 
   // Resize areas
   $('#detailcolumn').resizable({ 
@@ -45,4 +70,3 @@ function new_entry(top) { //{{{
   $('.pair_name',vnode).focus();
   return node;
 } //}}}
-

@@ -1,5 +1,5 @@
+var ws;
 var running = false;
-var load;
 var graphrealization;
 var subscription;
 var subscription_state = 'less';
@@ -43,14 +43,15 @@ var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
 
 $(document).ready(function() {// {{{
   $("input[name=base-url]").val(location.protocol + "//" + location.host + ":9298/");
-  $("button[name=base]").click(create_instance);
-  $("button[name=instance]").click(monitor_instance);
+  $("button[name=base]").click(function(){ create_instance(null); });
+  $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
   $("button[name=loadtestset]").click(load_testset);
   $("button[name=loadtestsetfile]").click(load_testsetfile);
+  $("button[name=loadmodelfile]").click(load_modelfile);
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
-  $("input[name=votestop]").click(check_subscription);
+
 
   $.ajax({ 
     url: "testsets/index.xml", 
@@ -62,27 +63,30 @@ $(document).ready(function() {// {{{
           $("<option></option>").attr("value",ts).text(ts)
         );
       });
+      var q = $.parseQuery();
+      if (q.monitor && q.load) {
+        $("input[name=instance-url]").val(q.monitor);
+        $("select[name=testset-names]").val(q.load)
+        ui_tab_click("#tabexecution");
+        monitor_instance(true);
+      } else if (q.load) {
+        $("select[name=testset-names]").val(q.load)
+        ui_tab_click("#tabexecution");
+        create_instance(q.load);
+      } else if (q.monitor) {
+        $("input[name=instance-url]").val(q.monitor);
+        ui_tab_click("#tabexecution");
+        // ui_toggle_vis_tab($("#instance td.switch"));
+        monitor_instance(false);
+      }  
     }
   });
-  
-  var q = $.parseQuery();
-  if (q.monitor) {
-    $("input[name=instance-url]").val(q.monitor);
-    ui_toggle_vis_tab($("#instance td.switch"));
-    monitor_instance();
-  }
-  if (q.load) {
-    load = q.load;
-    ui_toggle_vis_tab($("#instance td.switch"));
-    create_instance();
-  }
 });// }}}
 
 function check_subscription() { // {{{
   var url = $("input[name=current-instance]").val();
   var num = 0;
   if ($("input[name=votecontinue]").is(':checked')) num += 1;
-  if ($("input[name=votestop]").is(':checked')) num += 1;
   if (num > 0 && subscription_state == 'less') {
     $.ajax({
       type: "PUT", 
@@ -110,8 +114,8 @@ function check_subscription() { // {{{
   }  
 }// }}}
 
-function create_instance() {// {{{
-  var info = load ? load : prompt("Instance info?", "Enter info here");
+function create_instance(ask) {// {{{
+  var info = ask ? ask: prompt("Instance info?", "Enter info here");
   if (info != null) {
     if (info.match(/\S/)) {
       var base = $("input[name=base-url]").val();
@@ -122,7 +126,7 @@ function create_instance() {// {{{
         data: "info=" + info, 
         success: function(res){
           $("input[name=instance-url]").val((base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://"));
-          if (load) monitor_instance();
+          if (ask) monitor_instance(true);
         },  
         error: function(a,b,c) {
           alert("No CPEE running.");
@@ -134,10 +138,10 @@ function create_instance() {// {{{
   }  
 }// }}}
   
-function monitor_instance() {// {{{
+function monitor_instance(load) {// {{{
   var url = $("input[name=instance-url]").val();
 
-  $('#main .tabbehind button').hide();
+  $('.tabbehind button').hide();
   $('#dat_details').empty();
 
   $.ajax({
@@ -149,10 +153,13 @@ function monitor_instance() {// {{{
 
       // Change url to return to current instance when reloading
       $("input[name=current-instance]").val(url);
-      $("#current-instance").html("<a href='" + url + "' target='_blank'>" + url + "</a>");
+      $("#current-instance").text(url);
+      $("#current-instance").attr('href',url);
       history.replaceState({}, '', '?monitor='+url);
 
-      ui_tab_click($("#tabinstance")[0]);
+      // Change url to return to current instance when reloading (because new subscription is made)
+      $("input[name=votecontinue]").removeAttr('checked');
+      subscription_state = 'less';
 
       $.ajax({
         type: "POST", 
@@ -167,6 +174,7 @@ function monitor_instance() {// {{{
           });
           append_to_log("monitoring", "id", subscription);
           var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+          if (ws) ws.close();
           ws = new Socket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
           ws.onopen = function() {
             append_to_log("monitoring", "opened", "");
@@ -216,6 +224,7 @@ function monitor_instance() {// {{{
     },
     error: function(a,b,c) {
       alert("This ain't no CPEE instance");
+      ui_tab_click("#tabnew");
     }
   });      
 }// }}}
@@ -297,7 +306,7 @@ function monitor_instance_dsl() {// {{{
 
         $.ajax({
           type: "GET",
-          url: url + "/properties/values/description/",
+          url: url + "/properties/values/dslx/",
           success: function(res){
             graphrealization = new WfAdaptor(CPEE);
             graphrealization.set_svg_container($('#graphcanvas'));
@@ -306,6 +315,7 @@ function monitor_instance_dsl() {// {{{
               save_description();
               manifestation.events.click(svgid,undefined);
             };
+            $('#graphcanvas').redraw();
 
             monitor_instance_pos();
           }
@@ -362,7 +372,6 @@ function monitor_instance_state_change(notification) { //{{{
     ctv.empty();
 
     if (notification == "stopped") {
-      format_visual_clear();
       monitor_instance_pos();
     }  
     if (notification == "running") {
@@ -371,13 +380,19 @@ function monitor_instance_state_change(notification) { //{{{
 
     var but = "";
     if (notification == "ready" || notification == "stopped") {
-      but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();'>simulate</button></td>";
+      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();'>simulate</button>";
     }
     if (notification == "running") {
-      but = "<td>⇒</td><td><button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button></td>";
+      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button>";
     }
 
-    ctv.append("<tr><td>State:</td><td>" + notification + "</td>" + but + "</tr>");
+    if (notification == "finished") {
+      $('.tabbehind button').hide();
+    } else {
+      $('#parameters .tabbehind button').show();
+    }  
+
+    ctv.append(notification + but);
   }
 }   //}}}
 function monitor_instance_pos_change(notification) {// {{{
@@ -398,12 +413,9 @@ function monitor_instance_vote_add(notification) {// {{{
   var parts = JSON.parse(notification);
   var ctv = $("#votes");
 
-  var astr = "<tr id='vote_to_continue-" + parts.activity + "-" + parts.callback + "'><td>Activity:</td><td>" + parts.activity + "</td><td>⇒</td>";
+  astr = '';
   if ($("input[name=votecontinue]").is(':checked'))
-    astr += "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>vote to continue</button></td>";
-  if ($("input[name=votestop]").is(':checked'))
-    astr += "<td><button onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"false\");'>vote to stop</button></td>";
-  astr += "</tr>";
+    astr += "<button id='vote_to_continue-" + parts.activity + "-" + parts.callback + "' onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>" + parts.activity + "</button>";
   ctv.append(astr);
   format_visual_add(parts.activity,"vote")
 }// }}}
@@ -482,17 +494,19 @@ function save_testset() {// {{{
                     type: "GET", 
                     url: base + "/properties/values/description/",
                     success: function(res){
-                      testset.append($(res.documentElement));
+                      var pars = $X('<description/>');
+                      pars.append($(res.documentElement));
+                      testset.append(pars);
                       $.ajax({
                         type: "GET", 
                         url: base + "/properties/values/transformation/",
                         success: function(res){
                           var pars = $X('<transformation/>');
-                          pars.append($(res.documentElement));
+                          pars.append($(res.documentElement).children());
                           testset.append(pars);
                           $.ajax({
                             type: "GET", 
-                            url: base + "/properties/values/name/",
+                            url: base + "/properties/values/info/",
                             success: function(res){
                               var name = res;
 
@@ -533,7 +547,7 @@ function save_svg() {// {{{
       gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
       $.ajax({
         type: "GET", 
-        url: base + "/properties/values/name/",
+        url: base + "/properties/values/info/",
         success: function(res){
           var name = res;
 
@@ -546,7 +560,7 @@ function save_svg() {// {{{
     }  
   });
 }// }}}
-function set_testset (testset) {// {{{
+function set_testset(testset) {// {{{
   var url = $("input[name=current-instance]").val();
 
   $.ajax({
@@ -583,13 +597,21 @@ function set_testset (testset) {// {{{
     error: report_failure
   });
   
+  load_testset_hw(url,testset);
   $.ajax({
-    type: "PUT", 
-    url: url + "/properties/values/handlerwrapper",
-    success: function() { load_testset_hw(url,testset); },
-    error: report_failure
+    type: "GET", 
+    url: url + "/properties/values/state/",
+    dataType: "text",
+    success: function(res){
+      $.ajax({
+        type: "PUT", 
+        url: url + "/properties/values/state",
+        data: ({value: res}),
+        error: report_failure
+      });
+    }
   });
-}// }}}
+ }// }}}
 function load_testsetfile() { //{{{
   if (running) return;
   if (typeof window.FileReader !== 'function') {
@@ -606,6 +628,23 @@ function load_testsetfile() { //{{{
   reader.onabort = function(){ running  = false; }  
   reader.readAsText(files[0]);
 } //}}}
+function load_modelfile() { //{{{
+  if (running) return;
+  if (typeof window.FileReader !== 'function') {
+    alert('FileReader not yet supportet');
+    return;
+  }  
+  var files = $('#modelfile').get(0).files;
+  var reader = new FileReader();
+  reader.onload = function(){
+    var url = $("input[name=current-instance]").val();
+    load_des(url,reader.result);
+    running  = false;
+  }  
+  reader.onerror = function(){ running  = false; }  
+  reader.onabort = function(){ running  = false; }  
+  reader.readAsText(files[0]);
+} //}}}
 function load_testset() {// {{{
   if (running) return;
   running  = true;
@@ -614,7 +653,7 @@ function load_testset() {// {{{
   $('#main .tabbehind button').hide();
   $('#dat_details').empty();
 
-  var name = load ? load : $("select[name=testset-names]").val();
+  var name = $("select[name=testset-names]").val();
 
   $.ajax({ 
     cache: false,
@@ -628,16 +667,23 @@ function load_testset() {// {{{
   running  = false;
 }// }}}
 
-function load_testset_des(url,testset) {// {{{
-  $("testset > description",testset).each(function(){
-    var val = "<content>" + $(this).serializeXML() + "</content>";
-    $.ajax({
-      type: "PUT", 
-      url: url + "/properties/values/description",
-      data: ({content: val}),
-      error: report_failure
-    });
+function load_des(url,model) { //{{{
+  model = model.replace(/<\?[^\?]+\?>/,'');
+  var val = "<content>" + model + "</content>";
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/description",
+    data: ({content: val}),
+    error: report_failure
   });
+}   //}}}
+
+function load_testset_des(url,testset) {// {{{
+  var ser = '';
+  $("testset > description > *",testset).each(function(){
+    ser += $(this).serializeXML() + "\n";
+  });
+  load_des(url,ser);
 } // }}}
 function load_testset_hw(url,testset) {// {{{
   $("testset > handlerwrapper",testset).each(function(){
