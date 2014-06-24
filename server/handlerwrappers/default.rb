@@ -103,8 +103,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def inform_syntax_error(err,code)# {{{
-    puts err.message
-    puts err.backtrace
     @controller.notify("properties/description/error", :instance => @controller.instance, :message => err.message)
   end# }}}
   def inform_manipulate_change(status,dataelements,endpoints) # {{{

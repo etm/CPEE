@@ -64,12 +64,14 @@
       <get in="*" out="instance-info"/>
       <delete in="*"/>
       <resource relative="callbacks">
+        <doc:documentation>xb</doc:documentation>
         <get in="*" out="callbacks"/>
         <resource>
           <put in="*"/>
         </resource>
       </resource>
       <resource relative="notifications">
+        <doc:documentation>xr</doc:documentation>
         <resource relative="subscriptions">
           <resource>
             <resource relative="debug">

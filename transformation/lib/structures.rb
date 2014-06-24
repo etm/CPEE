@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module ProcessTransformation
 
 class Link #{{{
@@ -224,29 +226,21 @@ end #}}}
     end
 
     def eliminate(loops)
-      diffs = self.dup
       self.each_with_index do |t,i|
+        maxcut = 0
         loops.each do |l|
-          l.each do |n|
-            t.shift if t.first == n 
-          end
+          if t[0...l.length] == l
+            maxcut = l.length if l.length > maxcut
+          end  
         end
-        t.each do |n|
-          diffs[i].delete(n)
-        end
+        self[i].shift(maxcut)
       end
-      diffs
     end
 
     def segment_by_loops(loops)
       # supress loops
-      trcs = self.dup
-      trcs.delete_if { |t| t.first == t.last }
-      diffs = trcs.eliminate(loops)
-      puts trcs.to_s
-      puts diffs.to_s
-
-      exit
+      self.delete_if { |t| loops.include?(t) }
+      self.eliminate(loops.unloop)
     end  
 
     def segment_by(endnode,&c)

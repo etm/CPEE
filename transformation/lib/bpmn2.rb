@@ -151,23 +151,29 @@ module ProcessTransformation
               branch.condition << li.condition unless li.nil?
             end  
             if node.incoming <= 1
-              (branch << map_node(node)).compact!
               traces.shift_all
+              n = map_node(node)
+              unless n.is_a?(Conditional) && traces.finished?
+                (branch << n).compact!
+              end  
             else
               loops = traces.loops
               if node.type == :exclusiveGateway
                 branch << Loop.new(node.id, :pre_test)
+                ### as the first is a decision node, just remove and continue
                 traces.shift_all
-                build_ttree branch.last, loops, nil, debug
+                build_ttree branch.last, loops.unloop, nil, debug
+                traces.cleanup
               else
                 branch << Loop.new(node.id, :post_test)
                 node.incoming -= loops.length
+                ### throw away the loop traces, remove loop traces from front of all other traces
                 traces.segment_by_loops loops
-                build_ttree branch.last, traces, nil, debug
+                build_ttree branch.last, loops, nil, debug
               end
             end
           else
-            tracesgroup, endnode = traces.segment_by(enode) { |n| n.type == branch.last.type }
+            tracesgroup, endnode = traces.segment_by(enode) { |n| n.type == branch.last.type  || n.type == :endEvent }
             tracesgroup.each do |trcs|
               build_ttree branch.last.new_branch, trcs, endnode, debug
               endnode.incoming -= 1 unless endnode.nil?
