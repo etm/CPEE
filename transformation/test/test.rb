@@ -6,11 +6,11 @@ require 'pp'
 
 Dir.chdir(File.expand_path(File.dirname(__FILE__)))
 
-Dir['* 7.bpmn'].each do |f|
+Dir['* 8.bpmn'].each do |f|
   bpmn2 = ProcessTransformation::Source::BPMN2.new(File.read(f))
-  bpmn2.traces
-  bpmn2.tree true
+  puts bpmn2.traces.to_s
+  #bpmn2.tree true
 
-  # xml = bpmn2.model(ProcessTransformation::Target::CPEE)
-  # puts xml
+  #xml = bpmn2.model(ProcessTransformation::Target::CPEE)
+  #puts xml
 end
