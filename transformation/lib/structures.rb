@@ -12,11 +12,18 @@ class Link #{{{
   end
 end #}}}
 
+module Container
+  def container?
+    @container || false
+  end
+end
+
 class Node #{{{ 
+  include Container
   @@niceid = -1
-  attr_reader :id, :label, :niceid, :outgoing
+  attr_reader :id, :label, :niceid
   attr_reader :endpoints, :methods, :parameters
-  attr_accessor :script, :script_id, :script_var, :incoming, :type
+  attr_accessor :script, :script_id, :script_var, :incoming, :outgoing, :type
   def initialize(id,type,label,incoming,outgoing)
     @id = id
     @niceid = (@@niceid += 1)
@@ -42,39 +49,62 @@ module Struct #{{{
   end  
 end #}}}
 
+class Break < Node
+  def initialize(incoming)
+    super '-1', :break, 'BREAK', incoming, []
+  end
+end
+
 class Alternative < Array #{{{
+  include Container
   attr_accessor :condition
   attr_reader :id
   def condition?; true; end
   def initialize(id)
+    @container = true
     @id = id
     @condition = []
   end
 end #}}}
 class Branch < Array #{{{
+  include Container
   attr_reader :id
   def condition?; false; end
   def initialize(id)
+    @container = true
     @id = id
   end
 end #}}}
-class Loop < Array #{{{
-  attr_accessor :id, :mode, :type, :condition
-  def condition?; true; end
-  def initialize(id,mode)
+class BlindLoop < Array #{{{
+  include Container
+  def condition?; false; end
+  attr_accessor :id, :type
+  def initialize(id)
+    @container = true
     @id = id
-    @mode = mode
+    @type = :loop
+  end  
+end #}}}
+class Loop < Array #{{{
+  include Container
+  attr_accessor :id, :type, :condition
+  def condition?; true; end
+  def initialize(id)
+    @container = true
+    @id = id
     @type = :loop
     @condition = []
   end  
 end #}}}
 
 class Parallel #{{{
+  include Container
   include Struct
   include Enumerable
   attr_reader :id, :sub
   attr_accessor :type
   def initialize(id,type)
+    @container = true
     @id = id
     @type = type
     @sub = []
@@ -82,14 +112,17 @@ class Parallel #{{{
   def new_branch
     (@sub << Branch.new(@id)).last
   end
-end #}}}
+end #}}} 
 
 class Conditional #{{{
+  include Container
   include Struct
   include Enumerable
+  attr_reader :container
   attr_reader :id, :sub, :mode
   attr_accessor :type
   def initialize(id,mode,type)
+    @container = true
     @id = id
     @sub = []
     @mode = mode
@@ -175,11 +208,13 @@ end #}}}
       ele.each_with_index do |e,i|
         last  = (i == ele.length - 1)
         pchar = last ? '└' : '├'
-        if e.is_a?(Node)
-          ret << indent + pchar + ' ' + e.niceid.to_s + "\n"
-        else
+        if e.container?
           ret << indent + pchar + ' ' + e.class.to_s.gsub(/[^:]*::/,'') + "\n"
           ret << print_tree(e,indent + (last ? '  ' : '│ '))
+        elsif e.is_a?(Break) && 
+          ret << indent + pchar + ' ' + e.class.to_s.gsub(/[^:]*::/,'') + "\n"
+        else
+          ret << indent + pchar + ' ' + e.niceid.to_s + "\n"
         end
       end
       ret
@@ -190,11 +225,13 @@ end #}}}
   class Traces < Array #{{{
     def initialize_copy(other)
      super
-     self.map{ |t| t.dup }
+     self.map!{ |t| t.dup }
     end
 
-    def cleanup
-      self.delete_if { |t| t.compact.empty? }
+    def remove(trcs)
+      trcs.each do |t|
+        self.delete(t)
+      end  
     end
 
     def first_node
@@ -217,33 +254,69 @@ end #}}}
       (n = self.map{|t| t.first }.uniq).length == 1 ? n.first : nil
     end
 
-    def loops
-      Traces.new self.find_all{ |t| t.first == t.last }
+    def include_in_all?(e)
+      num = 0
+      self.each{|n| num += 1 if n.include?(e)} 
+      num == self.length
     end
 
-    def unloop
-      self.each { |t| t.pop }
+    def loops
+      Traces.new self.find_all{ |t| t.first == t.last }
     end
 
     def eliminate(loops)
       self.each_with_index do |t,i|
         maxcut = 0
         loops.each do |l|
-          if t[0...l.length] == l
-            maxcut = l.length if l.length > maxcut
-          end  
+          maxcut.upto(l.length) do |i|
+            maxcut = i if t[0...i] == l[0...i]
+          end
         end
-        self[i].shift(maxcut)
+        ### in case of nested loop, take it all
+        0.upto (maxcut-1) do |j|
+          if self[i][j] == self[i].last
+            maxcut = self[i].length
+          end
+        end  
+        loops << self[i].shift(maxcut)
+      end
+    end
+
+    def extend
+      # find largest common
+      max = nil
+      self.first.each do |e| 
+        if self.include_in_all?(e)
+          max = e
+        else  
+          break
+        end
+      end  
+
+      # if last is largest common append break
+      # else append from last to largest common
+      self.each do |t|
+        if t.last == max
+          t << Break.new(1)
+        else
+          p max
+          last = t.last
+          t.last.incoming = 1
+          (t.index(last) + 1).upto(t.index(max) + 1) do |i|
+            t << t[i]
+          end
+        end  
       end
     end
 
     def segment_by_loops(loops)
       # supress loops
       self.delete_if { |t| loops.include?(t) }
-      self.eliminate(loops.unloop)
+      self.eliminate(loops)
+      loops.extend
     end  
 
-    def segment_by(endnode,&c)
+    def find_endnode
       # supress loops
       trcs = self.dup
       trcs.delete_if { |t| t.uniq.length < t.length }
@@ -251,25 +324,30 @@ end #}}}
       # find common node (except loops)
       enode = nil
       trcs.first.each do |n|
-        if c.call(n)
-          existcheck = trcs.map{ |s| s.include?(n) }
-          if existcheck.uniq.length == 1 # all true
-            enode = n
-            break
-          end  
+        if trcs.include_in_all?(n)
+          enode = n
+          break
         end  
       end
-      enode.type = nil if enode
+      enode
+    end  
 
+    def segment_by(endnode)
       # cut shit until common node, return the shit you cut away
       tracesgroup = self.group_by{|t| t.first}.map do |k,trace|
         coltrace = trace.map do |t|
           # slice upto common node, collect the sliced away part
-          (len = t.index(enode)) ? t.slice!(0...len) : t
+          len = t.index(endnode)
+          if len
+            cut = t.slice!(0...len)
+            cut << t.first
+          else # if endnode is nil, then return the whole
+            t
+          end
         end.uniq
         Traces.new(coltrace)
       end
-      [tracesgroup,enode||endnode]
+      [tracesgroup,endnode]
     end
   end #}}}
 

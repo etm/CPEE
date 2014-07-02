@@ -6,10 +6,10 @@ require 'pp'
 
 Dir.chdir(File.expand_path(File.dirname(__FILE__)))
 
-Dir['* 8.bpmn'].each do |f|
+Dir["* #{ARGV[0]}.bpmn"].each do |f|
   bpmn2 = ProcessTransformation::Source::BPMN2.new(File.read(f))
   puts bpmn2.traces.to_s
-  #bpmn2.tree true
+  bpmn2.tree true
 
   #xml = bpmn2.model(ProcessTransformation::Target::CPEE)
   #puts xml

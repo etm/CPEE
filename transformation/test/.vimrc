@@ -1,1 +1,1 @@
-map <F10> :!./test.rb<CR>
+map <F10> :!./test.rb 

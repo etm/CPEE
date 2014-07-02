@@ -143,41 +143,77 @@ module ProcessTransformation
       end #}}}
 
       def build_ttree(branch,traces,enode=nil,debug=false)
+        savetraces = traces.dup
+        blindloop = false
         while not traces.finished?
+          ### if traces exist more than once, make it so they exist only once
+          ### if somebody creates a modell with an inclusive/exclusive that
+          ### has identical branches with different conditions, we are fucked
+          ### but how are the odds? right? right?
+          traces.uniq!
           debug_print debug, traces
           if node = traces.same_first
             if branch.condition?
               li = @graph.link(branch.id,traces.first_node.id)
               branch.condition << li.condition unless li.nil?
-            end  
-            if node.incoming <= 1
+            end
+            if node == enode
+              traces.shift_all
+            elsif node.incoming <= 1
               traces.shift_all
               n = map_node(node)
-              unless n.is_a?(Conditional) && traces.finished?
+              if !(n.nil? || (n.container? && (node.outgoing <=1 || traces.finished?)))
                 (branch << n).compact!
-              end  
+              end
             else
               loops = traces.loops
               if node.type == :exclusiveGateway
-                branch << Loop.new(node.id, :pre_test)
                 ### as the first is a decision node, just remove and continue
-                traces.shift_all
-                build_ttree branch.last, loops.unloop, nil, debug
-                traces.cleanup
+                if node.incoming == 2
+                  node.incoming = 1
+                  branch << Loop.new(node.id)
+                  ### remove the gateway itself, as for a single loop it is no longer used.
+                  ### the condition will the loop condition
+                  traces.shift_all
+                  build_ttree branch.last, loops, nil, debug
+                else  
+                  ### dont remove it, treat it as a normal conditional
+                  ### an infinite loop that can only be left by break is created
+                  node.incoming = 1
+                  branch << BlindLoop.new(node.id)
+                  ### add the blank conditional to get a break
+                  len = loops.length
+                  loops << [loops.first_node]
+                  build_ttree branch.last, loops, nil, debug
+                  ### set outgoing to number of loops (without the break) so that it can be ignored (should be 1 all the time)
+                  p #{loops.length}
+                  node.outgoing -= len
+                end   
               else
-                branch << Loop.new(node.id, :post_test)
+                branch << BlindLoop.new(node.id)
                 node.incoming -= loops.length
                 ### throw away the loop traces, remove loop traces from front of all other traces
                 traces.segment_by_loops loops
                 build_ttree branch.last, loops, nil, debug
               end
+              traces.remove(loops)
             end
           else
-            tracesgroup, endnode = traces.segment_by(enode) { |n| n.type == branch.last.type  || n.type == :endEvent }
+            endnode = traces.find_endnode || enode
+            tracesgroup, endnode = traces.segment_by endnode
             tracesgroup.each do |trcs|
-              build_ttree branch.last.new_branch, trcs, endnode, debug
+              if trcs.finished?
+                build_ttree branch.last.new_branch, Traces.new([[Break.new(1)]]), endnode, debug
+              else  
+                build_ttree branch.last.new_branch, trcs, endnode, debug
+              end  
               endnode.incoming -= 1 unless endnode.nil?
             end
+            ### all before is reduced to one incoming arrow
+            ### if now there is still more than one incoming we have a loop situation
+            ### where the end of a branching statement is also the starting/endpoint 
+            ### of a loop
+            endnode.incoming += 1 unless endnode.nil?
           end
         end
       end
