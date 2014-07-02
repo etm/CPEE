@@ -241,6 +241,9 @@ end #}}}
     def first_node
       self.first.first
     end
+    def second_nodes
+      self.map { |t| t[1] }
+    end
 
     def shortest
       self.min_by{|e|e.length}
@@ -268,11 +271,33 @@ end #}}}
       num == self.length
     end
 
+    def include_in_some?(e)
+      num = 0
+      self.each{|n| num += 1 if n.include?(e)} 
+      num > 1
+    end
+
+    def add_breaks
+      trueloops = self.find_all{ |t| t.last == t.first }.length
+      if trueloops == self.length
+        self << [self.first_node] ### the blank conditional so that we get a break
+      else
+        self.each do |t|
+          t << Break.new(1) unless t.last == t.first ### an explicit break
+        end
+      end  
+    end
+
     def loops
-      Traces.new self.find_all{ |t| t.first == t.last }
+      lo = Traces.new self.find_all{ |t| t.first == t.last }
+      self.each do |t|
+        lo << t if lo.second_nodes.include?(t[1])
+      end
+      lo.uniq
     end
 
     def eliminate(loops)
+      ### find nested loops
       self.each_with_index do |t,i|
         maxcut = 0
         ### find out which common parts the traces share with theloops
@@ -284,17 +309,37 @@ end #}}}
         ### in case of nested loop (common part occurs at end of loop), include the whole
         0.upto (maxcut-1) do |j|
           if self[i][j] == self[i].last
-            maxcut = self[i].length
+            loops << self[i].shift(self[i].length)
           end
         end  
+      end
+      loops.uniq!
+      loops.remove_empty
+      self.remove_empty
+
+      ### cut from non-nested loops
+      self.each_with_index do |t,i|
+        maxcut = 0
+        ### find out which common parts the traces share with theloops
+        loops.each do |l|
+          maxcut.upto(l.length) do |i|
+            maxcut = i if t[0...i] == l[0...i]
+          end
+        end
         loops << self[i].shift(maxcut)
       end
+
+      p "====================="
+      puts loops.to_s
+      puts self.to_s
     end
 
     def extend
       # find largest common
       max = nil
-      self.shortest.each do |e| 
+      sh = self.shortest
+      sh = sh[0..-2] if sh.first == sh.last
+      sh.each do |e,i|
         if self.include_in_all?(e)
           max = e
         else  
@@ -302,12 +347,10 @@ end #}}}
         end
       end
 
-      # if last is largest common append break
+      # if last is the largest common do nothing
       # else append from last to largest common
       self.each do |t|
-        if t.last == max && t.first != max
-          # t << Break.new(1)
-        else
+        unless t.last == max
           last = t.last
           t.last.incoming = 1
           if t.index(last) && t.index(max)

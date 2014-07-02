@@ -143,8 +143,6 @@ module ProcessTransformation
       end #}}}
 
       def build_ttree(branch,traces,enode=nil,debug=false)
-        savetraces = traces.dup
-        blindloop = false
         while not traces.finished?
           ### if traces exist more than once, make it so they exist only once
           ### if somebody creates a modell with an inclusive/exclusive that
@@ -184,7 +182,7 @@ module ProcessTransformation
                   branch << BlindLoop.new(node.id)
                   ### add the blank conditional to get a break
                   len = loops.length
-                  loops << [loops.first_node]
+                  loops.add_breaks
                   build_ttree branch.last, loops, nil, debug
                   ### set outgoing to number of loops (without the break) so that it can be ignored (should be 1 all the time)
                   node.outgoing -= len
