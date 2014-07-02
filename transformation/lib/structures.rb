@@ -271,12 +271,6 @@ end #}}}
       num == self.length
     end
 
-    def include_in_some?(e)
-      num = 0
-      self.each{|n| num += 1 if n.include?(e)} 
-      num > 1
-    end
-
     def add_breaks
       trueloops = self.find_all{ |t| t.last == t.first }.length
       if trueloops == self.length
@@ -328,10 +322,6 @@ end #}}}
         end
         loops << self[i].shift(maxcut)
       end
-
-      p "====================="
-      puts loops.to_s
-      puts self.to_s
     end
 
     def extend
