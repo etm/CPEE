@@ -175,6 +175,7 @@ module ProcessTransformation
                   ### remove the gateway itself, as for a single loop it is no longer used.
                   ### the condition will the loop condition
                   traces.shift_all
+                  loops.remove_empty
                   build_ttree branch.last, loops, nil, debug
                 else  
                   ### dont remove it, treat it as a normal conditional
@@ -186,17 +187,16 @@ module ProcessTransformation
                   loops << [loops.first_node]
                   build_ttree branch.last, loops, nil, debug
                   ### set outgoing to number of loops (without the break) so that it can be ignored (should be 1 all the time)
-                  p #{loops.length}
                   node.outgoing -= len
                 end   
               else
-                branch << BlindLoop.new(node.id)
                 node.incoming -= loops.length
                 ### throw away the loop traces, remove loop traces from front of all other traces
                 traces.segment_by_loops loops
-                build_ttree branch.last, loops, nil, debug
+                build_ttree branch, loops, nil, debug
               end
               traces.remove(loops)
+              traces.remove_empty
             end
           else
             endnode = traces.find_endnode || enode

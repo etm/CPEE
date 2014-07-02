@@ -234,8 +234,16 @@ end #}}}
       end  
     end
 
+    def remove_empty
+      self.delete_if{|t| t.empty? }
+    end
+
     def first_node
       self.first.first
+    end
+
+    def shortest
+      self.min_by{|e|e.length}
     end
 
     def to_s
@@ -267,12 +275,13 @@ end #}}}
     def eliminate(loops)
       self.each_with_index do |t,i|
         maxcut = 0
+        ### find out which common parts the traces share with theloops
         loops.each do |l|
           maxcut.upto(l.length) do |i|
             maxcut = i if t[0...i] == l[0...i]
           end
         end
-        ### in case of nested loop, take it all
+        ### in case of nested loop (common part occurs at end of loop), include the whole
         0.upto (maxcut-1) do |j|
           if self[i][j] == self[i].last
             maxcut = self[i].length
@@ -285,28 +294,32 @@ end #}}}
     def extend
       # find largest common
       max = nil
-      self.first.each do |e| 
+      self.shortest.each do |e| 
         if self.include_in_all?(e)
           max = e
         else  
           break
         end
-      end  
+      end
 
       # if last is largest common append break
       # else append from last to largest common
       self.each do |t|
-        if t.last == max
-          t << Break.new(1)
+        if t.last == max && t.first != max
+          # t << Break.new(1)
         else
-          p max
           last = t.last
           t.last.incoming = 1
-          (t.index(last) + 1).upto(t.index(max) + 1) do |i|
-            t << t[i]
+          if t.index(last) && t.index(max)
+            (t.index(last) + 1).upto(t.index(max)) do |i|
+              t << t[i]
+            end 
           end
         end  
       end
+
+      max.incoming = self.length
+      max
     end
 
     def segment_by_loops(loops)
