@@ -9,8 +9,8 @@
   </endpoints><!--}}}-->
   <description/>
   <transformation>
-    <description type='rest'>http://localhost:9295</description>
-    <dataelements type='rest'>http://localhost:9295</dataelements>
-    <endpoints type='rest'>http://localhost:9295</endpoints>
+    <description type='rest'>http://localhost:9295/bpmn2/</description>
+    <dataelements type='rest'>http://localhost:9295/bpmn2/</dataelements>
+    <endpoints type='rest'>http://localhost:9295/bpmn2/</endpoints>
   </transformation>
 </testset>

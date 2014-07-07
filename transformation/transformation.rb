@@ -19,11 +19,14 @@ require 'rubygems'
 require 'riddl/server'
 require 'xml/smart'
 require File.expand_path(File.dirname(__FILE__) + '/lib/bpmn2')
+require File.expand_path(File.dirname(__FILE__) + '/lib/cpee')
 require 'json'
 
 class ExtractDescription < Riddl::Implementation #{{{
   def response
     bpmn2 = ProcessTransformation::Source::BPMN2.new(@p[0].value.read)
+    bpmn2.traces
+    bpmn2.tree(false)
     xml = bpmn2.model(ProcessTransformation::Target::CPEE)
 
     return Riddl::Parameter::Complex.new("description","text/xml",xml.to_s)
