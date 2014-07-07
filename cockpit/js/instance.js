@@ -42,7 +42,7 @@ var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change';// }}}
 
 $(document).ready(function() {// {{{
-  $("input[name=base-url]").val(location.protocol + "//" + location.host + ":9298/");
+  $("input[name=base-url]").val(location.protocol + "//" + location.host + ":" + $('body').data('defaultport'));
   $("button[name=base]").click(function(){ create_instance(null); });
   $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
   $("button[name=loadtestset]").click(load_testset);
