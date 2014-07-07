@@ -106,7 +106,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   // }}}
   // Helper Functions {{{
-  var draw_symbol = this.draw.draw_symbol = function (sym_name, id, title, row, col, group) { // {{{
+  var draw_symbol = this.draw.draw_symbol = function (tname, sym_name, id, title, row, col, group) { // {{{
     if(elements[sym_name] == undefined || elements[sym_name].svg == undefined) sym_name = 'unknown';
     var g = $X('<g class="element" element-id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' + 
                   '<text class="super" transform="translate(30,8.4)">' +
@@ -121,8 +121,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     g.append(sym);
 
     // Binding events for symbol
-    for(event_name in adaptor.elements[sym_name]) {
-      sym.bind(event_name, {'function_call':adaptor.elements[sym_name][event_name]}, function(e) { e.data.function_call($(this).parents(':first').attr('element-id'),e)});
+    for(event_name in adaptor.elements[tname]) {
+      sym.bind(event_name, {'function_call':adaptor.elements[tname][event_name]}, function(e) { e.data.function_call($(this).parents(':first').attr('element-id'),e)});
       if(event_name == 'mousedown') sym.bind('contextmenu', false);
     }
     if(group) {group.append(g);}
@@ -319,7 +319,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       max.row++;
       $(root).attr('svg-id','description');
       group.attr('element-id','group-description');
-      illustrator.draw.draw_symbol('start', 'description', 'START', pos.row, pos.col, group);
+      illustrator.draw.draw_symbol('start', 'start', 'description', 'START', pos.row, pos.col, group);
     } // }}}
 
     $(root).children().each(function() { 
@@ -364,9 +364,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(!illustrator.elements[tname])                                         {sym_name = 'unknown';}
       else if(typeof illustrator.elements[tname].resolve_symbol == 'function') {sym_name = illustrator.elements[tname].resolve_symbol(this);}
       else if(typeof illustrator.elements[tname].resolve_symbol == 'string')   {sym_name = illustrator.elements[tname].resolve_symbol;}
-      else                                                                            {sym_name = tname;}
+      else                                                                     {sym_name = tname;}
       if((illustrator.elements[tname] && illustrator.elements[tname].svg()) || sym_name == 'unknown') { 
-        illustrator.draw.draw_symbol(sym_name, $(this).attr('svg-id'), $(this).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[tname] ? illustrator.elements[tname].type : 'primitive unknown');
+        illustrator.draw.draw_symbol(tname, sym_name, $(this).attr('svg-id'), $(this).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[tname] ? illustrator.elements[tname].type : 'primitive unknown');
       } else { console.log("no icon "+ tname);}
       if(illustrator.elements[tname] && illustrator.elements[tname].border) illustrator.draw.draw_border($(this).attr('svg-id'), pos, block.max, block.svg);
       if(illustrator.elements[tname] && illustrator.elements[tname].type == 'complex') illustrator.draw.draw_tile($(this).attr('svg-id'), pos, block.max, block.svg);

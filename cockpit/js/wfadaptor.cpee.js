@@ -200,8 +200,8 @@ function CPEE(adaptor) {
   } // }}}
   this.events.dragstart = function (svgid, e) { //{{{
   } //}}}
-  
-  // Primitive Elements
+
+  // Abstract Elements (they only have an illustrator)
   this.elements.callinjection = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract', 
@@ -214,29 +214,6 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-  'description' : {//{{{
-    'create':  function(target) {
-      var node = null;
-      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
-      return node;
-    },
-    'permissible_children': function(node) {
-      if(node.children('manipulate').lenght < 1)
-        return [
-         {'label': 'Script Block', 
-          'function_call': adaptor.description.insert_last_into, 
-          'menu_icon': elements.callmanipulate.illustrator.svg, 
-          'params': [adaptor.description.elements.manipulate.create, node]}
-        ];
-      return [];
-    }
-  },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-   }//}}}
   }; /*}}}*/
   this.elements.callcorrelation = { /*{{{*/
     'illustrator': {//{{{
@@ -250,29 +227,6 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-  'description' : {//{{{
-    'create':  function(target) {
-      var node = null;
-      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="correlation" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
-      return node;
-    },
-    'permissible_children': function(node) {
-      if(node.children('manipulate').lenght < 1)
-        return [
-         {'label': 'Script Block', 
-          'function_call': adaptor.description.insert_last_into, 
-          'menu_icon': elements.callmanipulate.illustrator.svg, 
-          'params': [adaptor.description.elements.manipulate.create, node]}
-        ];
-      return [];
-    }
-  },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-   }//}}}
   }; /*}}}*/
   this.elements.callinstantiation = { /*{{{*/
     'illustrator': {//{{{
@@ -286,29 +240,6 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-  'description' : {//{{{
-    'create':  function(target) {
-      var node = null;
-      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="instantiate" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
-      return node;
-    },
-    'permissible_children': function(node) {
-      if(node.children('manipulate').lenght < 1)
-        return [
-         {'label': 'Script Block', 
-          'function_call': adaptor.description.insert_last_into, 
-          'menu_icon': elements.callmanipulate.illustrator.svg, 
-          'params': [adaptor.description.elements.manipulate.create, node]}
-        ];
-      return [];
-    }
-  },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-   }//}}}
   }; /*}}}*/
   this.elements.callmanipulate = { /*{{{*/
     'illustrator': {//{{{
@@ -322,30 +253,32 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-  'description' : {//{{{
-    'create':  function(target) {
-      var node = null;
-      node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
-      return node;
-    },
-    'permissible_children': function(node) {
-      if(node.children('manipulate').lenght < 1)
-        return [
-         {'label': 'Script Block', 
-          'function_call': adaptor.description.insert_last_into, 
-          'menu_icon': elements.callmanipulate.illustrator.svg, 
-          'params': [adaptor.description.elements.manipulate.create, node]}
-        ];
-      return [];
-    }
-  },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-   }//}}}
   }; /*}}}*/
+  this.elements.choose_inclusive = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'abstract',
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
+                    '<circle cx="15.5" cy="15.5" r="7" class="stand"/>' + 
+                  '</svg>');
+      }
+    },//}}}
+  };  /*}}}*/
+  this.elements.choose_exclusive = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'abstract',
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
+                    '<line x1="10.5" y1="20.5" x2="20.5" y2="10.5" class="stand"/>' +
+                    '<line x1="10.5" y1="10.5" x2="20.5" y2="20.5" class="stand"/>' +
+                  '</svg>');
+      }
+    },//}}}
+  };  /*}}}*/
+
+  // Primitive Elements
   this.elements.call = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'primitive', 
@@ -450,154 +383,8 @@ function CPEE(adaptor) {
     'click': events.click,
    }//}}}
   }; /*}}}*/
-  this.elements.constraints = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'primitive',
-      'endnodes' : 'this',
-      'svg': function() {
-        return false;
-      }
-    },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<manipulate id="' + adaptor.description.get_free_id() + '" xmlns="http://cpee.org/ns/description/1.0"/>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        return [];
-      }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,false, true);
-    },
-    'click': events.click,
-   }//}}}
-  }; /*}}}*/
   
   // Complex Elements
-  this.elements.choose_inclusive = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'abstract',
-      'endnodes' : 'aggregate',
-      'closeblock': false,
-      'expansion' : function(node) { 
-        return 'horizontal';
-      }, 
-      'col_shift' : function(node) { 
-        return false; 
-      },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
-                    '<circle cx="15.5" cy="15.5" r="7" class="stand"/>' + 
-                  '</svg>');
-      }
-    },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        var func = null;
-        if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
-        else { func = adaptor.description.insert_after }
-        if(node.children('parallel_branch').length > 0) {
-          return [{'label': 'Parallel Branch', 
-           'function_call': func, 
-           'menu_icon': elements.parallel_branch.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel_branch.create, node]}];
-        }
-        var childs = [{'label': 'Alternative', 
-         'function_call': func, 
-         'menu_icon': elements.alternative.illustrator.svg, 
-         'params': [adaptor.description.elements.alternative.create, node]}];
-        if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length) 
-          childs.push({'label': 'Otherwise', 
-           'function_call': func, 
-           'menu_icon': elements.otherwise.illustrator.svg, 
-           'params': [adaptor.description.elements.otherwise.create, node]});
-        if(node.parents('parallel').length > node.parents('parallel_branch').length) 
-          childs.push({'label': 'Parallel Branch', 
-           'function_call': func, 
-           'menu_icon': elements.parallel_branch.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel_branch.create, node]});
-        return childs; 
-      }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick,
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
-  };  /*}}}*/
-  this.elements.choose_exclusive = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'abstract',
-      'endnodes' : 'aggregate',
-      'closeblock': false,
-      'expansion' : function(node) { 
-        return 'horizontal';
-      }, 
-      'col_shift' : function(node) { 
-        return false; 
-      },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
-                    '<line x1="10.5" y1="20.5" x2="20.5" y2="10.5" class="stand"/>' +
-                    '<line x1="10.5" y1="10.5" x2="20.5" y2="20.5" class="stand"/>' +
-                  '</svg>');
-      }
-    },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        var func = null;
-        if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
-        else { func = adaptor.description.insert_after }
-        if(node.children('parallel_branch').length > 0) {
-          return [{'label': 'Parallel Branch', 
-           'function_call': func, 
-           'menu_icon': elements.parallel_branch.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel_branch.create, node]}];
-        }
-        var childs = [{'label': 'Alternative', 
-         'function_call': func, 
-         'menu_icon': elements.alternative.illustrator.svg, 
-         'params': [adaptor.description.elements.alternative.create, node]}];
-        if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length) 
-          childs.push({'label': 'Otherwise', 
-           'function_call': func, 
-           'menu_icon': elements.otherwise.illustrator.svg, 
-           'params': [adaptor.description.elements.otherwise.create, node]});
-        if(node.parents('parallel').length > node.parents('parallel_branch').length) 
-          childs.push({'label': 'Parallel Branch', 
-           'function_call': func, 
-           'menu_icon': elements.parallel_branch.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel_branch.create, node]});
-        return childs; 
-      }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick,
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
-  };  /*}}}*/
-
   this.elements.choose = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'complex',
@@ -1132,7 +919,7 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>');
+        var node = $X('<group xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
