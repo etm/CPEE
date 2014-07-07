@@ -337,20 +337,30 @@ module CPEE
         tdata = doc.find("/p:properties/p:transformation/p:dataelements").first
         tendp = doc.find("/p:properties/p:transformation/p:endpoints").first
 
+        tdesctype = tdesc.attributes['type']
+        tdatatype = tdata.attributes['type']
+        tendptype = tendp.attributes['type']
+
+        if desc.children.empty?
+          tdesctype = tdatatype = tendptype = 'clean'
+        end  
+
         ### description transformation, including dslx to dsl
-        addit = if tdesc.attributes['type'] == 'copy' || tdesc.empty?
+        addit = if tdesctype == 'copy' || tdesc.empty?
           desc.children.first.to_doc.root
-        elsif tdesc.attributes['type'] == 'rest' && !tdesc.empty?
+        elsif tdesctype == 'rest' && !tdesc.empty?
           srv = Riddl::Client.interface(tdesc.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
           status, res = srv.post [
             Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
             Riddl::Parameter::Simple.new("type","description")
           ]
           XML::Smart::string(res[0].value.read).root if status == 200
-        elsif tdesc.attributes['type'] == 'xslt' && !tdesc.empty?
+        elsif tdesctype == 'xslt' && !tdesc.empty?
           trans = XML::Smart::open_unprotected(tdesc.text)
           desc.children.first.to_doc.transform_with(trans).root
-        else
+        elsif tdesctype == 'clean'
+          XML::Smart::open_unprotected(@opts[:empty_dslx]).root
+        else  
           nil
         end
         unless addit.nil?
@@ -362,16 +372,18 @@ module CPEE
         end
 
         ### dataelements extraction
-        addit = if tdata.attributes['type'] == 'rest' && !tdata.empty?
+        addit = if tdatatype == 'rest' && !tdata.empty?
           srv = Riddl::Client.interface(tdata.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
           status, res = srv.post [ 
             Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
             Riddl::Parameter::Simple.new("type","dataelements")
           ]
           res
-        elsif tdata.attributes['type'] == 'xslt' && !tdata.empty?
+        elsif tdatatype == 'xslt' && !tdata.empty?
           trans = XML::Smart::open_unprotected(tdata.text)
           desc.children.first.to_doc.transform_with(trans)
+        elsif tdatatype == 'clean'
+          []
         else
           nil
         end  
@@ -387,16 +399,18 @@ module CPEE
         end  
 
         ### enpoints extraction
-        addit = if tendp.attributes['type'] == 'rest' && !tdata.empty?
+        addit = if tendptype == 'rest' && !tdata.empty?
           srv = Riddl::Client.interface(tendp.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
           status, res = srv.post [ 
             Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
             Riddl::Parameter::Simple.new("type","endpoints")
           ]
           res
-        elsif tendp.attributes['type'] == 'xslt' && !tdata.empty?
+        elsif tendptype == 'xslt' && !tdata.empty?
           trans = XML::Smart::open_unprotected(tendp.text)
           desc.children.first.to_doc.transform_with(trans)
+        elsif tendptype == 'clean'
+          []
         else
           nil
         end  

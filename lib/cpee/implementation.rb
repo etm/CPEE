@@ -33,6 +33,7 @@ module CPEE
     opts[:properties_schema_inactive] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.inactive')
     opts[:transformation_dslx]        ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation_dslx.xsl')
     opts[:transformation_service]     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation.xml')
+    opts[:empty_dslx]                 ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/empty_dslx.xml')
 
     Proc.new do
       Dir[opts[:handlerwrappers] + "/*.rb"].each do |h|
