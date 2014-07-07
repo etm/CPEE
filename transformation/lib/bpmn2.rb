@@ -1,5 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/structures')
-require File.expand_path(File.dirname(__FILE__) + '/cpee')
 require 'rubygems'
 require 'xml/smart'
 require 'highline'
@@ -147,6 +146,7 @@ module ProcessTransformation
             node
         end
       end #}}}
+      private :map_node
 
       def build_ttree(branch,traces,enode=nil,debug=false)
         while not traces.finished?
@@ -224,6 +224,7 @@ module ProcessTransformation
           end
         end
       end
+      private :build_ttree
 
       def debug_print(debug,traces) #{{{
         if debug

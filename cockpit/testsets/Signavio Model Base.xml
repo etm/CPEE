@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<testset>
+  <positions/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <dataelements/>
+  <handlers/>
+  <endpoints><!--{{{-->
+    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout1.php</timeout>
+  </endpoints><!--}}}-->
+  <description/>
+  <transformation>
+    <description type='rest'>http://localhost:9295/bpmn2/</description>
+    <dataelements type='rest'>http://localhost:9295/bpmn2/</dataelements>
+    <endpoints type='rest'>http://localhost:9295/bpmn2/</endpoints>
+  </transformation>
+</testset>
