@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <choose mode="inclusive">
+    <alternative condition="data.a &lt; 4" language="text/javascript">
+      <call id="a36" endpoint="timeout">
+        <parameters>
+          <label>C</label>
+          <method/>
+          <type>serviceTask</type>
+          <mid>sid-126C0EE2-98B6-4D69-9585-35AB1E90E4B8</mid>
+          <parameters>
+            <timeout>2</timeout>
+          </parameters>
+        </parameters>
+        <manipulate output="result" language="application/javascript">data.a += 'path 2,'</manipulate>
+      </call>
+    </alternative>
+    <alternative condition="data.a &lt; 3" language="text/javascript">
+      <call id="a34" endpoint="timeout">
+        <parameters>
+          <label>B</label>
+          <method/>
+          <type>serviceTask</type>
+          <mid>sid-6CFA8542-1FF6-4BB8-957E-5C9806CD90C6</mid>
+          <parameters>
+            <timeout>1</timeout>
+          </parameters>
+        </parameters>
+        <manipulate output="result" language="application/javascript">data.a += 'path 1,'</manipulate>
+      </call>
+    </alternative>
+  </choose>
+</description>

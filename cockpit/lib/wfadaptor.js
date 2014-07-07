@@ -323,10 +323,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     } // }}}
 
     $(root).children().each(function() { 
+      var tname = this.tagName;
+
       // Set SVG-ID {{{
       if($(this).attr('id') == undefined) {
-        if(id_counter[this.tagName] == undefined) id_counter[this.tagName] = -1;
-        $(this).attr('svg-id', this.tagName + '_' + (++id_counter[this.tagName]));
+        if(id_counter[tname] == undefined) id_counter[tname] = -1;
+        $(this).attr('svg-id', tname + '_' + (++id_counter[tname]));
         $(this).attr('svg-label', '');
       } else { 
         $(this).attr('svg-id',  $(this).attr('id'));
@@ -341,15 +343,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       else { collapsed = true; }
       if(root_expansion == 'vertical')  pos.row++;
       if(root_expansion == 'horizontal')  pos.col++;
-      if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].type == 'complex' && !collapsed) {
-        if(illustrator.elements[this.tagName] != undefined && !illustrator.elements[this.tagName].svg()) pos.row--;
-// TODO: Remaining problem is the order insode the svg. Thats why the connection is above the icon
+      if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'complex' && !collapsed) {
+        if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg()) pos.row--;
+// TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
         block = parse(this, jQuery.extend(true, {}, pos));
         group.append(block.svg);
         block.svg.attr('id', 'group-' + $(this).attr('svg-id')); 
-        if(illustrator.elements[this.tagName].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive 
+        if(illustrator.elements[tname].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive 
       } else {
-        if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].type == 'primitive'  && illustrator.elements[this.tagName].svg()) { // This enables "invisble" elements, by returning false in the SVG function (e.g. constraints)
+        if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'primitive'  && illustrator.elements[tname].svg()) { // This enables "invisble" elements, by returning false in the SVG function (e.g. constraints)
           block.max.row = pos.row;
           block.max.col = pos.col;
           block.endnodes = (!collapsed ? [pos] : [jQuery.extend(true, {}, pos)]);
@@ -359,27 +361,27 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       // }}}
       // Draw symbol {{{
       var sym_name = '';
-      if(!illustrator.elements[this.tagName])                                         {sym_name = 'unknown';}
-      else if(typeof illustrator.elements[this.tagName].resolve_symbol == 'function') {sym_name = illustrator.elements[this.tagName].resolve_symbol(this);}
-      else if(typeof illustrator.elements[this.tagName].resolve_symbol == 'string')   {sym_name = illustrator.elements[this.tagName].resolve_symbol;}
-      else                                                                            {sym_name = this.tagName;}
-      if((illustrator.elements[this.tagName] && illustrator.elements[this.tagName].svg()) || sym_name == 'unknown') { 
-        illustrator.draw.draw_symbol(sym_name, $(this).attr('svg-id'), $(this).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[this.tagName] ? illustrator.elements[this.tagName].type : 'primitive unknown');
-      } else { console.log("no icon "+ this.tagName);}
-      if(illustrator.elements[this.tagName] && illustrator.elements[this.tagName].border) illustrator.draw.draw_border($(this).attr('svg-id'), pos, block.max, block.svg);
-      if(illustrator.elements[this.tagName] && illustrator.elements[this.tagName].type == 'complex') illustrator.draw.draw_tile($(this).attr('svg-id'), pos, block.max, block.svg);
+      if(!illustrator.elements[tname])                                         {sym_name = 'unknown';}
+      else if(typeof illustrator.elements[tname].resolve_symbol == 'function') {sym_name = illustrator.elements[tname].resolve_symbol(this);}
+      else if(typeof illustrator.elements[tname].resolve_symbol == 'string')   {sym_name = illustrator.elements[tname].resolve_symbol;}
+      else                                                                            {sym_name = tname;}
+      if((illustrator.elements[tname] && illustrator.elements[tname].svg()) || sym_name == 'unknown') { 
+        illustrator.draw.draw_symbol(sym_name, $(this).attr('svg-id'), $(this).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[tname] ? illustrator.elements[tname].type : 'primitive unknown');
+      } else { console.log("no icon "+ tname);}
+      if(illustrator.elements[tname] && illustrator.elements[tname].border) illustrator.draw.draw_border($(this).attr('svg-id'), pos, block.max, block.svg);
+      if(illustrator.elements[tname] && illustrator.elements[tname].type == 'complex') illustrator.draw.draw_tile($(this).attr('svg-id'), pos, block.max, block.svg);
       // }}}
       // Calculate Connection {{{
-      if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].closeblock) { // Close Block if element e.g. loop 
+      if(illustrator.elements[tname] != undefined && illustrator.elements[tname].closeblock) { // Close Block if element e.g. loop 
         for(node in block.endnodes) illustrator.draw.draw_connection(group, block.endnodes[node], pos, block.max.row+1, block.endnodes.length, true);
       }
-      if(illustrator.elements[this.tagName] != undefined && illustrator.elements[this.tagName].endnodes != 'this')  { 
+      if(illustrator.elements[tname] != undefined && illustrator.elements[tname].endnodes != 'this')  { 
         for(i in block.endnodes) endnodes.push(block.endnodes[i]); // collects all endpoints from different childs e.g. alternatives from choose 
       } else { endnodes = [jQuery.extend(true, {}, pos)]; } // sets this element as only endpoint (aggreagte)
       if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
         illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos, null, null, true);
       } else {
-        if ($.inArray(this.tagName,noarrow) == -1)
+        if ($.inArray(tname,noarrow) == -1)
           for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos, null, null, true);
         else  
           for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos, null, null, false);

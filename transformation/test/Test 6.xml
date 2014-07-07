@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <parallel wait="-1">
+    <parallel_branch>
+      <call id="a83" endpoint="timeout">
+        <parameters>
+          <label>Supply Mechanical Parts</label>
+          <method>post</method>
+          <type>task</type>
+          <mid>sid-D4C03035-FFE9-45A0-9958-E0072D8E7D69</mid>
+          <parameters>
+            <timeout>1</timeout>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a84" endpoint="timeout">
+        <parameters>
+          <label>Produce Mechanical Parts (A-Z)</label>
+          <method>post</method>
+          <type>task</type>
+          <mid>sid-CE44030B-094E-4ABE-A20C-2B26A4E0C1E2</mid>
+          <parameters>
+            <timeout>1</timeout>
+          </parameters>
+        </parameters>
+      </call>
+    </parallel_branch>
+    <parallel_branch>
+      <parallel wait="-1">
+        <parallel_branch>
+          <call id="a80" endpoint="timeout">
+            <parameters>
+              <label>Develop Control System</label>
+              <method>post</method>
+              <type>task</type>
+              <mid>sid-4FD7796A-0591-44C7-9CD4-396E1E1FB1AC</mid>
+              <parameters>
+                <timeout>1</timeout>
+              </parameters>
+            </parameters>
+            <manipulate output="result" language="application/javascript">data.a = 'path 1'</manipulate>
+          </call>
+        </parallel_branch>
+        <parallel_branch>
+          <call id="a79" endpoint="timeout">
+            <parameters>
+              <label>Supply Electric Parts</label>
+              <method>post</method>
+              <type>task</type>
+              <mid>sid-88FB8C16-1E86-4094-A856-44914C13E58C</mid>
+              <parameters>
+                <timeout>1</timeout>
+              </parameters>
+            </parameters>
+            <manipulate output="result" language="application/javascript">data.a = 'path 2'</manipulate>
+          </call>
+        </parallel_branch>
+      </parallel>
+    </parallel_branch>
+    <parallel_branch>
+      <call id="a85" endpoint="timeout">
+        <parameters>
+          <label>Produce Headcap System</label>
+          <method>post</method>
+          <type>task</type>
+          <mid>sid-E06AE736-3F81-4E20-9AE2-F9F52061309F</mid>
+          <parameters>
+            <timeout>1</timeout>
+          </parameters>
+        </parameters>
+      </call>
+    </parallel_branch>
+  </parallel>
+  <choose mode="exclusive">
+    <alternative condition="data.a == 'path 1'" language="text/javascript">
+      <call id="a87" endpoint="timeout">
+        <parameters>
+          <label>Systems Integration A</label>
+          <method>post</method>
+          <type>task</type>
+          <mid>sid-AC85624C-6560-4B37-ACF5-A5DF723B7234</mid>
+          <parameters>
+            <timeout>1</timeout>
+          </parameters>
+        </parameters>
+      </call>
+    </alternative>
+    <alternative condition="data.a == 'path 2'" language="text/javascript">
+      <call id="a92" endpoint="timeout">
+        <parameters>
+          <label>Systems Integration B</label>
+          <method>post</method>
+          <type>task</type>
+          <mid>sid-061DA4F1-581F-4F62-BD97-F291C1867FC4</mid>
+          <parameters>
+            <timeout>1</timeout>
+          </parameters>
+        </parameters>
+      </call>
+    </alternative>
+  </choose>
+</description>

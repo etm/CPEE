@@ -32,6 +32,7 @@ $(document).ready(function() {
   }); //}}}
 
   $('#dat_details input.pair_name, #dat_details input.prop_value, #dat_details textarea.prop_value, #dat_details select.prop_value, #dat_details input.pair_value').live('keyup',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
+  $('#dat_details select.prop_value').live('change',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
 });
 
 function mark_main_save(top) { //{{{
@@ -120,6 +121,7 @@ function serialize_details(parent) { //{{{
       xml.attr($('select.pname_mode').val(),$('input.pname_condition').val());
       break;
     case 'choose':
+      xml.attr('mode',$('select.pname_mode').val());
       break;
     case 'alternative':
       xml.attr('condition',$('input.pname_condition').val());

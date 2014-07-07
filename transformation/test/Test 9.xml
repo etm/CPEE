@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <loop pre_test="true">
+    <choose mode="exclusive">
+      <alternative condition="data.a &lt; 3" language="text/javascript">
+        <call id="a74" endpoint="timeout">
+          <parameters>
+            <label>A</label>
+            <method/>
+            <type>serviceTask</type>
+            <mid>sid-1867B455-950E-4191-81A8-B6899B0330AF</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+          <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+        </call>
+      </alternative>
+      <alternative condition="data.a &gt;= 3 &amp;&amp; data.a &lt; 5" language="text/javascript">
+        <call id="a76" endpoint="timeout">
+          <parameters>
+            <label>B</label>
+            <method/>
+            <type>serviceTask</type>
+            <mid>sid-975D733D-EA63-42A4-8AF8-2A8C5DA3756C</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+          <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+        </call>
+      </alternative>
+      <otherwise>
+        <break/>
+      </otherwise>
+    </choose>
+  </loop>
+</description>

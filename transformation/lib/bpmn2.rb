@@ -42,6 +42,10 @@ module ProcessTransformation
         doc.find("/bm:definitions/bm:process/bm:*[@id and @name and not(@itemSubjectRef) and not(name()='sequenceFlow')]").each do |e|
           n = Node.new(e.attributes['id'],e.qname.name.to_sym,e.attributes['name'].strip,e.find('count(bm:incoming)'),e.find('count(bm:outgoing)'))
 
+          if e.attributes['scriptFormat'] != ''
+            n.script_type = e.attributes['scriptFormat']
+          end
+
           e.find("bm:property[@name='cpee:endpoint']/@itemSubjectRef").each do |ep|
             n.endpoints << ep.value
           end
@@ -49,6 +53,7 @@ module ProcessTransformation
             n.methods << m.value
           end
           e.find("bm:script").each do |s|
+            n.script ||= ''
             n.script << s.text.strip
           end
           e.find("bm:ioSpecification/bm:dataInput").each do |a|
@@ -84,6 +89,7 @@ module ProcessTransformation
           if node.type == :scriptTask && (x = @graph.find_script_id(node.id)).any?
             x.each do |k,n|
               n.script = node.script
+              n.script_type = node.script_type
             end
             true
           else
@@ -132,7 +138,7 @@ module ProcessTransformation
           when :exclusiveGateway
             Conditional.new(node.id,:exclusive,node.type)
           when :eventBasedGateway
-            Conditional.new(node.id,:event,node.type)
+            Parallel.new(node.id,node.type,1)
           when :inclusiveGateway
             Conditional.new(node.id,:inclusive,node.type)
           when :endEvent, :startEvent, nil
@@ -153,7 +159,10 @@ module ProcessTransformation
           if node = traces.same_first
             if branch.condition?
               li = @graph.link(branch.id,traces.first_node.id)
-              branch.condition << li.condition unless li.nil?
+              unless li.nil?
+                branch.condition << li.condition 
+                branch.condition_type = "text/javascript"
+              end  
             end
             if node == enode
               traces.shift_all
@@ -179,7 +188,7 @@ module ProcessTransformation
                   ### dont remove it, treat it as a normal conditional
                   ### an infinite loop that can only be left by break is created
                   node.incoming = 1
-                  branch << BlindLoop.new(node.id)
+                  branch << InfiniteLoop.new(node.id)
                   ### add the blank conditional to get a break
                   len = loops.length
                   loops.add_breaks

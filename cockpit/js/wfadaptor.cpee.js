@@ -162,6 +162,8 @@ function CPEE(adaptor) {
         tab.append(create_input_property('Condition','',$(node).attr(mode)));
         break;
       case 'choose':
+        var mode = ($(node).attr('mode') == 'inclusive' || $(node).attr('mode') == undefined ? 'inclusive' : 'exclusive')
+        tab.append(create_select_property('Mode','',mode,['exclusive','inclusive']));
         break;
       case 'alternative':
         tab.append(create_input_property('Condition','',$(node).attr('condition')));
@@ -351,19 +353,14 @@ function CPEE(adaptor) {
       'resolve_symbol' : function(node) { 
         if($(node).attr('endpoint') == 'instantiation') {
           return 'callinstantiation'; 
-          return illustrator.elements.callinstantiation.draw(node, pos, block);
         } else if($(node).attr('endpoint') == 'correlation') {
           return 'callcorrelation'; 
-          return illustrator.elements.callcorrelation.draw(node, pos, block);
         } else if($('parameters > service', node).length > 0) {
           return 'callinjection'; 
-          return illustrator.elements.callinjection.draw(node, pos, block);
         } else if($('manipulate', node).length > 0) {
           return 'callmanipulate'; 
-          return illustrator.elements.callmanipulate.draw(node, pos, block);
         } else {
-          return'call' 
-          return illustrator.draw.draw_symbol('call', $(node).attr('svg-id'), pos.row, pos.col);
+          return'call';
         }
       },
       'svg': function() {
@@ -425,6 +422,34 @@ function CPEE(adaptor) {
     'click': events.click,
    }//}}}
   }; /*}}}*/
+  this.elements.break = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'primitive',
+      'endnodes' : 'this',
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<circle cx="15" cy="15" r="14" class="stand"/>' +
+                    '<circle cx="15" cy="15" r="11" class="stand"/>' +
+                    '<polygon points="10.5,20.5 15,8.5 20.5,20.5 15,15.5 10.5,20.5" class="black"/>' +
+                  '</svg>');
+      }
+    },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = $X('<break xmlns="http://cpee.org/ns/description/1.0"/>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        return [];
+      }
+    },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      events.mousedown(node,e,false, true);
+    },
+    'click': events.click,
+   }//}}}
+  }; /*}}}*/
   this.elements.constraints = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'primitive',
@@ -451,9 +476,9 @@ function CPEE(adaptor) {
   }; /*}}}*/
   
   // Complex Elements
-  this.elements.choose = { /*{{{*/
+  this.elements.choose_inclusive = { /*{{{*/
     'illustrator': {//{{{
-      'type' : 'complex',
+      'type' : 'abstract',
       'endnodes' : 'aggregate',
       'closeblock': false,
       'expansion' : function(node) { 
@@ -471,7 +496,136 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<choose xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
+        var node = $X('<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        var func = null;
+        if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
+        else { func = adaptor.description.insert_after }
+        if(node.children('parallel_branch').length > 0) {
+          return [{'label': 'Parallel Branch', 
+           'function_call': func, 
+           'menu_icon': elements.parallel_branch.illustrator.svg, 
+           'params': [adaptor.description.elements.parallel_branch.create, node]}];
+        }
+        var childs = [{'label': 'Alternative', 
+         'function_call': func, 
+         'menu_icon': elements.alternative.illustrator.svg, 
+         'params': [adaptor.description.elements.alternative.create, node]}];
+        if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length) 
+          childs.push({'label': 'Otherwise', 
+           'function_call': func, 
+           'menu_icon': elements.otherwise.illustrator.svg, 
+           'params': [adaptor.description.elements.otherwise.create, node]});
+        if(node.parents('parallel').length > node.parents('parallel_branch').length) 
+          childs.push({'label': 'Parallel Branch', 
+           'function_call': func, 
+           'menu_icon': elements.parallel_branch.illustrator.svg, 
+           'params': [adaptor.description.elements.parallel_branch.create, node]});
+        return childs; 
+      }
+    },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      events.mousedown(node,e,true, true);
+    },
+    'click': events.click,
+    'dblclick': events.dblclick,
+    'mouseover': events.mouseover,
+    'mouseout': events.mouseout,
+   }//}}}
+  };  /*}}}*/
+  this.elements.choose_exclusive = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'abstract',
+      'endnodes' : 'aggregate',
+      'closeblock': false,
+      'expansion' : function(node) { 
+        return 'horizontal';
+      }, 
+      'col_shift' : function(node) { 
+        return false; 
+      },
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
+                    '<line x1="10.5" y1="20.5" x2="20.5" y2="10.5" class="stand"/>' +
+                    '<line x1="10.5" y1="10.5" x2="20.5" y2="20.5" class="stand"/>' +
+                  '</svg>');
+      }
+    },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = $X('<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        var func = null;
+        if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
+        else { func = adaptor.description.insert_after }
+        if(node.children('parallel_branch').length > 0) {
+          return [{'label': 'Parallel Branch', 
+           'function_call': func, 
+           'menu_icon': elements.parallel_branch.illustrator.svg, 
+           'params': [adaptor.description.elements.parallel_branch.create, node]}];
+        }
+        var childs = [{'label': 'Alternative', 
+         'function_call': func, 
+         'menu_icon': elements.alternative.illustrator.svg, 
+         'params': [adaptor.description.elements.alternative.create, node]}];
+        if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length) 
+          childs.push({'label': 'Otherwise', 
+           'function_call': func, 
+           'menu_icon': elements.otherwise.illustrator.svg, 
+           'params': [adaptor.description.elements.otherwise.create, node]});
+        if(node.parents('parallel').length > node.parents('parallel_branch').length) 
+          childs.push({'label': 'Parallel Branch', 
+           'function_call': func, 
+           'menu_icon': elements.parallel_branch.illustrator.svg, 
+           'params': [adaptor.description.elements.parallel_branch.create, node]});
+        return childs; 
+      }
+    },//}}}
+  'adaptor' : {//{{{
+    'mousedown': function (node, e) {
+      events.mousedown(node,e,true, true);
+    },
+    'click': events.click,
+    'dblclick': events.dblclick,
+    'mouseover': events.mouseover,
+    'mouseout': events.mouseout,
+   }//}}}
+  };  /*}}}*/
+
+  this.elements.choose = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'complex',
+      'endnodes' : 'aggregate',
+      'closeblock': false,
+      'expansion' : function(node) { 
+        return 'horizontal';
+      }, 
+      'resolve_symbol' : function(node) { 
+        if($(node).attr('mode') == 'exclusive') {
+          return 'choose_exclusive'; 
+        } else {
+          return 'choose_inclusive';
+        }
+      },
+      'col_shift' : function(node) { 
+        return false; 
+      },
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
+                    '<circle cx="15.5" cy="15.5" r="7" class="stand"/>' + 
+                  '</svg>');
+      }
+    },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = $X('<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
         return node;
       },
       'permissible_children': function(node) {

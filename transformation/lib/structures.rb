@@ -23,7 +23,7 @@ class Node #{{{
   @@niceid = -1
   attr_reader :id, :label, :niceid
   attr_reader :endpoints, :methods, :parameters
-  attr_accessor :script, :script_id, :script_var, :incoming, :outgoing, :type
+  attr_accessor :script, :script_id, :script_var, :script_type, :incoming, :outgoing, :type
   def initialize(id,type,label,incoming,outgoing)
     @id = id
     @niceid = (@@niceid += 1)
@@ -31,7 +31,8 @@ class Node #{{{
     @label = label
     @endpoints = []
     @methods = []
-    @script = ''
+    @script = nil
+    @script_type = nil
     @script_id = nil
     @script_var = 'result'
     @parameters = {}
@@ -57,13 +58,14 @@ end
 
 class Alternative < Array #{{{
   include Container
-  attr_accessor :condition
+  attr_accessor :condition, :condition_type
   attr_reader :id
   def condition?; true; end
   def initialize(id)
     @container = true
     @id = id
     @condition = []
+    @condition_type = nil
   end
 end #}}}
 class Branch < Array #{{{
@@ -75,7 +77,7 @@ class Branch < Array #{{{
     @id = id
   end
 end #}}}
-class BlindLoop < Array #{{{
+class InfiniteLoop < Array #{{{
   include Container
   def condition?; false; end
   attr_accessor :id, :type
@@ -87,13 +89,14 @@ class BlindLoop < Array #{{{
 end #}}}
 class Loop < Array #{{{
   include Container
-  attr_accessor :id, :type, :condition
+  attr_accessor :id, :type, :condition, :condition_type
   def condition?; true; end
   def initialize(id)
     @container = true
     @id = id
     @type = :loop
     @condition = []
+    @condition_type = nil
   end  
 end #}}}
 
@@ -102,12 +105,13 @@ class Parallel #{{{
   include Struct
   include Enumerable
   attr_reader :id, :sub
-  attr_accessor :type
-  def initialize(id,type)
+  attr_accessor :type, :wait
+  def initialize(id,type,wait='-1')
     @container = true
     @id = id
     @type = type
     @sub = []
+    @wait = wait
   end
   def new_branch
     (@sub << Branch.new(@id)).last

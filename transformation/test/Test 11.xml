@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <call id="a99" endpoint="timeout">
+    <parameters>
+      <label>A</label>
+      <method/>
+      <type>serviceTask</type>
+      <mid>sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819</mid>
+      <parameters>
+        <timeout>1</timeout>
+      </parameters>
+    </parameters>
+  </call>
+  <call id="a100" endpoint="timeout">
+    <parameters>
+      <label>B</label>
+      <method/>
+      <type>serviceTask</type>
+      <mid>sid-0418754D-A9C4-4832-B8CA-8436A7372318</mid>
+      <parameters>
+        <timeout>1</timeout>
+      </parameters>
+    </parameters>
+    <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+  </call>
+  <loop pre_test="true">
+    <choose mode="exclusive">
+      <alternative condition="data.a &lt; 3" language="text/javascript">
+        <call id="a99" endpoint="timeout">
+          <parameters>
+            <label>A</label>
+            <method/>
+            <type>serviceTask</type>
+            <mid>sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+        </call>
+        <call id="a100" endpoint="timeout">
+          <parameters>
+            <label>B</label>
+            <method/>
+            <type>serviceTask</type>
+            <mid>sid-0418754D-A9C4-4832-B8CA-8436A7372318</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+          <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+        </call>
+      </alternative>
+      <otherwise>
+        <call id="a101" endpoint="timeout">
+          <parameters>
+            <label>C</label>
+            <method/>
+            <type>serviceTask</type>
+            <mid>sid-E2CECD87-A7C8-48E9-B3A8-02BB2F04E6AE</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+          <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+        </call>
+        <choose mode="exclusive">
+          <alternative condition="data.a &lt; 5" language="text/javascript">
+            <call id="a100" endpoint="timeout">
+              <parameters>
+                <label>B</label>
+                <method/>
+                <type>serviceTask</type>
+                <mid>sid-0418754D-A9C4-4832-B8CA-8436A7372318</mid>
+                <parameters>
+                  <timeout>1</timeout>
+                </parameters>
+              </parameters>
+              <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+            </call>
+          </alternative>
+          <otherwise>
+            <break/>
+          </otherwise>
+        </choose>
+      </otherwise>
+    </choose>
+  </loop>
+</description>

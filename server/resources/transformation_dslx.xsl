@@ -42,6 +42,10 @@
       </xsl:call-template>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
+    <xsl:if test="name()='break'">
+      <xsl:text>break</xsl:text>
+      <xsl:call-template name="print-newline"/>
+    </xsl:if>
     <xsl:if test="name()='parallel'">
       <xsl:text>parallel</xsl:text>
       <xsl:if test="@wait">
@@ -63,14 +67,32 @@
     <xsl:if test="name()='loop'">
       <xsl:text>loop </xsl:text>
       <xsl:if test="@pre_test">
-        <xsl:text>pre_test{</xsl:text>
-        <xsl:value-of select="@pre_test"/>
-        <xsl:text>} </xsl:text>
+        <xsl:choose>
+          <xsl:when test="not(@language) or @language='application/x-ruby'">
+            <xsl:text>pre_test{</xsl:text>
+            <xsl:value-of select="@pre_test"/>
+            <xsl:text>} </xsl:text>
+          </xsl:when>  
+          <xsl:otherwise>
+            <xsl:text>pre_test("</xsl:text>
+            <xsl:value-of select="@pre_test"/>
+            <xsl:text>") </xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:if>
       <xsl:if test="@post_test">
-        <xsl:text>post_test{</xsl:text>
-        <xsl:value-of select="@post_test"/>
-        <xsl:text>} </xsl:text>
+        <xsl:choose>
+          <xsl:when test="not(@language) or @language='application/x-ruby'">
+            <xsl:text>post_test{</xsl:text>
+            <xsl:value-of select="@post_test"/>
+            <xsl:text>} </xsl:text>
+          </xsl:when>  
+          <xsl:otherwise>
+            <xsl:text>post_test("</xsl:text>
+            <xsl:value-of select="@post_test"/>
+            <xsl:text>") </xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:if>
       <xsl:text>do</xsl:text>
       <xsl:call-template name="print-newline"/>
@@ -85,7 +107,16 @@
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='choose'">
-      <xsl:text>choose do</xsl:text>
+      <xsl:text>choose </xsl:text>
+        <xsl:choose>
+          <xsl:when test="@mode='exclusive'">
+            <xsl:text>:exclusive</xsl:text>
+          </xsl:when>  
+          <xsl:otherwise>
+            <xsl:text>:inclusive</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      <xsl:text> do</xsl:text>
       <xsl:call-template name="print-newline"/>
       <xsl:apply-templates>
         <xsl:with-param name="myspace"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
@@ -127,7 +158,18 @@
       <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
     </xsl:call-template>
     <xsl:text>alternative </xsl:text>
-    <xsl:value-of select="@condition"/>
+    <xsl:choose>
+      <xsl:when test="not(@language) or @language='application/x-ruby'">
+        <xsl:text>"</xsl:text>
+        <xsl:value-of select="@condition"/>
+        <xsl:text>"</xsl:text>
+      </xsl:when>  
+      <xsl:otherwise>
+        <xsl:text>"</xsl:text>
+        <xsl:value-of select="@condition"/>
+        <xsl:text>"</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
     <xsl:text> do</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
