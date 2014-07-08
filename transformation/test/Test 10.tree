@@ -1,17 +1,17 @@
 TREE:
   ├ Parallel
   │ ├ Branch
-  │ │ ├ 19
-  │ │ └ 20
+  │ │ ├ 12
+  │ │ └ 13
   │ ├ Branch
   │ │ └ Parallel
   │ │   ├ Branch
-  │ │   │ └ 16
+  │ │   │ └ 9
   │ │   └ Branch
-  │ │     └ 15
+  │ │     └ 8
   │ └ Branch
-  │   └ 21
-  ├ 23
+  │   └ 14
+  ├ 16
   └ Loop
-    ├ 27
-    └ 23
+    ├ 20
+    └ 16

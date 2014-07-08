@@ -1,21 +1,35 @@
 #!/usr/bin/ruby
 # encoding: UTF-8
+#
+# This file is part of CPEE.
+#
+# CPEE is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# CPEE (file COPYING in the main directory).  If not, see
+# <http://www.gnu.org/licenses/>.
+
 require 'rubygems'
-require File.expand_path(File.dirname(__FILE__) + '/../lib/bpmn2')
-require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee')
+require File.expand_path(File.dirname(__FILE__) + '/../../lib/cpee/processtransformation/bpmn2')
+require File.expand_path(File.dirname(__FILE__) + '/../../lib/cpee/processtransformation/cpee')
 require 'pp'
 
 Dir.chdir(File.expand_path(File.dirname(__FILE__)))
 f = "Test 1.bpmn"
 
-bpmn2 = ProcessTransformation::Source::BPMN2.new(File.read(f))
+bpmn2 = CPEE::ProcessTransformation::Source::BPMN2.new(File.read(f))
 
 p bpmn2.dataelements
 p bpmn2.endpoints
 
-
-bpmn2.traces
-tree = bpmn2.tree(false).to_s
-xml = bpmn2.model(ProcessTransformation::Target::CPEE)
+bpmn2.build_traces
+tree = bpmn2.build_tree(false).to_s
+xml = bpmn2.generate_model(CPEE::ProcessTransformation::Target::CPEE)
 
 puts tree

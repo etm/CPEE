@@ -2,8 +2,8 @@ TREE:
   └ InfiniteLoop
     └ Conditional
       ├ Alternative
-      │ └ 74
+      │ └ 43
       ├ Alternative
-      │ └ 76
+      │ └ 45
       └ Alternative
         └ Break
