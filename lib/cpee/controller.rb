@@ -153,6 +153,10 @@ module CPEE
       @callback = [] # everything should be empty now
     end # }}}
 
+    def info
+      @properties.data.find("string(/p:properties/p:info)")
+    end
+
     def serialize_dataelements! #{{{
       @properties.modify do |doc|
         node = doc.find("/p:properties/p:dataelements").first
