@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:d="http://cpee.org/ns/description/1.0">
+<xsl:stylesheet version="1.0" 
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+    xmlns:d="http://cpee.org/ns/description/1.0" 
+    xmlns:str="http://exslt.org/strings">
+
   <xsl:output method="text"/>
   <xsl:strip-space elements="*"/>
   <xsl:variable name="myspacemultiplier">2</xsl:variable>
@@ -26,8 +30,22 @@
       <xsl:value-of select="@id"/>
     </xsl:if>
     <xsl:if test="name()='call'">
-      <xsl:text>, :</xsl:text>
-      <xsl:value-of select="@endpoint"/>
+      <xsl:text>, </xsl:text>
+      <xsl:choose>
+        <xsl:when test="count(str:tokenize(@endpoint,' ')) > 1">
+          <xsl:text>[</xsl:text>
+          <xsl:for-each select="str:tokenize(@endpoint,' ')">
+            <xsl:if test="position() >1">, </xsl:if>
+            <xsl:text>:</xsl:text>
+            <xsl:value-of select="."/>
+          </xsl:for-each>
+          <xsl:text>]</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>:</xsl:text>
+          <xsl:value-of select="@endpoint"/>
+        </xsl:otherwise>
+      </xsl:choose>  
       <xsl:text>, { </xsl:text>
       <xsl:apply-templates select="d:parameters"/>
       <xsl:text> }</xsl:text>
