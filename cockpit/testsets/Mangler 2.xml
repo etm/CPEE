@@ -20,7 +20,7 @@
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="bookAir">
         <parameters>
-          <method>post</method>
+          <method>:post</method>
           <parameters>
             <from>data.from</from>
             <to>data.to</to>
@@ -35,7 +35,7 @@
           <parallel_branch pass="data.persons" local="p">
             <call id="a2" endpoint="bookHotel">
               <parameters>
-                <method>post</method>
+                <method>:post</method>
                 <parameters>
                   <to>data.to</to>
                 </parameters>
@@ -50,7 +50,7 @@
           <parallel_branch pass="data.persons" local="p">
             <call id="a4" endpoint="bookHotel">
               <parameters>
-                <method>post</method>
+                <method>:post</method>
                 <parameters>
                   <to>data.to</to>
                 </parameters>
@@ -62,7 +62,7 @@
           <parallel_branch pass="data.persons" local="p">
             <call id="a5" endpoint="bookHotel">
               <parameters>
-                <method>post</method>
+                <method>:post</method>
                 <parameters>
                   <to>data.to</to>
                 </parameters>
@@ -78,7 +78,7 @@
         <alternative condition="data.costs > 700">
           <call id="a7" endpoint="approve">
             <parameters>
-              <method>post</method>
+              <method>:post</method>
               <parameters>
                 <costs>data.costs</costs>
               </parameters>

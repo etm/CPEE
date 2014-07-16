@@ -15,7 +15,7 @@
           <loop pre_test='data.feedback'>
             <call id="publish" endpoint="timeout">
                 <parameters><!--{{{-->
-                <method>post</method>
+                <method>:post</method>
                 <parameters>
                   <timeout>1</timeout>
                 </parameters>
@@ -25,7 +25,7 @@
               <alternative condition="data.x != nil">
                 <call id="a4_1" endpoint="timeout">
                   <parameters><!--{{{-->
-                    <method>post</method>
+                    <method>:post</method>
                     <parameters>
                       <timeout>4</timeout>
                     </parameters>
@@ -35,7 +35,7 @@
               <otherwise>
                 <call id="a4_2" endpoint="timeout">
                   <parameters><!--{{{-->
-                    <method>post</method>
+                    <method>:post</method>
                     <parameters>
                       <timeout>10</timeout>
                     </parameters>
@@ -47,7 +47,7 @@
               <alternative condition="data.x != nil">
                 <call id="a4_1" endpoint="timeout">
                   <parameters><!--{{{-->
-                    <method>post</method>
+                    <method>:post</method>
                     <parameters>
                       <timeout>4</timeout>
                     </parameters>
@@ -57,7 +57,7 @@
               <otherwise>
                 <call id="a4_2" endpoint="timeout">
                   <parameters><!--{{{-->
-                    <method>post</method>
+                    <method>:post</method>
                     <parameters>
                       <timeout>10</timeout>
                     </parameters>
@@ -68,7 +68,7 @@
           </loop>
           <call id="a4_1" endpoint="timeout">
             <parameters><!--{{{-->
-              <method>post</method>
+              <method>:post</method>
               <parameters>
                 <timeout>4</timeout>
               </parameters>
@@ -79,7 +79,7 @@
           <loop pre_test='data.feedback'>
             <call id="prepare" endpoint="timeout">
                 <parameters><!--{{{-->
-                <method>post</method>
+                <method>:post</method>
                 <parameters>
                   <timeout>4</timeout>
                 </parameters>
@@ -91,7 +91,7 @@
                   <alternative condition="data.x != nil">
                     <call id="a4_1" endpoint="timeout">
                       <parameters><!--{{{-->
-                        <method>post</method>
+                        <method>:post</method>
                         <parameters>
                           <timeout>4</timeout>
                         </parameters>
@@ -103,7 +103,7 @@
                   <alternative condition="data.x.nil?">
                     <call id="a4_2" endpoint="timeout">
                       <parameters><!--{{{-->
-                        <method>post</method>
+                        <method>:post</method>
                         <parameters>
                           <timeout>10</timeout>
                         </parameters>
@@ -117,7 +117,7 @@
                   <alternative condition="data.x != nil">
                     <call id="a4_1" endpoint="timeout">
                       <parameters><!--{{{-->
-                        <method>post</method>
+                        <method>:post</method>
                         <parameters>
                           <timeout>4</timeout>
                         </parameters>
@@ -129,7 +129,7 @@
                   <alternative condition="data.x.nil?">
                     <call id="a4_2" endpoint="timeout">
                       <parameters><!--{{{-->
-                        <method>post</method>
+                        <method>:post</method>
                         <parameters>
                           <timeout>10</timeout>
                         </parameters>
