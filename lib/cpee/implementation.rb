@@ -25,7 +25,8 @@ module CPEE
 
   def self::implementation(opts)
     opts[:instances]                  ||= File.expand_path(File.dirname(__FILE__) + '/../../server/instances')
-    opts[:handlerwrappers]            ||= File.expand_path(File.dirname(__FILE__) + '/../../server/handlerwrappers')
+    opts[:global_handlerwrappers]     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/handlerwrappers')
+    opts[:handlerwrappers]            ||= ''
     opts[:topics]                     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/topics.xml')
     opts[:properties_init]            ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.init')
     opts[:properties_schema_active]   ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.active')
@@ -36,9 +37,12 @@ module CPEE
     opts[:empty_dslx]                 ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/empty_dslx.xml')
 
     Proc.new do
+      Dir[opts[:global_handlerwrappers] + "/*.rb"].each do |h|
+        require h
+      end unless opts[:global_handlerwrappers].strip == ''
       Dir[opts[:handlerwrappers] + "/*.rb"].each do |h|
         require h
-      end
+      end unless opts[:handlerwrappers].strip == ''
 
       controller = {}
       Dir[opts[:instances] + '/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.each do |id|
