@@ -29,7 +29,15 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
       (parameters[:parameters] || {}).each do |k,v|
-        params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v))
+        if v.is_a?(Struct) 
+          if v.respond_to?(:mimetype)
+            params <<  Riddl::Parameter::Complex.new("#{k}",v.mimetype,v.value)
+          else  
+            params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v.value))
+          end  
+        else
+          params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v))
+        end 
       end
       params << Riddl::Header.new("CPEE_BASE",@controller.base_url)
       params << Riddl::Header.new("CPEE_INSTANCE",@controller.instance_url)
@@ -105,18 +113,18 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def inform_syntax_error(err,code)# {{{
     @controller.notify("properties/description/error", :instance => @controller.instance, :message => err.message)
   end# }}}
-  def inform_manipulate_change(status,dataelements,endpoints) # {{{
+  def inform_manipulate_change(status,changed_dataelements,changed_endpoints,dataelements,endpoints) # {{{
     unless status.nil?
       @controller.serialize_status!
       @controller.notify("properties/status/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :id => status.id, :message => status.message)
     end  
     unless dataelements.nil?
       @controller.serialize_dataelements!
-      @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => dataelements)
+      @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => changed_dataelements)
     end
     unless endpoints.nil?
       @controller.serialize_endpoints!
-      @controller.notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => endpoints)
+      @controller.notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => changed_endpoints)
     end  
   end # }}}
   def inform_position_change(ipc={}) # {{{

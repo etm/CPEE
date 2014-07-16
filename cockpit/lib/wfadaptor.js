@@ -333,7 +333,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       } else { 
         $(this).attr('svg-id',  $(this).attr('id'));
         if ($(this).children('parameters').length > 0) {
-          $(this).attr('svg-label', $('label',$(this).children('parameters')).text());
+          $(this).attr('svg-label', $('label',$(this).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,''));
         } else {  
           $(this).attr('svg-label', '');
         }  
