@@ -16,7 +16,7 @@
         <parallel_branch pass="data.persons" local="p">
           <call id="a2" endpoint="bookHotel">
             <parameters>
-              <method>post</method>
+              <method>:post</method>
               <parameters>
                 <to>"Vienna"</to>
               </parameters>
