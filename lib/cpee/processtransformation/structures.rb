@@ -112,6 +112,7 @@ module CPEE
     class Loop < Array #{{{
       include Container
       attr_accessor :id, :type, :condition, :condition_type
+      attr_reader :attributes
       def condition?; true; end
       def initialize(id)
         @container = true
@@ -119,6 +120,7 @@ module CPEE
         @type = :loop
         @condition = []
         @condition_type = nil
+        @attributes = {}
       end  
     end #}}}
 
@@ -146,6 +148,7 @@ module CPEE
       include Enumerable
       attr_reader :container
       attr_reader :id, :sub, :mode
+      attr_reader :attributes
       attr_accessor :type
       def initialize(id,mode,type)
         @container = true
@@ -153,6 +156,7 @@ module CPEE
         @sub = []
         @mode = mode
         @type = type
+        @attributes = {}
       end  
       def new_branch
         (@sub << Alternative.new(@id)).last
