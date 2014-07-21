@@ -185,7 +185,7 @@ module CPEE
               if branch.condition?
                 li = @graph.link(branch.id,traces.first_node.id)
                 unless li.nil?
-                  branch.condition << li.condition 
+                  branch.condition << li.condition unless li.condition.nil?
                   branch.condition_type = "text/javascript"
                 end  
               end
@@ -199,14 +199,18 @@ module CPEE
                 end
               else
                 loops = traces.loops
-                if node.type == :exclusiveGateway
+                if node.type == :exclusiveGateway || traces.length == 1
                   ### as the first is a decision node, just remove and continue
                   if node.incoming == 2
                     node.incoming = 1
                     branch << Loop.new(node.id)
                     ### remove the gateway itself, as for a single loop it is no longer used.
                     ### the condition will the loop condition
-                    traces.shift_all
+                    if traces.length == 1
+                      loops.first.pop
+                    else
+                      traces.shift_all
+                    end
                     loops.remove_empty
                     build_ttree branch.last, loops, nil, debug
                   else  

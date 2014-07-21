@@ -38,8 +38,8 @@ module CPEE
         def generate_for_list(list,res)
           list.each do |e|
             nam = e.class.name.gsub(/\w+:+/,'')
-          send("print_#{nam}".to_sym,e,res)
-        end
+            send("print_#{nam}".to_sym,e,res)
+          end
         end
         private :generate_for_list
 
@@ -51,11 +51,15 @@ module CPEE
           s1 = res.add('loop', 'pre_test' => 'true')
           generate_for_list(node,s1)
         end
-        def print_Loop(node,res)
-          s1 = res.add('loop', 'pre_test' => node.condition.join(' && '))
+        def print_Loop_default(node,res)
+          s1 = res.add('loop', 'pre_test' => node.condition.empty? ? 'true' : node.condition.join(' && '))
           s1.attributes['language'] = node.condition_type unless node.condition_type.nil?
           generate_for_list(node,s1)
+          s1
         end
+        private :print_Loop_default
+        def print_Loop(node,res); print_Loop_default(node,res); end
+        private :print_Loop
 
         def print_Node(node,res)
           if node.endpoints.empty? && !node.script.nil? && node.script.strip != ''
@@ -83,16 +87,19 @@ module CPEE
         end
         private :print_Node
 
-        def print_Parallel(node,res)
+        def print_Parallel_default(node,res)
           s1 = res.add('parallel','wait' => node.wait)
           node.sub.each do |branch|
             s2 = s1.add('parallel_branch')
             generate_for_list(branch,s2)
           end
+          s1
         end
+        private :print_Parallel_default
+        def print_Parallel(node,res); print_Parallel_default(node,res); end
         private :print_Parallel
 
-        def print_Conditional(node,res)
+        def print_Conditional_default(node,res)
           s1 = res.add('d:choose', 'mode' => node.mode)
           node.sub.each do |branch|
             s2 = if branch.condition.any?
@@ -107,8 +114,12 @@ module CPEE
           if (x = s1.find('d:otherwise')).any?
             s1.add x
           end
+          s1
         end
+        private :print_Conditional_default
+        def print_Conditional(node,res); print_Conditional_default(node,res); end
         private :print_Conditional
+
       end
 
     end

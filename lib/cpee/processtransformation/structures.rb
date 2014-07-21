@@ -24,11 +24,12 @@ module CPEE
 
     class Link #{{{
       attr_accessor :from, :to
-      attr_reader :condition
+      attr_reader :condition, :attributes
       def initialize(from,to,cond=nil)
         @from  = from
         @to = to
         @condition = cond
+        @attributes = {}
       end
     end #}}}
 
@@ -294,6 +295,11 @@ module CPEE
           num = 0
           self.each{|n| num += 1 if n.include?(e)} 
           num == self.length
+        end
+
+        def infinite_loop_fix
+          self << self.first.dup
+          self.last.pop
         end
 
         def add_breaks
