@@ -182,7 +182,7 @@ module CPEE
             traces.uniq!
             debug_print debug, traces
             if node = traces.same_first
-              if branch.condition?
+              if branch.condition? && branch.empty?
                 li = @graph.link(branch.id,traces.first_node.id)
                 unless li.nil?
                   branch.condition << li.condition unless li.condition.nil?
@@ -238,10 +238,11 @@ module CPEE
               endnode = traces.find_endnode || enode
               tracesgroup, endnode = traces.segment_by endnode
               tracesgroup.each do |trcs|
+                nb = branch.last.new_branch
                 if trcs.finished?
-                  build_ttree branch.last.new_branch, Traces.new([[Break.new(1)]]), endnode, debug
+                  build_ttree nb, Traces.new([[Break.new(1)]]), endnode, debug
                 else  
-                  build_ttree branch.last.new_branch, trcs, endnode, debug
+                  build_ttree nb, trcs, endnode, debug
                 end  
                 endnode.incoming -= 1 unless endnode.nil?
               end
