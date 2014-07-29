@@ -199,15 +199,15 @@ module CPEE
                 end
               else
                 loops = traces.loops
-                if node.type == :exclusiveGateway || traces.length == 1
+                if node.type == :exclusiveGateway || traces.all_loops?
                   ### as the first is a decision node, just remove and continue
                   if node.incoming == 2
                     node.incoming = 1
                     branch << Loop.new(node.id)
                     ### remove the gateway itself, as for a single loop it is no longer used.
                     ### the condition will the loop condition
-                    if traces.length == 1
-                      loops.first.pop
+                    if traces.all_loops?
+                      loops.pop_all
                     else
                       traces.shift_all
                     end

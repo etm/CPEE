@@ -286,6 +286,9 @@ module CPEE
         def shift_all
           self.each{ |tr| tr.shift }
         end  
+        def pop_all
+          self.each{ |tr| tr.pop }
+        end  
 
         def finished?
           self.reduce(0){|sum,t| sum += t.length} == 0
@@ -300,11 +303,18 @@ module CPEE
           self.each{|n| num += 1 if n.include?(e)} 
           num == self.length
         end
-
-        def infinite_loop_fix
-          self << self.first.dup
-          self.last.pop
+        def same_position_in_all?(e,i)
+          num = 0
+          self.each{|n| num += 1 if n[i] == e}
+          num == self.length
         end
+
+        def all_loops?
+          num = 0
+          self.each{|n| num += 1 if n.first == n.last }
+          num == self.length
+        end
+
 
         def add_breaks
           trueloops = self.find_all{ |t| t.last == t.first }.length
@@ -364,8 +374,8 @@ module CPEE
           max = nil
           sh = self.shortest
           sh = sh[0..-2] if sh.first == sh.last
-          sh.each do |e,i|
-            if self.include_in_all?(e)
+          sh.each_with_index do |e,i|
+            if self.same_position_in_all?(e,i)
               max = e
             else  
               break

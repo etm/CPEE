@@ -29,7 +29,8 @@ p bpmn2.dataelements
 p bpmn2.endpoints
 
 bpmn2.build_traces
-tree = bpmn2.build_tree(false).to_s
+
+tree = bpmn2.build_tree(true).to_s
 xml = bpmn2.generate_model(CPEE::ProcessTransformation::Target::CPEE)
 
-puts tree
+puts xml
