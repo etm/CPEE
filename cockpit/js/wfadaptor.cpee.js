@@ -214,6 +214,29 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = null;
+        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        if(node.children('manipulate').lenght < 1)
+          return [
+           {'label': 'Script Block', 
+            'function_call': adaptor.description.insert_last_into, 
+            'menu_icon': elements.callmanipulate.illustrator.svg, 
+            'params': [adaptor.description.elements.manipulate.create, node]}
+          ];
+        return [];
+      }
+    },//}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, true);
+      },
+      'click': events.click,
+    }//}}}
   }; /*}}}*/
   this.elements.callcorrelation = { /*{{{*/
     'illustrator': {//{{{
@@ -227,6 +250,29 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = null;
+        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="correlation" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        if(node.children('manipulate').lenght < 1)
+          return [
+           {'label': 'Script Block', 
+            'function_call': adaptor.description.insert_last_into, 
+            'menu_icon': elements.callmanipulate.illustrator.svg, 
+            'params': [adaptor.description.elements.manipulate.create, node]}
+          ];
+        return [];
+      }
+    },//}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, true);
+      },
+      'click': events.click,
+    }//}}}
   }; /*}}}*/
   this.elements.callinstantiation = { /*{{{*/
     'illustrator': {//{{{
@@ -240,6 +286,29 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = null;
+        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="instantiate" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        if(node.children('manipulate').lenght < 1)
+          return [
+           {'label': 'Script Block', 
+            'function_call': adaptor.description.insert_last_into, 
+            'menu_icon': elements.callmanipulate.illustrator.svg, 
+            'params': [adaptor.description.elements.manipulate.create, node]}
+          ];
+        return [];
+      }
+    },//}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, true);
+      },
+      'click': events.click,
+    }//}}}
   }; /*}}}*/
   this.elements.callmanipulate = { /*{{{*/
     'illustrator': {//{{{
@@ -253,6 +322,29 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
+    'description' : {//{{{
+      'create':  function(target) {
+        var node = null;
+        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+        return node;
+      },
+      'permissible_children': function(node) {
+        if(node.children('manipulate').lenght < 1)
+          return [
+           {'label': 'Script Block', 
+            'function_call': adaptor.description.insert_last_into, 
+            'menu_icon': elements.callmanipulate.illustrator.svg, 
+            'params': [adaptor.description.elements.manipulate.create, node]}
+          ];
+        return [];
+      }
+    },//}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, true);
+      },
+      'click': events.click,
+    }//}}}
   }; /*}}}*/
   this.elements.choose_inclusive = { /*{{{*/
     'illustrator': {//{{{
