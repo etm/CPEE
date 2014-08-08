@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name             = "cpee"
-  s.version          = "1.3.141"
+  s.version          = "1.3.142"
   s.platform         = Gem::Platform::RUBY
   s.license          = "LGPL-3"
   s.summary          = "Preliminary release of cloud process execution engine (cpee). If you just need workflow execution, without a rest/xmpp service exposing it, then use WEEL"
