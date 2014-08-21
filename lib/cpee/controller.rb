@@ -439,7 +439,7 @@ module CPEE
           Thread.new(ke,ur) do |key,url|
             ev = build_notification(key,what,content,'event')
             if url.class == String
-              client = Riddl::Client.new(url,nil,:xmpp => @opts[:xmpp])
+              client = Riddl::Client.new(url,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml',:xmpp => @opts[:xmpp])
               client.post ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)} rescue nil
             elsif url.class == Riddl::Utils::Notifications::Producer::WS
               e = XML::Smart::string("<event/>")
@@ -475,7 +475,7 @@ module CPEE
             c['callback'] = callback
             notf = build_notification(k,what,c,'vote',callback)
             if u.class == String
-              client = Riddl::Client.new(u)
+              client = Riddl::Client.new(u,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml',:xmpp => @opts[:xmpp])
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
               @mutex.synchronize do
                 status, result, headers = client.post params
