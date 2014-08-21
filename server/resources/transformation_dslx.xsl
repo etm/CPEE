@@ -38,6 +38,9 @@
           </xsl:for-each>
           <xsl:text>]</xsl:text>
         </xsl:when>
+        <xsl:when test="count(str:tokenize(@endpoint,' ')) = 0">
+          <xsl:text>nil</xsl:text>
+        </xsl:when>
         <xsl:otherwise>
           <xsl:text>:</xsl:text>
           <xsl:value-of select="@endpoint"/>

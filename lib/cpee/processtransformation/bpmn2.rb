@@ -173,13 +173,14 @@ module CPEE
         end #}}}
         private :map_node
 
-        def build_ttree(branch,traces,enode=nil,debug=false)
+        def build_ttree(branch,traces,enode=nil,debug=false,down=0)
           while not traces.finished?
             ### if traces exist more than once, make it so they exist only once
             ### if somebody creates a modell with an inclusive/exclusive that
             ### has identical branches with different conditions, we are fucked
             ### but how are the odds? right? right?
             traces.uniq!
+            puts '--> now on ' + down.to_s if debug
             debug_print debug, traces
             if node = traces.same_first
               if branch.condition? && branch.empty?
@@ -211,8 +212,10 @@ module CPEE
                     else
                       traces.shift_all
                     end
+                    puts '--> down to ' + (down + 1).to_s if debug
                     loops.remove_empty
-                    build_ttree branch.last, loops, nil, debug
+                    puts '--> up from ' + down.to_s if debug
+                    build_ttree branch.last, loops.dup, nil, debug, down + 1
                   else  
                     ### dont remove it, treat it as a normal conditional
                     ### an infinite loop that can only be left by break is created
@@ -221,7 +224,9 @@ module CPEE
                     ### add the blank conditional to get a break
                     len = loops.length
                     loops.add_breaks
-                    build_ttree branch.last, loops, nil, debug
+                    puts '--> down to ' + (down + 1).to_s if debug
+                    build_ttree branch.last, loops.dup, nil, debug, down + 1
+                    puts '--> up from ' + down.to_s if debug
                     ### set outgoing to number of loops (without the break) so that it can be ignored (should be 1 all the time)
                     node.outgoing -= len
                   end   
@@ -229,7 +234,9 @@ module CPEE
                   node.incoming -= loops.length
                   ### throw away the loop traces, remove loop traces from front of all other traces
                   traces.segment_by_loops loops
-                  build_ttree branch, loops, nil, debug
+                  puts '--> down to ' + (down + 1).to_s if debug
+                  build_ttree branch, loops.dup, nil, debug, down + 1
+                  puts '--> up from ' + down.to_s if debug
                 end
                 traces.remove(loops)
                 traces.remove_empty
@@ -240,12 +247,17 @@ module CPEE
               tracesgroup.each do |trcs|
                 nb = branch.last.new_branch
                 if trcs.finished?
-                  build_ttree nb, Traces.new([[Break.new(1)]]), endnode, debug
+                  puts '--> down to ' + (down + 1).to_s if debug
+                  build_ttree nb, Traces.new([[Break.new(1)]]), endnode, debug, down + 1
+                  puts '--> up from ' + down.to_s if debug
                 else  
-                  build_ttree nb, trcs, endnode, debug
+                  puts '--> down to ' + (down + 1).to_s if debug
+                  build_ttree nb, trcs, endnode, debug, down + 1
+                  puts '--> up from ' + down.to_s if debug
                 end  
                 endnode.incoming -= 1 unless endnode.nil?
               end
+              traces.empty! if endnode.nil?
               ### all before is reduced to one incoming arrow
               ### if now there is still more than one incoming we have a loop situation
               ### where the end of a branching statement is also the starting/endpoint 

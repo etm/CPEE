@@ -264,6 +264,10 @@ module CPEE
           end  
         end
 
+        def empty!
+          self.delete_if{true}
+        end
+
         def remove_empty
           self.delete_if{|t| t.empty? }
         end
@@ -414,12 +418,14 @@ module CPEE
 
           # find common node (except loops)
           enode = nil
-          trcs.first.each do |n|
-            if trcs.include_in_all?(n)
-              enode = n
-              break
-            end  
-          end
+          unless trcs.empty?
+            trcs.first.each do |n|
+              if trcs.include_in_all?(n)
+                enode = n
+                break
+              end  
+            end
+          end  
           enode
         end  
 
