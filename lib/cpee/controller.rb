@@ -295,13 +295,12 @@ module CPEE
             start
           when 'simulating'  
             sim
+          when 'ready'
+            @instance.state_signal
         end
       else
         if node = @properties.data.find("/p:properties/p:state").first
-          case state
-            when 'stopping'; node.text = 'running'
-            when 'running'; node.text = 'stopped'
-          end
+          node.text = @instance.state_signal
         end
       end
     end #}}}
