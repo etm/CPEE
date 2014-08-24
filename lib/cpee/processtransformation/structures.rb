@@ -81,13 +81,14 @@ module CPEE
     class Alternative < Array #{{{
       include Container
       attr_accessor :condition, :condition_type
-      attr_reader :id
+      attr_reader :id, :attributes
       def condition?; true; end
       def initialize(id)
         @container = true
         @id = id
         @condition = []
         @condition_type = nil
+        @attributes = {}
       end
     end #}}}
     class Branch < Array #{{{
@@ -414,7 +415,7 @@ module CPEE
         def find_endnode
           # supress loops
           trcs = self.dup
-          trcs.delete_if { |t| t.uniq.length < t.length }
+          # trcs.delete_if { |t| t.uniq.length < t.length }
 
           # find common node (except loops)
           enode = nil

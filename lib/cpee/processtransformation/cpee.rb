@@ -54,6 +54,9 @@ module CPEE
         def print_Loop_default(node,res)
           s1 = res.add('loop', 'pre_test' => node.condition.empty? ? 'true' : node.condition.join(' && '))
           s1.attributes['language'] = node.condition_type unless node.condition_type.nil?
+          node.attributes.each do |k,v|
+            s1.attributes[k] = v
+          end  
           generate_for_list(node,s1)
           s1
         end
@@ -108,6 +111,9 @@ module CPEE
               a
             else
               s1.add('d:otherwise')
+            end  
+            branch.attributes.each do |k,v|
+              s2.attributes[k] = v
             end  
             generate_for_list(branch,s2)
           end

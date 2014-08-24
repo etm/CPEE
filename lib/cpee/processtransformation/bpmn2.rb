@@ -184,10 +184,16 @@ module CPEE
             debug_print debug, traces
             if node = traces.same_first
               if branch.condition? && branch.empty?
-                li = @graph.link(branch.id,traces.first_node.id)
+                li = if (branch.id == traces.first_node.id)
+                  ### for tail controlled loops
+                  @graph.link(branch.id,traces.second_nodes.first.id)
+                else
+                  @graph.link(branch.id,traces.first_node.id)
+                end
                 unless li.nil?
                   branch.condition << li.condition unless li.condition.nil?
                   branch.condition_type = "text/javascript"
+                  branch.attributes.merge!(li.attributes)
                 end  
               end
               if node == enode
@@ -205,18 +211,18 @@ module CPEE
                   if node.incoming == 2
                     node.incoming = 1
                     branch << Loop.new(node.id)
-                    ### remove the gateway itself, as for a single loop it is no longer used.
-                    ### the condition will the loop condition
                     if traces.all_loops?
+                      ### if all loops, tail loop thus remove the loopback
                       loops.pop_all
                     else
+                      ### remove the gateway itself, as for a single loop it is no longer used.
                       traces.shift_all
                     end
                     puts '--> down to ' + (down + 1).to_s if debug
                     loops.remove_empty
                     puts '--> up from ' + down.to_s if debug
                     build_ttree branch.last, loops.dup, nil, debug, down + 1
-                  else  
+                  else
                     ### dont remove it, treat it as a normal conditional
                     ### an infinite loop that can only be left by break is created
                     node.incoming = 1
@@ -243,17 +249,18 @@ module CPEE
               end
             else
               endnode = traces.find_endnode || enode
+              puts "--> endnode #{endnode.nil? ? 'nil' : endnode.niceid}" if debug
               tracesgroup, endnode = traces.segment_by endnode
               tracesgroup.each do |trcs|
                 nb = branch.last.new_branch
                 if trcs.finished?
-                  puts '--> down to ' + (down + 1).to_s if debug
+                  puts '--> branch down to ' + (down + 1).to_s if debug
                   build_ttree nb, Traces.new([[Break.new(1)]]), endnode, debug, down + 1
-                  puts '--> up from ' + down.to_s if debug
+                  puts '--> branch up from ' + down.to_s if debug
                 else  
-                  puts '--> down to ' + (down + 1).to_s if debug
+                  puts '--> branch down to ' + (down + 1).to_s if debug
                   build_ttree nb, trcs, endnode, debug, down + 1
-                  puts '--> up from ' + down.to_s if debug
+                  puts '--> branch up from ' + down.to_s if debug
                 end  
                 endnode.incoming -= 1 unless endnode.nil?
               end
