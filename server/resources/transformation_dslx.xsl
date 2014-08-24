@@ -102,7 +102,7 @@
           <xsl:otherwise>
             <xsl:text>pre_test("</xsl:text>
             <xsl:value-of select="@pre_test"/>
-            <xsl:text>") </xsl:text>
+            <xsl:text>")</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
@@ -116,11 +116,18 @@
           <xsl:otherwise>
             <xsl:text>post_test("</xsl:text>
             <xsl:value-of select="@post_test"/>
-            <xsl:text>") </xsl:text>
+            <xsl:text>")</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
-      <xsl:text>do</xsl:text>
+      <xsl:for-each select="@*[not(name()='language' or name()='pre_test' or name()='post_test')]">
+        <xsl:text>, :</xsl:text>
+        <xsl:value-of select="name(.)"/>
+        <xsl:text> => "</xsl:text>
+        <xsl:value-of select="."/>
+        <xsl:text>"</xsl:text>
+      </xsl:for-each>   
+      <xsl:text> do</xsl:text>
       <xsl:call-template name="print-newline"/>
       <xsl:apply-templates>
         <xsl:with-param name="myspace">
@@ -211,6 +218,13 @@
         <xsl:text>"</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
+    <xsl:for-each select="@*[not(name()='language' or name()='condition')]">
+      <xsl:text>, :</xsl:text>
+      <xsl:value-of select="name(.)"/>
+      <xsl:text> => "</xsl:text>
+      <xsl:value-of select="."/>
+      <xsl:text>"</xsl:text>
+    </xsl:for-each>   
     <xsl:text> do</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
@@ -235,7 +249,16 @@
         <xsl:value-of select="$myspace+$myspacemultiplier"/>
       </xsl:with-param>
     </xsl:call-template>
-    <xsl:text>otherwise do</xsl:text>
+    <xsl:text>otherwise </xsl:text>
+    <xsl:for-each select="@*[not(name()='language' or name()='condition')]">
+      <xsl:if test="position() &gt;1">, </xsl:if>
+      <xsl:text>:</xsl:text>
+      <xsl:value-of select="name(.)"/>
+      <xsl:text> => "</xsl:text>
+      <xsl:value-of select="."/>
+      <xsl:text>"</xsl:text>
+    </xsl:for-each>   
+    <xsl:text> do</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
       <xsl:with-param name="myspace">
