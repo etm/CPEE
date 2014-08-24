@@ -436,13 +436,16 @@ module CPEE
       if item
         item.each do |ke,ur|
           Thread.new(ke,ur) do |key,url|
-            ev = build_notification(key,what,content,'event')
+            notf = build_notification(key,what,content,'event')
             if url.class == String
               client = Riddl::Client.new(url,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml',:xmpp => @opts[:xmpp])
-              client.post ev.map{|k,v|Riddl::Parameter::Simple.new(k,v)} rescue nil
+              params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
+              params << Riddl::Header.new("CPEE_BASE",self.base)
+              params << Riddl::Header.new("CPEE_INSTANCE",self.instance)
+              client.post params
             elsif url.class == Riddl::Utils::Notifications::Producer::WS
               e = XML::Smart::string("<event/>")
-              ev.each do |k,v|
+              notf.each do |k,v|
                 e.root.add(k,v)
               end
               url.send(e.to_s) rescue nil
@@ -476,6 +479,8 @@ module CPEE
             if u.class == String
               client = Riddl::Client.new(u,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml',:xmpp => @opts[:xmpp])
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
+              params << Riddl::Header.new("CPEE_BASE",self.base)
+              params << Riddl::Header.new("CPEE_INSTANCE",self.instance)
               @mutex.synchronize do
                 status, result, headers = client.post params
                 if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
