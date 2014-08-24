@@ -1,5 +1,9 @@
 TREE:
   ├ 12
-  └ Loop
-    ├ 14
-    └ 12
+  └ InfiniteLoop
+    └ Conditional
+      ├ Alternative
+      │ ├ 14
+      │ └ 12
+      └ Alternative
+        └ Break

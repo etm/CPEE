@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <description xmlns="http://cpee.org/ns/description/1.0">
-  <manipulate id="a107" output="result" language="application/javascript">data.a = 0</manipulate>
-  <call id="a111" endpoint="timeout">
+  <manipulate id="a110" output="result" language="application/javascript">data.a = 0</manipulate>
+  <call id="a114" endpoint="timeout">
     <parameters>
       <label>B</label>
       <method/>
@@ -13,21 +13,28 @@
     </parameters>
     <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
   </call>
-  <loop pre_test="data.a &lt; 3" language="text/javascript">
-    <call id="a111" endpoint="timeout">
-      <parameters>
-        <label>B</label>
-        <method/>
-        <type>serviceTask</type>
-        <mid>sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819</mid>
-        <parameters>
-          <timeout>1</timeout>
-        </parameters>
-      </parameters>
-      <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
-    </call>
+  <loop pre_test="true">
+    <choose mode="exclusive">
+      <alternative condition="data.a &lt; 3" language="text/javascript">
+        <call id="a114" endpoint="timeout">
+          <parameters>
+            <label>B</label>
+            <method/>
+            <type>serviceTask</type>
+            <mid>sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+          <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+        </call>
+      </alternative>
+      <otherwise>
+        <break/>
+      </otherwise>
+    </choose>
   </loop>
-  <call id="a113" endpoint="timeout">
+  <call id="a116" endpoint="timeout">
     <parameters>
       <label>C</label>
       <method/>

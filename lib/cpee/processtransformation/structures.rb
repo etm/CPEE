@@ -370,7 +370,8 @@ module CPEE
                 maxcut = i if t[0...i] == l[0...i]
               end
             end
-            loops << self[i].shift(maxcut)
+            cutted = self[i].shift(maxcut)
+            loops << cutted if cutted.length > 1 ### if only the loop node is left, no need to attach
           end
         end
 
@@ -401,7 +402,7 @@ module CPEE
             end  
           end
 
-          max.incoming = self.length
+          max.incoming = self.length + 1
           max
         end
 

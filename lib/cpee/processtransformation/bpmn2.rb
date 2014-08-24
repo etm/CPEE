@@ -218,10 +218,10 @@ module CPEE
                       ### remove the gateway itself, as for a single loop it is no longer used.
                       traces.shift_all
                     end
-                    puts '--> down to ' + (down + 1).to_s if debug
+                    puts '--> down loop1 to ' + (down + 1).to_s if debug
                     loops.remove_empty
-                    puts '--> up from ' + down.to_s if debug
                     build_ttree branch.last, loops.dup, nil, debug, down + 1
+                    puts '--> up loop1 from ' + down.to_s if debug
                   else
                     ### dont remove it, treat it as a normal conditional
                     ### an infinite loop that can only be left by break is created
@@ -230,9 +230,9 @@ module CPEE
                     ### add the blank conditional to get a break
                     len = loops.length
                     loops.add_breaks
-                    puts '--> down to ' + (down + 1).to_s if debug
+                    puts '--> down loop2 to ' + (down + 1).to_s if debug
                     build_ttree branch.last, loops.dup, nil, debug, down + 1
-                    puts '--> up from ' + down.to_s if debug
+                    puts '--> up loop2 from ' + down.to_s if debug
                     ### set outgoing to number of loops (without the break) so that it can be ignored (should be 1 all the time)
                     node.outgoing -= len
                   end   
@@ -240,9 +240,9 @@ module CPEE
                   node.incoming -= loops.length
                   ### throw away the loop traces, remove loop traces from front of all other traces
                   traces.segment_by_loops loops
-                  puts '--> down to ' + (down + 1).to_s if debug
+                  puts '--> down loop3 to ' + (down + 1).to_s if debug
                   build_ttree branch, loops.dup, nil, debug, down + 1
-                  puts '--> up from ' + down.to_s if debug
+                  puts '--> up loop3 from ' + down.to_s if debug
                 end
                 traces.remove(loops)
                 traces.remove_empty

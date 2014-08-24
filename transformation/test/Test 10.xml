@@ -2,7 +2,7 @@
 <description xmlns="http://cpee.org/ns/description/1.0">
   <parallel wait="-1">
     <parallel_branch>
-      <call id="a19" endpoint="timeout">
+      <call id="a20" endpoint="timeout">
         <parameters>
           <label>Supply Mechanical Parts</label>
           <method>post</method>
@@ -13,7 +13,7 @@
           </parameters>
         </parameters>
       </call>
-      <call id="a20" endpoint="timeout">
+      <call id="a21" endpoint="timeout">
         <parameters>
           <label>Produce Mechanical Parts (A-Z)</label>
           <method>post</method>
@@ -28,7 +28,7 @@
     <parallel_branch>
       <parallel wait="-1">
         <parallel_branch>
-          <call id="a16" endpoint="timeout">
+          <call id="a17" endpoint="timeout">
             <parameters>
               <label>Develop Control System</label>
               <method>post</method>
@@ -42,7 +42,7 @@
           </call>
         </parallel_branch>
         <parallel_branch>
-          <call id="a15" endpoint="timeout">
+          <call id="a16" endpoint="timeout">
             <parameters>
               <label>Supply Electric Parts</label>
               <method>post</method>
@@ -58,7 +58,7 @@
       </parallel>
     </parallel_branch>
     <parallel_branch>
-      <call id="a21" endpoint="timeout">
+      <call id="a22" endpoint="timeout">
         <parameters>
           <label>Produce Headcap System</label>
           <method>post</method>
@@ -71,7 +71,7 @@
       </call>
     </parallel_branch>
   </parallel>
-  <call id="a23" endpoint="timeout">
+  <call id="a24" endpoint="timeout">
     <parameters>
       <label>Systems Integration A</label>
       <method>post</method>
@@ -82,29 +82,36 @@
       </parameters>
     </parameters>
   </call>
-  <loop pre_test="data.a == 'path 2'" language="text/javascript">
-    <call id="a27" endpoint="timeout">
-      <parameters>
-        <label>Systems Integration B</label>
-        <method>post</method>
-        <type>task</type>
-        <mid>sid-061DA4F1-581F-4F62-BD97-F291C1867FC4</mid>
-        <parameters>
-          <timeout>1</timeout>
-        </parameters>
-      </parameters>
-      <manipulate output="result" language="application/javascript">data.a = 'path 1'</manipulate>
-    </call>
-    <call id="a23" endpoint="timeout">
-      <parameters>
-        <label>Systems Integration A</label>
-        <method>post</method>
-        <type>task</type>
-        <mid>sid-AC85624C-6560-4B37-ACF5-A5DF723B7234</mid>
-        <parameters>
-          <timeout>1</timeout>
-        </parameters>
-      </parameters>
-    </call>
+  <loop pre_test="true">
+    <choose mode="exclusive">
+      <alternative condition="data.a == 'path 2'" language="text/javascript">
+        <call id="a28" endpoint="timeout">
+          <parameters>
+            <label>Systems Integration B</label>
+            <method>post</method>
+            <type>task</type>
+            <mid>sid-061DA4F1-581F-4F62-BD97-F291C1867FC4</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+          <manipulate output="result" language="application/javascript">data.a = 'path 1'</manipulate>
+        </call>
+        <call id="a24" endpoint="timeout">
+          <parameters>
+            <label>Systems Integration A</label>
+            <method>post</method>
+            <type>task</type>
+            <mid>sid-AC85624C-6560-4B37-ACF5-A5DF723B7234</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+        </call>
+      </alternative>
+      <otherwise>
+        <break/>
+      </otherwise>
+    </choose>
   </loop>
 </description>
