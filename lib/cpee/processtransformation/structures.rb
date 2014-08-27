@@ -167,6 +167,10 @@ module CPEE
     class Graph #{{{
       attr_reader :flow, :nodes
 
+      def find_node(niceid)
+        @nodes.find{|k,v| v.niceid == niceid }
+      end
+
       def initialize
         @nodes = {}
         @links = []
@@ -303,6 +307,17 @@ module CPEE
           (n = self.map{|t| t.first }.uniq).length == 1 ? n.first : nil
         end
 
+        # future use
+        def incoming
+          if node = self.same_first
+            tcount = 1
+            self.each{|t| tcount += 1 if t.first == t.last }
+            tcount
+          else
+            raise "Wrong Question"
+          end  
+        end
+
         def include_in_all?(e)
           num = 0
           self.each{|n| num += 1 if n.include?(e)} 
@@ -388,12 +403,17 @@ module CPEE
             end
           end
 
+          # all before the largest common are just copied, so incoming should be 1
+          sh.each do |e|
+            break if e == max
+            e.incoming = 1
+          end  
+
           # if last is the largest common do nothing
           # else append from last to largest common
           self.each do |t|
             unless t.last == max
               last = t.last
-              t.last.incoming = 1
               if t.index(last) && t.index(max)
                 (t.index(last) + 1).upto(t.index(max)) do |i|
                   t << t[i]

@@ -21,7 +21,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../lib/cpee/processtransf
 require 'pp'
 
 Dir.chdir(File.expand_path(File.dirname(__FILE__)))
-f = "Test 11.bpmn"
+f = "Test 8.bpmn"
 
 bpmn2 = CPEE::ProcessTransformation::Source::BPMN2.new(File.read(f))
 
@@ -32,5 +32,3 @@ bpmn2.build_traces
 
 tree = bpmn2.build_tree(true).to_s
 xml = bpmn2.generate_model(CPEE::ProcessTransformation::Target::CPEE)
-
-puts xml

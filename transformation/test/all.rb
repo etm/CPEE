@@ -22,6 +22,7 @@ require 'pp'
 
 Dir.chdir(File.expand_path(File.dirname(__FILE__)))
 Dir["Test *.bpmn"].each do |f|
+  puts f
   bpmn2 = CPEE::ProcessTransformation::Source::BPMN2.new(File.read(f))
   bpmn2.build_traces
   tree = bpmn2.build_tree(false).to_s
