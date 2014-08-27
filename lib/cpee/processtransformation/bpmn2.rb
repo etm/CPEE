@@ -187,7 +187,7 @@ module CPEE
             puts '--> now on ' + down.to_s if debug
             debug_print debug, traces
             if node = traces.same_first
-              if branch.condition? && branch.empty?
+              if branch.empty? && branch.respond_to?(:id)
                 li = if (branch.id == traces.first_node.id)
                   ### for tail controlled loops
                   @graph.link(branch.id,traces.second_nodes.first.id)
@@ -195,9 +195,14 @@ module CPEE
                   @graph.link(branch.id,traces.first_node.id)
                 end
                 unless li.nil?
-                  branch.condition << li.condition unless li.condition.nil?
-                  branch.condition_type = "text/javascript"
-                  branch.attributes.merge!(li.attributes)
+                  if branch.condition?
+                    branch.condition << li.condition unless li.condition.nil?
+                    branch.condition_type = "text/javascript"
+                  end  
+                  if branch.respond_to?(:attributes)
+                    branch.attributes.merge!(li.attributes) 
+                    li.attributes.delete_if{true}
+                  end  
                 end  
               end
               if node == enode

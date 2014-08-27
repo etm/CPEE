@@ -103,11 +103,13 @@ module CPEE
     class InfiniteLoop < Array #{{{
       include Container
       def condition?; false; end
+      attr_reader :attributes
       attr_accessor :id, :type
       def initialize(id)
         @container = true
         @id = id
         @type = :loop
+        @attributes = {}
       end  
     end #}}}
     class Loop < Array #{{{
