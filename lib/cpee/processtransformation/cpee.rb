@@ -3,15 +3,15 @@
 # This file is part of CPEE.
 #
 # Apache License, Version 2.0
-# 
+#
 # Copyright (c) 2013 Juergen Mangler
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,6 +49,9 @@ module CPEE
 
         def print_InfiniteLoop(node,res)
           s1 = res.add('loop', 'pre_test' => 'true')
+          node.attributes.each do |k,v|
+            s1.attributes[k] = v
+          end
           generate_for_list(node,s1)
         end
         def print_Loop_default(node,res)
@@ -56,7 +59,7 @@ module CPEE
           s1.attributes['language'] = node.condition_type unless node.condition_type.nil?
           node.attributes.each do |k,v|
             s1.attributes[k] = v
-          end  
+          end
           generate_for_list(node,s1)
           s1
         end
@@ -70,7 +73,7 @@ module CPEE
             n.text = node.script
             n.attributes['output'] = node.script_var unless node.script_var.nil?
             n.attributes['language'] = node.script_type unless node.script_type.nil?
-          else  
+          else
             n   = res.add('d:call', 'id' => "a#{node.niceid}", 'endpoint' => node.endpoints.join(','))
             p   = n.add('d:parameters')
                   p.add('d:label',node.label)
@@ -111,10 +114,10 @@ module CPEE
               a
             else
               s1.add('d:otherwise')
-            end  
+            end
             branch.attributes.each do |k,v|
               s2.attributes[k] = v
-            end  
+            end
             generate_for_list(branch,s2)
           end
           if (x = s1.find('d:otherwise')).any?
@@ -130,6 +133,6 @@ module CPEE
 
     end
 
-  end  
+  end
 
 end
