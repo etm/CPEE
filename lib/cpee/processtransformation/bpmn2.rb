@@ -141,7 +141,7 @@ module CPEE
           @tree
         end #}}}
     
-        def build_extraces(traces, node) #{{{
+        def  build_extraces(traces, node) #{{{
           dupt = traces.last.dup
           @graph.next_nodes(node).each_with_index do |n,i|
             traces << dupt.dup if i > 0
@@ -172,6 +172,10 @@ module CPEE
           end
         end #}}}
         private :map_node
+
+        def print_node(niceid)
+          @graph.find_node(niceid)
+        end
 
         def build_ttree(branch,traces,enode=nil,debug=false,down=0)
           while not traces.finished?
@@ -221,7 +225,7 @@ module CPEE
                     puts '--> down loop1 to ' + (down + 1).to_s if debug
                     loops.remove_empty
                     build_ttree branch.last, loops.dup, nil, debug, down + 1
-                    puts '--> up loop1 from ' + down.to_s if debug
+                    puts '--> up loop1 from ' + (down + 1).to_s if debug
                   else
                     ### dont remove it, treat it as a normal conditional
                     ### an infinite loop that can only be left by break is created
@@ -232,7 +236,7 @@ module CPEE
                     loops.add_breaks
                     puts '--> down loop2 to ' + (down + 1).to_s if debug
                     build_ttree branch.last, loops.dup, nil, debug, down + 1
-                    puts '--> up loop2 from ' + down.to_s if debug
+                    puts '--> up loop2 from ' + (down + 1).to_s if debug
                     ### set outgoing to number of loops (without the break) so that it can be ignored (should be 1 all the time)
                     node.outgoing -= len
                   end   
@@ -242,7 +246,7 @@ module CPEE
                   traces.segment_by_loops loops
                   puts '--> down loop3 to ' + (down + 1).to_s if debug
                   build_ttree branch, loops.dup, nil, debug, down + 1
-                  puts '--> up loop3 from ' + down.to_s if debug
+                  puts '--> up loop3 from ' + (down + 1).to_s if debug
                 end
                 traces.remove(loops)
                 traces.remove_empty
@@ -256,11 +260,11 @@ module CPEE
                 if trcs.finished?
                   puts '--> branch down to ' + (down + 1).to_s if debug
                   build_ttree nb, Traces.new([[Break.new(1)]]), endnode, debug, down + 1
-                  puts '--> branch up from ' + down.to_s if debug
+                  puts '--> branch up from ' + (down + 1).to_s if debug
                 else  
                   puts '--> branch down to ' + (down + 1).to_s if debug
                   build_ttree nb, trcs, endnode, debug, down + 1
-                  puts '--> branch up from ' + down.to_s if debug
+                  puts '--> branch up from ' + (down + 1).to_s if debug
                 end  
                 endnode.incoming -= 1 unless endnode.nil?
               end
