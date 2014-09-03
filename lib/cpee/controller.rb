@@ -287,7 +287,7 @@ module CPEE
     end #}}}
     def unserialize_state! #{{{ 
       state = @properties.data.find("string(/p:properties/p:state)")
-      if call_vote("properties/state/change", :instance => @id, :newstate => state)
+      if call_vote("properties/state/change", :instance => @id, :info => info, :state => state)
         case state
           when 'stopping'
             stop
