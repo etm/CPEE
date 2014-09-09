@@ -283,7 +283,7 @@ module CPEE
           self.first.first
         end
         def second_nodes
-          self.map { |t| t[1] }
+          self.map { |t| t.length > 1 ? t[1] : t[0] }
         end
 
         def shortest

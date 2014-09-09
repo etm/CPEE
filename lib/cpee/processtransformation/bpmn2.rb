@@ -189,7 +189,8 @@ module CPEE
             if node = traces.same_first
               if branch.empty? && branch.respond_to?(:id)
                 li = if (branch.id == traces.first_node.id)
-                  ### for tail controlled loops
+                  ### for tail controlled loops, use the link from this to next
+                  ### if a tasks loops to itself, then second_nodes returns the first
                   @graph.link(branch.id,traces.second_nodes.first.id)
                 else
                   @graph.link(branch.id,traces.first_node.id)
