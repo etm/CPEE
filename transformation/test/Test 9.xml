@@ -3,7 +3,7 @@
   <loop pre_test="true">
     <choose mode="exclusive">
       <alternative condition="data.a &lt; 3" language="text/javascript">
-        <call id="a77" endpoint="timeout">
+        <call id="a3" endpoint="timeout">
           <parameters>
             <label>A</label>
             <method/>
@@ -17,7 +17,7 @@
         </call>
       </alternative>
       <alternative condition="data.a &gt;= 3 &amp;&amp; data.a &lt; 5" language="text/javascript">
-        <call id="a79" endpoint="timeout">
+        <call id="a5" endpoint="timeout">
           <parameters>
             <label>B</label>
             <method/>

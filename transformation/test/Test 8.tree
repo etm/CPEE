@@ -1,14 +1,14 @@
 TREE:
-  ├ 60
-  ├ 63
+  ├ 3
+  ├ 6
   └ InfiniteLoop
     └ Conditional
       ├ Alternative
-      │ ├ 64
-      │ ├ 60
-      │ └ 63
+      │ ├ 7
+      │ ├ 3
+      │ └ 6
       ├ Alternative
-      │ ├ 62
-      │ └ 63
+      │ ├ 5
+      │ └ 6
       └ Alternative
         └ Break

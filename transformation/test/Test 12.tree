@@ -1,10 +1,10 @@
 TREE:
-  ├ 110
-  ├ 114
+  ├ 1
+  ├ 5
   ├ InfiniteLoop
   │ └ Conditional
   │   ├ Alternative
-  │   │ └ 114
+  │   │ └ 5
   │   └ Alternative
   │     └ Break
-  └ 116
+  └ 7

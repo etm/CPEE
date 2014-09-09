@@ -1,15 +1,15 @@
 TREE:
-  ├ 102
-  ├ 103
+  ├ 4
+  ├ 5
   └ InfiniteLoop
     └ Conditional
       ├ Alternative
-      │ ├ 102
-      │ └ 103
+      │ ├ 4
+      │ └ 5
       └ Alternative
-        ├ 104
+        ├ 6
         └ Conditional
           ├ Alternative
-          │ └ 103
+          │ └ 5
           └ Alternative
             └ Break

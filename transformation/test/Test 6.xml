@@ -2,7 +2,7 @@
 <description xmlns="http://cpee.org/ns/description/1.0">
   <parallel wait="-1">
     <parallel_branch>
-      <call id="a86" endpoint="timeout">
+      <call id="a4" endpoint="timeout">
         <parameters>
           <label>Supply Mechanical Parts</label>
           <method>post</method>
@@ -13,7 +13,7 @@
           </parameters>
         </parameters>
       </call>
-      <call id="a87" endpoint="timeout">
+      <call id="a5" endpoint="timeout">
         <parameters>
           <label>Produce Mechanical Parts (A-Z)</label>
           <method>post</method>
@@ -28,7 +28,7 @@
     <parallel_branch>
       <parallel wait="-1">
         <parallel_branch>
-          <call id="a83" endpoint="timeout">
+          <call id="a1" endpoint="timeout">
             <parameters>
               <label>Develop Control System</label>
               <method>post</method>
@@ -42,7 +42,7 @@
           </call>
         </parallel_branch>
         <parallel_branch>
-          <call id="a82" endpoint="timeout">
+          <call id="a0" endpoint="timeout">
             <parameters>
               <label>Supply Electric Parts</label>
               <method>post</method>
@@ -58,7 +58,7 @@
       </parallel>
     </parallel_branch>
     <parallel_branch>
-      <call id="a88" endpoint="timeout">
+      <call id="a6" endpoint="timeout">
         <parameters>
           <label>Produce Headcap System</label>
           <method>post</method>
@@ -73,7 +73,7 @@
   </parallel>
   <choose mode="exclusive">
     <alternative condition="data.a == 'path 1'" language="text/javascript">
-      <call id="a90" endpoint="timeout">
+      <call id="a8" endpoint="timeout">
         <parameters>
           <label>Systems Integration A</label>
           <method>post</method>
@@ -86,7 +86,7 @@
       </call>
     </alternative>
     <alternative condition="data.a == 'path 2'" language="text/javascript">
-      <call id="a95" endpoint="timeout">
+      <call id="a13" endpoint="timeout">
         <parameters>
           <label>Systems Integration B</label>
           <method>post</method>

@@ -41,13 +41,14 @@ module CPEE
 
     class Node #{{{ 
       include Container
-      @@niceid = -1
+      @@niceid = {}
       attr_reader :id, :label, :niceid
       attr_reader :endpoints, :methods, :parameters, :attributes
       attr_accessor :script, :script_id, :script_var, :script_type, :incoming, :outgoing, :type
-      def initialize(id,type,label,incoming,outgoing)
+      def initialize(context,id,type,label,incoming,outgoing)
+        @@niceid[context] ||= -1
+        @niceid = (@@niceid[context] += 1)
         @id = id
-        @niceid = (@@niceid += 1)
         @type = type
         @label = label
         @endpoints = []
@@ -73,8 +74,8 @@ module CPEE
     end #}}}
 
     class Break < Node
-      def initialize(incoming)
-        super '-1', :break, 'BREAK', incoming, []
+      def initialize(context,incoming)
+        super context, '-1', :break, 'BREAK', incoming, []
       end
     end
 
@@ -338,13 +339,13 @@ module CPEE
         end
 
 
-        def add_breaks
+        def add_breaks(context)
           trueloops = self.find_all{ |t| t.last == t.first }.length
           if trueloops == self.length
             self << [self.first_node] ### the blank conditional so that we get a break
           else
             self.each do |t|
-              t << Break.new(1) unless t.last == t.first ### an explicit break
+              t << Break.new(context,1) unless t.last == t.first ### an explicit break
             end
           end  
         end

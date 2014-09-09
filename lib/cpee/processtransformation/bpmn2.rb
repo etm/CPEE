@@ -73,7 +73,7 @@ module CPEE
 
         def extract_nodelink(doc)
           doc.find("/bm:definitions/bm:process/bm:*[@id and @name and not(@itemSubjectRef) and not(name()='sequenceFlow')]").each do |e|
-            n = Node.new(e.attributes['id'],e.qname.name.to_sym,e.attributes['name'].strip,e.find('count(bm:incoming)'),e.find('count(bm:outgoing)'))
+            n = Node.new(self.object_id,e.attributes['id'],e.qname.name.to_sym,e.attributes['name'].strip,e.find('count(bm:incoming)'),e.find('count(bm:outgoing)'))
 
             if e.attributes['scriptFormat'] != ''
               n.script_type = e.attributes['scriptFormat']
@@ -239,7 +239,7 @@ module CPEE
                     branch << InfiniteLoop.new(node.id)
                     ### add the blank conditional to get a break
                     len = loops.length
-                    loops.add_breaks
+                    loops.add_breaks(self.object_id)
                     puts '--> down loop2 to ' + (down + 1).to_s if debug
                     build_ttree branch.last, loops.dup, nil, debug, down + 1
                     puts '--> up loop2 from ' + (down + 1).to_s if debug
@@ -265,7 +265,7 @@ module CPEE
                 nb = branch.last.new_branch
                 if trcs.finished?
                   puts '--> branch down to ' + (down + 1).to_s if debug
-                  build_ttree nb, Traces.new([[Break.new(1)]]), endnode, debug, down + 1
+                  build_ttree nb, Traces.new([[Break.new(self.object_id,1)]]), endnode, debug, down + 1
                   puts '--> branch up from ' + (down + 1).to_s if debug
                 else  
                   puts '--> branch down to ' + (down + 1).to_s if debug

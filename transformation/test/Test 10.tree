@@ -1,21 +1,21 @@
 TREE:
   ├ Parallel
   │ ├ Branch
-  │ │ ├ 20
-  │ │ └ 21
+  │ │ ├ 4
+  │ │ └ 5
   │ ├ Branch
   │ │ └ Parallel
   │ │   ├ Branch
-  │ │   │ └ 17
+  │ │   │ └ 1
   │ │   └ Branch
-  │ │     └ 16
+  │ │     └ 0
   │ └ Branch
-  │   └ 22
-  ├ 24
+  │   └ 6
+  ├ 8
   └ InfiniteLoop
     └ Conditional
       ├ Alternative
-      │ ├ 28
-      │ └ 24
+      │ ├ 12
+      │ └ 8
       └ Alternative
         └ Break

@@ -1,9 +1,9 @@
 TREE:
-  ├ 67
-  ├ 71
+  ├ 1
+  ├ 5
   └ InfiniteLoop
     └ Conditional
       ├ Alternative
-      │ └ 71
+      │ └ 5
       └ Alternative
         └ Break
