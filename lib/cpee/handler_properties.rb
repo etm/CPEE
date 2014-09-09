@@ -20,7 +20,6 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase
         @data.notify('properties/handlerwrapper/change', :instance => @data.instance)
       when 'description'
         nots = @data.unserialize_description!
-        @data.notify('properties/description/change', :instance => @data.instance)
         nots.uniq.each do |noti|
           @data.notify(*noti)
         end
