@@ -77,9 +77,9 @@ module CPEE
             n   = res.add('d:call', 'id' => "a#{node.niceid}", 'endpoint' => node.endpoints.join(','))
             p   = n.add('d:parameters')
                   p.add('d:label',node.label)
-                  p.add('d:method',node.methods.join(','))
-                  p.add('d:type',node.type)
-                  p.add('d:mid',node.id)
+                  p.add('d:method',node.methods.join(',') || 'post')
+                  p.add('d:type',":#{node.type}")
+                  p.add('d:mid',"'#{node.id}'")
             par = p.add('d:parameters')
             node.parameters.each do |k,v|
               par.add(k,v)
