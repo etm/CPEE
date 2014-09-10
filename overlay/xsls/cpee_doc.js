@@ -32,13 +32,16 @@
           var cook = new Object;
           cook.zahl = 0;
           rc_chi.each(function(){
+            var method_name = $(this).prop('tagName');
+            console.log(method_name);
+            if (method_name == 'resource') { return };
+
             var tr_yn=1;
             var naga_siren = new Object;
             naga_siren.tstring = "<table class='operation'><tbody><tr><td class='name'>Method</td><td><strong>%METHOD%</strong></td></tr><tr><td class='name'>Message-ID</td><td><strong>%MSG_NAME%</strong></td></tr><tr><td rowspan=\"%IROWSPAN%\" class='name'>Inputparameter(s)</td>";
             naga_siren.spanne = 0;
             var msg_name = $(this).attr('in');
             var msg_search = "message[name='"+msg_name+"']";
-            var method_name = $(this).prop('tagName');
             var templat = "";
             if($(data).find(msg_search).children().length >0){
               $(data).find(msg_search).children().each(function(){
