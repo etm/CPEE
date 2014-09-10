@@ -64,8 +64,8 @@
       </xsl:call-template>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
-    <xsl:if test="name()='break'">
-      <xsl:text>break</xsl:text>
+    <xsl:if test="name()='escape'">
+      <xsl:text>escape</xsl:text>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='parallel'">

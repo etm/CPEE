@@ -44,7 +44,7 @@ module CPEE
         private :generate_for_list
 
         def print_Break(node,res)
-          res.add('break')
+          res.add('escape')
         end
 
         def print_InfiniteLoop(node,res)
