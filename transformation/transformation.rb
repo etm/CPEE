@@ -17,8 +17,13 @@
 require 'rubygems'
 require 'riddl/server'
 require 'xml/smart'
-require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee/processtransformation/bpmn2')
-require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee/processtransformation/cpee')
+if File.exists?(File.dirname(__FILE__) + '/../lib/cpee/processtransformation/bpmn2')
+  require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee/processtransformation/bpmn2')
+  require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee/processtransformation/cpee')
+else
+  require 'cpee/processtransformation/bpmn2'
+  require 'cpee/processtransformation/cpee'
+end
 require 'json'
 
 class ExtractDescription < Riddl::Implementation #{{{
