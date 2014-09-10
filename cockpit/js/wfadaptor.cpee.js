@@ -447,7 +447,7 @@ function CPEE(adaptor) {
     'click': events.click,
    }//}}}
   }; /*}}}*/
-  this.elements.break = { /*{{{*/
+  this.elements.escape = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
@@ -461,7 +461,7 @@ function CPEE(adaptor) {
     },//}}}
     'description' : {//{{{
       'create':  function(target) {
-        var node = $X('<break xmlns="http://cpee.org/ns/description/1.0"/>');
+        var node = $X('<escape xmlns="http://cpee.org/ns/description/1.0"/>');
         return node;
       },
       'permissible_children': function(node) {
