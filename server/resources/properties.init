@@ -17,10 +17,10 @@
 
 <properties xmlns="http://riddl.org/ns/common-patterns/properties/1.0">
   <info/>
+  <properties/>
   <state>ready</state>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <positions/>
-  <properties/>
   <dataelements/>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
