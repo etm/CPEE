@@ -18,6 +18,11 @@
   <info type="simple" modifiable="false" mutable="false">
     <text/>
   </info>
+  <properties type="complex" modifiable="true">
+    <zeroOrMore>
+      <element><anyName/><text/></element>
+    </zeroOrMore>  
+  </properties>  
   <handlerwrapper type="simple" modifiable="true">
     <data type="string">
       <param name="pattern">[A-Z][a-zA-Z]*</param>
