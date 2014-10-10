@@ -206,9 +206,10 @@ module CPEE
                   end  
                 end  
               end
+              nic = traces.incoming(node)
               if node == enode
                 traces.shift_all
-              elsif node.incoming <= 1
+              elsif nic == 1 || branch.is_a?(CPEE::ProcessTransformation::InfiniteLoop)
                 traces.shift_all
                 n = map_node(node)
                 if !(n.nil? || (n.container? && (node.outgoing <=1 || traces.finished?)))
@@ -218,6 +219,7 @@ module CPEE
                 loops = traces.loops
                 if node.type == :exclusiveGateway || traces.all_loops?
                   ### as the first is a decision node, just remove and continue
+                  ### change to nic
                   if node.incoming == 2
                     node.incoming = 1
                     branch << Loop.new(node.id)
@@ -274,7 +276,12 @@ module CPEE
                 end  
                 endnode.incoming -= 1 unless endnode.nil?
               end
-              traces.empty! if endnode.nil?
+              # remove all traces that don't start with endnode to account for loops
+              if endnode.nil?
+                traces.empty!
+              else  
+                traces.remove_by_endnode(endnode)
+              end  
               ### all before is reduced to one incoming arrow
               ### if now there is still more than one incoming we have a loop situation
               ### where the end of a branching statement is also the starting/endpoint 

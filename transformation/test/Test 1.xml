@@ -3,10 +3,10 @@
   <manipulate id="a1" output="result" language="application/javascript">data.a = 0</manipulate>
   <call id="a5" endpoint="timeout">
     <parameters>
-      <label>B</label>
+      <label>"B"</label>
       <method/>
-      <type>serviceTask</type>
-      <mid>sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819</mid>
+      <type>:serviceTask</type>
+      <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
       <parameters>
         <timeout>1</timeout>
       </parameters>
@@ -18,10 +18,10 @@
       <alternative condition="data.a &lt; 3" language="text/javascript">
         <call id="a5" endpoint="timeout">
           <parameters>
-            <label>B</label>
+            <label>"B"</label>
             <method/>
-            <type>serviceTask</type>
-            <mid>sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819</mid>
+            <type>:serviceTask</type>
+            <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
             <parameters>
               <timeout>1</timeout>
             </parameters>
@@ -30,7 +30,7 @@
         </call>
       </alternative>
       <otherwise>
-        <break/>
+        <escape/>
       </otherwise>
     </choose>
   </loop>

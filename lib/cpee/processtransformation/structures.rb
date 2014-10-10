@@ -271,6 +271,11 @@ module CPEE
             self.delete(t)
           end  
         end
+        def remove_by_endnode(enode)
+          self.delete_if do |t|
+            t[0] != enode 
+          end
+        end
 
         def empty!
           self.delete_if{true}
@@ -311,14 +316,13 @@ module CPEE
         end
 
         # future use
-        def incoming
-          if node = self.same_first
-            tcount = 1
-            self.each{|t| tcount += 1 if t.first == t.last }
-            tcount
-          else
-            raise "Wrong Question"
+        def incoming(node)
+          tcount = 1
+          self.each do |t|
+            break if t.length == 1
+            tcount += 1 if t.last == node
           end  
+          tcount
         end
 
         def include_in_all?(e)
@@ -341,11 +345,12 @@ module CPEE
 
         def add_breaks(context)
           trueloops = self.find_all{ |t| t.last == t.first }.length
+          tb = Break.new(context,1)
           if trueloops == self.length
             self << [self.first_node] ### the blank conditional so that we get a break
           else
             self.each do |t|
-              t << Break.new(context,1) unless t.last == t.first ### an explicit break
+              t << tb unless t.last == t.first ### an explicit break
             end
           end  
         end
@@ -439,7 +444,8 @@ module CPEE
         def find_endnode
           # supress loops
           trcs = self.dup
-          # trcs.delete_if { |t| t.uniq.length < t.length }
+          # dangerous TODO
+          trcs.delete_if { |t| t.uniq.length < t.length }
 
           # find common node (except loops)
           enode = nil
