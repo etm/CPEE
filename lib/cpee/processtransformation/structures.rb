@@ -74,8 +74,8 @@ module CPEE
     end #}}}
 
     class Break < Node
-      def initialize(context,incoming)
-        super context, '-1', :break, 'BREAK', incoming, []
+      def initialize(context)
+        super context, '-1', :break, 'BREAK', 1, []
       end
     end
 
@@ -327,26 +327,21 @@ module CPEE
           num == self.length
         end
 
+        def aaa
+          puts 'rrr'
+        end
+
         def all_loops?
           num = 0
           self.each{|n| num += 1 if n.first == n.last }
           num == self.length
         end
 
-        def cleanup_loops
-          self.each do |t|
-            if t.length > 1 && t.last == t.first
-              t.shift
-              t.pop
-            end
-          end  
-        end
-
         def add_breaks(context)
           trueloops = self.find_all{ |t| t.last == t.first }.length
-          tb = Break.new(context,1)
+          tb = Break.new(context)
           if trueloops == self.length
-            self << [tb]
+            self << [nil,tb]
           else
             self.each do |t|
               t << tb unless t.last == t.first ### an explicit break

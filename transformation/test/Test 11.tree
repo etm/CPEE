@@ -5,9 +5,10 @@ TREE:
     ├ Alternative
     │ ├ 4
     │ └ 5
-    ├ Alternative
-    │ ├ 6
-    │ └ 5
     └ Alternative
       ├ 6
-      └ Break
+      └ Conditional
+        ├ Alternative
+        │ └ 5
+        └ Alternative
+          └ Break

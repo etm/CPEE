@@ -217,26 +217,26 @@ module CPEE
               else
                 loops = traces.loops
                 if node.type == :exclusiveGateway || traces.all_loops?
-                  ### dont remove it, treat it as a normal conditional
                   ### an infinite loop that can only be left by break is created
+                  ### at the output time it is decided wether this can be optimized
                   branch << Loop.new(node.id)
                   ### duplicate because we need it later to remove all the shit from traces
                   lops = loops.dup
                   ### remove the exclusive gateway because we no longer need it
                   lops.add_breaks(self.object_id)
-                  lops.cleanup_loops
+                  lops.shift_all
                   ### add the blank conditional to get a break
-                  puts '--> down loop2 to ' + (down + 1).to_s if debug
+                  puts '--> down head_loop to ' + (down + 1).to_s if debug
                   build_ttree branch, lops, nil, debug, down + 1
-                  puts '--> up loop2 from ' + (down + 1).to_s if debug
+                  puts '--> up head_loop from ' + (down + 1).to_s if debug
                   traces.remove(loops)
                   traces.shift_all
                 else
                   ### throw away the loop traces, remove loop traces from front of all other traces
                   traces.segment_by_loops loops
-                  puts '--> down loop3 to ' + (down + 1).to_s if debug
+                  puts '--> down tail_loop to ' + (down + 1).to_s if debug
                   build_ttree branch, loops.dup, nil, debug, down + 1
-                  puts '--> up loop3 from ' + (down + 1).to_s if debug
+                  puts '--> up tail_loop from ' + (down + 1).to_s if debug
                   traces.remove(loops)
                 end
                 traces.remove_empty
@@ -249,7 +249,7 @@ module CPEE
                 nb = branch.last.new_branch
                 if trcs.finished?
                   puts '--> branch down to ' + (down + 1).to_s if debug
-                  build_ttree nb, Traces.new([[Break.new(self.object_id,1)]]), endnode, debug, down + 1
+                  build_ttree nb, Traces.new([[Break.new(self.object_id)]]), endnode, debug, down + 1
                   puts '--> branch up from ' + (down + 1).to_s if debug
                 else  
                   puts '--> branch down to ' + (down + 1).to_s if debug
