@@ -13,25 +13,18 @@
     </parameters>
     <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
   </call>
-  <loop pre_test="true">
-    <choose mode="exclusive">
-      <alternative condition="data.a &lt; 3" language="text/javascript">
-        <call id="a5" endpoint="timeout">
-          <parameters>
-            <label>"B"</label>
-            <method/>
-            <type>:serviceTask</type>
-            <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
-            <parameters>
-              <timeout>1</timeout>
-            </parameters>
-          </parameters>
-          <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
-        </call>
-      </alternative>
-      <otherwise>
-        <escape/>
-      </otherwise>
-    </choose>
+  <loop pre_test="data.a &lt; 3" language="text/javascript">
+    <call id="a5" endpoint="timeout">
+      <parameters>
+        <label>"B"</label>
+        <method/>
+        <type>:serviceTask</type>
+        <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
+        <parameters>
+          <timeout>1</timeout>
+        </parameters>
+      </parameters>
+      <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+    </call>
   </loop>
 </description>

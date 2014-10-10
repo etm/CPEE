@@ -1,9 +1,8 @@
 TREE:
-  └ InfiniteLoop
-    └ Conditional
-      ├ Alternative
-      │ └ 3
-      ├ Alternative
-      │ └ 5
-      └ Alternative
-        └ Break
+  └ Loop
+    ├ Alternative
+    │ └ 3
+    ├ Alternative
+    │ └ 5
+    └ Alternative
+      └ Break

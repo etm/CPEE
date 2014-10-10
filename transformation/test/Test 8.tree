@@ -1,14 +1,13 @@
 TREE:
   ├ 3
   ├ 6
-  └ InfiniteLoop
-    └ Conditional
-      ├ Alternative
-      │ ├ 7
-      │ ├ 3
-      │ └ 6
-      ├ Alternative
-      │ ├ 5
-      │ └ 6
-      └ Alternative
-        └ Break
+  └ Loop
+    ├ Alternative
+    │ ├ 7
+    │ ├ 3
+    │ └ 6
+    ├ Alternative
+    │ ├ 5
+    │ └ 6
+    └ Alternative
+      └ Break

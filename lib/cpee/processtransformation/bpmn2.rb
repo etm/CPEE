@@ -155,16 +155,16 @@ module CPEE
         end #}}}
         private :build_extraces
 
-        def map_node(node) #{{{
+        def map_node(node,flat) #{{{
           case node.type
             when :parallelGateway
-              Parallel.new(node.id,node.type)
+              flat ? nil : Parallel.new(node.id,node.type)
             when :exclusiveGateway
-              Conditional.new(node.id,:exclusive,node.type)
+              flat ? nil : Conditional.new(node.id,:exclusive,node.type)
             when :eventBasedGateway
-              Parallel.new(node.id,node.type,1)
+              flat ? nil : Parallel.new(node.id,node.type,1)
             when :inclusiveGateway
-              Conditional.new(node.id,:inclusive,node.type)
+              flat ? nil : Conditional.new(node.id,:inclusive,node.type)
             when :endEvent, :startEvent, nil
               nil
             else
@@ -206,13 +206,12 @@ module CPEE
                   end  
                 end  
               end
-              nic = traces.incoming(node)
               if node == enode
                 traces.shift_all
-              elsif nic == 1 || branch.is_a?(CPEE::ProcessTransformation::InfiniteLoop)
+              elsif traces.incoming(node) == 1
                 traces.shift_all
-                n = map_node(node)
-                if !(n.nil? || (n.container? && traces.finished?))
+                n = map_node(node,traces.same_first)
+                if !n.nil? && !(n.container? && traces.finished?)
                   (branch << n).compact!
                 end
               else
@@ -246,8 +245,6 @@ module CPEE
               endnode = traces.find_endnode || enode
               puts "--> endnode #{endnode.nil? ? 'nil' : endnode.niceid}" if debug
               tracesgroup, endnode = traces.segment_by endnode
-              p 'ssssssssssss'
-              p branch
               tracesgroup.each do |trcs|
                 nb = branch.last.new_branch
                 if trcs.finished?

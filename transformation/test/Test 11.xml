@@ -63,25 +63,33 @@
           </parameters>
           <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
         </call>
-        <choose mode="exclusive">
-          <alternative condition="data.a &lt; 5" language="text/javascript">
-            <call id="a5" endpoint="timeout">
-              <parameters>
-                <label>"B"</label>
-                <method/>
-                <type>:serviceTask</type>
-                <mid>'sid-0418754D-A9C4-4832-B8CA-8436A7372318'</mid>
-                <parameters>
-                  <timeout>1</timeout>
-                </parameters>
-              </parameters>
-              <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
-            </call>
-          </alternative>
-          <otherwise>
-            <escape/>
-          </otherwise>
-        </choose>
+        <call id="a5" endpoint="timeout">
+          <parameters>
+            <label>"B"</label>
+            <method/>
+            <type>:serviceTask</type>
+            <mid>'sid-0418754D-A9C4-4832-B8CA-8436A7372318'</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+          <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+        </call>
+      </otherwise>
+      <otherwise>
+        <call id="a6" endpoint="timeout">
+          <parameters>
+            <label>"C"</label>
+            <method/>
+            <type>:serviceTask</type>
+            <mid>'sid-E2CECD87-A7C8-48E9-B3A8-02BB2F04E6AE'</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+          <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+        </call>
+        <escape/>
       </otherwise>
     </choose>
   </loop>

@@ -101,23 +101,11 @@ module CPEE
         @id = id
       end
     end #}}}
-    class InfiniteLoop < Array #{{{
-      include Container
-      def condition?; false; end
-      attr_reader :attributes
-      attr_accessor :id, :type
-      def initialize(id)
-        @container = true
-        @id = id
-        @type = :loop
-        @attributes = {}
-      end  
-    end #}}}
     class Loop #{{{
       include Container
       include Struct
       include Enumerable
-      attr_reader :id, :sub
+      attr_reader :id, :sub, :mode
       attr_accessor :type, :condition, :condition_type
       attr_reader :attributes
       def condition?; true; end
@@ -125,6 +113,7 @@ module CPEE
         @container = true
         @id = id
         @type = :loop
+        @mode = :exclusive
         @condition = []
         @sub = []
         @condition_type = nil
