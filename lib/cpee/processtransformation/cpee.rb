@@ -55,12 +55,17 @@ module CPEE
           generate_for_list(node,s1)
         end
         def print_Loop_default(node,res)
-          s1 = res.add('loop', 'pre_test' => node.condition.empty? ? 'true' : node.condition.join(' && '))
-          s1.attributes['language'] = node.condition_type unless node.condition_type.nil?
-          node.attributes.each do |k,v|
-            s1.attributes[k] = v
+          if node.sub.length == 2
+            s1 = res.add('loop', 'pre_test' => node.sub[0].condition.empty? ? 'true' : node.sub[0].condition.join(' && '))
+            s1.attributes['language'] = node.sub[0].condition_type unless node.sub[0].condition_type.nil?
+            node.sub[0].attributes.each do |k,v|
+              s1.attributes[k] = v
+            end
+            generate_for_list(node.sub[0],s1)
+          else  
+            s1 = res.add('loop', 'pre_test' => 'true')
+            print_Conditional(node,s1)
           end
-          generate_for_list(node,s1)
           s1
         end
         private :print_Loop_default

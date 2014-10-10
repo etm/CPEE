@@ -212,56 +212,42 @@ module CPEE
               elsif nic == 1 || branch.is_a?(CPEE::ProcessTransformation::InfiniteLoop)
                 traces.shift_all
                 n = map_node(node)
-                if !(n.nil? || (n.container? && (node.outgoing <=1 || traces.finished?)))
+                if !(n.nil? || (n.container? && traces.finished?))
                   (branch << n).compact!
                 end
               else
                 loops = traces.loops
                 if node.type == :exclusiveGateway || traces.all_loops?
-                  ### as the first is a decision node, just remove and continue
-                  #if node.incoming == 2
-                  #  node.incoming = 1
-                  #  branch << Loop.new(node.id)
-                  #  if traces.all_loops?
-                  #    ### if all loops, tail loop thus remove the loopback
-                  #    loops.pop_all
-                  #  else
-                  #    ### remove the gateway itself, as for a single loop it is no longer used.
-                  #    traces.shift_all
-                  #  end
-                  #  puts '--> down loop1 to ' + (down + 1).to_s if debug
-                  #  loops.remove_empty
-                  #  build_ttree branch.last, loops.dup, nil, debug, down + 1
-                  #  puts '--> up loop1 from ' + (down + 1).to_s if debug
-                  #else
-                    ### dont remove it, treat it as a normal conditional
-                    ### an infinite loop that can only be left by break is created
-                    node.incoming = 1
-                    branch << InfiniteLoop.new(node.id)
-                    ### add the blank conditional to get a break
-                    len = loops.length
-                    loops.add_breaks(self.object_id)
-                    puts '--> down loop2 to ' + (down + 1).to_s if debug
-                    build_ttree branch.last, loops.dup, nil, debug, down + 1
-                    puts '--> up loop2 from ' + (down + 1).to_s if debug
-                    ### set outgoing to number of loops (without the break) so that it can be ignored (should be 1 all the time)
-                    node.outgoing -= len
-                  #end   
+                  ### dont remove it, treat it as a normal conditional
+                  ### an infinite loop that can only be left by break is created
+                  branch << Loop.new(node.id)
+                  ### duplicate because we need it later to remove all the shit from traces
+                  lops = loops.dup
+                  ### remove the exclusive gateway because we no longer need it
+                  lops.add_breaks(self.object_id)
+                  lops.cleanup_loops
+                  ### add the blank conditional to get a break
+                  puts '--> down loop2 to ' + (down + 1).to_s if debug
+                  build_ttree branch, lops, nil, debug, down + 1
+                  puts '--> up loop2 from ' + (down + 1).to_s if debug
+                  traces.remove(loops)
+                  traces.shift_all
                 else
-                  node.incoming -= loops.length
                   ### throw away the loop traces, remove loop traces from front of all other traces
                   traces.segment_by_loops loops
                   puts '--> down loop3 to ' + (down + 1).to_s if debug
                   build_ttree branch, loops.dup, nil, debug, down + 1
                   puts '--> up loop3 from ' + (down + 1).to_s if debug
+                  traces.remove(loops)
                 end
-                traces.remove(loops)
                 traces.remove_empty
               end
             else
               endnode = traces.find_endnode || enode
               puts "--> endnode #{endnode.nil? ? 'nil' : endnode.niceid}" if debug
               tracesgroup, endnode = traces.segment_by endnode
+              p 'ssssssssssss'
+              p branch
               tracesgroup.each do |trcs|
                 nb = branch.last.new_branch
                 if trcs.finished?
@@ -273,7 +259,6 @@ module CPEE
                   build_ttree nb, trcs, endnode, debug, down + 1
                   puts '--> branch up from ' + (down + 1).to_s if debug
                 end  
-                endnode.incoming -= 1 unless endnode.nil?
               end
               # remove all traces that don't start with endnode to account for loops
               if endnode.nil?
@@ -281,11 +266,6 @@ module CPEE
               else  
                 traces.remove_by_endnode(endnode)
               end  
-              ### all before is reduced to one incoming arrow
-              ### if now there is still more than one incoming we have a loop situation
-              ### where the end of a branching statement is also the starting/endpoint 
-              ### of a loop
-              endnode.incoming += 1 unless endnode.nil?
             end
           end
         end

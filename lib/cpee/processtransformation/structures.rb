@@ -113,9 +113,12 @@ module CPEE
         @attributes = {}
       end  
     end #}}}
-    class Loop < Array #{{{
+    class Loop #{{{
       include Container
-      attr_accessor :id, :type, :condition, :condition_type
+      include Struct
+      include Enumerable
+      attr_reader :id, :sub
+      attr_accessor :type, :condition, :condition_type
       attr_reader :attributes
       def condition?; true; end
       def initialize(id)
@@ -123,9 +126,13 @@ module CPEE
         @id = id
         @type = :loop
         @condition = []
+        @sub = []
         @condition_type = nil
         @attributes = {}
       end  
+      def new_branch
+        (@sub << Alternative.new(@id)).last
+      end
     end #}}}
 
     class Parallel #{{{
@@ -337,11 +344,20 @@ module CPEE
           num == self.length
         end
 
+        def cleanup_loops
+          self.each do |t|
+            if t.length > 1 && t.last == t.first
+              t.shift
+              t.pop
+            end
+          end  
+        end
+
         def add_breaks(context)
           trueloops = self.find_all{ |t| t.last == t.first }.length
           tb = Break.new(context,1)
           if trueloops == self.length
-            self << [self.first_node] ### the blank conditional so that we get a break
+            self << [tb]
           else
             self.each do |t|
               t << tb unless t.last == t.first ### an explicit break
@@ -402,12 +418,6 @@ module CPEE
           end
           max = max.last
 
-          # all before the largest common are just copied, so incoming should be 1
-          sh.each do |e|
-            break if e == max
-            e.incoming = 1
-          end
-
           # if last is the largest common do nothing
           # else append from last to largest common
           self.each do |t|
@@ -421,7 +431,6 @@ module CPEE
             end  
           end
 
-          max.incoming = self.length + 1
           max
         end
 
