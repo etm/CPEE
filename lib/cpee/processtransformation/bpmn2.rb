@@ -219,22 +219,21 @@ module CPEE
                 loops = traces.loops
                 if node.type == :exclusiveGateway || traces.all_loops?
                   ### as the first is a decision node, just remove and continue
-                  ### change to nic
-                  if node.incoming == 2
-                    node.incoming = 1
-                    branch << Loop.new(node.id)
-                    if traces.all_loops?
-                      ### if all loops, tail loop thus remove the loopback
-                      loops.pop_all
-                    else
-                      ### remove the gateway itself, as for a single loop it is no longer used.
-                      traces.shift_all
-                    end
-                    puts '--> down loop1 to ' + (down + 1).to_s if debug
-                    loops.remove_empty
-                    build_ttree branch.last, loops.dup, nil, debug, down + 1
-                    puts '--> up loop1 from ' + (down + 1).to_s if debug
-                  else
+                  #if node.incoming == 2
+                  #  node.incoming = 1
+                  #  branch << Loop.new(node.id)
+                  #  if traces.all_loops?
+                  #    ### if all loops, tail loop thus remove the loopback
+                  #    loops.pop_all
+                  #  else
+                  #    ### remove the gateway itself, as for a single loop it is no longer used.
+                  #    traces.shift_all
+                  #  end
+                  #  puts '--> down loop1 to ' + (down + 1).to_s if debug
+                  #  loops.remove_empty
+                  #  build_ttree branch.last, loops.dup, nil, debug, down + 1
+                  #  puts '--> up loop1 from ' + (down + 1).to_s if debug
+                  #else
                     ### dont remove it, treat it as a normal conditional
                     ### an infinite loop that can only be left by break is created
                     node.incoming = 1
@@ -247,7 +246,7 @@ module CPEE
                     puts '--> up loop2 from ' + (down + 1).to_s if debug
                     ### set outgoing to number of loops (without the break) so that it can be ignored (should be 1 all the time)
                     node.outgoing -= len
-                  end   
+                  #end   
                 else
                   node.incoming -= loops.length
                   ### throw away the loop traces, remove loop traces from front of all other traces

@@ -330,18 +330,12 @@ module CPEE
           self.each{|n| num += 1 if n.include?(e)} 
           num == self.length
         end
-        def same_position_in_all?(e,i)
-          num = 0
-          self.each{|n| num += 1 if n[i] == e}
-          num == self.length
-        end
 
         def all_loops?
           num = 0
           self.each{|n| num += 1 if n.first == n.last }
           num == self.length
         end
-
 
         def add_breaks(context)
           trueloops = self.find_all{ |t| t.last == t.first }.length
@@ -400,22 +394,19 @@ module CPEE
 
         def extend
           # find largest common
-          max = nil
+          max = []
           sh = self.shortest
           sh = sh[0..-2] if sh.first == sh.last
           sh.each_with_index do |e,i|
-            if self.same_position_in_all?(e,i)
-              max = e
-            else  
-              break
-            end
+            max << e if self.include_in_all?(e)
           end
+          max = max.last
 
           # all before the largest common are just copied, so incoming should be 1
           sh.each do |e|
             break if e == max
             e.incoming = 1
-          end  
+          end
 
           # if last is the largest common do nothing
           # else append from last to largest common
