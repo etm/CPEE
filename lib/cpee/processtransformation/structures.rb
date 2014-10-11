@@ -337,11 +337,11 @@ module CPEE
           num == self.length
         end
 
-        def add_breaks(context)
+        def add_breaks(context,front=true)
           trueloops = self.find_all{ |t| t.last == t.first }.length
           tb = Break.new(context)
           if trueloops == self.length
-            self << [nil,tb]
+            self << (front ? [nil,tb] : [tb,nil])
           else
             self.each do |t|
               t << tb unless t.last == t.first ### an explicit break
