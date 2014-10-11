@@ -223,9 +223,7 @@ module CPEE
                   ### duplicate because we need it later to remove all the shit from traces
                   lops = loops.dup
                   ### remove the exclusive gateway because we no longer need it
-                  unless traces.all_loops?
-                    lops.add_breaks(self.object_id,node.type == :exclusiveGateway)
-                  end  
+                  lops.add_breaks(self.object_id,node.type == :exclusiveGateway)
                   traces.remove(loops)
                   if node.type == :exclusiveGateway
                     lops.shift_all
