@@ -248,10 +248,10 @@ module CPEE
                 end
               end
             end
-            evs.each { |e| @votes[e].delete(key) }
+            evs.each { |e| @votes[e].delete(key) if @votes[e] }
             vos.each do |e| 
               @callbacks.each{|voteid,cb|cb.delete_if!(e,key)}
-              @votes[e].delete(key)
+              @votes[e].delete(key) if @votes[e]
             end  
           end  
         when :cre
