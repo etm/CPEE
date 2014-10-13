@@ -15,7 +15,7 @@
 */
 
 // TODO: changes in svg-script:
-// 1) drawing frunctions
+// 1) drawing functions
 // 2) creation of svg-container (Bug: arrows on lines)
 // 3) after-function to insert using namespace of description
 

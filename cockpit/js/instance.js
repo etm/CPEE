@@ -24,6 +24,8 @@ var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/handlerwrapper' + '&' +
+               'events' + '=' + 'result' + '&' +
                'topic'  + '=' + 'properties/handlers' + '&' +
                'events' + '=' + 'change';// }}}
 var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
@@ -38,6 +40,8 @@ var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/handlerwrapper' + '&' +
+               'events' + '=' + 'result' + '&' +
                'topic'  + '=' + 'properties/handlers' + '&' +
                'events' + '=' + 'change';// }}}
 
@@ -316,6 +320,7 @@ function monitor_instance_dsl() {// {{{
               manifestation.events.click(svgid,undefined);
             };
             $('#graphcanvas').redraw();
+            $('#graphcolumn div').redraw();
 
             monitor_instance_pos();
           }
@@ -582,20 +587,22 @@ function set_testset(testset) {// {{{
   load_testset_endpoints(url,testset);
   load_testset_pos(url,testset);
 
-  var ser = '';
-  $("testset > transformation > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  var val = "<content>" + ser + "</content>";
-  $.ajax({
-    type: "PUT", 
-    url: url + "/properties/values/transformation",
-    data: ({content: val}),
-    success: function() { 
-      load_testset_des(url,testset); 
-    },
-    error: report_failure
-  });
+  if ($("testset > transformation",testset).length > 0) {
+    var ser = '';
+    $("testset > transformation > *",testset).each(function(){
+      ser += $(this).serializeXML() + "\n";
+    });
+    var val = "<content>" + ser + "</content>";
+    $.ajax({
+      type: "PUT", 
+      url: url + "/properties/values/transformation",
+      data: ({content: val}),
+      success: function() { 
+        load_testset_des(url,testset); 
+      },
+      error: report_failure
+    });
+  }  
   
   load_testset_hw(url,testset);
   $.ajax({
@@ -679,6 +686,7 @@ function load_des(url,model) { //{{{
 }   //}}}
 
 function load_testset_des(url,testset) {// {{{
+  if ($("testset > description",testset).length == 0) { return; }
   var ser = '';
   $("testset > description > *",testset).each(function(){
     ser += $(this).serializeXML() + "\n";
@@ -697,6 +705,7 @@ function load_testset_hw(url,testset) {// {{{
   });
 } // }}}
 function load_testset_dataelements(url,testset) {// {{{
+  if ($("testset > dataelements",testset).length == 0) { return; }
   var ser = '';
   $("testset > dataelements > *",testset).each(function(){
     ser += $(this).serializeXML() + "\n";
@@ -710,6 +719,7 @@ function load_testset_dataelements(url,testset) {// {{{
   });
 }// }}}
 function load_testset_endpoints(url,testset) {// {{{
+  if ($("testset > endpoints",testset).length == 0) { return; }
   var ser = '';
   $("testset > endpoints > *",testset).each(function(){
     ser += $(this).serializeXML() + "\n";
@@ -723,6 +733,7 @@ function load_testset_endpoints(url,testset) {// {{{
   });  
 }// }}}
 function load_testset_pos(url,testset) {// {{{
+  if ($("testset > positions",testset).length == 0) { return; }
   var ser = '';
   $("testset > positions > *",testset).each(function(){
     ser += $(this).serializeXML() + "\n";
@@ -732,6 +743,7 @@ function load_testset_pos(url,testset) {// {{{
     type: "PUT", 
     url: url + "/properties/values/positions/",
     data: ({content: val}),
+    success: monitor_instance_pos,
     error: report_failure
   });  
 }// }}}

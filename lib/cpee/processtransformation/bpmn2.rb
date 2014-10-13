@@ -253,7 +253,7 @@ module CPEE
                 nb = branch.last.new_branch
                 if trcs.finished?
                   puts '--> branch down to ' + (down + 1).to_s if debug
-                  build_ttree nb, Traces.new([[Break.new(self.object_id)]]), endnode, debug, down + 1
+                  # build_ttree nb, Traces.new([[Break.new(self.object_id)]]), endnode, debug, down + 1
                   puts '--> branch up from ' + (down + 1).to_s if debug
                 else  
                   puts '--> branch down to ' + (down + 1).to_s if debug
