@@ -24,7 +24,7 @@ Dir["*.bpmn"].each do |f|
   puts f
   bpmn2 = CPEE::ProcessTransformation::Source::BPMN2.new(File.read(f))
   bpmn2.build_traces
-  tree = bpmn2.build_tree(false).to_s
+  tree = bpmn2.build_tree(false).to_s(false)
   xml = bpmn2.generate_model(CPEE::ProcessTransformation::Target::CPEE)
   fname = File.basename(f,'.bpmn')
   File.write(fname + '.tree',tree)

@@ -22,22 +22,19 @@ module CPEE
 
   module ProcessTransformation
 
-    class Link #{{{
-      attr_accessor :from, :to
-      attr_reader :condition, :attributes
-      def initialize(from,to,cond=nil)
-        @from  = from
-        @to = to
-        @condition = cond
-        @attributes = {}
-      end
-    end #}}}
-
-    module Container
+    module Container #{{{
       def container?
         @container || false
       end
-    end
+    end #}}}
+    module Struct #{{{
+      def each(&a)
+        @sub.each{|s| a.call(s)}
+      end
+      def length
+        @sub.length
+      end  
+    end #}}}
 
     class Node #{{{ 
       include Container
@@ -63,21 +60,21 @@ module CPEE
         @attributes = {}
       end
     end # }}} 
-
-    module Struct #{{{
-      def each(&a)
-        @sub.each{|s| a.call(s)}
+    class Link #{{{
+      attr_accessor :from, :to
+      attr_reader :condition, :attributes
+      def initialize(from,to,cond=nil)
+        @from  = from
+        @to = to
+        @condition = cond
+        @attributes = {}
       end
-      def length
-        @sub.length
-      end  
     end #}}}
-
-    class Break < Node
+    class Break < Node #{{{
       def initialize(context)
         super context, '-1', :break, 'BREAK', 1, []
       end
-    end
+    end #}}}
 
     class Alternative < Array #{{{
       include Container
@@ -101,6 +98,7 @@ module CPEE
         @id = id
       end
     end #}}}
+
     class Loop #{{{
       include Container
       include Struct
@@ -233,22 +231,22 @@ module CPEE
       class Tree < Array #{{{
         def condition?; false; end
 
-        def to_s
-          "TREE:\n" << print_tree(self)
+        def to_s(verbose=true)
+          "TREE:\n" << print_tree(self,'  ',verbose)
         end
 
-        def print_tree(ele,indent='  ')
+        def print_tree(ele,indent='  ',verbose=true)
           ret = ''
           ele.each_with_index do |e,i|
             last  = (i == ele.length - 1)
             pchar = last ? '└' : '├'
             if e.container?
               ret << indent + pchar + ' ' + e.class.to_s.gsub(/[^:]*::/,'') + "\n"
-              ret << print_tree(e,indent + (last ? '  ' : '│ '))
-            elsif e.is_a?(Break) && 
+              ret << print_tree(e,indent + (last ? '  ' : '│ '),verbose)
+            elsif e.is_a?(Break)
               ret << indent + pchar + ' ' + e.class.to_s.gsub(/[^:]*::/,'') + "\n"
             else
-              ret << indent + pchar + ' ' + e.niceid.to_s + "\n"
+              ret << indent + pchar + ' ' + e.niceid.to_s + (verbose ? " (#{e.label})" : "") + "\n"
             end
           end
           ret

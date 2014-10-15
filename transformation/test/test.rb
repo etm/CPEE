@@ -21,7 +21,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../lib/cpee/processtransf
 require 'pp'
 
 Dir.chdir(File.expand_path(File.dirname(__FILE__)))
-f = "OEE.xml"
+f = "OEE.bpmn"
 
 bpmn2 = CPEE::ProcessTransformation::Source::BPMN2.new(File.read(f))
 
