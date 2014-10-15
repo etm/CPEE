@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <manipulate id="a8" output="result" language="http://www.java.com/java">data.machine_id = 1;data.machine_started = null;data.machine_stopped = null;data.downtime = 0;data.planned_production_time = 0.8;data.ideal_cycle_time = 3;data.repairing = false;data.quality = 0;data.performance = 0;data.availability = 0;data.oee = 0;data.good_pieces = 0;data.total_pieces = 0;</manipulate>
+  <parallel wait="-1">
+    <parallel_branch>
+      <loop pre_test="true" language="text/javascript">
+        <call id="a2" endpoint="">
+          <parameters>
+            <label>"Get Start/Stop Machine"</label>
+            <method/>
+            <type>:task</type>
+            <mid>'_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF'</mid>
+            <parameters>
+              <TaskName/>
+              <SENSORID>__F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDInputItem</SENSORID>
+              <OWNERID>__F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_OWNERIDInputItem</OWNERID>
+            </parameters>
+          </parameters>
+        </call>
+      </loop>
+    </parallel_branch>
+    <parallel_branch>
+      <loop pre_test="true" language="text/javascript">
+        <call id="a3" endpoint="">
+          <parameters>
+            <label>""</label>
+            <method/>
+            <type>:intermediateCatchEvent</type>
+            <mid>'_F7034306-E67C-40E4-8941-B42EFE8F112B'</mid>
+            <parameters/>
+          </parameters>
+        </call>
+        <call id="a9" endpoint="">
+          <parameters>
+            <label>"Get Total Pieces"</label>
+            <method/>
+            <type>:task</type>
+            <mid>'_08682F43-65F8-4926-B283-9AEBDCB71D50'</mid>
+            <parameters>
+              <TaskName/>
+              <DataName>__08682F43-65F8-4926-B283-9AEBDCB71D50_DataNameInputItem</DataName>
+              <MachineID>__08682F43-65F8-4926-B283-9AEBDCB71D50_MachineIDInputItem</MachineID>
+            </parameters>
+          </parameters>
+        </call>
+        <manipulate id="a4" output="result" language="http://www.java.com/java">var now =  new Date();var total = Math.abs(now - new Date(data.machine_started));data.operating_time = Math.abs(total - data.downtime) / total;</manipulate>
+        <manipulate id="a5" output="result" language="http://www.java.com/java">var now =  new Date();data.availability = data.operating_time / data.planned_production_time;if (data.availability &gt; 1) { data.availability = 1; }data.performance_time = Math.abs(now - new Date(data.machine_started) - data.downtime) / (1000 * 60);data.performance = data.ideal_cycle_time / ( data.performance_time / data.total_pieces);if (data.performance &gt; 1) { data.performance = 1; }data.quality = data.good_pieces / data.total_pieces;data.oee = data.availability * data.performance * data.quality;data.oeedata = {   'quality': data.quality,   'oee': data.oee,   'availability': data.availability,  'performance': data.performance,  'machineid': data.machine_id};</manipulate>
+        <call id="a14" endpoint="">
+          <parameters>
+            <label>"Send OEE Value"</label>
+            <method/>
+            <type>:task</type>
+            <mid>'_BD32D6CA-7910-4BA4-AFB0-7B12472849ED'</mid>
+            <parameters>
+              <TaskName/>
+              <Data>__BD32D6CA-7910-4BA4-AFB0-7B12472849ED_DataInputItem</Data>
+            </parameters>
+          </parameters>
+        </call>
+        <choose mode="exclusive">
+          <alternative condition="data.oee &lt; 0.5 &amp;&amp; data.repairing == false" language="text/javascript">
+            <manipulate id="a13" output="result" language="http://www.java.com/java">data.repairing = true;</manipulate>
+            <call id="a11" endpoint="">
+              <parameters>
+                <label>"Send Email to Tenneco Engineer"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_EDBCFA55-4850-4311-9673-24857D91B9CD'</mid>
+                <parameters>
+                  <TaskName/>
+                </parameters>
+              </parameters>
+            </call>
+            <call id="a10" endpoint="">
+              <parameters>
+                <label>"Spawn OEE Crowdsourcing Subprocess"</label>
+                <method/>
+                <type>:callActivity</type>
+                <mid>'_C67A01F2-D0B9-4EDA-BADF-A3B8E1C9DAFE'</mid>
+                <parameters/>
+              </parameters>
+            </call>
+            <call id="a12" endpoint="">
+              <parameters>
+                <label>"Machine Fixed, Status no longer REPAIR"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_61146DCF-7E7F-4DA6-BD83-A88DFDAACAFB'</mid>
+                <parameters>
+                  <TaskName/>
+                </parameters>
+              </parameters>
+            </call>
+          </alternative>
+          <otherwise/>
+        </choose>
+      </loop>
+    </parallel_branch>
+  </parallel>
+</description>

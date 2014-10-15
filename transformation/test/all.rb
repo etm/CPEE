@@ -20,7 +20,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../lib/cpee/processtransf
 require File.expand_path(File.dirname(__FILE__) + '/../../lib/cpee/processtransformation/cpee')
 
 Dir.chdir(File.expand_path(File.dirname(__FILE__)))
-Dir["Test *.bpmn"].each do |f|
+Dir["*.bpmn"].each do |f|
   puts f
   bpmn2 = CPEE::ProcessTransformation::Source::BPMN2.new(File.read(f))
   bpmn2.build_traces

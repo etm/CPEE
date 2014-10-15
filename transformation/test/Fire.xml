@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <loop pre_test="true" language="text/javascript">
+    <call id="a1" endpoint="">
+      <parameters>
+        <label>"Receive Temperature &gt; 800 Warning"</label>
+        <method/>
+        <type>:task</type>
+        <mid>'_A789FB96-5218-4D92-89CC-32C79FBE30FE'</mid>
+        <parameters>
+          <TaskName/>
+          <SensorID>__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorIDInputItem</SensorID>
+          <OwnerID>__A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDInputItem</OwnerID>
+          <SensorType>__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeInputItem</SensorType>
+        </parameters>
+      </parameters>
+    </call>
+  </loop>
+</description>
