@@ -311,7 +311,6 @@ module CPEE
           (n = self.map{|t| t.first }.uniq).length == 1 ? n.first : nil
         end
 
-        # future use
         def incoming(node)
           tcount = 1
           self.each do |t|
@@ -325,10 +324,6 @@ module CPEE
           num = 0
           self.each{|n| num += 1 if n.include?(e)} 
           num == self.length
-        end
-
-        def aaa
-          puts 'rrr'
         end
 
         def all_loops?
@@ -417,13 +412,6 @@ module CPEE
 
           max
         end
-
-        def segment_by_loops(loops)
-          # supress loops
-          self.delete_if { |t| loops.include?(t) }
-          self.eliminate(loops)
-          loops.extend
-        end  
 
         def find_endnode
           # supress loops

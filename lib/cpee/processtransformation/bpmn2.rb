@@ -216,32 +216,34 @@ module CPEE
                 end
               else
                 loops = traces.loops
-                if node.type == :exclusiveGateway || traces.all_loops?
+                if node.type == :exclusiveGateway || traces.all_loops? # or (infinite loop[s])
+                  traces.remove(loops)
+
                   ### an infinite loop that can only be left by break is created
                   ### at the output time it is decided wether this can be optimized
                   branch << Loop.new(node.id)
                   ### duplicate because we need it later to remove all the shit from traces
-                  lops = loops.dup
+                  loops.add_breaks(self.object_id,node.type == :exclusiveGateway)
                   ### remove the exclusive gateway because we no longer need it
-                  lops.add_breaks(self.object_id,node.type == :exclusiveGateway)
-                  traces.remove(loops)
+                  ### if there is non (tail controlled, remove the loop target (last)
                   if node.type == :exclusiveGateway
-                    lops.shift_all
+                    loops.shift_all
                     traces.shift_all 
                   else
-                    lops.pop_all
+                    loops.pop_all
                   end
                   ### add the blank conditional to get a break
                   puts '--> down head_loop to ' + (down + 1).to_s if debug
-                  build_ttree branch, lops, nil, debug, down + 1
+                  build_ttree branch, loops, nil, debug, down + 1
                   puts '--> up head_loop from ' + (down + 1).to_s if debug
                 else
                   ### throw away the loop traces, remove loop traces from front of all other traces
-                  traces.segment_by_loops loops
+                  traces.remove(loops)
+                  traces.eliminate(loops)
+                  loops.extend
                   puts '--> down tail_loop to ' + (down + 1).to_s if debug
                   build_ttree branch, loops.dup, nil, debug, down + 1
                   puts '--> up tail_loop from ' + (down + 1).to_s if debug
-                  traces.remove(loops)
                 end
                 traces.remove_empty
               end
@@ -251,11 +253,7 @@ module CPEE
               tracesgroup, endnode = traces.segment_by endnode
               tracesgroup.each do |trcs|
                 nb = branch.last.new_branch
-                if trcs.finished?
-                  puts '--> branch down to ' + (down + 1).to_s if debug
-                  # build_ttree nb, Traces.new([[Break.new(self.object_id)]]), endnode, debug, down + 1
-                  puts '--> branch up from ' + (down + 1).to_s if debug
-                else  
+                unless trcs.finished?
                   puts '--> branch down to ' + (down + 1).to_s if debug
                   build_ttree nb, trcs, endnode, debug, down + 1
                   puts '--> branch up from ' + (down + 1).to_s if debug
