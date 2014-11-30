@@ -1,13 +1,5 @@
 <?xml version="1.0"?>
 <testset>
-  <positions/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <dataelements/>
-  <handlers/>
-  <endpoints><!--{{{-->
-    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout1.php</timeout>
-  </endpoints><!--}}}-->
-  <description/>
   <transformation>
     <description type='copy'/>
     <dataelements type='none'/>

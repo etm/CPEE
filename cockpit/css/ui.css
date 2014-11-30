@@ -44,7 +44,7 @@ button.highlight { background-color: #cc0000; }
 #areainstance table.compact tbody.loadsave td:nth-child(4)        { padding: 0 0.5em; border-left: 1px solid ButtonShadow; }
 #areainstance table.compact tbody.loadsave td:nth-child(4) button { height: 5em; }
 
-#areainstance table.compact button[name=setmodeltype]   { width: 10em; }
+#areainstance table.compact button[name=loadmodeltype]  { width: 10em; }
 #areainstance table.compact button[name=loadtestset]    { width: 10em; }
 #areainstance table.compact button[name=loadmodelfile]  { width: 10em; }
 

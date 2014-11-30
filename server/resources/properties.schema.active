@@ -38,8 +38,10 @@
       <attribute name='type'>
         <choice>
           <value>copy</value>
-          <value>xslt</value>
           <value>rest</value>
+          <value>xslt</value>
+          <value>clean</value>
+          <value>none</value>
         </choice>  
       </attribute>
       <data type="anyURI"/>
@@ -47,8 +49,10 @@
     <element name='dataelements'>
       <attribute name='type'>
         <choice>
-          <value>xslt</value>
           <value>rest</value>
+          <value>xslt</value>
+          <value>clean</value>
+          <value>none</value>
         </choice>  
       </attribute>
       <data type="anyURI"/>
@@ -56,8 +60,10 @@
     <element name='endpoints'>
       <attribute name='type'>
         <choice>
-          <value>xslt</value>
           <value>rest</value>
+          <value>xslt</value>
+          <value>clean</value>
+          <value>none</value>
         </choice>  
       </attribute>
       <data type="anyURI"/>

@@ -50,11 +50,13 @@ $(document).ready(function() {// {{{
   $("button[name=base]").click(function(){ create_instance(null); });
   $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
   $("button[name=loadtestset]").click(load_testset);
-  $("button[name=loadmodelfile]").click(load_modelfile);
+  $("button[name=loadmodeltype]").click(load_modeltype);
+  $("button[name=loadmodelfile]").click(load_model);
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=testsetfile]").change(load_testsetfile);
+  $("input[name=modelfile]").change(load_modelfile);
 
   $.ajax({ 
     url: "testsets/testsets.xml", 
@@ -650,6 +652,7 @@ function load_testsetfile() { //{{{
 } //}}}
 function load_modelfile() { //{{{
   if (running) return;
+  running = true;
   if (typeof window.FileReader !== 'function') {
     alert('FileReader not yet supportet');
     return;
@@ -692,6 +695,30 @@ function load_testset() {// {{{
       }
     });
   }  
+}// }}}
+
+function load_model() {// {{{
+  if (running) return;
+  document.getElementById('modelfile').click();
+}// }}}
+
+function load_modeltype() {// {{{
+  if (running) return;
+  running  = true;
+  
+  var name = $("select[name=transformation-names]").val();
+
+  $.ajax({ 
+    cache: false,
+    dataType: 'xml',
+    url: "testsets/" + name + ".xml",
+    success: function(res){ 
+      set_testset(res);
+    },
+    complete: function() {
+      running  = false;
+    }
+  });
 }// }}}
 
 function load_des(url,model) { //{{{
