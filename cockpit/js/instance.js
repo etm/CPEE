@@ -50,23 +50,23 @@ $(document).ready(function() {// {{{
   $("button[name=base]").click(function(){ create_instance(null); });
   $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
   $("button[name=loadtestset]").click(load_testset);
-  $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodelfile]").click(load_modelfile);
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
-
+  $("input[name=testsetfile]").change(load_testsetfile);
 
   $.ajax({ 
-    url: "testsets/index.xml", 
+    url: "testsets/testsets.xml", 
     dataType: 'xml',
     success: function(res){
       $('testset',res).each(function(){
         var ts = $(this).text();
-        $('select[name=testset-names]').append(
+        $('select[name=testset-names] optgroup:last-child').append(
           $("<option></option>").attr("value",ts).text(ts)
         );
       });
+      $('select[name=testset-names] optgroup:last-child option:first-child').attr('selected','selected');
       var q = $.parseQuery();
       if (q.monitor && q.load) {
         $("input[name=instance-url]").val(q.monitor);
@@ -83,6 +83,18 @@ $(document).ready(function() {// {{{
         // ui_toggle_vis_tab($("#instance td.switch"));
         monitor_instance(false);
       }  
+    }
+  });
+  $.ajax({ 
+    url: "testsets/transformations.xml", 
+    dataType: 'xml',
+    success: function(res){
+      $('transformation',res).each(function(){
+        var ts = $(this).text();
+        $('select[name=transformation-names]').append(
+          $("<option></option>").attr("value",ts).text(ts)
+        );
+      });
     }
   });
 });// }}}
@@ -621,6 +633,7 @@ function set_testset(testset) {// {{{
  }// }}}
 function load_testsetfile() { //{{{
   if (running) return;
+  running = true;
   if (typeof window.FileReader !== 'function') {
     alert('FileReader not yet supportet');
     return;
@@ -662,16 +675,23 @@ function load_testset() {// {{{
 
   var name = $("select[name=testset-names]").val();
 
-  $.ajax({ 
-    cache: false,
-    dataType: 'xml',
-    url: "testsets/" + name + ".xml",
-    success: function(res){ 
-      document.title = name;
-      set_testset(res);
-    }
-  });
-  running  = false;
+  if (name == '###') {
+    running = false;
+    document.getElementById('testsetfile').click();
+  } else {  
+    $.ajax({ 
+      cache: false,
+      dataType: 'xml',
+      url: "testsets/" + name + ".xml",
+      success: function(res){ 
+        document.title = name;
+        set_testset(res);
+      },
+      complete: function() {
+        running  = false;
+      }
+    });
+  }  
 }// }}}
 
 function load_des(url,model) { //{{{

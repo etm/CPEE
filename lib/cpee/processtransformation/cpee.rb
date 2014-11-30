@@ -22,38 +22,19 @@ module CPEE
 
   module ProcessTransformation
 
-    module Target
+    module Target 
 
-      class CPEE
-        def initialize(tree)
-          @tree = tree
-        end
+      class CPEE < Default
         def generate
           res = XML::Smart.string("<description xmlns='http://cpee.org/ns/description/1.0'/>")
           res.register_namespace 'd', 'http://cpee.org/ns/description/1.0'
-          generate_for_list(@tree,res.root)
-          res
+          super.generate(res.root)
         end
-
-        def generate_for_list(list,res)
-          list.each do |e|
-            nam = e.class.name.gsub(/\w+:+/,'')
-            send("print_#{nam}".to_sym,e,res)
-          end
-        end
-        private :generate_for_list
 
         def print_Break(node,res)
           res.add('escape')
         end
 
-        def print_InfiniteLoop(node,res)
-          s1 = res.add('loop', 'pre_test' => 'true')
-          node.attributes.each do |k,v|
-            s1.attributes[k] = v
-          end
-          generate_for_list(node,s1)
-        end
         def print_Loop_default(node,res)
           if node.sub.length == 2
             s1 = res.add('loop', 'pre_test' => node.sub[0].condition.empty? ? 'true' : node.sub[0].condition.join(' && '))

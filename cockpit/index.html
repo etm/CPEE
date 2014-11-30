@@ -192,14 +192,14 @@
           <table class='compact'>
             <tbody class='loadsave'>
               <tr>
-                <td><select title='a testset includes various setting, subscriptions and a model' name="testset-names"></select></td>
-                <td><button title='a testset includes various setting, subscriptions and a model' name="loadtestset">load from testset</button></td>
+                <td><input type='file' name='testsetfile' id='testsetfile' style='display:none'/><select title='a testset includes various setting, subscriptions and a model' name="testset-names"><optgroup label='Local Files'><option value='###'>Select file ...</option></optgroup><optgroup label='Predefined examples'></optgroup></select></td>
+                <td><button title='a testset includes various setting, subscriptions and a model' name="loadtestset">load testset</button></td>
                 <td rowspan='3'><button title='a testset includes various setting, subscriptions and a model' name="savetestset">save testset</button><a id="savetestset" href="" download=""></a></td>
                 <td rowspan='3'><button title='a testset includes various setting, subscriptions and a model' name="savesvg">save svg graph</button><a id="savesvg" href="" download=""></a></td>
               </tr>
               <tr>
-                <td><input title='a testset includes various setting, subscriptions and a model' type='file' id='testsetfile'/></td>
-                <td><button title='a testset includes various setting, subscriptions and a model' name="loadtestsetfile">load from testset</button></td>
+                <td><select title='the model type affects the transformation property of an instance' name="transformation-names"></select></td>
+                <td><button title='a testset includes various setting, subscriptions and a model' name="setmodeltype">set model type</button></td>
               </tr>
               <tr>
                 <td><input title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' type='file' id='modelfile'/></td>
