@@ -155,6 +155,8 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
           result = JSON::parse(result[0].value.read)
         elsif result[0].mimetype == 'application/xml' || result[0].mimetype == 'text/xml'
           result = XML::Smart::string(result[0].value.read)
+        elsif result[0].mimetype == 'text/plain'
+          result = result[0].value.read
         else
           result = result[0]
         end
