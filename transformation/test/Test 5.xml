@@ -4,19 +4,19 @@
     <parallel_branch>
       <call id="a3" endpoint="">
         <parameters>
-          <label/>
+          <label>""</label>
           <method/>
-          <type>intermediateCatchEvent</type>
-          <mid>sid-FDA9D8AC-4CBE-49EE-BB52-CBF03C4A89D3</mid>
+          <type>:intermediateCatchEvent</type>
+          <mid>'sid-FDA9D8AC-4CBE-49EE-BB52-CBF03C4A89D3'</mid>
           <parameters/>
         </parameters>
       </call>
       <call id="a7" endpoint="timeout">
         <parameters>
-          <label>C</label>
+          <label>"C"</label>
           <method/>
-          <type>serviceTask</type>
-          <mid>sid-0C51420D-D969-48DB-AB8C-CA1E2DD172AD</mid>
+          <type>:serviceTask</type>
+          <mid>'sid-0C51420D-D969-48DB-AB8C-CA1E2DD172AD'</mid>
           <parameters>
             <timeout>1</timeout>
           </parameters>
@@ -27,19 +27,19 @@
     <parallel_branch>
       <call id="a4" endpoint="">
         <parameters>
-          <label/>
+          <label>""</label>
           <method/>
-          <type>intermediateCatchEvent</type>
-          <mid>sid-329EAD16-9E20-4A9D-BE92-2C43A27E2DEE</mid>
+          <type>:intermediateCatchEvent</type>
+          <mid>'sid-329EAD16-9E20-4A9D-BE92-2C43A27E2DEE'</mid>
           <parameters/>
         </parameters>
       </call>
       <call id="a5" endpoint="timeout">
         <parameters>
-          <label>B</label>
+          <label>"B"</label>
           <method/>
-          <type>serviceTask</type>
-          <mid>sid-11B915E1-B4C6-43EE-B4AC-0D9A614616A3</mid>
+          <type>:serviceTask</type>
+          <mid>'sid-11B915E1-B4C6-43EE-B4AC-0D9A614616A3'</mid>
           <parameters>
             <timeout>1</timeout>
           </parameters>

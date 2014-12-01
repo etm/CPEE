@@ -1,8 +1,6 @@
 TREE:
-  ├ 3
   └ Loop
     ├ Alternative
-    │ ├ 5
-    │ └ 3
+    │ └ 1
     └ Alternative
       └ Break

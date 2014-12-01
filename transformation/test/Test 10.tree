@@ -12,10 +12,9 @@ TREE:
   │ └ Branch
   │   └ 6
   ├ 8
-  └ InfiniteLoop
-    └ Conditional
-      ├ Alternative
-      │ ├ 12
-      │ └ 8
-      └ Alternative
-        └ Break
+  └ Loop
+    ├ Alternative
+    │ ├ 12
+    │ └ 8
+    └ Alternative
+      └ Break

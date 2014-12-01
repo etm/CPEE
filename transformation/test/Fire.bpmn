@@ -1,0 +1,847 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/bpmn20" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_Rl_dIDg0EeSUM5Rft7nyDQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="_geolocationItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_alertItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorIDInputItem" structureRef="Integer"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDInputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeInputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTimestampOutputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorDataOutputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationValidOutputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationTimestampOutputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationLatitudeOutputItem" structureRef="Float"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationLongitudeOutputItem" structureRef="Float"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationAccuracyOutputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorIDOutputItem" structureRef="Integer"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDOutputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeOutputItem" structureRef="String"/>
+  <bpmn2:process id="53be9818e4b0207100d22646" name="Fire Hazard" isExecutable="true">
+    <bpmn2:extensionElements>
+      <drools:global identifier="geolocation" type="Object"/>
+      <drools:metadata>
+        <drools:metaentry>
+          <drools:name>id</drools:name>
+          <drools:value>53be9818e4b0207100d22646</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>targetnamespace</drools:name>
+          <drools:value>http://www.omg.org/bpmn20</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>resourceId</drools:name>
+          <drools:value>53be9818e4b0207100d22646</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>vardefs</drools:name>
+          <drools:value>geolocation:String:#geolocation,alert:String:#alert</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>typelanguage</drools:name>
+          <drools:value>http://www.w3.org/2001/XMLSchema</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>expressionlanguage</drools:name>
+          <drools:value>http://www.w3.org/1999/XPath</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>adhocprocess</drools:name>
+          <drools:value>false</drools:value>
+        </drools:metaentry>
+      </drools:metadata>
+    </bpmn2:extensionElements>
+    <bpmn2:property id="geolocation" itemSubjectRef="_geolocationItem"/>
+    <bpmn2:property id="alert" itemSubjectRef="_alertItem"/>
+    <bpmn2:startEvent id="_D6E5A591-4653-4AA2-B219-6E57250BC7C3" drools:bgcolor="#9acd32" drools:selectable="true" name="">
+      <bpmn2:outgoing>_526E306E-ECF9-489A-B5C2-FDCCE2A6BCF3</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="_526E306E-ECF9-489A-B5C2-FDCCE2A6BCF3" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_D6E5A591-4653-4AA2-B219-6E57250BC7C3" targetRef="_A789FB96-5218-4D92-89CC-32C79FBE30FE"/>
+    <bpmn2:task id="_A789FB96-5218-4D92-89CC-32C79FBE30FE" drools:selectable="true" drools:taskName="smartobject" name="Receive Temperature &gt; 800 Warning">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>smartobject</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>javascript</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_A789FB96-5218-4D92-89CC-32C79FBE30FE</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Receive Temperature > 800 Warning</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>asdomain</drools:name>
+            <drools:value>29.3 - Manufacture of parts and accessories for motor vehicles</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>dataoutputset</drools:name>
+            <drools:value>SensorTimestamp:String,SensorData:String,LocationValid:String,LocationTimestamp:String,LocationLatitude:Float,LocationLongitude:Float,LocationAccuracy:String,SensorID:Integer,OwnerID:String,SensorType:String</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script</drools:name>
+            <drools:value><![CDATA[data.geolocation = result.locationlatitude + "," + result.locationlongitude;data.alert = 'Fire!!!' + Math.random().toString(36).substr(2, 5);]]></drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>assignments</drools:name>
+            <drools:value>OwnerID=TennecoMachine,SensorType=Fire</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>typeproc</drools:name>
+            <drools:value>29.3223 - Manufacture of Research and Development for motor vehicles </drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>company</drools:name>
+            <drools:value><![CDATA[[{
+"serviceId": "111",
+"serviceLabel": "Manual Labor",
+"serviceEndpoint": "xmpp-r://adventure_gateway_uvi@fp7-adventure.eu",
+"orgName": "Mangler Sensor CO",
+"profileId": "22",
+"serviceOperation": "26",
+"serviceOperationLabel": "push",
+"dataInputs": 
+[{
+"name": "SensorID",
+"standardType": "Integer"}, 
+{
+"name": "OwnerID",
+"standardType": "String"}, 
+{
+"name": "SensorType",
+"standardType": "String"}]
+,
+"dataOutputs": 
+[{
+"name": "SensorTimestamp",
+"standardType": "String"}, 
+{
+"name": "SensorData",
+"standardType": "String"}, 
+{
+"name": "LocationValid",
+"standardType": "String"}, 
+{
+"name": "LocationTimestamp",
+"standardType": "String"}, 
+{
+"name": "LocationLatitude",
+"standardType": "Float"}, 
+{
+"name": "LocationLongitude",
+"standardType": "Float"}, 
+{
+"name": "LocationAccuracy",
+"standardType": "String"}, 
+{
+"name": "SensorID",
+"standardType": "Integer"}, 
+{
+"name": "OwnerID",
+"standardType": "String"}, 
+{
+"name": "SensorType",
+"standardType": "String"}]
+,
+"order": "1",
+"serviceOperations": 
+[{
+"initData": {
+"OperationId": "26",
+"InterfaceId": "61",
+"Name": "push",
+"Description": "null",
+"Method": "PUSH",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "30",
+"OperationId": "26",
+"ParameterId": "38",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "38",
+"Name": "SensorID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "31",
+"OperationId": "26",
+"ParameterId": "39",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "39",
+"Name": "SensorTimestamp",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "32",
+"OperationId": "26",
+"ParameterId": "40",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "40",
+"Name": "SensorData",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "33",
+"OperationId": "26",
+"ParameterId": "41",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "41",
+"Name": "LocationValid",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "34",
+"OperationId": "26",
+"ParameterId": "42",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "42",
+"Name": "LocationTimestamp",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "35",
+"OperationId": "26",
+"ParameterId": "43",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "43",
+"Name": "LocationLatitude",
+"Description": "null",
+"DataType": "FLOAT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "36",
+"OperationId": "26",
+"ParameterId": "44",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "44",
+"Name": "LocationLongitude",
+"Description": "null",
+"DataType": "FLOAT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "37",
+"OperationId": "26",
+"ParameterId": "45",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "45",
+"Name": "LocationAccuracy",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "38",
+"OperationId": "26",
+"ParameterId": "46",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "46",
+"Name": "SensorID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "39",
+"OperationId": "26",
+"ParameterId": "47",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "47",
+"Name": "OwnerID",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "40",
+"OperationId": "26",
+"ParameterId": "48",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "48",
+"Name": "OwnerID",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "85",
+"OperationId": "26",
+"ParameterId": "93",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "93",
+"Name": "SensorType",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "86",
+"OperationId": "26",
+"ParameterId": "94",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "94",
+"Name": "SensorType",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns08746471164407164http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+}]
+]]></drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>documentation</drools:name>
+            <drools:value>Smart Object</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>taskname</drools:name>
+            <drools:value>smartobject</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>datainputset</drools:name>
+            <drools:value>SensorID:Integer,OwnerID:String,SensorType:String</drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:documentation id="_RmAEMDg0EeSUM5Rft7nyDQ"><![CDATA[Smart Object]]></bpmn2:documentation>
+      <bpmn2:incoming>_C26DFB4A-3427-402E-832D-AA82EBC3D501</bpmn2:incoming>
+      <bpmn2:incoming>_526E306E-ECF9-489A-B5C2-FDCCE2A6BCF3</bpmn2:incoming>
+      <bpmn2:outgoing>_C26DFB4A-3427-402E-832D-AA82EBC3D501</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="_RmAEMTg0EeSUM5Rft7nyDQ">
+        <bpmn2:dataInput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_TaskNameInput" name="TaskName"/>
+        <bpmn2:dataInput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorIDInput" drools:dtype="Integer" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorIDInputItem" name="SensorID"/>
+        <bpmn2:dataInput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDInput" drools:dtype="String" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDInputItem" name="OwnerID"/>
+        <bpmn2:dataInput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeInput" drools:dtype="String" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeInputItem" name="SensorType"/>
+        <bpmn2:dataOutput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTimestampOutput" drools:dtype="String" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTimestampOutputItem" name="SensorTimestamp"/>
+        <bpmn2:dataOutput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorDataOutput" drools:dtype="String" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorDataOutputItem" name="SensorData"/>
+        <bpmn2:dataOutput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationValidOutput" drools:dtype="String" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationValidOutputItem" name="LocationValid"/>
+        <bpmn2:dataOutput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationTimestampOutput" drools:dtype="String" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationTimestampOutputItem" name="LocationTimestamp"/>
+        <bpmn2:dataOutput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationLatitudeOutput" drools:dtype="Float" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationLatitudeOutputItem" name="LocationLatitude"/>
+        <bpmn2:dataOutput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationLongitudeOutput" drools:dtype="Float" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationLongitudeOutputItem" name="LocationLongitude"/>
+        <bpmn2:dataOutput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationAccuracyOutput" drools:dtype="String" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationAccuracyOutputItem" name="LocationAccuracy"/>
+        <bpmn2:dataOutput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorIDOutput" drools:dtype="Integer" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorIDOutputItem" name="SensorID"/>
+        <bpmn2:dataOutput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDOutput" drools:dtype="String" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDOutputItem" name="OwnerID"/>
+        <bpmn2:dataOutput id="_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeOutput" drools:dtype="String" itemSubjectRef="__A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeOutputItem" name="SensorType"/>
+        <bpmn2:inputSet id="_RmAEMjg0EeSUM5Rft7nyDQ">
+          <bpmn2:dataInputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorIDInput</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDInput</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeInput</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_TaskNameInput</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet id="_RmAEMzg0EeSUM5Rft7nyDQ">
+          <bpmn2:dataOutputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTimestampOutput</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorDataOutput</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationValidOutput</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationTimestampOutput</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationLatitudeOutput</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationLongitudeOutput</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_LocationAccuracyOutput</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorIDOutput</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDOutput</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeOutput</bpmn2:dataOutputRefs>
+        </bpmn2:outputSet>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="_RmAENDg0EeSUM5Rft7nyDQ">
+        <bpmn2:targetRef>_A789FB96-5218-4D92-89CC-32C79FBE30FE_TaskNameInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_RmAENTg0EeSUM5Rft7nyDQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_RmAENjg0EeSUM5Rft7nyDQ">smartobject</bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_RmAENzg0EeSUM5Rft7nyDQ">_A789FB96-5218-4D92-89CC-32C79FBE30FE_TaskNameInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_RmAEODg0EeSUM5Rft7nyDQ">
+        <bpmn2:targetRef>_A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_RmAEOTg0EeSUM5Rft7nyDQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_RmAEOjg0EeSUM5Rft7nyDQ"><![CDATA[TennecoMachine]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_RmAEOzg0EeSUM5Rft7nyDQ">_A789FB96-5218-4D92-89CC-32C79FBE30FE_OwnerIDInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_RmAEPDg0EeSUM5Rft7nyDQ">
+        <bpmn2:targetRef>_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_RmAEPTg0EeSUM5Rft7nyDQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_RmAEPjg0EeSUM5Rft7nyDQ"><![CDATA[Fire]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_RmAEPzg0EeSUM5Rft7nyDQ">_A789FB96-5218-4D92-89CC-32C79FBE30FE_SensorTypeInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="_C26DFB4A-3427-402E-832D-AA82EBC3D501" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_A789FB96-5218-4D92-89CC-32C79FBE30FE" targetRef="_A789FB96-5218-4D92-89CC-32C79FBE30FE"/>
+    <bpmn2:task id="_90523862-F69E-491F-B8A6-8D2C419A2302" drools:selectable="true" drools:taskName="externalManufacturingTask" name="Set In Transit for Supplier to 0">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>externalManufacturingTask</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>javascript</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_90523862-F69E-491F-B8A6-8D2C419A2302</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Set In Transit for Supplier to 0</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>avg_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>min_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>max_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>documentation</drools:name>
+            <drools:value>ManufacturingTask</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>taskname</drools:name>
+            <drools:value>externalManufacturingTask</drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:documentation id="_RmAEQDg0EeSUM5Rft7nyDQ"><![CDATA[ManufacturingTask]]></bpmn2:documentation>
+      <bpmn2:ioSpecification id="_RmAEQTg0EeSUM5Rft7nyDQ">
+        <bpmn2:dataInput id="_90523862-F69E-491F-B8A6-8D2C419A2302_TaskNameInput" name="TaskName"/>
+        <bpmn2:inputSet id="_RmArQDg0EeSUM5Rft7nyDQ"/>
+        <bpmn2:outputSet id="_RmArQTg0EeSUM5Rft7nyDQ"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="_RmArQjg0EeSUM5Rft7nyDQ">
+        <bpmn2:targetRef>_90523862-F69E-491F-B8A6-8D2C419A2302_TaskNameInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_RmArQzg0EeSUM5Rft7nyDQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_RmArRDg0EeSUM5Rft7nyDQ">externalManufacturingTask</bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_RmArRTg0EeSUM5Rft7nyDQ">_90523862-F69E-491F-B8A6-8D2C419A2302_TaskNameInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+    </bpmn2:task>
+    <bpmn2:textAnnotation id="_376991C5-57E1-459B-B5B3-7E540B1CB9F4" drools:selectable="true">
+      <bpmn2:text>Should Receive Supplier ID, for which the sensor shows the temp warning </bpmn2:text>
+    </bpmn2:textAnnotation>
+    <bpmn2:association id="_17952C90-96E5-4245-ADCA-4FEEDF071BBC" drools:selectable="true" drools:type="none" sourceRef="_A789FB96-5218-4D92-89CC-32C79FBE30FE" targetRef="_376991C5-57E1-459B-B5B3-7E540B1CB9F4"/>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="_RmArRjg0EeSUM5Rft7nyDQ">
+    <bpmndi:BPMNPlane id="_RmArRzg0EeSUM5Rft7nyDQ" bpmnElement="53be9818e4b0207100d22646">
+      <bpmndi:BPMNShape id="_RmArSDg0EeSUM5Rft7nyDQ" bpmnElement="_D6E5A591-4653-4AA2-B219-6E57250BC7C3">
+        <dc:Bounds height="30.0" width="30.0" x="144.0" y="206.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_RmArSTg0EeSUM5Rft7nyDQ" bpmnElement="_526E306E-ECF9-489A-B5C2-FDCCE2A6BCF3">
+        <di:waypoint xsi:type="dc:Point" x="159.0" y="221.0"/>
+        <di:waypoint xsi:type="dc:Point" x="269.0" y="221.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_RmArSjg0EeSUM5Rft7nyDQ" bpmnElement="_A789FB96-5218-4D92-89CC-32C79FBE30FE">
+        <dc:Bounds height="80.0" width="100.0" x="219.0" y="181.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_RmArSzg0EeSUM5Rft7nyDQ" bpmnElement="_C26DFB4A-3427-402E-832D-AA82EBC3D501">
+        <di:waypoint xsi:type="dc:Point" x="269.0" y="221.0"/>
+        <di:waypoint xsi:type="dc:Point" x="269.0" y="132.0"/>
+        <di:waypoint xsi:type="dc:Point" x="397.0" y="132.0"/>
+        <di:waypoint xsi:type="dc:Point" x="397.0" y="221.0"/>
+        <di:waypoint xsi:type="dc:Point" x="269.0" y="221.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_RmArTDg0EeSUM5Rft7nyDQ" bpmnElement="_90523862-F69E-491F-B8A6-8D2C419A2302">
+        <dc:Bounds height="80.0" width="100.0" x="555.0" y="181.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_RmArTTg0EeSUM5Rft7nyDQ" bpmnElement="_376991C5-57E1-459B-B5B3-7E540B1CB9F4">
+        <dc:Bounds height="104.0" width="82.0" x="285.0" y="315.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_RmArTjg0EeSUM5Rft7nyDQ" bpmnElement="_17952C90-96E5-4245-ADCA-4FEEDF071BBC">
+        <di:waypoint xsi:type="dc:Point" x="269.0" y="221.0"/>
+        <di:waypoint xsi:type="dc:Point" x="285.0" y="367.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmn2:relationship id="_RmArTzg0EeSUM5Rft7nyDQ" type="jBPMProcessSimulation">
+    <bpmn2:extensionElements>
+      <drools:ProcessAnalysisData>
+        <drools:Scenario xsi:type="drools:Scenario" id="default" name="Simulationscenario">
+          <drools:ScenarioParameters xsi:type="drools:ScenarioParameters_._type" baseTimeUnit="ms"/>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_526E306E-ECF9-489A-B5C2-FDCCE2A6BCF3" id="_RmArUDg0EeSUM5Rft7nyDQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_90523862-F69E-491F-B8A6-8D2C419A2302" id="_RmArUTg0EeSUM5Rft7nyDQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_A789FB96-5218-4D92-89CC-32C79FBE30FE" id="_RmArUjg0EeSUM5Rft7nyDQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_C26DFB4A-3427-402E-832D-AA82EBC3D501" id="_RmArUzg0EeSUM5Rft7nyDQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+        </drools:Scenario>
+      </drools:ProcessAnalysisData>
+    </bpmn2:extensionElements>
+    <bpmn2:source>_Rl_dIDg0EeSUM5Rft7nyDQ</bpmn2:source>
+    <bpmn2:target>_Rl_dIDg0EeSUM5Rft7nyDQ</bpmn2:target>
+  </bpmn2:relationship>
+</bpmn2:definitions>

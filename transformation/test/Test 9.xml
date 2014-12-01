@@ -5,10 +5,10 @@
       <alternative condition="data.a &lt; 3" language="text/javascript">
         <call id="a3" endpoint="timeout">
           <parameters>
-            <label>A</label>
+            <label>"A"</label>
             <method/>
-            <type>serviceTask</type>
-            <mid>sid-1867B455-950E-4191-81A8-B6899B0330AF</mid>
+            <type>:serviceTask</type>
+            <mid>'sid-1867B455-950E-4191-81A8-B6899B0330AF'</mid>
             <parameters>
               <timeout>1</timeout>
             </parameters>
@@ -19,10 +19,10 @@
       <alternative condition="data.a &gt;= 3 &amp;&amp; data.a &lt; 5" language="text/javascript">
         <call id="a5" endpoint="timeout">
           <parameters>
-            <label>B</label>
+            <label>"B"</label>
             <method/>
-            <type>serviceTask</type>
-            <mid>sid-975D733D-EA63-42A4-8AF8-2A8C5DA3756C</mid>
+            <type>:serviceTask</type>
+            <mid>'sid-975D733D-EA63-42A4-8AF8-2A8C5DA3756C'</mid>
             <parameters>
               <timeout>1</timeout>
             </parameters>
@@ -31,7 +31,7 @@
         </call>
       </alternative>
       <otherwise>
-        <break/>
+        <escape/>
       </otherwise>
     </choose>
   </loop>

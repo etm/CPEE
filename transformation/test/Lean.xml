@@ -1,0 +1,311 @@
+<?xml version="1.0"?>
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <call id="a1" endpoint="">
+    <parameters>
+      <label>"Fetch Component 1 Stock Level from TENNECO"</label>
+      <method/>
+      <type>:task</type>
+      <mid>'_E0847391-A047-452C-89C7-6E1BA4582F7B'</mid>
+      <parameters>
+        <TaskName/>
+        <SENSORID>__E0847391-A047-452C-89C7-6E1BA4582F7B_SENSORIDInputItem</SENSORID>
+        <OWNERID>__E0847391-A047-452C-89C7-6E1BA4582F7B_OWNERIDInputItem</OWNERID>
+      </parameters>
+    </parameters>
+  </call>
+  <parallel wait="-1">
+    <parallel_branch>
+      <call id="a2" endpoint="">
+        <parameters>
+          <label>"Fetch M1 Lead Time"</label>
+          <method/>
+          <type>:task</type>
+          <mid>'_F4B7246D-65D7-4BEE-B34D-A39A1FB9F250'</mid>
+          <parameters>
+            <TaskName/>
+            <DataName>__F4B7246D-65D7-4BEE-B34D-A39A1FB9F250_DataNameInputItem</DataName>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a3" endpoint="">
+        <parameters>
+          <label>"Fetch M1 Capacity"</label>
+          <method/>
+          <type>:task</type>
+          <mid>'_D6EEB583-2A13-49E9-AC26-79D420EFBDAD'</mid>
+          <parameters>
+            <TaskName/>
+            <DataName>__D6EEB583-2A13-49E9-AC26-79D420EFBDAD_DataNameInputItem</DataName>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a4" endpoint="">
+        <parameters>
+          <label>"Fetch M1 Price"</label>
+          <method/>
+          <type>:task</type>
+          <mid>'_68F70257-09F7-4F95-8D60-825ED2A26A93'</mid>
+          <parameters>
+            <TaskName/>
+            <DataName>__68F70257-09F7-4F95-8D60-825ED2A26A93_DataNameInputItem</DataName>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a12" endpoint="">
+        <parameters>
+          <label>"Fetch M1 in Transit"</label>
+          <method/>
+          <type>:task</type>
+          <mid>'_36D96550-4649-4EAF-BEC3-B4E92B066C1C'</mid>
+          <parameters>
+            <TaskName/>
+            <DataName>__36D96550-4649-4EAF-BEC3-B4E92B066C1C_DataNameInputItem</DataName>
+          </parameters>
+        </parameters>
+      </call>
+    </parallel_branch>
+    <parallel_branch>
+      <call id="a6" endpoint="">
+        <parameters>
+          <label>"Fetch M2 Lead Time, Capacity, Intransit  and Price"</label>
+          <method/>
+          <type>:task</type>
+          <mid>'_143F81B9-4E15-4B44-B655-3B8DE51A0685'</mid>
+          <parameters>
+            <TaskName/>
+            <DataName>__143F81B9-4E15-4B44-B655-3B8DE51A0685_DataNameInputItem</DataName>
+          </parameters>
+        </parameters>
+      </call>
+    </parallel_branch>
+  </parallel>
+  <call id="a11" endpoint="">
+    <parameters>
+      <label>"Decide M1, M2 or Problem"</label>
+      <method/>
+      <type>:scriptTask</type>
+      <mid>'_2D655D33-72BE-4982-B8AA-7D0E6C61CC21'</mid>
+      <parameters/>
+    </parameters>
+  </call>
+  <loop pre_test="true">
+    <choose mode="exclusive">
+      <otherwise>
+        <call id="a5" endpoint="">
+          <parameters>
+            <label>"Order Component 1"</label>
+            <method/>
+            <type>:task</type>
+            <mid>'_D397209F-A7DE-4EFB-B145-FD2EED7718BD'</mid>
+            <parameters>
+              <TaskName/>
+            </parameters>
+          </parameters>
+        </call>
+        <call id="a14" endpoint="">
+          <parameters>
+            <label>"Set Intransit to Order Amount"</label>
+            <method/>
+            <type>:task</type>
+            <mid>'_69381CFE-2948-4022-A78E-E12922A60D9B'</mid>
+            <parameters>
+              <TaskName/>
+            </parameters>
+          </parameters>
+        </call>
+        <call id="a1" endpoint="">
+          <parameters>
+            <label>"Fetch Component 1 Stock Level from TENNECO"</label>
+            <method/>
+            <type>:task</type>
+            <mid>'_E0847391-A047-452C-89C7-6E1BA4582F7B'</mid>
+            <parameters>
+              <TaskName/>
+              <SENSORID>__E0847391-A047-452C-89C7-6E1BA4582F7B_SENSORIDInputItem</SENSORID>
+              <OWNERID>__E0847391-A047-452C-89C7-6E1BA4582F7B_OWNERIDInputItem</OWNERID>
+            </parameters>
+          </parameters>
+        </call>
+        <parallel wait="-1">
+          <parallel_branch>
+            <call id="a2" endpoint="">
+              <parameters>
+                <label>"Fetch M1 Lead Time"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_F4B7246D-65D7-4BEE-B34D-A39A1FB9F250'</mid>
+                <parameters>
+                  <TaskName/>
+                  <DataName>__F4B7246D-65D7-4BEE-B34D-A39A1FB9F250_DataNameInputItem</DataName>
+                </parameters>
+              </parameters>
+            </call>
+            <call id="a3" endpoint="">
+              <parameters>
+                <label>"Fetch M1 Capacity"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_D6EEB583-2A13-49E9-AC26-79D420EFBDAD'</mid>
+                <parameters>
+                  <TaskName/>
+                  <DataName>__D6EEB583-2A13-49E9-AC26-79D420EFBDAD_DataNameInputItem</DataName>
+                </parameters>
+              </parameters>
+            </call>
+            <call id="a4" endpoint="">
+              <parameters>
+                <label>"Fetch M1 Price"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_68F70257-09F7-4F95-8D60-825ED2A26A93'</mid>
+                <parameters>
+                  <TaskName/>
+                  <DataName>__68F70257-09F7-4F95-8D60-825ED2A26A93_DataNameInputItem</DataName>
+                </parameters>
+              </parameters>
+            </call>
+            <call id="a12" endpoint="">
+              <parameters>
+                <label>"Fetch M1 in Transit"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_36D96550-4649-4EAF-BEC3-B4E92B066C1C'</mid>
+                <parameters>
+                  <TaskName/>
+                  <DataName>__36D96550-4649-4EAF-BEC3-B4E92B066C1C_DataNameInputItem</DataName>
+                </parameters>
+              </parameters>
+            </call>
+          </parallel_branch>
+          <parallel_branch>
+            <call id="a6" endpoint="">
+              <parameters>
+                <label>"Fetch M2 Lead Time, Capacity, Intransit  and Price"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_143F81B9-4E15-4B44-B655-3B8DE51A0685'</mid>
+                <parameters>
+                  <TaskName/>
+                  <DataName>__143F81B9-4E15-4B44-B655-3B8DE51A0685_DataNameInputItem</DataName>
+                </parameters>
+              </parameters>
+            </call>
+          </parallel_branch>
+        </parallel>
+        <call id="a11" endpoint="">
+          <parameters>
+            <label>"Decide M1, M2 or Problem"</label>
+            <method/>
+            <type>:scriptTask</type>
+            <mid>'_2D655D33-72BE-4982-B8AA-7D0E6C61CC21'</mid>
+            <parameters/>
+          </parameters>
+        </call>
+      </otherwise>
+      <otherwise>
+        <call id="a1" endpoint="">
+          <parameters>
+            <label>"Fetch Component 1 Stock Level from TENNECO"</label>
+            <method/>
+            <type>:task</type>
+            <mid>'_E0847391-A047-452C-89C7-6E1BA4582F7B'</mid>
+            <parameters>
+              <TaskName/>
+              <SENSORID>__E0847391-A047-452C-89C7-6E1BA4582F7B_SENSORIDInputItem</SENSORID>
+              <OWNERID>__E0847391-A047-452C-89C7-6E1BA4582F7B_OWNERIDInputItem</OWNERID>
+            </parameters>
+          </parameters>
+        </call>
+        <parallel wait="-1">
+          <parallel_branch>
+            <call id="a2" endpoint="">
+              <parameters>
+                <label>"Fetch M1 Lead Time"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_F4B7246D-65D7-4BEE-B34D-A39A1FB9F250'</mid>
+                <parameters>
+                  <TaskName/>
+                  <DataName>__F4B7246D-65D7-4BEE-B34D-A39A1FB9F250_DataNameInputItem</DataName>
+                </parameters>
+              </parameters>
+            </call>
+            <call id="a3" endpoint="">
+              <parameters>
+                <label>"Fetch M1 Capacity"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_D6EEB583-2A13-49E9-AC26-79D420EFBDAD'</mid>
+                <parameters>
+                  <TaskName/>
+                  <DataName>__D6EEB583-2A13-49E9-AC26-79D420EFBDAD_DataNameInputItem</DataName>
+                </parameters>
+              </parameters>
+            </call>
+            <call id="a4" endpoint="">
+              <parameters>
+                <label>"Fetch M1 Price"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_68F70257-09F7-4F95-8D60-825ED2A26A93'</mid>
+                <parameters>
+                  <TaskName/>
+                  <DataName>__68F70257-09F7-4F95-8D60-825ED2A26A93_DataNameInputItem</DataName>
+                </parameters>
+              </parameters>
+            </call>
+            <call id="a12" endpoint="">
+              <parameters>
+                <label>"Fetch M1 in Transit"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_36D96550-4649-4EAF-BEC3-B4E92B066C1C'</mid>
+                <parameters>
+                  <TaskName/>
+                  <DataName>__36D96550-4649-4EAF-BEC3-B4E92B066C1C_DataNameInputItem</DataName>
+                </parameters>
+              </parameters>
+            </call>
+          </parallel_branch>
+          <parallel_branch>
+            <call id="a6" endpoint="">
+              <parameters>
+                <label>"Fetch M2 Lead Time, Capacity, Intransit  and Price"</label>
+                <method/>
+                <type>:task</type>
+                <mid>'_143F81B9-4E15-4B44-B655-3B8DE51A0685'</mid>
+                <parameters>
+                  <TaskName/>
+                  <DataName>__143F81B9-4E15-4B44-B655-3B8DE51A0685_DataNameInputItem</DataName>
+                </parameters>
+              </parameters>
+            </call>
+          </parallel_branch>
+        </parallel>
+        <call id="a11" endpoint="">
+          <parameters>
+            <label>"Decide M1, M2 or Problem"</label>
+            <method/>
+            <type>:scriptTask</type>
+            <mid>'_2D655D33-72BE-4982-B8AA-7D0E6C61CC21'</mid>
+            <parameters/>
+          </parameters>
+        </call>
+      </otherwise>
+      <otherwise>
+        <escape/>
+      </otherwise>
+    </choose>
+  </loop>
+  <call id="a13" endpoint="">
+    <parameters>
+      <label>"Big Problem eMail"</label>
+      <method/>
+      <type>:task</type>
+      <mid>'_7BCD5EDC-1371-4010-85D2-A6C2D92D939E'</mid>
+      <parameters>
+        <TaskName/>
+      </parameters>
+    </parameters>
+  </call>
+</description>

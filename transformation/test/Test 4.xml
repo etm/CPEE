@@ -4,10 +4,10 @@
     <alternative condition="data.a &lt; 4" language="text/javascript">
       <call id="a5" endpoint="timeout">
         <parameters>
-          <label>C</label>
+          <label>"C"</label>
           <method/>
-          <type>serviceTask</type>
-          <mid>sid-126C0EE2-98B6-4D69-9585-35AB1E90E4B8</mid>
+          <type>:serviceTask</type>
+          <mid>'sid-126C0EE2-98B6-4D69-9585-35AB1E90E4B8'</mid>
           <parameters>
             <timeout>2</timeout>
           </parameters>
@@ -18,10 +18,10 @@
     <alternative condition="data.a &lt; 3" language="text/javascript">
       <call id="a3" endpoint="timeout">
         <parameters>
-          <label>B</label>
+          <label>"B"</label>
           <method/>
-          <type>serviceTask</type>
-          <mid>sid-6CFA8542-1FF6-4BB8-957E-5C9806CD90C6</mid>
+          <type>:serviceTask</type>
+          <mid>'sid-6CFA8542-1FF6-4BB8-957E-5C9806CD90C6'</mid>
           <parameters>
             <timeout>1</timeout>
           </parameters>

@@ -217,7 +217,7 @@ function CPEE(adaptor) {
     'description' : {//{{{
       'create':  function(target) {
         var node = null;
-        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><manipulate output="result"/></call>');
         return node;
       },
       'permissible_children': function(node) {
@@ -253,7 +253,7 @@ function CPEE(adaptor) {
     'description' : {//{{{
       'create':  function(target) {
         var node = null;
-        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="correlation" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="correlation" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><manipulate output="result"/></call>');
         return node;
       },
       'permissible_children': function(node) {
@@ -289,7 +289,7 @@ function CPEE(adaptor) {
     'description' : {//{{{
       'create':  function(target) {
         var node = null;
-        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="instantiate" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="instantiate" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><manipulate output="result"/></call>');
         return node;
       },
       'permissible_children': function(node) {
@@ -325,7 +325,7 @@ function CPEE(adaptor) {
     'description' : {//{{{
       'create':  function(target) {
         var node = null;
-        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label></label><method>post</method><parameters/></parameters><manipulate output="result"/></call>');
+        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><manipulate output="result"/></call>');
         return node;
       },
       'permissible_children': function(node) {
@@ -398,7 +398,7 @@ function CPEE(adaptor) {
     'description' : {//{{{
       'create':  function(target) {
         var node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://cpee.org/ns/description/1.0"/>');
-        node.append($X('<parameters xmlns="http://cpee.org/ns/description/1.0"><label></label><method>post</method><parameters/></parameters>'));
+        node.append($X('<parameters xmlns="http://cpee.org/ns/description/1.0"><label>""</label><method>:post</method><parameters/></parameters>'));
         return node;
       },
       'permissible_children': function(node) {

@@ -155,16 +155,16 @@ module CPEE
         end #}}}
         private :build_extraces
 
-        def map_node(node) #{{{
+        def map_node(node,flat) #{{{
           case node.type
             when :parallelGateway
-              Parallel.new(node.id,node.type)
+              flat ? nil : Parallel.new(node.id,node.type)
             when :exclusiveGateway
-              Conditional.new(node.id,:exclusive,node.type)
+              flat ? nil : Conditional.new(node.id,:exclusive,node.type)
             when :eventBasedGateway
-              Parallel.new(node.id,node.type,1)
+              flat ? nil : Parallel.new(node.id,node.type,1)
             when :inclusiveGateway
-              Conditional.new(node.id,:inclusive,node.type)
+              flat ? nil : Conditional.new(node.id,:inclusive,node.type)
             when :endEvent, :startEvent, nil
               nil
             else
@@ -208,53 +208,43 @@ module CPEE
               end
               if node == enode
                 traces.shift_all
-              elsif node.incoming <= 1
+              elsif traces.incoming(node) == 1
                 traces.shift_all
-                n = map_node(node)
-                if !(n.nil? || (n.container? && (node.outgoing <=1 || traces.finished?)))
+                n = map_node(node,traces.same_first)
+                if !n.nil? && !(n.container? && traces.finished?)
                   (branch << n).compact!
                 end
               else
                 loops = traces.loops
-                if node.type == :exclusiveGateway || traces.all_loops?
-                  ### as the first is a decision node, just remove and continue
-                  if node.incoming == 2
-                    node.incoming = 1
-                    branch << Loop.new(node.id)
-                    if traces.all_loops?
-                      ### if all loops, tail loop thus remove the loopback
-                      loops.pop_all
-                    else
-                      ### remove the gateway itself, as for a single loop it is no longer used.
-                      traces.shift_all
-                    end
-                    puts '--> down loop1 to ' + (down + 1).to_s if debug
-                    loops.remove_empty
-                    build_ttree branch.last, loops.dup, nil, debug, down + 1
-                    puts '--> up loop1 from ' + (down + 1).to_s if debug
+                if node.type == :exclusiveGateway || traces.all_loops? # or (infinite loop[s])
+                  traces.remove(loops)
+
+                  ### an infinite loop that can only be left by break is created
+                  ### at the output time it is decided wether this can be optimized
+                  branch << Loop.new(node.id)
+                  ### duplicate because we need it later to remove all the shit from traces
+                  loops.add_breaks(self.object_id,node.type == :exclusiveGateway)
+                  ### remove the exclusive gateway because we no longer need it
+                  ### if there is non (tail controlled, remove the loop target (last)
+                  if node.type == :exclusiveGateway
+                    loops.shift_all
+                    traces.shift_all 
                   else
-                    ### dont remove it, treat it as a normal conditional
-                    ### an infinite loop that can only be left by break is created
-                    node.incoming = 1
-                    branch << InfiniteLoop.new(node.id)
-                    ### add the blank conditional to get a break
-                    len = loops.length
-                    loops.add_breaks(self.object_id)
-                    puts '--> down loop2 to ' + (down + 1).to_s if debug
-                    build_ttree branch.last, loops.dup, nil, debug, down + 1
-                    puts '--> up loop2 from ' + (down + 1).to_s if debug
-                    ### set outgoing to number of loops (without the break) so that it can be ignored (should be 1 all the time)
-                    node.outgoing -= len
-                  end   
+                    loops.pop_all
+                  end
+                  ### add the blank conditional to get a break
+                  puts '--> down head_loop to ' + (down + 1).to_s if debug
+                  build_ttree branch, loops, nil, debug, down + 1
+                  puts '--> up head_loop from ' + (down + 1).to_s if debug
                 else
-                  node.incoming -= loops.length
                   ### throw away the loop traces, remove loop traces from front of all other traces
-                  traces.segment_by_loops loops
-                  puts '--> down loop3 to ' + (down + 1).to_s if debug
+                  traces.remove(loops)
+                  traces.eliminate(loops)
+                  loops.extend
+                  puts '--> down tail_loop to ' + (down + 1).to_s if debug
                   build_ttree branch, loops.dup, nil, debug, down + 1
-                  puts '--> up loop3 from ' + (down + 1).to_s if debug
+                  puts '--> up tail_loop from ' + (down + 1).to_s if debug
                 end
-                traces.remove(loops)
                 traces.remove_empty
               end
             else
@@ -263,23 +253,18 @@ module CPEE
               tracesgroup, endnode = traces.segment_by endnode
               tracesgroup.each do |trcs|
                 nb = branch.last.new_branch
-                if trcs.finished?
-                  puts '--> branch down to ' + (down + 1).to_s if debug
-                  build_ttree nb, Traces.new([[Break.new(self.object_id,1)]]), endnode, debug, down + 1
-                  puts '--> branch up from ' + (down + 1).to_s if debug
-                else  
+                unless trcs.finished?
                   puts '--> branch down to ' + (down + 1).to_s if debug
                   build_ttree nb, trcs, endnode, debug, down + 1
                   puts '--> branch up from ' + (down + 1).to_s if debug
                 end  
-                endnode.incoming -= 1 unless endnode.nil?
               end
-              traces.empty! if endnode.nil?
-              ### all before is reduced to one incoming arrow
-              ### if now there is still more than one incoming we have a loop situation
-              ### where the end of a branching statement is also the starting/endpoint 
-              ### of a loop
-              endnode.incoming += 1 unless endnode.nil?
+              # remove all traces that don't start with endnode to account for loops
+              if endnode.nil?
+                traces.empty!
+              else  
+                traces.remove_by_endnode(endnode)
+              end  
             end
           end
         end

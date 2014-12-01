@@ -1,0 +1,39 @@
+TREE:
+  ├ 1
+  ├ Parallel
+  │ ├ Branch
+  │ │ ├ 2
+  │ │ ├ 3
+  │ │ ├ 4
+  │ │ └ 12
+  │ └ Branch
+  │   └ 6
+  ├ 11
+  ├ Loop
+  │ ├ Alternative
+  │ │ ├ 5
+  │ │ ├ 14
+  │ │ ├ 1
+  │ │ ├ Parallel
+  │ │ │ ├ Branch
+  │ │ │ │ ├ 2
+  │ │ │ │ ├ 3
+  │ │ │ │ ├ 4
+  │ │ │ │ └ 12
+  │ │ │ └ Branch
+  │ │ │   └ 6
+  │ │ └ 11
+  │ ├ Alternative
+  │ │ ├ 1
+  │ │ ├ Parallel
+  │ │ │ ├ Branch
+  │ │ │ │ ├ 2
+  │ │ │ │ ├ 3
+  │ │ │ │ ├ 4
+  │ │ │ │ └ 12
+  │ │ │ └ Branch
+  │ │ │   └ 6
+  │ │ └ 11
+  │ └ Alternative
+  │   └ Break
+  └ 13

@@ -120,7 +120,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
-      <xsl:for-each select="@*[not(name()='language' or name()='pre_test' or name()='post_test')]">
+      <xsl:for-each select="@*[not(name()='language' or name()='pre_test' or name()='post_test' or name()='svg-label')]">
         <xsl:text>, :</xsl:text>
         <xsl:value-of select="name(.)"/>
         <xsl:text> => "</xsl:text>
@@ -218,7 +218,7 @@
         <xsl:text>"</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:for-each select="@*[not(name()='language' or name()='condition')]">
+    <xsl:for-each select="@*[not(name()='language' or name()='condition' or name()='svg-label')]">
       <xsl:text>, :</xsl:text>
       <xsl:value-of select="name(.)"/>
       <xsl:text> => "</xsl:text>
@@ -250,7 +250,7 @@
       </xsl:with-param>
     </xsl:call-template>
     <xsl:text>otherwise </xsl:text>
-    <xsl:for-each select="@*[not(name()='language' or name()='condition')]">
+    <xsl:for-each select="@*[not(name()='language' or name()='condition' or name()='svg-label')]">
       <xsl:if test="position() &gt;1">, </xsl:if>
       <xsl:text>:</xsl:text>
       <xsl:value-of select="name(.)"/>

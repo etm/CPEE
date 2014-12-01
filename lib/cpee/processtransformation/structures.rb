@@ -22,22 +22,19 @@ module CPEE
 
   module ProcessTransformation
 
-    class Link #{{{
-      attr_accessor :from, :to
-      attr_reader :condition, :attributes
-      def initialize(from,to,cond=nil)
-        @from  = from
-        @to = to
-        @condition = cond
-        @attributes = {}
-      end
-    end #}}}
-
-    module Container
+    module Container #{{{
       def container?
         @container || false
       end
-    end
+    end #}}}
+    module Struct #{{{
+      def each(&a)
+        @sub.each{|s| a.call(s)}
+      end
+      def length
+        @sub.length
+      end  
+    end #}}}
 
     class Node #{{{ 
       include Container
@@ -63,21 +60,21 @@ module CPEE
         @attributes = {}
       end
     end # }}} 
-
-    module Struct #{{{
-      def each(&a)
-        @sub.each{|s| a.call(s)}
+    class Link #{{{
+      attr_accessor :from, :to
+      attr_reader :condition, :attributes
+      def initialize(from,to,cond=nil)
+        @from  = from
+        @to = to
+        @condition = cond
+        @attributes = {}
       end
-      def length
-        @sub.length
-      end  
     end #}}}
-
-    class Break < Node
-      def initialize(context,incoming)
-        super context, '-1', :break, 'BREAK', incoming, []
+    class Break < Node #{{{
+      def initialize(context)
+        super context, '-1', :break, 'BREAK', 1, []
       end
-    end
+    end #}}}
 
     class Alternative < Array #{{{
       include Container
@@ -101,31 +98,28 @@ module CPEE
         @id = id
       end
     end #}}}
-    class InfiniteLoop < Array #{{{
+
+    class Loop #{{{
       include Container
-      def condition?; false; end
-      attr_reader :attributes
-      attr_accessor :id, :type
-      def initialize(id)
-        @container = true
-        @id = id
-        @type = :loop
-        @attributes = {}
-      end  
-    end #}}}
-    class Loop < Array #{{{
-      include Container
-      attr_accessor :id, :type, :condition, :condition_type
+      include Struct
+      include Enumerable
+      attr_reader :id, :sub, :mode
+      attr_accessor :type, :condition, :condition_type
       attr_reader :attributes
       def condition?; true; end
       def initialize(id)
         @container = true
         @id = id
         @type = :loop
+        @mode = :exclusive
         @condition = []
+        @sub = []
         @condition_type = nil
         @attributes = {}
       end  
+      def new_branch
+        (@sub << Alternative.new(@id)).last
+      end
     end #}}}
 
     class Parallel #{{{
@@ -237,22 +231,22 @@ module CPEE
       class Tree < Array #{{{
         def condition?; false; end
 
-        def to_s
-          "TREE:\n" << print_tree(self)
+        def to_s(verbose=true)
+          "TREE:\n" << print_tree(self,'  ',verbose)
         end
 
-        def print_tree(ele,indent='  ')
+        def print_tree(ele,indent='  ',verbose=true)
           ret = ''
           ele.each_with_index do |e,i|
             last  = (i == ele.length - 1)
             pchar = last ? '└' : '├'
             if e.container?
               ret << indent + pchar + ' ' + e.class.to_s.gsub(/[^:]*::/,'') + "\n"
-              ret << print_tree(e,indent + (last ? '  ' : '│ '))
-            elsif e.is_a?(Break) && 
+              ret << print_tree(e,indent + (last ? '  ' : '│ '),verbose)
+            elsif e.is_a?(Break)
               ret << indent + pchar + ' ' + e.class.to_s.gsub(/[^:]*::/,'') + "\n"
             else
-              ret << indent + pchar + ' ' + e.niceid.to_s + "\n"
+              ret << indent + pchar + ' ' + e.niceid.to_s + (verbose ? " (#{e.label})" : "") + "\n"
             end
           end
           ret
@@ -270,6 +264,11 @@ module CPEE
           trcs.each do |t|
             self.delete(t)
           end  
+        end
+        def remove_by_endnode(enode)
+          self.delete_if do |t|
+            t[0] != enode 
+          end
         end
 
         def empty!
@@ -310,25 +309,18 @@ module CPEE
           (n = self.map{|t| t.first }.uniq).length == 1 ? n.first : nil
         end
 
-        # future use
-        def incoming
-          if node = self.same_first
-            tcount = 1
-            self.each{|t| tcount += 1 if t.first == t.last }
-            tcount
-          else
-            raise "Wrong Question"
+        def incoming(node)
+          tcount = 1
+          self.each do |t|
+            break if t.length == 1
+            tcount += 1 if t.last == node
           end  
+          tcount
         end
 
         def include_in_all?(e)
           num = 0
           self.each{|n| num += 1 if n.include?(e)} 
-          num == self.length
-        end
-        def same_position_in_all?(e,i)
-          num = 0
-          self.each{|n| num += 1 if n[i] == e}
           num == self.length
         end
 
@@ -338,14 +330,14 @@ module CPEE
           num == self.length
         end
 
-
-        def add_breaks(context)
+        def add_breaks(context,front=true)
           trueloops = self.find_all{ |t| t.last == t.first }.length
+          tb = Break.new(context)
           if trueloops == self.length
-            self << [self.first_node] ### the blank conditional so that we get a break
+            self << (front ? [nil,tb] : [tb,nil])
           else
             self.each do |t|
-              t << Break.new(context,1) unless t.last == t.first ### an explicit break
+              t << tb unless t.last == t.first ### an explicit break
             end
           end  
         end
@@ -395,22 +387,13 @@ module CPEE
 
         def extend
           # find largest common
-          max = nil
+          max = []
           sh = self.shortest
           sh = sh[0..-2] if sh.first == sh.last
           sh.each_with_index do |e,i|
-            if self.same_position_in_all?(e,i)
-              max = e
-            else  
-              break
-            end
+            max << e if self.include_in_all?(e)
           end
-
-          # all before the largest common are just copied, so incoming should be 1
-          sh.each do |e|
-            break if e == max
-            e.incoming = 1
-          end  
+          max = max.last
 
           # if last is the largest common do nothing
           # else append from last to largest common
@@ -425,21 +408,14 @@ module CPEE
             end  
           end
 
-          max.incoming = self.length + 1
           max
         end
-
-        def segment_by_loops(loops)
-          # supress loops
-          self.delete_if { |t| loops.include?(t) }
-          self.eliminate(loops)
-          loops.extend
-        end  
 
         def find_endnode
           # supress loops
           trcs = self.dup
-          # trcs.delete_if { |t| t.uniq.length < t.length }
+          # dangerous TODO
+          trcs.delete_if { |t| t.uniq.length < t.length }
 
           # find common node (except loops)
           enode = nil

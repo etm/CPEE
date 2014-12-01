@@ -3,43 +3,36 @@
   <manipulate id="a1" output="result" language="application/javascript">data.a = 0</manipulate>
   <call id="a5" endpoint="timeout">
     <parameters>
-      <label>B</label>
+      <label>"B"</label>
       <method/>
-      <type>serviceTask</type>
-      <mid>sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819</mid>
+      <type>:serviceTask</type>
+      <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
       <parameters>
         <timeout>1</timeout>
       </parameters>
     </parameters>
     <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
   </call>
-  <loop pre_test="true">
-    <choose mode="exclusive">
-      <alternative condition="data.a &lt; 3" language="text/javascript">
-        <call id="a5" endpoint="timeout">
-          <parameters>
-            <label>B</label>
-            <method/>
-            <type>serviceTask</type>
-            <mid>sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819</mid>
-            <parameters>
-              <timeout>1</timeout>
-            </parameters>
-          </parameters>
-          <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
-        </call>
-      </alternative>
-      <otherwise>
-        <break/>
-      </otherwise>
-    </choose>
+  <loop pre_test="data.a &lt; 3" language="text/javascript">
+    <call id="a5" endpoint="timeout">
+      <parameters>
+        <label>"B"</label>
+        <method/>
+        <type>:serviceTask</type>
+        <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
+        <parameters>
+          <timeout>1</timeout>
+        </parameters>
+      </parameters>
+      <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+    </call>
   </loop>
   <call id="a7" endpoint="timeout">
     <parameters>
-      <label>C</label>
+      <label>"C"</label>
       <method/>
-      <type>serviceTask</type>
-      <mid>sid-5F1CD375-479E-4DD5-8F97-66E20814D204</mid>
+      <type>:serviceTask</type>
+      <mid>'sid-5F1CD375-479E-4DD5-8F97-66E20814D204'</mid>
       <parameters>
         <timeout>1</timeout>
       </parameters>

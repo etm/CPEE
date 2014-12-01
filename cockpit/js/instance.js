@@ -24,6 +24,8 @@ var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/handlerwrapper' + '&' +
+               'events' + '=' + 'result' + '&' +
                'topic'  + '=' + 'properties/handlers' + '&' +
                'events' + '=' + 'change';// }}}
 var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
@@ -38,6 +40,8 @@ var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/handlerwrapper' + '&' +
+               'events' + '=' + 'result' + '&' +
                'topic'  + '=' + 'properties/handlers' + '&' +
                'events' + '=' + 'change';// }}}
 
@@ -46,23 +50,25 @@ $(document).ready(function() {// {{{
   $("button[name=base]").click(function(){ create_instance(null); });
   $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
   $("button[name=loadtestset]").click(load_testset);
-  $("button[name=loadtestsetfile]").click(load_testsetfile);
-  $("button[name=loadmodelfile]").click(load_modelfile);
+  $("button[name=loadmodeltype]").click(load_modeltype);
+  $("button[name=loadmodelfile]").click(load_model);
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
-
+  $("input[name=testsetfile]").change(load_testsetfile);
+  $("input[name=modelfile]").change(load_modelfile);
 
   $.ajax({ 
-    url: "testsets/index.xml", 
+    url: "testsets/testsets.xml", 
     dataType: 'xml',
     success: function(res){
       $('testset',res).each(function(){
         var ts = $(this).text();
-        $('select[name=testset-names]').append(
+        $('select[name=testset-names] optgroup:last-child').append(
           $("<option></option>").attr("value",ts).text(ts)
         );
       });
+      $('select[name=testset-names] optgroup:last-child option:first-child').attr('selected','selected');
       var q = $.parseQuery();
       if (q.monitor && q.load) {
         $("input[name=instance-url]").val(q.monitor);
@@ -79,6 +85,18 @@ $(document).ready(function() {// {{{
         // ui_toggle_vis_tab($("#instance td.switch"));
         monitor_instance(false);
       }  
+    }
+  });
+  $.ajax({ 
+    url: "testsets/transformations.xml", 
+    dataType: 'xml',
+    success: function(res){
+      $('transformation',res).each(function(){
+        var ts = $(this).text();
+        $('select[name=transformation-names]').append(
+          $("<option></option>").attr("value",ts).text(ts)
+        );
+      });
     }
   });
 });// }}}
@@ -316,6 +334,7 @@ function monitor_instance_dsl() {// {{{
               manifestation.events.click(svgid,undefined);
             };
             $('#graphcanvas').redraw();
+            $('#graphcolumn div').redraw();
 
             monitor_instance_pos();
           }
@@ -582,20 +601,22 @@ function set_testset(testset) {// {{{
   load_testset_endpoints(url,testset);
   load_testset_pos(url,testset);
 
-  var ser = '';
-  $("testset > transformation > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  var val = "<content>" + ser + "</content>";
-  $.ajax({
-    type: "PUT", 
-    url: url + "/properties/values/transformation",
-    data: ({content: val}),
-    success: function() { 
-      load_testset_des(url,testset); 
-    },
-    error: report_failure
-  });
+  if ($("testset > transformation",testset).length > 0) {
+    var ser = '';
+    $("testset > transformation > *",testset).each(function(){
+      ser += $(this).serializeXML() + "\n";
+    });
+    var val = "<content>" + ser + "</content>";
+    $.ajax({
+      type: "PUT", 
+      url: url + "/properties/values/transformation",
+      data: ({content: val}),
+      success: function() { 
+        load_testset_des(url,testset); 
+      },
+      error: report_failure
+    });
+  }  
   
   load_testset_hw(url,testset);
   $.ajax({
@@ -614,6 +635,7 @@ function set_testset(testset) {// {{{
  }// }}}
 function load_testsetfile() { //{{{
   if (running) return;
+  running = true;
   if (typeof window.FileReader !== 'function') {
     alert('FileReader not yet supportet');
     return;
@@ -630,6 +652,7 @@ function load_testsetfile() { //{{{
 } //}}}
 function load_modelfile() { //{{{
   if (running) return;
+  running = true;
   if (typeof window.FileReader !== 'function') {
     alert('FileReader not yet supportet');
     return;
@@ -655,16 +678,47 @@ function load_testset() {// {{{
 
   var name = $("select[name=testset-names]").val();
 
+  if (name == '###') {
+    running = false;
+    document.getElementById('testsetfile').click();
+  } else {  
+    $.ajax({ 
+      cache: false,
+      dataType: 'xml',
+      url: "testsets/" + name + ".xml",
+      success: function(res){ 
+        document.title = name;
+        set_testset(res);
+      },
+      complete: function() {
+        running  = false;
+      }
+    });
+  }  
+}// }}}
+
+function load_model() {// {{{
+  if (running) return;
+  document.getElementById('modelfile').click();
+}// }}}
+
+function load_modeltype() {// {{{
+  if (running) return;
+  running  = true;
+  
+  var name = $("select[name=transformation-names]").val();
+
   $.ajax({ 
     cache: false,
     dataType: 'xml',
     url: "testsets/" + name + ".xml",
     success: function(res){ 
-      document.title = name;
       set_testset(res);
+    },
+    complete: function() {
+      running  = false;
     }
   });
-  running  = false;
 }// }}}
 
 function load_des(url,model) { //{{{
@@ -679,6 +733,7 @@ function load_des(url,model) { //{{{
 }   //}}}
 
 function load_testset_des(url,testset) {// {{{
+  if ($("testset > description",testset).length == 0) { return; }
   var ser = '';
   $("testset > description > *",testset).each(function(){
     ser += $(this).serializeXML() + "\n";
@@ -697,6 +752,7 @@ function load_testset_hw(url,testset) {// {{{
   });
 } // }}}
 function load_testset_dataelements(url,testset) {// {{{
+  if ($("testset > dataelements",testset).length == 0) { return; }
   var ser = '';
   $("testset > dataelements > *",testset).each(function(){
     ser += $(this).serializeXML() + "\n";
@@ -710,6 +766,7 @@ function load_testset_dataelements(url,testset) {// {{{
   });
 }// }}}
 function load_testset_endpoints(url,testset) {// {{{
+  if ($("testset > endpoints",testset).length == 0) { return; }
   var ser = '';
   $("testset > endpoints > *",testset).each(function(){
     ser += $(this).serializeXML() + "\n";
@@ -723,6 +780,7 @@ function load_testset_endpoints(url,testset) {// {{{
   });  
 }// }}}
 function load_testset_pos(url,testset) {// {{{
+  if ($("testset > positions",testset).length == 0) { return; }
   var ser = '';
   $("testset > positions > *",testset).each(function(){
     ser += $(this).serializeXML() + "\n";
@@ -732,6 +790,7 @@ function load_testset_pos(url,testset) {// {{{
     type: "PUT", 
     url: url + "/properties/values/positions/",
     data: ({content: val}),
+    success: monitor_instance_pos,
     error: report_failure
   });  
 }// }}}

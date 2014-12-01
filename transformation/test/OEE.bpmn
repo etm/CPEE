@@ -1,0 +1,4149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/bpmn20" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_sGKlYVE8EeSFFI-uM5IUzQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="_oeeItem"/>
+  <bpmn2:itemDefinition id="_internalItem"/>
+  <bpmn2:itemDefinition id="_machine_idItem"/>
+  <bpmn2:itemDefinition id="_performanceItem"/>
+  <bpmn2:itemDefinition id="_availabilityItem"/>
+  <bpmn2:itemDefinition id="_qualityItem"/>
+  <bpmn2:itemDefinition id="_machine_startedItem"/>
+  <bpmn2:itemDefinition id="_oeedataItem"/>
+  <bpmn2:itemDefinition id="_repairingItem"/>
+  <bpmn2:itemDefinition id="__F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDInputItem" structureRef="Integer"/>
+  <bpmn2:itemDefinition id="__F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_OWNERIDInputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORDATAOutputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDOutputItem" structureRef="Integer"/>
+  <bpmn2:itemDefinition id="__08682F43-65F8-4926-B283-9AEBDCB71D50_DataNameInputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__08682F43-65F8-4926-B283-9AEBDCB71D50_MachineIDInputItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__BD32D6CA-7910-4BA4-AFB0-7B12472849ED_DataInputItem" structureRef="String"/>
+  <bpmn2:process id="53e1f7b3e4b0207100d226e4" name="OEE Calculation Loop" isExecutable="true">
+    <bpmn2:extensionElements>
+      <drools:metadata>
+        <drools:metaentry>
+          <drools:name>id</drools:name>
+          <drools:value>53e1f7b3e4b0207100d226e4</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>targetnamespace</drools:name>
+          <drools:value>http://www.omg.org/bpmn20</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>resourceId</drools:name>
+          <drools:value>53e1f7b3e4b0207100d226e4</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>vardefs</drools:name>
+          <drools:value>oee,internal,machine_id,performance,availability,quality,machine_started,oeedata,repairing</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>typelanguage</drools:name>
+          <drools:value>http://www.w3.org/2001/XMLSchema</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>expressionlanguage</drools:name>
+          <drools:value>http://www.w3.org/1999/XPath</drools:value>
+        </drools:metaentry>
+        <drools:metaentry>
+          <drools:name>adhocprocess</drools:name>
+          <drools:value>false</drools:value>
+        </drools:metaentry>
+      </drools:metadata>
+    </bpmn2:extensionElements>
+    <bpmn2:property id="oee" itemSubjectRef="_oeeItem"/>
+    <bpmn2:property id="internal" itemSubjectRef="_internalItem"/>
+    <bpmn2:property id="machine_id" itemSubjectRef="_machine_idItem"/>
+    <bpmn2:property id="performance" itemSubjectRef="_performanceItem"/>
+    <bpmn2:property id="availability" itemSubjectRef="_availabilityItem"/>
+    <bpmn2:property id="quality" itemSubjectRef="_qualityItem"/>
+    <bpmn2:property id="machine_started" itemSubjectRef="_machine_startedItem"/>
+    <bpmn2:property id="oeedata" itemSubjectRef="_oeedataItem"/>
+    <bpmn2:property id="repairing" itemSubjectRef="_repairingItem"/>
+    <bpmn2:startEvent id="_7AD76E0A-0EE8-4967-9B4A-7A7E57E0D8D7" drools:bgcolor="#9acd32" drools:selectable="true" name="">
+      <bpmn2:outgoing>_8E1F24D7-104C-44DC-8E6A-2E636E31002D</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="_A534791D-4D9C-41FA-8958-E725855ABD0A" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_D1CAD1F3-A42B-4BE9-9705-872C45BF5E59" targetRef="_ADA43DBE-D064-4DF9-A253-6D2AA1D23AE9"/>
+    <bpmn2:parallelGateway id="_ADA43DBE-D064-4DF9-A253-6D2AA1D23AE9" drools:bgcolor="#f0e68c" drools:selectable="true" drools:bordercolor="#a67f00" name="" gatewayDirection="Diverging">
+      <bpmn2:incoming>_A534791D-4D9C-41FA-8958-E725855ABD0A</bpmn2:incoming>
+      <bpmn2:outgoing>_49ECAAEC-64D2-415F-AD67-DF61B30B71E3</bpmn2:outgoing>
+      <bpmn2:outgoing>_CA3FE85B-54FD-4A10-898A-8EA59AC6C703</bpmn2:outgoing>
+    </bpmn2:parallelGateway>
+    <bpmn2:sequenceFlow id="_49ECAAEC-64D2-415F-AD67-DF61B30B71E3" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_ADA43DBE-D064-4DF9-A253-6D2AA1D23AE9" targetRef="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF"/>
+    <bpmn2:task id="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF" drools:selectable="true" drools:taskName="smartobject" name="Get Start/Stop Machine">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>smartobject</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>javascript</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Get Start/Stop Machine</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>asdomain</drools:name>
+            <drools:value>29.327 - Manufacture of Exhaust Systems for motor vehicles </drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>dataoutputset</drools:name>
+            <drools:value>SENSORDATA:String,SENSORID:Integer</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script</drools:name>
+            <drools:value><![CDATA[var ev = JSON.parse(result.sensordata);if (ev.running == "False") {  if (data.machine_started == null) {    data.machine_started = ev.when;  }    data.machine_stopped = ev.when;}if (ev.running == "True" && data.machine_stopped) {  data.downtime += Math.abs(new Date(ev.when) - new Date(data.machine_stopped));  data.machine_stopped = null;}]]></drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>assignments</drools:name>
+            <drools:value>SENSORID=1,OWNERID=Tenneco</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>company</drools:name>
+            <drools:value><![CDATA[[{
+"serviceId": "133",
+"serviceLabel": "Catalytic Converter Manufacture",
+"serviceEndpoint": "xmpp-r://fauxrezia@fp7-adventure.eu",
+"orgName": "Fauxrezia",
+"profileId": "60",
+"serviceOperation": "39",
+"serviceOperationLabel": "GetData",
+"dataOutputs": 
+[{
+"name": "Capacity",
+"standardType": "String"}, 
+{
+"name": "Lead",
+"standardType": "String"}, 
+{
+"name": "Price",
+"standardType": "String"}, 
+{
+"name": "InTransit",
+"standardType": "String"}]
+,
+"order": "3",
+"serviceOperations": 
+[{
+"initData": {
+"OperationId": "39",
+"InterfaceId": "69",
+"Name": "GetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "77",
+"OperationId": "39",
+"ParameterId": "85",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "85",
+"Name": "Capacity",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "87",
+"OperationId": "39",
+"ParameterId": "95",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "95",
+"Name": "Lead",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "88",
+"OperationId": "39",
+"ParameterId": "96",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "96",
+"Name": "Price",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "93",
+"OperationId": "39",
+"ParameterId": "101",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "101",
+"Name": "InTransit",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "73",
+"InterfaceId": "69",
+"Name": "SetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "357",
+"OperationId": "73",
+"ParameterId": "365",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "365",
+"Name": "Capacity",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+}, 
+{
+"serviceId": "137",
+"serviceLabel": "Exhaust Systems Service",
+"serviceEndpoint": "xmpp-r://catspipes@fp7-adventure.eu",
+"orgName": "Cats & Pipes Ltd",
+"profileId": "63",
+"serviceOperation": "42",
+"serviceOperationLabel": "GetData",
+"dataInputs": 
+[{
+"name": "DataName",
+"standardType": "String"}]
+,
+"dataOutputs": 
+[{
+"name": "Capacity",
+"standardType": "String"}, 
+{
+"name": "Lead",
+"standardType": "String"}, 
+{
+"name": "Price",
+"standardType": "String"}, 
+{
+"name": "InTransit",
+"standardType": "String"}]
+,
+"order": "2",
+"serviceOperations": 
+[{
+"initData": {
+"OperationId": "42",
+"InterfaceId": "73",
+"Name": "GetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "80",
+"OperationId": "42",
+"ParameterId": "88",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "88",
+"Name": "DataName",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "94",
+"OperationId": "42",
+"ParameterId": "102",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "102",
+"Name": "Capacity",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "95",
+"OperationId": "42",
+"ParameterId": "103",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "103",
+"Name": "Lead",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "96",
+"OperationId": "42",
+"ParameterId": "104",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "104",
+"Name": "Price",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "97",
+"OperationId": "42",
+"ParameterId": "105",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "105",
+"Name": "InTransit",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+}, 
+{
+"serviceId": "136",
+"serviceLabel": "Exhaust Systems Service",
+"serviceEndpoint": "xmpp-r://tenneco@fp7-adventure.eu",
+"orgName": "Tenneco (UK) Ltd",
+"profileId": "62",
+"serviceOperation": "78",
+"serviceOperationLabel": "StatusUpdate",
+"dataInputs": 
+[{
+"name": "SENSORID",
+"standardType": "Integer"}, 
+{
+"name": "OWNERID",
+"standardType": "String"}]
+,
+"dataOutputs": 
+[{
+"name": "SENSORDATA",
+"standardType": "String"}, 
+{
+"name": "SENSORID",
+"standardType": "Integer"}]
+,
+"order": "1",
+"serviceOperations": 
+[{
+"initData": {
+"OperationId": "40",
+"InterfaceId": "72",
+"Name": "GetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "78",
+"OperationId": "40",
+"ParameterId": "86",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "86",
+"Name": "DataName",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "79",
+"OperationId": "40",
+"ParameterId": "87",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "87",
+"Name": "ReturnData",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "74",
+"InterfaceId": "72",
+"Name": "StockUpdate",
+"Description": "null",
+"Method": "PUSH",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "388",
+"OperationId": "74",
+"ParameterId": "396",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "396",
+"Name": "SENSORDATA",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "389",
+"OperationId": "74",
+"ParameterId": "397",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "397",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "390",
+"OperationId": "74",
+"ParameterId": "398",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "398",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "391",
+"OperationId": "74",
+"ParameterId": "399",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "399",
+"Name": "OWNERID",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "78",
+"InterfaceId": "72",
+"Name": "StatusUpdate",
+"Description": "null",
+"Method": "PUSH",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "392",
+"OperationId": "78",
+"ParameterId": "400",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "400",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "393",
+"OperationId": "78",
+"ParameterId": "401",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "401",
+"Name": "OWNERID",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "394",
+"OperationId": "78",
+"ParameterId": "402",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "402",
+"Name": "SENSORDATA",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "395",
+"OperationId": "78",
+"ParameterId": "403",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "403",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07012309228027418http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+}]
+]]></drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>documentation</drools:name>
+            <drools:value>Smart Object</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>taskname</drools:name>
+            <drools:value>smartobject</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>datainputset</drools:name>
+            <drools:value>SENSORID:Integer,OWNERID:String</drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:documentation id="_sGO20FE8EeSFFI-uM5IUzQ"><![CDATA[Smart Object]]></bpmn2:documentation>
+      <bpmn2:incoming>_49ECAAEC-64D2-415F-AD67-DF61B30B71E3</bpmn2:incoming>
+      <bpmn2:incoming>_24A7481C-C741-41EA-926A-8CE56157C918</bpmn2:incoming>
+      <bpmn2:outgoing>_24A7481C-C741-41EA-926A-8CE56157C918</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="_sGO20VE8EeSFFI-uM5IUzQ">
+        <bpmn2:dataInput id="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_TaskNameInput" name="TaskName"/>
+        <bpmn2:dataInput id="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDInput" drools:dtype="Integer" itemSubjectRef="__F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDInputItem" name="SENSORID"/>
+        <bpmn2:dataInput id="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_OWNERIDInput" drools:dtype="String" itemSubjectRef="__F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_OWNERIDInputItem" name="OWNERID"/>
+        <bpmn2:dataOutput id="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORDATAOutput" drools:dtype="String" itemSubjectRef="__F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORDATAOutputItem" name="SENSORDATA"/>
+        <bpmn2:dataOutput id="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDOutput" drools:dtype="Integer" itemSubjectRef="__F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDOutputItem" name="SENSORID"/>
+        <bpmn2:inputSet id="_sGO20lE8EeSFFI-uM5IUzQ">
+          <bpmn2:dataInputRefs>_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDInput</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_OWNERIDInput</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_TaskNameInput</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet id="_sGO201E8EeSFFI-uM5IUzQ">
+          <bpmn2:dataOutputRefs>_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORDATAOutput</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDOutput</bpmn2:dataOutputRefs>
+        </bpmn2:outputSet>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="_sGPd4FE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_TaskNameInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGPd4VE8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGPd4lE8EeSFFI-uM5IUzQ">smartobject</bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGPd41E8EeSFFI-uM5IUzQ">_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_TaskNameInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_sGPd5FE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGPd5VE8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGPd5lE8EeSFFI-uM5IUzQ"><![CDATA[1]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGPd51E8EeSFFI-uM5IUzQ">_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_SENSORIDInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_sGPd6FE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_OWNERIDInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGPd6VE8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGPd6lE8EeSFFI-uM5IUzQ"><![CDATA[Tenneco]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGPd61E8EeSFFI-uM5IUzQ">_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF_OWNERIDInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="_24A7481C-C741-41EA-926A-8CE56157C918" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF" targetRef="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF"/>
+    <bpmn2:intermediateCatchEvent id="_F7034306-E67C-40E4-8941-B42EFE8F112B" drools:bgcolor="#f5deb3" drools:selectable="true" drools:bordercolor="#a0522d" drools:boundaryca="false" name="">
+      <bpmn2:incoming>_CA3FE85B-54FD-4A10-898A-8EA59AC6C703</bpmn2:incoming>
+      <bpmn2:incoming>_89427DD5-DA2F-4AF3-B474-C486AC5725AD</bpmn2:incoming>
+      <bpmn2:outgoing>_A17E2675-B789-48A2-AA07-CBA14D867939</bpmn2:outgoing>
+      <bpmn2:timerEventDefinition id="_sGPd7FE8EeSFFI-uM5IUzQ">
+        <bpmn2:timeDuration xsi:type="bpmn2:tFormalExpression" id="_sGPd7VE8EeSFFI-uM5IUzQ">20 seconds</bpmn2:timeDuration>
+        <bpmn2:timeCycle xsi:type="bpmn2:tFormalExpression" id="_sGPd7lE8EeSFFI-uM5IUzQ">20 seconds</bpmn2:timeCycle>
+      </bpmn2:timerEventDefinition>
+    </bpmn2:intermediateCatchEvent>
+    <bpmn2:sequenceFlow id="_CA3FE85B-54FD-4A10-898A-8EA59AC6C703" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_ADA43DBE-D064-4DF9-A253-6D2AA1D23AE9" targetRef="_F7034306-E67C-40E4-8941-B42EFE8F112B"/>
+    <bpmn2:sequenceFlow id="_A17E2675-B789-48A2-AA07-CBA14D867939" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_F7034306-E67C-40E4-8941-B42EFE8F112B" targetRef="_08682F43-65F8-4926-B283-9AEBDCB71D50"/>
+    <bpmn2:sequenceFlow id="_333363A9-E943-4C95-B511-583DB01009FB" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_08682F43-65F8-4926-B283-9AEBDCB71D50" targetRef="_FC58ACCF-701E-4C7E-84F2-C5CCCFFFE28F"/>
+    <bpmn2:scriptTask id="_FC58ACCF-701E-4C7E-84F2-C5CCCFFFE28F" drools:selectable="true" name="Calculate Operational Time" scriptFormat="http://www.java.com/java">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>Script</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>looptype</drools:name>
+            <drools:value>None</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>java</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>behavior</drools:name>
+            <drools:value>all</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_FC58ACCF-701E-4C7E-84F2-C5CCCFFFE28F</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Calculate Operational Time</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script</drools:name>
+            <drools:value><![CDATA[var now =  new Date();var total = Math.abs(now - new Date(data.machine_started));data.operating_time = Math.abs(total - data.downtime) / total;]]></drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_333363A9-E943-4C95-B511-583DB01009FB</bpmn2:incoming>
+      <bpmn2:outgoing>_861783C7-104E-4D25-9D13-016EFCEEA2C9</bpmn2:outgoing>
+      <bpmn2:script><![CDATA[var now =  new Date();var total = Math.abs(now - new Date(data.machine_started));data.operating_time = Math.abs(total - data.downtime) / total;]]></bpmn2:script>
+    </bpmn2:scriptTask>
+    <bpmn2:scriptTask id="_F515E6D5-533A-4C57-9E96-CEE0B4D76064" drools:selectable="true" name="Calculate OEE Value" scriptFormat="http://www.java.com/java">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>Script</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>looptype</drools:name>
+            <drools:value>None</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>java</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>behavior</drools:name>
+            <drools:value>all</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_F515E6D5-533A-4C57-9E96-CEE0B4D76064</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Calculate OEE Value</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script</drools:name>
+            <drools:value><![CDATA[var now =  new Date();data.availability = data.operating_time / data.planned_production_time;if (data.availability > 1) { data.availability = 1; }data.performance_time = Math.abs(now - new Date(data.machine_started) - data.downtime) / (1000 * 60);data.performance = data.ideal_cycle_time / ( data.performance_time / data.total_pieces);if (data.performance > 1) { data.performance = 1; }data.quality = data.good_pieces / data.total_pieces;data.oee = data.availability * data.performance * data.quality;data.oeedata = {   'quality': data.quality,   'oee': data.oee,   'availability': data.availability,  'performance': data.performance,  'machineid': data.machine_id};]]></drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_861783C7-104E-4D25-9D13-016EFCEEA2C9</bpmn2:incoming>
+      <bpmn2:outgoing>_94BA2C30-1C2B-40BA-A13B-B72E7C8B68D3</bpmn2:outgoing>
+      <bpmn2:script><![CDATA[var now =  new Date();data.availability = data.operating_time / data.planned_production_time;if (data.availability > 1) { data.availability = 1; }data.performance_time = Math.abs(now - new Date(data.machine_started) - data.downtime) / (1000 * 60);data.performance = data.ideal_cycle_time / ( data.performance_time / data.total_pieces);if (data.performance > 1) { data.performance = 1; }data.quality = data.good_pieces / data.total_pieces;data.oee = data.availability * data.performance * data.quality;data.oeedata = {   'quality': data.quality,   'oee': data.oee,   'availability': data.availability,  'performance': data.performance,  'machineid': data.machine_id};]]></bpmn2:script>
+    </bpmn2:scriptTask>
+    <bpmn2:sequenceFlow id="_861783C7-104E-4D25-9D13-016EFCEEA2C9" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_FC58ACCF-701E-4C7E-84F2-C5CCCFFFE28F" targetRef="_F515E6D5-533A-4C57-9E96-CEE0B4D76064"/>
+    <bpmn2:exclusiveGateway id="_940254D1-5D6F-45C3-A83E-75E3FFB489B5" drools:bgcolor="#f0e68c" drools:selectable="true" drools:bordercolor="#a67f00" drools:dg="" name="" gatewayDirection="Diverging">
+      <bpmn2:incoming>_9A1873B7-BCA0-4E8E-856C-263085F5FD0E</bpmn2:incoming>
+      <bpmn2:outgoing>_B61A13E0-ED27-424F-9A15-1FACEAE4DFE5</bpmn2:outgoing>
+      <bpmn2:outgoing>_65D703EA-EB26-4674-BBBF-2427A12AE979</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="_9A1873B7-BCA0-4E8E-856C-263085F5FD0E" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_BD32D6CA-7910-4BA4-AFB0-7B12472849ED" targetRef="_940254D1-5D6F-45C3-A83E-75E3FFB489B5"/>
+    <bpmn2:sequenceFlow id="_7913AF0A-D816-4719-A710-C4D42477721A" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_EDBCFA55-4850-4311-9673-24857D91B9CD" targetRef="_C67A01F2-D0B9-4EDA-BADF-A3B8E1C9DAFE"/>
+    <bpmn2:exclusiveGateway id="_F3634DD9-EBCA-4355-89D3-1924FAFFF395" drools:bgcolor="#f0e68c" drools:selectable="true" drools:bordercolor="#a67f00" drools:dg="" name="" gatewayDirection="Converging">
+      <bpmn2:incoming>_8D32E055-D92E-4B72-AC10-E6DEAB210062</bpmn2:incoming>
+      <bpmn2:incoming>_B61A13E0-ED27-424F-9A15-1FACEAE4DFE5</bpmn2:incoming>
+      <bpmn2:outgoing>_89427DD5-DA2F-4AF3-B474-C486AC5725AD</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="_B61A13E0-ED27-424F-9A15-1FACEAE4DFE5" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_940254D1-5D6F-45C3-A83E-75E3FFB489B5" targetRef="_F3634DD9-EBCA-4355-89D3-1924FAFFF395"/>
+    <bpmn2:scriptTask id="_D1CAD1F3-A42B-4BE9-9705-872C45BF5E59" drools:selectable="true" name="Initialize Values" scriptFormat="http://www.java.com/java">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>Script</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>looptype</drools:name>
+            <drools:value>None</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>java</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>behavior</drools:name>
+            <drools:value>all</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_D1CAD1F3-A42B-4BE9-9705-872C45BF5E59</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Initialize Values</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script</drools:name>
+            <drools:value><![CDATA[data.machine_id = 1;data.machine_started = null;data.machine_stopped = null;data.downtime = 0;data.planned_production_time = 0.8;data.ideal_cycle_time = 3;data.repairing = false;data.quality = 0;data.performance = 0;data.availability = 0;data.oee = 0;data.good_pieces = 0;data.total_pieces = 0;]]></drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_8E1F24D7-104C-44DC-8E6A-2E636E31002D</bpmn2:incoming>
+      <bpmn2:outgoing>_A534791D-4D9C-41FA-8958-E725855ABD0A</bpmn2:outgoing>
+      <bpmn2:script><![CDATA[data.machine_id = 1;data.machine_started = null;data.machine_stopped = null;data.downtime = 0;data.planned_production_time = 0.8;data.ideal_cycle_time = 3;data.repairing = false;data.quality = 0;data.performance = 0;data.availability = 0;data.oee = 0;data.good_pieces = 0;data.total_pieces = 0;]]></bpmn2:script>
+    </bpmn2:scriptTask>
+    <bpmn2:sequenceFlow id="_8E1F24D7-104C-44DC-8E6A-2E636E31002D" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_7AD76E0A-0EE8-4967-9B4A-7A7E57E0D8D7" targetRef="_D1CAD1F3-A42B-4BE9-9705-872C45BF5E59"/>
+    <bpmn2:task id="_08682F43-65F8-4926-B283-9AEBDCB71D50" drools:selectable="true" drools:taskName="externalManufacturingTask" name="Get Total Pieces">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>externalManufacturingTask</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>javascript</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_08682F43-65F8-4926-B283-9AEBDCB71D50</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Get Total Pieces</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>avg_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>asdomain</drools:name>
+            <drools:value>29.327 - Manufacture of Exhaust Systems for motor vehicles </drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>min_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script</drools:name>
+            <drools:value><![CDATA[data.total_pieces = result.totalpieces;data.good_pieces = result.goodpieces;]]></drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>assignments</drools:name>
+            <drools:value>DataName=TOTALPIECES|GOODPIECES,MachineID=machine_id</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>company</drools:name>
+            <drools:value><![CDATA[[{
+"serviceId": "136",
+"serviceLabel": "Exhaust Systems Service",
+"serviceEndpoint": "xmpp-r://tenneco@fp7-adventure.eu",
+"orgName": "Tenneco (UK) Ltd",
+"profileId": "62",
+"serviceOperation": "79",
+"serviceOperationLabel": "GetMachineData",
+"dataInputs": 
+[{
+"name": "DataName",
+"standardType": "String"}, 
+{
+"name": "MachineID",
+"standardType": "String"}]
+,
+"dataOutputs": 
+[{
+"name": "ReturnData",
+"standardType": "String"}]
+,
+"order": "1",
+"serviceOperations": 
+[{
+"initData": {
+"OperationId": "40",
+"InterfaceId": "72",
+"Name": "GetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "78",
+"OperationId": "40",
+"ParameterId": "86",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "86",
+"Name": "DataName",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "79",
+"OperationId": "40",
+"ParameterId": "87",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "87",
+"Name": "ReturnData",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "74",
+"InterfaceId": "72",
+"Name": "StockUpdate",
+"Description": "null",
+"Method": "PUSH",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "388",
+"OperationId": "74",
+"ParameterId": "396",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "396",
+"Name": "SENSORDATA",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "389",
+"OperationId": "74",
+"ParameterId": "397",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "397",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "390",
+"OperationId": "74",
+"ParameterId": "398",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "398",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "391",
+"OperationId": "74",
+"ParameterId": "399",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "399",
+"Name": "OWNERID",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "78",
+"InterfaceId": "72",
+"Name": "StatusUpdate",
+"Description": "null",
+"Method": "PUSH",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "392",
+"OperationId": "78",
+"ParameterId": "400",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "400",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "393",
+"OperationId": "78",
+"ParameterId": "401",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "401",
+"Name": "OWNERID",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "394",
+"OperationId": "78",
+"ParameterId": "402",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "402",
+"Name": "SENSORDATA",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "395",
+"OperationId": "78",
+"ParameterId": "403",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "403",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "79",
+"InterfaceId": "72",
+"Name": "GetMachineData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "397",
+"OperationId": "79",
+"ParameterId": "405",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "405",
+"Name": "DataName",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "398",
+"OperationId": "79",
+"ParameterId": "406",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "406",
+"Name": "MachineID",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "399",
+"OperationId": "79",
+"ParameterId": "407",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "407",
+"Name": "ReturnData",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+}, 
+{
+"serviceId": "137",
+"serviceLabel": "Exhaust Systems Service",
+"serviceEndpoint": "xmpp-r://catspipes@fp7-adventure.eu",
+"orgName": "Cats & Pipes Ltd",
+"profileId": "63",
+"serviceOperation": "42",
+"serviceOperationLabel": "GetData",
+"dataInputs": 
+[{
+"name": "DataName",
+"standardType": "String"}]
+,
+"dataOutputs": 
+[{
+"name": "Capacity",
+"standardType": "String"}, 
+{
+"name": "Lead",
+"standardType": "String"}, 
+{
+"name": "Price",
+"standardType": "String"}, 
+{
+"name": "InTransit",
+"standardType": "String"}]
+,
+"order": "2",
+"serviceOperations": 
+[{
+"initData": {
+"OperationId": "42",
+"InterfaceId": "73",
+"Name": "GetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "80",
+"OperationId": "42",
+"ParameterId": "88",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "88",
+"Name": "DataName",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "94",
+"OperationId": "42",
+"ParameterId": "102",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "102",
+"Name": "Capacity",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "95",
+"OperationId": "42",
+"ParameterId": "103",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "103",
+"Name": "Lead",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "96",
+"OperationId": "42",
+"ParameterId": "104",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "104",
+"Name": "Price",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "97",
+"OperationId": "42",
+"ParameterId": "105",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "105",
+"Name": "InTransit",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+}, 
+{
+"serviceId": "133",
+"serviceLabel": "Catalytic Converter Manufacture",
+"serviceEndpoint": "xmpp-r://fauxrezia@fp7-adventure.eu",
+"orgName": "Fauxrezia",
+"profileId": "60",
+"serviceOperation": "39",
+"serviceOperationLabel": "GetData",
+"dataOutputs": 
+[{
+"name": "Capacity",
+"standardType": "String"}, 
+{
+"name": "Lead",
+"standardType": "String"}, 
+{
+"name": "Price",
+"standardType": "String"}, 
+{
+"name": "InTransit",
+"standardType": "String"}]
+,
+"order": "3",
+"serviceOperations": 
+[{
+"initData": {
+"OperationId": "39",
+"InterfaceId": "69",
+"Name": "GetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "77",
+"OperationId": "39",
+"ParameterId": "85",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "85",
+"Name": "Capacity",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "87",
+"OperationId": "39",
+"ParameterId": "95",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "95",
+"Name": "Lead",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "88",
+"OperationId": "39",
+"ParameterId": "96",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "96",
+"Name": "Price",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "93",
+"OperationId": "39",
+"ParameterId": "101",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "101",
+"Name": "InTransit",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "73",
+"InterfaceId": "69",
+"Name": "SetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "357",
+"OperationId": "73",
+"ParameterId": "365",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "365",
+"Name": "Capacity",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns07412211766499898http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+}]
+]]></drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>max_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>documentation</drools:name>
+            <drools:value>ManufacturingTask</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>taskname</drools:name>
+            <drools:value>externalManufacturingTask</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>datainputset</drools:name>
+            <drools:value>DataName:String,MachineID:String</drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:documentation id="_sGQsAFE8EeSFFI-uM5IUzQ"><![CDATA[ManufacturingTask]]></bpmn2:documentation>
+      <bpmn2:incoming>_A17E2675-B789-48A2-AA07-CBA14D867939</bpmn2:incoming>
+      <bpmn2:outgoing>_333363A9-E943-4C95-B511-583DB01009FB</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="_sGQsAVE8EeSFFI-uM5IUzQ">
+        <bpmn2:dataInput id="_08682F43-65F8-4926-B283-9AEBDCB71D50_TaskNameInput" name="TaskName"/>
+        <bpmn2:dataInput id="_08682F43-65F8-4926-B283-9AEBDCB71D50_DataNameInput" drools:dtype="String" itemSubjectRef="__08682F43-65F8-4926-B283-9AEBDCB71D50_DataNameInputItem" name="DataName"/>
+        <bpmn2:dataInput id="_08682F43-65F8-4926-B283-9AEBDCB71D50_MachineIDInput" drools:dtype="String" itemSubjectRef="__08682F43-65F8-4926-B283-9AEBDCB71D50_MachineIDInputItem" name="MachineID"/>
+        <bpmn2:inputSet id="_sGQsAlE8EeSFFI-uM5IUzQ">
+          <bpmn2:dataInputRefs>_08682F43-65F8-4926-B283-9AEBDCB71D50_DataNameInput</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_08682F43-65F8-4926-B283-9AEBDCB71D50_MachineIDInput</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_08682F43-65F8-4926-B283-9AEBDCB71D50_TaskNameInput</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet id="_sGRTEFE8EeSFFI-uM5IUzQ"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="_sGRTEVE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>_08682F43-65F8-4926-B283-9AEBDCB71D50_TaskNameInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGRTElE8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGRTE1E8EeSFFI-uM5IUzQ">externalManufacturingTask</bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGRTFFE8EeSFFI-uM5IUzQ">_08682F43-65F8-4926-B283-9AEBDCB71D50_TaskNameInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_sGRTFVE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>_08682F43-65F8-4926-B283-9AEBDCB71D50_DataNameInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGRTFlE8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGRTF1E8EeSFFI-uM5IUzQ"><![CDATA[TOTALPIECES|GOODPIECES]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGRTGFE8EeSFFI-uM5IUzQ">_08682F43-65F8-4926-B283-9AEBDCB71D50_DataNameInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_sGRTGVE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>_08682F43-65F8-4926-B283-9AEBDCB71D50_MachineIDInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGRTGlE8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGRTG1E8EeSFFI-uM5IUzQ"><![CDATA[machine_id]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGRTHFE8EeSFFI-uM5IUzQ">_08682F43-65F8-4926-B283-9AEBDCB71D50_MachineIDInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+    </bpmn2:task>
+    <bpmn2:callActivity id="_C67A01F2-D0B9-4EDA-BADF-A3B8E1C9DAFE" drools:selectable="true" drools:independent="true" drools:waitForCompletion="true" name="Spawn OEE Crowdsourcing Subprocess" calledElement="53be982de4b0207100d22648">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>waitforcompletion</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>javascript</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_C67A01F2-D0B9-4EDA-BADF-A3B8E1C9DAFE</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Spawn OEE Crowdsourcing Subprocess</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>activitytype</drools:name>
+            <drools:value>Sub-Process</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>independent</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>calledelement</drools:name>
+            <drools:value>53be982de4b0207100d22648</drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_7913AF0A-D816-4719-A710-C4D42477721A</bpmn2:incoming>
+      <bpmn2:outgoing>_F5040E41-9B9A-4619-A36E-532112FDA5D6</bpmn2:outgoing>
+    </bpmn2:callActivity>
+    <bpmn2:task id="_EDBCFA55-4850-4311-9673-24857D91B9CD" drools:selectable="true" drools:taskName="externalManufacturingTask" name="Send Email to Tenneco Engineer">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>externalManufacturingTask</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>javascript</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_EDBCFA55-4850-4311-9673-24857D91B9CD</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Send Email to Tenneco Engineer</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>avg_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>min_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>max_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>documentation</drools:name>
+            <drools:value>ManufacturingTask</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>taskname</drools:name>
+            <drools:value>externalManufacturingTask</drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:documentation id="_sGR6IFE8EeSFFI-uM5IUzQ"><![CDATA[ManufacturingTask]]></bpmn2:documentation>
+      <bpmn2:incoming>_4AE9CA7C-5C90-4C85-9305-9C23EFA18FB7</bpmn2:incoming>
+      <bpmn2:outgoing>_7913AF0A-D816-4719-A710-C4D42477721A</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="_sGR6IVE8EeSFFI-uM5IUzQ">
+        <bpmn2:dataInput id="_EDBCFA55-4850-4311-9673-24857D91B9CD_TaskNameInput" name="TaskName"/>
+        <bpmn2:inputSet id="_sGR6IlE8EeSFFI-uM5IUzQ"/>
+        <bpmn2:outputSet id="_sGR6I1E8EeSFFI-uM5IUzQ"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="_sGR6JFE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>_EDBCFA55-4850-4311-9673-24857D91B9CD_TaskNameInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGR6JVE8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGR6JlE8EeSFFI-uM5IUzQ">externalManufacturingTask</bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGR6J1E8EeSFFI-uM5IUzQ">_EDBCFA55-4850-4311-9673-24857D91B9CD_TaskNameInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="_89427DD5-DA2F-4AF3-B474-C486AC5725AD" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_F3634DD9-EBCA-4355-89D3-1924FAFFF395" targetRef="_F7034306-E67C-40E4-8941-B42EFE8F112B"/>
+    <bpmn2:sequenceFlow id="_8D32E055-D92E-4B72-AC10-E6DEAB210062" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_61146DCF-7E7F-4DA6-BD83-A88DFDAACAFB" targetRef="_F3634DD9-EBCA-4355-89D3-1924FAFFF395"/>
+    <bpmn2:task id="_61146DCF-7E7F-4DA6-BD83-A88DFDAACAFB" drools:selectable="true" drools:taskName="nonidentified" name="Machine Fixed, Status no longer REPAIR">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>nonidentified</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>send</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>javascript</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script</drools:name>
+            <drools:value><![CDATA[data.repairing = false;]]></drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>assignments</drools:name>
+            <drools:value>internal=repairmachine,machine_id=machine_id</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_61146DCF-7E7F-4DA6-BD83-A88DFDAACAFB</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Machine Fixed, Status no longer REPAIR</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>documentation</drools:name>
+            <drools:value>Non Identified Sensors</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>taskname</drools:name>
+            <drools:value>nonidentified</drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:documentation id="_sGShMFE8EeSFFI-uM5IUzQ"><![CDATA[Non Identified Sensors]]></bpmn2:documentation>
+      <bpmn2:incoming>_F5040E41-9B9A-4619-A36E-532112FDA5D6</bpmn2:incoming>
+      <bpmn2:outgoing>_8D32E055-D92E-4B72-AC10-E6DEAB210062</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="_sGShMVE8EeSFFI-uM5IUzQ">
+        <bpmn2:dataInput id="_61146DCF-7E7F-4DA6-BD83-A88DFDAACAFB_TaskNameInput" name="TaskName"/>
+        <bpmn2:inputSet id="_sGShMlE8EeSFFI-uM5IUzQ"/>
+        <bpmn2:outputSet id="_sGShM1E8EeSFFI-uM5IUzQ"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="_sGShNFE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>_61146DCF-7E7F-4DA6-BD83-A88DFDAACAFB_TaskNameInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGShNVE8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGShNlE8EeSFFI-uM5IUzQ">nonidentified</bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGShN1E8EeSFFI-uM5IUzQ">_61146DCF-7E7F-4DA6-BD83-A88DFDAACAFB_TaskNameInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_sGShOFE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>internal</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGShOVE8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGShOlE8EeSFFI-uM5IUzQ"><![CDATA[repairmachine]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGShO1E8EeSFFI-uM5IUzQ">internal</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_sGShPFE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>machine_id</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGShPVE8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGShPlE8EeSFFI-uM5IUzQ"><![CDATA[machine_id]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGShP1E8EeSFFI-uM5IUzQ">machine_id</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="_F5040E41-9B9A-4619-A36E-532112FDA5D6" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_C67A01F2-D0B9-4EDA-BADF-A3B8E1C9DAFE" targetRef="_61146DCF-7E7F-4DA6-BD83-A88DFDAACAFB"/>
+    <bpmn2:scriptTask id="_5F69A836-E624-4A64-9BBC-0A0037FEAB4A" drools:selectable="true" name="Set Machine Status to REPAIR" scriptFormat="http://www.java.com/java">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>Script</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>looptype</drools:name>
+            <drools:value>None</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>java</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>behavior</drools:name>
+            <drools:value>all</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_5F69A836-E624-4A64-9BBC-0A0037FEAB4A</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Set Machine Status to REPAIR</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script</drools:name>
+            <drools:value><![CDATA[data.repairing = true;]]></drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_65D703EA-EB26-4674-BBBF-2427A12AE979</bpmn2:incoming>
+      <bpmn2:outgoing>_4AE9CA7C-5C90-4C85-9305-9C23EFA18FB7</bpmn2:outgoing>
+      <bpmn2:script><![CDATA[data.repairing = true;]]></bpmn2:script>
+    </bpmn2:scriptTask>
+    <bpmn2:sequenceFlow id="_65D703EA-EB26-4674-BBBF-2427A12AE979" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_940254D1-5D6F-45C3-A83E-75E3FFB489B5" targetRef="_5F69A836-E624-4A64-9BBC-0A0037FEAB4A">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" id="_sGTIQFE8EeSFFI-uM5IUzQ" language="http://www.mvel.org/2.0"><![CDATA[data.oee < 0.5 && data.repairing == false]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_4AE9CA7C-5C90-4C85-9305-9C23EFA18FB7" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100" drools:probability2="100" drools:repetition1="100" drools:repetition2="100" sourceRef="_5F69A836-E624-4A64-9BBC-0A0037FEAB4A" targetRef="_EDBCFA55-4850-4311-9673-24857D91B9CD"/>
+    <bpmn2:sequenceFlow id="_94BA2C30-1C2B-40BA-A13B-B72E7C8B68D3" drools:bgcolor="#000000" drools:selectable="true" drools:probability1="100.0" drools:probability2="100.0" drools:repetition1="100.0" drools:repetition2="100.0" sourceRef="_F515E6D5-533A-4C57-9E96-CEE0B4D76064" targetRef="_BD32D6CA-7910-4BA4-AFB0-7B12472849ED"/>
+    <bpmn2:task id="_BD32D6CA-7910-4BA4-AFB0-7B12472849ED" drools:selectable="true" drools:taskName="externalManufacturingTask" name="Send OEE Value">
+      <bpmn2:extensionElements>
+        <drools:metadata>
+          <drools:metaentry>
+            <drools:name>tasktype</drools:name>
+            <drools:value>externalManufacturingTask</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>script_language</drools:name>
+            <drools:value>javascript</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>fontcolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>bordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>resourceId</drools:name>
+            <drools:value>_BD32D6CA-7910-4BA4-AFB0-7B12472849ED</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>name</drools:name>
+            <drools:value>Send OEE Value</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>avg_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>isselectable</drools:name>
+            <drools:value>true</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>asdomain</drools:name>
+            <drools:value>29.327 - Manufacture of Exhaust Systems for motor vehicles </drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbordercolor</drools:name>
+            <drools:value>#000000</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>min_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>origbgcolor</drools:name>
+            <drools:value>#fafad2</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>assignments</drools:name>
+            <drools:value>Data=oeedata</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>company</drools:name>
+            <drools:value><![CDATA[[{
+"serviceId": "133",
+"serviceLabel": "Catalytic Converter Manufacture",
+"serviceEndpoint": "xmpp-r://fauxrezia@fp7-adventure.eu",
+"orgName": "Fauxrezia",
+"profileId": "60",
+"serviceOperation": "39",
+"serviceOperationLabel": "GetData",
+"dataInputs": 
+[{
+"name": "DataName",
+"standardType": "String"}]
+,
+"dataOutputs": 
+[{
+"name": "Capacity",
+"standardType": "String"}, 
+{
+"name": "Lead",
+"standardType": "String"}, 
+{
+"name": "Price",
+"standardType": "String"}, 
+{
+"name": "InTransit",
+"standardType": "String"}]
+,
+"order": "2",
+"serviceOperations": 
+[{
+"initData": {
+"OperationId": "39",
+"InterfaceId": "69",
+"Name": "GetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "77",
+"OperationId": "39",
+"ParameterId": "85",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "85",
+"Name": "Capacity",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "87",
+"OperationId": "39",
+"ParameterId": "95",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "95",
+"Name": "Lead",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "88",
+"OperationId": "39",
+"ParameterId": "96",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "96",
+"Name": "Price",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "93",
+"OperationId": "39",
+"ParameterId": "101",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "101",
+"Name": "InTransit",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "410",
+"OperationId": "39",
+"ParameterId": "418",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "418",
+"Name": "DataName",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "73",
+"InterfaceId": "69",
+"Name": "SetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "357",
+"OperationId": "73",
+"ParameterId": "365",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "365",
+"Name": "Capacity",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+}, 
+{
+"serviceId": "137",
+"serviceLabel": "Exhaust Systems Service",
+"serviceEndpoint": "xmpp-r://catspipes@fp7-adventure.eu",
+"orgName": "Cats & Pipes Ltd",
+"profileId": "63",
+"serviceOperation": "42",
+"serviceOperationLabel": "GetData",
+"dataInputs": 
+[{
+"name": "DataName",
+"standardType": "String"}]
+,
+"dataOutputs": 
+[{
+"name": "Capacity",
+"standardType": "String"}, 
+{
+"name": "Lead",
+"standardType": "String"}, 
+{
+"name": "Price",
+"standardType": "String"}, 
+{
+"name": "InTransit",
+"standardType": "String"}]
+,
+"order": "2",
+"serviceOperations": 
+[{
+"initData": {
+"OperationId": "42",
+"InterfaceId": "73",
+"Name": "GetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "80",
+"OperationId": "42",
+"ParameterId": "88",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "88",
+"Name": "DataName",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "94",
+"OperationId": "42",
+"ParameterId": "102",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "102",
+"Name": "Capacity",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "95",
+"OperationId": "42",
+"ParameterId": "103",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "103",
+"Name": "Lead",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "96",
+"OperationId": "42",
+"ParameterId": "104",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "104",
+"Name": "Price",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "97",
+"OperationId": "42",
+"ParameterId": "105",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "105",
+"Name": "InTransit",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+}, 
+{
+"serviceId": "136",
+"serviceLabel": "Exhaust Systems Service",
+"serviceEndpoint": "xmpp-r://tenneco@fp7-adventure.eu",
+"orgName": "Tenneco (UK) Ltd",
+"profileId": "62",
+"serviceOperation": "80",
+"serviceOperationLabel": "SetData",
+"dataInputs": 
+[{
+"name": "Data",
+"standardType": "String"}]
+,
+"dataOutputs": 
+[]
+,
+"order": "1",
+"serviceOperations": 
+[{
+"initData": {
+"OperationId": "40",
+"InterfaceId": "72",
+"Name": "GetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "400",
+"OperationId": "40",
+"ParameterId": "408",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "408",
+"Name": "TotalPieces",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "401",
+"OperationId": "40",
+"ParameterId": "409",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "409",
+"Name": "GoodPieces",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "413",
+"OperationId": "40",
+"ParameterId": "421",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "421",
+"Name": "DataName",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "74",
+"InterfaceId": "72",
+"Name": "StockUpdate",
+"Description": "null",
+"Method": "PUSH",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "388",
+"OperationId": "74",
+"ParameterId": "396",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "396",
+"Name": "SENSORDATA",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "389",
+"OperationId": "74",
+"ParameterId": "397",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "397",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "390",
+"OperationId": "74",
+"ParameterId": "398",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "398",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "391",
+"OperationId": "74",
+"ParameterId": "399",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "399",
+"Name": "OWNERID",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "78",
+"InterfaceId": "72",
+"Name": "StatusUpdate",
+"Description": "null",
+"Method": "PUSH",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "392",
+"OperationId": "78",
+"ParameterId": "400",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "400",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "393",
+"OperationId": "78",
+"ParameterId": "401",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "401",
+"Name": "OWNERID",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "394",
+"OperationId": "78",
+"ParameterId": "402",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "402",
+"Name": "SENSORDATA",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "395",
+"OperationId": "78",
+"ParameterId": "403",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "403",
+"Name": "SENSORID",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "79",
+"InterfaceId": "72",
+"Name": "GetMachineData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "397",
+"OperationId": "79",
+"ParameterId": "405",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "405",
+"Name": "DataName",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "398",
+"OperationId": "79",
+"ParameterId": "406",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "406",
+"Name": "MachineID",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "403",
+"OperationId": "79",
+"ParameterId": "411",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "411",
+"Name": "TotalPieces",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"Id": "404",
+"OperationId": "79",
+"ParameterId": "412",
+"Type": "OUTPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "412",
+"Name": "GoodPieces",
+"Description": "null",
+"DataType": "INT",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}, 
+{
+"initData": {
+"OperationId": "80",
+"InterfaceId": "72",
+"Name": "SetData",
+"Description": "null",
+"Method": "PULL",
+"Attachments": "null",
+"OperationParameters": 
+[{
+"initData": {
+"Id": "414",
+"OperationId": "80",
+"ParameterId": "422",
+"Type": "INPUT",
+"Parameter": {
+"initData": {
+"ParameterId": "422",
+"Name": "Data",
+"Description": "null",
+"DataType": "STRING",
+"SpecificationUrl": "null",
+"Attachments": "null",
+"ParameterClassifications": 
+[]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+},
+"context": "null",
+"isValidated": "false",
+"_storeToken": {
+"typeName": "ns013460275784898834http___isoft_technology_de_odata_DPD_svc.com.isoft.dpd.model.DPDEntities",
+"args": {
+"name": "oData",
+"oDataServiceHost": "http://isoft-technology.de/odata/DPD.svc",
+"maxDataServiceVersion": "2.0"}}}]
+}]
+]]></drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>max_time</drools:name>
+            <drools:value>1m</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>documentation</drools:name>
+            <drools:value>ManufacturingTask</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>taskname</drools:name>
+            <drools:value>externalManufacturingTask</drools:value>
+          </drools:metaentry>
+          <drools:metaentry>
+            <drools:name>datainputset</drools:name>
+            <drools:value>Data:String</drools:value>
+          </drools:metaentry>
+        </drools:metadata>
+      </bpmn2:extensionElements>
+      <bpmn2:documentation id="_sGTIQVE8EeSFFI-uM5IUzQ"><![CDATA[ManufacturingTask]]></bpmn2:documentation>
+      <bpmn2:incoming>_94BA2C30-1C2B-40BA-A13B-B72E7C8B68D3</bpmn2:incoming>
+      <bpmn2:outgoing>_9A1873B7-BCA0-4E8E-856C-263085F5FD0E</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="_sGTIQlE8EeSFFI-uM5IUzQ">
+        <bpmn2:dataInput id="_BD32D6CA-7910-4BA4-AFB0-7B12472849ED_TaskNameInput" name="TaskName"/>
+        <bpmn2:dataInput id="_BD32D6CA-7910-4BA4-AFB0-7B12472849ED_DataInput" drools:dtype="String" itemSubjectRef="__BD32D6CA-7910-4BA4-AFB0-7B12472849ED_DataInputItem" name="Data"/>
+        <bpmn2:inputSet id="_sGTvUFE8EeSFFI-uM5IUzQ">
+          <bpmn2:dataInputRefs>_BD32D6CA-7910-4BA4-AFB0-7B12472849ED_DataInput</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_BD32D6CA-7910-4BA4-AFB0-7B12472849ED_TaskNameInput</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet id="_sGTvUVE8EeSFFI-uM5IUzQ"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="_sGTvUlE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>_BD32D6CA-7910-4BA4-AFB0-7B12472849ED_TaskNameInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGTvU1E8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGTvVFE8EeSFFI-uM5IUzQ">externalManufacturingTask</bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGTvVVE8EeSFFI-uM5IUzQ">_BD32D6CA-7910-4BA4-AFB0-7B12472849ED_TaskNameInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_sGTvVlE8EeSFFI-uM5IUzQ">
+        <bpmn2:targetRef>_BD32D6CA-7910-4BA4-AFB0-7B12472849ED_DataInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_sGTvV1E8EeSFFI-uM5IUzQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sGTvWFE8EeSFFI-uM5IUzQ"><![CDATA[oeedata]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sGTvWVE8EeSFFI-uM5IUzQ">_BD32D6CA-7910-4BA4-AFB0-7B12472849ED_DataInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+    </bpmn2:task>
+    <bpmn2:textAnnotation id="_F91B833A-486F-49F7-82D8-FA36306E0840" drools:selectable="true">
+      <bpmn2:text>We do this to no trigger the condition every day as long as the machine is repaired</bpmn2:text>
+    </bpmn2:textAnnotation>
+    <bpmn2:association id="_0FA5F24A-C0EF-4DE9-A6DA-FB28AE2AB7D0" drools:selectable="true" drools:type="none" sourceRef="_5F69A836-E624-4A64-9BBC-0A0037FEAB4A" targetRef="_F91B833A-486F-49F7-82D8-FA36306E0840"/>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="_sGUWYFE8EeSFFI-uM5IUzQ">
+    <bpmndi:BPMNPlane id="_sGUWYVE8EeSFFI-uM5IUzQ" bpmnElement="53e1f7b3e4b0207100d226e4">
+      <bpmndi:BPMNShape id="_sGUWYlE8EeSFFI-uM5IUzQ" bpmnElement="_7AD76E0A-0EE8-4967-9B4A-7A7E57E0D8D7">
+        <dc:Bounds height="30.0" width="30.0" x="60.0" y="284.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGUWY1E8EeSFFI-uM5IUzQ" bpmnElement="_A534791D-4D9C-41FA-8958-E725855ABD0A">
+        <di:waypoint xsi:type="dc:Point" x="200.0" y="299.0"/>
+        <di:waypoint xsi:type="dc:Point" x="319.0" y="299.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGUWZFE8EeSFFI-uM5IUzQ" bpmnElement="_ADA43DBE-D064-4DF9-A253-6D2AA1D23AE9">
+        <dc:Bounds height="40.0" width="40.0" x="299.0" y="279.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGUWZVE8EeSFFI-uM5IUzQ" bpmnElement="_49ECAAEC-64D2-415F-AD67-DF61B30B71E3">
+        <di:waypoint xsi:type="dc:Point" x="319.0" y="299.0"/>
+        <di:waypoint xsi:type="dc:Point" x="500.0" y="160.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGUWZlE8EeSFFI-uM5IUzQ" bpmnElement="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF">
+        <dc:Bounds height="80.0" width="100.0" x="450.0" y="120.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGUWZ1E8EeSFFI-uM5IUzQ" bpmnElement="_24A7481C-C741-41EA-926A-8CE56157C918">
+        <di:waypoint xsi:type="dc:Point" x="500.0" y="160.0"/>
+        <di:waypoint xsi:type="dc:Point" x="500.0" y="86.0"/>
+        <di:waypoint xsi:type="dc:Point" x="380.0" y="86.0"/>
+        <di:waypoint xsi:type="dc:Point" x="380.0" y="160.0"/>
+        <di:waypoint xsi:type="dc:Point" x="500.0" y="160.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGUWaFE8EeSFFI-uM5IUzQ" bpmnElement="_F7034306-E67C-40E4-8941-B42EFE8F112B">
+        <dc:Bounds height="30.0" width="30.0" x="375.0" y="315.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGUWaVE8EeSFFI-uM5IUzQ" bpmnElement="_CA3FE85B-54FD-4A10-898A-8EA59AC6C703">
+        <di:waypoint xsi:type="dc:Point" x="319.0" y="299.0"/>
+        <di:waypoint xsi:type="dc:Point" x="390.0" y="330.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_sGUWalE8EeSFFI-uM5IUzQ" bpmnElement="_A17E2675-B789-48A2-AA07-CBA14D867939">
+        <di:waypoint xsi:type="dc:Point" x="390.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="490.0" y="330.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_sGU9cFE8EeSFFI-uM5IUzQ" bpmnElement="_333363A9-E943-4C95-B511-583DB01009FB">
+        <di:waypoint xsi:type="dc:Point" x="490.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="620.0" y="330.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGU9cVE8EeSFFI-uM5IUzQ" bpmnElement="_FC58ACCF-701E-4C7E-84F2-C5CCCFFFE28F">
+        <dc:Bounds height="80.0" width="100.0" x="570.0" y="290.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_sGU9clE8EeSFFI-uM5IUzQ" bpmnElement="_F515E6D5-533A-4C57-9E96-CEE0B4D76064">
+        <dc:Bounds height="80.0" width="100.0" x="710.0" y="290.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGU9c1E8EeSFFI-uM5IUzQ" bpmnElement="_861783C7-104E-4D25-9D13-016EFCEEA2C9">
+        <di:waypoint xsi:type="dc:Point" x="620.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="760.0" y="330.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGU9dFE8EeSFFI-uM5IUzQ" bpmnElement="_940254D1-5D6F-45C3-A83E-75E3FFB489B5">
+        <dc:Bounds height="40.0" width="40.0" x="980.0" y="500.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGU9dVE8EeSFFI-uM5IUzQ" bpmnElement="_9A1873B7-BCA0-4E8E-856C-263085F5FD0E">
+        <di:waypoint xsi:type="dc:Point" x="905.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1000.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1000.0" y="520.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_sGU9dlE8EeSFFI-uM5IUzQ" bpmnElement="_7913AF0A-D816-4719-A710-C4D42477721A">
+        <di:waypoint xsi:type="dc:Point" x="760.0" y="520.0"/>
+        <di:waypoint xsi:type="dc:Point" x="620.0" y="520.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGU9d1E8EeSFFI-uM5IUzQ" bpmnElement="_F3634DD9-EBCA-4355-89D3-1924FAFFF395">
+        <dc:Bounds height="40.0" width="40.0" x="370.0" y="500.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGU9eFE8EeSFFI-uM5IUzQ" bpmnElement="_B61A13E0-ED27-424F-9A15-1FACEAE4DFE5">
+        <di:waypoint xsi:type="dc:Point" x="1000.0" y="520.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1000.0" y="611.0"/>
+        <di:waypoint xsi:type="dc:Point" x="390.0" y="611.0"/>
+        <di:waypoint xsi:type="dc:Point" x="390.0" y="520.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGU9eVE8EeSFFI-uM5IUzQ" bpmnElement="_D1CAD1F3-A42B-4BE9-9705-872C45BF5E59">
+        <dc:Bounds height="80.0" width="100.0" x="150.0" y="259.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGU9elE8EeSFFI-uM5IUzQ" bpmnElement="_8E1F24D7-104C-44DC-8E6A-2E636E31002D">
+        <di:waypoint xsi:type="dc:Point" x="75.0" y="299.0"/>
+        <di:waypoint xsi:type="dc:Point" x="200.0" y="299.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGU9e1E8EeSFFI-uM5IUzQ" bpmnElement="_08682F43-65F8-4926-B283-9AEBDCB71D50">
+        <dc:Bounds height="80.0" width="100.0" x="440.0" y="290.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_sGU9fFE8EeSFFI-uM5IUzQ" bpmnElement="_C67A01F2-D0B9-4EDA-BADF-A3B8E1C9DAFE">
+        <dc:Bounds height="80.0" width="100.0" x="570.0" y="480.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_sGU9fVE8EeSFFI-uM5IUzQ" bpmnElement="_EDBCFA55-4850-4311-9673-24857D91B9CD">
+        <dc:Bounds height="80.0" width="100.0" x="710.0" y="480.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGVkgFE8EeSFFI-uM5IUzQ" bpmnElement="_89427DD5-DA2F-4AF3-B474-C486AC5725AD">
+        <di:waypoint xsi:type="dc:Point" x="390.0" y="520.0"/>
+        <di:waypoint xsi:type="dc:Point" x="390.0" y="330.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_sGVkgVE8EeSFFI-uM5IUzQ" bpmnElement="_8D32E055-D92E-4B72-AC10-E6DEAB210062">
+        <di:waypoint xsi:type="dc:Point" x="490.0" y="520.0"/>
+        <di:waypoint xsi:type="dc:Point" x="390.0" y="520.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGVkglE8EeSFFI-uM5IUzQ" bpmnElement="_61146DCF-7E7F-4DA6-BD83-A88DFDAACAFB">
+        <dc:Bounds height="80.0" width="100.0" x="440.0" y="480.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGVkg1E8EeSFFI-uM5IUzQ" bpmnElement="_F5040E41-9B9A-4619-A36E-532112FDA5D6">
+        <di:waypoint xsi:type="dc:Point" x="620.0" y="520.0"/>
+        <di:waypoint xsi:type="dc:Point" x="490.0" y="520.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGVkhFE8EeSFFI-uM5IUzQ" bpmnElement="_5F69A836-E624-4A64-9BBC-0A0037FEAB4A">
+        <dc:Bounds height="80.0" width="100.0" x="840.0" y="480.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGVkhVE8EeSFFI-uM5IUzQ" bpmnElement="_65D703EA-EB26-4674-BBBF-2427A12AE979">
+        <di:waypoint xsi:type="dc:Point" x="1000.0" y="520.0"/>
+        <di:waypoint xsi:type="dc:Point" x="890.0" y="520.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_sGVkhlE8EeSFFI-uM5IUzQ" bpmnElement="_4AE9CA7C-5C90-4C85-9305-9C23EFA18FB7">
+        <di:waypoint xsi:type="dc:Point" x="890.0" y="520.0"/>
+        <di:waypoint xsi:type="dc:Point" x="760.0" y="520.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_sGVkh1E8EeSFFI-uM5IUzQ" bpmnElement="_94BA2C30-1C2B-40BA-A13B-B72E7C8B68D3">
+        <di:waypoint xsi:type="dc:Point" x="760.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="905.0" y="330.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_sGVkiFE8EeSFFI-uM5IUzQ" bpmnElement="_BD32D6CA-7910-4BA4-AFB0-7B12472849ED">
+        <dc:Bounds height="80.0" width="100.0" x="855.0" y="290.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_sGVkiVE8EeSFFI-uM5IUzQ" bpmnElement="_F91B833A-486F-49F7-82D8-FA36306E0840">
+        <dc:Bounds height="92.0" width="102.0" x="885.0" y="375.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_sGVkilE8EeSFFI-uM5IUzQ" bpmnElement="_0FA5F24A-C0EF-4DE9-A6DA-FB28AE2AB7D0">
+        <di:waypoint xsi:type="dc:Point" x="890.0" y="520.0"/>
+        <di:waypoint xsi:type="dc:Point" x="890.0" y="495.0"/>
+        <di:waypoint xsi:type="dc:Point" x="885.0" y="421.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmn2:relationship id="_sGVki1E8EeSFFI-uM5IUzQ" type="jBPMProcessSimulation">
+    <bpmn2:extensionElements>
+      <drools:ProcessAnalysisData>
+        <drools:Scenario xsi:type="drools:Scenario" id="default" name="Simulationscenario">
+          <drools:ScenarioParameters xsi:type="drools:ScenarioParameters_._type" baseTimeUnit="ms"/>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_4AE9CA7C-5C90-4C85-9305-9C23EFA18FB7" id="_sGWLkFE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_08682F43-65F8-4926-B283-9AEBDCB71D50" id="_sGWLkVE8EeSFFI-uM5IUzQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_A534791D-4D9C-41FA-8958-E725855ABD0A" id="_sGWLklE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_F97BE272-CCF7-4C77-9112-81A6B4BAE6BF" id="_sGWLk1E8EeSFFI-uM5IUzQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_61146DCF-7E7F-4DA6-BD83-A88DFDAACAFB" id="_sGWLlFE8EeSFFI-uM5IUzQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_F515E6D5-533A-4C57-9E96-CEE0B4D76064" id="_sGWLlVE8EeSFFI-uM5IUzQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_89427DD5-DA2F-4AF3-B474-C486AC5725AD" id="_sGWLllE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_A17E2675-B789-48A2-AA07-CBA14D867939" id="_sGWLl1E8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_FC58ACCF-701E-4C7E-84F2-C5CCCFFFE28F" id="_sGWLmFE8EeSFFI-uM5IUzQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_49ECAAEC-64D2-415F-AD67-DF61B30B71E3" id="_sGWLmVE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_8D32E055-D92E-4B72-AC10-E6DEAB210062" id="_sGWLmlE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_24A7481C-C741-41EA-926A-8CE56157C918" id="_sGWLm1E8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_5F69A836-E624-4A64-9BBC-0A0037FEAB4A" id="_sGWyoFE8EeSFFI-uM5IUzQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_8E1F24D7-104C-44DC-8E6A-2E636E31002D" id="_sGWyoVE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_B61A13E0-ED27-424F-9A15-1FACEAE4DFE5" id="_sGWyolE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_65D703EA-EB26-4674-BBBF-2427A12AE979" id="_sGWyo1E8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_F5040E41-9B9A-4619-A36E-532112FDA5D6" id="_sGWypFE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_9A1873B7-BCA0-4E8E-856C-263085F5FD0E" id="_sGWypVE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_EDBCFA55-4850-4311-9673-24857D91B9CD" id="_sGWyplE8EeSFFI-uM5IUzQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_D1CAD1F3-A42B-4BE9-9705-872C45BF5E59" id="_sGWyp1E8EeSFFI-uM5IUzQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_CA3FE85B-54FD-4A10-898A-8EA59AC6C703" id="_sGWyqFE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_861783C7-104E-4D25-9D13-016EFCEEA2C9" id="_sGWyqVE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_BD32D6CA-7910-4BA4-AFB0-7B12472849ED" id="_sGWyqlE8EeSFFI-uM5IUzQ">
+            <drools:CostParameters xsi:type="drools:CostParameters"/>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_7913AF0A-D816-4719-A710-C4D42477721A" id="_sGWyq1E8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+          <drools:ElementParameters xsi:type="drools:ElementParameters_._type" elementId="_333363A9-E943-4C95-B511-583DB01009FB" id="_sGXZsFE8EeSFFI-uM5IUzQ">
+            <drools:ControlParameters xsi:type="drools:ControlParameters">
+              <drools:Probability xsi:type="drools:Parameter">
+                <drools:FloatingParameter value="100.0"/>
+              </drools:Probability>
+            </drools:ControlParameters>
+          </drools:ElementParameters>
+        </drools:Scenario>
+      </drools:ProcessAnalysisData>
+    </bpmn2:extensionElements>
+    <bpmn2:source>_sGKlYVE8EeSFFI-uM5IUzQ</bpmn2:source>
+    <bpmn2:target>_sGKlYVE8EeSFFI-uM5IUzQ</bpmn2:target>
+  </bpmn2:relationship>
+</bpmn2:definitions>

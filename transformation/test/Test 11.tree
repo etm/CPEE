@@ -1,15 +1,14 @@
 TREE:
   ├ 4
   ├ 5
-  └ InfiniteLoop
-    └ Conditional
-      ├ Alternative
-      │ ├ 4
-      │ └ 5
-      └ Alternative
-        ├ 6
-        └ Conditional
-          ├ Alternative
-          │ └ 5
-          └ Alternative
-            └ Break
+  └ Loop
+    ├ Alternative
+    │ ├ 4
+    │ └ 5
+    └ Alternative
+      ├ 6
+      └ Conditional
+        ├ Alternative
+        │ └ 5
+        └ Alternative
+          └ Break
