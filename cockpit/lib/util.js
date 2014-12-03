@@ -41,10 +41,6 @@ String.prototype.unserialize = function() {
   return ret;
 };
 
-String.prototype.parseXML = function() {
-  return $.parseXML(this).documentElement;
-} 
-
 $X = function(xmlstr) {
   return $($.parseXML(xmlstr).documentElement);
 };

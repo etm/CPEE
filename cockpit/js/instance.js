@@ -198,7 +198,7 @@ function monitor_instance(load) {// {{{
             append_to_log("monitoring", "opened", "");
           };
           ws.onmessage = function(e) {
-            data = e.data.parseXML();
+            data = $.parseXML(e.data);
             if ($('event > topic',data).length > 0) {
               switch($('event > topic',data).text()) {
                 case 'properties/dataelements':
@@ -616,7 +616,9 @@ function set_testset(testset) {// {{{
       },
       error: report_failure
     });
-  }  
+  } else {
+    load_testset_des(url,testset); 
+  }
   
   load_testset_hw(url,testset);
   $.ajax({
@@ -643,7 +645,7 @@ function load_testsetfile() { //{{{
   var files = $('#testsetfile').get(0).files;
   var reader = new FileReader();
   reader.onload = function(){
-    set_testset(reader.result.parseXML());
+    set_testset($.parseXML(reader.result));
     running  = false;
   }  
   reader.onerror = function(){ running  = false; }  

@@ -32,7 +32,7 @@ $(document).ready(function() {
   $('#detailcolumn').resizable({ 
     handles: { 'w' : '#handle2'},
     resize: function(event, ui) { 
-      if ($.browser.webkit) {
+      if ($.browser.name == "Chrome") {
         $('#handle2').offset({ left: ui.helper.offset().left+3 });
       }  
     }
