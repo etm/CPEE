@@ -13,13 +13,13 @@ $(document).ready(function() {
   }); //}}}
 
   // New entry //{{{
-  $('#main .header button').live('click',function(){
+  $(document).on('click','#main .header button',function(){
     var node = new_entry($(this).parents('div.tabbed'));
     node.addClass('indent');
   }); //}}}
   
   // Delete entries //{{{
-  $('#main td.del a').live('click',function(event){
+  $(document).on('click','#main td.del a',function(event){
     var top = $(event.target).parents('div.tabbed');
     remove_entry($("input",$(event.target).parents('tr')).get(0),false);
     mark_main_save(top);
@@ -31,8 +31,8 @@ $(document).ready(function() {
     save_main($(event.target).parents('div.tabbed'));
   }); //}}}
 
-  $('#dat_details input.pair_name, #dat_details input.prop_value, #dat_details textarea.prop_value, #dat_details select.prop_value, #dat_details input.pair_value').live('keyup',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
-  $('#dat_details select.prop_value').live('change',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
+  $(document).on('keyup','#dat_details input.pair_name, #dat_details input.prop_value, #dat_details textarea.prop_value, #dat_details select.prop_value, #dat_details input.pair_value',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
+  $(document).on('change','#dat_details select.prop_value',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
 });
 
 function mark_main_save(top) { //{{{

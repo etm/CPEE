@@ -5,7 +5,7 @@ $(document).ready(function() {
   }); //}}}
   
   // Delete entries //{{{
-  $('#parameters td.del a').live('click',function(event){
+  $(document).on('click','#parameters td.del a',function(event){
     var top = $(event.target).parents('.tabbed');
     remove_entry($("input",$(event.target).parents('tr')).get(0),false);
     mark_parameters_save(top);
@@ -22,8 +22,8 @@ $(document).ready(function() {
     save_parameters($(event.target).parents('div.tabbed'));
   }); //}}}
 
-  $('#dat_dataelements input').live('keyup',function(e){ mark_parameters_save($(e.target).parents('div.tabbed')); });
-  $('#dat_endpoints input').live('keyup',function(e){ mark_parameters_save($(e.target).parents('div.tabbed')); });
+  $(document).on('keyup','#dat_dataelements input',function(e){ mark_parameters_save($(e.target).parents('div.tabbed')); });
+  $(document).on('keyup','#dat_endpoints input',function(e){ mark_parameters_save($(e.target).parents('div.tabbed')); });
 });
 
 function mark_parameters_save(top) { //{{{

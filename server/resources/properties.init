@@ -38,7 +38,7 @@
   </description>
   <transformation>
     <description type='copy'/>
-    <dataelements type='xslt'/>
-    <endpoints type='xslt'/>
+    <dataelements type='none'/>
+    <endpoints type='none'/>
   </transformation>
 </properties>

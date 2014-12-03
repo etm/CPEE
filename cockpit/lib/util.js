@@ -41,13 +41,10 @@ String.prototype.unserialize = function() {
   return ret;
 };
 
-String.prototype.parseXML = function() {         
-  if (window.ActiveXObject && window.GetObject) {
-    var dom = new ActiveXObject('Microsoft.XMLDOM');
-    dom.loadXML(this);
-    return dom;
-  }
-  if (window.DOMParser)
-    return new DOMParser().parseFromString(this,'text/xml');
-  throw new Error('NoXMLparser available');
+String.prototype.parseXML = function() {
+  return $.parseXML(this).documentElement;
 } 
+
+$X = function(xmlstr) {
+  return $($.parseXML(xmlstr).documentElement);
+};

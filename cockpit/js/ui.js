@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  if (!($.browser.mozilla && parseInt($.browser.version) >= 20) && !($.browser.webkit && parseInt($.browser.version) >= 535)) {
+  if (!($.browser.name == "Firefox" && $.browser.version >= 20) && !($.browser.name == "Chrome" && $.browser.version >= 30)) {
     $('body').children().remove();
     $('body').append('Sorry, only Firefox >= 20.0 and Chrom(e|ium) >= 17 for now.');
   }  
@@ -9,7 +9,6 @@ $(document).ready(function() {
     $('body').children().each(function(key,c){
       if (skip) {
         $(c).remove(); 
-        console.log($(c));
       } else {
         $(c).removeClass('hidden');
       }  
