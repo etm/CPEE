@@ -155,11 +155,10 @@ span.vote {
   padding:0;
   width: 100%;
 }
-#dat_details td.del                     { width: 1.2em; }
-#dat_details td.del a                   { font-size: 1.3em; font-weight: bold; }
-#dat_details td.pname                   { width: 7em;    vertical-align: top; }
-#dat_details td.cname                   { width: 10.2em; vertical-align: top; padding-top:0.25em; }
-#dat_details td.sep                     { width: 1em;    vertical-align: top; padding-top:0.25em; }
+#dat_details td.del                     { width: 1.2em; font-size: 1.3em; font-weight: bold; }
+#dat_details td.pname                   { width: 7em; }
+#dat_details td.cname                   { width: 10.2em; padding-top:0.25em; }
+#dat_details td.sep                     { width: 1em;    padding-top:0.25em; }
 #dat_details tr.indent td:nth-child(1)  { padding-left: 2em;}
 #dat_details tr:nth-child(odd) input    { background-color: ButtonFace; }
 #dat_details tr:nth-child(odd) textarea { background-color: ButtonFace; }
