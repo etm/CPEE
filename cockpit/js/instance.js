@@ -511,30 +511,21 @@ function save_testset() {// {{{
                   testset.append(pars);
                   $.ajax({
                     type: "GET", 
-                    url: base + "/properties/values/description/",
+                    url: base + "/properties/values/dslx/",
                     success: function(res){
                       var pars = $X('<description/>');
                       pars.append($(res.documentElement));
                       testset.append(pars);
+                      pars = $X('<transformation><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation>');
+                      testset.append(pars);
                       $.ajax({
                         type: "GET", 
-                        url: base + "/properties/values/transformation/",
+                        url: base + "/properties/values/info/",
                         success: function(res){
-                          var pars = $X('<transformation/>');
-                          pars.append($(res.documentElement).children());
-                          testset.append(pars);
-                          $.ajax({
-                            type: "GET", 
-                            url: base + "/properties/values/info/",
-                            success: function(res){
-                              var name = res;
-
-                              $('#savetestset').attr('download',name + '.xml');
-                              $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializeXML()));
-                              document.getElementById('savetestset').click();
-                            },  
-                            error: report_failure
-                          });
+                          var name = res;
+                          $('#savetestset').attr('download',name + '.xml');
+                          $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializeXML()));
+                          document.getElementById('savetestset').click();
                         },  
                         error: report_failure
                       });
