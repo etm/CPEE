@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<description xmlns="http://cpee.org/ns/description/1.0">
+  <loop pre_test="true" language="text/javascript">
+    <manipulate id="a1" output="result" language="application/javascript">data.a = 0</manipulate>
+    <choose mode="exclusive">
+      <alternative condition="data.a &lt; 3" language="text/javascript"/>
+      <alternative condition="data.a &lt; 0" language="text/javascript">
+        <call id="a4" endpoint="timeout">
+          <parameters>
+            <label>"B"</label>
+            <method/>
+            <type>:serviceTask</type>
+            <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
+            <parameters>
+              <timeout>1</timeout>
+            </parameters>
+          </parameters>
+          <manipulate output="result" language="application/javascript">data.a += 1</manipulate>
+        </call>
+      </alternative>
+    </choose>
+  </loop>
+</description>

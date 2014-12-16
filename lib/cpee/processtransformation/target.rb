@@ -28,9 +28,11 @@ module CPEE
         def initialize(tree)
           @tree = tree
         end
-        def generate(node)
-          generate_for_list(@tree,node)
-        end
+
+        def output_to_document(doc)
+          generate_for_list(@tree,doc.root)
+          doc.to_s
+        end  
 
         def generate_for_list(list,res)
           list.each do |e|

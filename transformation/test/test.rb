@@ -21,7 +21,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../lib/cpee/processtransf
 require 'pp'
 
 Dir.chdir(File.expand_path(File.dirname(__FILE__)))
-f = "OEE.bpmn"
+f = "Test 16.bpmn"
 
 bpmn2 = CPEE::ProcessTransformation::Source::BPMN2.new(File.read(f))
 
@@ -32,6 +32,8 @@ bpmn2.build_traces
 
 tree = bpmn2.build_tree(true).to_s
 xml = bpmn2.generate_model(CPEE::ProcessTransformation::Target::CPEE)
+
+# p xml.to_s
 
 puts 'do "xmllint test.xml" for happiness. or not.'
 File.write(File.expand_path(File.dirname(__FILE__) + '/test.xml'),xml.to_s)

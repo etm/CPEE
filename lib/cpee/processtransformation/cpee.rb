@@ -18,6 +18,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require File.expand_path(File.dirname(__FILE__) + '/target')
+
 module CPEE
 
   module ProcessTransformation
@@ -28,14 +30,14 @@ module CPEE
         def generate
           res = XML::Smart.string("<description xmlns='http://cpee.org/ns/description/1.0'/>")
           res.register_namespace 'd', 'http://cpee.org/ns/description/1.0'
-          super.generate(res.root)
+          output_to_document res
         end
 
         def print_Break(node,res)
           res.add('escape')
         end
 
-        def print_Loop_default(node,res)
+        def print_Loop(node,res)
           if node.sub.length == 2
             s1 = res.add('loop', 'pre_test' => node.sub[0].condition.empty? ? 'true' : node.sub[0].condition.join(' && '))
             s1.attributes['language'] = node.sub[0].condition_type unless node.sub[0].condition_type.nil?
@@ -49,9 +51,6 @@ module CPEE
           end
           s1
         end
-        private :print_Loop_default
-        def print_Loop(node,res); print_Loop_default(node,res); end
-        private :print_Loop
 
         def print_Node(node,res)
           if node.endpoints.empty? && !node.script.nil? && node.script.strip != ''
@@ -77,9 +76,8 @@ module CPEE
             end
           end
         end
-        private :print_Node
 
-        def print_Parallel_default(node,res)
+        def print_Parallel(node,res)
           s1 = res.add('parallel','wait' => node.wait)
           node.sub.each do |branch|
             s2 = s1.add('parallel_branch')
@@ -87,11 +85,8 @@ module CPEE
           end
           s1
         end
-        private :print_Parallel_default
-        def print_Parallel(node,res); print_Parallel_default(node,res); end
-        private :print_Parallel
 
-        def print_Conditional_default(node,res)
+        def print_Conditional(node,res)
           s1 = res.add('d:choose', 'mode' => node.mode)
           node.sub.each do |branch|
             s2 = if branch.condition.any?
@@ -111,9 +106,6 @@ module CPEE
           end
           s1
         end
-        private :print_Conditional_default
-        def print_Conditional(node,res); print_Conditional_default(node,res); end
-        private :print_Conditional
 
       end
 
