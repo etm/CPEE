@@ -38,7 +38,7 @@ module CPEE
         end
 
         def print_Loop(node,res)
-          if node.sub.length == 2
+          if node.sub.length == 2 && node.sub[1].condition.empty? && ((node.sub[1].length == 1 && node.sub[1][0].class.name.gsub(/\w+:+/,'') == 'Break') ||  node.sub[1].length == 0)
             s1 = res.add('loop', 'pre_test' => node.sub[0].condition.empty? ? 'true' : node.sub[0].condition.join(' && '))
             s1.attributes['language'] = node.sub[0].condition_type unless node.sub[0].condition_type.nil?
             node.sub[0].attributes.each do |k,v|
