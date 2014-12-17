@@ -134,7 +134,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @controller.call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position)
   end # }}}
 
-  def simplify_response(result)
+  def simplify_result(result)
     if result.length == 1
       if result[0].is_a? Riddl::Parameter::Simple
         result = result[0]
