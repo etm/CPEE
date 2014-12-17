@@ -191,24 +191,34 @@
           </table>
         </div> <!--}}}-->
         <div id="areainstance" class="inactive"> <!--{{{-->
-          <table class='compact'>
-            <tbody class='loadsave'>
-              <tr>
-                <td><input type='file' name='testsetfile' id='testsetfile' style='display:none'/><select title='a testset includes various setting, subscriptions and a model' name="testset-names"><optgroup label='Local Files'><option value='###'>Select file ...</option></optgroup><optgroup label='Predefined examples'></optgroup></select></td>
-                <td><button title='a testset includes various setting, subscriptions and a model' name="loadtestset">load testset</button></td>
-                <td rowspan='3'><button title='a testset includes various setting, subscriptions and a model' name="savetestset">save testset</button><a id="savetestset" href="" download=""></a></td>
-                <td rowspan='3'><button title='a testset includes various setting, subscriptions and a model' name="savesvg">save svg graph</button><a id="savesvg" href="" download=""></a></td>
-              </tr>
-              <tr>
-                <td><select title='the model type affects the transformation property of an instance' name="transformation-names"><option value='???'>???</option></select></td>
-                <td><button title='a testset includes various setting, subscriptions and a model' name="loadmodeltype">set model type</button></td>
-              </tr>
-              <tr>
-                <td><input type='file' name='modelfile' id='modelfile' style='display:none'/></td>
-                <td><button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">load model</button></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class='section'>
+            <div>
+              <input type='file' name='testsetfile' id='testsetfile'/>
+              <input type='file' name='modelfile' id='modelfile' style='display:none'/>
+              <button title='a testset includes various setting, subscriptions and a model' name="loadtestset">predefined testset</button>
+              <button title='a testset includes various setting, subscriptions and a model' name="loadtestsetfile">local testset</button>
+            </div>  
+            <div>
+                <button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">model</button>
+            </div>    
+            <div class='label'>Load</div>
+          </div>
+          <div class='section'>
+            <div>
+              <a id="savetestset" href="" download=""></a>
+              <a id="savesvg" href="" download=""></a>
+              <button title='a testset includes various setting, subscriptions and a model' name="savetestset">save testset</button>
+              <button title='a testset includes various setting, subscriptions and a model' name="savesvg">save svg graph</button>
+            </div>  
+            <div class='label'>Save</div>
+          </div>
+          <div class='section'>
+            <div>
+              <select title='the model type affects the transformation property of an instance' name="transformation-names"><option value='???'>???</option></select>
+              <button title='a testset includes various setting, subscriptions and a model' name="loadmodeltype">set model type</button>
+            </div>
+            <div class='label'>Type</div>
+          </div>
         </div> <!--}}}-->
         <div id="areaexecution" class='inactive'> <!--{{{-->
           <table class='compact'>

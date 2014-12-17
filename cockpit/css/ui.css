@@ -31,7 +31,16 @@ button.highlight { background-color: #cc0000; }
 #areadataelements { height: 100%; overflow-x: hidden; overflow-y: scroll; }
 #areaendpoints    { height: 100%; overflow: auto; }
 
-#areainstance                       { height: 7em; overflow: hidden; }
+#areainstance input[type=file]         { display: none; }
+#areainstance div.section              { display: inline-block; }
+#areainstance div.section:nth-child(2) { padding: 0 0.5em; border-left: 1px solid ButtonShadow; }
+#areainstance div.section:nth-child(3) { padding: 0 0.5em; border-left: 1px solid ButtonShadow; }
+
+#areainstance div.section:nth-child(1) div:nt-child(1) { padding: 0 0.5em; border-left: 1px solid ButtonShadow; }
+#areainstance div.section              { display: inline-block; }
+
+
+/* #areainstance                       { height: 7em; overflow: hidden; }
 #areainstance input                 { padding: 0; margin:0; }
 #areainstance button                { white-space:nowrap; }
 #areainstance select                { width: 18em; }
@@ -47,6 +56,7 @@ button.highlight { background-color: #cc0000; }
 #areainstance table.compact button[name=loadmodeltype]  { width: 10em; }
 #areainstance table.compact button[name=loadtestset]    { width: 10em; }
 #areainstance table.compact button[name=loadmodelfile]  { width: 10em; }
+*/
 
 #areaexecution { height: 7em; overflow: auto; }
 #areaexecution input { padding: 0; margin:0; }
