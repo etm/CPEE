@@ -50,8 +50,9 @@ $(document).ready(function() {// {{{
   $("button[name=base]").click(function(){ create_instance(null); });
   $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
   $("button[name=loadtestset]").click(load_testset);
+  $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodeltype]").click(load_modeltype);
-  $("button[name=loadmodelfile]").click(load_model);
+  $("button[name=loadmodelfile]").click(load_modelfile);
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
@@ -520,7 +521,7 @@ function save_testset() {// {{{
                       testset.append(pars);
                       $.ajax({
                         type: "GET", 
-                        url: base + "/properties/values/info/",
+                        url: base + "/properties/values/attributes/info/",
                         success: function(res){
                           var name = res;
                           $('#savetestset').attr('download',name + '.xml');
@@ -557,7 +558,7 @@ function save_svg() {// {{{
       gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
       $.ajax({
         type: "GET", 
-        url: base + "/properties/values/info/",
+        url: base + "/properties/values/attributes/info/",
         success: function(res){
           var name = res;
 
@@ -626,7 +627,8 @@ function set_testset(testset) {// {{{
     }
   });
  }// }}}
-function load_testsetfile() { //{{{
+
+function load_testsetfile_after() { //{{{
   if (running) return;
   running = true;
   if (typeof window.FileReader !== 'function') {
@@ -643,7 +645,12 @@ function load_testsetfile() { //{{{
   reader.onabort = function(){ running  = false; }  
   reader.readAsText(files[0]);
 } //}}}
-function load_modelfile() { //{{{
+function load_testsetfile() {// {{{
+  if (running) return;
+  document.getElementById('testsetfile').click();
+}// }}}
+
+function load_modelfile_after() { //{{{
   if (running) return;
   running = true;
   if (typeof window.FileReader !== 'function') {
@@ -661,40 +668,33 @@ function load_modelfile() { //{{{
   reader.onabort = function(){ running  = false; }  
   reader.readAsText(files[0]);
 } //}}}
-function load_testset() {// {{{
-  if (running) return;
-  running  = true;
-  save['dsl'] = null; // reload dsl and position under all circumstances
-  
-  $('#main .tabbehind button').hide();
-  $('#dat_details').empty();
-
-  var name = $("select[name=testset-names]").val();
-
-  if (name == '###') {
-    running = false;
-    document.getElementById('testsetfile').click();
-  } else {  
-    $.ajax({ 
-      cache: false,
-      dataType: 'xml',
-      url: "testsets/" + name + ".xml",
-      success: function(res){ 
-        document.title = name;
-        set_testset(res);
-      },
-      complete: function() {
-        running  = false;
-      }
-    });
-  }  
-}// }}}
-
-function load_model() {// {{{
+function load_modelfile() {// {{{
   if (running) return;
   document.getElementById('modelfile').click();
 }// }}}
 
+function load_testset() {// {{{
+  if (running) return;
+  running  = true;
+
+  var name = $("select[name=testset-names]").val();
+  $.ajax({ 
+    cache: false,
+    dataType: 'xml',
+    url: "testsets/" + name + ".xml",
+    success: function(res){ 
+      save['dsl'] = null; // reload dsl and position under all circumstances
+      $('#main .tabbehind button').hide();
+      $('#dat_details').empty();
+
+      document.title = name;
+      set_testset(res);
+    },
+    complete: function() {
+      running  = false;
+    }
+  });
+}// }}}
 function load_modeltype() {// {{{
   if (running) return;
   running  = true;

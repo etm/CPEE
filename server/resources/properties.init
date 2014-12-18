@@ -18,6 +18,7 @@
 <properties xmlns="http://riddl.org/ns/common-patterns/properties/1.0">
   <attributes>
     <info/>
+    <modeltype>CPEE</modeltype>
   </attributes>
   <state>ready</state>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>

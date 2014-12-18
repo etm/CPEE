@@ -60,4 +60,3 @@ function contextmenu_remove(event) {
   $('.contextmenu:first').remove();
   $('body', document).unbind('mousedown',contextmenu_remove);
 }
-
