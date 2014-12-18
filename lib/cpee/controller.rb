@@ -154,7 +154,7 @@ module CPEE
     end # }}}
 
     def info
-      @properties.data.find("string(/p:properties/p:info)")
+      @properties.data.find("string(/p:properties/p:attributes/p:info)")
     end
 
     def serialize_dataelements! #{{{

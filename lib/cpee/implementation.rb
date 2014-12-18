@@ -116,7 +116,7 @@ module CPEE
       Riddl::Parameter::Complex.new("wis","text/xml") do
         ins = XML::Smart::string('<instances/>')
         controller.each do |k,v|
-          name = v.properties.data.find("string(/p:properties/p:info)")
+          name = v.properties.data.find("string(/p:properties/p:attributes/p:info)")
           state = v.properties.data.find("string(/p:properties/p:state)")
           ins.root.add('instance',name, 'id' => k, 'state' => state)
         end
@@ -138,7 +138,8 @@ module CPEE
         break
       end  
       controller[id] = Controller.new(id,opts)
-      controller[id].properties.data.find("/p:properties/p:info").first.text = name
+      info = controller[id].properties.data.find("/p:properties/p:attributes/p:info")
+      info.first.text = name if info.length == 1
 
       Riddl::Parameter::Simple.new("id", id)
     end

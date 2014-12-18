@@ -195,29 +195,24 @@
             <div>
               <input type='file' name='testsetfile' id='testsetfile'/>
               <input type='file' name='modelfile' id='modelfile' style='display:none'/>
-              <button title='a testset includes various setting, subscriptions and a model' name="loadtestset">predefined testset</button>
-              <button title='a testset includes various setting, subscriptions and a model' name="loadtestsetfile">local testset</button>
+              <button title='a testset includes various setting, subscriptions and a model' name="loadtestset">load predefined testset</button>
+              <button title='a testset includes various setting, subscriptions and a model' name="loadtestsetfile">load local testset</button>
             </div>  
             <div>
-                <button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">model</button>
+                <button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">load model</button>
             </div>    
-            <div class='label'>Load</div>
-          </div>
-          <div class='section'>
+          </div><div class='section'>
+            <a id="savetestset" href="" download=""></a>
+            <a id="savesvg" href="" download=""></a>
+            <button title='a testset includes various setting, subscriptions and a model' name="savetestset">save testset</button>
+            <button title='a testset includes various setting, subscriptions and a model' name="savesvg">save svg graph</button>
+          </div><div class='section'>
             <div>
-              <a id="savetestset" href="" download=""></a>
-              <a id="savesvg" href="" download=""></a>
-              <button title='a testset includes various setting, subscriptions and a model' name="savetestset">save testset</button>
-              <button title='a testset includes various setting, subscriptions and a model' name="savesvg">save svg graph</button>
-            </div>  
-            <div class='label'>Save</div>
-          </div>
-          <div class='section'>
-            <div>
-              <select title='the model type affects the transformation property of an instance' name="transformation-names"><option value='???'>???</option></select>
-              <button title='a testset includes various setting, subscriptions and a model' name="loadmodeltype">set model type</button>
+              Current model: <span id='currentmodel'></span>
             </div>
-            <div class='label'>Type</div>
+            <div>
+              <button title='a testset includes various setting, subscriptions and a model' name="loadmodeltype">set model type</button>
+            </div>  
           </div>
         </div> <!--}}}-->
         <div id="areaexecution" class='inactive'> <!--{{{-->

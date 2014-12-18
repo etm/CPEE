@@ -16,8 +16,9 @@
 -->
 
 <properties xmlns="http://riddl.org/ns/common-patterns/properties/1.0">
-  <info/>
-  <properties/>
+  <attributes>
+    <info/>
+  </attributes>
   <state>ready</state>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <positions/>
