@@ -45,7 +45,8 @@ module CPEE
       end unless opts[:handlerwrappers].strip == ''
 
       controller = {}
-      Dir[opts[:instances] + '/*/properties.xml'].map{|e|::File::basename(::File::dirname(e))}.each do |id|
+      Dir[opts[:instances] + '/*/properties.xml'].each do |e|
+        id = ::File::basename(::File::dirname(e))
         controller[id.to_i] = Controller.new(id,opts)
       end
 

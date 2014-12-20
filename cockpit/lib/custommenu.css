@@ -14,17 +14,18 @@
   <http://www.gnu.org/licenses/>.
 */
 
-div.contextmenu {
+div.contextmenu, div.menu {
   padding: 0;
   margin: 0;
   z-index: 100000;
   position: absolute;
   display:none;
   background: Menu;
-  border: 1px solid ButtonShadow;
+  border: 1px solid ActiveBorder;
   -moz-box-sizing:    border-box;
   -webkit-box-sizing: border-box;
   box-sizing:         border-box;
+  box-shadow: 0.1em 0.1em 0.1em ThreeDShadow;
 }
 
 table.contextmenu {
@@ -46,22 +47,28 @@ tr.contextmenuheader > td{
   padding-right: 1em;
 }
 tr.contextmenuheader:not(:first-child) {
-  border-top: 1px solid ButtonShadow;
+  border-top: 1px solid ActiveBorder;
 }
 
-tr.contextmenuitem {
+div.menu > div { 
+  height: 1.5em;
+}
+
+tr.contextmenuitem, div.menu > div {
   font-size: small;
   color: MenuText;
 }
-tr.contextmenuitem:hover {
+tr.contextmenuitem:hover, div.menu > div:hover {
   background-color:Highlight;
   color: HighlightText;
 }
-tr.contextmenuitem > td{
+tr.contextmenuitem > td, div.menu > div {
+  padding: 0;
+  margin: 0;
   padding-left: 0.5em;
   padding-right: 1em;
 }
-tr.contextmenuitem > .contextmenuicon{
+tr.contextmenuitem > .contextmenuicon {
   margin-left: 0.7em;
   padding-right: 0em;
 }
@@ -75,4 +82,3 @@ tr.contextmenuitem > .contextmenuicon div svg {
   width: 1.5em;
   vertical-align:bottom;
 }
-

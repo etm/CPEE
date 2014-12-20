@@ -49,7 +49,7 @@ $(document).ready(function() {// {{{
   $("input[name=base-url]").val(location.protocol + "//" + location.host + ":" + $('body').data('defaultport'));
   $("button[name=base]").click(function(){ create_instance(null); });
   $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
-  $("button[name=loadtestset]").click(load_testset);
+  $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets')); });
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodeltype]").click(load_modeltype);
   $("button[name=loadmodelfile]").click(load_modelfile);
@@ -65,11 +65,10 @@ $(document).ready(function() {// {{{
     success: function(res){
       $('testset',res).each(function(){
         var ts = $(this).text();
-        $('select[name=testset-names] optgroup:last-child').append(
-          $("<option></option>").attr("value",ts).text(ts)
+        $('#predefinedtestsets').append(
+          $("<div></div>").text(ts)
         );
       });
-      $('select[name=testset-names] optgroup:last-child option:first-child').attr('selected','selected');
       var q = $.parseQuery();
       if (q.monitor && q.load) {
         $("input[name=instance-url]").val(q.monitor);

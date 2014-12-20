@@ -108,7 +108,7 @@ function CPEE(adaptor) {
                         },
                         'params': ['> manipulate', xml_node]});
       }
-      contextmenu(menu, e);
+      new CustomMenu(e).contextmenu(menu);
     }
     return false;
   } // }}} 

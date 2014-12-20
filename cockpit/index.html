@@ -36,12 +36,12 @@
     <script type="text/javascript" src="lib/jquery.cookie.js"></script>
     <script type="text/javascript" src="lib/jquery.redraw.js"></script>
 
-    <script type="text/javascript" src="lib/contextmenu.js"></script>
+    <script type="text/javascript" src="lib/custommenu.js"></script>
     <script type="text/javascript" src="lib/wfadaptor.js"></script>
     <script type="text/javascript" src="lib/ui.js"></script>
 
     <link rel="stylesheet" href="lib/wfadaptor.css" type="text/css"/>
-    <link rel="stylesheet" href="lib/contextmenu.css" type="text/css"/>
+    <link rel="stylesheet" href="lib/custommenu.css" type="text/css"/>
     <link rel="stylesheet" href="lib/ui.css" type="text/css"/>
 
     <!-- custom stuff, play arround  -->
@@ -194,9 +194,8 @@
           <div class='section'>
             <div>
               <input type='file' name='testsetfile' id='testsetfile'/>
-              <button title='a testset includes various setting, subscriptions and a model' name="loadtestset">load predefined testset</button>
-              <button title='a testset includes various setting, subscriptions and a model' name="loadtestsetfile">load testset file</button>
-            </div>  
+              <button title='a testset includes various setting, subscriptions and a model' name="loadtestset">load predefined testset</button><button title='a testset includes various setting, subscriptions and a model' name="loadtestsetfile">load testset file</button>
+            </div>
             <div>
               <input type='file' name='modelfile' id='modelfile'/>
               <button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">load model</button>
@@ -237,6 +236,9 @@
         </div> <!--}}}-->
       </div>
     </div>
+
+    <div class='menu' id='predefinedtestsets'>
+    </div>  
 
     <div class="tabbed hidden" id='parameters'>
       <table class="tabbar">
