@@ -18,22 +18,24 @@ function CustomMenu(e) {
   var target = $(e.target);
   var x = e.pageX;
   var y = e.pageY;
-  var remove = function(event) {
-    if (!event) {
-      $('.contextmenu:first').remove();
-      $('body', document).unbind('mousedown',remove);
-      return;
-    }  
-
-    if($(event.target).parent('tr.contextmenuitem') && (event.button == 0)) { $(event.target).click(); } 
-    $('.contextmenu:first').remove();
-    $('body', document).unbind('mousedown',remove);
-  }
+  var remove = function(event) {};
   this.remove = remove;
   e.stopPropagation();
-  $('body', document).bind('mousedown',remove); 
 
   this.contextmenu = function(items) {
+    remove = function(event) {
+      if (!event) {
+        $('.contextmenu:first').remove();
+        $('body', document).unbind('mousedown',remove);
+        return;
+      }  
+
+      if($(event.target).parent('tr.contextmenuitem') && (event.button == 0)) { $(event.target).click(); } 
+      $('.contextmenu:first').remove();
+      $('body', document).unbind('mousedown',remove);
+    }
+    $('body', document).bind('mousedown',remove); 
+
     if($('div.contextmenu').length > 0) remove();
     var div = $('<div class="contextmenu"><table class="contextmenu"/></div>');
     for(head in items) {
@@ -64,8 +66,27 @@ function CustomMenu(e) {
     }
   }
 
-  this.menu = function(menu) {
+  this.menu = function(menu,call) {
     menu.show();
+    var mitemclick = function(ele){ 
+      $("div.menuitem[data-selected=selected]",$(menu)).each(function(ind,rem){ $(rem).removeAttr('data-selected'); });
+      $(ele.target).attr('data-selected','selected'); 
+      call(ele.target);
+    };
+    remove = function(event) {
+      if($(event.target).parent('div.menu') && (event.button == 0)) { $(event.target).click(); } 
+      menu.hide();
+      $('body', document).unbind('mousedown',remove);
+      $("div.menuitem",$(menu)).each(function(ind,ele){
+        $(ele).unbind('click',mitemclick);
+      });
+    }
+    $('body', document).bind('mousedown',remove); 
+
+    $("div.menuitem",$(menu)).each(function(ind,ele){
+      $(ele).bind('click',mitemclick);
+    });
+
     var off = target.offset();
 
     menu.css({'left':off.left,'top':off.top+target.outerHeight() + 1});

@@ -49,7 +49,7 @@ $(document).ready(function() {// {{{
   $("input[name=base-url]").val(location.protocol + "//" + location.host + ":" + $('body').data('defaultport'));
   $("button[name=base]").click(function(){ create_instance(null); });
   $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
-  $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets')); });
+  $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),load_testset); });
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodeltype]").click(load_modeltype);
   $("button[name=loadmodelfile]").click(load_modelfile);
@@ -65,9 +65,7 @@ $(document).ready(function() {// {{{
     success: function(res){
       $('testset',res).each(function(){
         var ts = $(this).text();
-        $('#predefinedtestsets').append(
-          $("<div></div>").text(ts)
-        );
+        $('#predefinedtestsets').append($("<div class='menuitem'></div>").text(ts));
       });
       var q = $.parseQuery();
       if (q.monitor && q.load) {
@@ -520,9 +518,13 @@ function save_testset() {// {{{
                       testset.append(pars);
                       $.ajax({
                         type: "GET", 
-                        url: base + "/properties/values/attributes/info/",
+                        url: base + "/properties/values/attributes/",
                         success: function(res){
-                          var name = res;
+                          var pars = $X('<attributes/>');
+                          pars.append($(res.documentElement));
+                          testset.append(pars);
+                          var name = $("values > info",res);
+                          console.log(res);
                           $('#savetestset').attr('download',name + '.xml');
                           $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializeXML()));
                           document.getElementById('savetestset').click();
@@ -676,7 +678,7 @@ function load_testset() {// {{{
   if (running) return;
   running  = true;
 
-  var name = $("select[name=testset-names]").val();
+  var name = $("#predefinedtestsets div.menuitem[data-selected=selected]").text();
   $.ajax({ 
     cache: false,
     dataType: 'xml',

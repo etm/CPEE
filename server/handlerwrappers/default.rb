@@ -42,6 +42,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       params << Riddl::Header.new("CPEE_BASE",@controller.base_url)
       params << Riddl::Header.new("CPEE_INSTANCE",@controller.instance_url)
       params << Riddl::Header.new("CPEE_CALLBACK",@controller.instance_url + '/callbacks/' + callback)
+      params << Riddl::Header.new("CPEE_ACTIVITY",@handler_position)
+      params << Riddl::Header.new("CPEE_LABEL",parameters[:label])
+      @controller.attributes.each do |key,value|
+        params << Riddl::Header.new("CPEE_ATTR_#{key}",value)
+      end  
 
       type = parameters[:method] || 'post'
       client = Riddl::Client.new(@handler_endpoint)
