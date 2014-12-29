@@ -24,6 +24,8 @@ var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/transformation' + '&' +
+               'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/handlerwrapper' + '&' +
                'events' + '=' + 'result' + '&' +
                'topic'  + '=' + 'properties/handlers' + '&' +
@@ -40,6 +42,8 @@ var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'properties/transformation' + '&' +
+               'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'properties/handlerwrapper' + '&' +
                'events' + '=' + 'result' + '&' +
                'topic'  + '=' + 'properties/handlers' + '&' +
@@ -51,8 +55,8 @@ $(document).ready(function() {// {{{
   $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
   $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),load_testset); });
   $("button[name=loadtestsetfile]").click(load_testsetfile);
-  $("button[name=loadmodeltype]").click(load_modeltype);
   $("button[name=loadmodelfile]").click(load_modelfile);
+  $("button[name=loadmodeltype]").click(function(e){new CustomMenu(e).menu($('#modeltypes'),load_modeltype, $("button[name=loadmodeltype]")); });
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
@@ -91,9 +95,7 @@ $(document).ready(function() {// {{{
     success: function(res){
       $('transformation',res).each(function(){
         var ts = $(this).text();
-        $('select[name=transformation-names]').append(
-          $("<option></option>").attr("value",ts).text(ts)
-        );
+        $('#modeltypes').append($("<div class='menuitem'></div>").text(ts));
       });
     }
   });
@@ -214,6 +216,9 @@ function monitor_instance(load) {// {{{
                 case 'properties/position':
                   monitor_instance_pos_change($('event > notification',data).text());
                   break;
+                case 'properties/transformation':
+                  monitor_instance_transformation();
+                  break;
                 case 'running':
                   monitor_instance_running($('event > notification',data).text(),$('event > event',data).text());
                   break;
@@ -235,6 +240,7 @@ function monitor_instance(load) {// {{{
 
       monitor_instance_dataelements();
       monitor_instance_endpoints();
+      monitor_instance_transformation();
       monitor_instance_dsl();
       monitor_instance_state();
     },
@@ -350,6 +356,19 @@ function monitor_instance_state() {// {{{
     dataType: "text",
     success: function(res){
       monitor_instance_state_change(res);
+    }
+  });
+}// }}}
+function monitor_instance_transformation() {// {{{
+  var url = $("input[name=current-instance]").val();
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/attributes/modeltype",
+    success: function(res){
+      $("#currentmodel").text($(res.documentElement).text());
+    },
+    error: function() {
+      $("#currentmodel").text('???');
     }
   });
 }// }}}
@@ -698,16 +717,24 @@ function load_testset() {// {{{
 }// }}}
 function load_modeltype() {// {{{
   if (running) return;
+  var url = $("input[name=current-instance]").val();
   running  = true;
   
-  var name = $("select[name=transformation-names]").val();
-
+  var name = $("#modeltypes div.menuitem[data-selected=selected]").text();
   $.ajax({ 
     cache: false,
     dataType: 'xml',
     url: "testsets/" + name + ".xml",
     success: function(res){ 
-      set_testset(res);
+      $.ajax({
+        type: "PUT", 
+        url: url + "/properties/values/attributes/modeltype",
+        data: ({value: name}),
+        success: function(){
+          set_testset(res);
+        },
+        error: report_failure
+      });
     },
     complete: function() {
       running  = false;

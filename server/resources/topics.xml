@@ -48,6 +48,9 @@
   <topic id='properties/handlerwrapper'>
     <event>change</event>
   </topic>
+  <topic id='properties/transformation'>
+    <event>change</event>
+  </topic>
   <topic id='properties/handlers'>
     <event>change</event>
     <event>error</event>

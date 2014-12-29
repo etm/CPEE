@@ -32,6 +32,8 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase
       when 'positions'  
         @data.unserialize_positions!
         @data.notify('properties/position/change', :instance => @data.instance)
+      when 'transformation'  
+        @data.notify('properties/transformation/change', :instance => @data.instance)
       when 'state'  
         @data.unserialize_state!
       else

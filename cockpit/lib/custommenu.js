@@ -67,20 +67,21 @@ function CustomMenu(e) {
   }
 
   this.menu = function(menu,call) {
-    menu.show();
-    var mitemclick = function(ele){ 
-      $("div.menuitem[data-selected=selected]",$(menu)).each(function(ind,rem){ $(rem).removeAttr('data-selected'); });
-      $(ele.target).attr('data-selected','selected'); 
-      call(ele.target);
-    };
     remove = function(event) {
-      if($(event.target).parent('div.menu') && (event.button == 0)) { $(event.target).click(); } 
+      if ($(event.target).parent('div.menu') && (event.button == 0)) { $(event.target).click(); } 
       menu.hide();
       $('body', document).unbind('mousedown',remove);
       $("div.menuitem",$(menu)).each(function(ind,ele){
         $(ele).unbind('click',mitemclick);
       });
     }
+
+    menu.show();
+    var mitemclick = function(ele){ 
+      $("div.menuitem[data-selected=selected]",$(menu)).each(function(ind,rem){ $(rem).removeAttr('data-selected'); });
+      $(ele.target).attr('data-selected','selected'); 
+      call(ele.target);
+    };
     $('body', document).bind('mousedown',remove); 
 
     $("div.menuitem",$(menu)).each(function(ind,ele){
@@ -89,7 +90,7 @@ function CustomMenu(e) {
 
     var off = target.offset();
 
-    menu.css({'left':off.left,'top':off.top+target.outerHeight() + 1});
+    menu.css({'left':off.left,'top':off.top+target.outerHeight() + 1,'min-width': target.width()});
     if(($(window).height() < (y + menu.height()))) {
       menu.css({'top':$(window).height()-menu.height()-5});
     }
