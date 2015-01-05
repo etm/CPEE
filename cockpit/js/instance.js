@@ -60,8 +60,8 @@ $(document).ready(function() {// {{{
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("input[name=votecontinue]").click(check_subscription);
-  $("input[name=testsetfile]").change(load_testsetfile);
-  $("input[name=modelfile]").change(load_modelfile);
+  $("input[name=testsetfile]").change(load_testsetfile_after);
+  $("input[name=modelfile]").change(load_modelfile_after);
 
   $.ajax({ 
     url: "testsets/testsets.xml", 
@@ -539,11 +539,10 @@ function save_testset() {// {{{
                         type: "GET", 
                         url: base + "/properties/values/attributes/",
                         success: function(res){
+                          var name = $("value > info",res).text();
                           var pars = $X('<attributes/>');
-                          pars.append($(res.documentElement));
+                          pars.append($(res.documentElement).children());
                           testset.append(pars);
-                          var name = $("values > info",res);
-                          console.log(res);
                           $('#savetestset').attr('download',name + '.xml');
                           $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializeXML()));
                           document.getElementById('savetestset').click();
@@ -565,7 +564,7 @@ function save_testset() {// {{{
     },
     error: report_failure
   });  
-}// }}}
+}// }}} 
 function save_svg() {// {{{
   var base = $("input[name=current-instance]").val();
   var params = { mimetype: 'image/svg+xml' };
@@ -580,7 +579,7 @@ function save_svg() {// {{{
         type: "GET", 
         url: base + "/properties/values/attributes/info/",
         success: function(res){
-          var name = res;
+          var name = $(res.documentElement).text();
 
           $('#savesvg').attr('download',name + '.svg');
           $('#savesvg').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(gc.serializeXML()));
@@ -650,6 +649,7 @@ function set_testset(testset) {// {{{
 
 function load_testsetfile_after() { //{{{
   if (running) return;
+  console.log('rrrr');
   running = true;
   if (typeof window.FileReader !== 'function') {
     alert('FileReader not yet supportet');
