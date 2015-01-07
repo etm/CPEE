@@ -29,6 +29,8 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase
       when 'dataelements'
         @data.unserialize_dataelements!
         @data.notify('properties/dataelements/change', :instance => @data.instance)
+      when 'attributes'
+        @data.unserialize_attributes!
       when 'positions'  
         @data.unserialize_positions!
         @data.notify('properties/position/change', :instance => @data.instance)
