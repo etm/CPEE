@@ -610,6 +610,7 @@ function set_testset(testset) {// {{{
   });  
 
   load_testset_dataelements(url,testset);
+  load_testset_attributes(url,testset);
   load_testset_endpoints(url,testset);
   load_testset_pos(url,testset);
 
@@ -782,6 +783,20 @@ function load_testset_dataelements(url,testset) {// {{{
   $.ajax({
     type: "PUT", 
     url: url + "/properties/values/dataelements",
+    data: ({content: val}),
+    error: report_failure
+  });
+}// }}}
+function load_testset_attributes(url,testset) {// {{{
+  if ($("testset > attributes",testset).length == 0) { return; }
+  var ser = '';
+  $("testset > attributes > *",testset).each(function(){
+    ser += $(this).serializeXML() + "\n";
+  });
+  var val = "<content>" + ser + "</content>";
+  $.ajax({
+    type: "PUT", 
+    url: url + "/properties/values/attributes",
     data: ({content: val}),
     error: report_failure
   });
