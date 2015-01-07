@@ -153,6 +153,14 @@ module CPEE
       @callback = [] # everything should be empty now
     end # }}}
 
+    def attributes
+      attrs = {}
+      @properties.data.find("/p:properties/p:attributes/p:*").map do |ele|
+        attrs[ele.qname.name] = ele.text
+      end
+      attrs
+    end
+
     def info
       @properties.data.find("string(/p:properties/p:attributes/p:info)")
     end
