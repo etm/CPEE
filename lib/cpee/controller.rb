@@ -62,6 +62,7 @@ module CPEE
       @callbacks = {}
       @instance = EmptyWorkflow.new(self)
       @positions = []
+      @attributes = {}
       @thread = nil
       @mutex = Mutex.new
       @opts = opts
@@ -93,6 +94,7 @@ module CPEE
       unserialize_endpoints!
       unserialize_dsl!
       unserialize_positions!
+      unserialize_attributes!
     end
 
     attr_reader :id
@@ -100,6 +102,7 @@ module CPEE
     attr_reader :notifications
     attr_reader :callbacks
     attr_reader :mutex
+    attr_reader :attributes
 
     def base_url 
       @opts[:url]
@@ -273,6 +276,12 @@ module CPEE
       end    
     end # }}} 
     
+    def unserialize_attributes! #{{{
+      @attributes = {}
+      @properties.data.find("/p:properties/p:attributes/p:*").map do |ele|
+        @attributes[ele.qname.name] = ele.text
+      end
+    end #}}}
     def unserialize_dataelements! #{{{
         @instance.data.clear
         @properties.data.find("/p:properties/p:dataelements/p:*").each do |e|
