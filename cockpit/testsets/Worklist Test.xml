@@ -14,7 +14,7 @@
           <label>""</label>
           <method>:post</method>
           <parameters>
-            <orgmodel>organisation1</orgmodel>
+            <orgmodel>"organisation1"</orgmodel>
             <domain>"Virtual Business 1"</domain>
             <form>"resources/form-f.html"</form>
             <role>"clerk"</role>
