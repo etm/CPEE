@@ -1,0 +1,60 @@
+<element rngui:version="1.2" name="data" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org"> 
+  <rngui:ui/>
+  <element name="type">
+    <rngui:ui>
+      <rngui:readonly/>
+      <rngui:label>Type</rngui:label>
+    </rngui:ui>
+    <data type="string"/>
+  </element>
+  <element name="position">
+    <rngui:ui>
+      <rngui:readonly/>
+      <rngui:label>ID</rngui:label>
+    </rngui:ui>
+    <data type="string"/>
+  </element>
+  <element name="endpoint">
+    <rngui:ui>
+      <rngui:label>Endpoint</rngui:label>
+    </rngui:ui>
+    <data type="string"/>
+  </element>
+  <element name="code">
+    <rngui:ui>
+      <rngui:label>Script</rngui:label>
+    </rngui:ui>
+    <text/>
+  </element>
+  <element name='parameters'>
+    <rngui:ui/>
+    <element name="label">
+      <rngui:ui>
+        <rngui:label>Label</rngui:label>
+      </rngui:ui>
+      <data type="string"/>
+    </element>
+    <element name="method">
+      <rngui:ui>
+        <rngui:label>Method</rngui:label>
+      </rngui:ui>
+      <choice>
+        <value>:post</value>
+        <value>:get</value>
+        <value>:put</value>
+        <value>:delete</value>
+      </choice>
+    </element>
+    <element name="parameters">
+      <zeroOrMore>
+        <rngui:ui>
+          <rngui:heading>Label</rngui:heading>
+        </rngui:ui>
+        <element>
+          <anyName/>
+          <data type="string"/>
+        </element>
+      </zeroOrMore>
+    </element>  
+  </element>
+</element>

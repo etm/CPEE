@@ -1,0 +1,73 @@
+<!--
+  This file is part of CPEE.
+
+  CPEE is free software: you can redistribute it and/or modify it under the terms
+  of the GNU General Public License as published by the Free Software Foundation,
+  either version 3 of the License, or (at your option) any later version.
+
+  CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along with
+  CPEE (file COPYING in the main directory).  If not, see
+  <http://www.gnu.org/licenses/>.
+-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>CPEE Cockpit</title>
+
+    <!-- libs, do not modify -->
+
+    <script type="text/javascript" src="lib/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.browser.js"></script>
+    <script type="text/javascript" src="lib/jquery.svg.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.svgdom.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-ui.custom.min.js"></script>
+    <script type="text/javascript" src="lib/util.js"></script>
+    <script type="text/javascript" src="lib/printf.js"></script>
+    <script type="text/javascript" src="lib/strftime.min.js"></script>
+    <script type="text/javascript" src="lib/parsequery.js"></script>
+    <script type="text/javascript" src="lib/underscore.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.caret.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.cookie.js"></script>
+    <script type="text/javascript" src="lib/jquery.redraw.js"></script>
+
+    <script type="text/javascript" src="lib/custommenu.js"></script>
+    <script type="text/javascript" src="lib/wfadaptor.js"></script>
+    <script type="text/javascript" src="lib/ui.js"></script>
+
+    <link rel="stylesheet" href="lib/wfadaptor.css" type="text/css"/>
+    <link rel="stylesheet" href="lib/custommenu.css" type="text/css"/>
+    <link rel="stylesheet" href="lib/ui.css" type="text/css"/>
+
+    <!-- custom stuff, play arround  -->
+
+    <script type="text/javascript" src="js/ui.js"></script>
+    <script type="text/javascript" src="js/instance.js"></script>
+    <script type="text/javascript" src="js/details.js"></script>
+    <script type="text/javascript" src="js/parameters.js"></script>
+    <script type="text/javascript" src="js/wfadaptor.cpee.js"></script>
+    <script type="text/javascript" src="js/rngtest.js"></script>
+    <link rel="stylesheet" href="css/ui.css" type="text/css"/>
+    <link rel="stylesheet" href="css/ui.css" type="text/css"/>
+    <script type="text/javascript">
+      $("body").ready(function(){
+        $.ajax({
+          type: "GET", 
+          url: "rngtest.rng",
+          success: function(res){
+            new RelaxNGui($('#show'),res);
+          }
+        });  
+      });
+    </script>
+  </head>
+  <body data-defaultport="9298">
+    <div id="show">
+    </div>
+  </body>
+</html>
