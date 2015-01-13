@@ -1,0 +1,15 @@
+<data>
+  <type></type>
+  <position></position>
+  <endpoint></endpoint>
+  <code></code>
+  <parameters>
+    <label></label>
+    <method>:get</method>
+    <parameters>
+      <a/>
+      <b/>
+      <c/>
+    </parameters>
+  </parameters>
+</data>
