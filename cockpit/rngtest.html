@@ -44,6 +44,7 @@
     <link rel="stylesheet" href="lib/custommenu.css" type="text/css"/>
     <link rel="stylesheet" href="lib/ui.css" type="text/css"/>
 
+    <script type="text/javascript" src="lib/relaxngui.js"></script>
     <!-- custom stuff, play arround  -->
 
     <script type="text/javascript" src="js/ui.js"></script>
@@ -51,7 +52,6 @@
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
     <script type="text/javascript" src="js/wfadaptor.cpee.js"></script>
-    <script type="text/javascript" src="js/rngtest.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <script type="text/javascript">
@@ -60,6 +60,7 @@
           type: "GET", 
           url: "rngtest.rng",
           success: function(res){
+            console.log(res);
             new RelaxNGui($('#show'),res);
           }
         });  
