@@ -16,10 +16,10 @@
           <parameters>
             <orgmodel>"organisation1"</orgmodel>
             <domain>"Virtual Business 1"</domain>
-            <form>"resources/form-f.html"</form>
-            <role>"clerk"</role>
-            <a>"c"</a>
-            <b>"d"</b>
+            <form>"http://solo.wst.univie.ac.at/form/form-f.php"</form>
+            <role>"regular"</role>
+            <schaden>"55546"</schaden>
+            <text>"fetzen hin"</text>
           </parameters>
         </parameters>
         <manipulate/>
