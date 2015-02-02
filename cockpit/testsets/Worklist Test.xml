@@ -11,12 +11,12 @@
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="cb">
         <parameters>
-          <label>""</label>
+          <label>"OK OR NOT OK"</label>
           <method>:post</method>
           <parameters>
             <orgmodel>"organisation1"</orgmodel>
             <domain>"Virtual Business 1"</domain>
-            <form>"http://solo.wst.univie.ac.at/form/form-f.php"</form>
+            <form>"http://solo.wst.univie.ac.at/form/form-f.html"</form>
             <role>"regular"</role>
             <schaden>"55546"</schaden>
             <text>"fetzen hin"</text>
