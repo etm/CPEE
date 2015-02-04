@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <testset>
-  <dataelements/>
+  <dataelements><bla xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/></dataelements>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
@@ -22,7 +22,7 @@
             <b>"d"</b>
           </parameters>
         </parameters>
-        <manipulate/>
+        <manipulate>data.bla = result.value</manipulate>
       </call>
     </description>
   </description>
