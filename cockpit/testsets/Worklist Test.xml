@@ -4,7 +4,7 @@
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <cb xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://solo.wst.univie.ac.at:9299</cb>
+    <cb xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://solo.wst.univie.ac.at:9302</cb>
   </endpoints>
   <positions/>
   <description>
