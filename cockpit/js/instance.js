@@ -395,9 +395,9 @@ function monitor_instance_pos() {// {{{
 function monitor_instance_running(notification,event) {// {{{
   if (save['state'] == "stopping") return;
   var parts = JSON.parse(notification);
-  if (event == "activity_calling")
+  if (event == "calling")
     format_visual_add(parts.activity,"active")
-  if (event == "activity_done")
+  if (event == "done")
     format_visual_remove(parts.activity,"active")
 } // }}}
 function monitor_instance_state_change(notification) { //{{{

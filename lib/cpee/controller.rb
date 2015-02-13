@@ -416,7 +416,7 @@ module CPEE
               @instance.data[k.value.to_sym] = ValueHelper::parse(v.value)
               node.add(k.value,ValueHelper::generate(v.value))
             end  
-            nots << ["properties/dataelements/change", {:instance => instance, :changed => JSON::generate(@instance.data)}]
+            nots << ["dataelements/change", {:instance => instance, :changed => JSON::generate(@instance.data)}]
           end  
 
           ### endpoints extraction
@@ -447,11 +447,11 @@ module CPEE
               @instance.endpoints[k.value.to_sym] = ValueHelper::parse(v.value)
               node.add(k.value,ValueHelper::generate(v.value))
             end  
-            nots << ["properties/endpoints/change", {:instance => instance, :changed => JSON::generate(@instance.endpoints)}]
+            nots << ["endpoints/change", {:instance => instance, :changed => JSON::generate(@instance.endpoints)}]
           end  
-          nots << ['properties/description/change', { :instance => instance }]
+          nots << ["description/change", { :instance => instance }]
         rescue => err
-          nots << ["properties/description/error", { :instance => instance, :message => err.message }]
+          nots << ["description/error", { :instance => instance, :message => err.message }]
         end
       end
       nots
