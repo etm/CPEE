@@ -173,6 +173,9 @@ function monitor_instance(load) {// {{{
       $("input[name=current-instance]").val(url);
       $("#current-instance").text(url);
       $("#current-instance").attr('href',url);
+      $("#current-instance-properties").attr('href',url + 'properties/');
+      $("#current-instance-subscriptions").attr('href',url + 'subscriptions/');
+      $("#current-instance-callbacks").attr('href',url + 'callbacks/');
       history.replaceState({}, '', '?monitor='+url);
 
       // Change url to return to current instance when reloading (because new subscription is made)

@@ -48,8 +48,12 @@ function ui_toggle_vis_tab(moi) {// {{{
 function ui_rest_resize() {
   if ($('div.tabbed.rest .tabbar')) {
     var theight = $(window).height() - $('div.tabbed.rest .tabbar').offset().top - $('div.tabbed.rest .tabbar').height();
-    $('div.tabbed.rest .tabbelow').height(theight);
-    $('div.tabbed.rest .tabbelow .column').height(theight);
+    $('div.tabbed.rest .tabbelow').each(function(key,ele){
+      $(ele).height(theight - parseInt($(ele).css('padding-top')) - parseInt($(ele).css('padding-bottom')) );
+    });  
+    $('div.tabbed.rest .tabbelow .column').each(function(key,ele){
+      $(ele).height(theight - parseInt($(ele).css('padding-top')) - parseInt($(ele).css('padding-bottom')) );
+    });  
   }  
 }  
 
