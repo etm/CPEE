@@ -32,8 +32,12 @@ module CPEE
       nil
     end
 
-    def callback(result)
-      @handler.send @method, result, *@data
+    def callback(result=nil,options=nil)
+      if options
+        @handler.send @method, result, options, *@data
+      else  
+        @handler.send @method, result, *@data
+      end 
     end
   end
 

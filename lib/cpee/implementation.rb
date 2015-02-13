@@ -84,7 +84,7 @@ module CPEE
       callback = @r[2]
       controller[id].mutex.synchronize do
         if controller[id].callbacks.has_key?(callback)
-          controller[id].callbacks[callback].callback(@p)
+          controller[id].callbacks[callback].callback(@p,@h)
         end
       end  
     end

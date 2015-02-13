@@ -141,7 +141,7 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
     @controller.call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end # }}}
 
-  def callback(result)
+  def callback(result=nil,options={})
     @handler_returnValue = result
     @controller.callbacks.delete(@handler_passthrough)
     @handler_passthrough = nil

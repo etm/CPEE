@@ -146,7 +146,7 @@ module CPEE
         # only remove vote_callbacks, the other stuff is removed by
         # the instance stopping cleanup
         if c.method == :vote_callback
-          c.callback(nil)
+          c.callback
           true
         else  
           false
@@ -512,7 +512,7 @@ module CPEE
                 if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
                   @callbacks[callback] = Callback.new("vote #{notf.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :http, continue, voteid, callback, inum)
                 else
-                  vote_callback(result,continue,voteid,callback, inum)
+                  vote_callback(result,nil,continue,voteid,callback,inum)
                 end
               end  
             elsif u.class == Riddl::Utils::Notifications::Producer::WS
@@ -534,7 +534,7 @@ module CPEE
       end
     end # }}}
 
-    def vote_callback(result,continue,voteid,callback,num)# {{{
+    def vote_callback(result,options,continue,voteid,callback,num)# {{{
       @callbacks.delete(callback)
       if result == :DELETE
         @votes_results[voteid] << true

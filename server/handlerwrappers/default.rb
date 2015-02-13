@@ -25,6 +25,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def activity_handle(passthrough, parameters) # {{{
     @controller.notify("running/activity_calling", :instance => @controller.instance, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
 
+    result = []
     if passthrough.nil?
       params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
@@ -53,21 +54,17 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
       status, result, headers = client.request type => params
       raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status != 200
-      result = simplify_result(result)
 
       if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
         @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
         @handler_passthrough = callback
-        return
+      else
+        callback result
       end
     else
       @controller.callbacks[passthrough] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
       @handler_passthrough = passthrough
-      return
     end
-
-    @handler_returnValue = result
-    @handler_continue.continue
   end # }}}
 
   def activity_result_status # {{{
@@ -158,12 +155,17 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     result
   end
 
-  def callback(result)
+  def callback(result=nil,options={})
     result = simplify_result(result)
-    @handler_returnValue = result
-    @controller.callbacks.delete(@handler_passthrough)
-    @handler_passthrough = nil
-    @handler_continue.continue
+    if options['CPEE_UPDATE'] 
+      @handler_returnValue = result
+      @handler_continue.continue WEEL::Signal::Again
+    else
+      @controller.callbacks.delete(@handler_passthrough)
+      @handler_returnValue = result
+      @handler_passthrough = nil
+      @handler_continue.continue
+    end
   end
 
    def simulate(type,nesting,tid,parent,parameters={}) #{{{
