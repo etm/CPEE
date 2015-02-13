@@ -17,7 +17,7 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase
     case @property
       when 'handlerwrapper'
         @data.unserialize_handlerwrapper!
-        @data.notify('properties/handlerwrapper/change', :instance => @data.instance)
+        @data.notify('handlerwrapper/change', :instance => @data.instance)
       when 'description'
         nots = @data.unserialize_description!
         nots.uniq.each do |noti|
@@ -25,17 +25,17 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase
         end
       when 'endpoints'
         @data.unserialize_endpoints!
-        @data.notify('properties/endpoints/change', :instance => @data.instance)
+        @data.notify('endpoints/change', :instance => @data.instance)
       when 'dataelements'
         @data.unserialize_dataelements!
-        @data.notify('properties/dataelements/change', :instance => @data.instance)
+        @data.notify('dataelements/change', :instance => @data.instance)
       when 'attributes'
         @data.unserialize_attributes!
       when 'positions'  
         @data.unserialize_positions!
-        @data.notify('properties/position/change', :instance => @data.instance)
+        @data.notify('position/change', :instance => @data.instance)
       when 'transformation'  
-        @data.notify('properties/transformation/change', :instance => @data.instance)
+        @data.notify('transformation/change', :instance => @data.instance)
       when 'state'  
         @data.unserialize_state!
       else

@@ -15,43 +15,43 @@
 -->
 
 <topics xmlns='http://riddl.org/ns/common-patterns/notifications-producer/1.0'>
-  <topic id='running'>
-    <event>activity_calling</event>
-    <event>activity_failed</event>
-    <event>activity_status</event>
-    <event>activity_manipulating</event>
-    <event>activity_done</event>
+  <topic id='activity'>
+    <event>calling</event>
+    <event>failed</event>
+    <event>manipulating</event>
+    <event>status</event>
+    <event>done</event>
     <vote>syncing_before</vote>
     <vote>syncing_after</vote>
   </topic>
-  <topic id='properties/position'>
+  <topic id='position'>
     <event>change</event>
   </topic>
-  <topic id='properties/description'>
+  <topic id='description'>
     <event>change</event>
     <event>error</event>
     <vote>modify</vote>
   </topic>
-  <topic id='properties/state'>
+  <topic id='state'>
     <event>change</event>
     <vote>change</vote>
   </topic>
-  <topic id='properties/status'>
+  <topic id='status'>
     <event>change</event>
   </topic>
-  <topic id='properties/dataelements'>
+  <topic id='dataelements'>
     <event>change</event>
   </topic>
-  <topic id='properties/endpoints'>
+  <topic id='endpoints'>
     <event>change</event>
   </topic>
-  <topic id='properties/handlerwrapper'>
+  <topic id='handlerwrapper'>
     <event>change</event>
   </topic>
-  <topic id='properties/transformation'>
+  <topic id='transformation'>
     <event>change</event>
   </topic>
-  <topic id='properties/handlers'>
+  <topic id='handler'>
     <event>change</event>
     <event>error</event>
     <event>debug</event>

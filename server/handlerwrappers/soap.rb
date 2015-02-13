@@ -26,7 +26,7 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def activity_handle(passthrough, parameters) # {{{
-    @controller.notify("running/activity_calling", :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
+    @controller.notify("activity/calling", :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
 
     if passthrough.nil?
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
@@ -92,53 +92,53 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def inform_activity_done # {{{
-    @controller.notify("running/activity_done", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
+    @controller.notify("activity/done", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end # }}}
   def inform_activity_manipulate # {{{
-    @controller.notify("running/activity_manipulating", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
+    @controller.notify("activity/manipulating", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end # }}}
   def inform_activity_failed(err) # {{{
     puts err.message
     puts err.backtrace
-    @controller.notify("running/activity_failed", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    @controller.notify("activity/failed", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end # }}}
 
   def inform_syntax_error(err,code)# {{{
     puts err.message
     puts err.backtrace
-    @controller.notify("properties/description/error", :instance => "#{@url}/#{@controller.id}", :message => err.message)
+    @controller.notify("description/error", :instance => "#{@url}/#{@controller.id}", :message => err.message)
   end# }}}
   def inform_manipulate_change(status,dataelements,endpoints) # {{{
     unless status.nil?
       @controller.serialize_status!
-      @controller.notify("properties/status/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :id => status.id, :message => status.message)
+      @controller.notify("status/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :id => status.id, :message => status.message)
     end  
     unless dataelements.nil?
       @controller.serialize_dataelements!
-      @controller.notify("properties/dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => dataelements)
+      @controller.notify("dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => dataelements)
     end
     unless endpoints.nil?
       @controller.serialize_endpoints!
-      @controller.notify("properties/endpoints/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => endpoints)
+      @controller.notify("endpoints/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => endpoints)
     end  
   end # }}}
   def inform_position_change(ipc={}) # {{{
     @controller.serialize_positions!
     ipc[:instance] = "#{@url}/#{@controller.id}"
-    @controller.notify("properties/position/change", ipc)
+    @controller.notify("position/change", ipc)
   end # }}}
   def inform_state_change(newstate) # {{{
     if @controller
       @controller.serialize_state!
-      @controller.notify("properties/state/change", :instance => "#{@url}/#{@controller.id}", :state => newstate)
+      @controller.notify("state/change", :instance => "#{@url}/#{@controller.id}", :state => newstate)
     end
   end # }}}
 
   def vote_sync_after # {{{
-    @controller.call_vote("running/syncing_after", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
+    @controller.call_vote("activity/syncing_after", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end # }}}
   def vote_sync_before # {{{
-    @controller.call_vote("running/syncing_before", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
+    @controller.call_vote("activity/syncing_before", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position)
   end # }}}
 
   def callback(result=nil,options={})

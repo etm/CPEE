@@ -10,43 +10,43 @@ var save = {};
     save['dataelements'] = undefined;
     save['details'] = undefined;
 var node_state = {};
-var sub_more = 'topic'  + '=' + 'running' + '&' +// {{{
-               'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
-               'topic'  + '=' + 'running' + '&' +
+var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
+               'events' + '=' + 'calling,manipulating,failed,done' + '&' +
+               'topic'  + '=' + 'activity' + '&' +
                'votes'  + '=' + 'syncing_after' + '&' +
-               'topic'  + '=' + 'properties/description' + '&' +
+               'topic'  + '=' + 'description' + '&' +
                'events' + '=' + 'change,error' + '&' +
-               'topic'  + '=' + 'properties/position' + '&' +
+               'topic'  + '=' + 'position' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/state' + '&' +
+               'topic'  + '=' + 'state' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/dataelements' + '&' +
+               'topic'  + '=' + 'dataelements' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/endpoints' + '&' +
+               'topic'  + '=' + 'endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/transformation' + '&' +
+               'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/handlerwrapper' + '&' +
+               'topic'  + '=' + 'handlerwrapper' + '&' +
                'events' + '=' + 'result' + '&' +
-               'topic'  + '=' + 'properties/handlers' + '&' +
+               'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
-var sub_less = 'topic'  + '=' + 'running' + '&' +// {{{
-               'events' + '=' + 'activity_calling,activity_manipulating,activity_failed,activity_done' + '&' +
-               'topic'  + '=' + 'properties/position' + '&' +
+var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
+               'events' + '=' + 'calling,manipulating,failed,done' + '&' +
+               'topic'  + '=' + 'position' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/description' + '&' +
+               'topic'  + '=' + 'description' + '&' +
                'events' + '=' + 'change,error' + '&' +
-               'topic'  + '=' + 'properties/state' + '&' +
+               'topic'  + '=' + 'state' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/dataelements' + '&' +
+               'topic'  + '=' + 'dataelements' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/endpoints' + '&' +
+               'topic'  + '=' + 'endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/transformation' + '&' +
+               'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'properties/handlerwrapper' + '&' +
+               'topic'  + '=' + 'handlerwrapper' + '&' +
                'events' + '=' + 'result' + '&' +
-               'topic'  + '=' + 'properties/handlers' + '&' +
+               'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
 
 $(document).ready(function() {// {{{
@@ -204,25 +204,25 @@ function monitor_instance(load) {// {{{
             data = $.parseXML(e.data);
             if ($('event > topic',data).length > 0) {
               switch($('event > topic',data).text()) {
-                case 'properties/dataelements':
+                case 'dataelements':
                   monitor_instance_dataelements();
                   break;
-                case 'properties/description':
+                case 'description':
                   monitor_instance_dsl();
                   break;
-                case 'properties/endpoints':
+                case 'endpoints':
                   monitor_instance_endpoints();
                   break;
-                case 'properties/state':
+                case 'state':
                   monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
                   break;
-                case 'properties/position':
+                case 'position':
                   monitor_instance_pos_change($('event > notification',data).text());
                   break;
-                case 'properties/transformation':
+                case 'transformation':
                   monitor_instance_transformation();
                   break;
-                case 'running':
+                case 'activity':
                   monitor_instance_running($('event > notification',data).text(),$('event > event',data).text());
                   break;
               }
