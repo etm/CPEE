@@ -6,6 +6,6 @@
       <parameters/>
     </parameters>
     <finalize>data.a = result.value</finalize>
-    <update>data.a = result.value</update>
+    <update>data.b = result.value</update>
   </call>
 </description></description><transformation><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation><attributes><info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Enter info here</info><modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype></attributes></testset>

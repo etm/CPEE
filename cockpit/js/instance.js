@@ -11,7 +11,7 @@ var save = {};
     save['details'] = undefined;
 var node_state = {};
 var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
-               'events' + '=' + 'calling,manipulating,failed,done' + '&' +
+               'events' + '=' + 'calling,status,manipulating,failed,done' + '&' +
                'topic'  + '=' + 'activity' + '&' +
                'votes'  + '=' + 'syncing_after' + '&' +
                'topic'  + '=' + 'description' + '&' +
@@ -31,7 +31,7 @@ var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
 var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
-               'events' + '=' + 'calling,manipulating,failed,done' + '&' +
+               'events' + '=' + 'calling,status,manipulating,failed,done' + '&' +
                'topic'  + '=' + 'position' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'description' + '&' +

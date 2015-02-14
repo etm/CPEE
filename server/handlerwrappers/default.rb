@@ -108,11 +108,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       @controller.serialize_status!
       @controller.notify("status/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :id => status.id, :message => status.message)
     end  
-    unless dataelements.nil?
+    unless changed_dataelements.nil?
       @controller.serialize_dataelements!
       @controller.notify("dataelements/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => changed_dataelements)
     end
-    unless endpoints.nil?
+    unless changed_endpoints.nil?
       @controller.serialize_endpoints!
       @controller.notify("endpoints/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => changed_endpoints)
     end  
@@ -159,6 +159,9 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     result = simplify_result(result)
     if options['CPEE_UPDATE'] 
       @handler_returnValue = result
+      if options['CPEE_UPDATE_STATUS']
+        @controller.notify("activity/status", :instance => @controller.instance, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'])
+      end
       @handler_continue.continue WEEL::Signal::Again
     else
       @controller.callbacks.delete(@handler_passthrough)
