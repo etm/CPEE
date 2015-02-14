@@ -22,7 +22,7 @@
             <text>"fetzen hin"</text>
           </parameters>
         </parameters>
-        <manipulate>data.bla = result.value</manipulate>
+        <finalize>data.bla = result.value</finalize>
       </call>
     </description>
   </description>

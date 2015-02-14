@@ -20,9 +20,9 @@
                 <op1>data.wait</op1>
               </parameters>
             </parameters><!--}}}-->
-            <manipulate output="result">
+            <finalize output="result">
               data.wait -= 1
-            </manipulate>
+            </finalize>
           </call> 
           <manipulate id="b1_a02">
             data.wait += 1
@@ -36,9 +36,9 @@
                     <op1>data.wait</op1>
                   </parameters>
                 </parameters><!--}}}-->
-                <manipulate output="result">
+                <finalize output="result">
                   data.wait -= 1
-                </manipulate>
+                </finalize>
               </call> 
               <call id="b1_a04" endpoint="services">
                 <parameters><!--{{{--> 
@@ -47,9 +47,9 @@
                     <op1>data.wait</op1>
                   </parameters>
                 </parameters><!--}}}-->
-                <manipulate output="result">
+                <finalize output="result">
                   data.wait -= 1
-                </manipulate>
+                </finalize>
               </call> 
               <manipulate id="b1_a05">
                 data.wait += 1
@@ -63,9 +63,9 @@
                     <op1>data.wait</op1>
                   </parameters>
                 </parameters><!--}}}-->
-                <manipulate output="result">
+                <finalize output="result">
                   data.wait -= 1
-                </manipulate>
+                </finalize>
               </call> 
               <manipulate id="b1_a07">
                 data.wait += 1
@@ -77,9 +77,9 @@
                     <op1>data.wait</op1>
                   </parameters>
                 </parameters><!--}}}-->
-                <manipulate output="result">
+                <finalize output="result">
                   data.wait -= 1
-                </manipulate>
+                </finalize>
               </call> 
             </parallel_branch>
           </parallel>
@@ -92,9 +92,9 @@
                 <op1>data.wait</op1>
               </parameters>
             </parameters><!--}}}-->
-            <manipulate output="result">
+            <finalize output="result">
               data.wait -= 1
-            </manipulate>
+            </finalize>
           </call> 
           <manipulate id="b2_a02">
             data.wait += 1
@@ -108,9 +108,9 @@
                     <op1>data.wait</op1>
                   </parameters>
                 </parameters><!--}}}-->
-                <manipulate output="result">
+                <finalize output="result">
                   data.wait -= 1
-                </manipulate>
+                </finalize>
               </call> 
               <call id="b2_a04" endpoint="services">
                 <parameters><!--{{{--> 
@@ -119,9 +119,9 @@
                     <op1>data.wait</op1>
                   </parameters>
                 </parameters><!--}}}-->
-                <manipulate output="result">
+                <finalize output="result">
                   data.wait -= 1
-                </manipulate>
+                </finalize>
               </call> 
               <manipulate id="b2_a05">
                 data.wait += 1
@@ -135,9 +135,9 @@
                     <op1>data.wait</op1>
                   </parameters>
                 </parameters><!--}}}-->
-                <manipulate output="result">
+                <finalize output="result">
                   data.wait -= 1
-                </manipulate>
+                </finalize>
               </call> 
               <manipulate id="b2_a07">
                 data.wait += 1
@@ -149,9 +149,9 @@
                     <op1>data.wait</op1>
                   </parameters>
                 </parameters><!--}}}-->
-                <manipulate output="result">
+                <finalize output="result">
                   data.wait -= 1
-                </manipulate>
+                </finalize>
               </call> 
             </parallel_branch>
           </parallel>

@@ -20,7 +20,7 @@
             <timeout>2</timeout>
           </parameters>
         </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "a1,"</manipulate>  
+        <finalize output="result">  data.x += "a1,"</finalize>  
       </call>  
       <call id="a2" endpoint="timeout">
         <parameters><!--{{{-->
@@ -29,7 +29,7 @@
             <timeout>4</timeout>
           </parameters>
         </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "a2,"</manipulate>
+        <finalize output="result">  data.x += "a2,"</finalize>
       </call>
       <call id="a3" endpoint="timeout">
         <parameters><!--{{{-->
@@ -38,7 +38,7 @@
             <timeout>4</timeout>
           </parameters>
         </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "a3,"</manipulate>  
+        <finalize output="result">  data.x += "a3,"</finalize>  
       </call>  
     </description><!--}}}-->
   </description>

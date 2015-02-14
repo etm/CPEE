@@ -19,7 +19,7 @@
             <bug>data.nasty</bug>
           </parameters>
         </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "done"</manipulate>  
+        <finalize output="result">  data.x += "done"</finalize>  
       </call>  
       <parallel wait="2">
         <parallel_branch>

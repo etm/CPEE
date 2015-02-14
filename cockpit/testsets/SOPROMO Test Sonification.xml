@@ -13,12 +13,12 @@
   </dataelements>
   <handlers>
     <handler url="http://localhost:9299/events">
-      <events topic='running'>activity_calling,activity_failed,activity_manipulating,activity_done</events>
-      <events topic='properties/dataelements'>change</events>
-      <events topic='properties/endpoints'>change</events>
-      <events topic='properties/description'>error</events>
-      <events topic='properties/state'>change</events>
-      <events topic='properties/status'>change</events>
+      <events topic='activity'>calling,failed,manipulating,done</events>
+      <events topic='dataelements'>change</events>
+      <events topic='endpoints'>change</events>
+      <events topic='description'>error</events>
+      <events topic='state'>change</events>
+      <events topic='status'>change</events>
     </handler>
   </handlers>
   <endpoints>
@@ -37,9 +37,9 @@
             <persons>data.persons</persons>
           </parameters>
         </parameters>
-        <manipulate output="result">  data.airline = result.value('id')
+        <finalize output="result">  data.airline = result.value('id')
     data.costs += result.value('costs').to_f
-    status.update 1, 'Hotel'</manipulate>
+    status.update 1, 'Hotel'</finalize>
       </call>
       <parallel>
         <loop pre_test="data.persons > 0">
@@ -51,8 +51,8 @@
                   <to>data.to</to>
                 </parameters>
               </parameters>
-              <manipulate output="result">        data.hotels &lt;&lt; result.value('id')
-          data.costs += result.value('costs').to_f</manipulate>
+              <finalize output="result">        data.hotels &lt;&lt; result.value('id')
+          data.costs += result.value('costs').to_f</finalize>
             </call>
           </parallel_branch>
           <manipulate id="a3">      data.persons -= 1</manipulate>  

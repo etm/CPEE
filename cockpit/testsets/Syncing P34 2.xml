@@ -7,7 +7,7 @@
   </dataelements><!--}}}-->
   <handlers><!--{{{-->
     <handler url="http://localhost:9299/1/events">
-      <votes topic='running'>syncing_before,syncing_after</votes>
+      <votes topic='activity'>syncing_before,syncing_after</votes>
     </handler>
   </handlers><!--}}}-->
   <endpoints><!--{{{-->
@@ -23,7 +23,7 @@
             <timeout>2</timeout>
           </parameters>
         </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "a1,"</manipulate>  
+        <finalize output="result">  data.x += "a1,"</finalize>  
       </call>  
       <call id="a2" endpoint="timeouts">
         <parameters><!--{{{-->
@@ -32,7 +32,7 @@
             <timeout>10</timeout>
           </parameters>
         </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "a2,"</manipulate>  
+        <finalize output="result">  data.x += "a2,"</finalize>  
       </call>  
       <call id="a3" endpoint="timeout">
         <parameters><!--{{{-->
@@ -41,7 +41,7 @@
             <timeout>4</timeout>
           </parameters>
         </parameters><!--}}}-->
-        <manipulate output="result">  data.x += "a3,"</manipulate>  
+        <finalize output="result">  data.x += "a3,"</finalize>  
       </call>  
     </description><!--}}}-->
   </description>

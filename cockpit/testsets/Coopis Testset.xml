@@ -27,9 +27,9 @@
             <persons>data.persons</persons>
           </parameters>
         </parameters>
-        <manipulate output="result">  data.airline = result.value('id')
+        <finalize output="result">  data.airline = result.value('id')
     data.costs += result.value('costs').to_f
-    status.update 1, 'Hotel'</manipulate>
+    status.update 1, 'Hotel'</finalize>
       </call>
       <parallel>
         <loop pre_test="data.persons > 0">
@@ -41,8 +41,8 @@
                   <to>data.to</to>
                 </parameters>
               </parameters>
-              <manipulate output="result">        data.hotels &lt;&lt; result.value('id')
-          data.costs += result.value('costs').to_f</manipulate>
+              <finalize output="result">        data.hotels &lt;&lt; result.value('id')
+          data.costs += result.value('costs').to_f</finalize>
             </call>
           </parallel_branch>
           <manipulate id="a3">      data.persons -= 1</manipulate>  
