@@ -17,4 +17,5 @@
   <testset>Worklist Test</testset>
   <testset>Worklist Test CPEE</testset>
   <testset>Worklist Parallel</testset>
+  <testset>Update</testset>
 </testsets>
