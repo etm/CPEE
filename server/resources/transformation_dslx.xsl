@@ -49,7 +49,23 @@
       <xsl:text>, { </xsl:text>
       <xsl:apply-templates select="d:parameters"/>
       <xsl:text> }</xsl:text>
-      <xsl:apply-templates select="d:manipulate" mode="part-of-call">
+      <xsl:choose>
+        <xsl:when test="count(d:finalize | d:update)=2">
+          <xsl:text>, &lt;&lt;-END, &lt;&lt;-END</xsl:text>
+        </xsl:when>
+        <xsl:when test="d:finalize">
+          <xsl:text>, &lt;&lt;-END</xsl:text>
+        </xsl:when>
+        <xsl:when test="d:update">
+          <xsl:text>, nil, &lt;&lt;-END</xsl:text>
+        </xsl:when>
+      </xsl:choose>
+      <xsl:apply-templates select="d:finalize" mode="part-of-call">
+        <xsl:with-param name="myspace">
+          <xsl:value-of select="$myspace"/>
+        </xsl:with-param>
+      </xsl:apply-templates>
+      <xsl:apply-templates select="d:update" mode="part-of-call">
         <xsl:with-param name="myspace">
           <xsl:value-of select="$myspace"/>
         </xsl:with-param>
@@ -57,7 +73,7 @@
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='manipulate'">
-      <xsl:call-template name="print-content">
+      <xsl:call-template name="print-mcontent">
         <xsl:with-param name="myspace">
           <xsl:value-of select="$myspace"/>
         </xsl:with-param>
@@ -357,7 +373,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  <xsl:template match="d:manipulate" mode="part-of-call">
+  <xsl:template match="d:finalize | d:update" mode="part-of-call">
     <xsl:param name="myspace"/>
     <xsl:call-template name="print-content">
       <xsl:with-param name="myspace">
@@ -366,6 +382,21 @@
     </xsl:call-template>
   </xsl:template>
   <xsl:template name="print-content">
+    <xsl:param name="myspace"/>
+    <xsl:if test="text()">
+      <xsl:call-template name="print-newline"/>
+      <xsl:value-of select="text()"/>
+      <xsl:call-template name="print-newline"/>
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>END</xsl:text>
+    </xsl:if>
+  </xsl:template>
+  <xsl:template name="print-mcontent">
     <xsl:param name="myspace"/>
     <xsl:if test="text()">
       <xsl:choose>
@@ -378,7 +409,7 @@
           </xsl:if>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:text>, &lt;&lt;-end </xsl:text>
+          <xsl:text>, &lt;&lt;-END</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
       <xsl:call-template name="print-newline"/>
@@ -390,7 +421,14 @@
           <xsl:value-of select="$myspace+$myspacemultiplier"/>
         </xsl:with-param>
       </xsl:call-template>
-      <xsl:text>end</xsl:text>
+      <xsl:choose>
+        <xsl:when test="@language='application/x-ruby'">
+          <xsl:text>end</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>END</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
   </xsl:template>
   <xsl:template name="print-space">
