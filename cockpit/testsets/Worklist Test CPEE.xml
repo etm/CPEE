@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<testset>
+  <dataelements><bla xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/></dataelements>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <cb xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org:9302</cb>
+  </endpoints>
+  <positions/>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="cb">
+        <parameters>
+          <label>"OK OR NOT OK"</label>
+          <method>:post</method>
+          <parameters>
+            <orgmodel>"organisation1"</orgmodel>
+            <domain>"Virtual Business 1"</domain>
+            <form>"http://cpee.org/forms/form-f.html"</form>
+            <role>"regular"</role>
+            <schaden>"55546"</schaden>
+            <text>"fetzen hin"</text>
+          </parameters>
+        </parameters>
+        <manipulate>data.bla = result.value</manipulate>
+      </call>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">asda</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+    <organisation1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
+  </attributes>
+</testset>
