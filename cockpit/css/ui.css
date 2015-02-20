@@ -38,6 +38,13 @@ div.tabbed table.tabbar td.tabbehind button {
   margin-left: 0.5em;
 }
 
+#current-instance-properties[href]:after {
+  content: "|";
+}  
+#current-instance-subscriptions[href]:after {
+  content: "|";
+}  
+
 button.highlight { background-color: #cc0000; }
 
 #parameters .tabbelow { height: 9em; min-height: 1.7em; }
@@ -142,18 +149,13 @@ span.vote {
   padding-left: 1.5em; 
 }
 
-#areadetails .handle {
-  color: ButtonShadow;
-  white-space:nowrap;
+#areadetails .columnresizehandle {
   cursor: ew-resize; 
-}
-#areadetails .handle span {
-  margin-top: -1em;
-  position: absolute;
   -webkit-transform: rotate(90deg); 
   -webkit-transform-origin: 0% 100%; 
   -moz-transform: rotate(90deg); 
   -moz-transform-origin: left bottom; 
+  margin-top: -1em;
 }
 
 .ui-resizable-s { 

@@ -21,8 +21,8 @@
     <title>CPEE Cockpit</title>
 
     <!-- libs, do not modify -->
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="http://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
 
     <script type="text/javascript" src="lib/jquery.browser.js"></script>
     <script type="text/javascript" src="lib/jquery.svg.min.js"></script>
@@ -164,7 +164,7 @@
     </table> <!--}}}-->
 
     <div class='menu' id='predefinedtestsets'></div>  
-    <div class='menu' id='modeltypes'></div>  
+    <div class='menu' id='modeltypes'></div>
 
     <div class="tabbed" id="instance">
       <table class="tabbar">
@@ -173,7 +173,7 @@
           <td class="tab"                 id="tabnew"       ><h1>New</h1></td>
           <td class="tab inactive hidden" id="tabinstance"  ><h1>Instance</h1></td>
           <td class="tab inactive hidden" id="tabexecution" ><h1>Execution</h1></td>
-          <td class="tabbehind"><input name="current-instance" type="text" value="" readonly='readonly' style='display:none'/><a id='current-instance'></a><a id='current-instance-properties'>P</a>|<a id='current-instance-subscriptions'>S</a>|<a id='current-instance-callbacks'>C</a></td>
+          <td class="tabbehind"><a id='current-instance'></a><a id='current-instance-properties'></a><a id='current-instance-subscriptions'></a><a id='current-instance-callbacks'></a></td>
         </tr>
         <tr class="border hidden"><td colspan="5"></td></tr>
       </table>
@@ -275,7 +275,7 @@
         <div id='graphcolumn' class='column'>
           <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
         </div>
-        <div class="handle"><span>drag to resize</span></div>
+        <div class="columnresizehandle">drag to resize</div>
         <div id="detailcolumn" class='column'>
           <table id="dat_details"></table>
         </div>

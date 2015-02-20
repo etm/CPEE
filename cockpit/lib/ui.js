@@ -34,14 +34,11 @@
       var prev = drag.prev();
       var next = drag.next(); 
 
-      var drg_w = drag.outerWidth(),
-          pos_x = drag.offset().left + drg_w - e.pageX;
-
       // Assume 50/50 split between prev and next then adjust to
       // the next X for prev
       var total = prev.outerWidth() + next.outerWidth();
 
-      var pos = e.pageX - drg_w - prev.offset().left;
+      var pos = e.pageX - prev.offset().left;
       if (pos > total) {
         pos = total;
       }
@@ -72,7 +69,6 @@ function ui_tab_click(moi) { // {{{
       $("#area" + b).addClass("inactive");
     }  
   });
-  ui_rest_resize();
 } // }}}
 function ui_toggle_vis_tab(moi) {// {{{
   var tabbar = $(moi).parent().parent().parent();
@@ -85,24 +81,14 @@ function ui_toggle_vis_tab(moi) {// {{{
   if ($(fix).attr('class') && $(fix).attr('class').match(/fixedstate/)) {
     $(".fixedstatehollow").height($(fix).height());
   }  
-  ui_rest_resize();
 }// }}}
 
-function ui_rest_resize() {
-   if ($('div.tabbed.rest .tabbar')) {
-    var theight = $(window).height() - $('div.tabbed.rest .tabbar').offset().top - $('div.tabbed.rest .tabbar').height();
-    $('div.tabbed.rest .tabbelow').each(function(key,ele){
-      $(ele).height(theight - parseInt($(ele).css('padding-top')) - parseInt($(ele).css('padding-bottom')) );
-    });  
-    $('div.tabbed.rest .tabbelow .column').each(function(key,ele){
-      $(ele).height(theight - parseInt($(ele).css('padding-top')) - parseInt($(ele).css('padding-bottom')) );
-    });  
-  }  
-}
-
 $(document).ready(function() {
-  $(window).resize(ui_rest_resize);
-  $('.handle').drags();
+  if (!($.browser.name == "Firefox" && $.browser.version >= 20) && !($.browser.name == "Chrome" && $.browser.version >= 30)) {
+    $('body').children().remove();
+    $('body').append('Sorry, only Firefox >= 20.0 and Chrom(e|ium) >= 17 for now.');
+  }  
+  $('.columnresizehandle').drags();
   $('.tabbed table.tabbar td.tab.switch').click(function(){ui_toggle_vis_tab(this);});
   $('.tabbed table.tabbar td.tab').not('.switch').click(function(){ui_tab_click(this);});
 });
