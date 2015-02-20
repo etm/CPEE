@@ -184,23 +184,17 @@ div.tabbed.rest .tabbelow {
 }
 
 div.tabbed.rest .tabbelow.columns {
-  padding:0;
-  overflow: hidden;
-  border-collapse:collapse;
-  border-spacing:0;
-  width:100%
-}
-div.tabbed.rest .tabbelow.columns > tbody > tr > td {
-  margin: 0;
   padding: 0;
+  margin: 0;
   border: 0 none;
-  vertical-align: top;
+  overflow: hidden;
+  display: flex;
 }
 div.tabbed.rest .tabbelow.columns .column {
-  -moz-box-sizing:    border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing:        border-box;
+  border-collapse: collapse;
+  border-spacing: 0;
 
+  border: 0;
   margin:0;
   padding: 1em;
 

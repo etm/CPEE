@@ -81,15 +81,15 @@ function CPEE(adaptor) {
       var menu = {};
   
       if(child) {
-        group = elements[xml_node.get(0).tagName].description.permissible_children(xml_node);
+        group = elements[xml_node.get(0).tagName].permissible_children(xml_node);
         if(group.length > 0) menu['Insert into'] = group;
       }
       if(sibling) {
-        group = elements[xml_node.parent().get(0).tagName].description.permissible_children(xml_node);
+        group = elements[xml_node.parent().get(0).tagName].permissible_children(xml_node);
         if(group.length > 0) menu['Insert after'] = group;
       }
   
-      if(xml_node.get(0).tagName != 'description' && !elements[xml_node.get(0).tagName].description.deleteable)
+      if(xml_node.get(0).tagName != 'description' && !elements[xml_node.get(0).tagName].neverdelete)
         menu['Remove Element'] = [{'label': 'Actual Element', 
                         'function_call': adaptor.description.remove, 
                         'menu_icon': function() {
@@ -99,7 +99,7 @@ function CPEE(adaptor) {
                         },
                         'params': [null, xml_node]}];
       if($('> manipulate', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
-        menu['Remove Element'].push({'label': 'Remove Script Block', 
+        menu['Remove Element'].push({'label': 'Remove Scripts', 
                         'function_call': adaptor.description.remove, 
                         'menu_icon': function() {
                           var icon =  elements.callmanipulate.illustrator.svg();
@@ -138,8 +138,10 @@ function CPEE(adaptor) {
         tab.append(create_readonly_property('ID',$(node).attr('id')));
         tab.append(create_input_property('Endpoint','',$(node).attr('endpoint')));
   
-        if ($('manipulate',node).length > 0)
-          tab.append(create_area_property('Script','',format_text_skim($('manipulate',node).text())));
+        if ($('finalize',node).length > 0)
+          tab.append(create_area_property('Finalize','',format_text_skim($('finalize',node).text())));
+        if ($('update',node).length > 0)
+          tab.append(create_area_property('Update','',format_text_skim($('update',node).text())));
   
         tab.append(create_header('Parameters:'));
   
@@ -202,114 +204,6 @@ function CPEE(adaptor) {
   } //}}}
 
   // Abstract Elements (they only have an illustrator)
-  this.elements.callinjection = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'abstract', 
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<circle cx="15" cy="15" r="14" class="rfill stand"/>' + 
-                    '<text transform="translate(15,21)" class="normal">c</text>' +
-                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
-                    '<text transform="translate(28,31)" class="small">i</text>' +
-                  '</svg>');
-      }
-    },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = null;
-        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><manipulate output="result"/></call>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        if(node.children('manipulate').lenght < 1)
-          return [
-           {'label': 'Script Block', 
-            'function_call': adaptor.description.insert_last_into, 
-            'menu_icon': elements.callmanipulate.illustrator.svg, 
-            'params': [adaptor.description.elements.manipulate.create, node]}
-          ];
-        return [];
-      }
-    },//}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
-      },
-      'click': events.click,
-    }//}}}
-  }; /*}}}*/
-  this.elements.callcorrelation = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'abstract', 
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
-                    '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
-                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
-                    '<text transform="translate(28,31)" class="small">c</text>' +
-                  '</svg>');
-      }
-    },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = null;
-        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="correlation" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><manipulate output="result"/></call>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        if(node.children('manipulate').lenght < 1)
-          return [
-           {'label': 'Script Block', 
-            'function_call': adaptor.description.insert_last_into, 
-            'menu_icon': elements.callmanipulate.illustrator.svg, 
-            'params': [adaptor.description.elements.manipulate.create, node]}
-          ];
-        return [];
-      }
-    },//}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
-      },
-      'click': events.click,
-    }//}}}
-  }; /*}}}*/
-  this.elements.callinstantiation = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'abstract', 
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
-                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
-                    '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
-                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' + 
-                    '<text transform="translate(28,32)" class="small">i</text>' +
-                  '</svg>');
-      }
-    },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = null;
-        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="instantiate" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><manipulate output="result"/></call>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        if(node.children('manipulate').lenght < 1)
-          return [
-           {'label': 'Script Block', 
-            'function_call': adaptor.description.insert_last_into, 
-            'menu_icon': elements.callmanipulate.illustrator.svg, 
-            'params': [adaptor.description.elements.manipulate.create, node]}
-          ];
-        return [];
-      }
-    },//}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
-      },
-      'click': events.click,
-    }//}}}
-  }; /*}}}*/
   this.elements.callmanipulate = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract', 
@@ -322,23 +216,17 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = null;
-        node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><manipulate output="result"/></call>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        if(node.children('manipulate').lenght < 1)
-          return [
-           {'label': 'Script Block', 
-            'function_call': adaptor.description.insert_last_into, 
-            'menu_icon': elements.callmanipulate.illustrator.svg, 
-            'params': [adaptor.description.elements.manipulate.create, node]}
-          ];
-        return [];
-      }
-    },//}}}
+    'description': '<call id="###" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><finalize output="result"/><update output="result"/></call>',
+    'permissible_children': function(node) { //{{{
+      if(node.children('manipulate').lenght < 1)
+        return [
+         {'label': 'Scripts', 
+          'function_call': adaptor.description.insert_last_into, 
+          'menu_icon': elements.callmanipulate.illustrator.svg, 
+          'params': [adaptor.description.elements.manipulate, node]}
+        ];
+      return [];
+    }, //}}}
     'adaptor' : {//{{{
       'mousedown': function (node, e) {
         events.mousedown(node,e,true, true);
@@ -395,23 +283,17 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<call id="' + adaptor.description.get_free_id() + '" endpoint="" xmlns="http://cpee.org/ns/description/1.0"/>');
-        node.append($X('<parameters xmlns="http://cpee.org/ns/description/1.0"><label>""</label><method>:post</method><parameters/></parameters>'));
-        return node;
-      },
-      'permissible_children': function(node) {
-        if(node.children('manipulate').length < 1) 
-          return [
-           {'label': 'Script Block', 
-            'function_call': adaptor.description.insert_last_into, 
-            'menu_icon': elements.callmanipulate.illustrator.svg, 
-            'params': [adaptor.description.elements.manipulate.create, node]}
-          ];
-        return [];
-      }
-    },//}}}
+    'description': '<call id="###" endpoint="" xmlns="http://cpee.org/ns/description/1.0"><parameters xmlns="http://cpee.org/ns/description/1.0"><label>""</label><method>:post</method><parameters/></parameters></call>',
+    'permissible_children': function(node) { //{{{
+      if(node.children('manipulate').length < 1) 
+        return [
+         {'label': 'Scripts', 
+          'function_call': adaptor.description.insert_last_into, 
+          'menu_icon': elements.callmanipulate.illustrator.svg, 
+          'params': [adaptor.description.elements.scripts, node]}
+        ];
+      return [];
+    }, //}}}
   'adaptor' : {//{{{
     'mousedown': function (node, e) {
       events.mousedown(node,e,true, true);
@@ -419,6 +301,28 @@ function CPEE(adaptor) {
     'click': events.click,
     'dragstart': events.dragstart,
    }//}}}
+  }; /*}}}*/
+  this.elements.scripts = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'primitive',
+      'endnodes' : 'this',
+      'svg': function() {
+        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' + 
+                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
+                    '<text transform="translate(15,21)" class="normal">s</text>' +
+                  '</svg>');
+      }
+    },//}}}
+    'description': '<finalize xmlns="http://cpee.org/ns/description/1.0"/><update xmlns="http://cpee.org/ns/description/1.0"/>',
+    'permissible_children': function(node) { //{{{
+      return [];
+    }, //}}}
+    'adaptor': { //{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,false, true);
+      },
+      'click': events.click,
+    } //}}}
   }; /*}}}*/
   this.elements.manipulate = { /*{{{*/
     'illustrator': {//{{{
@@ -431,15 +335,10 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<manipulate id="' + adaptor.description.get_free_id() + '" xmlns="http://cpee.org/ns/description/1.0"/>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        return [];
-      }
-    },//}}}
+    'description': '<manipulate id="###" xmlns="http://cpee.org/ns/description/1.0"/>',
+    'permissible_children': function(node) { //{{{
+      return [];
+    }, //}}}
   'adaptor' : {//{{{
     'mousedown': function (node, e) {
       events.mousedown(node,e,false, true);
@@ -459,21 +358,16 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<escape xmlns="http://cpee.org/ns/description/1.0"/>');
-        return node;
+    'description': '<escape xmlns="http://cpee.org/ns/description/1.0"/>',
+    'permissible_children': function(node) { //{{{
+      return [];
+    }, //}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,false, true);
       },
-      'permissible_children': function(node) {
-        return [];
-      }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,false, true);
-    },
-    'click': events.click,
-   }//}}}
+      'click': events.click,
+    }//}}}
   }; /*}}}*/
   
   // Complex Elements
@@ -502,47 +396,42 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        var func = null;
-        if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
-        else { func = adaptor.description.insert_after }
-        if(node.children('parallel_branch').length > 0) {
-          return [{'label': 'Parallel Branch', 
-           'function_call': func, 
-           'menu_icon': elements.parallel_branch.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel_branch.create, node]}];
-        }
-        var childs = [{'label': 'Alternative', 
+    'description': '<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>',
+    'permissible_children': function(node) { //{{{
+      var func = null;
+      if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
+      else { func = adaptor.description.insert_after }
+      if(node.children('parallel_branch').length > 0) {
+        return [{'label': 'Parallel Branch', 
          'function_call': func, 
-         'menu_icon': elements.alternative.illustrator.svg, 
-         'params': [adaptor.description.elements.alternative.create, node]}];
-        if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length) 
-          childs.push({'label': 'Otherwise', 
-           'function_call': func, 
-           'menu_icon': elements.otherwise.illustrator.svg, 
-           'params': [adaptor.description.elements.otherwise.create, node]});
-        if(node.parents('parallel').length > node.parents('parallel_branch').length) 
-          childs.push({'label': 'Parallel Branch', 
-           'function_call': func, 
-           'menu_icon': elements.parallel_branch.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel_branch.create, node]});
-        return childs; 
+         'menu_icon': elements.parallel_branch.illustrator.svg, 
+         'params': [adaptor.description.elements.parallel_branch, node]}];
       }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick,
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
+      var childs = [{'label': 'Alternative', 
+       'function_call': func, 
+       'menu_icon': elements.alternative.illustrator.svg, 
+       'params': [adaptor.description.elements.alternative, node]}];
+      if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length) 
+        childs.push({'label': 'Otherwise', 
+         'function_call': func, 
+         'menu_icon': elements.otherwise.illustrator.svg, 
+         'params': [adaptor.description.elements.otherwise, node]});
+      if(node.parents('parallel').length > node.parents('parallel_branch').length) 
+        childs.push({'label': 'Parallel Branch', 
+         'function_call': func, 
+         'menu_icon': elements.parallel_branch.illustrator.svg, 
+         'params': [adaptor.description.elements.parallel_branch, node]});
+      return childs; 
+    }, //}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, true);
+      },
+      'click': events.click,
+      'dblclick': events.dblclick,
+      'mouseover': events.mouseover,
+      'mouseout': events.mouseout,
+    }//}}}
   };  /*}}}*/
   this.elements.otherwise = { /*{{{*/
     'illustrator': {//{{{
@@ -562,58 +451,53 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<otherwise xmlns="http://cpee.org/ns/description/1.0"/>');
-        return node;
+    'description': '<otherwise xmlns="http://cpee.org/ns/description/1.0"/>',
+    'neverdelete': true,
+    'permissible_children': function(node) { //{{{
+      var func = null;
+      var childs = null;
+      if(node.get(0).tagName == 'otherwise') { func = adaptor.description.insert_first_into }
+      else { func = adaptor.description.insert_after }
+      return [
+        {'label': 'Service Call with Scripts', 
+         'function_call': func, 
+         'menu_icon': elements.callmanipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.callmanipulate, node]},
+        {'label': 'Service Call', 
+         'function_call': func, 
+         'menu_icon': elements.call.illustrator.svg, 
+         'params': [adaptor.description.elements.call, node]},
+        {'label': 'Script', 
+         'function_call': func, 
+         'menu_icon': elements.manipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.manipulate, node]},
+        {'label': 'Parallel', 
+         'function_call': func, 
+         'menu_icon': elements.parallel.illustrator.svg, 
+         'params': [adaptor.description.elements.parallel, node]},
+        {'label': 'Choose', 
+         'function_call': func, 
+         'menu_icon': elements.choose.illustrator.svg, 
+         'params': [adaptor.description.elements.choose, node]},
+        {'label': 'Loop', 
+         'function_call': func, 
+         'menu_icon': elements.loop.illustrator.svg, 
+         'params': [adaptor.description.elements.loop, node]},
+        {'label': 'Critical', 
+         'function_call': func, 
+         'menu_icon': elements.critical.illustrator.svg, 
+         'params': [adaptor.description.elements.critical, node]}
+      ];
+    }, //}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, false);
       },
-      'deleteable': true,
-      'permissible_children': function(node) {
-        var func = null;
-        var childs = null;
-        if(node.get(0).tagName == 'otherwise') { func = adaptor.description.insert_first_into }
-        else { func = adaptor.description.insert_after }
-        return [
-          {'label': 'Service Call with Script Block', 
-           'function_call': func, 
-           'menu_icon': elements.callmanipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.callmanipulate.create, node]},
-          {'label': 'Service Call', 
-           'function_call': func, 
-           'menu_icon': elements.call.illustrator.svg, 
-           'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Script', 
-           'function_call': func, 
-           'menu_icon': elements.manipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.manipulate.create, node]},
-          {'label': 'Parallel', 
-           'function_call': func, 
-           'menu_icon': elements.parallel.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel.create, node]},
-          {'label': 'Choose', 
-           'function_call': func, 
-           'menu_icon': elements.choose.illustrator.svg, 
-           'params': [adaptor.description.elements.choose.create, node]},
-          {'label': 'Loop', 
-           'function_call': func, 
-           'menu_icon': elements.loop.illustrator.svg, 
-           'params': [adaptor.description.elements.loop.create, node]},
-          {'label': 'Critical', 
-           'function_call': func, 
-           'menu_icon': elements.critical.illustrator.svg, 
-           'params': [adaptor.description.elements.critical.create, node]}
-        ];
-      }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, false);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick, 
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
+      'click': events.click,
+      'dblclick': events.dblclick, 
+      'mouseover': events.mouseover,
+      'mouseout': events.mouseout,
+    }//}}}
   }; /*}}}*/
   this.elements.alternative = { /*{{{*/
     'illustrator': {//{{{
@@ -633,60 +517,56 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<alternative condition="" xmlns="http://cpee.org/ns/description/1.0"/>');
-        return node;
+    'description': '<alternative condition="" xmlns="http://cpee.org/ns/description/1.0"/>',
+    'permissible_children': function(node) { //{{{
+      if(node.get(0).tagName == 'alternative') { func = adaptor.description.insert_first_into }
+      else { func = adaptor.description.insert_after }
+      if(node.parents('parallel').length > node.parents('parallel_branch').length && node.get(0).tagName == 'alternative') {
+        return [{'label': 'Parallel Branch', 
+         'function_call': func, 
+         'menu_icon': elements.parallel_branch.illustrator.svg, 
+         'params': [adaptor.description.elements.parallel_branch, node]}];
+      }   
+      return [
+        {'label': 'Service Call with Scripts', 
+         'function_call': func, 
+         'menu_icon': elements.callmanipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.callmanipulate, node]},
+        {'label': 'Service Call', 
+         'function_call': func, 
+         'menu_icon': elements.call.illustrator.svg, 
+         'params': [adaptor.description.elements.call, node]},
+        {'label': 'Script', 
+         'function_call': func, 
+         'menu_icon': elements.manipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.manipulate, node]},
+        {'label': 'Parallel', 
+         'function_call': func, 
+         'menu_icon': elements.parallel.illustrator.svg, 
+         'params': [adaptor.description.elements.parallel, node]},
+        {'label': 'Choose', 
+         'function_call': func, 
+         'menu_icon': elements.choose.illustrator.svg, 
+         'params': [adaptor.description.elements.choose, node]},
+        {'label': 'Loop', 
+         'function_call': func, 
+         'menu_icon': elements.loop.illustrator.svg, 
+         'params': [adaptor.description.elements.loop, node]},
+        {'label': 'Critical', 
+         'function_call': func, 
+         'menu_icon': elements.critical.illustrator.svg, 
+         'params': [adaptor.description.elements.critical, node]}
+      ];
+    }, //}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, false);
       },
-      'permissible_children': function(node) {
-        if(node.get(0).tagName == 'alternative') { func = adaptor.description.insert_first_into }
-        else { func = adaptor.description.insert_after }
-        if(node.parents('parallel').length > node.parents('parallel_branch').length && node.get(0).tagName == 'alternative') 
-          return [{'label': 'Parallel Branch', 
-           'function_call': func, 
-           'menu_icon': elements.parallel_branch.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel_branch.create, node]}];
-        return [
-          {'label': 'Service Call with Script Block', 
-           'function_call': func, 
-           'menu_icon': elements.callmanipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.callmanipulate.create, node]},
-          {'label': 'Service Call', 
-           'function_call': func, 
-           'menu_icon': elements.call.illustrator.svg, 
-           'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Script', 
-           'function_call': func, 
-           'menu_icon': elements.manipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.manipulate.create, node]},
-          {'label': 'Parallel', 
-           'function_call': func, 
-           'menu_icon': elements.parallel.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel.create, node]},
-          {'label': 'Choose', 
-           'function_call': func, 
-           'menu_icon': elements.choose.illustrator.svg, 
-           'params': [adaptor.description.elements.choose.create, node]},
-          {'label': 'Loop', 
-           'function_call': func, 
-           'menu_icon': elements.loop.illustrator.svg, 
-           'params': [adaptor.description.elements.loop.create, node]},
-          {'label': 'Critical', 
-           'function_call': func, 
-           'menu_icon': elements.critical.illustrator.svg, 
-           'params': [adaptor.description.elements.critical.create, node]}
-        ];
-      }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, false);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick, 
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
+      'click': events.click,
+      'dblclick': events.dblclick, 
+      'mouseover': events.mouseover,
+      'mouseout': events.mouseout,
+    }//}}}
   };  /*}}}*/
   this.elements.loop = { /*{{{*/
     'illustrator': {//{{{
@@ -707,66 +587,61 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },// }}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<loop pre_test="" xmlns="http://cpee.org/ns/description/1.0"/>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        var func = null;
-        if(node.get(0).tagName == 'loop') { func = adaptor.description.insert_first_into }
-        else { func = adaptor.description.insert_after }
-        var childs = [
-          {'label': 'Service Call with Script Block', 
-           'function_call': func, 
-           'menu_icon': elements.callmanipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.callmanipulate.create, node]},
-          {'label': 'Service Call', 
-           'function_call': func, 
-           'menu_icon': elements.call.illustrator.svg, 
-           'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Manipulate', 
-           'function_call': func, 
-           'menu_icon': elements.manipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.manipulate.create, node]},
-          {'label': 'Choose', 
-           'function_call': func, 
-           'menu_icon': elements.choose.illustrator.svg, 
-           'params': [adaptor.description.elements.choose.create, node]},
-          {'label': 'Loop', 
-           'function_call': func, 
-           'menu_icon': elements.loop.illustrator.svg, 
-           'params': [adaptor.description.elements.loop.create, node]},
-          {'label': 'Critical', 
-           'function_call': func, 
-           'menu_icon': elements.critical.illustrator.svg, 
-           'params': [adaptor.description.elements.critical.create, node]}
-        ];
-        if(node.parent('parallel').length > node.parent('parallel_branch').length) {
-          childs.push({'label': 'Parallel Branch',
-                       'function_call': func, 
-                       'menu_icon': elements.parallel_branch.illustrator.svg, 
-                       'params': [adaptor.description.elements.parallel_branch.create, node]}
-                      );
-        } else {
-          childs.push({'label': 'Parallel',
-                       'function_call': func, 
-                       'menu_icon': elements.parallel.illustrator.svg, 
-                       'params': [adaptor.description.elements.parallel.create, node]}
-                      );
-        }
-        return childs;
+    'description': '<loop pre_test="" xmlns="http://cpee.org/ns/description/1.0"/>',
+    'permissible_children': function(node) { //{{{
+      var func = null;
+      if(node.get(0).tagName == 'loop') { func = adaptor.description.insert_first_into }
+      else { func = adaptor.description.insert_after }
+      var childs = [
+        {'label': 'Service Call with Scripts', 
+         'function_call': func, 
+         'menu_icon': elements.callmanipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.callmanipulate, node]},
+        {'label': 'Service Call', 
+         'function_call': func, 
+         'menu_icon': elements.call.illustrator.svg, 
+         'params': [adaptor.description.elements.call, node]},
+        {'label': 'Manipulate', 
+         'function_call': func, 
+         'menu_icon': elements.manipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.manipulate, node]},
+        {'label': 'Choose', 
+         'function_call': func, 
+         'menu_icon': elements.choose.illustrator.svg, 
+         'params': [adaptor.description.elements.choose, node]},
+        {'label': 'Loop', 
+         'function_call': func, 
+         'menu_icon': elements.loop.illustrator.svg, 
+         'params': [adaptor.description.elements.loop, node]},
+        {'label': 'Critical', 
+         'function_call': func, 
+         'menu_icon': elements.critical.illustrator.svg, 
+         'params': [adaptor.description.elements.critical, node]}
+      ];
+      if(node.parent('parallel').length > node.parent('parallel_branch').length) {
+        childs.push({'label': 'Parallel Branch',
+                     'function_call': func, 
+                     'menu_icon': elements.parallel_branch.illustrator.svg, 
+                     'params': [adaptor.description.elements.parallel_branch, node]}
+                    );
+      } else {
+        childs.push({'label': 'Parallel',
+                     'function_call': func, 
+                     'menu_icon': elements.parallel.illustrator.svg, 
+                     'params': [adaptor.description.elements.parallel, node]}
+                    );
       }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick, 
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
+      return childs;
+    }, //}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, true);
+      },
+      'click': events.click,
+      'dblclick': events.dblclick, 
+      'mouseover': events.mouseover,
+      'mouseout': events.mouseout,
+    }//}}}
   };  /*}}}*/
   this.elements.parallel = { /*{{{*/
     'illustrator': {//{{{
@@ -790,59 +665,54 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<parallel xmlns="http://cpee.org/ns/description/1.0"/>');
-        return node;
+    'description': '<parallel xmlns="http://cpee.org/ns/description/1.0"/>',
+    'permissible_children': function(node) { //{{{
+      var childs =  [
+        {'label': 'Service Call with Scripts', 
+         'function_call': adaptor.description.insert_last_into, 
+         'menu_icon': elements.callmanipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.callmanipulate, node]},
+        {'label': 'Service Call', 
+         'function_call': adaptor.description.insert_last_into, 
+         'menu_icon': elements.call.illustrator.svg, 
+         'params': [adaptor.description.elements.call, node]},
+        {'label': 'Manipulate', 
+         'function_call': adaptor.description.insert_last_into, 
+         'menu_icon': elements.manipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.manipulate, node]},
+        {'label': 'Choose', 
+         'function_call': adaptor.description.insert_last_into, 
+         'menu_icon': elements.choose.illustrator.svg, 
+         'params': [adaptor.description.elements.choose, node]},
+        {'label': 'Loop', 
+         'function_call': adaptor.description.insert_last_into, 
+         'menu_icon': elements.loop.illustrator.svg, 
+         'params': [adaptor.description.elements.loop, node]},
+        {'label': 'Critical', 
+         'function_call': adaptor.description.insert_last_into, 
+         'menu_icon': elements.critical.illustrator.svg, 
+         'params': [adaptor.description.elements.critical, node]},
+        {'label': 'Parallel Branch',
+         'function_call': adaptor.description.insert_last_into, 
+         'menu_icon': elements.parallel_branch.illustrator.svg, 
+         'params': [adaptor.description.elements.parallel_branch, node]}
+      ];
+      if(node.get(0).tagName != 'parallel')
+        childs.push({'label': 'Parallel', 
+           'function_call': adaptor.description.insert_last_into, 
+           'menu_icon': elements.parallel.illustrator.svg, 
+           'params': [adaptor.description.elements.parallel, node]});
+      return childs;
+    }, //}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, true);
       },
-      'permissible_children': function(node) {
-        var childs =  [
-          {'label': 'Service Call with Script Block', 
-           'function_call': adaptor.description.insert_last_into, 
-           'menu_icon': elements.callmanipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.callmanipulate.create, node]},
-          {'label': 'Service Call', 
-           'function_call': adaptor.description.insert_last_into, 
-           'menu_icon': elements.call.illustrator.svg, 
-           'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Manipulate', 
-           'function_call': adaptor.description.insert_last_into, 
-           'menu_icon': elements.manipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.manipulate.create, node]},
-          {'label': 'Choose', 
-           'function_call': adaptor.description.insert_last_into, 
-           'menu_icon': elements.choose.illustrator.svg, 
-           'params': [adaptor.description.elements.choose.create, node]},
-          {'label': 'Loop', 
-           'function_call': adaptor.description.insert_last_into, 
-           'menu_icon': elements.loop.illustrator.svg, 
-           'params': [adaptor.description.elements.loop.create, node]},
-          {'label': 'Critical', 
-           'function_call': adaptor.description.insert_last_into, 
-           'menu_icon': elements.critical.illustrator.svg, 
-           'params': [adaptor.description.elements.critical.create, node]},
-          {'label': 'Parallel Branch',
-           'function_call': adaptor.description.insert_last_into, 
-           'menu_icon': elements.parallel_branch.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel_branch.create, node]}
-        ];
-        if(node.get(0).tagName != 'parallel')
-          childs.push({'label': 'Parallel', 
-             'function_call': adaptor.description.insert_last_into, 
-             'menu_icon': elements.parallel.illustrator.svg, 
-             'params': [adaptor.description.elements.parallel.create, node]});
-        return childs;
-      }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick, 
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
+      'click': events.click,
+      'dblclick': events.dblclick, 
+      'mouseover': events.mouseover,
+      'mouseout': events.mouseout,
+    }//}}}
   };  /*}}}*/
   this.elements.parallel_branch = { /*{{{*/
     'illustrator': {//{{{
@@ -864,64 +734,59 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<parallel_branch xmlns="http://cpee.org/ns/description/1.0"/>');
-        return node;
-      },
-      'permissible_children': function(node) {
-        var func = null;
-        var childs = null;
-        if(node.get(0).tagName == 'parallel_branch') { func = adaptor.description.insert_first_into }
-        else { func = adaptor.description.insert_after }
-        childs =  [
-          {'label': 'Service Call with Script Block', 
-           'function_call': func, 
-           'menu_icon': elements.callmanipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.callmanipulate.create, node]},
-          {'label': 'Service Call', 
-           'function_call': func, 
-           'menu_icon': elements.call.illustrator.svg, 
-           'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Script', 
-           'function_call': func, 
-           'menu_icon': elements.manipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.manipulate.create, node]},
-          {'label': 'Parallel', 
-           'function_call': func, 
-           'menu_icon': elements.parallel.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel.create, node]},
-          {'label': 'Choose', 
-           'function_call': func, 
-           'menu_icon': elements.choose.illustrator.svg, 
-           'params': [adaptor.description.elements.choose.create, node]},
-          {'label': 'Loop', 
-           'function_call': func, 
-           'menu_icon': elements.loop.illustrator.svg, 
-           'params': [adaptor.description.elements.loop.create, node]},
-          {'label': 'Critical', 
-           'function_call': func, 
-           'menu_icon': elements.critical.illustrator.svg, 
-           'params': [adaptor.description.elements.critical.create, node]},
-        ];
-        if(node.parents('choose').length > node.parents('alternative, otherwise').length && node.get(0).tagName == 'parallel_branch') {
-          return [{'label': 'Alternative', 
-           'function_call': func, 
-           'menu_icon': elements.alternative.illustrator.svg, 
-           'params': [adaptor.description.elements.alternative.create, node]}];
-        }
-        return childs;
+    'description': '<parallel_branch xmlns="http://cpee.org/ns/description/1.0"/>',
+    'permissible_children': function(node) { //{{{
+      var func = null;
+      var childs = null;
+      if(node.get(0).tagName == 'parallel_branch') { func = adaptor.description.insert_first_into }
+      else { func = adaptor.description.insert_after }
+      childs =  [
+        {'label': 'Service Call with Scripts', 
+         'function_call': func, 
+         'menu_icon': elements.callmanipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.callmanipulate, node]},
+        {'label': 'Service Call', 
+         'function_call': func, 
+         'menu_icon': elements.call.illustrator.svg, 
+         'params': [adaptor.description.elements.call, node]},
+        {'label': 'Script', 
+         'function_call': func, 
+         'menu_icon': elements.manipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.manipulate, node]},
+        {'label': 'Parallel', 
+         'function_call': func, 
+         'menu_icon': elements.parallel.illustrator.svg, 
+         'params': [adaptor.description.elements.parallel, node]},
+        {'label': 'Choose', 
+         'function_call': func, 
+         'menu_icon': elements.choose.illustrator.svg, 
+         'params': [adaptor.description.elements.choose, node]},
+        {'label': 'Loop', 
+         'function_call': func, 
+         'menu_icon': elements.loop.illustrator.svg, 
+         'params': [adaptor.description.elements.loop, node]},
+        {'label': 'Critical', 
+         'function_call': func, 
+         'menu_icon': elements.critical.illustrator.svg, 
+         'params': [adaptor.description.elements.critical, node]},
+      ];
+      if(node.parents('choose').length > node.parents('alternative, otherwise').length && node.get(0).tagName == 'parallel_branch') {
+        return [{'label': 'Alternative', 
+         'function_call': func, 
+         'menu_icon': elements.alternative.illustrator.svg, 
+         'params': [adaptor.description.elements.alternative, node]}];
       }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, false);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick, 
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
+      return childs;
+    }, //}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, false);
+      },
+      'click': events.click,
+      'dblclick': events.dblclick, 
+      'mouseover': events.mouseover,
+      'mouseout': events.mouseout,
+    }//}}}
   };  /*}}}*/
   this.elements.critical = { /*{{{*/
     'illustrator': {//{{{
@@ -942,56 +807,51 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>');
-        return node;
+    'description': '<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>',
+    'permissible_children': function(node) { //{{{
+      var func = null;
+      if(node.get(0).tagName == 'critical') { func = adaptor.description.insert_first_into }
+      else { func = adaptor.description.insert_after }
+      return [
+        {'label': 'Service Call with Scripts', 
+         'function_call': func, 
+         'menu_icon': elements.callmanipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.callmanipulate, node]},
+        {'label': 'Service Call', 
+         'function_call': func, 
+         'menu_icon': elements.call.illustrator.svg, 
+         'params': [adaptor.description.elements.call, node]},
+        {'label': 'Script', 
+         'function_call': func, 
+         'menu_icon': elements.manipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.manipulate, node]},
+        {'label': 'Parallel', 
+         'function_call': func, 
+         'menu_icon': elements.parallel.illustrator.svg, 
+         'params': [adaptor.description.elements.parallel, node]},
+        {'label': 'Choose', 
+         'function_call': func, 
+         'menu_icon': elements.choose.illustrator.svg, 
+         'params': [adaptor.description.elements.choose, node]},
+        {'label': 'Loop', 
+         'function_call': func, 
+         'menu_icon': elements.loop.illustrator.svg, 
+         'params': [adaptor.description.elements.loop, node]},
+        {'label': 'Critical', 
+         'function_call': func, 
+         'menu_icon': elements.critical.illustrator.svg, 
+         'params': [adaptor.description.elements.critical, node]},
+      ];
+    }, //}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, true);
       },
-      'permissible_children': function(node) {
-        var func = null;
-        if(node.get(0).tagName == 'critical') { func = adaptor.description.insert_first_into }
-        else { func = adaptor.description.insert_after }
-        return [
-          {'label': 'Service Call with Script Block', 
-           'function_call': func, 
-           'menu_icon': elements.callmanipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.callmanipulate.create, node]},
-          {'label': 'Service Call', 
-           'function_call': func, 
-           'menu_icon': elements.call.illustrator.svg, 
-           'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Script', 
-           'function_call': func, 
-           'menu_icon': elements.manipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.manipulate.create, node]},
-          {'label': 'Parallel', 
-           'function_call': func, 
-           'menu_icon': elements.parallel.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel.create, node]},
-          {'label': 'Choose', 
-           'function_call': func, 
-           'menu_icon': elements.choose.illustrator.svg, 
-           'params': [adaptor.description.elements.choose.create, node]},
-          {'label': 'Loop', 
-           'function_call': func, 
-           'menu_icon': elements.loop.illustrator.svg, 
-           'params': [adaptor.description.elements.loop.create, node]},
-          {'label': 'Critical', 
-           'function_call': func, 
-           'menu_icon': elements.critical.illustrator.svg, 
-           'params': [adaptor.description.elements.critical.create, node]},
-        ];
-      }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick, 
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
+      'click': events.click,
+      'dblclick': events.dblclick, 
+      'mouseover': events.mouseover,
+      'mouseout': events.mouseout,
+    }//}}}
   };  /*}}}*/
   this.elements.group = { /*{{{*/
     'illustrator': {//{{{
@@ -1009,28 +869,23 @@ function CPEE(adaptor) {
         return false;
       }
     },//}}}
-    'description' : {//{{{
-      'create':  function(target) {
-        var node = $X('<group xmlns="http://cpee.org/ns/description/1.0"/>');
-        return node;
+    'description': '<group xmlns="http://cpee.org/ns/description/1.0"/>',
+    'permissible_children': function(node) { //{{{
+      var func = null;
+      if(node.get(0).tagName == 'group') { func = adaptor.description.insert_first_into }
+      else { func = adaptor.description.insert_after }
+      return [
+      ];
+    }, //}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, true);
       },
-      'permissible_children': function(node) {
-        var func = null;
-        if(node.get(0).tagName == 'group') { func = adaptor.description.insert_first_into }
-        else { func = adaptor.description.insert_after }
-        return [
-        ];
-      }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick, 
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
+      'click': events.click,
+      'dblclick': events.dblclick, 
+      'mouseover': events.mouseover,
+      'mouseout': events.mouseout,
+    }//}}}
   };  /*}}}*/
   this.elements.start = this.elements.description = { /*{{{*/
     'illustrator': {//{{{
@@ -1049,51 +904,50 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description' : {//{{{
-      'permissible_children': function(node) {
-        var func = null;
-        if(node.get(0).tagName == 'description') { func = adaptor.description.insert_first_into }
-        else { func = adaptor.description.insert_after }
-        return [
-          {'label': 'Service Call with Script Block', 
-           'function_call': func, 
-           'menu_icon': elements.callmanipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.callmanipulate.create, node]},
-          {'label': 'Service Call', 
-           'function_call': func, 
-           'menu_icon': elements.call.illustrator.svg, 
-           'params': [adaptor.description.elements.call.create, node]},
-          {'label': 'Script Task', 
-           'function_call': func, 
-           'menu_icon': elements.manipulate.illustrator.svg, 
-           'params': [adaptor.description.elements.manipulate.create, node]},
-          {'label': 'Parallel', 
-           'function_call': func, 
-           'menu_icon': elements.parallel.illustrator.svg, 
-           'params': [adaptor.description.elements.parallel.create, node]},
-          {'label': 'Choose', 
-           'function_call': func, 
-           'menu_icon': elements.choose.illustrator.svg, 
-           'params': [adaptor.description.elements.choose.create, node]},
-          {'label': 'Loop', 
-           'function_call': func, 
-           'menu_icon': elements.loop.illustrator.svg, 
-           'params': [adaptor.description.elements.loop.create, node]},
-          {'label': 'Critical', 
-           'function_call': func, 
-           'menu_icon': elements.critical.illustrator.svg, 
-           'params': [adaptor.description.elements.critical.create, node]}
-        ];
-      }
-    },//}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, false);
-    },
-    'click': events.click,
-    'dblclick': events.dblclick, 
-    'mouseover': events.mouseover,
-    'mouseout': events.mouseout,
-   }//}}}
+    'description': null,
+    'permissible_children': function(node) { //{{{
+      var func = null;
+      if(node.get(0).tagName == 'description') { func = adaptor.description.insert_first_into }
+      else { func = adaptor.description.insert_after }
+      return [
+        {'label': 'Service Call with Scripts', 
+         'function_call': func, 
+         'menu_icon': elements.callmanipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.callmanipulate, node]},
+        {'label': 'Service Call', 
+         'function_call': func, 
+         'menu_icon': elements.call.illustrator.svg, 
+         'params': [adaptor.description.elements.call, node]},
+        {'label': 'Script Task', 
+         'function_call': func, 
+         'menu_icon': elements.manipulate.illustrator.svg, 
+         'params': [adaptor.description.elements.manipulate, node]},
+        {'label': 'Parallel', 
+         'function_call': func, 
+         'menu_icon': elements.parallel.illustrator.svg, 
+         'params': [adaptor.description.elements.parallel, node]},
+        {'label': 'Choose', 
+         'function_call': func, 
+         'menu_icon': elements.choose.illustrator.svg, 
+         'params': [adaptor.description.elements.choose, node]},
+        {'label': 'Loop', 
+         'function_call': func, 
+         'menu_icon': elements.loop.illustrator.svg, 
+         'params': [adaptor.description.elements.loop, node]},
+        {'label': 'Critical', 
+         'function_call': func, 
+         'menu_icon': elements.critical.illustrator.svg, 
+         'params': [adaptor.description.elements.critical, node]}
+      ];
+    }, //}}}
+    'adaptor' : {//{{{
+      'mousedown': function (node, e) {
+        events.mousedown(node,e,true, false);
+      },
+      'click': events.click,
+      'dblclick': events.dblclick, 
+      'mouseover': events.mouseover,
+      'mouseout': events.mouseout,
+    }//}}}
   }; /*}}}*/
-.5}
+}

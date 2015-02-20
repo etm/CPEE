@@ -77,8 +77,6 @@ button.highlight { background-color: #cc0000; }
 #dat_log td { vertical-align: top; }
 #dat_log tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
 
-#areadetails { table-layout: fixed; }
-
 #dat_endpoints {
   border-collapse:collapse;
   border-spacing:0;
@@ -134,27 +132,35 @@ span.vote {
   color: #73d216;
 }
 
-#detailcolumn { width: 50%; }
-#detailcolumn .column { padding-left: 2em; }
-#graphcolumn { margin: 0; padding: 0; border-right: 1pt solid ButtonShadow; min-width: 9em; }
-#graphcolumn .column { margin: 0; padding: 0; }
-
-.ui-resizable-handle { 
-  z-index: 99999; 
-  color: ButtonShadow;
-  position: absolute;
-  white-space:nowrap;
+#graphcolumn { 
+  margin: 0; 
+  padding: 0; 
+  border-right: 1px solid ButtonShadow; 
+  min-width: 9em; 
 }
-.ui-resizable-w { 
-  cursor: w-resize; 
+#detailcolumn { 
+  padding-left: 1.5em; 
+}
+
+#areadetails .handle {
+  color: ButtonShadow;
+  white-space:nowrap;
+  cursor: ew-resize; 
+}
+#areadetails .handle span {
+  margin-top: -1em;
+  position: absolute;
   -webkit-transform: rotate(90deg); 
   -webkit-transform-origin: 0% 100%; 
   -moz-transform: rotate(90deg); 
   -moz-transform-origin: left bottom; 
-  margin-top: -1em;
-  margin-left: 0.3em;
 }
+
 .ui-resizable-s { 
+  color: ButtonShadow;
+  white-space:nowrap;
+  position: absolute;
+  z-index: 99999; 
   right:2em;
   cursor: s-resize; 
   text-align: right;

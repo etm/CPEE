@@ -105,9 +105,14 @@ function serialize_details(parent) { //{{{
           });
         }
 
-        if ($('textarea.pname_script',parent).length > 0) {
-          var mani = $X('<manipulate xmlns="http://cpee.org/ns/description/1.0"/>');
-              mani.text($('textarea.pname_script',parent).val());
+        if ($('textarea.pname_finalize',parent).length > 0) {
+          var mani = $X('<finalize xmlns="http://cpee.org/ns/description/1.0"/>');
+              mani.text($('textarea.pname_finalize',parent).val());
+          xml.append(mani);
+        }
+        if ($('textarea.pname_update',parent).length > 0) {
+          var mani = $X('<update xmlns="http://cpee.org/ns/description/1.0"/>');
+              mani.text($('textarea.pname_update',parent).val());
           xml.append(mani);
         }
       break;

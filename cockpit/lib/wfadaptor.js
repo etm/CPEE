@@ -234,7 +234,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[svg-id = \'' + svg_id + '\']', description);
   } // }}}
-  this.get_free_id = function() { // {{{
+  var get_free_id = this.get_free_id = function() { // {{{
     var existing = new Array();
     $('*[id]', description).each(function(){existing.push($(this).attr('id'))});
     var id = 1;
@@ -242,7 +242,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       id += 1; 
     }
     return 'a' + id;
-  } // }}}
+  } // }}} 
   var update = this.update = function(svgid) { // {{{
     id_counter = {};
     if(update_illustrator){
@@ -263,25 +263,19 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
   // Adaption functions {{{
   this.insert_after = function(new_node, target) { // {{{
-    var nn;
-    if(typeof(new_node) == 'function') {nn = new_node(target);}
-    else {nn = new_node;}
+    var nn = $X(new_node.replace(/###/,get_free_id()));
     target.after(nn);
     nn.attr('new','true');
     update();
   } // }}}
   this.insert_first_into = function(new_node, target, selector) { // {{{
-    var nn;
-    if(typeof(new_node) == 'function') {nn = new_node(target);}
-    else {nn = new_node;}
+    var nn = $X(new_node.replace(/###/,get_free_id()));
     target.prepend(nn);
     nn.attr('new','true');
     update();
   } // }}}
   this.insert_last_into = function(new_node, target, selector) { // {{{
-    var nn;
-    if(typeof(new_node) == 'function') {nn = new_node(target);}
-    else {nn = new_node;}
+    var nn = $X(new_node.replace(/###/,get_free_id()));
     target.append(nn);
     nn.attr('new','true');
     update();

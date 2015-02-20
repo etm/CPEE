@@ -337,6 +337,7 @@ function monitor_instance_dsl() {// {{{
             graphrealization.set_svg_container($('#graphcanvas'));
             graphrealization.set_description($(res), true);
             graphrealization.notify = function(svgid) {
+              console.log('rrr');
               save_description();
               manifestation.events.click(svgid,undefined);
             };
