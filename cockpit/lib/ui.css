@@ -47,7 +47,6 @@ a:active  { color:#000000; text-decoration:underline; }
 
 div.rest {
   flex: 1 1 auto;
-  min-height: min-content;
   border-bottom: 5px solid black;
 }
 
@@ -204,6 +203,7 @@ div.tabbed.rest .tabbelow.columns .column {
   border-collapse: collapse;
   border-spacing: 0;
   flex: 1;
+  max-height: fit-content;
 
   border: 0;
   margin:0;

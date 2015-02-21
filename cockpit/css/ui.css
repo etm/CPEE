@@ -76,7 +76,7 @@ button.highlight { background-color: #cc0000; }
 
 #areaexecution table.compact tbody.debug tr:last-child td { padding-bottom: 0.5em; }
 #areaexecution table.compact tbody.exe tr:first-child td { padding-top: 0.5em; }
-#areaexecution table.compact tbody.exe { 1em; border-top: 1px solid ButtonShadow; }
+#areaexecution table.compact tbody.exe { border-top: 1px solid ButtonShadow; }
 
 #areaexecution table.compact tbody.exe td { height: 2.2em; }
 
