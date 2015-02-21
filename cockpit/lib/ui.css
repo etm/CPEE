@@ -47,6 +47,8 @@ a:active  { color:#000000; text-decoration:underline; }
 
 div.rest {
   flex: 1 1 auto;
+  min-height: min-content;
+  border-bottom: 5px solid black;
 }
 
 div.tabbed table.tabbar { 
@@ -196,7 +198,7 @@ div.tabbed.rest .tabbelow.columns {
   border: 0 none;
   overflow: hidden;
   display: flex;
-  height: 100%;
+  align-items: stretch;
 }
 div.tabbed.rest .tabbelow.columns .column {
   border-collapse: collapse;
@@ -210,6 +212,8 @@ div.tabbed.rest .tabbelow.columns .column {
   overflow: scroll;
   top: 0;
 }  
+
+
 div.tabbed.rest .tabbelow.columns .columnresizehandle {
   position:absolute;
   color: ButtonShadow;
