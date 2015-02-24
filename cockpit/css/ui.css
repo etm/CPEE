@@ -38,6 +38,13 @@ div.tabbed table.tabbar td.tabbehind button {
   margin-left: 0.5em;
 }
 
+#current-instance-properties[href]:after {
+  content: "|";
+}  
+#current-instance-subscriptions[href]:after {
+  content: "|";
+}  
+
 button.highlight { background-color: #cc0000; }
 
 #parameters .tabbelow { height: 9em; min-height: 1.7em; }
@@ -69,15 +76,13 @@ button.highlight { background-color: #cc0000; }
 
 #areaexecution table.compact tbody.debug tr:last-child td { padding-bottom: 0.5em; }
 #areaexecution table.compact tbody.exe tr:first-child td { padding-top: 0.5em; }
-#areaexecution table.compact tbody.exe { 1em; border-top: 1px solid ButtonShadow; }
+#areaexecution table.compact tbody.exe { border-top: 1px solid ButtonShadow; }
 
 #areaexecution table.compact tbody.exe td { height: 2.2em; }
 
 #dat_log { width:100%; }
 #dat_log td { vertical-align: top; }
 #dat_log tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
-
-#areadetails { table-layout: fixed; }
 
 #dat_endpoints {
   border-collapse:collapse;
@@ -134,27 +139,30 @@ span.vote {
   color: #73d216;
 }
 
-#detailcolumn { width: 50%; }
-#detailcolumn .column { padding-left: 2em; }
-#graphcolumn { margin: 0; padding: 0; border-right: 1pt solid ButtonShadow; min-width: 9em; }
-#graphcolumn .column { margin: 0; padding: 0; }
-
-.ui-resizable-handle { 
-  z-index: 99999; 
-  color: ButtonShadow;
-  position: absolute;
-  white-space:nowrap;
+#graphcolumn { 
+  margin: 0; 
+  padding: 0; 
+  border-right: 1px solid ButtonShadow; 
+  min-width: 9em; 
 }
-.ui-resizable-w { 
-  cursor: w-resize; 
+#detailcolumn { 
+  padding-left: 1.5em; 
+}
+
+#areadetails .columnresizehandle {
+  cursor: ew-resize; 
   -webkit-transform: rotate(90deg); 
   -webkit-transform-origin: 0% 100%; 
   -moz-transform: rotate(90deg); 
   -moz-transform-origin: left bottom; 
   margin-top: -1em;
-  margin-left: 0.3em;
 }
+
 .ui-resizable-s { 
+  color: ButtonShadow;
+  white-space:nowrap;
+  position: absolute;
+  z-index: 99999; 
   right:2em;
   cursor: s-resize; 
   text-align: right;

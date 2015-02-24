@@ -17,9 +17,12 @@
 html, body {
   font-family: sans-serif,Arial,Verdana,Helvetica;
   font-size: 0.85em;
+  height: 100%;
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   background-color:#FFFFFF;
   padding:0;
   margin:0;
@@ -41,6 +44,11 @@ a:link    { color:#425d73; text-decoration:none; }
 a:visited { color:#425d73; text-decoration:none; }
 a:hover   { color:#000000; text-decoration:underline; }
 a:active  { color:#000000; text-decoration:underline; }
+
+div.rest {
+  flex: 1 1 auto;
+  border-bottom: 5px solid black;
+}
 
 div.tabbed table.tabbar { 
   padding: 0; 
@@ -184,28 +192,32 @@ div.tabbed.rest .tabbelow {
 }
 
 div.tabbed.rest .tabbelow.columns {
-  padding:0;
-  overflow: hidden;
-  border-collapse:collapse;
-  border-spacing:0;
-  width:100%
-}
-div.tabbed.rest .tabbelow.columns > tbody > tr > td {
-  margin: 0;
   padding: 0;
+  margin: 0;
   border: 0 none;
-  vertical-align: top;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
 }
 div.tabbed.rest .tabbelow.columns .column {
-  -moz-box-sizing:    border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing:        border-box;
+  border-collapse: collapse;
+  border-spacing: 0;
+  flex: 1;
+  max-height: fit-content;
 
+  border: 0;
   margin:0;
   padding: 1em;
 
-  overflow: auto;
+  overflow: scroll;
   top: 0;
+}  
+
+
+div.tabbed.rest .tabbelow.columns .columnresizehandle {
+  position:absolute;
+  color: ButtonShadow;
+  white-space:nowrap;
 }  
 
 div.tabbed .tabbelow.inactive, div.tabbed .tabbelow .inactive { display: none; }

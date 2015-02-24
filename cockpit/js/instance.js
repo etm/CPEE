@@ -102,7 +102,7 @@ $(document).ready(function() {// {{{
 });// }}}
 
 function check_subscription() { // {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   var num = 0;
   if ($("input[name=votecontinue]").is(':checked')) num += 1;
   if (num > 0 && subscription_state == 'less') {
@@ -170,12 +170,14 @@ function monitor_instance(load) {// {{{
       $(".tabbed .tab.hidden").removeClass("hidden");
 
       // Change url to return to current instance when reloading
-      $("input[name=current-instance]").val(url);
       $("#current-instance").text(url);
       $("#current-instance").attr('href',url);
       $("#current-instance-properties").attr('href',url + 'properties/');
+      $("#current-instance-properties").text('P');
       $("#current-instance-subscriptions").attr('href',url + 'subscriptions/');
+      $("#current-instance-subscriptions").text('S');
       $("#current-instance-callbacks").attr('href',url + 'callbacks/');
+      $("#current-instance-callbacks").text('C');
       history.replaceState({}, '', '?monitor='+url);
 
       // Change url to return to current instance when reloading (because new subscription is made)
@@ -255,7 +257,7 @@ function monitor_instance(load) {// {{{
 }// }}}
 
 function monitor_instance_dataelements() {// {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/dataelements/",
@@ -283,7 +285,7 @@ function monitor_instance_dataelements() {// {{{
 } // }}}
 
 function monitor_instance_endpoints() {// {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/endpoints/",
@@ -312,7 +314,7 @@ function monitor_instance_endpoints() {// {{{
 }// }}}
 
 function monitor_instance_dsl() {// {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "GET",
     dataType: "text",
@@ -337,12 +339,10 @@ function monitor_instance_dsl() {// {{{
             graphrealization.set_svg_container($('#graphcanvas'));
             graphrealization.set_description($(res), true);
             graphrealization.notify = function(svgid) {
+              console.log('rrr');
               save_description();
               manifestation.events.click(svgid,undefined);
             };
-            $('#graphcanvas').redraw();
-            $('#graphcolumn div').redraw();
-
             monitor_instance_pos();
           }
         });
@@ -352,7 +352,7 @@ function monitor_instance_dsl() {// {{{
 }// }}}
 
 function monitor_instance_state() {// {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/state/",
@@ -363,7 +363,7 @@ function monitor_instance_state() {// {{{
   });
 }// }}}
 function monitor_instance_transformation() {// {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/attributes/modeltype",
@@ -377,7 +377,7 @@ function monitor_instance_transformation() {// {{{
 }// }}}
 
 function monitor_instance_pos() {// {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "GET", 
     url: url + "/properties/values/positions/",
@@ -459,7 +459,7 @@ function monitor_instance_vote_add(notification) {// {{{
   format_visual_add(parts.activity,"vote")
 }// }}}
 function monitor_instance_vote_remove(activity,callback,value) {//{{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "PUT", 
     url: url + "/callbacks/" + callback,
@@ -471,7 +471,7 @@ function monitor_instance_vote_remove(activity,callback,value) {//{{{
 }//}}}
 
 function start_instance() {// {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "PUT", 
     url: url + "/properties/values/state",
@@ -480,7 +480,7 @@ function start_instance() {// {{{
   });
 }// }}}
 function sim_instance() {// {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "PUT", 
     url: url + "/properties/values/state",
@@ -489,7 +489,7 @@ function sim_instance() {// {{{
   });
 }// }}}
 function stop_instance() {// {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "PUT", 
     url: url + "/properties/values/state",
@@ -499,7 +499,7 @@ function stop_instance() {// {{{
 }// }}}
 
 function save_testset() {// {{{
-  var base = $("input[name=current-instance]").val();
+  var base = $("#current-instance").text();
   var testset = $X('<testset/>');
 
   $.ajax({
@@ -569,7 +569,7 @@ function save_testset() {// {{{
   });  
 }// }}} 
 function save_svg() {// {{{
-  var base = $("input[name=current-instance]").val();
+  var base = $("#current-instance").text();
   var params = { mimetype: 'image/svg+xml' };
 
   var gc = $('#graphcanvas').clone();
@@ -594,7 +594,7 @@ function save_svg() {// {{{
   });
 }// }}}
 function set_testset(testset) {// {{{
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
 
   $.ajax({
     type: "GET", 
@@ -684,7 +684,7 @@ function load_modelfile_after() { //{{{
   var files = $('#modelfile').get(0).files;
   var reader = new FileReader();
   reader.onload = function(){
-    var url = $("input[name=current-instance]").val();
+    var url = $("#current-instance").text();
     load_des(url,reader.result);
     running  = false;
   }  
@@ -721,7 +721,7 @@ function load_testset() {// {{{
 }// }}}
 function load_modeltype() {// {{{
   if (running) return;
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   running  = true;
   
   var name = $("#modeltypes div.menuitem[data-selected=selected]").text();

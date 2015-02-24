@@ -21,12 +21,12 @@
     <title>CPEE Cockpit</title>
 
     <!-- libs, do not modify -->
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
 
-    <script type="text/javascript" src="lib/jquery.min.js"></script>
     <script type="text/javascript" src="lib/jquery.browser.js"></script>
     <script type="text/javascript" src="lib/jquery.svg.min.js"></script>
     <script type="text/javascript" src="lib/jquery.svgdom.min.js"></script>
-    <script type="text/javascript" src="lib/jquery-ui.custom.min.js"></script>
     <script type="text/javascript" src="lib/util.js"></script>
     <script type="text/javascript" src="lib/printf.js"></script>
     <script type="text/javascript" src="lib/strftime.min.js"></script>
@@ -98,7 +98,7 @@
        </p>
 
        <p>
-         <input id='iagree' type='checkbox'/><label for'iagree'><strong>OK, I Agree with this terms. I will be a happy person, and do no evil.</strong></label>
+         <input id='iagree' type='checkbox'/><label for='iagree'><strong>OK, I Agree with this terms. I will be a happy person, and do no evil.</strong></label>
        </p>
        <p>
         <button id='icontinue' disabled='disabled'>Continue</button>
@@ -164,7 +164,7 @@
     </table> <!--}}}-->
 
     <div class='menu' id='predefinedtestsets'></div>  
-    <div class='menu' id='modeltypes'></div>  
+    <div class='menu' id='modeltypes'></div>
 
     <div class="tabbed" id="instance">
       <table class="tabbar">
@@ -173,7 +173,7 @@
           <td class="tab"                 id="tabnew"       ><h1>New</h1></td>
           <td class="tab inactive hidden" id="tabinstance"  ><h1>Instance</h1></td>
           <td class="tab inactive hidden" id="tabexecution" ><h1>Execution</h1></td>
-          <td class="tabbehind"><input name="current-instance" type="text" value="" readonly='readonly' style='display:none'/><a id='current-instance'></a><a id='current-instance-properties'>P</a>|<a id='current-instance-subscriptions'>S</a>|<a id='current-instance-callbacks'>C</a></td>
+          <td class="tabbehind"><a id='current-instance'></a><a id='current-instance-properties'></a><a id='current-instance-subscriptions'></a><a id='current-instance-callbacks'></a></td>
         </tr>
         <tr class="border hidden"><td colspan="5"></td></tr>
       </table>
@@ -256,7 +256,7 @@
         <div id="areaendpoints" class='inactive'> <!--{{{-->
           <table id="dat_endpoints"></table>
         </div> <!--}}}-->
-        <span id='handle1' class="ui-resizable-handle ui-resizable-s">drag to resize</span>
+        <span class="ui-resizable-handle ui-resizable-s">drag to resize</span>
       </div>
     </div>
 
@@ -271,21 +271,15 @@
         </tr>
         <tr class="border hidden"><td colspan="3"></td></tr>
       </table>
-      <table class="tabbelow columns" id="areadetails">
-        <tr>
-          <td id='graphcolumn'> <!--{{{-->
-            <div class='column'>
-              <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
-            </div>
-          </td> <!--}}}-->
-          <td id="detailcolumn"> <!--{{{-->
-            <span id='handle2' class="ui-resizable-handle ui-resizable-w">drag to resize</span>
-            <div class='column'>
-              <table id="dat_details"></table>
-            </div>
-          </td> <!--}}}-->
-        </tr>
-      </table>
+      <div class="tabbelow columns" id="areadetails">
+        <div id='graphcolumn' class='column'>
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
+        </div>
+        <div class="columnresizehandle">drag to resize</div>
+        <div id="detailcolumn" class='column'>
+          <table id="dat_details"></table>
+        </div>
+      </div>
       <div id="areadsl" class="tabbelow inactive"></div>
       <div id="arealog" class="tabbelow inactive"> <!--{{{-->
         <table id="dat_log" class="layout">

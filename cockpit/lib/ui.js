@@ -14,6 +14,46 @@
   <http://www.gnu.org/licenses/>.
 */
 
+(function($) { //{{{
+  $.fn.drags = function() {
+    var drag = $(this);
+     
+    this.on("mousedown", function(e) {
+      drag.addClass('draggable');
+      $(document).one("mouseup", function(e) {
+        drag.removeClass('draggable');
+        e.preventDefault();
+      });
+      e.preventDefault();
+    });
+    
+    $(document).on("mousemove", function(e) {
+      if (!drag.hasClass('draggable'))
+        return;
+
+      var prev = drag.prev();
+      var next = drag.next(); 
+
+      // Assume 50/50 split between prev and next then adjust to
+      // the next X for prev
+      var total = prev.outerWidth() + next.outerWidth();
+
+      var pos = e.pageX - prev.offset().left;
+      if (pos > total) {
+        pos = total;
+      }
+      
+      var leftPercentage = pos / total;
+      var rightPercentage = 1 - leftPercentage; 
+
+      prev.css('flex', leftPercentage.toString());
+      next.css('flex', rightPercentage.toString()); 
+
+      e.preventDefault();
+    });
+  }
+})(jQuery); //}}}
+
 function ui_tab_click(moi) { // {{{
   var active = $(moi).attr('id').replace(/tab/,'');
   var tab = $(moi).parent().parent().parent().parent();
@@ -29,7 +69,6 @@ function ui_tab_click(moi) { // {{{
       $("#area" + b).addClass("inactive");
     }  
   });
-  ui_rest_resize();
 } // }}}
 function ui_toggle_vis_tab(moi) {// {{{
   var tabbar = $(moi).parent().parent().parent();
@@ -42,23 +81,14 @@ function ui_toggle_vis_tab(moi) {// {{{
   if ($(fix).attr('class') && $(fix).attr('class').match(/fixedstate/)) {
     $(".fixedstatehollow").height($(fix).height());
   }  
-  ui_rest_resize();
 }// }}}
 
-function ui_rest_resize() {
-  if ($('div.tabbed.rest .tabbar')) {
-    var theight = $(window).height() - $('div.tabbed.rest .tabbar').offset().top - $('div.tabbed.rest .tabbar').height();
-    $('div.tabbed.rest .tabbelow').each(function(key,ele){
-      $(ele).height(theight - parseInt($(ele).css('padding-top')) - parseInt($(ele).css('padding-bottom')) );
-    });  
-    $('div.tabbed.rest .tabbelow .column').each(function(key,ele){
-      $(ele).height(theight - parseInt($(ele).css('padding-top')) - parseInt($(ele).css('padding-bottom')) );
-    });  
-  }  
-}  
-
 $(document).ready(function() {
-  $(window).resize(ui_rest_resize);
+  if (!($.browser.name == "Firefox" && $.browser.version >= 20) && !($.browser.name == "Chrome" && $.browser.version >= 30)) {
+    $('body').children().remove();
+    $('body').append('Sorry, only Firefox >= 20.0 and Chrom(e|ium) >= 17 for now.');
+  }  
+  $('.columnresizehandle').drags();
   $('.tabbed table.tabbar td.tab.switch').click(function(){ui_toggle_vis_tab(this);});
   $('.tabbed table.tabbar td.tab').not('.switch').click(function(){ui_tab_click(this);});
 });
