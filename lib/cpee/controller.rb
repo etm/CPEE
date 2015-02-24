@@ -251,7 +251,7 @@ module CPEE
                 end
               end
             end
-            evs.each { |e| @votes[e].delete(key) if @votes[e] }
+            evs.each { |e| @events[e].delete(key) if @events[e] }
             vos.each do |e| 
               @callbacks.each{|voteid,cb|cb.delete_if!(e,key)}
               @votes[e].delete(key) if @votes[e]
