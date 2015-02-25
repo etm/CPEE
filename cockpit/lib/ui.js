@@ -55,32 +55,27 @@
 })(jQuery); //}}}
 
 function ui_tab_click(moi) { // {{{
-  var active = $(moi).attr('id').replace(/tab/,'');
-  var tab = $(moi).parent().parent().parent().parent();
+  var active = $(moi).attr('data-tab');
+  var tabbed = $(moi).parents('.tabbed');
   var tabs = [];
-  $("td.tab",tab).each(function(){
+  $(".tab",tabbed).each(function(){
     if (!$(this).attr('class').match(/switch/))
-      tabs.push($(this).attr('id').replace(/tab/,''));
+      tabs.push($(this).attr('data-tab'));
   });  
-  $(".inactive",tab).removeClass("inactive");
+  $(".inactive",tabbed).removeClass("inactive");
   $.each(tabs,function(a,b){
     if (b != active) {
-      $("#tab" + b).addClass("inactive");
-      $("#area" + b).addClass("inactive");
+      $(".tab[data-tab=" + b + "]",tabbed).addClass("inactive");
+      $(".area[data-belongs-to-tab=" + b + "]",tabbed).addClass("inactive");
+      $(".resizehandle[data-belongs-to-tab=" + b + "]",tabbed).addClass("inactive");
     }  
   });
 } // }}}
 function ui_toggle_vis_tab(moi) {// {{{
-  var tabbar = $(moi).parent().parent().parent();
-  var tab = $(tabbar).parent();
-  var fix = $(tab).parent();
-  $('h1',moi).toggleClass('margin');
-  $("tr.border",tabbar).toggleClass('hidden');
-  $("div.tabbelow",tab).toggleClass('hidden');
-  $("td.tabbehind button",tabbar).toggleClass('hidden');
-  if ($(fix).attr('class') && $(fix).attr('class').match(/fixedstate/)) {
-    $(".fixedstatehollow").height($(fix).height());
-  }  
+  var tabbed = $(moi).parents('.tabbed');
+  tabbed.toggleClass('off');
+  $(".area",tabbed).toggleClass('hidden');
+  $(".tabbehind *",tabbed).toggleClass('hidden');
 }// }}}
 
 $(document).ready(function() {
@@ -89,6 +84,6 @@ $(document).ready(function() {
     $('body').append('Sorry, only Firefox >= 20.0 and Chrom(e|ium) >= 17 for now.');
   }  
   $('.columnresizehandle').drags();
-  $('.tabbed table.tabbar td.tab.switch').click(function(){ui_toggle_vis_tab(this);});
-  $('.tabbed table.tabbar td.tab').not('.switch').click(function(){ui_tab_click(this);});
+  $('.tabbed .tabbar .tab.switch').click(function(){ui_toggle_vis_tab(this);});
+  $('.tabbed .tabbar .tab').not('.switch').click(function(){ui_tab_click(this);});
 });

@@ -167,18 +167,15 @@
     <div class='menu' id='modeltypes'></div>
 
     <div class="tabbed" id="instance">
-      <table class="tabbar">
-        <tr>
-          <td class="tab switch"                            ><h1></h1></td>
-          <td class="tab"                 id="tabnew"       ><h1>New</h1></td>
-          <td class="tab inactive hidden" id="tabinstance"  ><h1>Instance</h1></td>
-          <td class="tab inactive hidden" id="tabexecution" ><h1>Execution</h1></td>
-          <td class="tabbehind"><a id='current-instance'></a><a id='current-instance-properties'></a><a id='current-instance-subscriptions'></a><a id='current-instance-callbacks'></a></td>
-        </tr>
-        <tr class="border hidden"><td colspan="5"></td></tr>
-      </table>
-      <div class="tabbelow">
-        <div id="areanew"> <!--{{{-->
+      <div class="tabbar">
+        <div class="tab switch"                                                ></div>
+        <div class="tab"                 data-tab="new"       id="tabnew"      >New</div>
+        <div class="tab inactive hidden" data-tab="instance"  id="tabinstance" >Instance</div>
+        <div class="tab inactive hidden" data-tab="execution" id="tabexecution">Execution</div>
+        <div class="behind"                                                    ><a id='current-instance'></a><a id='current-instance-properties'></a><a id='current-instance-subscriptions'></a><a id='current-instance-callbacks'></a></div>
+      </div>
+      <div class="content">
+        <div data-belongs-to-tab="new" id="areanew" class="area"> <!--{{{-->
           <table class='layout'>
           <tr>
             <td>Base Url:</td>
@@ -192,7 +189,7 @@
           </tr>
           </table>
         </div> <!--}}}-->
-        <div id="areainstance" class="inactive"> <!--{{{-->
+        <div data-belongs-to-tab="instance" id="areainstance" class="area inactive"> <!--{{{-->
           <div class='section'>
             <div>
               <input type='file' name='testsetfile' id='testsetfile'/>
@@ -216,7 +213,7 @@
             </div>  
           </div>
         </div> <!--}}}-->
-        <div id="areaexecution" class='inactive'> <!--{{{-->
+        <div data-belongs-to-tab="execution" id="areaexecution" class='area inactive'> <!--{{{-->
           <table class='compact'>
             <tbody class='debug'>
               <tr>
@@ -240,51 +237,46 @@
     </div>
 
     <div class="tabbed hidden" id='parameters'>
-      <table class="tabbar">
-        <tr>
-          <td class="tab switch"                       ><h1></h1></td>
-          <td class="tab"          id="tabdataelements"><h1>Data Elements</h1></td>
-          <td class="tab inactive" id="tabendpoints"   ><h1>Endpoints</h1></td>
-          <td class="tabbehind"><button title='Ctrl-N while editing entry'>New</button><button title='Ctrl-S while editing entry'>Save</button></td>
-        </tr>
-        <tr class="border hidden"><td colspan="4"></td></tr>
-      </table>
-      <div class="tabbelow">
-        <div id="areadataelements"> <!--{{{-->
+      <div class="tabbar">
+        <div class="tab switch"                                               ></div>
+        <div class="tab"          data-tab="dataelements" id="tabdataelements">Data Elements</div>
+        <div class="tab inactive" data-tab="endpoints"    id="tabendpoints"   >Endpoints</div>
+        <div class="behind"                                                   ><button title='Ctrl-N while editing entry'>New</button><button title='Ctrl-S while editing entry'>Save</button></div>
+      </div>
+      <div class="content">
+        <div data-belongs-to-tab="dataelements" id="areadataelements" class="area"> <!--{{{-->
           <table id="dat_dataelements"></table>
         </div> <!--}}}-->
-        <div id="areaendpoints" class='inactive'> <!--{{{-->
+        <div data-belongs-to-tab="endpoints" id="areaendpoints" class="area inactive"> <!--{{{-->
           <table id="dat_endpoints"></table>
         </div> <!--}}}-->
-        <span class="ui-resizable-handle ui-resizable-s">drag to resize</span>
       </div>
     </div>
 
+    <div class="resizehandle">drag to resize</div>
+
     <div id="main" class="tabbed rest hidden">
-      <table class="tabbar">
-        <tr>
-          <td class="tabbefore"></td>
-          <td class="tab"          id="tabdetails"><h1>Graph</h1></td>
-          <td class="tab inactive" id="tabdsl"    ><h1>Description</h1></td>
-          <td class="tab inactive" id="tablog"    ><h1>Log</h1></td>
-          <td class="tabbehind"><button title='Ctrl-S while editing entry'>Save</button></td>
-        </tr>
-        <tr class="border hidden"><td colspan="3"></td></tr>
-      </table>
-      <div class="tabbelow columns" id="areadetails">
-        <div id='graphcolumn' class='column'>
+      <div class="tabbar">
+        <div class="before"                                         ></div>
+        <div class="tab"          data-tab="details" id="tabdetails">Graph</div>
+        <div class="tab inactive" data-tab="dsl"     id="tabdsl"    >Description</div>
+        <div class="tab inactive" data-tab="log"     id="tablog"    >Log</div>
+        <div class="behind"                                         ><button title='Ctrl-S while editing entry'>Save</button></div>
+      </div>
+      <div class="content">
+        <div data-belongs-to-tab="details" id='graphcolumn' class='area'>
           <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
         </div>
-        <div class="columnresizehandle">drag to resize</div>
-        <div id="detailcolumn" class='column'>
+        <div data-belongs-to-tab="details" class="resizehandle">drag to resize</div>
+        <div data-belongs-to-tab="details" id="detailcolumn" class='area'>
           <table id="dat_details"></table>
         </div>
+        <div data-belongs-to-tab="dsl" id="areadsl" class="area inactive"></div>
+        <div data-belongs-to-tab="log" id="arealog" class="area inactive"> <!--{{{-->
+          <table id="dat_log" class="layout">
+          </table>
+        </div> <!--}}}-->
       </div>
-      <div id="areadsl" class="tabbelow inactive"></div>
-      <div id="arealog" class="tabbelow inactive"> <!--{{{-->
-        <table id="dat_log" class="layout">
-        </table>
-      </div> <!--}}}-->
     </div>
 
   </body>

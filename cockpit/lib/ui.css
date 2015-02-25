@@ -27,7 +27,6 @@ body {
   padding:0;
   margin:0;
   color: #000000;
-  overflow: hidden;
 }
 
 /* Browser Bug, set textarea explicitly */
@@ -45,71 +44,63 @@ a:visited { color:#425d73; text-decoration:none; }
 a:hover   { color:#000000; text-decoration:underline; }
 a:active  { color:#000000; text-decoration:underline; }
 
-div.rest {
+div.tabbed .tabbar { 
+  display: flex;
+  align-items: stretch;
+  flex-direction: row;
+  padding: 0; 
+  margin: 0; 
+  height: 2.6em;
+}
+div.tabbed.off { 
+  border-bottom: 0.2em solid ButtonShadow;
+  border-radius: 0;
+}
+div.tabbed.off .content {
+  display: none;
+}
+
+div.tabbed.rest {
   flex: 1 1 auto;
-  border-bottom: 5px solid black;
-}
-
-div.tabbed table.tabbar { 
-  padding: 0; 
-  margin: 0; 
-  margin-left: 1em;
-  margin-right: 1em;
+  padding: 0;
+  margin: 0;
   margin-top: 1em;
-  border-spacing:0; 
-  border-collapse: separate; 
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
-div.tabbed.rest table.tabbar { 
-  padding: 0; 
-  margin: 0; 
-  margin-left: 0em;
-  margin-right: 0em;
-  margin-top: 1.3em;
-  border-spacing:0; 
-  border-collapse: separate; 
+div.tabbed .tabbar .switch {
+  background-color: ButtonFace;
 }
-
-div.tabbed table.tabbar h1 {
-  font-size: 1.4em;
-  margin-top: 0em;
-  padding-top: 0em;
-  padding-bottom: 0em;
-}  
-
-div.tabbed table.tabbar .switch h1:before {
+div.tabbed .tabbar .switch:after {
   content: "▽";
   vertical-align:top;
   color: ButtonText;
 }  
-div.tabbed table.tabbar .switch h1.margin:before {
+div.tabbed.off .tabbar .switch:after {
   content: "▶";
   color: ButtonText;
   vertical-align:top;
 }  
 
-div.tabbed table.tabbar tr:first-child { height: 2.6em; }
-div.tabbed table.tabbar .tab {
+div.tabbed .tabbar .tab {
+  font-size: 1.4em;
+  font-weight: bold;
+  white-space: nowrap;
+
   cursor: pointer;
-  padding: 0em;
-  padding-left: 1em;
-  padding-right: 1em;
+  padding: 0;
+  padding-top: 0.3em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
   border: 1pt solid ButtonShadow;
   border-bottom: 1pt solid white;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
   border-bottom-right-radius: 0em;
-  width:0%;
-  -moz-border-radius: 1em;
-  -moz-border-radius-bottomleft: 0em;
-  -moz-border-radius-bottomright: 0em;
-  -webkit-border-radius: 1em;
-  -webkit-border-bottom-left-radius: 0em;
-  -webkit-border-bottom-right-radius: 0em;
 }
-div.tabbed table.tabbar .tab h1 { margin-top: 0em; margin-bottom: 0em; padding-top: 0em; padding-bottom: 0em; }
-div.tabbed table.tabbar .tab h1 { white-space: nowrap; }
-div.tabbed table.tabbar .tab.inactive {
+div.tabbed .tabbar .tab.inactive, div.tabbed .tabbar .tab.switch {
   border: 1pt solid ButtonShadow;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
@@ -122,106 +113,97 @@ div.tabbed table.tabbar .tab.inactive {
   -webkit-border-bottom-right-radius: 0em;
 }
 
-div.tabbed table.tabbar td.tabbehind {
+div.tabbed .tabbar .behind {
+  flex: 1 1 auto;
   vertical-align:bottom;
-  padding:0.2em 0em;
+  padding: 0;
+  padding-top: 0.9em;
   border-bottom: 1pt solid buttonshadow;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
   border-bottom-right-radius: 0em;
-  width:100%;
-  -moz-border-radius: 1em;
-  -moz-border-radius-bottomleft: 0em;
-  -moz-border-radius-bottomright: 0em;
-  -webkit-border-radius: 1em;
-  -webkit-border-bottom-left-radius: 0em;
-  -webkit-border-bottom-right-radius: 0em;
   text-align:right;
   white-space: nowrap;
-  overflow: hidden;
 }
-div.tabbed.rest table.tabbar td.tabbehind {
+
+div.tabbed.rest .tabbar {
+  min-height: -webkit-min-content;                                                                                                                                                                                                                                    
+  min-height: -moz-min-content;
+  min-height: min-content;
+}
+
+div.tabbed.rest .tabbar .behind {
   padding-right: 1em;
 }
 
-div.tabbed table.tabbar td.tabbefore {
+div.tabbed .tabbar .before {
   border-bottom: 1pt solid buttonshadow;
   padding-left:1em;
 }
 
-div.tabbed table.tabbar tr.border td {
-  height:0.1em;
-  background-color: ButtonShadow;
-  border-left: 1pt solid ButtonShadow;
-  border-right: 1pt solid ButtonShadow;
-  border-bottom: 1pt solid ButtonShadow;
-}
-
-div.tabbed table.tabbar td.switch {
-  background-color: ButtonFace;
-  border-bottom: 1pt solid ButtonShadow;
-}
-
-div.tabbed .tabbelow {
+div.tabbed {
+  margin-top: 1em;
   margin-left: 1em;
   margin-right: 1em;
+  min-height: -webkit-min-content;                                                                                                                                                                                                                                    
+  min-height: -moz-min-content;
+  min-height: min-content;
+}
+
+div.tabbed .content {
   padding: 1em;
+  margin: 0;
   border-bottom: 1pt solid ButtonShadow;
   border-left: 1pt solid ButtonShadow;
   border-right: 1pt solid ButtonShadow;
-  border-radius: 1em;
-  border-top-left-radius: 0em;
-  border-top-right-radius: 0em;
-  -moz-border-radius: 1em;
-  -moz-border-radius-topleft: 0em;
-  -moz-border-radius-topright: 0em;
-  -webkit-border-radius: 1em;
-  -webkit-border-top-left-radius: 0em;
-  -webkit-border-top-right-radius: 0em;
+  border-bottom-left-radius: 1em;
+  border-bottom-right-radius: 1em;
 }
 
-div.tabbed.rest .tabbelow {
-  padding: 1em;
+div.tabbed.rest .content {
+  padding: 0;
   margin: 0;
   border-radius: 0;
   border: 0 none;
   -moz-border-radius: 0;
   -webkit-border-radius: 0;
 
-  overflow: auto;
-}
-
-div.tabbed.rest .tabbelow.columns {
-  padding: 0;
-  margin: 0;
-  border: 0 none;
-  overflow: hidden;
   display: flex;
-  align-items: stretch;
+  flex-direction: row;
+  flex: 1 1 auto;
 }
-div.tabbed.rest .tabbelow.columns .column {
-  border-collapse: collapse;
-  border-spacing: 0;
-  flex: 1;
-  max-height: fit-content;
 
-  border: 0;
-  margin:0;
-  padding: 1em;
+div.tabbed.rest .content .area {
+  flex: 1 1 auto;
+  overflow-x: auto;
+  overflow-y: scroll;
+}
 
-  overflow: scroll;
-  top: 0;
-}  
-
-
-div.tabbed.rest .tabbelow.columns .columnresizehandle {
+div.tabbed.rest .content .resizehandle {
   position:absolute;
   color: ButtonShadow;
   white-space:nowrap;
 }  
 
-div.tabbed .tabbelow.inactive, div.tabbed .tabbelow .inactive { display: none; }
-div.tabbed .tabbelow .layout {
+div.tabbed .content .area {
+  margin: 0;
+  padding: 0;
+}
+
+.resizehandle {
+  position: absolute;
+  color: ButtonShadow;
+  white-space:nowrap;
+  z-index: 99999; 
+  right: 1em;
+  cursor: s-resize; 
+  text-align: right;
+  margin-top: 0.2em;
+}
+
+div.tabbed .content .area.inactive { display: none; }
+
+div.tabbed .layout {
   width: 100%;
   border-collapse:collapse;
   border-spacing:0;
@@ -229,17 +211,17 @@ div.tabbed .tabbelow .layout {
   padding:0;
   margin:0;
 }
-div.tabbed .tabbelow .layout td {
+div.tabbed .layout td {
   border:0 none;
   padding:0;
   margin:0;
 }
-div.tabbed .tabbelow .layout tr {
+div.tabbed .layout tr {
   border:0 none;
   padding:0;
   margin:0;
 }
-div.tabbed .tabbelow .compact {
+div.tabbed .compact {
   border-collapse:collapse;
   border-spacing:0;
   border:0 none;
@@ -247,31 +229,19 @@ div.tabbed .tabbelow .compact {
   margin:0;
 }
 
-div.tabbed .tabbelow .compact td {
+div.tabbed .compact td {
   border:0 none;
   padding:0;
   margin:0;
 }
-div.tabbed .tabbelow .compact tr {
+div.tabbed .compact tr {
   border:0 none;
   padding:0;
   margin:0;
 }
-div.tabbed .tabbelow .layout .fixed { white-space:nowrap; }
-div.tabbed .tabbelow .layout .top { vertical-align: top; }
+div.tabbed .layout .fixed { white-space:nowrap; }
+div.tabbed .layout .top { vertical-align: top; }
 
 .hidden {
   display: none;
 }
-
-.fixedstate {
-  background-color: white;
-  margin:0;
-  padding:1em;
-  position:fixed;
-  padding-top:0em;
-  bottom:0;
-  left:0;
-  right:0;
-}
-.fixedstate div.tabbed { margin-bottom:0; }
