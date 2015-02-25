@@ -67,7 +67,6 @@ function ui_tab_click(moi) { // {{{
     if (b != active) {
       $(".tab[data-tab=" + b + "]",tabbed).addClass("inactive");
       $(".area[data-belongs-to-tab=" + b + "]",tabbed).addClass("inactive");
-      $(".resizehandle[data-belongs-to-tab=" + b + "]",tabbed).addClass("inactive");
     }  
   });
 } // }}}
@@ -83,7 +82,7 @@ $(document).ready(function() {
     $('body').children().remove();
     $('body').append('Sorry, only Firefox >= 20.0 and Chrom(e|ium) >= 17 for now.');
   }  
-  $('.columnresizehandle').drags();
+  $('.tabbed.rest .content .area.resizehandle').drags();
   $('.tabbed .tabbar .tab.switch').click(function(){ui_toggle_vis_tab(this);});
   $('.tabbed .tabbar .tab').not('.switch').click(function(){ui_tab_click(this);});
 });

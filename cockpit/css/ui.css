@@ -151,22 +151,12 @@ span.vote {
   padding-left: 1.5em; 
 }
 
-#areadetails .columnresizehandle {
-  cursor: ew-resize; 
-  -webkit-transform: rotate(90deg); 
-  -webkit-transform-origin: 0% 100%; 
-  -moz-transform: rotate(90deg); 
-  -moz-transform-origin: left bottom; 
-  margin-top: -1em;
-}
-
 #dat_details {
   border-collapse:collapse;
   border-spacing:0;
   border:0 none;
-  margin:0;
+  margin:1em;
   padding:0;
-  width: 100%;
 }
 #dat_details td.del                     { width: 1.2em; font-size: 1.3em; font-weight: bold; }
 #dat_details td.pname                   { width: 7em; }
