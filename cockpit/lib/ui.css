@@ -74,11 +74,13 @@ div.tabbed .tabbar .switch {
 }
 div.tabbed .tabbar .switch:after {
   content: "▽";
+  font-weight: bold;
   vertical-align:top;
   color: ButtonText;
 }  
 div.tabbed.off .tabbar .switch:after {
   content: "▶";
+  font-weight: bold;
   color: ButtonText;
   vertical-align:top;
 }  
@@ -101,12 +103,6 @@ div.tabbed .tabbar .tab.inactive, div.tabbed .tabbar .tab.switch {
   border-radius: 1em;
   border-bottom-left-radius: 0em;
   border-bottom-right-radius: 0em;
-  -moz-border-radius: 1em;
-  -moz-border-radius-bottomleft: 0em;
-  -moz-border-radius-bottomright: 0em;
-  -webkit-border-radius: 1em;
-  -webkit-border-bottom-left-radius: 0em;
-  -webkit-border-bottom-right-radius: 0em;
 }
 
 div.tabbed .tabbar .behind {
@@ -157,8 +153,6 @@ div.tabbed.rest .content {
   margin: 0;
   border-radius: 0;
   border: 0 none;
-  -moz-border-radius: 0;
-  -webkit-border-radius: 0;
 
   display: flex;
   height: 0;
@@ -167,7 +161,7 @@ div.tabbed.rest .content {
 }
 
 div.tabbed.rest .content .area:not(.resizehandle) {
-  flex: 1 1 auto;
+  flex: 1 1 0%;
   overflow-x: auto;
   overflow-y: scroll;
 }
@@ -190,14 +184,13 @@ div.tabbed .content .area {
 }
 
 .resizehandle:not(.area) {
-  position: absolute;
   color: ButtonShadow;
   white-space:nowrap;
   z-index: 99999; 
-  right: 1em;
   cursor: s-resize; 
   text-align: right;
   margin-top: 0.2em;
+  margin-right: 1em;
 }
 
 div.tabbed .content .area.inactive { display: none; }

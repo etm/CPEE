@@ -21,7 +21,7 @@ button {
 }
 input { font-family: sans-serif; font-size: 1em; }
 
-#instance .area { height: 7em; }
+#instance .content { height: 7em; }
 
 #areanew td:nth-child(1)       { width: 7em; padding-right: 1em; }
 #areanew td:nth-child(3)       { width: 16em; padding-left: 1em; }
@@ -48,7 +48,7 @@ div.tabbed .tabbar .behind button {
 
 button.highlight { background-color: #cc0000; }
 
-#parameters .area { height: 9em; min-height: 1.7em; }
+#parameters .content { height: 9em; min-height: 1.7em; }
 
 #areadataelements { height: 100%; overflow-x: hidden; overflow-y: scroll; }
 #areaendpoints    { height: 100%; overflow: auto; }
@@ -145,7 +145,6 @@ span.vote {
   padding: 0; 
   border-right: 1px solid ButtonShadow; 
   min-width: 9em;
-  height: fit-content;
 }
 #detailcolumn { 
   padding-left: 1.5em; 

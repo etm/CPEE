@@ -124,7 +124,7 @@ svg text.normal {
   font-stretch:normal;
   text-align:center;
   line-height:125%;
-  writing-mode:lr-tb;
+  writing-mode:horizontal-tb;
   text-anchor:middle;
   color:#000000;
   fill:#000000;
@@ -140,7 +140,7 @@ svg text.inverted {
   font-stretch:normal;
   text-align:center;
   line-height:125%;
-  writing-mode:lr-tb;
+  writing-mode:horizontal-tb;
   text-anchor:middle;
   color:#ffffff;
   fill:#ffffff;
@@ -157,7 +157,7 @@ svg text.super {
   font-stretch:normal;
   text-align:center;
   line-height:100%;
-  writing-mode:lr-tb;
+  writing-mode:horizontal-tb;
   text-anchor:start;
   color:#000000;
   fill:#000000;
@@ -188,7 +188,7 @@ svg text.normallarge {
   font-stretch:normal;
   text-align:center;
   line-height:125%;
-  writing-mode:lr-tb;
+  writing-mode:horizontal-tb;
   text-anchor:middle;
   color:#000000;
   fill:#000000;
@@ -205,7 +205,7 @@ svg text.small {
   font-stretch:normal;
   text-align:center;
   line-height:125%;
-  writing-mode:lr-tb;
+  writing-mode:horizontal-tb;
   text-anchor:middle;
   color:#000000;
   fill:#000000;

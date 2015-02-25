@@ -15,8 +15,10 @@
 */
 
 (function($) { //{{{
-  $.fn.drags = function() {
+  $.fn.dragcolumn = function() {
     var drag = $(this);
+    var prev = drag.prev();
+    var next = drag.next(); 
      
     this.on("mousedown", function(e) {
       drag.addClass('draggable');
@@ -31,13 +33,9 @@
       if (!drag.hasClass('draggable'))
         return;
 
-      var prev = drag.prev();
-      var next = drag.next(); 
-
       // Assume 50/50 split between prev and next then adjust to
       // the next X for prev
       var total = prev.outerWidth() + next.outerWidth();
-
       var pos = e.pageX - prev.offset().left;
       if (pos > total) {
         pos = total;
@@ -48,6 +46,35 @@
 
       prev.css('flex', leftPercentage.toString());
       next.css('flex', rightPercentage.toString()); 
+
+      e.preventDefault();
+    });
+  }
+  $.fn.dragresize = function() {
+    var drag = $(this);
+    var prev = drag.prev();
+    var initpos = 0;
+    var initheight = $(".content",prev).height();
+     
+    this.on("mousedown", function(e) {
+      drag.addClass('draggable');
+      initpos = e.pageY;
+      $(document).one("mouseup", function(e) {
+        drag.removeClass('draggable');
+        e.preventDefault();
+      });
+      e.preventDefault();
+    });
+    
+    $(document).on("mousemove", function(e) {
+      if (!drag.hasClass('draggable'))
+        return;
+
+      var pos = initheight - (initpos - e.pageY);
+      if (pos < 0)
+        return;
+
+      $(".content",prev).css('height', pos.toString());
 
       e.preventDefault();
     });
@@ -82,7 +109,8 @@ $(document).ready(function() {
     $('body').children().remove();
     $('body').append('Sorry, only Firefox >= 20.0 and Chrom(e|ium) >= 17 for now.');
   }  
-  $('.tabbed.rest .content .area.resizehandle').drags();
+  $('.tabbed.rest .content .area.resizehandle').dragcolumn();
+  $('.resizehandle:not(.area)').dragresize();
   $('.tabbed .tabbar .tab.switch').click(function(){ui_toggle_vis_tab(this);});
   $('.tabbed .tabbar .tab').not('.switch').click(function(){ui_tab_click(this);});
 });
