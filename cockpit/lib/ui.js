@@ -100,8 +100,6 @@ function ui_tab_click(moi) { // {{{
 function ui_toggle_vis_tab(moi) {// {{{
   var tabbed = $(moi).parents('.tabbed');
   tabbed.toggleClass('off');
-  $(".area",tabbed).toggleClass('hidden');
-  $(".tabbehind *",tabbed).toggleClass('hidden');
 }// }}}
 
 $(document).ready(function() {

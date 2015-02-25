@@ -59,6 +59,9 @@ div.tabbed.off {
 div.tabbed.off .content {
   display: none;
 }
+div.tabbed.off .tabbar .behind {
+  display: none;
+}
 
 div.tabbed.rest {
   padding: 0;
