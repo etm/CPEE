@@ -21,7 +21,7 @@ button {
 }
 input { font-family: sans-serif; font-size: 1em; }
 
-#instance .content { height: 7em; }
+#instance ui-content { height: 7em; }
 
 #areanew td:nth-child(1)       { width: 7em; padding-right: 1em; }
 #areanew td:nth-child(3)       { width: 16em; padding-left: 1em; }
@@ -29,13 +29,13 @@ input { font-family: sans-serif; font-size: 1em; }
 #areanew button[name=base]     { width: 100%;  }
 #areanew button[name=instance] { width: 100%;  }
 
-div.tabbed div.tabbar .behind input { 
+ui-tabbed ui-tabbar ui-behind input { 
   border: 0 none; 
   text-align: right; 
   width: 100%;
 }
 
-div.tabbed .tabbar .behind button {
+ui-tabbed ui-tabbar ui-behind button {
   margin-left: 0.5em;
 }
 
@@ -48,7 +48,7 @@ div.tabbed .tabbar .behind button {
 
 button.highlight { background-color: #cc0000; }
 
-#parameters .content { height: 9em; min-height: 1.7em; }
+#parameters ui-content { height: 9em; min-height: 1.7em; }
 
 #areadataelements { height: 100%; overflow-x: hidden; overflow-y: scroll; }
 #areaendpoints    { height: 100%; overflow: auto; }
@@ -70,7 +70,6 @@ button.highlight { background-color: #cc0000; }
 #areainstance div.section:nth-child(3) div                          { vertical-align: middle; margin: 0; padding: 0; }
 #areainstance div.section:nth-child(3) button[name=loadmodeltype]   { width: 10em; height: 2em; }
 
-#areaexecution { overflow: auto; }
 #areaexecution input { padding: 0; margin:0; }
 #areaexecution table.compact { width: 100%; }
 #areaexecution table.compact tr td:nth-child(1) { width: 15ex; }

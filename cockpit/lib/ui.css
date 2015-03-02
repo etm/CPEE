@@ -45,50 +45,59 @@ a:visited { color:#425d73; text-decoration:none; }
 a:hover   { color:#000000; text-decoration:underline; }
 a:active  { color:#000000; text-decoration:underline; }
 
-div.tabbed .tabbar { 
+ui-tabbed {
+  min-height: -webkit-min-content;                                                                                                                                                                                                                                    
+  min-height: -moz-min-content;
+  min-height: min-content;
+  margin-top: 1em;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+ui-rest {
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  margin-top: 1em;
+  flex: 1 1 auto;
+}
+
+ui-tabbed.off { 
+  border-bottom: 0.2em solid ButtonShadow;
+  border-radius: 0;
+}
+ui-tabbed.off ui-content {
+  display: none;
+}
+ui-tabbed.off ui-tabbar ui-behind {
+  display: none;
+}
+
+ui-tabbar { 
   display: flex;
   align-items: stretch;
   flex-direction: row;
   padding: 0; 
   margin: 0; 
 }
-div.tabbed.off { 
-  border-bottom: 0.2em solid ButtonShadow;
-  border-radius: 0;
-}
-div.tabbed.off .content {
-  display: none;
-}
-div.tabbed.off .tabbar .behind {
-  display: none;
-}
-
-div.tabbed.rest {
-  padding: 0;
-  margin: 0;
-  margin-top: 1em;
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-}
-
-div.tabbed .tabbar .switch {
+ui-tabbed ui-tabbar ui-tab.switch {
   background-color: ButtonFace;
 }
-div.tabbed .tabbar .switch:after {
+ui-tabbed ui-tabbar ui-tab.switch:after {
   content: "▽";
   font-weight: bold;
   vertical-align:top;
   color: ButtonText;
 }  
-div.tabbed.off .tabbar .switch:after {
+ui-tabbed.off ui-tabbar ui-tab.switch:after {
   content: "▶";
   font-weight: bold;
   color: ButtonText;
   vertical-align:top;
 }  
 
-div.tabbed .tabbar .tab {
+ui-tabbar ui-tab {
   font-size: 1.4em;
   font-weight: bold;
   white-space: nowrap;
@@ -101,14 +110,14 @@ div.tabbed .tabbar .tab {
   border-bottom-left-radius: 0em;
   border-bottom-right-radius: 0em;
 }
-div.tabbed .tabbar .tab.inactive, div.tabbed .tabbar .tab.switch {
+ui-tabbar ui-tab.inactive, ui-tabbed ui-tabbar ui-tab.switch {
   border: 1pt solid ButtonShadow;
   border-radius: 1em;
   border-bottom-left-radius: 0em;
   border-bottom-right-radius: 0em;
 }
 
-div.tabbed .tabbar .behind {
+ui-tabbar ui-behind {
   flex: 1 1 auto;
   vertical-align:bottom;
   padding: 0;
@@ -120,28 +129,16 @@ div.tabbed .tabbar .behind {
   text-align:right;
   white-space: nowrap;
 }
-
-div.tabbed.rest .tabbar .behind {
+ui-rest ui-tabbar ui-behind {
   padding-right: 1em;
 }
 
-div.tabbed.rest .tabbar .before {
+ui-rest ui-tabbar ui-before {
   border-bottom: 1pt solid buttonshadow;
   padding-left:1em;
 }
 
-div.tabbed {
-  margin-top: 1em;
-  margin-left: 1em;
-  margin-right: 1em;
-}
-div.tabbed:not(.rest) {
-  min-height: -webkit-min-content;                                                                                                                                                                                                                                    
-  min-height: -moz-min-content;
-  min-height: min-content;
-}
-
-div.tabbed .content {
+ui-content {
   padding: 1em;
   margin: 0;
   border-bottom: 1pt solid ButtonShadow;
@@ -151,7 +148,7 @@ div.tabbed .content {
   border-bottom-right-radius: 1em;
 }
 
-div.tabbed.rest .content {
+ui-rest ui-content {
   padding: 0;
   margin: 0;
   border-radius: 0;
@@ -163,13 +160,13 @@ div.tabbed.rest .content {
   flex: 1 1 auto;
 }
 
-div.tabbed.rest .content .area:not(.resizehandle) {
+ui-rest ui-content ui-area {
   flex: 1 1 0%;
   overflow-x: auto;
   overflow-y: scroll;
 }
 
-div.tabbed.rest .content .area.resizehandle {
+ui-rest ui-content ui-resizehandle {
   position:absolute;
   color: ButtonShadow;
   white-space:nowrap;
@@ -181,12 +178,12 @@ div.tabbed.rest .content .area.resizehandle {
   margin-top: -1em;
 }  
 
-div.tabbed .content .area {
+ui-content ui-area {
   margin: 0;
   padding: 0;
 }
 
-.resizehandle:not(.area) {
+*[is=x-ui] > ui-resizehandle {
   color: ButtonShadow;
   white-space:nowrap;
   z-index: 99999; 
@@ -196,9 +193,10 @@ div.tabbed .content .area {
   margin-right: 1em;
 }
 
-div.tabbed .content .area.inactive { display: none; }
+ui-tabbed, ui-content, ui-area { display: block; }
+ui-content ui-area.inactive { display: none }
 
-div.tabbed .layout {
+ui-content ui-area .layout {
   width: 100%;
   border-collapse:collapse;
   border-spacing:0;
@@ -206,17 +204,17 @@ div.tabbed .layout {
   padding:0;
   margin:0;
 }
-div.tabbed .layout td {
+ui-content ui-area .layout td {
   border:0 none;
   padding:0;
   margin:0;
 }
-div.tabbed .layout tr {
+ui-content ui-area .layout tr {
   border:0 none;
   padding:0;
   margin:0;
 }
-div.tabbed .compact {
+ui-content ui-area .compact {
   border-collapse:collapse;
   border-spacing:0;
   border:0 none;
@@ -224,18 +222,18 @@ div.tabbed .compact {
   margin:0;
 }
 
-div.tabbed .compact td {
+ui-content ui-area .compact td {
   border:0 none;
   padding:0;
   margin:0;
 }
-div.tabbed .compact tr {
+ui-content ui-area .compact tr {
   border:0 none;
   padding:0;
   margin:0;
 }
-div.tabbed .layout .fixed { white-space:nowrap; }
-div.tabbed .layout .top { vertical-align: top; }
+ui-content ui-area .layout .fixed { white-space:nowrap; }
+ui-content ui-area .layout .top { vertical-align: top; }
 
 .hidden {
   display: none;

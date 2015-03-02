@@ -46,18 +46,18 @@
           <xsl:value-of select="@endpoint"/>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:text>, { </xsl:text>
+      <xsl:text>, parameters: { </xsl:text>
       <xsl:apply-templates select="d:parameters"/>
       <xsl:text> }</xsl:text>
       <xsl:choose>
         <xsl:when test="count(d:finalize | d:update)=2">
-          <xsl:text>, &lt;&lt;-END, &lt;&lt;-END</xsl:text>
+          <xsl:text>, finalize: &lt;&lt;-END, update: &lt;&lt;-END</xsl:text>
         </xsl:when>
         <xsl:when test="d:finalize">
-          <xsl:text>, &lt;&lt;-END</xsl:text>
+          <xsl:text>, finalize: &lt;&lt;-END</xsl:text>
         </xsl:when>
         <xsl:when test="d:update">
-          <xsl:text>, nil, &lt;&lt;-END</xsl:text>
+          <xsl:text>, update: &lt;&lt;-END</xsl:text>
         </xsl:when>
       </xsl:choose>
       <xsl:apply-templates select="d:finalize" mode="part-of-call">

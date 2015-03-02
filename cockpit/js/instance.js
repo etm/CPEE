@@ -166,8 +166,9 @@ function monitor_instance(load) {// {{{
     type: "GET", 
     url: url + "/properties/schema/",
     success: function(res){
-      $(".tabbed.hidden").removeClass("hidden");
-      $(".tabbed .tab.hidden").removeClass("hidden");
+      $("ui-tabbed.hidden, ui-rest.hidden").removeClass("hidden");
+      $("ui-resizehandle.hidden").removeClass("hidden");
+      $("ui-tabbed ui-tab.hidden, ui-rest ui-tab.hidden").removeClass("hidden");
 
       // Change url to return to current instance when reloading
       $("#current-instance").text(url);

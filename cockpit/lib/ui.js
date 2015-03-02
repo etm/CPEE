@@ -54,7 +54,7 @@
     var drag = $(this);
     var prev = drag.prev();
     var initpos = 0;
-    var initheight = $(".content",prev).height();
+    var initheight = $("ui-content",prev).height();
      
     this.on("mousedown", function(e) {
       drag.addClass('draggable');
@@ -74,7 +74,7 @@
       if (pos < 0)
         return;
 
-      $(".content",prev).css('height', pos.toString());
+      $("ui-content",prev).css('height', pos.toString());
 
       e.preventDefault();
     });
@@ -83,22 +83,22 @@
 
 function ui_tab_click(moi) { // {{{
   var active = $(moi).attr('data-tab');
-  var tabbed = $(moi).parents('.tabbed');
+  var tabbed = $(moi).parents('ui-tabbed');
   var tabs = [];
-  $(".tab",tabbed).each(function(){
+  $("ui-tab",tabbed).each(function(){
     if (!$(this).attr('class').match(/switch/))
       tabs.push($(this).attr('data-tab'));
   });  
   $(".inactive",tabbed).removeClass("inactive");
   $.each(tabs,function(a,b){
     if (b != active) {
-      $(".tab[data-tab=" + b + "]",tabbed).addClass("inactive");
-      $(".area[data-belongs-to-tab=" + b + "]",tabbed).addClass("inactive");
+      $("ui-tab[data-tab=" + b + "]",tabbed).addClass("inactive");
+      $("ui-area[data-belongs-to-tab=" + b + "]",tabbed).addClass("inactive");
     }  
   });
 } // }}}
 function ui_toggle_vis_tab(moi) {// {{{
-  var tabbed = $(moi).parents('.tabbed');
+  var tabbed = $(moi).parents('ui-tabbed');
   tabbed.toggleClass('off');
 }// }}}
 
@@ -107,8 +107,8 @@ $(document).ready(function() {
     $('body').children().remove();
     $('body').append('Sorry, only Firefox >= 20.0 and Chrom(e|ium) >= 17 for now.');
   }  
-  $('.tabbed.rest .content .area.resizehandle').dragcolumn();
-  $('.resizehandle:not(.area)').dragresize();
-  $('.tabbed .tabbar .tab.switch').click(function(){ui_toggle_vis_tab(this);});
-  $('.tabbed .tabbar .tab').not('.switch').click(function(){ui_tab_click(this);});
+  $('ui-rest ui-content ui-resizehandle').dragcolumn();
+  $('*[is=x-ui] > ui-resizehandle').dragresize();
+  $('ui-tabbed ui-tabbar ui-tab.switch').click(function(){ui_toggle_vis_tab(this);});
+  $('ui-tabbed ui-tabbar ui-tab').not('.switch').click(function(){ui_tab_click(this);});
 });
