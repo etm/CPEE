@@ -54,8 +54,7 @@ module CPEE
 
         def print_Node(node,res)
           if node.endpoints.empty? && !node.script.nil? && node.script.strip != ''
-            n = res.add('d:manipulate', 'id' => "a#{node.niceid}")
-            n.text = node.script
+            n = res.add('d:manipulate', 'id' => "a#{node.niceid}", node.script)
             n.attributes['output'] = node.script_var unless node.script_var.nil?
             n.attributes['language'] = node.script_type unless node.script_type.nil?
           else
@@ -70,7 +69,7 @@ module CPEE
               par.add(k,v)
             end
             if !node.script.nil? && node.script.strip != ''
-              x = n.add('manipulate',node.script)
+              x = n.add('d:finalize',node.script)
               x.attributes['output'] = node.script_var unless node.script_var.nil?
               x.attributes['language'] = node.script_type unless node.script_type.nil?
             end
