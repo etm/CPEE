@@ -37,6 +37,23 @@ textarea, input, select, button {
   resize: none;
 }
 
+button { 
+  padding: .1em .2em;
+  border: 1pt solid ButtonShadow;  
+  border-radius: 0.2em;
+  margin: 0; 
+  font-size: 0.9em; 
+  background: ButtonFace;
+  background: -webkit-gradient(linear, left top, left bottom, from(white), to(ButtonFace));
+  background: -moz-linear-gradient(top, white, ButtonFace);
+}
+button::-moz-focus-inner {
+  border: 0 none;
+  padding: 0;
+  margin: 0;
+}
+
+input { font-family: sans-serif; font-size: 1em; }
 input::-webkit-input-placeholder { color: red; }
 input:-moz-placeholder { color: red; }
 
@@ -194,16 +211,20 @@ ui-content ui-area {
 }
 
 ui-tabbed, ui-content, ui-area { display: block; }
-ui-content ui-area.inactive { display: none }
+ui-content ui-area.inactive, ui-content ui-resizehandle.inactive, ui-rest ui-content ui-resizehandle.inactive { display: none }
 
 ui-content ui-area .layout {
   width: 100%;
   border-collapse:collapse;
   border-spacing:0;
-  border:0 none;
+  border: 0 none;
   padding:0;
   margin:0;
 }
+ui-rest ui-content ui-area .layout {
+  border:1em solid white;
+  box-sizing:border-box;
+} 
 ui-content ui-area .layout td {
   border:0 none;
   padding:0;

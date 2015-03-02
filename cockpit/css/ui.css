@@ -7,20 +7,6 @@ body {
   font-size: 1em;
 }
 
-button { 
-  padding: .5em 2em .55em;
-  border: 1px solid ButtonShadow;  
-  border-radius: 0.2em;
-  padding: 0px; 
-  margin: 0; 
-  font-family: sans-serif; 
-  font-size: 0.9em; 
-  background: ButtonFace;
-  background: -webkit-gradient(linear, left top, left bottom, from(ButtonHighlight), to(ButtonFace));
-  background: -moz-linear-gradient(top, ButtonHighlight, ButtonFace);
-}
-input { font-family: sans-serif; font-size: 1em; }
-
 #instance ui-content { height: 7em; }
 
 #areanew td:nth-child(1)       { width: 7em; padding-right: 1em; }
@@ -28,12 +14,6 @@ input { font-family: sans-serif; font-size: 1em; }
 #areanew input                 { width: 100%;  }
 #areanew button[name=base]     { width: 100%;  }
 #areanew button[name=instance] { width: 100%;  }
-
-ui-tabbed ui-tabbar ui-behind input { 
-  border: 0 none; 
-  text-align: right; 
-  width: 100%;
-}
 
 ui-tabbed ui-tabbar ui-behind button {
   margin-left: 0.5em;
@@ -75,14 +55,11 @@ button.highlight { background-color: #cc0000; }
 #areaexecution table.compact tr td:nth-child(1) { width: 15ex; }
 
 #areaexecution table.compact tbody.debug tr:last-child td { padding-bottom: 0.5em; }
+#areaexecution table.compact tbody.debug tr:last-child td input { vertical-align: middle; }
 #areaexecution table.compact tbody.exe tr:first-child td { padding-top: 0.5em; }
 #areaexecution table.compact tbody.exe { border-top: 1px solid ButtonShadow; }
 
 #areaexecution table.compact tbody.exe td { height: 2.2em; }
-
-#dat_log { width:100%; }
-#dat_log td { vertical-align: top; }
-#dat_log tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
 
 #dat_endpoints {
   border-collapse:collapse;
@@ -120,8 +97,10 @@ button.highlight { background-color: #cc0000; }
 #dat_dataelements input:first-child       { border: 0 none; width: 8em; }  
 #dat_dataelements input:last-child        { border: 0 none; width: 100%; }
 
+#areadsl div { padding: 0 1em; }
+#areadsl div:first-child { padding-top: 1em; }
+#areadsl div:last-child { padding-bottom: 1em; }
 #areadsl pre {
-  margin: 1em;
   font-family: monospace; 
   font-size:1.3em;
 }
@@ -149,17 +128,12 @@ span.vote {
   padding-left: 1.5em; 
 }
 
-#dat_details {
-  border-collapse:collapse;
-  border-spacing:0;
-  border:0 none;
-  margin:1em;
-  padding:0;
-}
+#dat_log tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
+
 #dat_details td.del                     { width: 1.2em; font-size: 1.3em; font-weight: bold; }
 #dat_details td.pname                   { width: 7em; }
-#dat_details td.cname                   { width: 10.2em; padding-top:0.25em; }
-#dat_details td.sep                     { width: 1em;    padding-top:0.25em; }
+#dat_details td.cname                   { width: 10.2em; }
+#dat_details td.sep                     { width: 1em;    }
 #dat_details tr.indent td:nth-child(1)  { padding-left: 2em;}
 #dat_details tr:nth-child(odd) input    { background-color: ButtonFace; }
 #dat_details tr:nth-child(odd) textarea { background-color: ButtonFace; }
