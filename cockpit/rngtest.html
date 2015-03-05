@@ -23,6 +23,7 @@
     <!-- libs, do not modify -->
     <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.min.js"></script>
     <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/relaxngui.js"></script>
+    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/util.js"></script>
     <!-- custom stuff, play arround  -->
 
     <script type="text/javascript">
@@ -31,7 +32,6 @@
           type: "GET", 
           url: "rngtest.rng",
           success: function(res){
-            console.log(res);
             new RelaxNGui($('#show'),res);
           }
         });  

@@ -1,5 +1,4 @@
 <element rngui:version="1.2" name="data" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org"> 
-  <rngui:ui/>
   <element name="type">
     <rngui:ui>
       <rngui:readonly/>
@@ -33,7 +32,6 @@
     <text/>
   </element>
   <element name='parameters'>
-    <rngui:ui/>
     <element name="label">
       <rngui:ui>
         <rngui:label>Label</rngui:label>
