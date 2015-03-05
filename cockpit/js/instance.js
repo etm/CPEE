@@ -52,7 +52,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
 $(document).ready(function() {// {{{
   $("input[name=base-url]").val(location.protocol + "//" + location.host + ":" + $('body').data('defaultport'));
   $("button[name=base]").click(function(){ create_instance(null); });
-  $("button[name=instance]").click(function(){ ui_tab_click("#tabinstance"); monitor_instance(false); });
+  $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance(false); });
   $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),load_testset); });
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodelfile]").click(load_modelfile);
@@ -71,19 +71,19 @@ $(document).ready(function() {// {{{
         var ts = $(this).text();
         $('#predefinedtestsets').append($("<div class='menuitem'></div>").text(ts));
       });
-      var q = $.parseQuery();
+      var q = $.parseQuerySimple();
       if (q.monitor && q.load) {
         $("input[name=instance-url]").val(q.monitor);
         $("select[name=testset-names]").val(q.load)
-        ui_tab_click("#tabexecution");
+        ui_activate_tab("#tabexecution");
         monitor_instance(true);
       } else if (q.load) {
         $("select[name=testset-names]").val(q.load)
-        ui_tab_click("#tabexecution");
+        ui_activate_tab("#tabexecution");
         create_instance(q.load);
       } else if (q.monitor) {
         $("input[name=instance-url]").val(q.monitor);
-        ui_tab_click("#tabexecution");
+        ui_activate_tab("#tabexecution");
         // ui_toggle_vis_tab($("#instance td.switch"));
         monitor_instance(false);
       }  
@@ -252,7 +252,7 @@ function monitor_instance(load) {// {{{
     },
     error: function(a,b,c) {
       alert("This ain't no CPEE instance");
-      ui_tab_click("#tabnew");
+      ui_activate_tab("#tabnew");
     }
   });      
 }// }}}

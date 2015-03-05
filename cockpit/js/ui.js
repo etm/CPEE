@@ -23,9 +23,6 @@ $(document).ready(function() {
       location.reload();
     });
   }  
-
-  // Resize areas
-  $('#parameters .tabbelow').resizable();
 });
 
 // flexible parameter input
