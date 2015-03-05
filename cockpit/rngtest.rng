@@ -20,9 +20,15 @@
     </rngui:ui>
     <data type="string"/>
   </element>
-  <element name="code">
+  <element name="finalize">
     <rngui:ui>
-      <rngui:label>Script</rngui:label>
+      <rngui:label>Finalize</rngui:label>
+    </rngui:ui>
+    <text/>
+  </element>
+  <element name="update">
+    <rngui:ui>
+      <rngui:label>Update</rngui:label>
     </rngui:ui>
     <text/>
   </element>

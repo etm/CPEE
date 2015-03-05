@@ -2,7 +2,8 @@
   <type></type>
   <position></position>
   <endpoint></endpoint>
-  <code></code>
+  <finalize></finalize>
+  <update></update>
   <parameters>
     <label></label>
     <method>:get</method>
