@@ -1,4 +1,0 @@
-var RelaxNGui = function(doc) {
-  
-
-};
