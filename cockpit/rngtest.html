@@ -32,7 +32,8 @@
           type: "GET", 
           url: "rngtest.rng",
           success: function(res){
-            new RelaxNGui($('#show'),res);
+            var rngui = new RelaxNGui(null,res);
+            $('#show').append(rngui.result);
           }
         });  
       });

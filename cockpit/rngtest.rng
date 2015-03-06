@@ -1,47 +1,24 @@
 <element rngui:version="1.2" name="data" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org"> 
-  <element name="type">
-    <rngui:ui>
-      <rngui:readonly/>
-      <rngui:label>Type</rngui:label>
-    </rngui:ui>
+  <element name="type" rngui:label="Type">
+    <data type="string" rngui:readonly="true"/>
+  </element>
+  <element name="position" rngui:label="ID">
+    <data type="string" rngui:readonly="true"/>
+  </element>
+  <element name="endpoint" rngui:label="Endpoint">
     <data type="string"/>
   </element>
-  <element name="position">
-    <rngui:ui>
-      <rngui:readonly/>
-      <rngui:label>ID</rngui:label>
-    </rngui:ui>
-    <data type="string"/>
+  <element name="finalize" rngui:label="Finalize">
+    <text rngui:label='Script that is executed, when a service returns data'/>
   </element>
-  <element name="endpoint">
-    <rngui:ui>
-      <rngui:label>Endpoint</rngui:label>
-    </rngui:ui>
-    <data type="string"/>
-  </element>
-  <element name="finalize">
-    <rngui:ui>
-      <rngui:label>Finalize</rngui:label>
-    </rngui:ui>
-    <text/>
-  </element>
-  <element name="update">
-    <rngui:ui>
-      <rngui:label>Update</rngui:label>
-    </rngui:ui>
-    <text/>
+  <element name="update" rngui:label="Update">
+    <text rngui:label='Script that is executed, when a service send intermediate data'/>
   </element>
   <element name='parameters'>
-    <element name="label">
-      <rngui:ui>
-        <rngui:label>Label</rngui:label>
-      </rngui:ui>
-      <data type="string"/>
+    <element name="label" rngui:label="Label">
+      <data type="string" rngui:label="Short description of the task"/>
     </element>
-    <element name="method">
-      <rngui:ui>
-        <rngui:label>Method</rngui:label>
-      </rngui:ui>
+    <element name="method" rngui:label="Method">
       <choice>
         <value>:post</value>
         <value>:get</value>
@@ -50,13 +27,10 @@
       </choice>
     </element>
     <element name="parameters">
-      <zeroOrMore>
-        <rngui:ui>
-          <rngui:heading>Label</rngui:heading>
-        </rngui:ui>
-        <element>
+      <zeroOrMore rngui:label="Create Parameter Pairs">
+        <element rngui:label='Name'>
           <anyName/>
-          <data type="string"/>
+          <data type="string" rngui:label="Value"/>
         </element>
       </zeroOrMore>
     </element>  
