@@ -24,6 +24,8 @@ var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'attributes' + '&' +
+               'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'handlerwrapper' + '&' +
@@ -41,6 +43,8 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'dataelements' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'endpoints' + '&' +
+               'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'attributes' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
@@ -216,6 +220,10 @@ function monitor_instance(load) {// {{{
                 case 'endpoints':
                   monitor_instance_endpoints();
                   break;
+                case 'attributes':
+                  monitor_instance_attributes();
+                  monitor_instance_transformation();
+                  break;
                 case 'state':
                   monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
                   break;
@@ -246,6 +254,7 @@ function monitor_instance(load) {// {{{
 
       monitor_instance_dataelements();
       monitor_instance_endpoints();
+      monitor_instance_attributes();
       monitor_instance_transformation();
       monitor_instance_dsl();
       monitor_instance_state();
@@ -301,6 +310,35 @@ function monitor_instance_endpoints() {// {{{
       if (temp_xml != save['endpoints']) {
         save['endpoints'] = temp_xml;
         var ctv = $("#dat_endpoints");
+        ctv.empty();
+        $.each(temp,function(a,b){
+          var node = $("#dat_template_pair tr").clone(true);
+          $('.pair_name',node).val(a);
+          $('.pair_value',node).val(b);
+          ctv.append(node);
+        });
+        ctv.append(temp);
+      }  
+    }
+  });
+}// }}}
+
+function monitor_instance_attributes() {// {{{
+  var url = $("#current-instance").text();
+  $.ajax({
+    type: "GET", 
+    url: url + "/properties/values/attributes/",
+    success: function(res){
+      var values = $("value > *",res);
+      var temp = {}
+      values.each(function(){
+        temp[this.nodeName] = $(this).text();
+      });
+      var temp_xml = serialize_hash(temp);
+
+      if (temp_xml != save['attributes']) {
+        save['attributes'] = temp_xml;
+        var ctv = $("#dat_attributes");
         ctv.empty();
         $.each(temp,function(a,b){
           var node = $("#dat_template_pair tr").clone(true);

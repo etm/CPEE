@@ -283,16 +283,16 @@ module CPEE
       end
     end #}}}
     def unserialize_dataelements! #{{{
-        @instance.data.clear
-        @properties.data.find("/p:properties/p:dataelements/p:*").each do |e|
-          @instance.data[e.qname.to_sym] = ValueHelper::parse(e.text)
-        end
+      @instance.data.clear
+      @properties.data.find("/p:properties/p:dataelements/p:*").each do |e|
+        @instance.data[e.qname.to_sym] = ValueHelper::parse(e.text)
+      end
     end #}}}
     def unserialize_endpoints! #{{{
-        @instance.endpoints.clear
-        @properties.data.find("/p:properties/p:endpoints/p:*").each do |e|
-          @instance.endpoints[e.qname.to_sym] = e.text
-        end
+      @instance.endpoints.clear
+      @properties.data.find("/p:properties/p:endpoints/p:*").each do |e|
+        @instance.endpoints[e.qname.to_sym] = e.text
+      end
     end #}}}
     def unserialize_state! #{{{ 
       state = @properties.data.find("string(/p:properties/p:state)")

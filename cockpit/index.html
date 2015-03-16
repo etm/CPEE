@@ -237,7 +237,8 @@
         <ui-tab class="switch"                                               ></ui-tab>
         <ui-tab class=""         data-tab="dataelements" id="tabdataelements">Data Elements</ui-tab>
         <ui-tab class="inactive" data-tab="endpoints"    id="tabendpoints"   >Endpoints</ui-tab>
-        <ui-behind                                                               ><button title='Ctrl-N while editing entry'>New</button><button title='Ctrl-S while editing entry'>Save</button></ui-behind>
+        <ui-tab class="inactive" data-tab="attributes"   id="tabattributes"  >Attributes</ui-tab>
+        <ui-behind                                                           ><button title='Ctrl-N while editing entry'>New</button><button title='Ctrl-S while editing entry'>Save</button></ui-behind>
       </ui-tabbar>
       <ui-content>
         <ui-area data-belongs-to-tab="dataelements" id="areadataelements"> <!--{{{-->
@@ -245,6 +246,9 @@
         </ui-area> <!--}}}-->
         <ui-area data-belongs-to-tab="endpoints" id="areaendpoints" class="inactive"> <!--{{{-->
           <table id="dat_endpoints"></table>
+        </ui-area> <!--}}}-->
+        <ui-area data-belongs-to-tab="attributes" id="areaattributes" class="inactive"> <!--{{{-->
+          <table id="dat_attributes"></table>
         </ui-area> <!--}}}-->
       </ui-content>
     </ui-tabbed>

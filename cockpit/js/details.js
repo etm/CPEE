@@ -1,66 +1,66 @@
 $(document).ready(function() {
-  $('#main .tabbehind button').hide();
+  $('#main ui-behind button').hide();
 
   // save buttons shown or not //{{{
-  $('#main table.tabbar td.tab:not(.switch):not(.tabbehind)').click(function(event){
-    var me = $(event.target).parents('td.tab');
+  $('#main ui-tabbar ui-tab:not(.switch)').click(function(event){
+    var me = $(event.target).parents('ui-tab');
     if ($('#state').text() != 'finished')
       if (me.attr('id') == 'tabdetails') {
-        $('#main .tabbehind button').show();
+        $('#main ui-behind button').show();
       } else {
-        $('#main .tabbehind button').hide();
+        $('#main ui-behind button').hide();
       }  
   }); //}}}
 
   // New entry //{{{
   $(document).on('click','#main .header button',function(){
-    var node = new_entry($(this).parents('div.tabbed'));
+    var node = new_entry($(this).parents('ui-tabbed'));
     node.addClass('indent');
   }); //}}}
   
   // Delete entries //{{{
   $(document).on('click','#main td.del a',function(event){
-    var top = $(event.target).parents('div.tabbed');
+    var top = $(event.target).parents('ui-tabbed');
     remove_entry($("input",$(event.target).parents('tr')).get(0),false);
     mark_main_save(top);
     return false;
   }); //}}}
 
   // Save entries //{{{
-  $('#main .tabbehind button').click(function(event){
-    save_main($(event.target).parents('div.tabbed'));
+  $('#main ui-behind button').click(function(event){
+    save_main($(event.target).parents('ui-tabbed'));
   }); //}}}
 
-  $(document).on('keyup','#dat_details input.pair_name, #dat_details input.prop_value, #dat_details textarea.prop_value, #dat_details select.prop_value, #dat_details input.pair_value',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
-  $(document).on('change','#dat_details select.prop_value',function(e){ mark_main_save($(e.target).parents('div.tabbed')); });
+  $(document).on('keyup','#dat_details input.pair_name, #dat_details input.prop_value, #dat_details textarea.prop_value, #dat_details select.prop_value, #dat_details input.pair_value',function(e){ mark_main_save($(e.target).parents('ui-tabbed')); });
+  $(document).on('change','#dat_details select.prop_value',function(e){ mark_main_save($(e.target).parents('ui-tabbed')); });
 });
 
 function mark_main_save(top) { //{{{
-  var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
+  var visid = $('ui-tabbar ui-tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
   var tab  = $('#dat_' + visid);
   var details = serialize_details(tab).serializeXML();
 
   if (details != save[visid]) {
-    $('table.tabbar .tabbehind button',top).addClass('highlight');
+    $('ui-tabbar ui-behind button',top).addClass('highlight');
   } else {  
-    $('table.tabbar .tabbehind button',top).removeClass('highlight');
+    $('ui-tabbar ui-behind button',top).removeClass('highlight');
   }
 } //}}}
 function save_main(top) { //{{{
-  var visid   = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
+  var visid   = $('ui-tabbar ui-tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
   var tab     = $('#dat_' + visid);
   var node    = graphrealization.description.get_node_by_svg_id($('input.pname_svgid').val());
   var details = serialize_details(tab).serializeXML();
   if (details != save[visid]) {
     save[visid] = details;
-    $('table.tabbar .tabbehind button',top).removeClass('highlight');
+    $('ui-tabbar ui-behind button',top).removeClass('highlight');
 
     var newn = serialize_details(tab).attr('svg-id',$('input.pname_svgid').val());
     if (newn.children().length == 0) {
       newn.append(node.children());
     }  
     node.replaceWith(newn);
-    $('table.tabbar .tabbehind button:nth-child(2)',top).removeClass('highlight');
+    $('ui-tabbar ui-behind button:nth-child(2)',top).removeClass('highlight');
 
     save_description();
   }  
@@ -68,7 +68,7 @@ function save_main(top) { //{{{
 
 function save_description() {
   var serxml = graphrealization.description.get_description();
-  var url = $("input[name=current-instance]").val();
+  var url = $("#current-instance").text();
   $.ajax({
     type: "PUT", 
     url: url + "/properties/values/description/",

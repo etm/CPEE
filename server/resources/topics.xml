@@ -45,6 +45,9 @@
   <topic id='endpoints'>
     <event>change</event>
   </topic>
+  <topic id='attributes'>
+    <event>change</event>
+  </topic>
   <topic id='handlerwrapper'>
     <event>change</event>
   </topic>

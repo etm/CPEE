@@ -43,7 +43,7 @@ function remove_entry(target,foc) { //{{{
 }   //}}}
 
 function new_entry(top) { //{{{
-  var visid = $('table.tabbar td.tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
+  var visid = $('ui-tabbar ui-tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
   var node = $('#dat_template_pair tr').clone();
   var vnode = $('#dat_' + visid).append(node);
   $('.pair_name',vnode).focus();
