@@ -218,7 +218,7 @@ function CPEE(adaptor) {
     },//}}}
     'description': '<call id="###" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><finalize output="result"/><update output="result"/></call>',
     'permissible_children': function(node) { //{{{
-      if(node.children('manipulate').lenght < 1)
+      if(node.children('finalize,update').lenght < 1)
         return [
          {'label': 'Scripts', 
           'function_call': adaptor.description.insert_last_into, 
@@ -270,7 +270,7 @@ function CPEE(adaptor) {
           return 'callcorrelation'; 
         } else if($('parameters > service', node).length > 0) {
           return 'callinjection'; 
-        } else if($('manipulate', node).length > 0) {
+        } else if($('finalize,update', node).length > 0) {
           return 'callmanipulate'; 
         } else {
           return'call';
@@ -285,7 +285,7 @@ function CPEE(adaptor) {
     },//}}}
     'description': '<call id="###" endpoint="" xmlns="http://cpee.org/ns/description/1.0"><parameters xmlns="http://cpee.org/ns/description/1.0"><label>""</label><method>:post</method><parameters/></parameters></call>',
     'permissible_children': function(node) { //{{{
-      if(node.children('manipulate').length < 1) 
+      if(node.children('finalize,update').length < 1) 
         return [
          {'label': 'Scripts', 
           'function_call': adaptor.description.insert_last_into, 
@@ -313,7 +313,7 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description': '<finalize xmlns="http://cpee.org/ns/description/1.0"/><update xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': ['<finalize xmlns="http://cpee.org/ns/description/1.0"/>','<update xmlns="http://cpee.org/ns/description/1.0"/>'],
     'permissible_children': function(node) { //{{{
       return [];
     }, //}}}

@@ -253,31 +253,55 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     var newn = $('*[new=true]',description);
     newn.removeAttr('new');
 
-    if (newn.attr('svg-id') != undefined)
-      adaptor.notify(newn.attr('svg-id'));
-    else if (svgid != undefined)
-      adaptor.notify(svgid);
-    else
-      console.info('Something went horribly wrong');
+    $.each(newn,function(k,nn){
+      if ($(nn).attr('svg-id') != undefined)
+        adaptor.notify($(nn).attr('svg-id'));
+      else if (svgid != undefined)
+        adaptor.notify(svgid);
+    });
   } // }}}
   // }}}
   // Adaption functions {{{
   this.insert_after = function(new_node, target) { // {{{
-    var nn = $X(new_node.replace(/###/,get_free_id()));
-    target.after(nn);
-    nn.attr('new','true');
+    if ($.isArray(new_node)) {
+      $.each(new_node,function(k,v){
+        var nn = $X(v.replace(/###/,get_free_id()));
+        target.after(nn);
+        nn.attr('new','true');
+      });
+    } else {
+      var nn = $X(new_node.replace(/###/,get_free_id()));
+      target.after(nn);
+      nn.attr('new','true');
+    }
     update();
   } // }}}
   this.insert_first_into = function(new_node, target, selector) { // {{{
-    var nn = $X(new_node.replace(/###/,get_free_id()));
-    target.prepend(nn);
-    nn.attr('new','true');
+    if ($.isArray(new_node)) {
+      $.each(new_node,function(k,v){
+        var nn = $X(v.replace(/###/,get_free_id()));
+        target.prepend(nn);
+        nn.attr('new','true');
+      });
+    } else {
+      var nn = $X(new_node.replace(/###/,get_free_id()));
+      target.prepend(nn);
+      nn.attr('new','true');
+    }
     update();
   } // }}}
   this.insert_last_into = function(new_node, target, selector) { // {{{
-    var nn = $X(new_node.replace(/###/,get_free_id()));
-    target.append(nn);
-    nn.attr('new','true');
+    if ($.isArray(new_node)) {
+      $.each(new_node,function(k,v){
+        var nn = $X(v.replace(/###/,get_free_id()));
+        target.append(nn);
+        nn.attr('new','true');
+      });
+    } else {
+      var nn = $X(new_node.replace(/###/,get_free_id()));
+      target.append(nn);
+      nn.attr('new','true');
+    }
     update();
   } // }}}
   this.remove = function(selector, target) {//{{{
