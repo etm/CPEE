@@ -216,23 +216,6 @@ function CPEE(adaptor) {
                   '</svg>');
       }
     },//}}}
-    'description': '<call id="###" endpoint="" xmlns="http://this.org/ns/description/1.0"><parameters><label>""</label><method>:post</method><parameters/></parameters><finalize output="result"/><update output="result"/></call>',
-    'permissible_children': function(node) { //{{{
-      if(node.children('finalize,update').lenght < 1)
-        return [
-         {'label': 'Scripts', 
-          'function_call': adaptor.description.insert_last_into, 
-          'menu_icon': elements.callmanipulate.illustrator.svg, 
-          'params': [adaptor.description.elements.manipulate, node]}
-        ];
-      return [];
-    }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
-      },
-      'click': events.click,
-    }//}}}
   }; /*}}}*/
   this.elements.choose_inclusive = { /*{{{*/
     'illustrator': {//{{{

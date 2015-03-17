@@ -78,11 +78,15 @@ $(document).ready(function() {// {{{
       var q = $.parseQuerySimple();
       if (q.monitor && q.load) {
         $("input[name=instance-url]").val(q.monitor);
-        $("select[name=testset-names]").val(q.load)
+        $("#predefinedtestsets div.menuitem").each(function(k,v){
+          if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
+        });
         ui_activate_tab("#tabexecution");
         monitor_instance(true);
       } else if (q.load) {
-        $("select[name=testset-names]").val(q.load)
+        $("#predefinedtestsets div.menuitem").each(function(k,v){
+          if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
+        });
         ui_activate_tab("#tabexecution");
         create_instance(q.load);
       } else if (q.monitor) {
@@ -692,7 +696,6 @@ function set_testset(testset) {// {{{
 
 function load_testsetfile_after() { //{{{
   if (running) return;
-  console.log('rrrr');
   running = true;
   if (typeof window.FileReader !== 'function') {
     alert('FileReader not yet supportet');
