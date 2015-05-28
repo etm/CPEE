@@ -27,9 +27,9 @@
     <parameter name="id" type="integer"/>
   </message>
 
- <message name="instance-new">
-   <parameter name="info" type="string"/>
- </message>
+  <message name="instance-new">
+    <parameter name="info" type="string"/>
+  </message>
 
   <message name="instance-info">
     <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">

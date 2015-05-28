@@ -1,0 +1,89 @@
+<testset>
+  <endpoints>
+    <teil1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://wwwlab.cs.univie.ac.at/~a9506264/lagerhaltung.php/teil1</teil1>
+    <teil2 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://wwwlab.cs.univie.ac.at/~a9506264/lagerhaltung.php/teil2</teil2>
+    <teil3 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://wwwlab.cs.univie.ac.at/~a9506264/lagerhaltung.php/teil3</teil3>
+    <teil4 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://wwwlab.cs.univie.ac.at/~a9506264/lagerhaltung.php/teil4</teil4>
+    <produzieren xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://wwwlab.cs.univie.ac.at/~a9506264/correlator.php</produzieren>
+  </endpoints>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a11" endpoint="teil1">
+        <parameters>
+          <label>"Menge Pumpen"</label>
+          <method>:get</method>
+        </parameters>
+        <manipulate>data.pumpen = result["pumpen"] - 1</manipulate>
+      </call>
+      <call id="a12" endpoint="teil2">
+        <parameters>
+          <label>"Menge Schrauben"</label>
+          <method>:get</method>
+        </parameters>
+        <manipulate>data.schrauben = result["schrauben"] - 1 </manipulate>
+      </call>
+      <call id="a13" endpoint="teil3">
+        <parameters>
+          <label>"Menge Dichtunge"</label>
+          <method>:get</method>
+        </parameters>
+        <manipulate>data.dichtungen = result["dichtungen"] - 1</manipulate>
+      </call>
+      <call id="a14" endpoint="teil4">
+        <parameters>
+          <label>"Menge Rohre"</label>
+          <method>:get</method>
+        </parameters>
+        <manipulate>data.rohre = result["rohre"] - 1</manipulate>
+      </call>
+      <call id="a21" endpoint="teil1">
+        <parameters>
+          <label>"Menge Pumpen setzen"</label>
+          <method>:put</method>
+          <parameters>
+            <menge>data.pumpen</menge>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a22" endpoint="teil2">
+        <parameters>
+          <label>"Menge Schrauben setzen"</label>
+          <method>:put</method>
+          <parameters>
+            <menge>data.schrauben</menge>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a23" endpoint="teil3">
+        <parameters>
+          <label>"Menge Dichtungen setzen"</label>
+          <method>:put</method>
+          <parameters>
+            <menge>data.dichtungen</menge>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a24" endpoint="teil4">
+        <parameters>
+          <label>"Menge Rohre setzen"</label>
+          <method>:put</method>
+          <parameters>
+            <menge>data.rohre </menge>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a2" endpoint="produzieren">
+        <parameters>
+          <label>"Teil produzieren"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+        <manipulate/>
+      </call>
+    </description>
+  </description>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Beispiel Produktion</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+  </attributes>
+</testset>

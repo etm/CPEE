@@ -1,0 +1,15 @@
+<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <message name="instantiate">
+    <parameter name="xml" mimetype="*/xml"/>
+  </message>
+
+  <message name="instance-id">
+    <parameter name="id" type="integer"/>
+  </message>
+
+  <resource>
+    <post in="instantiate" out="instance-id"/>
+  </resource>
+   
+</description>
