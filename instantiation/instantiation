@@ -10,12 +10,12 @@ class Instantiate < Riddl::Implementation
     tdoc = @p[0].value.read
     XML::Smart.string(tdoc) do |doc|
       doc.register_namespace 'desc', 'http://cpee.org/ns/description/1.0'
+      doc.register_namespace 'prop', 'http://riddl.org/ns/common-patterns/properties/1.0'
 
       srv = Riddl::Client.new($cpee, $cpee + "?riddl-description")
       res = srv.resource("/")
-      status, response = res.post [
-        Riddl::Parameter::Simple.new("name",doc.find("/testset/attributes/info"))
-      ]
+      status, response = res.post Riddl::Parameter::Simple.new("info",doc.find("string(/testset/attributes/prop:info)"))
+
       ins = -1
       if status == 200
         ins = response.first.value
@@ -31,7 +31,7 @@ class Instantiate < Riddl::Implementation
         ["description"].each do |item|
           if doc.find("/testset/#{item}").any?
             params << Riddl::Parameter::Simple.new("name",item)
-            params << Riddl::Parameter::Simple.new("content","<content>" + doc.find("/testset/desc:#{item}").first.dump + "</content>")
+            params << Riddl::Parameter::Simple.new("content","<content>" + doc.find("/testset/#{item}/desc:*").first.dump + "</content>")
           end
         end
 
@@ -39,7 +39,7 @@ class Instantiate < Riddl::Implementation
         params << Riddl::Parameter::Simple.new("value","running")
 
         status, response = res.put params
-        return Riddl::Parameter::Simple.new("id",ins.to_i)
+        return Riddl::Parameter::Simple.new("url",$cpee + ins)
       end
     end
 
@@ -47,7 +47,7 @@ class Instantiate < Riddl::Implementation
   end
 end
 
-Riddl::Server.new(File.dirname(__FILE__) + '/instantiation.xml', :port => 9296, :debug => STDOUT) do
+Riddl::Server.new(File.dirname(__FILE__) + '/instantiation.xml', :port => 9296) do
   accessible_description true
   cross_site_xhr true
 

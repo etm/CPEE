@@ -4,12 +4,12 @@
     <parameter name="xml" mimetype="*/xml"/>
   </message>
 
-  <message name="instance-id">
-    <parameter name="id" type="integer"/>
+  <message name="instance">
+    <parameter name="url" type="anyURI"/>
   </message>
 
   <resource>
-    <post in="instantiate" out="instance-id"/>
+    <post in="instantiate" out="instance"/>
   </resource>
    
 </description>
