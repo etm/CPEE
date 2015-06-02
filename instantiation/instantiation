@@ -2,12 +2,17 @@
 require 'rubygems'
 require 'riddl/server'
 require 'xml/smart'
+require 'base64'
 
 $cpee = 'http://cpee.org:9298/'
 
 class Instantiate < Riddl::Implementation
   def response
     tdoc = @p[0].value.read
+    if @p[0].additional =~ /base64/
+      tdoc = Base64.decode64(tdoc)
+    end
+
     XML::Smart.string(tdoc) do |doc|
       doc.register_namespace 'desc', 'http://cpee.org/ns/description/1.0'
       doc.register_namespace 'prop', 'http://riddl.org/ns/common-patterns/properties/1.0'
@@ -47,7 +52,7 @@ class Instantiate < Riddl::Implementation
   end
 end
 
-Riddl::Server.new(File.dirname(__FILE__) + '/instantiation.xml', :port => 9296) do
+Riddl::Server.new(File.dirname(__FILE__) + '/instantiation.xml', :port => 9296, :debug => STDOUT) do
   accessible_description true
   cross_site_xhr true
 
