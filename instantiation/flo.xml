@@ -86,8 +86,9 @@
         <pid>data.pid</pid>
       </parameters>
     </parameters>
+    <finalize>data.progress = 'INTERMEDIATE'</finalize>
   </call>
-  <loop pre_test="data.progress == 'END'">
+  <loop pre_test="data.progress != 'END'">
     <call id="a4" endpoint="correlation">
       <parameters>
         <label>"Warten auf Fortschritt"</label>
