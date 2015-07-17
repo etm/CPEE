@@ -1,14 +1,14 @@
 <data>
-  <type></type>
-  <position></position>
-  <endpoint></endpoint>
-  <finalize></finalize>
-  <update></update>
+  <type>:activity</type>
+  <position>a1</position>
+  <endpoint>xyz</endpoint>
+  <finalize>abc = 1</finalize>
+  <update>def = 2</update>
   <parameters>
-    <label></label>
+    <label>alalala</label>
     <method>:get</method>
     <parameters>
-      <a/>
+      <a>1</a>
       <b/>
       <c/>
     </parameters>

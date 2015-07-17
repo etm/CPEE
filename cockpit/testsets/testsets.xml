@@ -1,4 +1,5 @@
 <testsets>
+  <testset>Infinity</testset>
   <testset>SOPROMO Test Sonification</testset>
   <testset>Linear</testset>
   <testset>Coopis Testset</testset>

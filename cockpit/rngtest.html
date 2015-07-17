@@ -33,15 +33,21 @@
           type: "GET", 
           url: "rngtest.rng",
           success: function(res){
-            var rngui = new RelaxNGui(null,res);
-            $('#show').append(rngui.result);
+            $.ajax({
+              type: "GET", 
+              url: "rngtest.xml",
+              success: function(xml){
+                var rngui = new RelaxNGui($('> data',xml),res,$('#show'));
+                $('#saveall').on('click',rngui.save);
+              }
+            });
           }
         });  
       });
     </script>
   </head>
   <body data-defaultport="9298">
-    <div id="show">
-    </div>
+    <div id="show"></div>
+    <button id='saveall'>save it all to console</button>
   </body>
 </html>

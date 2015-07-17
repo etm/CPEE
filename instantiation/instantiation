@@ -4,7 +4,8 @@ require 'riddl/server'
 require 'xml/smart'
 require 'base64'
 
-$cpee = 'http://cpee.org:9298/'
+# $cpee = 'http://cpee.org:9298/'
+$cpee = 'http://localhost:9298/'
 
 class Instantiate < Riddl::Implementation
   def response
@@ -16,6 +17,8 @@ class Instantiate < Riddl::Implementation
     XML::Smart.string(tdoc) do |doc|
       doc.register_namespace 'desc', 'http://cpee.org/ns/description/1.0'
       doc.register_namespace 'prop', 'http://riddl.org/ns/common-patterns/properties/1.0'
+
+      p $cpee
 
       srv = Riddl::Client.new($cpee, $cpee + "?riddl-description")
       res = srv.resource("/")
