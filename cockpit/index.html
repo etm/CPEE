@@ -20,25 +20,48 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>CPEE Cockpit</title>
 
-    <!-- libs, do not modify -->
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.min.js"></script>
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.browser.js"></script>
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.svg.min.js"></script>
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.svgdom.min.js"></script>
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/util.js"></script>
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/printf.js"></script>
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/strftime.min.js"></script>
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/parsequery.js"></script>
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/underscore.min.js"></script>
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.caret.min.js"></script>
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.cookie.js"></script>
+    <!-- libs, do not modify. When local than load local libs. -->
+    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.cookie.js">
+      if (document.location.hostname == 'localhost') {                                
+        document.write('script type="text/javascript" src="http://localhost/js_libs/jquery.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/jquery.browser.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/jquery.svg.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/jquery.svgdom.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/util.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/printf.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/strftime.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/parsequery.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/underscore.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/jquery.caret.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/jquery.cookie.js">\x3C/script>
 
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/custommenu.js"></script>
-    <link rel="stylesheet" href="http://gruppe.wst.univie.ac.at/js_libs/custommenu.css" type="text/css"/>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/ui.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://localhost/js_libs/custommenu.js">\x3C/script>
 
-    <script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/ui.js"></script>
-    <link rel="stylesheet" href="http://gruppe.wst.univie.ac.at/js_libs/ui.css" type="text/css"/>
+        document.write('link rel="stylesheet" href="http://localhost/js_libs/custommenu.css" type="text/css"/>
+        document.write('link rel="stylesheet" href="http://localhost/js_libs/ui.css" type="text/css"/>
+      } else {
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.browser.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.svg.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.svgdom.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/util.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/printf.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/strftime.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/parsequery.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/underscore.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.caret.min.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.cookie.js">\x3C/script>
 
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/ui.js">\x3C/script>
+        document.write('script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/custommenu.js">\x3C/script>
+
+        document.write('link rel="stylesheet" href="http://gruppe.wst.univie.ac.at/js_libs/custommenu.css" type="text/css"/>
+        document.write('link rel="stylesheet" href="http://gruppe.wst.univie.ac.at/js_libs/ui.css" type="text/css"/>
+      }
+    </script>
+
+    <!-- modelling ui -->
     <script type="text/javascript" src="js/wfadaptor.js"></script>
     <script type="text/javascript" src="js/wfadaptor.cpee.js"></script>
     <link rel="stylesheet" href="css/wfadaptor.css" type="text/css"/>
