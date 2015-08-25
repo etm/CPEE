@@ -1,0 +1,11 @@
+<call id="a1" endpoint="timeout">
+  <parameters>
+    <label></label>
+    <method>:post</method>
+    <arguments>
+      <timeout>2</timeout>
+    </arguments>
+  </parameters>
+  <finalize output="result">  data.x += "a1,"</finalize>  
+  <update output="result">  data.x += "a1,"</update>  
+</call>  
