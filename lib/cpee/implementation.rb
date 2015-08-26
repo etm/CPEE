@@ -38,7 +38,7 @@ module CPEE
     opts[:infinite_loop_stop]         ||= 10000
 
     opts[:runtime_options]            << [ 
-      "startclean", "delete instances before starting.", Proc.new { |status|
+      "startclean", "Delete instances before starting.", Proc.new { |status|
         Dir.glob(File.expand_path(File.dirname(__FILE__) + '/../../server/instances/*')).each do |d|
           FileUtils.rm_r(d) if File.basename(d) =~ /^\d+$/
         end
