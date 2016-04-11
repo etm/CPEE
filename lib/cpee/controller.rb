@@ -505,8 +505,9 @@ module CPEE
             if u.class == String
               client = Riddl::Client.new(u,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml',:xmpp => @opts[:xmpp])
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
-              params << Riddl::Header.new("CPEE_BASE",self.base)
-              params << Riddl::Header.new("CPEE_INSTANCE",self.instance)
+              params << Riddl::Header.new("CPEE_BASE",self.base_url)
+              params << Riddl::Header.new("CPEE_INSTANCE",self.instance_url)
+              params << Riddl::Header.new("CPEE_CALLBACK",self.instance_url + '/callbacks/' + callback)
               @mutex.synchronize do
                 status, result, headers = client.post params
                 if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
