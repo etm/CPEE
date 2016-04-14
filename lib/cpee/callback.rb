@@ -33,11 +33,7 @@ module CPEE
     end
 
     def callback(result=nil,options=nil)
-      if options
-        @handler.send @method, result, options, *@data
-      else  
-        @handler.send @method, result, *@data
-      end 
+      @handler.send @method, result, options, *@data
     end
   end
 
