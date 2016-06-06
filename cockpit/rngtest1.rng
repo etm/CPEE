@@ -1,4 +1,4 @@
-<element rngui:version="1.2" name="data" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org"> 
+<element rngui:version="1.2" name="data" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
   <element name="type" rngui:label="Type">
     <data type="string" rngui:readonly="true"/>
   </element>
@@ -14,7 +14,7 @@
   <element name="update" rngui:label="Update">
     <text rngui:label='Script that is executed, when a service send intermediate data'/>
   </element>
-  <element name='parameters'>
+  <element name='properties'>
     <element name="label" rngui:label="Label">
       <data type="string" rngui:label="Short description of the task"/>
     </element>
@@ -33,6 +33,6 @@
           <data type="string" rngui:label="Value"/>
         </element>
       </zeroOrMore>
-    </element>  
+    </element>
   </element>
 </element>

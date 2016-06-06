@@ -4,7 +4,7 @@
   <endpoint>xyz</endpoint>
   <finalize>abc = 1</finalize>
   <update>def = 2</update>
-  <parameters>
+  <properties>
     <label>alalala</label>
     <method>:get</method>
     <parameters>
@@ -12,5 +12,5 @@
       <b/>
       <c/>
     </parameters>
-  </parameters>
+  </properties>
 </data>

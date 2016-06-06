@@ -1,13 +1,13 @@
 # This file is part of CPEE.
-# 
+#
 # CPEE is free software: you can redistribute it and/or modify it under the terms
 # of the GNU General Public License as published by the Free Software Foundation,
 # either version 3 of the License, or (at your option) any later version.
-# 
+#
 # CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License along with
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
@@ -37,7 +37,7 @@ module CPEE
     opts[:empty_dslx]                 ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/empty_dslx.xml')
     opts[:infinite_loop_stop]         ||= 10000
 
-    opts[:runtime_options]            << [ 
+    opts[:runtime_options]            << [
       "startclean", "Delete instances before starting.", Proc.new { |status|
         Dir.glob(File.expand_path(File.dirname(__FILE__) + '/../../server/instances/*')).each do |d|
           FileUtils.rm_r(d) if File.basename(d) =~ /^\d+$/
@@ -56,13 +56,13 @@ module CPEE
       controller = {}
       Dir[opts[:instances] + '/*/properties.xml'].each do |e|
         id = ::File::basename(::File::dirname(e))
-        controller[id.to_i] = Controller.new(id,opts)
+        (controller[id.to_i] = Controller.new(id,opts)) rescue nil
       end
 
       interface 'properties' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
         use Riddl::Utils::Properties::implementation(controller[id].properties, PropertiesHandler.new(controller[id]), opts[:mode]) if controller[id]
-      end  
+      end
 
       interface 'main' do
         run CPEE::Instances, controller if get '*'
@@ -74,17 +74,17 @@ module CPEE
             run CPEE::Callbacks, controller, opts if get
             on resource do
               run CPEE::ExCallback, controller if get || put || post || delete
-            end  
-          end  
-        end  
+            end
+          end
+        end
       end
 
       interface 'notifications' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
         use Riddl::Utils::Notifications::Producer::implementation(controller[id].notifications, NotificationsHandler.new(controller[id]), opts[:mode]) if controller[id]
       end
-    end  
-  end  
+    end
+  end
 
   class ExCallback < Riddl::Implementation #{{{
     def response
@@ -95,7 +95,7 @@ module CPEE
         if controller[id].callbacks.has_key?(callback)
           controller[id].callbacks[callback].callback(@p,@h)
         end
-      end  
+      end
     end
   end #}}}
 
@@ -113,10 +113,10 @@ module CPEE
         if opts[:mode] == :debug
           controller[id].callbacks.each do |k,v|
             cb.root.add("callback",{"id" => k},"[#{v.protocol.to_s}] #{v.info}")
-          end  
+          end
         end
         cb.to_s
-      end  
+      end
     end
   end #}}}
 
@@ -146,7 +146,7 @@ module CPEE
         id += 1
         Dir.mkdir(opts[:instances] + "/#{id}") rescue nil
         break
-      end  
+      end
       controller[id] = Controller.new(id,opts)
       info = controller[id].properties.data.find("/p:properties/p:attributes/p:info")
       info.first.text = name if info.length == 1
