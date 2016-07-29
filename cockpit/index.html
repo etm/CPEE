@@ -22,11 +22,12 @@
 
     <!-- libs, do not modify. When local than load local libs. -->
     <script type="text/javascript">
-      if (document.location.hostname == 'localhost') {                                
+      if (document.location.hostname == 'localhost') {
         document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.min.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.browser.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.svg.min.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.svgdom.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/vkbeautify.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/util.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/printf.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/strftime.min.js">\x3C/script>');
@@ -34,17 +35,21 @@
         document.write('<script type="text/javascript" src="http://localhost/js_libs/underscore.min.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.caret.min.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.cookie.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/relaxngui.js">\x3C/script>');
 
         document.write('<script type="text/javascript" src="http://localhost/js_libs/ui.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/custommenu.js">\x3C/script>');
 
         document.write('<link rel="stylesheet" href="http://localhost/js_libs/custommenu.css" type="text/css"/>');
         document.write('<link rel="stylesheet" href="http://localhost/js_libs/ui.css" type="text/css"/>');
+
+        document.write('<link rel="stylesheet" href="http://localhost/js_libs/relaxngui.css" type="text/css"/>');
       } else {
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.min.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.browser.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.svg.min.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.svgdom.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/vkbeautify.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/util.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/printf.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/strftime.min.js">\x3C/script>');
@@ -53,11 +58,15 @@
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.caret.min.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.cookie.js">\x3C/script>');
 
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/relaxngui.js">\x3C/script>');
+
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/ui.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/custommenu.js">\x3C/script>');
 
         document.write('<link rel="stylesheet" href="http://gruppe.wst.univie.ac.at/js_libs/custommenu.css" type="text/css"/>');
         document.write('<link rel="stylesheet" href="http://gruppe.wst.univie.ac.at/js_libs/ui.css" type="text/css"/>');
+
+        document.write('<link rel="stylesheet" href="http://gruppe.wst.univie.ac.at/js_libs/relaxngui.css" type="text/css"/>');
       }
     </script>
 
@@ -83,14 +92,14 @@
          and you should seek further guidance and make independent enquiries
          before relying upon it.
        </p>
-       
+
        <p>
          All functionality included in this demonstrator is subject to change
          without notice. We make no representation or warranty whatsoever
          regarding the completeness, accuracy, adequacy, suitability or
          operation of this demonstrator, or of the results it produces.
        </p>
-       
+
        <p>
          We assume no responsibility for process instances created with this
          demonstrator and disclaim all liability arising from negligence or
@@ -101,7 +110,7 @@
          this demonstrator, or from any action or omission taken as a result of
          using this demonstrator.
        </p>
-       
+
        <p>
          This demonstrator was created in Austria. All liability is excluded to the extent
          permitted by law including any implied terms. Any interpretation of its
@@ -131,14 +140,6 @@
         <td class='pname'><input pattern="[a-zA-Z][a-zA-Z0-9_]*" placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
         <td class='sep'>⇒</td>
         <td class='pvalue'><input placeholder='fill in value...' class='pair_value' value=''/></td>
-      </tr>
-    </table> <!--}}}-->
-    <table id="prop_template_sizer" class='hidden'> <!--{{{-->
-      <tr class='sizer'>
-        <td class='del'></td>
-        <td class='pname'></td>
-        <td class='sep'></td>
-        <td class='value'></td>
       </tr>
     </table> <!--}}}-->
     <table id="prop_template_input" class='hidden'> <!--{{{-->
@@ -182,7 +183,7 @@
       </tr>
     </table> <!--}}}-->
 
-    <div class='menu' id='predefinedtestsets'></div>  
+    <div class='menu' id='predefinedtestsets'></div>
     <div class='menu' id='modeltypes'></div>
 
     <ui-tabbed id="instance">
@@ -217,7 +218,7 @@
             <div>
               <input type='file' name='modelfile' id='modelfile'/>
               <button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">load model</button>
-            </div>    
+            </div>
           </div><div class='section'>
             <a id="savetestset" href="" download=""></a>
             <a id="savesvg" href="" download=""></a>
@@ -229,7 +230,7 @@
             </div>
             <div>
               <button title='a testset includes various setting, subscriptions and a model' name="loadmodeltype">set model type</button>
-            </div>  
+            </div>
           </div>
         </ui-area> <!--}}}-->
         <ui-area data-belongs-to-tab="execution" id="areaexecution" class='inactive'> <!--{{{-->
@@ -239,7 +240,7 @@
                 <td>Debugging:</td>
                 <td><input type="checkbox" name="votecontinue"/></td>
               </tr>
-            </tbody>  
+            </tbody>
             <tbody class='exe'>
               <tr>
                 <td>Execution State:</td>
@@ -292,7 +293,7 @@
         </ui-area>
         <ui-resizehandle data-belongs-to-tab="details">drag to resize</ui-resizehandle>
         <ui-area data-belongs-to-tab="details" id="detailcolumn">
-          <table id="dat_details" class='layout'></table>
+          <div id="dat_details" class='layout'></div>
         </ui-area>
         <ui-area data-belongs-to-tab="dsl" id="areadsl" class="inactive"></ui-area>
         <ui-area data-belongs-to-tab="log" id="arealog" class="inactive"> <!--{{{-->

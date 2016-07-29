@@ -21,10 +21,10 @@ ui-tabbed ui-tabbar ui-behind button {
 
 #current-instance-properties[href]:after {
   content: "|";
-}  
+}
 #current-instance-subscriptions[href]:after {
   content: "|";
-}  
+}
 
 #parameters ui-content { height: 9em; min-height: 1.7em; }
 
@@ -75,7 +75,7 @@ ui-tabbed ui-tabbar ui-behind button {
 #dat_endpoints tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
 #dat_endpoints tr:nth-child(odd) input { background-color: ButtonFace; }
 #dat_endpoints input                   { border: 0 none; padding: 0; margin: 0; }
-#dat_endpoints input:first-child       { border: 0 none; width: 8em; }  
+#dat_endpoints input:first-child       { border: 0 none; width: 8em; }
 #dat_endpoints input:last-child        { border: 0 none; width: 100%; }
 
 #dat_dataelements {
@@ -93,7 +93,7 @@ ui-tabbed ui-tabbar ui-behind button {
 #dat_dataelements tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
 #dat_dataelements tr:nth-child(odd) input { background-color: ButtonFace; }
 #dat_dataelements input                   { border: 0 none; padding: 0; margin: 0; }
-#dat_dataelements input:first-child       { border: 0 none; width: 8em; }  
+#dat_dataelements input:first-child       { border: 0 none; width: 8em; }
 #dat_dataelements input:last-child        { border: 0 none; width: 100%; }
 
 #dat_attributes {
@@ -111,14 +111,14 @@ ui-tabbed ui-tabbar ui-behind button {
 #dat_attributes tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
 #dat_attributes tr:nth-child(odd) input { background-color: ButtonFace; }
 #dat_attributes input                   { border: 0 none; padding: 0; margin: 0; }
-#dat_attributes input:first-child       { border: 0 none; width: 8em; }  
+#dat_attributes input:first-child       { border: 0 none; width: 8em; }
 #dat_attributes input:last-child        { border: 0 none; width: 100%; }
 
 #areadsl div { padding: 0 1em; }
 #areadsl div:first-child { padding-top: 1em; }
 #areadsl div:last-child { padding-bottom: 1em; }
 #areadsl pre {
-  font-family: monospace; 
+  font-family: monospace;
   font-size:1.3em;
 }
 
@@ -135,35 +135,19 @@ span.vote {
   color: #73d216;
 }
 
-#graphcolumn { 
-  margin: 0; 
-  padding: 0; 
-  border-right: 1px solid ButtonShadow; 
+#graphcolumn {
+  margin: 0;
+  padding: 0;
+  border-right: 1px solid ButtonShadow;
   min-width: 9em;
 }
-#detailcolumn { 
-  padding-left: 1.5em; 
+#detailcolumn {
+  padding-left: 1.5em;
 }
 
 #dat_log tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
 
-#dat_details td.del                     { width: 1.2em; font-size: 1.3em; font-weight: bold; }
-#dat_details td.pname                   { width: 7em; }
-#dat_details td.cname                   { width: 10.2em; }
-#dat_details td.sep                     { width: 1em;    }
-#dat_details tr.indent td:nth-child(1)  { padding-left: 2em;}
-#dat_details tr:nth-child(odd) input    { background-color: ButtonFace; }
-#dat_details tr:nth-child(odd) textarea { background-color: ButtonFace; }
-#dat_details tr:nth-child(odd) select   { background-color: ButtonFace; }
-#dat_details tr:nth-child(even) select  { background-color: white; }
-#dat_details input                      { border: 0 none; width: 100%; padding: 0; margin: 0; }
-#dat_details select                     { border: 0 none; width: 100%; padding: 0; margin: 0; }
-#dat_details textarea                   { border: 0 none; width: 100%; padding: 0; margin: 0; }
-#dat_details tr.header td               { padding-bottom:0.2em; padding-top: 0.6em; }
-#dat_details tr.sizer td                { padding:0; margin:0; }
-
-#dat_details tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
-#dat_details .header button { border: 1pt solid buttonshadow; }
+#dat_details { border: 0 none; border-top: 1em solid white; border-bottom: 1em solid white; width: inherit; border-right: 1em solid white; }
 
 #disclaimer { margin: 1em; }
 #disclaimer p { max-width: 80ex; text-align: justify; }

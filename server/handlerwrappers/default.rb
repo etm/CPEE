@@ -30,15 +30,15 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
       (parameters[:parameters] || {}).each do |k,v|
-        if v.is_a?(Struct) 
+        if v.is_a?(Struct)
           if v.respond_to?(:mimetype)
             params <<  Riddl::Parameter::Complex.new("#{k}",v.mimetype,v.value)
-          else  
+          else
             params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v.value))
-          end  
+          end
         else
           params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v))
-        end 
+        end
       end
       params << Riddl::Header.new("CPEE_BASE",@controller.base_url)
       params << Riddl::Header.new("CPEE_INSTANCE",@controller.instance_url)
@@ -47,7 +47,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       params << Riddl::Header.new("CPEE_LABEL",parameters[:label])
       @controller.attributes.each do |key,value|
         params << Riddl::Header.new("CPEE_ATTR_#{key}",value)
-      end  
+      end
 
       type = parameters[:method] || 'post'
       client = Riddl::Client.new(@handler_endpoint)
@@ -107,7 +107,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     unless status.nil?
       @controller.serialize_status!
       @controller.notify("status/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :id => status.id, :message => status.message)
-    end  
+    end
     unless changed_dataelements.nil?
       @controller.serialize_dataelements!
       @controller.notify("dataelements/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => changed_dataelements)
@@ -115,7 +115,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     unless changed_endpoints.nil?
       @controller.serialize_endpoints!
       @controller.notify("endpoints/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => changed_endpoints)
-    end  
+    end
   end # }}}
   def inform_position_change(ipc={}) # {{{
     @controller.serialize_positions!
@@ -139,25 +139,25 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def simplify_result(result)
     if result.length == 1
       if result[0].is_a? Riddl::Parameter::Simple
-        result = result[0]
+        result = result[0].value
       elsif result[0].is_a? Riddl::Parameter::Complex
-        if result[0].mimetype == 'application/json' 
-          result = JSON::parse(result[0].value.read)
+        if result[0].mimetype == 'application/json'
+          result = JSON::parse(result[0].value.read) rescue nil
         elsif result[0].mimetype == 'application/xml' || result[0].mimetype == 'text/xml'
-          result = XML::Smart::string(result[0].value.read)
+          result = XML::Smart::string(result[0].value.read) rescue nil
         elsif result[0].mimetype == 'text/plain'
           result = result[0].value.read
         else
           result = result[0]
         end
       end
-    end  
+    end
     result
   end
 
   def callback(result=nil,options={})
     result = simplify_result(result)
-    if options['CPEE_UPDATE'] 
+    if options['CPEE_UPDATE']
       @handler_returnValue = result
       if options['CPEE_UPDATE_STATUS']
         @controller.notify("activity/status", :instance => @controller.instance, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'])
@@ -174,11 +174,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
    def simulate(type,nesting,tid,parent,parameters={}) #{{{
     pp "#{type} - #{nesting} - #{tid} - #{parent} - #{parameters.inspect}"
 
-    @controller.call_vote("simulating/step", 
-      :endpoint => @handler_endpoint, 
-      :instance => @controller.instance, 
-      :activity => tid, 
-      :type => type, 
+    @controller.call_vote("simulating/step",
+      :endpoint => @handler_endpoint,
+      :instance => @controller.instance,
+      :activity => tid,
+      :type => type,
       :nesting => nesting,
       :parent => parent,
       :parameters => parameters

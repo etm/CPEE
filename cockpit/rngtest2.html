@@ -32,7 +32,7 @@
       $("body").ready(function(){
         $.ajax({
           type: "GET",
-          url: "rngtest2.rng",
+          url: "rngs/call.rng",
           success: function(rng){
             $.ajax({
               type: "GET",
@@ -40,7 +40,7 @@
               success: function(data){
                 var rngui = new RelaxNGui(data,rng,$('#show'));
                 $('#saveall').on('click',function(){
-                  console.log($(rngui.save).serializeXML());
+                  console.log($(rngui.save()).serializePrettyXML());
                 });
               }
             });

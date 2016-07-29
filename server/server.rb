@@ -14,6 +14,8 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
+require 'rubygems'
+gem 'nokogiri', '~> 1.6.6'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee/implementation')
 
 Riddl::Server.new(CPEE::SERVER, :port => 9298) do

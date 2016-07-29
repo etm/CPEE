@@ -4,17 +4,17 @@ $(document).ready(function() {
 
     $('body').children().each(function(key,c){
       if (skip) {
-        $(c).remove(); 
+        $(c).remove();
       } else {
         $(c).removeClass('hidden');
-      }  
+      }
       skip = true;
     });
 
     $("#iagree").click(function(){
       if($(this).is(':checked')){
         $("#icontinue").prop("disabled", false);
-      } else {  
+      } else {
         $("#icontinue").prop("disabled", true);
       }
     });
@@ -22,12 +22,11 @@ $(document).ready(function() {
       $.cookie('cpee_iagree','yes');
       location.reload();
     });
-  }  
+  }
 });
 
 // flexible parameter input
-
-function remove_entry(target,foc) { //{{{
+function remove_entry(target,foc) { // {{{
   var tr = $($(target).parents('tr').get(0));
   if (foc) {
     var par = tr.parent();
@@ -38,14 +37,14 @@ function remove_entry(target,foc) { //{{{
       }
       prev = this;
     });
-  }  
+  }
   tr.remove();
-}   //}}}
+} // }}}
 
-function new_entry(top) { //{{{
+function new_entry(top) { // {{{
   var visid = $('ui-tabbar ui-tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
   var node = $('#dat_template_pair tr').clone();
   var vnode = $('#dat_' + visid).append(node);
   $('.pair_name',vnode).focus();
   return node;
-} //}}}
+} // }}}

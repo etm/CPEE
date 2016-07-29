@@ -3,7 +3,7 @@ $(document).ready(function() {
   $('#parameters ui-tabbar ui-tab:not(.switch)').click(function(event){
     mark_parameters_save($(event.target).parents('ui-tabbed'));
   }); //}}}
-  
+
   // Delete entries //{{{
   $(document).on('click','#parameters td.del a',function(event){
     var top = $(event.target).parents('ui-tabbed');
@@ -32,7 +32,7 @@ function mark_parameters_save(top) { //{{{
   var tab = $('#dat_' + visid);
   if (serialize_inputs(tab) != save[visid]) {
     $('ui-tabbar ui-behind button:nth-child(2)',top).addClass('highlight');
-  } else {  
+  } else {
     $('ui-tabbar ui-behind button:nth-child(2)',top).removeClass('highlight');
   }
 } //}}}
@@ -46,11 +46,11 @@ function save_parameters(top) { //{{{
     var url = $("#current-instance").text();
     $('ui-tabbar ui-behind button:nth-child(2)',top).removeClass('highlight');
     $.ajax({
-      type: "PUT", 
+      type: "PUT",
       url: url + "/properties/values/" + visid + "/",
       data: ({'content': serxml}),
     });
-  }  
+  }
 } //}}}
 
 function serialize_inputs(parent) { //{{{
@@ -61,7 +61,7 @@ function serialize_inputs(parent) { //{{{
     var v = $(fields[i+1]).val();
     if (k.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)) {
       xml.append($X('<' + k + '>' + v + '</' + k + '>'));
-    }   
+    }
   }
   return xml.serializeXML();
 } //}}}
