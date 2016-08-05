@@ -1,0 +1,5 @@
+server/instances
+.stats
+.whitelist.old
+.statsrun
+pkg

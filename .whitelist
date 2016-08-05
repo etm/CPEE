@@ -1,0 +1,897 @@
+.gitignore
+AUTHORS
+COPYING
+FEATURES
+INSTALL
+README
+Rakefile
+WEE/README
+WEE/Rakefile
+WEE/lib/MyHandler.rb
+WEE/lib/MyHandlerFactory.rb
+WEE/lib/Wee.rb
+WEE/lib/Workflow.rb
+WEE/lib/main.rb
+WEE/nbproject/private/private.xml
+WEE/nbproject/private/rake-t.txt
+WEE/nbproject/project.properties
+WEE/nbproject/project.xml
+cockpit/JS/graph.js
+cockpit/JS/helpers/contextmenu.css
+cockpit/JS/helpers/contextmenu.js
+cockpit/JS/helpers/doc-adaptor/demo.html
+cockpit/JS/helpers/doc-adaptor/demo1.html
+cockpit/JS/helpers/doc-adaptor/demo2.html
+cockpit/JS/helpers/doc-adaptor/index.html
+cockpit/JS/helpers/jquery.min.js
+cockpit/JS/helpers/jquery.svgdom.js
+cockpit/JS/helpers/parsequery.js
+cockpit/JS/helpers/printf.js
+cockpit/JS/helpers/strftime-min.js
+cockpit/JS/helpers/strftime.min.js
+cockpit/JS/helpers/underscore.min.js
+cockpit/JS/helpers/util.js
+cockpit/JS/main.js
+cockpit/JS/ui.js
+cockpit/JS/wfadaptor-doc/demo1.html
+cockpit/JS/wfadaptor-doc/demo2.html
+cockpit/JS/wfadaptor-doc/index.html
+cockpit/JS/wfadaptor.cpee.js
+cockpit/JS/wfadaptor.css
+cockpit/JS/wfadaptor.js
+cockpit/JS/wfadaptor.remus.js
+cockpit/README
+cockpit/Testsets.xml
+cockpit/Testsets/Concurrent.xml
+cockpit/Testsets/Coopis Testset.xml
+cockpit/Testsets/Endpoints and Data Manipulation.xml
+cockpit/Testsets/ICSOC Testset.xml
+cockpit/Testsets/Linear.xml
+cockpit/Testsets/Mangler 1.xml
+cockpit/Testsets/Mangler 2.xml
+cockpit/Testsets/RESCUE - Book Movie.xml
+cockpit/Testsets/RESCUE - Loop-Parallel Injection.xml
+cockpit/Testsets/Syncing P34 1.xml
+cockpit/Testsets/Syncing P34 2.xml
+cockpit/Testsets/Syncing P34 3.xml
+cockpit/Testsets/Syncing P34.xml
+cockpit/Testsets/TEST - Bad Loop.xml
+cockpit/Testsets/TEST - Wrong Positions.xml
+cockpit/Util/symbols.svg
+cockpit/Util/transformation1.xsl
+cockpit/Util/transformation2.xsl
+cockpit/contrib/graph_example.svg
+cockpit/contrib/legend.svg
+cockpit/contrib/symbols.svg
+cockpit/contrib/transformation1.xsl
+cockpit/contrib/transformation2.xsl
+cockpit/contrib/tree_example.svg
+cockpit/css/ui.css
+cockpit/css/wfadaptor.css
+cockpit/index.css
+cockpit/index.html
+cockpit/index.svg
+cockpit/js/details.js
+cockpit/js/instance.js
+cockpit/js/main.js
+cockpit/js/parameters.js
+cockpit/js/ui.js
+cockpit/js/wfadaptor-doc/demo1.html
+cockpit/js/wfadaptor-doc/demo2.html
+cockpit/js/wfadaptor-doc/index.html
+cockpit/js/wfadaptor.cpee.js
+cockpit/js/wfadaptor.js
+cockpit/js/wfadaptor.remus.js
+cockpit/lib/contextmenu.css
+cockpit/lib/contextmenu.js
+cockpit/lib/custommenu.css
+cockpit/lib/custommenu.js
+cockpit/lib/highlight.js/LICENSE
+cockpit/lib/highlight.js/README.md
+cockpit/lib/highlight.js/README.ru.md
+cockpit/lib/highlight.js/classref.txt
+cockpit/lib/highlight.js/highlight.pack.js
+cockpit/lib/highlight.js/styles/arta.css
+cockpit/lib/highlight.js/styles/ascetic.css
+cockpit/lib/highlight.js/styles/brown_paper.css
+cockpit/lib/highlight.js/styles/brown_papersq.png
+cockpit/lib/highlight.js/styles/dark.css
+cockpit/lib/highlight.js/styles/default.css
+cockpit/lib/highlight.js/styles/far.css
+cockpit/lib/highlight.js/styles/github.css
+cockpit/lib/highlight.js/styles/googlecode.css
+cockpit/lib/highlight.js/styles/idea.css
+cockpit/lib/highlight.js/styles/ir_black.css
+cockpit/lib/highlight.js/styles/magula.css
+cockpit/lib/highlight.js/styles/monokai.css
+cockpit/lib/highlight.js/styles/pojoaque.css
+cockpit/lib/highlight.js/styles/pojoaque.jpg
+cockpit/lib/highlight.js/styles/rainbow.css
+cockpit/lib/highlight.js/styles/school_book.css
+cockpit/lib/highlight.js/styles/school_book.png
+cockpit/lib/highlight.js/styles/solarized_dark.css
+cockpit/lib/highlight.js/styles/solarized_light.css
+cockpit/lib/highlight.js/styles/sunburst.css
+cockpit/lib/highlight.js/styles/tomorrow-night-blue.css
+cockpit/lib/highlight.js/styles/tomorrow-night-bright.css
+cockpit/lib/highlight.js/styles/tomorrow-night-eighties.css
+cockpit/lib/highlight.js/styles/tomorrow-night.css
+cockpit/lib/highlight.js/styles/tomorrow.css
+cockpit/lib/highlight.js/styles/vs.css
+cockpit/lib/highlight.js/styles/xcode.css
+cockpit/lib/highlight.js/styles/zenburn.css
+cockpit/lib/jquery-ui.custom.min.js
+cockpit/lib/jquery-ui.custom.min.txt
+cockpit/lib/jquery.browser.js
+cockpit/lib/jquery.caret.min.js
+cockpit/lib/jquery.cookie.js
+cockpit/lib/jquery.min.js
+cockpit/lib/jquery.redraw.js
+cockpit/lib/jquery.svg.min.js
+cockpit/lib/jquery.svgdom.js
+cockpit/lib/jquery.svgdom.min.js
+cockpit/lib/parsequery.js
+cockpit/lib/printf.js
+cockpit/lib/relanxngui.js
+cockpit/lib/relaxngui.js
+cockpit/lib/strftime.min.js
+cockpit/lib/ui.css
+cockpit/lib/ui.js
+cockpit/lib/underscore.min.js
+cockpit/lib/util.js
+cockpit/lib/wfadaptor-doc/demo1.html
+cockpit/lib/wfadaptor-doc/demo2.html
+cockpit/lib/wfadaptor-doc/index.html
+cockpit/lib/wfadaptor.css
+cockpit/lib/wfadaptor.js
+cockpit/rngtest.html
+cockpit/rngtest.rng
+cockpit/rngtest.xml
+cockpit/rngtest1.html
+cockpit/rngtest1.rng
+cockpit/rngtest1.xml
+cockpit/rngtest2.html
+cockpit/rngtest2.rng
+cockpit/rngtest2.xml
+cockpit/testsets/ADVENTURE Demo 1.xml
+cockpit/testsets/ADVENTURE Dynamic Order.xml
+cockpit/testsets/ADVENTURE Main Loop.xml
+cockpit/testsets/ADVENTURE Order.xml
+cockpit/testsets/ADVENTURE Performance Test 1.xml
+cockpit/testsets/ADVENTURE Performance Test 2.xml
+cockpit/testsets/CPEE.xml
+cockpit/testsets/Concurrent.xml
+cockpit/testsets/Coopis Testset.xml
+cockpit/testsets/Endpoints and Data Manipulation.xml
+cockpit/testsets/ICSOC Testset.xml
+cockpit/testsets/Infinity.xml
+cockpit/testsets/Linear.xml
+cockpit/testsets/Mangler 1.xml
+cockpit/testsets/Mangler 2.xml
+cockpit/testsets/RESCUE - Book Movie - Local.xml
+cockpit/testsets/RESCUE - Book Movie.xml
+cockpit/testsets/RESCUE - Loop-Parallel Injection.xml
+cockpit/testsets/SOPROMO Test Sonification.xml
+cockpit/testsets/Signavio Model Base.xml
+cockpit/testsets/Signavio.xml
+cockpit/testsets/Syncing P34 1.xml
+cockpit/testsets/Syncing P34 2.xml
+cockpit/testsets/Syncing P34 3.xml
+cockpit/testsets/Syncing P34.xml
+cockpit/testsets/TEST - Bad Loop.xml
+cockpit/testsets/TEST - Wrong Positions.xml
+cockpit/testsets/Update.xml
+cockpit/testsets/Worklist Parallel.xml
+cockpit/testsets/Worklist Test CPEE.xml
+cockpit/testsets/Worklist Test.xml
+cockpit/testsets/index.xml
+cockpit/testsets/testsets.xml
+cockpit/testsets/transformations.xml
+cockpit/ui.css
+contrib/BPEL/.vimrc
+contrib/BPEL/Repository/booking.bpel
+contrib/BPEL/Repository/booking.wsdl
+contrib/BPEL/Repository/booking/airline.wsdl
+contrib/BPEL/Repository/booking/hotel.wsdl
+contrib/BPEL/Repository/booking/report.wsdl
+contrib/BPEL/bpel2wee.rb
+contrib/BPEL/bpelserver.ru
+contrib/BPEL/bpelserver.xml
+contrib/BPEL/lib/BPEL_Transform.rb
+contrib/S-BPM/UVi-Demo-2012-04-04-Praese.odp
+contrib/S-BPM/UVi-Demo-2012-04-04-Praese.pdf
+contrib/Screenshot at 2011-09-28 02:38:11.png
+contrib/logo.png
+contrib/logo.svg
+contrib/logo2-small.png
+contrib/logo2.png
+contrib/logo2.svg
+contrib/logo2a.png
+contrib/logo2a.svg
+contrib/stats/build.saikuro
+contrib/stats/configuration_and_templates.txt
+contrib/stats/wee_details/Wee.rb_cyclo.html
+contrib/stats/wee_details/abc.2010-12-04.txt
+contrib/stats/wee_details/abc.2011-08-23.txt
+contrib/stats/wee_details/abc.txt
+contrib/stats/wee_details/index_cyclo.html
+contrib/stats/wee_details/loc.txt
+contrib/weedev.mp4
+contrib/wind-blowing-base.svg
+cpee.gemspec
+dep/rack-1.1.0+rack.io.gem
+examples/MyHandler.rb
+examples/SimpleWorkflow.rb
+examples/Workflow.rb
+examples/cpee-cockpit/JS/graph.js
+examples/cpee-cockpit/JS/helpers/browserdetect.js
+examples/cpee-cockpit/JS/helpers/clippy.swf
+examples/cpee-cockpit/JS/helpers/cors.js
+examples/cpee-cockpit/JS/helpers/jquery.min.js
+examples/cpee-cockpit/JS/helpers/parsequery.js
+examples/cpee-cockpit/JS/helpers/printf.js
+examples/cpee-cockpit/JS/helpers/strftime-min.js
+examples/cpee-cockpit/JS/helpers/util.js
+examples/cpee-cockpit/JS/helpers/yaml.js
+examples/cpee-cockpit/JS/main.js
+examples/cpee-cockpit/JS/ws/FABridge.js
+examples/cpee-cockpit/JS/ws/WebSocketMain.swf
+examples/cpee-cockpit/JS/ws/swfobject.js
+examples/cpee-cockpit/JS/ws/web_socket.js
+examples/cpee-cockpit/Testsets.xml
+examples/cpee-cockpit/Testsets.xsl
+examples/cpee-cockpit/Testsets/.Testset 1.xml.swp
+examples/cpee-cockpit/Testsets/BPM Testset.xml
+examples/cpee-cockpit/Testsets/Bad Loop.xml
+examples/cpee-cockpit/Testsets/CEC Testset.xml
+examples/cpee-cockpit/Testsets/Cinemas Class.xml
+examples/cpee-cockpit/Testsets/Cinemas.xml
+examples/cpee-cockpit/Testsets/Concurrent.xml
+examples/cpee-cockpit/Testsets/Coopis Testset.xml
+examples/cpee-cockpit/Testsets/Endpoints and Data Manipulation.xml
+examples/cpee-cockpit/Testsets/Endpoints.xml
+examples/cpee-cockpit/Testsets/ICSOC Testset.xml
+examples/cpee-cockpit/Testsets/Linear.xml
+examples/cpee-cockpit/Testsets/Loop Injection.xml
+examples/cpee-cockpit/Testsets/Mangler 1.xml
+examples/cpee-cockpit/Testsets/Mangler 2.xml
+examples/cpee-cockpit/Testsets/Parallel Injection.xml
+examples/cpee-cockpit/Testsets/RESCUE - Book Movie.xml
+examples/cpee-cockpit/Testsets/RESCUE - Loop Injection.xml
+examples/cpee-cockpit/Testsets/RESCUE - Loop-Parallel Injection.xml
+examples/cpee-cockpit/Testsets/RESCUE - Parallel Injection.xml
+examples/cpee-cockpit/Testsets/RESCUE.xml
+examples/cpee-cockpit/Testsets/Syncing P34 1.xml
+examples/cpee-cockpit/Testsets/Syncing P34 2.xml
+examples/cpee-cockpit/Testsets/Syncing P34 3.xml
+examples/cpee-cockpit/Testsets/Syncing P34.xml
+examples/cpee-cockpit/Testsets/TEST - Bad Loop.xml
+examples/cpee-cockpit/Testsets/TEST - Wrong Positions.xml
+examples/cpee-cockpit/Testsets/Testset 1.xml
+examples/cpee-cockpit/Testsets/Thread Kill.xml
+examples/cpee-cockpit/Testsets/Vigne 2.xml
+examples/cpee-cockpit/Testsets/Vigne.xml
+examples/cpee-cockpit/Testsets/Wrong Positions.xml
+examples/cpee-cockpit/Util/symbols.html
+examples/cpee-cockpit/Util/symbols.svg
+examples/cpee-cockpit/Util/transformation.xsl
+examples/cpee-cockpit/Util/transformation1.xsl
+examples/cpee-cockpit/Util/transformation2.xsl
+examples/cpee-cockpit/cors.js
+examples/cpee-cockpit/graph.js
+examples/cpee-cockpit/index.css
+examples/cpee-cockpit/index.html
+examples/cpee-cockpit/index.js
+examples/cpee-cockpit/index.php
+examples/cpee-cockpit/index.svg
+examples/cpee-cockpit/util.js
+examples/cpee/.vimrc
+examples/cpee/clear_instances.sh
+examples/cpee/declaration.ru
+examples/cpee/declaration.test
+examples/cpee/declaration.xml
+examples/cpee/engine/controller.rb
+examples/cpee/engine/empty_workflow.rb
+examples/cpee/engine/endpoint.xml
+examples/cpee/engine/engine.xml
+examples/cpee/engine/handler.rb
+examples/cpee/engine/handler_rescue.rb
+examples/cpee/engine/handlerwrappers/default.rb
+examples/cpee/engine/handlerwrappers/rescue.rb
+examples/cpee/engine/implementation.rb
+examples/cpee/engine/rngs/callbacks.rng
+examples/cpee/engine/rngs/instance-info.rng
+examples/cpee/engine/rngs/instances.rng
+examples/cpee/includes
+examples/cpee/instances/1000/notifications/bbe1d0b95f9f50e627d46dc496fd7762/consumer-secret
+examples/cpee/instances/1000/notifications/bbe1d0b95f9f50e627d46dc496fd7762/producer-secret
+examples/cpee/instances/1000/notifications/bbe1d0b95f9f50e627d46dc496fd7762/subscription.xml
+examples/cpee/instances/1000/notifications/topics.xml
+examples/cpee/instances/1000/properties.xml
+examples/cpee/instances/1000/properties.xml.sic
+examples/cpee/instances/notifications.init/topics.xml
+examples/cpee/instances/properties.init
+examples/cpee/instances/properties.schema.active
+examples/cpee/instances/properties.schema.finished
+examples/cpee/instances/properties.schema.inactive
+examples/cpee/server.declaration.xml
+examples/cpee/server.ru
+examples/cpee/stat/.vimrc
+examples/cpee/stat/delete.rb
+examples/cpee/stat/load.rb
+examples/cpee/stat/testset.xml
+examples/cpee/test/voting/subscribe.rb
+examples/cpee/test/voting/testset/context-variables
+examples/cpee/test/voting/testset/description
+examples/cpee/test/voting/testset/endpoints
+examples/cpee/test/voting/vote_false.rb
+examples/cpee/test/voting/vote_true.rb
+examples/cpee/tests/callback
+examples/cpee/tests/cv
+examples/cpee/tests/cv_del
+examples/cpee/tests/des
+examples/cpee/tests/ep
+examples/cpee/tests/ep_del
+examples/cpee/tests/instance
+examples/cpee/tests/not
+examples/cpee/tests/start
+examples/cpee/tests/trans
+examples/cpee/xsls/callbacks.xsl
+examples/cpee/xsls/info.xsl
+examples/cpee/xsls/instances.xsl
+examples/cpee/xsls/overview.xsl
+examples/cpee/xsls/subscriptions.xsl
+examples/deprecated/WebHandler.rb
+examples/deprecated/WebWorkflow.rb
+examples/deprecated/web/index.css
+examples/deprecated/web/index.rb
+examples/deprecated/web/prototype.js
+examples/deprecated/web/script.js
+examples/dist-wee-ui/.vimrc
+examples/dist-wee-ui/description.xml
+examples/dist-wee-ui/implementation/details.xhtml
+examples/dist-wee-ui/implementation/index.xhtml
+examples/dist-wee-ui/implementation/remote.txt
+examples/dist-wee-ui/lib/MarkUS_V3.0.rb
+examples/dist-wee-ui/lib/monitor.rb
+examples/dist-wee-ui/server.ru
+examples/dist-wee-ui/static/Images/arrow.png
+examples/dist-wee-ui/static/Images/list-add.png
+examples/dist-wee-ui/static/Images/list-remove.png
+examples/dist-wee-ui/static/Images/start.png
+examples/dist-wee-ui/static/Images/stop.png
+examples/dist-wee-ui/static/StyleImages/uni_logo.png
+examples/dist-wee-ui/static/StyleImages/uni_siegel.png
+examples/dist-wee-ui/static/details.js
+examples/dist-wee-ui/static/index.js
+examples/dist-wee-ui/static/jquery-1.3.2.min.js
+examples/dist-wee-ui/static/makerequest.js
+examples/dist-wee-ui/styles/content.css
+examples/dist-wee-ui/styles/uni.css
+examples/dist-wee/client.test
+examples/dist-wee/description.xml
+examples/dist-wee/lib/EmptyWorkflow.rb
+examples/dist-wee/lib/MarkUS_V3.0.rb
+examples/dist-wee/lib/MonitoringHandler.rb
+examples/dist-wee/lib/WeeController.rb
+examples/dist-wee/lib/context.rb
+examples/dist-wee/lib/description.rb
+examples/dist-wee/lib/endpoints.rb
+examples/dist-wee/lib/handler.rb
+examples/dist-wee/lib/instances.rb
+examples/dist-wee/lib/name.rb
+examples/dist-wee/lib/state.rb
+examples/dist-wee/lib/tweeter.rb
+examples/dist-wee/rngs/context_vars.rng
+examples/dist-wee/rngs/endpoints.rng
+examples/dist-wee/rngs/handler_types.rng
+examples/dist-wee/rngs/handlers.rng
+examples/dist-wee/rngs/wis.html
+examples/dist-wee/rngs/wis.rng
+examples/dist-wee/rngs/workflow_instances.rng
+examples/dist-wee/server.ru
+examples/dist-wee2/.vimrc
+examples/dist-wee2/Data/.gitignore
+examples/dist-wee2/declaration.ru
+examples/dist-wee2/declaration.test
+examples/dist-wee2/declaration.xml
+examples/dist-wee2/declaration/.vimrc
+examples/dist-wee2/declaration/declaration.ru
+examples/dist-wee2/declaration/declaration.xml
+examples/dist-wee2/engine/.vimrc
+examples/dist-wee2/engine/controller.rb
+examples/dist-wee2/engine/empty_workflow.rb
+examples/dist-wee2/engine/endpoint.xml
+examples/dist-wee2/engine/engine.ru
+examples/dist-wee2/engine/engine.test
+examples/dist-wee2/engine/engine.xml
+examples/dist-wee2/engine/engine/controller.rb
+examples/dist-wee2/engine/engine/empty_workflow.rb
+examples/dist-wee2/engine/engine/handler.rb
+examples/dist-wee2/engine/engine/implementation.rb
+examples/dist-wee2/engine/handler.rb
+examples/dist-wee2/engine/implementation.rb
+examples/dist-wee2/engine/instances
+examples/dist-wee2/engine/rngs/instance-info.rng
+examples/dist-wee2/engine/rngs/instances.rng
+examples/dist-wee2/engine/xsls/info.xsl
+examples/dist-wee2/engine/xsls/instances.xsl
+examples/dist-wee2/instances/.gitignore
+examples/dist-wee2/instances/notifications.init/topics.xml
+examples/dist-wee2/instances/properties.init
+examples/dist-wee2/instances/properties.schema.active
+examples/dist-wee2/instances/properties.schema.inactive
+examples/dist-wee2/lib/EmptyWorkflow.rb
+examples/dist-wee2/lib/WeeController.rb
+examples/dist-wee2/lib/main.rb
+examples/dist-wee2/main.desc
+examples/dist-wee2/main.rngs/instance-info.rng
+examples/dist-wee2/main.rngs/instances.rng
+examples/dist-wee2/main.ru
+examples/dist-wee2/main.test
+examples/dist-wee2/producer.xml
+examples/dist-wee2/properties-1_0.xml
+examples/dist-wee2/properties.desc
+examples/dist-wee2/properties.init
+examples/dist-wee2/properties.rngs
+examples/dist-wee2/properties.ru
+examples/dist-wee2/properties.schema
+examples/dist-wee2/properties.xml
+examples/dist-wee2/properties/.vimrc
+examples/dist-wee2/properties/description.xml
+examples/dist-wee2/properties/instance_test/properties.schema.inactive
+examples/dist-wee2/properties/instance_test/properties.xml
+examples/dist-wee2/properties/instances
+examples/dist-wee2/properties/properties.ru
+examples/dist-wee2/properties/properties.xml
+examples/dist-wee2/properties/server.ru
+examples/dist-wee2/tests/.vimrc
+examples/dist-wee2/tests/callback
+examples/dist-wee2/tests/cv
+examples/dist-wee2/tests/cv_del
+examples/dist-wee2/tests/des
+examples/dist-wee2/tests/ep
+examples/dist-wee2/tests/ep_del
+examples/dist-wee2/tests/instance
+examples/dist-wee2/tests/not
+examples/dist-wee2/tests/start
+examples/dist-wee2/xsls/info.xsl
+examples/dist-wee2/xsls/instances.xsl
+examples/dist-wee2/xsls/overview.xsl
+examples/dist-wee2/xsls/subscriptions.xsl
+examples/main.rb
+examples/monitoring/.vimrc
+examples/monitoring/monitor.rb
+examples/performance/delete.rb
+examples/performance/load.rb
+examples/performance/testset.xml
+examples/rescue-wee/client.test
+examples/rescue-wee/description.xml
+examples/rescue-wee/includes
+examples/rescue-wee/lib/EmptyWorkflow.rb
+examples/rescue-wee/lib/MarkUS_V3.0.rb
+examples/rescue-wee/lib/RescueHandler.rb
+examples/rescue-wee/lib/RescueHandler.rb~
+examples/rescue-wee/lib/WeeController.rb
+examples/rescue-wee/lib/context.rb
+examples/rescue-wee/lib/description.rb
+examples/rescue-wee/lib/endpoints.rb
+examples/rescue-wee/lib/handler.rb
+examples/rescue-wee/lib/instances.rb
+examples/rescue-wee/lib/name.rb
+examples/rescue-wee/lib/state.rb
+examples/rescue-wee/rngs/context_vars.rng
+examples/rescue-wee/rngs/endpoints.rng
+examples/rescue-wee/rngs/handler_types.rng
+examples/rescue-wee/rngs/handlers.rng
+examples/rescue-wee/rngs/wis.html
+examples/rescue-wee/rngs/workflow_instances.rng
+examples/rescue-wee/server.ru
+examples/rescue-wee/start.sh
+examples/shutdown.sh
+examples/simple/MyHandler.rb
+examples/simple/README
+examples/simple/SimpleHandlerWrapper.rb
+examples/simple/SimpleWorkflow.rb
+examples/simple/Workflow.rb
+examples/simple/main.rb
+examples/simple/runme.rb
+examples/startup.sh
+examples/ui/.vimrc
+examples/ui/content/Images/arrow.png
+examples/ui/content/Images/list-add.png
+examples/ui/content/Images/list-remove.png
+examples/ui/content/Images/start.png
+examples/ui/content/Images/stop.png
+examples/ui/content/details.html
+examples/ui/content/example.html
+examples/ui/content/index.html
+examples/ui/content/jquery-1.3.2.min.js
+examples/ui/description.xml
+examples/ui/implementation/details.html
+examples/ui/implementation/details.xhtml
+examples/ui/implementation/index.html
+examples/ui/implementation/index.xhtml
+examples/ui/implementation/remote.txt
+examples/ui/lib/MarkUS_V3.0.rb
+examples/ui/lib/monitor.rb
+examples/ui/server.ru
+examples/ui/static/Images/arrow.png
+examples/ui/static/Images/list-add.png
+examples/ui/static/Images/list-remove.png
+examples/ui/static/Images/start.png
+examples/ui/static/Images/stop.png
+examples/ui/static/StyleImages/uni_logo.png
+examples/ui/static/StyleImages/uni_siegel.png
+examples/ui/static/details.html
+examples/ui/static/details.js
+examples/ui/static/example.html
+examples/ui/static/index.css
+examples/ui/static/index.html
+examples/ui/static/index.js
+examples/ui/static/jquery-1.3.2.min.js
+examples/ui/static/makerequest.js
+examples/ui/styles/content.css
+examples/ui/styles/uni.css
+instantiation/.vimrc
+instantiation/Infinity.xml
+instantiation/flo.xml
+instantiation/instantiation
+instantiation/instantiation.xml
+instantiation/test.rb
+instantiation/testset.xml
+lib/BasicHandler.rb
+lib/MyHandler.rb
+lib/MyHandlerFactory.rb
+lib/SimpleWorkflow.rb
+lib/TestHandler.rb
+lib/TestHandlerFactory.rb
+lib/TestWorkflow.rb
+lib/WebHandler.rb
+lib/WebHandlerFactory.rb
+lib/WebWorkflow.rb
+lib/Wee.rb
+lib/Workflow.rb
+lib/Workflow.rb.goal
+lib/copy2console.sh
+lib/copy2netbeans.sh
+lib/cpee.xml
+lib/cpee/callback.rb
+lib/cpee/controller.rb
+lib/cpee/empty_workflow.rb
+lib/cpee/handler_notifications.rb
+lib/cpee/handler_properties.rb
+lib/cpee/implementation.rb
+lib/cpee/processtransformation/bpel/Repository/booking.bpel
+lib/cpee/processtransformation/bpel/Repository/booking.wsdl
+lib/cpee/processtransformation/bpel/Repository/booking/airline.wsdl
+lib/cpee/processtransformation/bpel/Repository/booking/hotel.wsdl
+lib/cpee/processtransformation/bpel/Repository/booking/report.wsdl
+lib/cpee/processtransformation/bpel/bpel2wee.rb
+lib/cpee/processtransformation/bpel/bpelserver.ru
+lib/cpee/processtransformation/bpel/bpelserver.xml
+lib/cpee/processtransformation/bpel/lib/BPEL_Transform.rb
+lib/cpee/processtransformation/bpmn2.rb
+lib/cpee/processtransformation/cpee.rb
+lib/cpee/processtransformation/structures.rb
+lib/cpee/processtransformation/target.rb
+lib/engine.xml
+lib/engine/callbacks.rng
+lib/engine/instance-info.rng
+lib/engine/instances.rng
+lib/main.rb
+lib/main.rb.goal
+lib/test.rb
+lib/web/Images/arrow.png
+lib/web/Images/list-add.png
+lib/web/Images/list-remove.png
+lib/web/Images/start.png
+lib/web/Images/stop.png
+lib/web/detail.html
+lib/web/details.html
+lib/web/index.css
+lib/web/index.html
+lib/web/index.rb
+lib/web/mask.html
+lib/web/prototype.js
+lib/web/script.js
+nbproject/private/config.properties
+nbproject/private/private.properties
+nbproject/private/private.xml
+nbproject/private/rake-d.txt
+nbproject/private/rake-t.txt
+nbproject/project.properties
+nbproject/project.xml
+optional/BPEL/.vimrc
+optional/BPEL/Repository/booking.bpel
+optional/BPEL/Repository/booking.wsdl
+optional/BPEL/Repository/booking.wsdl/airline.wsdl
+optional/BPEL/Repository/booking.wsdl/booking.wsdl
+optional/BPEL/Repository/booking.wsdl/hotel.wsdl
+optional/BPEL/Repository/booking.wsdl/report.wsdl
+optional/BPEL/Repository/booking/airline.wsdl
+optional/BPEL/Repository/booking/hotel.wsdl
+optional/BPEL/Repository/booking/report.wsdl
+optional/BPEL/booking.bpel
+optional/BPEL/booking.wsdl
+optional/BPEL/bpel2wee.rb
+optional/BPEL/bpelserver.ru
+optional/BPEL/bpelserver.xml
+optional/BPEL/bpelserver/base.xml
+optional/BPEL/lib/BPEL_Transform.rb
+optional/BPEL/wsdl/airline.wsdl
+optional/BPEL/wsdl/hotel.wsdl
+optional/BPEL/wsdl/report.wsdl
+overlay/.vimrc
+overlay/2
+overlay/declaration.rb
+overlay/declaration.xml
+overlay/libs/cpee_doc.css
+overlay/libs/cpee_doc.js
+overlay/libs/docu.js
+overlay/libs/table_methods.js
+overlay/overlay
+overlay/overlay.xml
+overlay/pollingmode/Makefile
+overlay/pollingmode/nfclib.c
+overlay/pollingmode/nfclib.h
+overlay/pollingmode/nfclib.o
+overlay/pollingmode/rathalos
+overlay/pollingmode/rathalos.c
+overlay/server.rb
+overlay/server.xml
+overlay/xsloverlay.xml
+overlay/xsls.xml
+overlay/xsls/.instances.xsl.swp
+overlay/xsls/.values.xsl.swp
+overlay/xsls/callback.xsl
+overlay/xsls/callbacks.xsl
+overlay/xsls/cpee_doc.css
+overlay/xsls/cpee_doc.js
+overlay/xsls/demo
+overlay/xsls/info.xsl
+overlay/xsls/instances.xsl
+overlay/xsls/notifications.xsl
+overlay/xsls/notifications_old.xsl
+overlay/xsls/overview.xsl
+overlay/xsls/properties.xsl
+overlay/xsls/showdown.js
+overlay/xsls/subs.xsl
+overlay/xsls/subscriptions.xsl
+overlay/xsls/subscriptions_hor.xsl
+overlay/xsls/subscriptions_ver.xsl
+overlay/xsls/topics.xsl
+overlay/xsls/values.xsl
+overlay/xsls/values_old.xsl
+server/.vimrc
+server/engine/callback.rb
+server/engine/controller.rb
+server/engine/empty_workflow.rb
+server/engine/engine.xml
+server/engine/handler_notifications.rb
+server/engine/handler_properties.rb
+server/engine/handlerwrappers/default.rb
+server/engine/handlerwrappers/rescue.rb
+server/engine/handlerwrappers/soap.rb
+server/engine/implementation.rb
+server/engine/rngs/callbacks.rng
+server/engine/rngs/instance-info.rng
+server/engine/rngs/instances.rng
+server/handlerwrappers/default.rb
+server/handlerwrappers/rescue.rb
+server/handlerwrappers/soap.rb
+server/instances/.gitignore
+server/instances/notifications.init/topics.xml
+server/instances/properties.init
+server/instances/properties.schema.active
+server/instances/properties.schema.finished
+server/instances/properties.schema.inactive
+server/resources/dslx_to_dsl.xsl
+server/resources/empty_dslx.xml
+server/resources/properties.init
+server/resources/properties.schema.active
+server/resources/properties.schema.finished
+server/resources/properties.schema.inactive
+server/resources/topics.xml
+server/resources/transformation.xml
+server/resources/transformation_dslx.xsl
+server/server.config
+server/server.declaration.xml
+server/server.rb
+server/server.ru
+server/test/.vimrc
+server/test/delete.rb
+server/test/load.rb
+server/test/testset.xml
+server/todo.txt
+server/xsls/callbacks.xsl
+server/xsls/info.xsl
+server/xsls/instances.xsl
+server/xsls/overview.xsl
+server/xsls/properties.xsl
+server/xsls/subscriptions.xsl
+server/xsls/test.html
+server/xsls/test.xml
+stats/build.saikuro
+stats/configuration_and_templates.txt
+stats/wee_details/Wee.rb_cyclo.html
+stats/wee_details/abc.txt
+stats/wee_details/index_cyclo.html
+stats/wee_details/loc.txt
+test/.gitignore
+test/.vimrc
+test/ContinueTest.rb
+test/TestHandler.rb
+test/TestHandlerWrapper.rb
+test/TestWorkflow.rb
+test/basic/tc_choose.rb
+test/basic/tc_codereplace.rb
+test/basic/tc_context.rb
+test/basic/tc_data.rb
+test/basic/tc_endpoint.rb
+test/basic/tc_endstate.rb
+test/basic/tc_handler.rb
+test/basic/tc_parallel.rb
+test/basic/tc_search.rb
+test/basic/tc_state.rb
+test/basic/tc_wf_control.rb
+test/basic/ts_basic.rb
+test/callback.rb
+test/cb.rb
+test/complex/tc_coopis.rb
+test/complex/tc_generalsynchonizingmerge_loopsearch.rb
+test/complex/tc_parallel_stop.rb
+test/delete.rb
+test/load.rb
+test/tc_codereplace.rb
+test/tc_context.rb
+test/tc_endpoint.rb
+test/tc_endstate.rb
+test/tc_search.rb
+test/tc_wf_control.rb
+test/testset.xml
+test/ts_basic.rb
+test/wfp_adv_branching/tc_generalizedjoin.rb
+test/wfp_adv_branching/tc_generalsynchronizingmerge.rb
+test/wfp_adv_branching/tc_localsynchronizingmerge.rb
+test/wfp_adv_branching/tc_multichoice_structuredsynchronizingmerge.rb
+test/wfp_adv_branching/tc_multimerge.rb
+test/wfp_adv_branching/tc_structured_discriminator.rb
+test/wfp_adv_branching/tc_structured_partial_join.rb
+test/wfp_adv_branching/tc_threadmerge.rb
+test/wfp_adv_branching/tc_threadsplit.rb
+test/wfp_adv_branching/ts_adv_branching.rb
+test/wfp_basic/tc_exclusivechoice_simplemerge.rb
+test/wfp_basic/tc_parallelsplit_synchronization.rb
+test/wfp_basic/tc_sequence.rb
+test/wfp_basic/ts_basic.rb
+test/wfp_iteration/tc_structuredloop.rb
+test/wfp_iteration/ts_iteration.rb
+test/wfp_state_based/tc_deferredchoice.rb
+test/wfp_state_based/tc_interleavedparallelrouting.rb
+test/wfp_state_based/ts_state_based.rb
+transformation/bpel/Repository/booking.bpel
+transformation/bpel/Repository/booking.wsdl
+transformation/bpel/Repository/booking/airline.wsdl
+transformation/bpel/Repository/booking/hotel.wsdl
+transformation/bpel/Repository/booking/report.wsdl
+transformation/bpel/bpel2wee.rb
+transformation/bpel/bpelserver.ru
+transformation/bpel/bpelserver.xml
+transformation/bpel/lib/BPEL_Transform.rb
+transformation/lib
+transformation/lib/bpel/Repository/booking.bpel
+transformation/lib/bpel/Repository/booking.wsdl
+transformation/lib/bpel/Repository/booking/airline.wsdl
+transformation/lib/bpel/Repository/booking/hotel.wsdl
+transformation/lib/bpel/Repository/booking/report.wsdl
+transformation/lib/bpel/bpel2wee.rb
+transformation/lib/bpel/bpelserver.ru
+transformation/lib/bpel/bpelserver.xml
+transformation/lib/bpel/lib/BPEL_Transform.rb
+transformation/lib/bpmn2.rb
+transformation/lib/cpee.rb
+transformation/lib/structures.rb
+transformation/signavio/lib/bpmn2.rb
+transformation/signavio/lib/cpee.rb
+transformation/signavio/lib/structures.rb
+transformation/signavio/lib/translation.rb
+transformation/signavio/server.rb
+transformation/signavio/test/.vimrc
+transformation/signavio/test/Test 1.bpmn
+transformation/signavio/test/Test 2.bpmn
+transformation/signavio/test/Test 3.bpmn
+transformation/signavio/test/Test 4.bpmn
+transformation/signavio/test/Test 5.bpmn
+transformation/signavio/test/WT.sgx
+transformation/signavio/test/base4.png
+transformation/signavio/test/servertest.rb
+transformation/signavio/test/test.rb
+transformation/signavio/test/tt.rb
+transformation/signavio/transformation.rb
+transformation/signavio/transformation.xml
+transformation/signavio/translation.xml
+transformation/test/.vimrc
+transformation/test/Fire.bpmn
+transformation/test/Fire.tree
+transformation/test/Fire.xml
+transformation/test/Lean.bpmn
+transformation/test/Lean.tree
+transformation/test/Lean.xml
+transformation/test/OEE.bpmn
+transformation/test/OEE.tree
+transformation/test/OEE.xml
+transformation/test/Test 1.bpmn
+transformation/test/Test 1.png
+transformation/test/Test 1.tree
+transformation/test/Test 1.xml
+transformation/test/Test 10.bpmn
+transformation/test/Test 10.png
+transformation/test/Test 10.tree
+transformation/test/Test 10.xml
+transformation/test/Test 11.bpmn
+transformation/test/Test 11.png
+transformation/test/Test 11.tree
+transformation/test/Test 11.xml
+transformation/test/Test 12.bpmn
+transformation/test/Test 12.png
+transformation/test/Test 12.tree
+transformation/test/Test 12.xml
+transformation/test/Test 13.bpmn
+transformation/test/Test 13.png
+transformation/test/Test 13.tree
+transformation/test/Test 13.xml
+transformation/test/Test 14.bpmn
+transformation/test/Test 14.png
+transformation/test/Test 14.tree
+transformation/test/Test 14.xml
+transformation/test/Test 15.bpmn
+transformation/test/Test 15.png
+transformation/test/Test 15.tree
+transformation/test/Test 15.xml
+transformation/test/Test 16.bpmn
+transformation/test/Test 16.png
+transformation/test/Test 17.bpmn
+transformation/test/Test 17.tree
+transformation/test/Test 17.xml
+transformation/test/Test 2.bpmn
+transformation/test/Test 2.png
+transformation/test/Test 2.tree
+transformation/test/Test 2.xml
+transformation/test/Test 3.bpmn
+transformation/test/Test 3.png
+transformation/test/Test 3.tree
+transformation/test/Test 3.xml
+transformation/test/Test 4.bpmn
+transformation/test/Test 4.png
+transformation/test/Test 4.tree
+transformation/test/Test 4.xml
+transformation/test/Test 5.bpmn
+transformation/test/Test 5.png
+transformation/test/Test 5.tree
+transformation/test/Test 5.xml
+transformation/test/Test 6.bpmn
+transformation/test/Test 6.png
+transformation/test/Test 6.tree
+transformation/test/Test 6.xml
+transformation/test/Test 7.bpmn
+transformation/test/Test 7.png
+transformation/test/Test 7.tree
+transformation/test/Test 7.xml
+transformation/test/Test 8.bpmn
+transformation/test/Test 8.png
+transformation/test/Test 8.tree
+transformation/test/Test 8.xml
+transformation/test/Test 9.bpmn
+transformation/test/Test 9.png
+transformation/test/Test 9.tree
+transformation/test/Test 9.xml
+transformation/test/Translation Test Cases.pdf
+transformation/test/all.rb
+transformation/test/test.rb
+transformation/transformation.rb
+transformation/transformation.xml
+transformation/transformation_dec.xml
+wee.gemspec
+wee.rb
+wee/WEE/nbproject/private/private.xml

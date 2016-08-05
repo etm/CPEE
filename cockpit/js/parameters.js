@@ -4,19 +4,6 @@ $(document).ready(function() {
     mark_parameters_save($(event.target).parents('ui-tabbed'));
   }); //}}}
 
-  // Delete entries //{{{
-  $(document).on('click','#parameters td.del a',function(event){
-    var top = $(event.target).parents('ui-tabbed');
-    remove_entry($("input",$(event.target).parents('tr')).get(0),false);
-    mark_parameters_save(top);
-    return false;
-  }); //}}}
-
-  // New entry //{{{
-  $('#parameters ui-behind button:nth-child(1)').click(function(){
-    new_entry($(this).parents('ui-tabbed'));
-  }); //}}}
-
   // Save entries //{{{
   $('#parameters ui-behind button:nth-child(2)').click(function(event){
     save_parameters($(event.target).parents('ui-tabbed'));

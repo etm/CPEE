@@ -38,7 +38,8 @@
               type: "GET",
               url: "rngtest2.xml",
               success: function(data){
-                var rngui = new RelaxNGui(data,rng,$('#show'));
+                var rngui = new RelaxNGui(rng,$('#show'));
+                rngui.content(data);
                 $('#saveall').on('click',function(){
                   console.log($(rngui.save()).serializePrettyXML());
                 });
