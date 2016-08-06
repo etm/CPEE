@@ -29,8 +29,11 @@ ui-tabbed ui-tabbar ui-behind button {
 #parameters ui-content { height: 9em; min-height: 1.7em; }
 
 #areadataelements { height: 100%; overflow-x: hidden; overflow-y: scroll; }
+#areadataelements button.relaxngui_control { display: none; }
 #areaendpoints { height: 100%; overflow-x: hidden; overflow-y: scroll; }
+#areaendpoints button.relaxngui_control { display: none; }
 #areaattributes { height: 100%; overflow-x: hidden; overflow-y: scroll; }
+#areaattributes button.relaxngui_control { display: none; }
 
 #areainstance input[type=file]         { display: none; }
 #areainstance div.section              { display: table-cell; vertical-align: middle; }

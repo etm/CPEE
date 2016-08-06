@@ -13,9 +13,9 @@ $(document).ready(function() {
   }); //}}}
 
   // New entry //{{{
-  $(document).on('click','#main .header button',function(){
-    var node = new_entry($(this).parents('ui-tabbed'));
-    node.addClass('indent');
+  $(document).on('click','#parameters ui-behind button:nth-child(1)',function(event){
+    var but = $(document).find('#parameters ui-content ui-area:not(.inactive) button');
+    but.click(); 
   }); //}}}
   
   // Delete entries //{{{

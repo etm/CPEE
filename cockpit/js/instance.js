@@ -8,6 +8,7 @@ var save = {};
     save['dsl'] = undefined;
     save['endpoints'] = undefined;
     save['dataelements'] = undefined;
+    save['attributes'] = undefined;
     save['details'] = undefined;
 var node_state = {};
 var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
@@ -72,6 +73,20 @@ $(document).ready(function() {// {{{
     url: "rngs/dataelements.rng",
     success: function(rng){
       save['dataelements'] = new RelaxNGui(rng,$('#dat_dataelements'));
+    }
+  });
+  $.ajax({
+    type: "GET",
+    url: "rngs/endpoints.rng",
+    success: function(rng){
+      save['endpoints'] = new RelaxNGui(rng,$('#dat_endpoints'));
+    }
+  });
+  $.ajax({
+    type: "GET",
+    url: "rngs/attributes.rng",
+    success: function(rng){
+      save['attributes'] = new RelaxNGui(rng,$('#dat_attributes'));
     }
   });
 
@@ -224,16 +239,16 @@ function monitor_instance(load) {// {{{
             if ($('event > topic',data).length > 0) {
               switch($('event > topic',data).text()) {
                 case 'dataelements':
-                  monitor_instance_dataelements();
+                  monitor_instance_values("dataelements");
                   break;
                 case 'description':
                   monitor_instance_dsl();
                   break;
                 case 'endpoints':
-                  monitor_instance_endpoints();
+                  monitor_instance_values("endpoints");
                   break;
                 case 'attributes':
-                  monitor_instance_attributes();
+                  monitor_instance_values("attributes");
                   monitor_instance_transformation();
                   break;
                 case 'state':
@@ -264,9 +279,9 @@ function monitor_instance(load) {// {{{
         }
       });
 
-      monitor_instance_dataelements();
-      monitor_instance_endpoints();
-      monitor_instance_attributes();
+      monitor_instance_values("dataelements");
+      monitor_instance_values("endpoints");
+      monitor_instance_values("attributes");
       monitor_instance_transformation();
       monitor_instance_dsl();
       monitor_instance_state();
@@ -278,74 +293,16 @@ function monitor_instance(load) {// {{{
   });
 }// }}}
 
-function monitor_instance_dataelements() {// {{{
+function monitor_instance_values(val) {// {{{
   var url = $("#current-instance").text();
   $.ajax({
     type: "GET",
-    url: url + "/properties/values/dataelements/",
+    url: url + "/properties/values/" + val + "/",
     success: function(res){
-      save['dataelements'].content(res);
+      save[val].content(res);
     }
   });
 } // }}}
-
-function monitor_instance_endpoints() {// {{{
-  var url = $("#current-instance").text();
-  $.ajax({
-    type: "GET",
-    url: url + "/properties/values/endpoints/",
-    success: function(res){
-      var values = $("value > *",res);
-      var temp = {}
-      values.each(function(){
-        temp[this.nodeName] = $(this).text();
-      });
-      var temp_xml = serialize_hash(temp);
-
-      if (temp_xml != save['endpoints']) {
-        save['endpoints'] = temp_xml;
-        var ctv = $("#dat_endpoints");
-        ctv.empty();
-        $.each(temp,function(a,b){
-          var node = $("#dat_template_pair tr").clone(true);
-          $('.pair_name',node).val(a);
-          $('.pair_value',node).val(b);
-          ctv.append(node);
-        });
-        ctv.append(temp);
-      }
-    }
-  });
-}// }}}
-
-function monitor_instance_attributes() {// {{{
-  var url = $("#current-instance").text();
-  $.ajax({
-    type: "GET",
-    url: url + "/properties/values/attributes/",
-    success: function(res){
-      var values = $("value > *",res);
-      var temp = {}
-      values.each(function(){
-        temp[this.nodeName] = $(this).text();
-      });
-      var temp_xml = serialize_hash(temp);
-
-      if (temp_xml != save['attributes']) {
-        save['attributes'] = temp_xml;
-        var ctv = $("#dat_attributes");
-        ctv.empty();
-        $.each(temp,function(a,b){
-          var node = $("#dat_template_pair tr").clone(true);
-          $('.pair_name',node).val(a);
-          $('.pair_value',node).val(b);
-          ctv.append(node);
-        });
-        ctv.append(temp);
-      }
-    }
-  });
-}// }}}
 
 function monitor_instance_dsl() {// {{{
   var url = $("#current-instance").text();
