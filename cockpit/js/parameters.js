@@ -26,7 +26,7 @@ $(document).ready(function() {
 
   // color of save button //{{{
   $('#parameters ui-tabbar ui-tab:not(.switch)').click(function(event){
-    mark_parameters_save($(event.target).parents('ui-tabbed'));
+    highlight_save_button(event);
   }); //}}}
 
   // save entries //{{{
@@ -54,11 +54,17 @@ $(document).ready(function() {
 
   // when keyup in one of the inputs, highlight the save button //{{{
   $(document).on('keyup','#dat_dataelements input, #dat_endpoints input, #dat_attributes input',function(event){
-    var visid = $('ui-tabbar ui-tab',$(event.target).parents('ui-tabbed')).not('.switch').not('.inactive').attr('data-tab');
-    if (save[visid].has_changed()) {
-      $('ui-tabbar ui-behind button:nth-child(2)',top).addClass('highlight');
-    } else {
-      $('ui-tabbar ui-behind button:nth-child(2)',top).removeClass('highlight');
-    }
+    console.log('rrrr');
+    highlight_save_button(event);
   }); //}}}
 });
+
+function highlight_save_button(event) {
+  var visid = $('ui-tabbar ui-tab',$(event.target).parents('ui-tabbed')).not('.switch').not('.inactive').attr('data-tab');
+  if (save[visid].has_changed()) {
+    console.log('aaa');
+    $('#parameters ui-tabbar ui-behind button:nth-child(2)').addClass('highlight');
+  } else {
+    $('#parameters ui-tabbar ui-behind button:nth-child(2)').removeClass('highlight');
+  }
+}
