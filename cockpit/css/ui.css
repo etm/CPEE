@@ -26,7 +26,7 @@ ui-tabbed ui-tabbar ui-behind button {
   content: "|";
 }
 
-#parameters ui-content { height: 9em; min-height: 1.7em; }
+#parameters ui-content { height: 8.5em; min-height: 1.7em; }
 
 #areadataelements { height: 100%; overflow-x: hidden; overflow-y: scroll; }
 #areadataelements button.relaxngui_control { display: none; }
