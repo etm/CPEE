@@ -69,28 +69,6 @@ $(document).ready(function() {// {{{
   $("input[name=modelfile]").change(load_modelfile_after);
 
   $.ajax({
-    type: "GET",
-    url: "rngs/dataelements.rng",
-    success: function(rng){
-      save['dataelements'] = new RelaxNGui(rng,$('#dat_dataelements'));
-    }
-  });
-  $.ajax({
-    type: "GET",
-    url: "rngs/endpoints.rng",
-    success: function(rng){
-      save['endpoints'] = new RelaxNGui(rng,$('#dat_endpoints'));
-    }
-  });
-  $.ajax({
-    type: "GET",
-    url: "rngs/attributes.rng",
-    success: function(rng){
-      save['attributes'] = new RelaxNGui(rng,$('#dat_attributes'));
-    }
-  });
-
-  $.ajax({
     url: "testsets/testsets.xml",
     dataType: 'xml',
     success: function(res){
