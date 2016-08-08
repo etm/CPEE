@@ -9,6 +9,15 @@ $(document).ready(function() {
     save_parameters($(event.target).parents('ui-tabbed'));
   }); //}}}
 
+  // New entry //{{{
+  $('#parameters ui-behind button:nth-child(1)').click(function(event){
+    var but = $(document).find('#parameters ui-content ui-area:not(.inactive) button');
+        but.click();
+    var are = $(document).find('#parameters ui-content ui-area:not(.inactive)');
+    var tab = $(document).find('#parameters ui-content ui-area:not(.inactive) .relaxngui_table');
+        are.animate({ scrollTop: tab.height() }, "slow");
+  }); //}}}
+
   $(document).on('keyup','#dat_dataelements input',function(e){ mark_parameters_save($(e.target).parents('ui-tabbed')); });
   $(document).on('keyup','#dat_endpoints input',function(e){ mark_parameters_save($(e.target).parents('ui-tabbed')); });
   $(document).on('keyup','#dat_attributes input',function(e){ mark_parameters_save($(e.target).parents('ui-tabbed')); });

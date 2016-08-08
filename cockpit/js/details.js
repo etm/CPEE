@@ -9,15 +9,9 @@ $(document).ready(function() {
         $('#main ui-behind button').show();
       } else {
         $('#main ui-behind button').hide();
-      }  
+      }
   }); //}}}
 
-  // New entry //{{{
-  $(document).on('click','#parameters ui-behind button:nth-child(1)',function(event){
-    var but = $(document).find('#parameters ui-content ui-area:not(.inactive) button');
-    but.click(); 
-  }); //}}}
-  
   // Delete entries //{{{
   $(document).on('click','#main td.del a',function(event){
     var top = $(event.target).parents('ui-tabbed');
@@ -42,7 +36,7 @@ function mark_main_save(top) { //{{{
 
   if (details != save[visid]) {
     $('ui-tabbar ui-behind button',top).addClass('highlight');
-  } else {  
+  } else {
     $('ui-tabbar ui-behind button',top).removeClass('highlight');
   }
 } //}}}
@@ -58,19 +52,19 @@ function save_main(top) { //{{{
     var newn = serialize_details(tab).attr('svg-id',$('input.pname_svgid').val());
     if (newn.children().length == 0) {
       newn.append(node.children());
-    }  
+    }
     node.replaceWith(newn);
     $('ui-tabbar ui-behind button:nth-child(2)',top).removeClass('highlight');
 
     save_description();
-  }  
+  }
 } //}}}
 
 function save_description() {
   var serxml = graphrealization.description.get_description();
   var url = $("#current-instance").text();
   $.ajax({
-    type: "PUT", 
+    type: "PUT",
     url: url + "/properties/values/description/",
     data: ({'content': '<content>' + serxml + '</content>'}),
   });
@@ -86,7 +80,7 @@ function serialize_details(parent) { //{{{
 
         var para = $X('<parameters xmlns="http://cpee.org/ns/description/1.0"/>');
         xml.append(para);
-        
+
         if ($('input.pname_method',parent).length > 0) {
           var pars = $X('<parameters xmlns="http://cpee.org/ns/description/1.0"/>');
           var meth = $X('<method xmlns="http://cpee.org/ns/description/1.0"/>');
@@ -137,18 +131,18 @@ function serialize_details(parent) { //{{{
     case 'parallel':
       if (parseInt($('input.pname_wait').val()) > -1) {
         xml.attr('wait',$('input.pname_wait').val());
-      }  
+      }
       break;
     case 'parallel_branch':
       if ($('input.pname_pass',parent).length > 0) {
         xml.attr('pass',$('input.pname_pass').val());
-      }  
+      }
       if ($('input.pname_local',parent).length > 0) {
         xml.attr('local',$('input.pname_local').val());
-      }  
+      }
       break;
     // TODO group
-  }  
+  }
 
   return xml;
 } //}}}
