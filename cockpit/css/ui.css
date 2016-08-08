@@ -38,8 +38,8 @@ ui-tabbed ui-tabbar ui-behind button {
 #areainstance input[type=file]         { display: none; }
 #areainstance div.section              { display: table-cell; vertical-align: middle; }
 #areainstance div.section:nth-child(1) {                                      padding: 0 0.5em 0 0; }
-#areainstance div.section:nth-child(2) { border-left: 1px solid ButtonShadow; padding: 0 0.5em; }
-#areainstance div.section:nth-child(3) { border-left: 1px solid ButtonShadow; padding: 0 0 0 0.5em; }
+#areainstance div.section:nth-child(2) { border-left: 1px solid #a1a1a1;      padding: 0 0.5em; }
+#areainstance div.section:nth-child(3) { border-left: 1px solid #a1a1a1;      padding: 0 0 0 0.5em; }
 
 #areainstance div.section:nth-child(1) div                          { vertical-align: middle; margin: 0; padding: 0; }
 #areainstance div.section:nth-child(1) button                       { vertical-align: middle; margin: 0; padding: 0; }
@@ -59,7 +59,7 @@ ui-tabbed ui-tabbar ui-behind button {
 #areaexecution table.compact tbody.debug tr:last-child td { padding-bottom: 0.5em; }
 #areaexecution table.compact tbody.debug tr:last-child td input { vertical-align: middle; }
 #areaexecution table.compact tbody.exe tr:first-child td { padding-top: 0.5em; }
-#areaexecution table.compact tbody.exe { border-top: 1px solid ButtonShadow; }
+#areaexecution table.compact tbody.exe { border-top: 1px solid #a1a1a1; }
 
 #areaexecution table.compact tbody.exe td { height: 2.2em; }
 
@@ -71,15 +71,6 @@ ui-tabbed ui-tabbar ui-behind button {
   padding:0;
   width: 100%;
 }
-#dat_endpoints button                  { border: 1pt solid buttonshadow; padding: 0; }
-#dat_endpoints td:nth-child(1)         { width: 1.2em; font-size: 1.3em; font-weight: bold; }
-#dat_endpoints td:nth-child(2)         { width: 8em; }
-#dat_endpoints td:nth-child(3)         { width: 1em; }
-#dat_endpoints tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
-#dat_endpoints tr:nth-child(odd) input { background-color: ButtonFace; }
-#dat_endpoints input                   { border: 0 none; padding: 0; margin: 0; }
-#dat_endpoints input:first-child       { border: 0 none; width: 8em; }
-#dat_endpoints input:last-child        { border: 0 none; width: 100%; }
 
 #dat_dataelements {
   border-collapse:collapse;
@@ -89,16 +80,6 @@ ui-tabbed ui-tabbar ui-behind button {
   padding:0;
   width: 100%;
 }
-#dat_dataelements button                  { border: 1pt solid buttonshadow; padding: 0; }
-#dat_dataelements td:nth-child(1)         { width: 1.2em; font-size: 1.3em; font-weight: bold;}
-#dat_dataelements td:nth-child(2)         { width: 8em; }
-#dat_dataelements td:nth-child(3)         { width: 1em; }
-#dat_dataelements tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
-#dat_dataelements tr:nth-child(odd) input { background-color: ButtonFace; }
-#dat_dataelements input                   { border: 0 none; padding: 0; margin: 0; }
-#dat_dataelements input:first-child       { border: 0 none; width: 8em; }
-#dat_dataelements input:last-child        { border: 0 none; width: 100%; }
-
 #dat_attributes {
   border-collapse:collapse;
   border-spacing:0;
@@ -107,15 +88,6 @@ ui-tabbed ui-tabbar ui-behind button {
   padding:0;
   width: 100%;
 }
-#dat_attributes button                  { border: 1pt solid buttonshadow; padding: 0; }
-#dat_attributes td:nth-child(1)         { width: 1.2em; font-size: 1.3em; font-weight: bold;}
-#dat_attributes td:nth-child(2)         { width: 8em; }
-#dat_attributes td:nth-child(3)         { width: 1em; }
-#dat_attributes tr:nth-child(odd)       { background-color: ButtonFace; color: ButtonText; }
-#dat_attributes tr:nth-child(odd) input { background-color: ButtonFace; }
-#dat_attributes input                   { border: 0 none; padding: 0; margin: 0; }
-#dat_attributes input:first-child       { border: 0 none; width: 8em; }
-#dat_attributes input:last-child        { border: 0 none; width: 100%; }
 
 #areadsl div { padding: 0 1em; }
 #areadsl div:first-child { padding-top: 1em; }
@@ -141,14 +113,14 @@ span.vote {
 #graphcolumn {
   margin: 0;
   padding: 0;
-  border-right: 1px solid ButtonShadow;
+  border-right: 1px solid #a1a1a1;
   min-width: 9em;
 }
 #detailcolumn {
   padding-left: 1.5em;
 }
 
-#dat_log tr:nth-child(odd) { background-color: ButtonFace; color: ButtonText; }
+#dat_log tr:nth-child(odd) { background-color: #e8e8e8; color: #333; }
 
 #dat_details { border: 0 none; border-top: 1em solid white; border-bottom: 1em solid white; width: inherit; border-right: 1em solid white; }
 
