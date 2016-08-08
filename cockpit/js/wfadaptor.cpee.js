@@ -134,7 +134,8 @@ function CPEE(adaptor) {
           type: "GET",
           url: "rngs/call.rng",
           success: function(rng){
-						var rngui = new RelaxNGui(node,rng,tab);
+						var rngui = new RelaxNGui(rng,tab);
+                rngui.content(node);
           }
         });
         break;
