@@ -66,6 +66,9 @@ function CPEE(adaptor) {
   this.events = events = {};
 
   this.noarrow = noarrow = ['alternative', 'otherwise'];
+  this.description_extract = function(rng) {
+    return new RelaxNGui(rng,null).example();
+  }
 
   // Events
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
@@ -194,37 +197,19 @@ function CPEE(adaptor) {
   this.elements.callmanipulate = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract',
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
-                    '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
-                    '<circle cx="28" cy="27" r="9" class="rfill stand"/>' +
-                    '<text transform="translate(28,31)" class="small">s</text>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/callmanipulate.svg'
     },//}}}
   }; /*}}}*/
   this.elements.choose_inclusive = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract',
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
-                    '<circle cx="15.5" cy="15.5" r="7" class="stand"/>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/choose_inclusive.svg'
     },//}}}
   };  /*}}}*/
   this.elements.choose_exclusive = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract',
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
-                    '<line x1="10.5" y1="20.5" x2="20.5" y2="10.5" class="stand"/>' +
-                    '<line x1="10.5" y1="10.5" x2="20.5" y2="20.5" class="stand"/>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/choose_exclusive.svg'
     },//}}}
   };  /*}}}*/
 
@@ -246,14 +231,9 @@ function CPEE(adaptor) {
           return'call';
         }
       },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
-                    '<path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/call.svg'
     },//}}}
-    'description': '<call id="###" endpoint="" xmlns="http://cpee.org/ns/description/1.0"><parameters xmlns="http://cpee.org/ns/description/1.0"><label>""</label><method>:post</method><parameters/></parameters></call>',
+    'description': 'rngs/call.rng',
     'permissible_children': function(node) { //{{{
       if(node.children('finalize,update').length < 1)
         return [
@@ -265,9 +245,7 @@ function CPEE(adaptor) {
       return [];
     }, //}}}
   'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,true, true);
-    },
+    'mousedown': function (node, e) { events.mousedown(node,e,true, true); },
     'click': events.click,
     'dragstart': events.dragstart,
    }//}}}
@@ -276,21 +254,14 @@ function CPEE(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
-                    '<text transform="translate(15,21)" class="normal">s</text>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/scripts.svg'
     },//}}}
     'description': ['<finalize xmlns="http://cpee.org/ns/description/1.0"/>','<update xmlns="http://cpee.org/ns/description/1.0"/>'],
     'permissible_children': function(node) { //{{{
       return [];
     }, //}}}
     'adaptor': { //{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,false, true);
-      },
+      'mousedown': function (node, e) { events.mousedown(node,e,false, true); },
       'click': events.click,
     } //}}}
   }; /*}}}*/
@@ -298,21 +269,14 @@ function CPEE(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>' +
-                    '<text transform="translate(15,21)" class="normal">s</text>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/manipulate.svg'
     },//}}}
     'description': '<manipulate id="###" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
       return [];
     }, //}}}
   'adaptor' : {//{{{
-    'mousedown': function (node, e) {
-      events.mousedown(node,e,false, true);
-    },
+    'mousedown': function (node, e) { events.mousedown(node,e,false, true); },
     'click': events.click,
    }//}}}
   }; /*}}}*/
@@ -320,22 +284,14 @@ function CPEE(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' +
-                    '<circle cx="15" cy="15" r="11" class="stand"/>' +
-                    '<polygon points="10.5,20.5 15,8.5 20.5,20.5 15,15.5 10.5,20.5" class="black"/>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/escape.svg'
     },//}}}
     'description': '<escape xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
       return [];
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,false, true);
-      },
+      'mousedown': function (node, e) { events.mousedown(node,e,false, true); },
       'click': events.click,
     }//}}}
   }; /*}}}*/
@@ -359,12 +315,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
-                    '<circle cx="15.5" cy="15.5" r="7" class="stand"/>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/choose.svg'
     },//}}}
     'description': '<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>',
     'permissible_children': function(node) { //{{{
@@ -414,12 +365,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<circle cx="15" cy="15" r="9" class="standtrans"/>' +
-                    '<line x1="9" y1="21" x2="21" y2="9" class="stand"/>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/otherwise.svg'
     },//}}}
     'description': '<otherwise xmlns="http://cpee.org/ns/description/1.0"/>',
     'neverdelete': true,
@@ -480,12 +426,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<circle cx="15" cy="15" r="14" class="standwithout"/>' +
-                    '<text transform="translate(15,20)" class="normal">{..}</text>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/alternative.svg'
     },//}}}
     'description': '<alternative condition="" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -549,13 +490,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
-                    '<line x1="10.5" y1="20.5" x2="20.5" y2="10.5" class="stand"/>' +
-                    '<line x1="10.5" y1="10.5" x2="20.5" y2="20.5" class="stand"/>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/loop.svg'
     },// }}}
     'description': '<loop pre_test="" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -627,13 +562,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
-                    '<text transform="translate(12,25)" class="normallarge">+</text>' +
-                    '<text transform="translate(18,16)" class="small">=</text>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/parallel.svg'
     },//}}}
     'description': '<parallel xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -697,12 +626,7 @@ function CPEE(adaptor) {
         if($(node).parents('parallel').first().children(':not(parallel_branch)').length > 0) return true;
         return false;
       },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>' +
-                    '<text transform="translate(15,20)" class="small">+|</text>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/parallel_branch.svg'
     },//}}}
     'description': '<parallel_branch xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -770,12 +694,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' +
-                    '<text transform="translate(15,21)" class="normal">⚠</text>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/critical.svg'
     },//}}}
     'description': '<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -835,9 +754,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': function() {
-        return false;
-      }
+      'svg': null
     },//}}}
     'description': '<group xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -868,11 +785,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': function() {
-        return $X('<svg class="clickable" xmlns="http://www.w3.org/2000/svg">' +
-                    '<circle cx="15" cy="15" r="14" class="stand"/>' +
-                  '</svg>');
-      }
+      'svg': 'symbols/start.svg'
     },//}}}
     'description': null,
     'permissible_children': function(node) { //{{{
