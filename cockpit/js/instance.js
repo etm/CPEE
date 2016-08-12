@@ -304,15 +304,15 @@ function monitor_instance_dsl() {// {{{
           type: "GET",
           url: url + "/properties/values/dslx/",
           success: function(res){
-            graphrealization = new WfAdaptor(CPEE);
-            graphrealization.set_svg_container($('#graphcanvas'));
-            graphrealization.set_description($(res), true);
-            graphrealization.notify = function(svgid) {
-              console.log('rrr');
-              save_description();
-              manifestation.events.click(svgid,undefined);
-            };
-            monitor_instance_pos();
+            new WfAdaptor(CPEE,$('script[data-theme-base]').attr('data-theme-base'),function(graphrealization){
+              graphrealization.set_svg_container($('#graphcanvas'));
+              graphrealization.set_description($(res), true);
+              graphrealization.notify = function(svgid) {
+                save_description();
+                manifestation.events.click(svgid,undefined);
+              };
+              monitor_instance_pos();
+            });
           }
         });
       }

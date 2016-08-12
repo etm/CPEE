@@ -233,7 +233,7 @@ function CPEE(adaptor) {
       },
       'svg': 'symbols/call.svg'
     },//}}}
-    'description': 'rngs/call.rng',
+    'description': '<call id="###" endpoint="" xmlns="http://cpee.org/ns/description/1.0"><parameters xmlns="http://cpee.org/ns/description/1.0"><label>""</label><method>:post</method><parameters/></parameters></call>',
     'permissible_children': function(node) { //{{{
       if(node.children('finalize,update').length < 1)
         return [

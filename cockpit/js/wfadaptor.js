@@ -19,11 +19,11 @@
 // 2) creation of svg-container (Bug: arrows on lines)
 // 3) after-function to insert using namespace of description
 
-// WfAdaptor: 
-// Handles interaction between Illustartor and Description 
+// WfAdaptor:
+// Handles interaction between Illustartor and Description
 // e.g. Event fires to Adaptor to insert Element and Illustrator and Description do it
-function WfAdaptor(manifesto) { // Controller {{{
- 
+function WfAdaptor(manifesto,theme_base,doit) { // Controller {{{
+
  // public variables {{{
     this.illustrator;
     this.description;
@@ -34,7 +34,7 @@ function WfAdaptor(manifesto) { // Controller {{{
     var illustrator;
     var description;
   // }}}
-  
+
   // helper funtions
   this.set_description = function(desc) { // public {{{
     this.description.set_description(desc);
@@ -54,14 +54,30 @@ function WfAdaptor(manifesto) { // Controller {{{
 
   manifestation = new manifesto(this);
   this.illustrator.noarrow = manifestation.noarrow;
+  var deferreds = [];
   for(element in manifestation.elements) {
+    if (manifestation.elements[element].illustrator.svg) {
+      deferreds.push(
+        $.ajax({
+          type: "GET",
+          url: theme_base + manifestation.elements[element].illustrator.svg,
+          success: function(res){
+            manifestation.elements[element].illustrator.svg = res;
+          }
+        })
+      );
+    }
     this.illustrator.elements[element] = manifestation.elements[element].illustrator;
     this.description.elements[element] = manifestation.elements[element].description;
     this.elements[element] = manifestation.elements[element].adaptor;
   }
+  self = this;
+  $.when.apply($, deferreds).then(function(x) {
+    doit(self);
+  });
 }  // }}}
 
-// WfIllustrator: 
+// WfIllustrator:
 // Is in charge of displaying the Graph. It is further able insert and remove elements with given ID's from the illsutration.
 function WfIllustrator(wf_adaptor) { // View  {{{
   // Variable {{{
@@ -74,7 +90,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.draw = {};
     // private
     var adaptor = null;
-  // }}} 
+  // }}}
   // Generic Functions {{{
   this.set_container = function(con) { // {{{
     svg.container = con;
@@ -88,7 +104,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         '<circle cx="15" cy="15" r="14" class="unkown"/>' +
         '<text transform="translate(15,20)" class="normal">?</text>' +
       '</g>');
-    for(element in elements) 
+    for(element in elements)
+      console.log(elements[element].svg);
       if(elements[element].svg() != false) {
         var sym = $X('<g xmlns="http://www.w3.org/2000/svg"/>').append(elements[element].svg().children()); // append all children to symbol
         $.each(elements[element].svg().attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
@@ -108,13 +125,13 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // Helper Functions {{{
   var draw_symbol = this.draw.draw_symbol = function (tname, sym_name, id, title, row, col, group) { // {{{
     if(elements[sym_name] == undefined || elements[sym_name].svg == undefined) sym_name = 'unknown';
-    var g = $X('<g class="element" element-id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' + 
+    var g = $X('<g class="element" element-id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
                   '<text class="super" transform="translate(30,8.4)">' +
                     '<tspan class="active">0</tspan>' +
                     '<tspan class="colon">,</tspan>' +
                     '<tspan class="vote">0</tspan>' +
                   '</text>' +
-               '</g>'); 
+               '</g>');
     var sym = svg.defs[sym_name].clone();
     sym.prepend($X('<title xmlns="http://www.w3.org/2000/svg">' + title  + '</title>'));
     sym.attr('class','activities');
@@ -126,16 +143,16 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       if(event_name == 'mousedown') sym.bind('contextmenu', false);
     }
     if(group) {group.append(g);}
-    else {svg.container.children('g:first').append(g);} 
+    else {svg.container.children('g:first').append(g);}
     return g;
-  } // }}}    
+  } // }}}
   var draw_border = this.draw.draw_border = function(id, p1, p2, group) { // {{{
     group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*width + '" ' +
         'y="' + (p1.row-0.80)*height + '" ' +
         'width="' + ((p2.col+1.00)-p1.col)*width + '" ' +
         'height="' + ((p2.row+1.00)-p1.row)*height +'" ' +
         'class="block" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
-  } // }}} 
+  } // }}}
   var draw_tile = this.draw.draw_tile = function(id, p1, p2, group) { // {{{
     group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*width + '" ' +
         'y="' + (p1.row-0.80)*height + '" ' +
@@ -148,7 +165,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     var line;
     if (arrow)
       line = $X('<path xmlns="http://www.w3.org/2000/svg" class="ourline" marker-end="url(#arrow)"/>');
-    else  
+    else
       line = $X('<path xmlns="http://www.w3.org/2000/svg" class="ourline"/>');
     if (end['row']-start['row'] == 0 || end['col']-start['col'] == 0) { // straight line
       line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
@@ -186,7 +203,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     }
     // Seems to solve injection groups-line problem, but I guess it will caus problem when collapsing elements
     //if(group) {group.prepend(line);}
-    //else 
+    //else
     {svg.container.append(line);}
   } //  }}}
   // }}}
@@ -195,7 +212,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // }}}
 } // }}}
 
-// WfDescription: 
+// WfDescription:
 // Manages the description. Is is further able to add/remove elements from the controlflow description.
 function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // public variables
@@ -205,7 +222,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var illustrator;
   var description;
   var id_counter = {};
-  var update_illustrator = true; 
+  var update_illustrator = true;
 
   // Generic Functions {{{
   this.set_description = function(desc, auto_update) { // public {{{
@@ -239,10 +256,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     $('*[id]', description).each(function(){existing.push($(this).attr('id'))});
     var id = 1;
     while ($.inArray('a' + id,existing) != -1) {
-      id += 1; 
+      id += 1;
     }
     return 'a' + id;
-  } // }}} 
+  } // }}}
   var update = this.update = function(svgid) { // {{{
     id_counter = {};
     if(update_illustrator){
@@ -309,7 +326,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(selector == undefined) {
       svgid = target.attr('svg-id');
       target.remove()
-    } else { 
+    } else {
       svgid = $(selector, target).attr('svg-id');
       $(selector, target).remove();
     }
@@ -322,15 +339,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     var pos = jQuery.extend(true, {}, parent_pos);
     var max = {'row': 0,'col': 0};
     var prev = [parent_pos]; // connects parent with child(s), depending on the expansion
-    var endnodes = []; 
+    var endnodes = [];
     var root_expansion = illustrator.elements[root.tagName].expansion(root);
     var block =  {'max':{}}; // e.g. {'max':{'row':0,'col':0}, 'endpoints':[]};
     var collapsed = false;
 
     var group = $X('<g class="group" xmlns="http://www.w3.org/2000/svg"/>');
 
-    if(root_expansion == 'horizontal') pos.row++; 
-    if(illustrator.elements[root.tagName].col_shift(root) == true && root_expansion != 'horizontal') pos.col++; 
+    if(root_expansion == 'horizontal') pos.row++;
+    if(illustrator.elements[root.tagName].col_shift(root) == true && root_expansion != 'horizontal') pos.col++;
 
     if(root.tagName == 'description') { // First parsing {{{
       pos.row++;
@@ -340,7 +357,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       illustrator.draw.draw_symbol('start', 'start', 'description', 'START', pos.row, pos.col, group);
     } // }}}
 
-    $(root).children().each(function() { 
+    $(root).children().each(function() {
       var tname = this.tagName;
 
       // Set SVG-ID {{{
@@ -348,13 +365,13 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         if(id_counter[tname] == undefined) id_counter[tname] = -1;
         $(this).attr('svg-id', tname + '_' + (++id_counter[tname]));
         $(this).attr('svg-label', '');
-      } else { 
+      } else {
         $(this).attr('svg-id',  $(this).attr('id'));
         if ($(this).children('parameters').length > 0) {
           $(this).attr('svg-label', $('label',$(this).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,''));
-        } else {  
+        } else {
           $(this).attr('svg-label', '');
-        }  
+        }
       }  // }}}
       // Calculate next position {{{
       if($(this).attr('collapsed') == undefined || $(this).attr('collapsed') == 'false') { collapsed = false; }
@@ -366,8 +383,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
         block = parse(this, jQuery.extend(true, {}, pos));
         group.append(block.svg);
-        block.svg.attr('id', 'group-' + $(this).attr('svg-id')); 
-        if(illustrator.elements[tname].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive 
+        block.svg.attr('id', 'group-' + $(this).attr('svg-id'));
+        if(illustrator.elements[tname].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive
       } else {
         if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'primitive'  && illustrator.elements[tname].svg()) { // This enables "invisble" elements, by returning false in the SVG function (e.g. constraints)
           block.max.row = pos.row;
@@ -383,27 +400,27 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       else if(typeof illustrator.elements[tname].resolve_symbol == 'function') {sym_name = illustrator.elements[tname].resolve_symbol(this);}
       else if(typeof illustrator.elements[tname].resolve_symbol == 'string')   {sym_name = illustrator.elements[tname].resolve_symbol;}
       else                                                                     {sym_name = tname;}
-      if((illustrator.elements[tname] && illustrator.elements[tname].svg()) || sym_name == 'unknown') { 
+      if((illustrator.elements[tname] && illustrator.elements[tname].svg()) || sym_name == 'unknown') {
         illustrator.draw.draw_symbol(tname, sym_name, $(this).attr('svg-id'), $(this).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[tname] ? illustrator.elements[tname].type : 'primitive unknown');
       } else { console.log("no icon "+ tname);}
       if(illustrator.elements[tname] && illustrator.elements[tname].border) illustrator.draw.draw_border($(this).attr('svg-id'), pos, block.max, block.svg);
       if(illustrator.elements[tname] && illustrator.elements[tname].type == 'complex') illustrator.draw.draw_tile($(this).attr('svg-id'), pos, block.max, block.svg);
       // }}}
       // Calculate Connection {{{
-      if(illustrator.elements[tname] != undefined && illustrator.elements[tname].closeblock) { // Close Block if element e.g. loop 
+      if(illustrator.elements[tname] != undefined && illustrator.elements[tname].closeblock) { // Close Block if element e.g. loop
         for(node in block.endnodes) illustrator.draw.draw_connection(group, block.endnodes[node], pos, block.max.row+1, block.endnodes.length, true);
       }
-      if(illustrator.elements[tname] != undefined && illustrator.elements[tname].endnodes != 'this')  { 
-        for(i in block.endnodes) endnodes.push(block.endnodes[i]); // collects all endpoints from different childs e.g. alternatives from choose 
+      if(illustrator.elements[tname] != undefined && illustrator.elements[tname].endnodes != 'this')  {
+        for(i in block.endnodes) endnodes.push(block.endnodes[i]); // collects all endpoints from different childs e.g. alternatives from choose
       } else { endnodes = [jQuery.extend(true, {}, pos)]; } // sets this element as only endpoint (aggreagte)
       if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
         illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos, null, null, true);
       } else {
         if ($.inArray(tname,noarrow) == -1)
           for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos, null, null, true);
-        else  
+        else
           for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos, null, null, false);
-      }  
+      }
       // }}}
       // Prepare next iteration {{{
       if(root_expansion == 'vertical') { prev = jQuery.extend(true, {}, endnodes); pos.row = block.max.row;} // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
@@ -427,4 +444,4 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   adaptor = wf_adaptor;
   illustrator = wf_illustrator;
   // }}}
-} // }}} 
+} // }}}
