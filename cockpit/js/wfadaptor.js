@@ -61,8 +61,9 @@ function WfAdaptor(manifesto,theme_base,doit) { // Controller {{{
         $.ajax({
           type: "GET",
           url: theme_base + manifestation.elements[element].illustrator.svg,
+          context: element,
           success: function(res){
-            manifestation.elements[element].illustrator.svg = res;
+            manifestation.elements[this].illustrator.svg = $(res.documentElement);
           }
         })
       );
@@ -75,7 +76,7 @@ function WfAdaptor(manifesto,theme_base,doit) { // Controller {{{
   $.when.apply($, deferreds).then(function(x) {
     doit(self);
   });
-}  // }}}
+} // }}}
 
 // WfIllustrator:
 // Is in charge of displaying the Graph. It is further able insert and remove elements with given ID's from the illsutration.
@@ -105,10 +106,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         '<text transform="translate(15,20)" class="normal">?</text>' +
       '</g>');
     for(element in elements)
-      console.log(elements[element].svg);
-      if(elements[element].svg() != false) {
-        var sym = $X('<g xmlns="http://www.w3.org/2000/svg"/>').append(elements[element].svg().children()); // append all children to symbol
-        $.each(elements[element].svg().attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
+      if(elements[element].svg) {
+        var sym = $X('<g xmlns="http://www.w3.org/2000/svg"/>').append(elements[element].svg.clone().children()); // append all children to symbol
+        $.each(elements[element].svg.attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
         svg.defs[element] = sym;
       }
   }  // }}}
@@ -379,14 +379,14 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(root_expansion == 'vertical')  pos.row++;
       if(root_expansion == 'horizontal')  pos.col++;
       if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'complex' && !collapsed) {
-        if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg()) pos.row--;
-// TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
+        if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg) pos.row--;
+        // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
         block = parse(this, jQuery.extend(true, {}, pos));
         group.append(block.svg);
         block.svg.attr('id', 'group-' + $(this).attr('svg-id'));
         if(illustrator.elements[tname].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive
       } else {
-        if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'primitive'  && illustrator.elements[tname].svg()) { // This enables "invisble" elements, by returning false in the SVG function (e.g. constraints)
+        if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'primitive'  && illustrator.elements[tname].svg) { // This enables "invisble" elements, by returning false in the SVG function (e.g. constraints)
           block.max.row = pos.row;
           block.max.col = pos.col;
           block.endnodes = (!collapsed ? [pos] : [jQuery.extend(true, {}, pos)]);
@@ -400,7 +400,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       else if(typeof illustrator.elements[tname].resolve_symbol == 'function') {sym_name = illustrator.elements[tname].resolve_symbol(this);}
       else if(typeof illustrator.elements[tname].resolve_symbol == 'string')   {sym_name = illustrator.elements[tname].resolve_symbol;}
       else                                                                     {sym_name = tname;}
-      if((illustrator.elements[tname] && illustrator.elements[tname].svg()) || sym_name == 'unknown') {
+      if((illustrator.elements[tname] && illustrator.elements[tname].svg) || sym_name == 'unknown') {
         illustrator.draw.draw_symbol(tname, sym_name, $(this).attr('svg-id'), $(this).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[tname] ? illustrator.elements[tname].type : 'primitive unknown');
       } else { console.log("no icon "+ tname);}
       if(illustrator.elements[tname] && illustrator.elements[tname].border) illustrator.draw.draw_border($(this).attr('svg-id'), pos, block.max, block.svg);
