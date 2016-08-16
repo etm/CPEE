@@ -74,7 +74,6 @@ function WfAdaptor(manifesto,theme_base,doit) { // Controller {{{
     this.elements[element] = manifestation.elements[element].adaptor;
   }
   self = this;
-  console.log(deferreds.length);
   $.when.apply($, deferreds).then(function(x) {
     doit(self);
   });

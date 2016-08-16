@@ -1,65 +1,3 @@
-function create_header(value){ //{{{
-  var tmp = $("#prop_template_header tr").clone();
-  $('.header_value',tmp).text(value);
-  return tmp;
-} //}}}
-function create_line(main,text){ //{{{
-  var tmp = $("#prop_template_line tr").clone();
-  $('.line_main',tmp).text(main);
-  $('.line_text',tmp).text(text);
-  return tmp;
-} //}}}
-function create_element(content,svgid){ //{{{
-  var tmp = $("#prop_template_readonly tr").clone();
-  $('.prop_name',tmp).text('Element');
-  $('.prop_value',tmp).val(content);
-  $('.prop_value',tmp).addClass('pname_element');
-  $('.prop_value',tmp).parent().append($("<input type='hidden' class='pname_svgid' value='" + svgid + "'>"));
-  return tmp;
-} //}}}
-function create_readonly_property(name,content){ //{{{
-  var tmp = $("#prop_template_readonly tr").clone();
-  $('.prop_name',tmp).text(name);
-  $('.prop_value',tmp).val(content);
-  $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
-  return tmp;
-} //}}}
-function create_input_property(name,cls,content){ //{{{
-  var tmp = $("#prop_template_input tr").clone();
-  tmp.addClass(cls);
-  $('.prop_name',tmp).text(name);
-  $('.prop_value',tmp).val(content);
-  $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
-  return tmp;
-} //}}}
-function create_select_property(name,cls,content,alts){ //{{{
-  var tmp = $("#prop_template_select tr").clone();
-  tmp.addClass(cls);
-  $('.prop_name',tmp).text(name);
-  $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
-  $.each(alts,function(a,b){
-    var o = $('<option value="' + b + '">' + b + '</option>');
-    if (b == content) o.attr('selected','selected');
-    $('.prop_value',tmp).append(o);
-  });
-  return tmp;
-} //}}}
-function create_area_property(name,cls,content){ //{{{
-  var tmp = $("#prop_template_area tr").clone();
-  tmp.addClass(cls);
-  $('.prop_name',tmp).text(name);
-  $('.prop_value',tmp).addClass('pname_' + name.toLowerCase());
-  $('.prop_value',tmp).text(content);
-  return tmp;
-} //}}}
-function create_input_pair(name,cls,content){ //{{{
-  var tmp = $("#dat_template_pair tr").clone();
-  tmp.addClass(cls);
-  $('.pair_name',tmp).val(name);
-  $('.pair_value',tmp).val(content);
-  return tmp;
-} //}}}
-
 function CPEE(adaptor) {
   this.adaptor = adaptor;
   this.elements = elements = {};
@@ -131,53 +69,14 @@ function CPEE(adaptor) {
     var node  = adaptor.description.get_node_by_svg_id(svgid).get(0);
 
     tab.empty();
-    switch(node.nodeName) {
-      case 'call':
-        $.ajax({
-          type: "GET",
-          url: adaptor.theme_base + "rngs/call.rng",
-          success: function(rng){
-						var rngui = new RelaxNGui(rng,tab);
-                rngui.content(node);
-          }
-        });
-        break;
-      case 'manipulate':
-        tab.append(create_readonly_property('ID',$(node).attr('id')));
-        tab.append(create_area_property('Script','',format_text_skim($(node).text())));
-        break;
-      case 'loop':
-        if ($(node).attr('pre_test') != undefined)
-          var mode = 'pre_test';
-        if ($(node).attr('post_test') != undefined)
-          var mode = 'post_test';
-        tab.append(create_select_property('Mode','',mode,['post_test','pre_test']));
-        tab.append(create_input_property('Condition','',$(node).attr(mode)));
-        break;
-      case 'choose':
-        var mode = ($(node).attr('mode') == 'inclusive' || $(node).attr('mode') == undefined ? 'inclusive' : 'exclusive')
-        tab.append(create_select_property('Mode','',mode,['exclusive','inclusive']));
-        break;
-      case 'alternative':
-        tab.append(create_input_property('Condition','',$(node).attr('condition')));
-        break;
-      case 'critical':
-        var sid = ($(node).attr('sid') == '' ? 'section' : $(node).attr('sid'));
-        tab.append(create_input_property('SID','',sid));
-        tab.append(create_line('Hint','Identical SID\'s shared by between differnt "critical" elements define mutual exclusive areas'));
-        break;
-      case 'parallel':
-        var wait = ($(node).attr('wait') == '' || $(node).attr('wait') == undefined ? '-1' : $(node).attr('wait'));
-        tab.append(create_input_property('Wait','',wait));
-        tab.append(create_line('Hint','-1 to wait for all branches'));
-        break;
-      case 'parallel_branch':
-        tab.append(create_input_property('Pass to branch','',$(node).attr('pass')));
-        tab.append(create_input_property('Local scope','',$(node).attr('local')));
-        break;
-      // TODO group
-    }
-    // add the sizer in order for colspan to work
+    $.ajax({
+      type: "GET",
+      url: adaptor.theme_base + "rngs/" + node.nodeName + ".rng",
+      success: function(rng){
+        save['details'] = new RelaxNGui(rng,tab);
+        save['details'].content(node);
+      }
+    });
     save['details'] = serialize_details(tab).serializeXML();
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
