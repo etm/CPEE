@@ -135,7 +135,7 @@ function CPEE(adaptor) {
       case 'call':
         $.ajax({
           type: "GET",
-          url: "rngs/call.rng",
+          url: adaptor.theme_base + "rngs/call.rng",
           success: function(rng){
 						var rngui = new RelaxNGui(rng,tab);
                 rngui.content(node);
@@ -197,19 +197,19 @@ function CPEE(adaptor) {
   this.elements.callmanipulate = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract',
-      'svg': 'symbols/callmanipulate.svg'
+      'svg': adaptor.theme_base + 'symbols/callmanipulate.svg'
     },//}}}
   }; /*}}}*/
   this.elements.choose_inclusive = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract',
-      'svg': 'symbols/choose_inclusive.svg'
+      'svg': adaptor.theme_base + 'symbols/choose_inclusive.svg'
     },//}}}
   };  /*}}}*/
   this.elements.choose_exclusive = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract',
-      'svg': 'symbols/choose_exclusive.svg'
+      'svg': adaptor.theme_base + 'symbols/choose_exclusive.svg'
     },//}}}
   };  /*}}}*/
 
@@ -231,7 +231,7 @@ function CPEE(adaptor) {
           return'call';
         }
       },
-      'svg': 'symbols/call.svg'
+      'svg': adaptor.theme_base + 'symbols/call.svg'
     },//}}}
     'description': '<call id="###" endpoint="" xmlns="http://cpee.org/ns/description/1.0"><parameters xmlns="http://cpee.org/ns/description/1.0"><label>""</label><method>:post</method><parameters/></parameters></call>',
     'permissible_children': function(node) { //{{{
@@ -254,7 +254,7 @@ function CPEE(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'svg': 'symbols/scripts.svg'
+      'svg': adaptor.theme_base + 'symbols/scripts.svg'
     },//}}}
     'description': ['<finalize xmlns="http://cpee.org/ns/description/1.0"/>','<update xmlns="http://cpee.org/ns/description/1.0"/>'],
     'permissible_children': function(node) { //{{{
@@ -269,7 +269,7 @@ function CPEE(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'svg': 'symbols/manipulate.svg'
+      'svg': adaptor.theme_base + 'symbols/manipulate.svg'
     },//}}}
     'description': '<manipulate id="###" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -284,7 +284,7 @@ function CPEE(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'svg': 'symbols/escape.svg'
+      'svg': adaptor.theme_base + 'symbols/escape.svg'
     },//}}}
     'description': '<escape xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -315,7 +315,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': 'symbols/choose.svg'
+      'svg': adaptor.theme_base + 'symbols/choose.svg'
     },//}}}
     'description': '<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>',
     'permissible_children': function(node) { //{{{
@@ -365,7 +365,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': 'symbols/otherwise.svg'
+      'svg': adaptor.theme_base + 'symbols/otherwise.svg'
     },//}}}
     'description': '<otherwise xmlns="http://cpee.org/ns/description/1.0"/>',
     'neverdelete': true,
@@ -426,7 +426,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': 'symbols/alternative.svg'
+      'svg': adaptor.theme_base + 'symbols/alternative.svg'
     },//}}}
     'description': '<alternative condition="" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -490,7 +490,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': 'symbols/loop.svg'
+      'svg': adaptor.theme_base + 'symbols/loop.svg'
     },// }}}
     'description': '<loop pre_test="" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -562,7 +562,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': 'symbols/parallel.svg'
+      'svg': adaptor.theme_base + 'symbols/parallel.svg'
     },//}}}
     'description': '<parallel xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -626,7 +626,7 @@ function CPEE(adaptor) {
         if($(node).parents('parallel').first().children(':not(parallel_branch)').length > 0) return true;
         return false;
       },
-      'svg': 'symbols/parallel_branch.svg'
+      'svg': adaptor.theme_base + 'symbols/parallel_branch.svg'
     },//}}}
     'description': '<parallel_branch xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -694,7 +694,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': 'symbols/critical.svg'
+      'svg': adaptor.theme_base + 'symbols/critical.svg'
     },//}}}
     'description': '<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -785,7 +785,7 @@ function CPEE(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': 'symbols/start.svg'
+      'svg': adaptor.theme_base + 'symbols/start.svg'
     },//}}}
     'description': null,
     'permissible_children': function(node) { //{{{

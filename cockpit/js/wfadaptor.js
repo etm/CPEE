@@ -28,9 +28,10 @@ function WfAdaptor(manifesto,theme_base,doit) { // Controller {{{
     this.illustrator;
     this.description;
     this.elements = {};
+    this.theme_base = theme_base;
   // }}}
 
-  // public variables {{{
+  // private variables {{{
     var illustrator;
     var description;
   // }}}
@@ -60,7 +61,7 @@ function WfAdaptor(manifesto,theme_base,doit) { // Controller {{{
       deferreds.push(
         $.ajax({
           type: "GET",
-          url: theme_base + manifestation.elements[element].illustrator.svg,
+          url: manifestation.elements[element].illustrator.svg,
           context: element,
           success: function(res){
             manifestation.elements[this].illustrator.svg = $(res.documentElement);
@@ -73,6 +74,7 @@ function WfAdaptor(manifesto,theme_base,doit) { // Controller {{{
     this.elements[element] = manifestation.elements[element].adaptor;
   }
   self = this;
+  console.log(deferreds.length);
   $.when.apply($, deferreds).then(function(x) {
     doit(self);
   });
