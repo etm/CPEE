@@ -1,4 +1,4 @@
-function CPEE(adaptor) {
+function ManifestationTheme(adaptor) {
   this.adaptor = adaptor;
   this.elements = elements = {};
   this.events = events = {};

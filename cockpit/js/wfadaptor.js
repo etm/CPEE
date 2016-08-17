@@ -22,7 +22,7 @@
 // WfAdaptor:
 // Handles interaction between Illustartor and Description
 // e.g. Event fires to Adaptor to insert Element and Illustrator and Description do it
-function WfAdaptor(manifesto,theme_base,doit) { // Controller {{{
+function WfAdaptor(theme_base,doit) { // Controller {{{
 
  // public variables {{{
     this.illustrator;
@@ -53,29 +53,31 @@ function WfAdaptor(manifesto,theme_base,doit) { // Controller {{{
   this.illustrator = illustrator = new WfIllustrator(this);
   this.description = description = new WfDescription(this, this.illustrator);
 
-  manifestation = new manifesto(this);
-  this.illustrator.noarrow = manifestation.noarrow;
-  var deferreds = [];
-  for(element in manifestation.elements) {
-    if (manifestation.elements[element].illustrator.svg) {
-      deferreds.push(
-        $.ajax({
-          type: "GET",
-          url: manifestation.elements[element].illustrator.svg,
-          context: element,
-          success: function(res){
-            manifestation.elements[this].illustrator.svg = $(res.documentElement);
-          }
-        })
-      );
+  $.getScript(theme_base, function() {
+    manifestation = new WFAdaptorManifestation(this);
+    this.illustrator.noarrow = manifestation.noarrow;
+    var deferreds = [];
+    for(element in manifestation.elements) {
+      if (manifestation.elements[element].illustrator.svg) {
+        deferreds.push(
+          $.ajax({
+            type: "GET",
+            url: manifestation.elements[element].illustrator.svg,
+            context: element,
+            success: function(res){
+              manifestation.elements[this].illustrator.svg = $(res.documentElement);
+            }
+          })
+        );
+      }
+      this.illustrator.elements[element] = manifestation.elements[element].illustrator;
+      this.description.elements[element] = manifestation.elements[element].description;
+      this.elements[element] = manifestation.elements[element].adaptor;
     }
-    this.illustrator.elements[element] = manifestation.elements[element].illustrator;
-    this.description.elements[element] = manifestation.elements[element].description;
-    this.elements[element] = manifestation.elements[element].adaptor;
-  }
-  self = this;
-  $.when.apply($, deferreds).then(function(x) {
-    doit(self);
+    self = this;
+    $.when.apply($, deferreds).then(function(x) {
+      doit(self);
+    });
   });
 } // }}}
 
