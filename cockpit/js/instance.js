@@ -282,10 +282,10 @@ function monitor_instance_values(val) {// {{{
   });
 } // }}}
 
-function adaptor_init(theme) {
+function adaptor_init(theme,dslx) {
   new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
     graphrealization.set_svg_container($('#graphcanvas'));
-    graphrealization.set_description($(res), true);
+    graphrealization.set_description($(dslx), true);
     graphrealization.notify = function(svgid) {
       save_description();
       manifestation.events.click(svgid,undefined);
@@ -315,15 +315,15 @@ function monitor_instance_dsl() {// {{{
         $.ajax({
           type: "GET",
           url: url + "/properties/values/dslx/",
-          success: function(res){
+          success: function(dslx){
             $.ajax({
               type: "GET",
               url: url + "/properties/values/attributes/theme/",
               success: function(res){
-                adaptor_init($('value',res).text());
+                adaptor_init($('value',res).text(),dslx);
               },
               error: function() {
-                adaptor_init('default');
+                adaptor_init('default',dslx);
               }
             });
           }

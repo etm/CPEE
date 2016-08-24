@@ -71,7 +71,7 @@ function WFAdaptorManifestation(adaptor) {
     tab.empty();
     $.ajax({
       type: "GET",
-      url: adaptor.theme_base + "rngs/" + node.nodeName + ".rng",
+      url: adaptor.theme_dir + "rngs/" + node.nodeName + ".rng",
       success: function(rng){
         save['details'] = new RelaxNGui(rng,tab);
         save['details'].content(node);
@@ -96,19 +96,19 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.callmanipulate = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract',
-      'svg': adaptor.theme_base + 'symbols/callmanipulate.svg'
+      'svg': adaptor.theme_dir + 'symbols/callmanipulate.svg'
     },//}}}
   }; /*}}}*/
   this.elements.choose_inclusive = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract',
-      'svg': adaptor.theme_base + 'symbols/choose_inclusive.svg'
+      'svg': adaptor.theme_dir + 'symbols/choose_inclusive.svg'
     },//}}}
   };  /*}}}*/
   this.elements.choose_exclusive = { /*{{{*/
     'illustrator': {//{{{
       'type' : 'abstract',
-      'svg': adaptor.theme_base + 'symbols/choose_exclusive.svg'
+      'svg': adaptor.theme_dir + 'symbols/choose_exclusive.svg'
     },//}}}
   };  /*}}}*/
 
@@ -130,7 +130,7 @@ function WFAdaptorManifestation(adaptor) {
           return'call';
         }
       },
-      'svg': adaptor.theme_base + 'symbols/call.svg'
+      'svg': adaptor.theme_dir + 'symbols/call.svg'
     },//}}}
     'description': '<call id="###" endpoint="" xmlns="http://cpee.org/ns/description/1.0"><parameters xmlns="http://cpee.org/ns/description/1.0"><label>""</label><method>:post</method><parameters/></parameters></call>',
     'permissible_children': function(node) { //{{{
@@ -153,7 +153,7 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'svg': adaptor.theme_base + 'symbols/scripts.svg'
+      'svg': adaptor.theme_dir + 'symbols/scripts.svg'
     },//}}}
     'description': ['<finalize xmlns="http://cpee.org/ns/description/1.0"/>','<update xmlns="http://cpee.org/ns/description/1.0"/>'],
     'permissible_children': function(node) { //{{{
@@ -168,7 +168,7 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'svg': adaptor.theme_base + 'symbols/manipulate.svg'
+      'svg': adaptor.theme_dir + 'symbols/manipulate.svg'
     },//}}}
     'description': '<manipulate id="###" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -183,7 +183,7 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'type' : 'primitive',
       'endnodes' : 'this',
-      'svg': adaptor.theme_base + 'symbols/escape.svg'
+      'svg': adaptor.theme_dir + 'symbols/escape.svg'
     },//}}}
     'description': '<escape xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -214,7 +214,7 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': adaptor.theme_base + 'symbols/choose.svg'
+      'svg': adaptor.theme_dir + 'symbols/choose.svg'
     },//}}}
     'description': '<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>',
     'permissible_children': function(node) { //{{{
@@ -264,7 +264,7 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': adaptor.theme_base + 'symbols/otherwise.svg'
+      'svg': adaptor.theme_dir + 'symbols/otherwise.svg'
     },//}}}
     'description': '<otherwise xmlns="http://cpee.org/ns/description/1.0"/>',
     'neverdelete': true,
@@ -325,7 +325,7 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': adaptor.theme_base + 'symbols/alternative.svg'
+      'svg': adaptor.theme_dir + 'symbols/alternative.svg'
     },//}}}
     'description': '<alternative condition="" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -389,7 +389,7 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': adaptor.theme_base + 'symbols/loop.svg'
+      'svg': adaptor.theme_dir + 'symbols/loop.svg'
     },// }}}
     'description': '<loop pre_test="" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -461,7 +461,7 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': adaptor.theme_base + 'symbols/parallel.svg'
+      'svg': adaptor.theme_dir + 'symbols/parallel.svg'
     },//}}}
     'description': '<parallel xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -525,7 +525,7 @@ function WFAdaptorManifestation(adaptor) {
         if($(node).parents('parallel').first().children(':not(parallel_branch)').length > 0) return true;
         return false;
       },
-      'svg': adaptor.theme_base + 'symbols/parallel_branch.svg'
+      'svg': adaptor.theme_dir + 'symbols/parallel_branch.svg'
     },//}}}
     'description': '<parallel_branch xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -593,7 +593,7 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': adaptor.theme_base + 'symbols/critical.svg'
+      'svg': adaptor.theme_dir + 'symbols/critical.svg'
     },//}}}
     'description': '<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>',
     'permissible_children': function(node) { //{{{
@@ -684,7 +684,7 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': adaptor.theme_base + 'symbols/start.svg'
+      'svg': adaptor.theme_dir + 'symbols/start.svg'
     },//}}}
     'description': null,
     'permissible_children': function(node) { //{{{

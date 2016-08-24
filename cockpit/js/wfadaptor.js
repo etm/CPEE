@@ -29,6 +29,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     this.description;
     this.elements = {};
     this.theme_base = theme_base;
+    this.theme_dir = theme_base.replace(/theme.js/,'');
   // }}}
 
   // private variables {{{
@@ -67,13 +68,13 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
             url: manifestation.elements[element].illustrator.svg,
             context: element,
             success: function(res){
-              manifestation.elements[self].illustrator.svg = $(res.documentElement);
+              manifestation.elements[this].illustrator.svg = $(res.documentElement);
             }
           })
         );
       }
-      self.illustrator.elements[element] = manifestation.elements[element].illustrator;
-      self.description.elements[element] = manifestation.elements[element].description;
+      illustrator.elements[element] = manifestation.elements[element].illustrator;
+      description.elements[element] = manifestation.elements[element].description;
       self.elements[element] = manifestation.elements[element].adaptor;
     }
     $.when.apply($, deferreds).then(function(x) {
