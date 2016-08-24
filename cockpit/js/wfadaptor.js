@@ -49,13 +49,15 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     illustrator.set_container(container); // TODO: shadowing the container element
   } // }}}
 
+  self = this;
+
   // initialze
   this.illustrator = illustrator = new WfIllustrator(this);
   this.description = description = new WfDescription(this, this.illustrator);
 
   $.getScript(theme_base, function() {
-    manifestation = new WFAdaptorManifestation(this);
-    this.illustrator.noarrow = manifestation.noarrow;
+    manifestation = new WFAdaptorManifestation(self);
+    illustrator.noarrow = manifestation.noarrow;
     var deferreds = [];
     for(element in manifestation.elements) {
       if (manifestation.elements[element].illustrator.svg) {
@@ -65,16 +67,15 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
             url: manifestation.elements[element].illustrator.svg,
             context: element,
             success: function(res){
-              manifestation.elements[this].illustrator.svg = $(res.documentElement);
+              manifestation.elements[self].illustrator.svg = $(res.documentElement);
             }
           })
         );
       }
-      this.illustrator.elements[element] = manifestation.elements[element].illustrator;
-      this.description.elements[element] = manifestation.elements[element].description;
-      this.elements[element] = manifestation.elements[element].adaptor;
+      self.illustrator.elements[element] = manifestation.elements[element].illustrator;
+      self.description.elements[element] = manifestation.elements[element].description;
+      self.elements[element] = manifestation.elements[element].adaptor;
     }
-    self = this;
     $.when.apply($, deferreds).then(function(x) {
       doit(self);
     });

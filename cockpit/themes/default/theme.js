@@ -1,4 +1,4 @@
-function ManifestationTheme(adaptor) {
+function WFAdaptorManifestation(adaptor) {
   this.adaptor = adaptor;
   this.elements = elements = {};
   this.events = events = {};

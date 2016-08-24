@@ -321,7 +321,7 @@ function monitor_instance_dsl() {// {{{
               url: url + "/properties/values/attributes/theme/",
               success: function(res){
                 adaptor_init($('value',res).text());
-              }
+              },
               error: function() {
                 adaptor_init('default');
               }
