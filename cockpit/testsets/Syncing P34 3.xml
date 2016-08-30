@@ -19,30 +19,30 @@
       <call id="a1" endpoint="timeout">
         <parameters><!--{{{-->
           <method>:post</method>
-          <parameters>
+          <arguments>
             <timeout>2</timeout>
-          </parameters>
+          </arguments>
         </parameters><!--}}}-->
-        <finalize output="result">  data.x += "a1,"</finalize>  
-      </call>  
+        <finalize output="result">  data.x += "a1,"</finalize>
+      </call>
       <call id="a2" endpoint="timeouts">
         <parameters><!--{{{-->
           <method>:post</method>
-          <parameters>
+          <arguments>
             <timeout>16</timeout>
-          </parameters>
+          </arguments>
         </parameters><!--}}}-->
-        <finalize output="result">  data.x += "a2,"</finalize>  
-      </call>  
+        <finalize output="result">  data.x += "a2,"</finalize>
+      </call>
       <call id="a3" endpoint="timeout">
         <parameters><!--{{{-->
           <method>:post</method>
-          <parameters>
+          <arguments>
             <timeout>4</timeout>
-          </parameters>
+          </arguments>
         </parameters><!--}}}-->
-        <finalize output="result">  data.x += "a3,"</finalize>  
-      </call>  
+        <finalize output="result">  data.x += "a3,"</finalize>
+      </call>
     </description><!--}}}-->
   </description>
   <transformation>

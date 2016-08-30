@@ -3,7 +3,7 @@
     <parameters>
       <label>"Update"</label>
       <method>:post</method>
-      <parameters/>
+      <arguments/>
     </parameters>
     <finalize>data.a = result.value</finalize>
     <update>data.b = result.value</update>

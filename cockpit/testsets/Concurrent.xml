@@ -17,9 +17,9 @@
           <call id="a2" endpoint="bookHotel">
             <parameters>
               <method>:post</method>
-              <parameters>
+              <arguments>
                 <to>"Vienna"</to>
-              </parameters>
+              </arguments>
             </parameters>
             <finalize output="result">        data.hotels &lt;&lt; result.value('id')
         data.costs += result.value('costs').to_f</finalize>

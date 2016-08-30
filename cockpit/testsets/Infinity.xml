@@ -12,9 +12,9 @@
           <parameters>
             <label>"Warten auf Fortschritt"</label>
             <method>:post</method>
-            <parameters>
+            <arguments>
               <pid>data.pid</pid>
-            </parameters>
+            </arguments>
           </parameters>
           <finalize>data.progress = result["progress"]</finalize>
         </call>

@@ -13,14 +13,14 @@
         <parameters>
           <label>"OK OR NOT OK"</label>
           <method>:post</method>
-          <parameters>
+          <arguments>
             <orgmodel>"organisation1"</orgmodel>
             <domain>"Virtual Business 1"</domain>
             <form>"http://cpee.org/forms/form-f.html"</form>
             <role>"regular"</role>
             <schaden>"55546"</schaden>
             <text>"fetzen hin"</text>
-          </parameters>
+          </arguments>
         </parameters>
         <manipulate>data.bla = result.value</manipulate>
       </call>

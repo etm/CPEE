@@ -30,6 +30,10 @@ $(document).ready(function() {
   $(document).on('change','#dat_details select.prop_value',function(e){ mark_main_save($(e.target).parents('ui-tabbed')); });
 });
 
+function generate_id() { //{{{
+  return 'a1';
+} //}}}
+
 function mark_main_save(top) { //{{{
   var visid = $('ui-tabbar ui-tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
 

@@ -21,11 +21,11 @@
       <call id="a1" endpoint="bookAir">
         <parameters>
           <method>:post</method>
-          <parameters>
+          <arguments>
             <from>data.from</from>
             <to>data.to</to>
             <persons>data.persons</persons>
-          </parameters>
+          </arguments>
         </parameters>
         <finalize output="result">  data.airline = result.value('id')
     data.costs += result.value('costs').to_f
@@ -37,9 +37,9 @@
             <call id="a2" endpoint="bookHotel">
               <parameters>
                 <method>:post</method>
-                <parameters>
+                <arguments>
                   <to>data.to</to>
-                </parameters>
+                </arguments>
               </parameters>
               <finalize output="result">        data.hotels &lt;&lt; result.value('id')
           data.costs += result.value('costs').to_f</finalize>
@@ -53,9 +53,9 @@
           <call id="a4" endpoint="approve">
             <parameters>
               <method>:post</method>
-              <parameters>
+              <arguments>
                 <costs>data.costs</costs>
-              </parameters>
+              </arguments>
             </parameters>
           </call>
         </alternative>

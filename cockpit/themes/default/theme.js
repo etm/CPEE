@@ -74,7 +74,7 @@ function WFAdaptorManifestation(adaptor) {
       url: adaptor.theme_dir + "rngs/" + node.nodeName + ".rng",
       success: function(rng){
         save['details'] = new RelaxNGui(rng,tab);
-        save['details'].content(node);
+        save['details'].content(node,adaptor.description.context_eval);
       }
     });
   } // }}}

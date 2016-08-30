@@ -14,27 +14,27 @@
         <parallel_branch>
           <loop mode="pre_test" condition='data.feedback'>
             <call id="design" endpoint="timeout">
-                <parameters><!--{{{-->
+              <parameters><!--{{{-->
                 <method>:post</method>
-                <parameters>
+                <arguments>
                   <timeout>4</timeout>
-                </parameters>
+                </arguments>
               </parameters><!--}}}-->
             </call>
             <call id="validate" endpoint="timeout">
-                <parameters><!--{{{-->
+              <parameters><!--{{{-->
                 <method>:post</method>
-                <parameters>
+                <arguments>
                   <timeout>2</timeout>
-                </parameters>
+                </arguments>
               </parameters><!--}}}-->
             </call>
             <call id="publish" endpoint="timeout">
-                <parameters><!--{{{-->
+              <parameters><!--{{{-->
                 <method>:post</method>
-                <parameters>
+                <arguments>
                   <timeout>1</timeout>
-                </parameters>
+                </arguments>
               </parameters><!--}}}-->
             </call>
           </loop>
@@ -42,27 +42,27 @@
         <parallel_branch>
           <loop mode="pre_test" condition='data.feedback'>
             <call id="prepare" endpoint="timeout">
-                <parameters><!--{{{-->
+              <parameters><!--{{{-->
                 <method>:post</method>
-                <parameters>
+                <arguments>
                   <timeout>4</timeout>
-                </parameters>
+                </arguments>
               </parameters><!--}}}-->
             </call>
             <call id="fab" endpoint="timeout">
-                <parameters><!--{{{-->
+              <parameters><!--{{{-->
                 <method>:post</method>
-                <parameters>
+                <arguments>
                   <timeout>4</timeout>
-                </parameters>
+                </arguments>
               </parameters><!--}}}-->
             </call>
             <call id="evaluate" endpoint="timeout">
-                <parameters><!--{{{-->
+              <parameters><!--{{{-->
                 <method>:post</method>
-                <parameters>
+                <arguments>
                   <timeout>4</timeout>
-                </parameters>
+                </arguments>
               </parameters><!--}}}-->
             </call>
           </loop>

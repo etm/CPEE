@@ -14,11 +14,11 @@
         <parallel_branch>
           <loop mode="pre_test" condition='data.feedback'>
             <call id="publish" endpoint="timeout">
-                <parameters><!--{{{-->
+              <parameters><!--{{{-->
                 <method>:post</method>
-                <parameters>
+                <arguments>
                   <timeout>1</timeout>
-                </parameters>
+                </arguments>
               </parameters><!--}}}-->
             </call>
             <choose>
@@ -26,9 +26,9 @@
                 <call id="a4_1" endpoint="timeout">
                   <parameters><!--{{{-->
                     <method>:post</method>
-                    <parameters>
+                    <arguments>
                       <timeout>4</timeout>
-                    </parameters>
+                    </arguments>
                   </parameters><!--}}}-->
                 </call>
               </alternative>
@@ -36,9 +36,9 @@
                 <call id="a4_2" endpoint="timeout">
                   <parameters><!--{{{-->
                     <method>:post</method>
-                    <parameters>
+                    <arguments>
                       <timeout>10</timeout>
-                    </parameters>
+                    </arguments>
                   </parameters><!--}}}-->
                 </call>
               </otherwise>
@@ -48,9 +48,9 @@
                 <call id="a4_1" endpoint="timeout">
                   <parameters><!--{{{-->
                     <method>:post</method>
-                    <parameters>
+                    <arguments>
                       <timeout>4</timeout>
-                    </parameters>
+                    </arguments>
                   </parameters><!--}}}-->
                 </call>
               </alternative>
@@ -58,9 +58,9 @@
                 <call id="a4_2" endpoint="timeout">
                   <parameters><!--{{{-->
                     <method>:post</method>
-                    <parameters>
+                    <arguments>
                       <timeout>10</timeout>
-                    </parameters>
+                    </arguments>
                   </parameters><!--}}}-->
                 </call>
               </otherwise>
@@ -69,20 +69,20 @@
           <call id="a4_1" endpoint="timeout">
             <parameters><!--{{{-->
               <method>:post</method>
-              <parameters>
+              <arguments>
                 <timeout>4</timeout>
-              </parameters>
+              </arguments>
             </parameters><!--}}}-->
           </call>
         </parallel_branch>
         <parallel_branch>
           <loop mode="pre_test" condition='data.feedback'>
             <call id="prepare" endpoint="timeout">
-                <parameters><!--{{{-->
+              <parameters><!--{{{-->
                 <method>:post</method>
-                <parameters>
+                <arguments>
                   <timeout>4</timeout>
-                </parameters>
+                </arguments>
               </parameters><!--}}}-->
             </call>
             <parallel>
@@ -92,9 +92,9 @@
                     <call id="a4_1" endpoint="timeout">
                       <parameters><!--{{{-->
                         <method>:post</method>
-                        <parameters>
+                        <arguments>
                           <timeout>4</timeout>
-                        </parameters>
+                        </arguments>
                       </parameters><!--}}}-->
                     </call>
                   </alternative>
@@ -104,9 +104,9 @@
                     <call id="a4_2" endpoint="timeout">
                       <parameters><!--{{{-->
                         <method>:post</method>
-                        <parameters>
+                        <arguments>
                           <timeout>10</timeout>
-                        </parameters>
+                        </arguments>
                       </parameters><!--}}}-->
                     </call>
                   </alternative>
@@ -118,9 +118,9 @@
                     <call id="a4_1" endpoint="timeout">
                       <parameters><!--{{{-->
                         <method>:post</method>
-                        <parameters>
+                        <arguments>
                           <timeout>4</timeout>
-                        </parameters>
+                        </arguments>
                       </parameters><!--}}}-->
                     </call>
                   </alternative>
@@ -130,9 +130,9 @@
                     <call id="a4_2" endpoint="timeout">
                       <parameters><!--{{{-->
                         <method>:post</method>
-                        <parameters>
+                        <arguments>
                           <timeout>10</timeout>
-                        </parameters>
+                        </arguments>
                       </parameters><!--}}}-->
                     </call>
                   </alternative>

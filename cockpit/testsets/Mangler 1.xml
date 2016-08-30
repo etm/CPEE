@@ -8,62 +8,62 @@
   </dataelements>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-  </endpoints>  
+  </endpoints>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="timeout">
         <parameters><!--{{{-->
           <method>:post</method>
-          <parameters>
+          <arguments>
             <timeout>4</timeout>
             <bug>data.nasty</bug>
-          </parameters>
+          </arguments>
         </parameters><!--}}}-->
-        <finalize output="result">  data.x += "done"</finalize>  
-      </call>  
+        <finalize output="result">  data.x += "done"</finalize>
+      </call>
       <parallel wait="2">
         <parallel_branch>
           <call id="a2_1" endpoint="timeout">
-              <parameters><!--{{{-->
+            <parameters><!--{{{-->
               <method>:post</method>
-              <parameters>
+              <arguments>
                 <timeout>6</timeout>
-              </parameters>
+              </arguments>
             </parameters><!--}}}-->
-          </call>  
+          </call>
         </parallel_branch>
         <parallel_branch>
           <call id="a2_2" endpoint="timeout">
             <parameters><!--{{{-->
               <method>:post</method>
-              <parameters>
+              <arguments>
                 <timeout>2</timeout>
-              </parameters>
+              </arguments>
             </parameters><!--}}}-->
-          </call>  
+          </call>
         </parallel_branch>
-      </parallel>  
-      <manipulate id="a3">  data.x += '_end'</manipulate>  
+      </parallel>
+      <manipulate id="a3">  data.x += '_end'</manipulate>
       <choose>
         <alternative condition="data.x != nil">
           <call id="a4_1" endpoint="timeout">
             <parameters><!--{{{-->
               <method>:post</method>
-              <parameters>
+              <arguments>
                 <timeout>4</timeout>
-              </parameters>
+              </arguments>
             </parameters><!--}}}-->
-          </call>  
+          </call>
         </alternative>
         <otherwise>
           <call id="a4_2" endpoint="timeout">
             <parameters><!--{{{-->
               <method>:post</method>
-              <parameters>
+              <arguments>
                 <timeout>10</timeout>
-              </parameters>
+              </arguments>
             </parameters><!--}}}-->
-          </call>  
+          </call>
         </otherwise>
       </choose>
     </description>

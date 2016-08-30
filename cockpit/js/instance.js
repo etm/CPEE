@@ -277,7 +277,7 @@ function monitor_instance_values(val) {// {{{
     type: "GET",
     url: url + "/properties/values/" + val + "/",
     success: function(res){
-      save[val].content(res);
+      save[val].content(res,undefined);
     }
   });
 } // }}}

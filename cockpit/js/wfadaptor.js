@@ -256,6 +256,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[svg-id = \'' + svg_id + '\']', description);
   } // }}}
+  var context_eval = this.context_eval = function(what) { // {{{
+    return eval(what);
+  } // }}}
   var get_free_id = this.get_free_id = function() { // {{{
     var existing = new Array();
     $('*[id]', description).each(function(){existing.push($(this).attr('id'))});

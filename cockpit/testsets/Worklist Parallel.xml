@@ -20,14 +20,14 @@
             <parameters>
               <label>"OKA"</label>
               <method>:post</method>
-              <parameters>
+              <arguments>
                 <orgmodel>"organisation1"</orgmodel>
                 <domain>"Virtual Business 1"</domain>
                 <form>"http://solo.wst.univie.ac.at/form/form-f.html"</form>
                 <role>"regular"</role>
                 <schaden>"10001"</schaden>
                 <text>"sehr gut"</text>
-              </parameters>
+              </arguments>
             </parameters>
             <finalize>data.a = result.value</finalize>
           </call>
@@ -37,14 +37,14 @@
             <parameters>
               <label>"OKB"</label>
               <method>:post</method>
-              <parameters>
+              <arguments>
                 <orgmodel>"organisation1"</orgmodel>
                 <domain>"Virtual Business 1"</domain>
                 <form>"http://solo.wst.univie.ac.at/form/form-f.html"</form>
                 <role>"regular"</role>
                 <schaden>"12341231"</schaden>
                 <text>"totalo kaputto"</text>
-              </parameters>
+              </arguments>
             </parameters>
             <finalize>data.b = result.value</finalize>
           </call>
@@ -54,14 +54,14 @@
             <parameters>
               <label>"OKC"</label>
               <method>:post</method>
-              <parameters>
+              <arguments>
                 <orgmodel>"organisation1"</orgmodel>
                 <domain>"Virtual Business 1"</domain>
                 <form>"http://solo.wst.univie.ac.at/form/form-f.html"</form>
                 <role>"regular"</role>
                 <schaden>"3000"</schaden>
                 <text>"ein Totalschaden"</text>
-              </parameters>
+              </arguments>
             </parameters>
             <finalize>data.c = result.value</finalize>
           </call>
@@ -71,14 +71,14 @@
         <parameters>
           <label>"OK OR NOT OK"</label>
           <method>:post</method>
-          <parameters>
+          <arguments>
             <orgmodel>"organisation1"</orgmodel>
             <domain>"Virtual Business 1"</domain>
             <form>"http://solo.wst.univie.ac.at/form/form-f.html"</form>
             <role>"regular"</role>
             <schaden>"55546"</schaden>
             <text>"fetzen hin"</text>
-          </parameters>
+          </arguments>
         </parameters>
         <finalize>data.bla = result.value</finalize>
       </call>
