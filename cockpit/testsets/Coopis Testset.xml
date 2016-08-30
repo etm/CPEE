@@ -32,7 +32,7 @@
     status.update 1, 'Hotel'</finalize>
       </call>
       <parallel>
-        <loop pre_test="data.persons > 0">
+        <loop mode="pre_test" condition="data.persons > 0">
           <parallel_branch pass="data.persons" local="p">
             <call id="a2" endpoint="bookHotel">
               <parameters>
@@ -45,9 +45,9 @@
           data.costs += result.value('costs').to_f</finalize>
             </call>
           </parallel_branch>
-          <manipulate id="a3">      data.persons -= 1</manipulate>  
-        </loop>  
-      </parallel>  
+          <manipulate id="a3">      data.persons -= 1</manipulate>
+        </loop>
+      </parallel>
       <choose>
         <alternative condition="data.costs > 700">
           <call id="a4" endpoint="approve">
@@ -57,11 +57,11 @@
                 <costs>data.costs</costs>
               </parameters>
             </parameters>
-          </call>  
+          </call>
         </alternative>
       </choose>
     </description>
-  </description>  
+  </description>
   <transformation>
     <description type='copy'/>
     <dataelements type='rest'/>

@@ -7,12 +7,12 @@
   </dataelements>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-  </endpoints>  
+  </endpoints>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <parallel>
         <parallel_branch>
-          <loop pre_test='data.feedback'>
+          <loop mode="pre_test" condition='data.feedback'>
             <call id="design" endpoint="timeout">
                 <parameters><!--{{{-->
                 <method>:post</method>
@@ -20,7 +20,7 @@
                   <timeout>4</timeout>
                 </parameters>
               </parameters><!--}}}-->
-            </call>  
+            </call>
             <call id="validate" endpoint="timeout">
                 <parameters><!--{{{-->
                 <method>:post</method>
@@ -28,7 +28,7 @@
                   <timeout>2</timeout>
                 </parameters>
               </parameters><!--}}}-->
-            </call>  
+            </call>
             <call id="publish" endpoint="timeout">
                 <parameters><!--{{{-->
                 <method>:post</method>
@@ -36,11 +36,11 @@
                   <timeout>1</timeout>
                 </parameters>
               </parameters><!--}}}-->
-            </call>  
+            </call>
           </loop>
         </parallel_branch>
         <parallel_branch>
-          <loop pre_test='data.feedback'>
+          <loop mode="pre_test" condition='data.feedback'>
             <call id="prepare" endpoint="timeout">
                 <parameters><!--{{{-->
                 <method>:post</method>
@@ -48,7 +48,7 @@
                   <timeout>4</timeout>
                 </parameters>
               </parameters><!--}}}-->
-            </call>  
+            </call>
             <call id="fab" endpoint="timeout">
                 <parameters><!--{{{-->
                 <method>:post</method>
@@ -65,9 +65,9 @@
                 </parameters>
               </parameters><!--}}}-->
             </call>
-          </loop>  
+          </loop>
         </parallel_branch>
-      </parallel>  
+      </parallel>
     </description>
   </description>
   <transformation>

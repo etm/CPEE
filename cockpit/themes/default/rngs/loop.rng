@@ -6,6 +6,6 @@
     </choice>
   </attribute>
   <attribute name="condition" rngui:label="Condition">
-    <data type="string" rng:label="Condition"/>
+    <data type="string" rngui:label="Condition"/>
   </attribute>
 </element>

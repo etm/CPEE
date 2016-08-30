@@ -12,7 +12,7 @@
   </endpoints>
   <description xmlns="http://cpee.org/ns/description/1.0">
     <parallel>
-      <loop pre_test="data.persons > 0">
+      <loop mode="pre_test" condition="data.persons > 0">
         <parallel_branch pass="data.persons" local="p">
           <call id="a2" endpoint="bookHotel">
             <parameters>
@@ -25,9 +25,9 @@
         data.costs += result.value('costs').to_f</finalize>
           </call>
         </parallel_branch>
-        <manipulate id="a3">      data.persons -= 1</manipulate>  
-      </loop>  
-    </parallel>  
+        <manipulate id="a3">      data.persons -= 1</manipulate>
+      </loop>
+    </parallel>
   </description>
   <transformation>
     <description type='copy'/>

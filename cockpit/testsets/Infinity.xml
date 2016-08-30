@@ -7,13 +7,13 @@
       <manipulate id="man">
         data.pid = Digest::MD5.hexdigest(Kernel::rand().to_s)
       </manipulate>
-      <loop pre_test="data.progress != 'END'">
+      <loop mode="pre_test" condition="data.progress != 'END'">
         <call id="a4" endpoint="infinity">
           <parameters>
             <label>"Warten auf Fortschritt"</label>
             <method>:post</method>
             <parameters>
-              <pid>data.pid</pid>          
+              <pid>data.pid</pid>
             </parameters>
           </parameters>
           <finalize>data.progress = result["progress"]</finalize>

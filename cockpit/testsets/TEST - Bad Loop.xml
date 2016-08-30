@@ -7,12 +7,12 @@
   </dataelements>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-  </endpoints>  
+  </endpoints>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <parallel>
         <parallel_branch>
-          <loop pre_test='data.feedback'>
+          <loop mode="pre_test" condition='data.feedback'>
             <call id="publish" endpoint="timeout">
                 <parameters><!--{{{-->
                 <method>:post</method>
@@ -20,7 +20,7 @@
                   <timeout>1</timeout>
                 </parameters>
               </parameters><!--}}}-->
-            </call>  
+            </call>
             <choose>
               <alternative condition="data.x != nil">
                 <call id="a4_1" endpoint="timeout">
@@ -30,7 +30,7 @@
                       <timeout>4</timeout>
                     </parameters>
                   </parameters><!--}}}-->
-                </call>  
+                </call>
               </alternative>
               <otherwise>
                 <call id="a4_2" endpoint="timeout">
@@ -40,7 +40,7 @@
                       <timeout>10</timeout>
                     </parameters>
                   </parameters><!--}}}-->
-                </call>  
+                </call>
               </otherwise>
             </choose>
             <choose>
@@ -52,7 +52,7 @@
                       <timeout>4</timeout>
                     </parameters>
                   </parameters><!--}}}-->
-                </call>  
+                </call>
               </alternative>
               <otherwise>
                 <call id="a4_2" endpoint="timeout">
@@ -62,7 +62,7 @@
                       <timeout>10</timeout>
                     </parameters>
                   </parameters><!--}}}-->
-                </call>  
+                </call>
               </otherwise>
             </choose>
           </loop>
@@ -73,10 +73,10 @@
                 <timeout>4</timeout>
               </parameters>
             </parameters><!--}}}-->
-          </call>  
+          </call>
         </parallel_branch>
         <parallel_branch>
-          <loop pre_test='data.feedback'>
+          <loop mode="pre_test" condition='data.feedback'>
             <call id="prepare" endpoint="timeout">
                 <parameters><!--{{{-->
                 <method>:post</method>
@@ -96,7 +96,7 @@
                           <timeout>4</timeout>
                         </parameters>
                       </parameters><!--}}}-->
-                    </call>  
+                    </call>
                   </alternative>
                 </parallel_branch>
                 <parallel_branch>
@@ -108,7 +108,7 @@
                           <timeout>10</timeout>
                         </parameters>
                       </parameters><!--}}}-->
-                    </call>  
+                    </call>
                   </alternative>
                 </parallel_branch>
               </choose>
@@ -122,7 +122,7 @@
                           <timeout>4</timeout>
                         </parameters>
                       </parameters><!--}}}-->
-                    </call>  
+                    </call>
                   </alternative>
                 </parallel_branch>
                 <parallel_branch>
@@ -134,14 +134,14 @@
                           <timeout>10</timeout>
                         </parameters>
                       </parameters><!--}}}-->
-                    </call>  
+                    </call>
                   </alternative>
                 </parallel_branch>
               </choose>
             </parallel>
-          </loop>  
+          </loop>
         </parallel_branch>
-      </parallel>  
+      </parallel>
     </description>
   </description>
   <transformation>
