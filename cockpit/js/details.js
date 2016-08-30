@@ -32,10 +32,8 @@ $(document).ready(function() {
 
 function mark_main_save(top) { //{{{
   var visid = $('ui-tabbar ui-tab',top).not('.switch').not('.inactive').attr('id').replace(/tab/,'');
-  var tab  = $('#dat_' + visid);
-  var details = serialize_details(tab).serializeXML();
 
-  if (details != save[visid]) {
+  if (save[visid].has_changed()) {
     $('ui-tabbar ui-behind button',top).addClass('highlight');
   } else {
     $('ui-tabbar ui-behind button',top).removeClass('highlight');

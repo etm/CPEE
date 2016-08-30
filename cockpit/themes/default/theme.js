@@ -77,7 +77,6 @@ function WFAdaptorManifestation(adaptor) {
         save['details'].content(node);
       }
     });
-    save['details'] = serialize_details(tab).serializeXML();
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
