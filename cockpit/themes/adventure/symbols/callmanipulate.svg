@@ -1,0 +1,6 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>
+  <path transform="scale(0.7) translate(12, 2)" class="stand" style="fill:#000000;" d="m 19.511059,31.248618 0,-23.6413153 -3.940219,0 0,15.7608793 -7.8804404,-7.88044 0,7.88044 -7.88043943,-7.88044 0,15.760876 z"/>
+  <circle cx="28" cy="27" r="9" class="rfill stand"/>
+  <text transform="translate(28,31)" class="small">s</text>
+</svg>

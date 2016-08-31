@@ -1,0 +1,6 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="stand"/>
+  <text transform="translate(12,25)" class="normallarge">+</text>
+  <text transform="translate(18,16)" class="small">=</text>
+</svg>
+
