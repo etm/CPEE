@@ -72,6 +72,17 @@ svg .stand {
   stroke-opacity:1;
   stroke-dasharray:none;
 }
+svg .normal {
+  fill:#000000;
+  fill-opacity:1;
+  stroke:#000000;
+  stroke-width:0.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
 svg .black {
   fill:#000000;
   fill-opacity:1;
