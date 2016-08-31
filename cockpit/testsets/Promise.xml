@@ -1,0 +1,255 @@
+<?xml version="1.0"?>
+<testset>
+  <dataelements/>
+  <handlerwrapper>PromiseHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout</timeout>
+    <timeout1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout/1</timeout1>
+    <timeout2 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout/16</timeout2>
+    <timeout3 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout/41</timeout3>
+    <preminder1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/preminder/1</preminder1>
+    <preminder2 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/preminder/2</preminder2>
+    <sreminder1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/sreminder/1</sreminder1>
+    <sreminder2 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/sreminder/2</sreminder2>
+    <inkasso xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/inkasso</inkasso>
+    <customer xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/customer</customer>
+    <credit xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit</credit>
+    <credit_worthy xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/worthy</credit_worthy>
+    <activation xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/activation</activation>
+    <zaehler xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/zaehler</zaehler>
+    <update xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/update</update>
+    <consume xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/consume</consume>
+    <decide xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/decide</decide>
+    <credit_consume xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/consume</credit_consume>
+    <credit_activate xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/activate</credit_activate>
+  </endpoints>
+  <positions/>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a20" endpoint="customer" svg-label="Generate Customer">
+        <parameters>
+          <label>"Generate Customer"</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+        <finalize>data.knr=result[0].value;data.status="normal";data.zaehlerid=result[1].value</finalize>
+      </call>
+      <call id="a10" endpoint="sreminder1" svg-label="Sendung erste Mahnung">
+        <parameters>
+          <label>"Sendung erste Mahnung"</label>
+          <method>:post</method>
+          <arguments>
+            <knr>data.knr</knr>
+          </arguments>
+          <type>:task</type>
+          <mid>'sid-5CD9191C-7233-414F-8EF4-A4E1A8D39E07'</mid>
+        </parameters>
+      </call>
+      <parallel wait="1" svg-label="">
+        <parallel_branch svg-label="">
+          <manipulate id="a16" svg-label=""> sleep 2 </manipulate>
+          <call id="a14" endpoint="timeout1" svg-label="2-woechige Frist">
+            <parameters>
+              <label>"2-woechige Frist"</label>
+              <method>:post</method>
+              <arguments>
+                <timeout>2</timeout>
+              </arguments>
+            </parameters>
+          </call>
+          <call id="a11" endpoint="sreminder2" svg-label="Senden zweite Mahnung">
+            <parameters>
+              <label>"Senden zweite Mahnung"</label>
+              <method>:post</method>
+              <arguments>
+                <knr>data.knr</knr>
+              </arguments>
+              <type>:task</type>
+              <mid>'sid-8417E18E-016C-4F87-86FC-216475C1C029'</mid>
+            </parameters>
+          </call>
+          <parallel wait="1" svg-label="">
+            <parallel_branch svg-label="">
+              <manipulate id="a21" svg-label="">sleep 2 </manipulate>
+              <call id="a7" endpoint="timeout2" svg-label="2-woechige Frist">
+                <parameters>
+                  <label>"2-woechige Frist"</label>
+                  <method>:post</method>
+                  <arguments>
+                    <timeout>2</timeout>
+                  </arguments>
+                </parameters>
+              </call>
+              <call id="a1" endpoint="inkasso" svg-label="Registrierung als Inkassokunde">
+                <parameters>
+                  <label>"Registrierung als Inkassokunde"</label>
+                  <method>:put</method>
+                  <arguments>
+                    <status>data.status</status>
+                  </arguments>
+                </parameters>
+                <finalize>data.status=result[0].value;data.zaehler_status='normal'</finalize>
+              </call>
+              <parallel wait="-1" svg-label="">
+                <parallel_branch svg-label="">
+                  <call id="a4" endpoint="activation" svg-label="Aktivierung Register fuer Guthaben und Anzeige am Display (Prepayment)">
+                    <parameters>
+                      <label>"Aktivierung Register fuer Guthaben und Anzeige am Display (Prepayment)"</label>
+                      <method>:post</method>
+                      <type>:task</type>
+                      <mid>'sid-032C8450-4DF9-435B-8105-F0C13734A7A8'</mid>
+                      <arguments>
+                        <knr>data.knr</knr>
+                      </arguments>
+                    </parameters>
+                  </call>
+                </parallel_branch>
+                <parallel_branch svg-label="">
+                  <call id="a2" endpoint="inkasso" svg-label="Umparametrierung des Zaehlers von Normal- auf Inkassobetrieb">
+                    <parameters>
+                      <label>"Umparametrierung des Zaehlers von Normal- auf Inkassobetrieb"</label>
+                      <method>:put</method>
+                      <arguments>
+                        <zaehlerid>data.zaehlerid</zaehlerid>
+                        <status>data.zaehler_status</status>
+                      </arguments>
+                    </parameters>
+                    <finalize>data.zaehler_status=result[0].value</finalize>
+                  </call>
+                </parallel_branch>
+              </parallel>
+              <call id="a6" endpoint="update" svg-label="Aktualisierung Guthaben">
+                <parameters>
+                  <label>"Aktualisierung Guthaben"</label>
+                  <method>:post</method>
+                  <arguments/>
+                </parameters>
+                <finalize>data.wartefrist="ok";data.guthaben=result[0].value.to_i</finalize>
+              </call>
+              <call id="a3" endpoint="timeout3" svg-label="Aufladen">
+                <parameters>
+                  <label>"Aufladen"</label>
+                  <method>:post</method>
+                  <arguments/>
+                </parameters>
+                <finalize>p data.guthaben</finalize>
+              </call>
+              <loop mode="pre_test" condition="data.wartefrist!='verstrichen'" svg-label="">
+                <loop mode="pre_test" condition="data.guthaben&gt;0" svg-label="">
+                  <call id="a5" endpoint="consume" svg-label="Verbrauchen">
+                    <parameters>
+                      <label>"Verbrauchen"</label>
+                      <method>:post</method>
+                      <arguments>
+                        <knr>data.knr</knr>
+                      </arguments>
+                    </parameters>
+                    <finalize>data.guthaben=data.guthaben-result[0].value.to_i</finalize>
+                  </call>
+                </loop>
+                <call id="a13" endpoint="decide" svg-label="Gesetzl. Frist">
+                  <parameters>
+                    <label>"Gesetzl. Frist"</label>
+                    <method>:post</method>
+                    <arguments>
+                      <knr>data.knr</knr>
+                    </arguments>
+                  </parameters>
+                  <finalize>data.wartefrist="verstrichen" if result[0].name == 'wartefrist';data.guthaben=result[0].value.to_i if result[0].name == "balance"</finalize>
+                </call>
+              </loop>
+              <call id="a17" endpoint="timeout" svg-label="Abschaltung">
+                <parameters>
+                  <label>"Abschaltung"</label>
+                  <method>:post</method>
+                  <arguments>
+                    <knr>data.knr</knr>
+                  </arguments>
+                </parameters>
+                <finalize>data.zaehler_status='off'</finalize>
+              </call>
+              <call id="a8" endpoint="credit_worthy" svg-label="Kreditwuerdig">
+                <parameters>
+                  <label>"Kreditwuerdig"</label>
+                  <method>:post</method>
+                  <arguments>
+                    <knr>data.knr</knr>
+                  </arguments>
+                </parameters>
+                <finalize>data.kreditf=result[0].value;data.kredit_wanted="true"</finalize>
+              </call>
+              <choose mode="exclusive" svg-label="">
+                <alternative condition="data.kreditf=='true'" svg-label="">
+                  <call id="a12" endpoint="timeout" svg-label="activate parametrizable credit function and credit offer">
+                    <parameters>
+                      <label>"activate parametrizable credit function and credit offer"</label>
+                      <method>:post</method>
+                      <arguments>
+                        <knr>data.knr</knr>
+                      </arguments>
+                    </parameters>
+                  </call>
+                  <choose mode="exclusive" svg-label="">
+                    <alternative condition="data.kredit_wanted=='true'" svg-label="">
+                      <call id="a18" endpoint="credit_activate" svg-label="activate meter">
+                        <parameters>
+                          <label>"activate meter"</label>
+                          <method>:post</method>
+                          <arguments>
+                            <knr>knr=data.knr</knr>
+                          </arguments>
+                        </parameters>
+                        <finalize>data.kredit=result[0].value.to_i</finalize>
+                      </call>
+                      <loop mode="pre_test" condition="data.kredit&gt;0" svg-label="">
+                        <call id="a19" endpoint="credit_consume" svg-label="Consume credit">
+                          <parameters>
+                            <label>"Consume credit"</label>
+                            <method>:post</method>
+                            <arguments>
+                              <knr>knr=data.knr</knr>
+                            </arguments>
+                          </parameters>
+                          <finalize>data.kredit=data.kredit-result[0].value.to_i</finalize>
+                        </call>
+                      </loop>
+                    </alternative>
+                    <otherwise svg-label=""/>
+                  </choose>
+                </alternative>
+                <otherwise svg-label=""/>
+              </choose>
+            </parallel_branch>
+            <parallel_branch svg-label="">
+              <call id="a9" endpoint="preminder2" svg-label="Kunde zahlt">
+                <parameters>
+                  <label>"Kunde zahlt"</label>
+                  <method>:post</method>
+                  <arguments/>
+                </parameters>
+              </call>
+            </parallel_branch>
+          </parallel>
+        </parallel_branch>
+        <parallel_branch svg-label="">
+          <call id="a15" endpoint="preminder1" svg-label="Kunde zahlt">
+            <parameters>
+              <label>"Kunde zahlt"</label>
+              <method>:post</method>
+              <arguments/>
+            </parameters>
+          </call>
+        </parallel_branch>
+      </parallel>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ss</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+  </attributes>
+</testset>
