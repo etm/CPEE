@@ -24,7 +24,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
     instancenr=@controller.instance.split('/').last
     instance_dir = @controller.instance_variable_get(:@opts)[:instances]
     unless File.exist?(instance_dir+'/'+instancenr+'/log.xes')
-      FileUtils.cp(instance_dir+'/template.xes', instance_dir+'/'+instancenr+'/log.xes') 
+      FileUtils.cp(instance_dir+'/template.xes', instance_dir+'/'+instancenr+'/log.xes')
       XML::Smart.modify(instance_dir+'/'+instancenr+'/log.xes') do |xml|
         trace = xml.find("/xmlns:log/xmlns:trace").first
         trace.add 'string', :key => "concept:name", :value => "Instance #{instancenr}"
@@ -37,7 +37,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
     instancenr=@controller.instance.split('/').last
     instance_dir = @controller.instance_variable_get(:@opts)[:instances]
     unless File.exist?(instance_dir+'/'+instancenr+'/log.xes')
-      FileUtils.cp(instance_dir+'/template.xes', instance_dir+'/'+instancenr+'/log.xes') 
+      FileUtils.cp(instance_dir+'/template.xes', instance_dir+'/'+instancenr+'/log.xes')
       XML::Smart.modify(instance_dir+'/'+instancenr+'/log.xes') do |xml|
         trace = xml.find("/xmlns:log/xmlns:trace").first
         trace.add 'string', :key => "concept:name", :value => "Instance #{instancenr}"
@@ -45,21 +45,21 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
     end
 
     @log_hash[:label]||=parameters[:label]
-    @log_hash[:data_send]||=parameters[:parameters] unless parameters[:parameters].nil?
+    @log_hash[:data_send]||=parameters[:arguments] unless parameters[:arguments].nil?
     result = []
     if passthrough.nil?
       params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      (parameters[:parameters] || {}).each do |k,v|
-        if v.is_a?(Struct) 
+      (parameters[:arguments] || {}).each do |k,v|
+        if v.is_a?(Struct)
           if v.respond_to?(:mimetype)
             params <<  Riddl::Parameter::Complex.new("#{k}",v.mimetype,v.value)
-          else  
+          else
             params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v.value))
-          end  
+          end
         else
           params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v))
-        end 
+        end
       end
       params << Riddl::Header.new("CPEE_BASE",@controller.base_url)
       params << Riddl::Header.new("CPEE_INSTANCE",@controller.instance_url)
@@ -68,7 +68,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
       params << Riddl::Header.new("CPEE_LABEL",parameters[:label])
       @controller.attributes.each do |key,value|
         params << Riddl::Header.new("CPEE_ATTR_#{key}",value)
-      end  
+      end
 
       type = parameters[:method] || 'post'
       client = Riddl::Client.new(@handler_endpoint)
@@ -117,12 +117,12 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
     XML::Smart.modify(@controller.instance_variable_get(:@opts)[:instances]+'/'+@controller.instance.split('/').last+'/log.xes') do |xml|
       trace = xml.find("/xmlns:log/xmlns:trace").first
       event = trace.add "event"
-      event.add 'string', :key => "concept:name", :value => @log_hash[:label] 
+      event.add 'string', :key => "concept:name", :value => @log_hash[:label]
       if @log_hash.has_key?(:data_send)
         list = event.add 'list', :key => "data_send"
         @log_hash[:data_send].each do |k,v|
           list.add 'string', :key => k , :value => v
-        end 
+        end
       end
       if @log_hash.has_key?(:data_received)
         @log_hash[:data_received].delete_if do |e|
@@ -130,7 +130,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
             event.add 'date', :key => "time:timestamp", :value => e.values[0]
             time_added=true
             true
-          else 
+          else
             false
           end
         end
@@ -141,7 +141,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
       end
       event.add 'date', :key => "time:timestamp", :value => Time.now unless time_added
     end
-    
+
   end # }}}
   def inform_activity_manipulate # {{{
     @controller.notify("activity/manipulating", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position)
@@ -159,7 +159,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
     unless status.nil?
       @controller.serialize_status!
       @controller.notify("status/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :id => status.id, :message => status.message)
-    end  
+    end
     unless changed_dataelements.nil?
       @controller.serialize_dataelements!
       @controller.notify("dataelements/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => changed_dataelements)
@@ -167,7 +167,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
     unless changed_endpoints.nil?
       @controller.serialize_endpoints!
       @controller.notify("endpoints/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => changed_endpoints)
-    end  
+    end
   end # }}}
   def inform_position_change(ipc={}) # {{{
     @controller.serialize_positions!
@@ -193,7 +193,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
       if r.is_a? Riddl::Parameter::Simple
         {r.name => r.value}
       elsif r.is_a? Riddl::Parameter::Complex
-        if r.mimetype == 'application/json' 
+        if r.mimetype == 'application/json'
           x = JSON::parse(r.value.read)
           r.value.rewind
           x
@@ -213,7 +213,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
       if result[0].is_a? Riddl::Parameter::Simple
         result = result[0].value
       elsif result[0].is_a? Riddl::Parameter::Complex
-        if result[0].mimetype == 'application/json' 
+        if result[0].mimetype == 'application/json'
           result = JSON::parse(result[0].value.read)
         elsif result[0].mimetype == 'application/xml' || result[0].mimetype == 'text/xml'
           result = XML::Smart::string(result[0].value.read)
@@ -225,7 +225,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
           result = result[0]
         end
       end
-    end  
+    end
     [result,tmp]
   end
 
@@ -234,7 +234,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
     pp result
     @controller.notify("activity/change", :instance => @controller.instance, :activity => @handler_position, :endpoint => @handler_endpoint, :params => notify_result)
     @log_hash[:data_received]||=notify_result unless notify_result.nil?
-    if options['CPEE_UPDATE'] 
+    if options['CPEE_UPDATE']
       @handler_returnValue = result
       if options['CPEE_UPDATE_STATUS']
         @controller.notify("activity/status", :instance => @controller.instance, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'])
@@ -251,11 +251,11 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
    def simulate(type,nesting,tid,parent,parameters={}) #{{{
     pp "#{type} - #{nesting} - #{tid} - #{parent} - #{parameters.inspect}"
 
-    @controller.call_vote("simulating/step", 
-      :endpoint => @handler_endpoint, 
-      :instance => @controller.instance, 
-      :activity => tid, 
-      :type => type, 
+    @controller.call_vote("simulating/step",
+      :endpoint => @handler_endpoint,
+      :instance => @controller.instance,
+      :activity => tid,
+      :type => type,
       :nesting => nesting,
       :parent => parent,
       :parameters => parameters
