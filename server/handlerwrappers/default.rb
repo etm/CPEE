@@ -29,7 +29,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     if passthrough.nil?
       params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      (parameters[:parameters] || {}).each do |k,v|
+      (parameters[:arguments] || {}).each do |k,v|
         if v.is_a?(Struct)
           if v.respond_to?(:mimetype)
             params <<  Riddl::Parameter::Complex.new("#{k}",v.mimetype,v.value)

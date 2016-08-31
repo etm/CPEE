@@ -228,6 +228,7 @@ function monitor_instance(load) {// {{{
                 case 'attributes':
                   monitor_instance_values("attributes");
                   monitor_instance_transformation();
+                  monitor_graph_change();
                   break;
                 case 'state':
                   monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
@@ -294,6 +295,26 @@ function adaptor_init(theme,dslx) {
   });
 }
 
+function monitor_graph_change() {
+  var url = $("#current-instance").text();
+  $.ajax({
+    type: "GET",
+    url: url + "/properties/values/dslx/",
+    success: function(dslx){
+      $.ajax({
+        type: "GET",
+        url: url + "/properties/values/attributes/theme/",
+        success: function(res){
+          adaptor_init($('value',res).text(),dslx);
+        },
+        error: function() {
+          adaptor_init('default',dslx);
+        }
+      });
+    }
+  });
+}
+
 function monitor_instance_dsl() {// {{{
   var url = $("#current-instance").text();
   $.ajax({
@@ -311,23 +332,7 @@ function monitor_instance_dsl() {// {{{
         res = res.replace(/activity\s+\[:([A-Za-z][a-zA-Z0-9_]+)([^\]]*\])/g,"<span class='activities' id=\"activity-$1\">activity [:$1$2</span>");
 
         ctv.append(res);
-
-        $.ajax({
-          type: "GET",
-          url: url + "/properties/values/dslx/",
-          success: function(dslx){
-            $.ajax({
-              type: "GET",
-              url: url + "/properties/values/attributes/theme/",
-              success: function(res){
-                adaptor_init($('value',res).text(),dslx);
-              },
-              error: function() {
-                adaptor_init('default',dslx);
-              }
-            });
-          }
-        });
+        monitor_graph_change();
       }
     }
   });

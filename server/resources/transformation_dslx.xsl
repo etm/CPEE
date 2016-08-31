@@ -108,41 +108,41 @@
     </xsl:if>
     <xsl:if test="name()='loop'">
       <xsl:text>loop </xsl:text>
-      <xsl:if test="@pre_test">
+      <xsl:if test="@mode='pre_test'">
         <xsl:choose>
           <xsl:when test="not(@language) or @language='application/x-ruby'">
             <xsl:text>pre_test{</xsl:text>
-            <xsl:value-of select="@pre_test"/>
+            <xsl:value-of select="@condition"/>
             <xsl:text>} </xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>pre_test("</xsl:text>
-            <xsl:value-of select="@pre_test"/>
+            <xsl:value-of select="@condition"/>
             <xsl:text>")</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
-      <xsl:if test="@post_test">
+      <xsl:if test="@mode='post_test'">
         <xsl:choose>
           <xsl:when test="not(@language) or @language='application/x-ruby'">
             <xsl:text>post_test{</xsl:text>
-            <xsl:value-of select="@post_test"/>
+            <xsl:value-of select="@condition"/>
             <xsl:text>} </xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>post_test("</xsl:text>
-            <xsl:value-of select="@post_test"/>
+            <xsl:value-of select="@condition"/>
             <xsl:text>")</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
-      <xsl:for-each select="@*[not(name()='language' or name()='pre_test' or name()='post_test' or name()='svg-label')]">
+      <xsl:for-each select="@*[not(name()='language' or name()='mode' or name()='condition' or name()='svg-label')]">
         <xsl:text>, :</xsl:text>
         <xsl:value-of select="name(.)"/>
         <xsl:text> => "</xsl:text>
         <xsl:value-of select="."/>
         <xsl:text>"</xsl:text>
-      </xsl:for-each>   
+      </xsl:for-each>
       <xsl:text> do</xsl:text>
       <xsl:call-template name="print-newline"/>
       <xsl:apply-templates>
@@ -240,7 +240,7 @@
       <xsl:text> => "</xsl:text>
       <xsl:value-of select="."/>
       <xsl:text>"</xsl:text>
-    </xsl:for-each>   
+    </xsl:for-each>
     <xsl:text> do</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
@@ -273,7 +273,7 @@
       <xsl:text> => "</xsl:text>
       <xsl:value-of select="."/>
       <xsl:text>"</xsl:text>
-    </xsl:for-each>   
+    </xsl:for-each>
     <xsl:text> do</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
@@ -345,7 +345,7 @@
           <xsl:if test="position() &gt;1">, </xsl:if>
           <xsl:text>:</xsl:text>
           <xsl:value-of select="name(.)"/>
-        </xsl:for-each>   
+        </xsl:for-each>
         <xsl:text>).new(</xsl:text>
         <xsl:text></xsl:text>
         <xsl:choose>
@@ -362,7 +362,7 @@
           <xsl:text>"</xsl:text>
           <xsl:value-of select="string(.)"/>
           <xsl:text>"</xsl:text>
-        </xsl:for-each>   
+        </xsl:for-each>
         <xsl:text>)</xsl:text>
       </xsl:when>
       <xsl:when test="not(node())">
