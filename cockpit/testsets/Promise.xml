@@ -23,6 +23,9 @@
     <credit_consume xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/consume</credit_consume>
     <credit_activate xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/activate</credit_activate>
   </endpoints>
+  <attributes>
+    <theme>promise</theme>
+  </attributes>
   <positions/>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">

@@ -110,6 +110,12 @@ function WFAdaptorManifestation(adaptor) {
       'svg': adaptor.theme_dir + 'symbols/choose_exclusive.svg'
     },//}}}
   };  /*}}}*/
+  this.elements.callpreminder = { /*{{{*/
+    'illustrator': {//{{{
+      'type' : 'abstract',
+      'svg': adaptor.theme_dir + 'symbols/preminder.svg'
+    },//}}}
+  };  /*}}}*/
 
   // Primitive Elements
   this.elements.call = { /*{{{*/
@@ -119,8 +125,8 @@ function WFAdaptorManifestation(adaptor) {
       'resolve_symbol' : function(node) {
         if($(node).attr('endpoint') == 'instantiation') {
           return 'callinstantiation';
-        } else if($(node).attr('endpoint') == 'correlation') {
-          return 'callcorrelation';
+        } else if($(node).attr('endpoint') == 'preminder1' || $(node).attr('endpoint') == 'preminder2' ) {
+          return 'callpreminder';
         } else if($('parameters > service', node).length > 0) {
           return 'callinjection';
         } else if($('finalize,update', node).length > 0) {
