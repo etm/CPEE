@@ -1,4 +1,5 @@
 <testsets>
+  <testset>Assline</testset>
   <testset>Infinity</testset>
   <testset>SOPROMO Test Sonification</testset>
   <testset>Linear</testset>
