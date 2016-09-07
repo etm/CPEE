@@ -1,6 +1,5 @@
 var ws;
 var running = false;
-var graphrealization;
 var subscription;
 var subscription_state = 'less';
 var save = {};
@@ -10,6 +9,7 @@ var save = {};
     save['dataelements'] = undefined;
     save['attributes'] = undefined;
     save['details'] = undefined;
+    save['details_target'] = undefined;
 var node_state = {};
 var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'calling,status,manipulating,failed,done' + '&' +

@@ -55,11 +55,11 @@ function WFAdaptorManifestation(adaptor) {
     }
 
     if ($('#state').text() != 'finished')
-      $('#main .tabbehind button').show();
-    if ($('#main .tabbehind button').hasClass('highlight')) {
+      $('#main ui-behind button').show();
+    if ($('#main ui-behind button').hasClass('highlight')) {
       var check = confirm("Discard changes?");
       if (check)
-        $('#main .tabbehind button').removeClass('highlight');
+        $('#main ui-behind button').removeClass('highlight');
       else
         return;
     }
@@ -68,13 +68,15 @@ function WFAdaptorManifestation(adaptor) {
     var tab   = $('#dat_' + visid);
     var node  = adaptor.description.get_node_by_svg_id(svgid).get(0);
 
+    save[visid + '_target'] = { 'svgid': svgid, 'model': adaptor.description };
+
     tab.empty();
     $.ajax({
       type: "GET",
       url: adaptor.theme_dir + "rngs/" + node.nodeName + ".rng",
       success: function(rng){
-        save['details'] = new RelaxNGui(rng,tab);
-        save['details'].content(node,adaptor.description.context_eval);
+        save[visid] = new RelaxNGui(rng,tab);
+        save[visid].content(node,adaptor.description.context_eval);
       }
     });
   } // }}}

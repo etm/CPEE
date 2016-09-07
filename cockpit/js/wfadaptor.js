@@ -394,7 +394,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         block.svg.attr('id', 'group-' + $(this).attr('svg-id'));
         if(illustrator.elements[tname].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive
       } else {
-        if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'primitive'  && illustrator.elements[tname].svg) { // This enables "invisble" elements, by returning false in the SVG function (e.g. constraints)
+        if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'primitive'  && illustrator.elements[tname].svg) { // This enables "invisble" elements, by returning undefined in the SVG function (e.g. constraints)
           block.max.row = pos.row;
           block.max.col = pos.col;
           block.endnodes = (!collapsed ? [pos] : [jQuery.extend(true, {}, pos)]);
