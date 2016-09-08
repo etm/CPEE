@@ -23,10 +23,18 @@ $(document).ready(function() {
       $('#main ui-tabbar ui-behind button').removeClass('highlight');
       save['details'].set_checkpoint();
 
+      // pull out xml and add XMLNS
+      // sadly we have to serialze, add in string and then parse again
+      // as adding namespaces to nodes is not supported
+      // serialization and reparsing is faster and more robust than xslt option
       var nnew = $(save['details'].save().documentElement);
           nnew.attr('svg-id',svgid);
+          nnew.attr('trans-xmlns','http://cpee.org/ns/description/1.0');
 
-      node.replaceWith(nnew);
+      var ntxt = nnew.serializeXML();
+          ntxt = ntxt.replace(/trans-xmlns/,'xmlns');
+
+      node.replaceWith($X(ntxt));
 
       $.ajax({
         type: "PUT",
