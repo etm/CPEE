@@ -104,7 +104,7 @@
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
   </head>
   <body data-defaultport="9298" data-theme-base="themes" is="x-ui">
-     <div id='disclaimer' class='hidden'>
+     <div id='disclaimer' class='hidden'> <!--{{{-->
        <h1>Disclaimer</h1>
 
        <p>
@@ -152,57 +152,7 @@
        <p>
         <button id='icontinue' disabled='disabled'>Continue</button>
        </p>
-    </div>
-
-    <!-- The following six are templates that get used during ui generation, change them carefully -->
-    <table id="dat_template_pair" class='hidden'> <!--{{{-->
-      <tr class="pair">
-        <td class='del'><a href='' tabindex='-1' title='Delete Item (Ctrl-D)'>✖</a></td>
-        <td class='pname'><input pattern="[a-zA-Z][a-zA-Z0-9_]*" placeholder='fill in name...' type='text' class='pair_name' value=''/></td>
-        <td class='sep'>⇒</td>
-        <td class='pvalue'><input placeholder='fill in value...' class='pair_value' value=''/></td>
-      </tr>
-    </table> <!--}}}-->
-    <table id="prop_template_input" class='hidden'> <!--{{{-->
-      <tr>
-        <td class='cname' colspan='2'><strong class="prop_name"></strong></td>
-        <td class='sep'>⇒</td>
-        <td class='value'><input type="text" class="prop_value" value=""/></td>
-      </tr>
-    </table> <!--}}}-->
-    <table id="prop_template_readonly" class='hidden'> <!--{{{-->
-      <tr>
-        <td class='cname' colspan='2'><strong class="prop_name"></strong></td>
-        <td class='sep'>⇒</td>
-        <td class='value'><input type="text" readonly='readonly' class="prop_value" value=""/></td>
-      </tr>
-    </table> <!--}}}-->
-    <table id="prop_template_area" class='hidden'> <!--{{{-->
-      <tr>
-        <td class='cname' colspan='2'><strong class="prop_name"></strong></td>
-        <td class='sep'>⇒</td>
-        <td class='value'><textarea rows='3' class="prop_value"></textarea></td>
-      </tr>
-    </table> <!--}}}-->
-    <table id="prop_template_header" class='hidden'> <!--{{{-->
-      <tr class='header'>
-        <td colspan='4'><strong class="header_value"></strong> <button title='Ctrl-N while editing entry'>New</button></td>
-      </tr>
-    </table> <!--}}}-->
-    <table id="prop_template_line" class='hidden'> <!--{{{-->
-      <tr>
-        <td class='cname' colspan='2'></td>
-        <td class='sep'>⇒</td>
-        <td class='value'><em class="line_main"></em><em>:</em> <span class='line_text'></span></td>
-      </tr>
-    </table> <!--}}}-->
-    <table id="prop_template_select" class='hidden'> <!--{{{-->
-      <tr>
-        <td class='cname' colspan='2'><strong class="prop_name"></strong></td>
-        <td class='sep'>⇒</td>
-        <td class='value'><select class="prop_value"></select></td>
-      </tr>
-    </table> <!--}}}-->
+    </div> <!--}}}-->
 
     <div class='menu' id='predefinedtestsets'></div>
     <div class='menu' id='modeltypes'></div>
