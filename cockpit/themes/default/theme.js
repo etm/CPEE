@@ -101,7 +101,7 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.callmanipulate = { /*{{{*/
     'type'  : 'abstract',
     'parent': 'call',
-    'description': adaptor.theme_dir + 'symbols/callmanipulate.rng',
+    'description': adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
       'svg': adaptor.theme_dir + 'symbols/callmanipulate.svg'
     },//}}}
@@ -122,7 +122,7 @@ function WFAdaptorManifestation(adaptor) {
   };  /*}}}*/
   this.elements.scripts = { /*{{{*/
     'type' : 'abstract',
-    'description': [adaptor.theme_dir + 'symbols/update.rng',adaptor.theme_dir + 'symbols/finalize.rng']
+    'description': [adaptor.theme_dir + 'rngs/update.rng',adaptor.theme_dir + 'rngs/finalize.rng']
   }; /*}}}*/
 
   // Primitive Elements
@@ -145,7 +145,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/call.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'symbols/call.rng',
+    'description': adaptor.theme_dir + 'rngs/call.rng',
     'permissible_children': function(node) { //{{{
       if(node.children('finalize,update').length < 1)
         return [
@@ -168,7 +168,7 @@ function WFAdaptorManifestation(adaptor) {
       'endnodes' : 'this',
       'svg': adaptor.theme_dir + 'symbols/manipulate.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'symbols/manipulate.rng',
+    'description': adaptor.theme_dir + 'rngs/manipulate.rng',
     'permissible_children': function(node) { //{{{
       return [];
     }, //}}}
@@ -183,7 +183,7 @@ function WFAdaptorManifestation(adaptor) {
       'endnodes' : 'this',
       'svg': adaptor.theme_dir + 'symbols/escape.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'symbols/escape.rng',
+    'description': adaptor.theme_dir + 'rngs/escape.rng',
     'permissible_children': function(node) { //{{{
       return [];
     }, //}}}
@@ -214,7 +214,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/choose.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'symbols/choose.rng',
+    'description': adaptor.theme_dir + 'rngs/choose.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
@@ -264,7 +264,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/otherwise.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'symbols/otherwise.rng',
+    'description': adaptor.theme_dir + 'rngs/otherwise.rng',
     'neverdelete': true,
     'permissible_children': function(node) { //{{{
       var func = null;
@@ -325,7 +325,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/alternative.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'symbols/alternative.rng',
+    'description': adaptor.theme_dir + 'rngs/alternative.rng',
     'permissible_children': function(node) { //{{{
       if(node.get(0).tagName == 'alternative') { func = adaptor.description.insert_first_into }
       else { func = adaptor.description.insert_after }
@@ -389,7 +389,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/loop.svg'
     },// }}}
-    'description': adaptor.theme_dir + 'symbols/loop.rng',
+    'description': adaptor.theme_dir + 'rngs/loop.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       if(node.get(0).tagName == 'loop') { func = adaptor.description.insert_first_into }
@@ -461,7 +461,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/parallel.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'symbols/parallel.rng',
+    'description': adaptor.theme_dir + 'rngs/parallel.rng',
     'permissible_children': function(node) { //{{{
       var childs =  [
         {'label': 'Service Call with Scripts',
@@ -525,7 +525,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/parallel_branch.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'symbols/parallel_branch.rng',
+    'description': adaptor.theme_dir + 'rngs/parallel_branch.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       var childs = null;
@@ -593,7 +593,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/critical.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'symbols/critical.rng',
+    'description': adaptor.theme_dir + 'rngs/critical.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       if(node.get(0).tagName == 'critical') { func = adaptor.description.insert_first_into }
@@ -653,7 +653,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': null
     },//}}}
-    'description': adaptor.theme_dir + 'symbols/group.rng',
+    'description': adaptor.theme_dir + 'rngs/group.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       if(node.get(0).tagName == 'group') { func = adaptor.description.insert_first_into }
