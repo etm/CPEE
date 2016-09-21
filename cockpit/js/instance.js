@@ -288,7 +288,6 @@ function adaptor_init(theme,dslx) {
     graphrealization.set_svg_container($('#graphcanvas'));
     graphrealization.set_description($(dslx), true);
     graphrealization.notify = function(svgid) {
-      save_description();
       manifestation.events.click(svgid,undefined);
     };
     monitor_instance_pos();

@@ -26,4 +26,16 @@
       </zeroOrMore>
     </element>
   </element>
+  <element name="finalize" rngui:header="Finalize" rngui:label="Code">
+    <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+      <data type="string" rngui:readonly="true"/>
+    </attribute>
+    <text rngui:label='Script that is executed, when a service returns data'/>
+  </element>
+  <element name="update" rngui:header="Update" rngui:label="Code">
+    <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+      <data type="string" rngui:readonly="true"/>
+    </attribute>
+    <text rngui:label='Script that is executed, when a service sends intermediate data'/>
+  </element>
 </element>

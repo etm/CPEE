@@ -13,37 +13,41 @@ function WFAdaptorManifestation(adaptor) {
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
     } else if(e.button == 2) { // right-click
+      console.log('rrrr');
+
       var xml_node = adaptor.description.get_node_by_svg_id(svgid);
       var group = null;
       var menu = {};
 
-      if(child) {
+      if (child) {
         group = elements[xml_node.get(0).tagName].permissible_children(xml_node);
         if(group.length > 0) menu['Insert into'] = group;
       }
-      if(sibling) {
+      if (sibling) {
         group = elements[xml_node.parent().get(0).tagName].permissible_children(xml_node);
         if(group.length > 0) menu['Insert after'] = group;
       }
 
+      console.log('rrrr');
+
       if(xml_node.get(0).tagName != 'description' && !elements[xml_node.get(0).tagName].neverdelete)
-        menu['Remove Element'] = [{'label': 'Actual Element',
-                        'function_call': adaptor.description.remove,
-                        'menu_icon': function() {
-                          var icon =  elements[xml_node.get(0).tagName].illustrator.svg();
-                          icon.children('.rfill').css({'fill':'red','fill-opacity':'0.5'});
-                          return icon;
-                        },
-                        'params': [null, xml_node]}];
-      if($('> manipulate', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
-        menu['Remove Element'].push({'label': 'Remove Scripts',
-                        'function_call': adaptor.description.remove,
-                        'menu_icon': function() {
-                          var icon =  elements.callmanipulate.illustrator.svg();
-                          icon.children('.rfill:last').css({'fill':'red','fill-opacity':'0.5'});
-                          return icon;
-                        },
-                        'params': ['> manipulate', xml_node]});
+        var icon =  elements[xml_node.get(0).tagName].illustrator.svg;
+        icon.children('.rfill').css({'fill':'red','fill-opacity':'0.5'});
+        menu['Remove Element'] = [{
+          'label': 'Actual Element',
+          'function_call': adaptor.description.remove,
+          'menu_icon': icon,
+          'params': [null, xml_node]
+        }];
+      if($('> finalize, > update', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
+        var icon =  elements.callmanipulate.illustrator.svg;
+        icon.children('.rfill:last').css({'fill':'red','fill-opacity':'0.5'});
+        menu['Remove Element'].push({
+          'label': 'Remove Scripts',
+          'function_call': adaptor.description.remove,
+          'menu_icon': icon,
+          'params': ['> finalize, > update', xml_node]
+        });
       }
       new CustomMenu(e).contextmenu(menu);
     }
@@ -95,28 +99,36 @@ function WFAdaptorManifestation(adaptor) {
 
   // Abstract Elements (they only have an illustrator)
   this.elements.callmanipulate = { /*{{{*/
+    'type'  : 'abstract',
+    'parent': 'call',
+    'description': adaptor.theme_dir + 'symbols/callmanipulate.rng',
     'illustrator': {//{{{
-      'type' : 'abstract',
       'svg': adaptor.theme_dir + 'symbols/callmanipulate.svg'
     },//}}}
   }; /*}}}*/
   this.elements.choose_inclusive = { /*{{{*/
+    'type'  : 'abstract',
+    'parent': 'choose',
     'illustrator': {//{{{
-      'type' : 'abstract',
       'svg': adaptor.theme_dir + 'symbols/choose_inclusive.svg'
     },//}}}
   };  /*}}}*/
   this.elements.choose_exclusive = { /*{{{*/
+    'type' : 'abstract',
+    'parent': 'choose',
     'illustrator': {//{{{
-      'type' : 'abstract',
       'svg': adaptor.theme_dir + 'symbols/choose_exclusive.svg'
     },//}}}
   };  /*}}}*/
+  this.elements.scripts = { /*{{{*/
+    'type' : 'abstract',
+    'description': [adaptor.theme_dir + 'symbols/update.rng',adaptor.theme_dir + 'symbols/finalize.rng']
+  }; /*}}}*/
 
   // Primitive Elements
   this.elements.call = { /*{{{*/
+    'type' : 'primitive',
     'illustrator': {//{{{
-      'type' : 'primitive',
       'endnodes' : 'this',
       'resolve_symbol' : function(node) {
         if($(node).attr('endpoint') == 'instantiation') {
@@ -133,7 +145,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/call.svg'
     },//}}}
-    'description': '<call id="###" endpoint="" xmlns="http://cpee.org/ns/description/1.0"><parameters xmlns="http://cpee.org/ns/description/1.0"><label>""</label><method>:post</method><parameters/></parameters></call>',
+    'description': adaptor.theme_dir + 'symbols/call.rng',
     'permissible_children': function(node) { //{{{
       if(node.children('finalize,update').length < 1)
         return [
@@ -150,28 +162,13 @@ function WFAdaptorManifestation(adaptor) {
     'dragstart': events.dragstart,
    }//}}}
   }; /*}}}*/
-  this.elements.scripts = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'primitive',
-      'endnodes' : 'this',
-      'svg': adaptor.theme_dir + 'symbols/scripts.svg'
-    },//}}}
-    'description': ['<finalize xmlns="http://cpee.org/ns/description/1.0"/>','<update xmlns="http://cpee.org/ns/description/1.0"/>'],
-    'permissible_children': function(node) { //{{{
-      return [];
-    }, //}}}
-    'adaptor': { //{{{
-      'mousedown': function (node, e) { events.mousedown(node,e,false, true); },
-      'click': events.click,
-    } //}}}
-  }; /*}}}*/
   this.elements.manipulate = { /*{{{*/
+    'type' : 'primitive',
     'illustrator': {//{{{
-      'type' : 'primitive',
       'endnodes' : 'this',
       'svg': adaptor.theme_dir + 'symbols/manipulate.svg'
     },//}}}
-    'description': '<manipulate id="###" xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': adaptor.theme_dir + 'symbols/manipulate.rng',
     'permissible_children': function(node) { //{{{
       return [];
     }, //}}}
@@ -181,12 +178,12 @@ function WFAdaptorManifestation(adaptor) {
    }//}}}
   }; /*}}}*/
   this.elements.escape = { /*{{{*/
+    'type' : 'primitive',
     'illustrator': {//{{{
-      'type' : 'primitive',
       'endnodes' : 'this',
       'svg': adaptor.theme_dir + 'symbols/escape.svg'
     },//}}}
-    'description': '<escape xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': adaptor.theme_dir + 'symbols/escape.rng',
     'permissible_children': function(node) { //{{{
       return [];
     }, //}}}
@@ -198,8 +195,8 @@ function WFAdaptorManifestation(adaptor) {
 
   // Complex Elements
   this.elements.choose = { /*{{{*/
+    'type' : 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
       'endnodes' : 'aggregate',
       'closeblock': false,
       'expansion' : function(node) {
@@ -217,7 +214,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/choose.svg'
     },//}}}
-    'description': '<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>',
+    'description': adaptor.theme_dir + 'symbols/choose.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
@@ -255,8 +252,8 @@ function WFAdaptorManifestation(adaptor) {
     }//}}}
   };  /*}}}*/
   this.elements.otherwise = { /*{{{*/
+    'type' : 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
       'endnodes' : 'passthrough',
       'closeblock': false,
       'expansion' : function(node) {
@@ -267,7 +264,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/otherwise.svg'
     },//}}}
-    'description': '<otherwise xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': adaptor.theme_dir + 'symbols/otherwise.rng',
     'neverdelete': true,
     'permissible_children': function(node) { //{{{
       var func = null;
@@ -316,8 +313,8 @@ function WFAdaptorManifestation(adaptor) {
     }//}}}
   }; /*}}}*/
   this.elements.alternative = { /*{{{*/
+    'type' : 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
       'endnodes' : 'passthrough',
       'closeblock':false,
       'expansion' : function(node) {
@@ -328,7 +325,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/alternative.svg'
     },//}}}
-    'description': '<alternative condition="" xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': adaptor.theme_dir + 'symbols/alternative.rng',
     'permissible_children': function(node) { //{{{
       if(node.get(0).tagName == 'alternative') { func = adaptor.description.insert_first_into }
       else { func = adaptor.description.insert_after }
@@ -380,8 +377,8 @@ function WFAdaptorManifestation(adaptor) {
     }//}}}
   };  /*}}}*/
   this.elements.loop = { /*{{{*/
+    'type' : 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : true,
       'expansion' : function(node) {
@@ -392,7 +389,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/loop.svg'
     },// }}}
-    'description': '<loop pre_test="" xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': adaptor.theme_dir + 'symbols/loop.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       if(node.get(0).tagName == 'loop') { func = adaptor.description.insert_first_into }
@@ -449,8 +446,8 @@ function WFAdaptorManifestation(adaptor) {
     }//}}}
   };  /*}}}*/
   this.elements.parallel = { /*{{{*/
+    'type' : 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : false,
       'border': true,
@@ -464,7 +461,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/parallel.svg'
     },//}}}
-    'description': '<parallel xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': adaptor.theme_dir + 'symbols/parallel.rng',
     'permissible_children': function(node) { //{{{
       var childs =  [
         {'label': 'Service Call with Scripts',
@@ -514,8 +511,8 @@ function WFAdaptorManifestation(adaptor) {
     }//}}}
   };  /*}}}*/
   this.elements.parallel_branch = { /*{{{*/
+    'type' : 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
       'endnodes' : 'this',
       'closeblock' : false,
       'expansion' : function(node) {
@@ -528,7 +525,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/parallel_branch.svg'
     },//}}}
-    'description': '<parallel_branch xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': adaptor.theme_dir + 'symbols/parallel_branch.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       var childs = null;
@@ -583,8 +580,8 @@ function WFAdaptorManifestation(adaptor) {
     }//}}}
   };  /*}}}*/
   this.elements.critical = { /*{{{*/
+    'type' : 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
       'endnodes' : 'aggregate',
       'closeblock' : false,
       'border': true,
@@ -596,7 +593,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': adaptor.theme_dir + 'symbols/critical.svg'
     },//}}}
-    'description': '<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': adaptor.theme_dir + 'symbols/critical.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       if(node.get(0).tagName == 'critical') { func = adaptor.description.insert_first_into }
@@ -643,8 +640,8 @@ function WFAdaptorManifestation(adaptor) {
     }//}}}
   };  /*}}}*/
   this.elements.group = { /*{{{*/
+    'type' : 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
       'endnodes' : 'aggregate',
       'closeblock' : false,
       'border': 'injectiongroup', // other value than true,false inidcates the used class for the svg-object
@@ -656,7 +653,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': null
     },//}}}
-    'description': '<group xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': adaptor.theme_dir + 'symbols/group.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       if(node.get(0).tagName == 'group') { func = adaptor.description.insert_first_into }
@@ -675,8 +672,8 @@ function WFAdaptorManifestation(adaptor) {
     }//}}}
   };  /*}}}*/
   this.elements.start = this.elements.description = { /*{{{*/
+    'type' : 'description',
     'illustrator': {//{{{
-      'type' : 'description',
       'endnodes' : 'passthrough',
       'closeblock' : false,
       'expansion' : function(node) {

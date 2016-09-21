@@ -61,21 +61,46 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     illustrator.noarrow = manifestation.noarrow;
     var deferreds = [];
     for(element in manifestation.elements) {
-      if (manifestation.elements[element].illustrator.svg) {
+      if (manifestation.elements[element].illustrator) {
+        if (manifestation.elements[element].illustrator.svg) {
+          deferreds.push(
+            $.ajax({
+              type: "GET",
+              url: manifestation.elements[element].illustrator.svg,
+              context: element,
+              success: function(res){
+                manifestation.elements[this].illustrator.svg = $(res.documentElement);
+              }
+            })
+          );
+        }
+        illustrator.elements[element] = manifestation.elements[element].illustrator;
+        illustrator.elements[element].type = manifestation.elements[element].type || 'abstract';
+      }
+      if (manifestation.elements[element].description) {
         deferreds.push(
           $.ajax({
             type: "GET",
-            url: manifestation.elements[element].illustrator.svg,
+            url: manifestation.elements[element].description,
             context: element,
             success: function(res){
-              manifestation.elements[this].illustrator.svg = $(res.documentElement);
+              manifestation.elements[this].description = $(res.documentElement);
+              description.elements[element] = manifestation.elements[element].description;
             }
           })
         );
+      } else {
+        if (manifestation.elements[element].parent) { // take from parent if empty
+          description.elements[element] = manifestation.elements[manifestation.elements[element].parent].description;
+        }
       }
-      illustrator.elements[element] = manifestation.elements[element].illustrator;
-      description.elements[element] = manifestation.elements[element].description;
-      self.elements[element] = manifestation.elements[element].adaptor;
+      if (manifestation.elements[element].adaptor) {
+        self.elements[element] = manifestation.elements[element].adaptor;
+      } else {
+        if (manifestation.elements[element].parent) { // take from parent if empty
+          self.elements[element] = manifestation.elements[manifestation.elements[element].parent].adaptor;
+        }
+      }
     }
     $.when.apply($, deferreds).then(function(x) {
       doit(self);
