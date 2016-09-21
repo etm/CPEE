@@ -4,12 +4,15 @@ $(document).ready(function() {
   // save button shown or not //{{{
   $('#main ui-tabbar ui-tab:not(.switch)').click(function(event){
     var me = $(event.target);
-    if ($('#state').text() != 'finished')
+    if ($('#state').text() != 'finished') {
       if (me.data('tab') == 'details') {
-        $('#main ui-tabbar ui-behind button').show();
+        if (!$("#dat_details").is(':empty')) {
+          $('#main ui-tabbar ui-behind button').show();
+        }
       } else {
         $('#main ui-tabbar ui-behind button').hide();
       }
+    }
   }); //}}}
 
   $('#main ui-tabbar ui-behind button').click(function(event){
