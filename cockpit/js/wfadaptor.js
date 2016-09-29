@@ -78,17 +78,33 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
         illustrator.elements[element].type = manifestation.elements[element].type || 'abstract';
       }
       if (manifestation.elements[element].description) {
-        deferreds.push(
-          $.ajax({
-            type: "GET",
-            url: manifestation.elements[element].description,
-            context: element,
-            success: function(res){
-              manifestation.elements[this].description = $(res.documentElement);
-              description.elements[element] = manifestation.elements[element].description;
-            }
-          })
-        );
+        if ( typeof manifestation.elements[element].description === 'string' ) {
+          deferreds.push(
+            $.ajax({
+              type: "GET",
+              url: manifestation.elements[element].description,
+              context: element,
+              success: function(res){
+                manifestation.elements[this].description = $(res.documentElement);
+                description.elements[element] = manifestation.elements[element].description;
+              }
+            })
+          );
+        } else if ($.isArray(manifestation.elements[element].description)) {
+          _.each(manifestation.elements[element].description,function(val,ind){
+            deferreds.push(
+              $.ajax({
+                type: "GET",
+                url: val,
+                context: element,
+                success: function(res){
+                  manifestation.elements[this].description = $(res.documentElement);
+                  description.elements[element] = manifestation.elements[element].description;
+                }
+              })
+            );
+          });
+        }
       } else {
         if (manifestation.elements[element].parent) { // take from parent if empty
           description.elements[element] = manifestation.elements[manifestation.elements[element].parent].description;
