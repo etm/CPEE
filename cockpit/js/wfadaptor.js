@@ -86,7 +86,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
               context: element,
               success: function(res){
                 manifestation.elements[this].description = $(res.documentElement);
-                description.elements[element] = manifestation.elements[element].description;
+                description.elements[this] = manifestation.elements[this].description;
               }
             })
           );
@@ -99,7 +99,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
                 context: element,
                 success: function(res){
                   manifestation.elements[this].description = $(res.documentElement);
-                  description.elements[element] = manifestation.elements[element].description;
+                  description.elements[this] = manifestation.elements[this].description;
                 }
               })
             );
@@ -171,7 +171,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // Helper Functions {{{
   var draw_symbol = this.draw.draw_symbol = function (tname, sym_name, id, title, row, col, group) { // {{{
     if(elements[sym_name] == undefined || elements[sym_name].svg == undefined) sym_name = 'unknown';
-    var g = $X('<g class="element" element-id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
+    var g = $X('<g class="element" element-type="' + sym_name + '" element-id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
                   '<text class="super" transform="translate(30,8.4)">' +
                     '<tspan class="active">0</tspan>' +
                     '<tspan class="colon">,</tspan>' +
@@ -316,15 +316,11 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
       illustrator.set_svg(graph);
     }
-    var newn = $('*[new=true]',description);
-    newn.removeAttr('new');
 
-    $.each(newn,function(k,nn){
-      if ($(nn).attr('svg-id') != undefined)
-        adaptor.notify($(nn).attr('svg-id'));
-      else if (svgid != undefined)
-        adaptor.notify(svgid);
-    });
+    if (svgid != undefined)
+      adaptor.notify(svgid);
+    else
+      console.info('Something went horribly wrong');
   } // }}}
   // }}}
   // Adaption functions {{{
@@ -336,6 +332,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         nn.attr('new','true');
       });
     } else {
+      var rngw = new RelaxNGui(new_node,$('#relaxngworker'));
+      console.log(rngw);
+
       var nn = $X(new_node.replace(/###/,get_free_id()));
       target.after(nn);
       nn.attr('new','true');
@@ -377,6 +376,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       target.remove()
     } else {
       svgid = $(selector, target).attr('svg-id');
+      if (!svgid) {
+        svgid = target.attr('svg-id');
+      }
       $(selector, target).remove();
     }
     update(svgid);
@@ -449,6 +451,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       else if(typeof illustrator.elements[tname].resolve_symbol == 'function') {sym_name = illustrator.elements[tname].resolve_symbol(this);}
       else if(typeof illustrator.elements[tname].resolve_symbol == 'string')   {sym_name = illustrator.elements[tname].resolve_symbol;}
       else                                                                     {sym_name = tname;}
+      $(this).attr('svg-type',sym_name);
       if((illustrator.elements[tname] && illustrator.elements[tname].svg) || sym_name == 'unknown') {
         illustrator.draw.draw_symbol(tname, sym_name, $(this).attr('svg-id'), $(this).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[tname] ? illustrator.elements[tname].type : 'primitive unknown');
       } else { console.log("no icon "+ tname);}

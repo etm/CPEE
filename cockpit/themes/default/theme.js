@@ -4,17 +4,12 @@ function WFAdaptorManifestation(adaptor) {
   this.events = events = {};
 
   this.noarrow = noarrow = ['alternative', 'otherwise'];
-  this.description_extract = function(rng) {
-    return new RelaxNGui(rng,null).example();
-  }
 
   // Events
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
     } else if(e.button == 2) { // right-click
-      console.log('rrrr');
-
       var xml_node = adaptor.description.get_node_by_svg_id(svgid);
       var group = null;
       var menu = {};
@@ -27,8 +22,6 @@ function WFAdaptorManifestation(adaptor) {
         group = elements[xml_node.parent().get(0).tagName].permissible_children(xml_node);
         if(group.length > 0) menu['Insert after'] = group;
       }
-
-      console.log('rrrr');
 
       if(xml_node.get(0).tagName != 'description' && !elements[xml_node.get(0).tagName].neverdelete)
         var icon =  elements[xml_node.get(0).tagName].illustrator.svg;
@@ -75,14 +68,8 @@ function WFAdaptorManifestation(adaptor) {
     save[visid + '_target'] = { 'svgid': svgid, 'model': adaptor.description };
 
     tab.empty();
-    $.ajax({
-      type: "GET",
-      url: adaptor.theme_dir + "rngs/" + node.nodeName + ".rng",
-      success: function(rng){
-        save[visid] = new RelaxNGui(rng,tab);
-        save[visid].content(node,adaptor.description.context_eval);
-      }
-    });
+    save[visid] = new RelaxNGui(adaptor.description.elements[$(node).attr('svg-type')],tab);
+    save[visid].content(node,adaptor.description.context_eval);
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
@@ -157,7 +144,7 @@ function WFAdaptorManifestation(adaptor) {
       return [];
     }, //}}}
   'adaptor' : {//{{{
-    'mousedown': function (node, e) { events.mousedown(node,e,true, true); },
+    'mousedown': function (node,e) { events.mousedown(node,e,true,true); },
     'click': events.click,
     'dragstart': events.dragstart,
    }//}}}
@@ -173,7 +160,7 @@ function WFAdaptorManifestation(adaptor) {
       return [];
     }, //}}}
   'adaptor' : {//{{{
-    'mousedown': function (node, e) { events.mousedown(node,e,false, true); },
+    'mousedown': function (node,e) { events.mousedown(node,e,false,true); },
     'click': events.click,
    }//}}}
   }; /*}}}*/
@@ -188,7 +175,7 @@ function WFAdaptorManifestation(adaptor) {
       return [];
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) { events.mousedown(node,e,false, true); },
+      'mousedown': function (node,e) { events.mousedown(node,e,false,true); },
       'click': events.click,
     }//}}}
   }; /*}}}*/
@@ -242,8 +229,8 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
+      'mousedown': function (node,e) {
+        events.mousedown(node,e,true,true);
       },
       'click': events.click,
       'dblclick': events.dblclick,
@@ -303,8 +290,8 @@ function WFAdaptorManifestation(adaptor) {
       ];
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, false);
+      'mousedown': function (node,e) {
+        events.mousedown(node,e,true,false);
       },
       'click': events.click,
       'dblclick': events.dblclick,
@@ -367,8 +354,8 @@ function WFAdaptorManifestation(adaptor) {
       ];
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, false);
+      'mousedown': function (node,e) {
+        events.mousedown(node,e,true,false);
       },
       'click': events.click,
       'dblclick': events.dblclick,
@@ -436,8 +423,8 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
+      'mousedown': function (node,e) {
+        events.mousedown(node,e,true,true);
       },
       'click': events.click,
       'dblclick': events.dblclick,
@@ -501,8 +488,8 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
+      'mousedown': function (node,e) {
+        events.mousedown(node,e,true,true);
       },
       'click': events.click,
       'dblclick': events.dblclick,
@@ -570,8 +557,8 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, false);
+      'mousedown': function (node,e) {
+        events.mousedown(node,e,true,false);
       },
       'click': events.click,
       'dblclick': events.dblclick,
@@ -630,8 +617,8 @@ function WFAdaptorManifestation(adaptor) {
       ];
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
+      'mousedown': function (node,e) {
+        events.mousedown(node,e,true,true);
       },
       'click': events.click,
       'dblclick': events.dblclick,
@@ -662,8 +649,8 @@ function WFAdaptorManifestation(adaptor) {
       ];
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
+      'mousedown': function (node,e) {
+        events.mousedown(node,e,true,true);
       },
       'click': events.click,
       'dblclick': events.dblclick,
@@ -721,8 +708,8 @@ function WFAdaptorManifestation(adaptor) {
       ];
     }, //}}}
     'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, false);
+      'mousedown': function (node,e) {
+        events.mousedown(node,e,true,false);
       },
       'click': events.click,
       'dblclick': events.dblclick,
