@@ -289,8 +289,16 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var gd = this.get_description = function() { //  public {{{
     var serxml = $(description.get(0).documentElement).clone(true);
     serxml.removeAttr('svg-id');
+    serxml.removeAttr('svg-type');
+    serxml.removeAttr('svg-label');
     $('*[svg-id]',serxml).each(function(){
       $(this).removeAttr('svg-id');
+    });
+    $('*[svg-type]',serxml).each(function(){
+      $(this).removeAttr('svg-type');
+    });
+    $('*[svg-label]',serxml).each(function(){
+      $(this).removeAttr('svg-label');
     });
     return serxml.serializeXML();
   } // }}}
