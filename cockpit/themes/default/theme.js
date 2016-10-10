@@ -25,7 +25,7 @@ function WFAdaptorManifestation(adaptor) {
 
       if(xml_node.get(0).tagName != 'description' && !elements[xml_node.get(0).tagName].neverdelete)
         var icon =  elements[xml_node.get(0).tagName].illustrator.svg.clone();
-        icon.children('.rfill').css({'fill':'red','fill-opacity':'0.5'});
+        icon.children('.rfill').css({'fill':'#ff7f7f','fill-opacity':'1'});
         menu['Remove Element'] = [{
           'label': 'Actual Element',
           'function_call': adaptor.description.remove,
@@ -34,7 +34,7 @@ function WFAdaptorManifestation(adaptor) {
         }];
       if($('> finalize, > update', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
         var icon =  elements.callmanipulate.illustrator.svg.clone();
-        icon.children('.rfill:last').css({'fill':'red','fill-opacity':'0.5'});
+        icon.children('.rfill:last').css({'fill':'#ff7f7f','fill-opacity':'1'});
         menu['Remove Element'].push({
           'label': 'Remove Scripts',
           'function_call': adaptor.description.remove,
