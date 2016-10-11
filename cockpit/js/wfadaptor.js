@@ -59,6 +59,8 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   $.getScript(theme_base, function() {
     manifestation = new WFAdaptorManifestation(self);
     illustrator.noarrow = manifestation.noarrow;
+    description.source = manifestation.source;
+    console.log(description);
     var deferreds = [];
     for(element in manifestation.elements) {
       if (manifestation.elements[element].illustrator) {
@@ -262,7 +264,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 // Manages the description. Is is further able to add/remove elements from the controlflow description.
 function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // public variables
-  var elements = this.elements = {};
+  var self = this;
+  this.elements = {};
+  this.source = [];
   // private variables
   var adaptor;
   var illustrator;
@@ -335,15 +339,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.insert_after = function(new_node, target) { // {{{
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
-        var nn = $X(v.replace(/###/,get_free_id()));
+        var nn = source(v);
         target.after(nn);
         nn.attr('new','true');
       });
     } else {
-      var rngw = new RelaxNGui(new_node,$('#relaxngworker'));
-      console.log(rngw);
-
-      var nn = $X(new_node.replace(/###/,get_free_id()));
+      var nn = source(new_node);
       target.after(nn);
       nn.attr('new','true');
     }
@@ -352,12 +353,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.insert_first_into = function(new_node, target, selector) { // {{{
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
-        var nn = $X(v.replace(/###/,get_free_id()));
+        var nn = self.source(v);
         target.prepend(nn);
         nn.attr('new','true');
       });
     } else {
-      var nn = $X(new_node.replace(/###/,get_free_id()));
+      var nn = self.source(new_node);
       target.prepend(nn);
       nn.attr('new','true');
     }
@@ -366,12 +367,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.insert_last_into = function(new_node, target, selector) { // {{{
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
-        var nn = $X(v.replace(/###/,get_free_id()));
+        var nn = self.source(v);
         target.append(nn);
         nn.attr('new','true');
       });
     } else {
-      var nn = $X(new_node.replace(/###/,get_free_id()));
+      var nn = self.source(new_node);
       target.append(nn);
       nn.attr('new','true');
     }

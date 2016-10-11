@@ -4,6 +4,11 @@ function WFAdaptorManifestation(adaptor) {
   this.events = events = {};
 
   this.noarrow = noarrow = ['alternative', 'otherwise'];
+  this.source = source = function(rng) {
+    console.log('rrr');
+    var rngw = new RelaxNGui(rng,$('#relaxngworker'));
+    return rngw.save();
+  };
 
   // Events
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
@@ -26,8 +31,8 @@ function WFAdaptorManifestation(adaptor) {
       if(xml_node.get(0).tagName != 'description' && !elements[xml_node.get(0).tagName].neverdelete)
         var icon =  elements[xml_node.get(0).tagName].illustrator.svg.clone();
         icon.children('.rfill').css({'fill':'#ff7f7f','fill-opacity':'1'});
-        menu['Remove Element'] = [{
-          'label': 'Actual Element',
+        menu['Delete'] = [{
+          'label': 'Remove Element',
           'function_call': adaptor.description.remove,
           'menu_icon': icon,
           'params': [null, xml_node]
@@ -35,7 +40,7 @@ function WFAdaptorManifestation(adaptor) {
       if($('> finalize, > update', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
         var icon =  elements.callmanipulate.illustrator.svg.clone();
         icon.children('.rfill:last').css({'fill':'#ff7f7f','fill-opacity':'1'});
-        menu['Remove Element'].push({
+        menu['Delete'].push({
           'label': 'Remove Scripts',
           'function_call': adaptor.description.remove,
           'menu_icon': icon,
