@@ -35,6 +35,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   // private variables {{{
     var illustrator;
     var description;
+    var self = this;
   // }}}
 
   // helper funtions
@@ -50,7 +51,6 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     illustrator.set_container(container); // TODO: shadowing the container element
   } // }}}
 
-  self = this;
 
   // initialze
   this.illustrator = illustrator = new WfIllustrator(this);
