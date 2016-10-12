@@ -134,7 +134,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.width = 40;
     this.noarrow = [];
     this.elements = {};
-    var svg = this.svg = {};
+    this.svg = {};
     this.draw = {};
     // private
     var self = this;
@@ -142,14 +142,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // }}}
   // Generic Functions {{{
   this.set_container = function(con) { // {{{
-    svg.container = con;
-    svg.container.append($X('<defs xmlns="http://www.w3.org/2000/svg">' +
+    self.svg.container = con;
+    self.svg.container.append($X('<defs xmlns="http://www.w3.org/2000/svg">' +
         '<marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
           '<path d="m 2 2 l 6 3 l -6 3 z"/>' +
         '</marker>' +
       '</defs>'));
-    svg.defs = {};
-    svg.defs['unknown'] = $X('<g xmlns="http://www.w3.org/2000/svg" class="unknown">' +
+    self.svg.defs = {};
+    self.svg.defs['unknown'] = $X('<g xmlns="http://www.w3.org/2000/svg" class="unknown">' +
         '<circle cx="15" cy="15" r="14" class="unkown"/>' +
         '<text transform="translate(15,20)" class="normal">?</text>' +
       '</g>');
@@ -157,17 +157,17 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       if(self.elements[element].svg) {
         var sym = $X('<g xmlns="http://www.w3.org/2000/svg"/>').append(self.elements[element].svg.clone().children()); // append all children to symbol
         $.each(self.elements[element].svg.attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
-        svg.defs[element] = sym;
+        self.svg.defs[element] = sym;
       }
   }  // }}}
   var clear = this.clear = function() { // {{{
-    $('> :not(defs)', svg.container).each(function() {$(this).remove()});
+    $('> :not(defs)', self.svg.container).each(function() {$(this).remove()});
   } // }}}
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
-    svg.container.attr({'height': (graph.max.row+0.3)*self.height, 'width':(graph.max.col+0.65)*self.width});
-    svg.container.append(graph.svg);
+    self.svg.container.attr({'height': (graph.max.row+0.3)*self.height, 'width':(graph.max.col+0.65)*self.width});
+    self.svg.container.append(graph.svg);
   } // }}}
   // }}}
   // Helper Functions {{{
@@ -180,7 +180,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
                     '<tspan class="vote">0</tspan>' +
                   '</text>' +
                '</g>');
-    var sym = svg.defs[sym_name].clone();
+    var sym = self.svg.defs[sym_name].clone();
     sym.prepend($X('<title xmlns="http://www.w3.org/2000/svg">' + title  + '</title>'));
     sym.attr('class','activities');
     g.append(sym);
@@ -191,7 +191,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       if(event_name == 'mousedown') sym.bind('contextmenu', false);
     }
     if(group) {group.append(g);}
-    else {svg.container.children('g:first').append(g);}
+    else {self.svg.container.children('g:first').append(g);}
     return g;
   } // }}}
   var draw_border = this.draw.draw_border = function(id, p1, p2, group) { // {{{
@@ -252,7 +252,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     // Seems to solve injection groups-line problem, but I guess it will caus problem when collapsing elements
     //if(group) {group.prepend(line);}
     //else
-    {svg.container.append(line);}
+    {self.svg.container.append(line);}
   } //  }}}
   // }}}
   // Initialize {{{
