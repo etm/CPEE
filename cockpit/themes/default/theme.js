@@ -91,34 +91,6 @@ function WFAdaptorManifestation(adaptor) {
   this.events.dragstart = function (svgid, e) { //{{{
   } //}}}
 
-  // Abstract Elements (they only have an illustrator)
-  this.elements.callmanipulate = { /*{{{*/
-    'type'  : 'abstract',
-    'parent': 'call',
-    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
-    'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
-    },//}}}
-  }; /*}}}*/
-  this.elements.choose_inclusive = { /*{{{*/
-    'type'  : 'abstract',
-    'parent': 'choose',
-    'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg'
-    },//}}}
-  };  /*}}}*/
-  this.elements.choose_exclusive = { /*{{{*/
-    'type' : 'abstract',
-    'parent': 'choose',
-    'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
-    },//}}}
-  };  /*}}}*/
-  this.elements.scripts = { /*{{{*/
-    'type' : 'abstract',
-    'description': [self.adaptor.theme_dir + 'rngs/update.rng',self.adaptor.theme_dir + 'rngs/finalize.rng']
-  }; /*}}}*/
-
   // Primitive Elements
   this.elements.call = { /*{{{*/
     'type' : 'primitive',
@@ -724,4 +696,35 @@ function WFAdaptorManifestation(adaptor) {
       'mouseout': self.events.mouseout,
     }//}}}
   }; /*}}}*/
+
+  // Abstract Elements
+  // * they may only have an illustrator (or other parts)
+  // * they HAVE TO have a parent
+  this.elements.callmanipulate = { /*{{{*/
+    'type'  : 'abstract',
+    'parent': 'call',
+    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
+    },//}}}
+  }; /*}}}*/
+  this.elements.choose_inclusive = { /*{{{*/
+    'type'  : 'abstract',
+    'parent': 'choose',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.choose_exclusive = { /*{{{*/
+    'type' : 'abstract',
+    'parent': 'choose',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.scripts = { /*{{{*/
+    'type' : 'abstract',
+    'description': [self.adaptor.theme_dir + 'rngs/update.rng',self.adaptor.theme_dir + 'rngs/finalize.rng']
+  }; /*}}}*/
+
 }

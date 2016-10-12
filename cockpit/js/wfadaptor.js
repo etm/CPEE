@@ -61,6 +61,21 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     illustrator.noarrow = manifestation.noarrow;
     description.source = manifestation.source;
     var deferreds = [];
+    // copy parent stuff
+    for(element in manifestation.elements) {
+      if (!manifestation.elements[element].description) {
+        console.log(element);
+        if (manifestation.elements[element].parent) { // take from parent if empty
+          manifestation.elements[element].description = manifestation.elements[manifestation.elements[element].parent].description;
+        }
+      }
+      if (!manifestation.elements[element].adaptor) {
+        if (manifestation.elements[element].parent) { // take from parent if empty
+          manifestation.elements[element].adaptor = manifestation.elements[manifestation.elements[element].parent].adaptor;
+        }
+      }
+    }
+    // doit
     for(element in manifestation.elements) {
       if (manifestation.elements[element].illustrator) {
         if (manifestation.elements[element].illustrator.svg) {
@@ -80,18 +95,9 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
       }
       if (manifestation.elements[element].description) {
         if ( typeof manifestation.elements[element].description === 'string' ) {
-          deferreds.push(
-            $.ajax({
-              type: "GET",
-              url: manifestation.elements[element].description,
-              context: element,
-              success: function(res){
-                manifestation.elements[this].description = $(res.documentElement);
-                description.elements[this] = manifestation.elements[this].description;
-              }
-            })
-          );
-        } else if ($.isArray(manifestation.elements[element].description)) {
+          manifestation.elements[element].description = [ manifestation.elements[element].description ];
+        }
+        if ($.isArray(manifestation.elements[element].description)) {
           _.each(manifestation.elements[element].description,function(val,ind){
             deferreds.push(
               $.ajax({
@@ -106,17 +112,9 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
             );
           });
         }
-      } else {
-        if (manifestation.elements[element].parent) { // take from parent if empty
-          description.elements[element] = manifestation.elements[manifestation.elements[element].parent].description;
-        }
       }
       if (manifestation.elements[element].adaptor) {
         self.elements[element] = manifestation.elements[element].adaptor;
-      } else {
-        if (manifestation.elements[element].parent) { // take from parent if empty
-          self.elements[element] = manifestation.elements[manifestation.elements[element].parent].adaptor;
-        }
       }
     }
     $.when.apply($, deferreds).then(function(x) {
