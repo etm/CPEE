@@ -133,7 +133,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.height = 40;
     this.width = 40;
     this.noarrow = [];
-    this.elements = {};
+    this.elements = {}; // the svgs
     this.svg = {};
     this.draw = {};
     // private
@@ -263,11 +263,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 // WfDescription:
 // Manages the description. Is is further able to add/remove elements from the controlflow description.
 function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
-  var self = this;
   // public variables
-  this.elements = {};
-  this.source = [];
+  this.elements = {}; // the rngs
+  this.source = null;
   // private variables
+  var self = this;
   var adaptor;
   var illustrator;
   var description;
