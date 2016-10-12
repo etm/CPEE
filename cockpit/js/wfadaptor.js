@@ -60,7 +60,6 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     manifestation = new WFAdaptorManifestation(self);
     illustrator.noarrow = manifestation.noarrow;
     description.source = manifestation.source;
-    console.log(description);
     var deferreds = [];
     for(element in manifestation.elements) {
       if (manifestation.elements[element].illustrator) {
@@ -134,7 +133,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.height = 40;
     this.width = 40;
     this.noarrow = [];
-    var elements = this.elements = {};
+    this.elements = {};
     var svg = this.svg = {};
     this.draw = {};
     // private
@@ -154,10 +153,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         '<circle cx="15" cy="15" r="14" class="unkown"/>' +
         '<text transform="translate(15,20)" class="normal">?</text>' +
       '</g>');
-    for(element in elements)
-      if(elements[element].svg) {
-        var sym = $X('<g xmlns="http://www.w3.org/2000/svg"/>').append(elements[element].svg.clone().children()); // append all children to symbol
-        $.each(elements[element].svg.attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
+    for(element in self.elements)
+      if(self.elements[element].svg) {
+        var sym = $X('<g xmlns="http://www.w3.org/2000/svg"/>').append(self.elements[element].svg.clone().children()); // append all children to symbol
+        $.each(self.elements[element].svg.attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
         svg.defs[element] = sym;
       }
   }  // }}}
@@ -173,7 +172,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // }}}
   // Helper Functions {{{
   var draw_symbol = this.draw.draw_symbol = function (tname, sym_name, id, title, row, col, group) { // {{{
-    if(elements[sym_name] == undefined || elements[sym_name].svg == undefined) sym_name = 'unknown';
+    if(self.elements[sym_name] == undefined || self.elements[sym_name].svg == undefined) sym_name = 'unknown';
     var g = $X('<g class="element" element-type="' + sym_name + '" element-id="' + id  + '" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
                   '<text class="super" transform="translate(30,8.4)">' +
                     '<tspan class="active">0</tspan>' +
