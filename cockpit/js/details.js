@@ -52,7 +52,7 @@ $(document).ready(function() {
     }
   }); //}}}
 
-  $(document).on('keyup','#dat_details input, #dat_details textarea, #dat_details select',function(e){ mark_main_save(); });
+  $(document).on('input','#dat_details input, #dat_details textarea, #dat_details select',function(e){ mark_main_save(); });
   $(document).on('change','#dat_details select',function(e){ mark_main_save(); });
 });
 
