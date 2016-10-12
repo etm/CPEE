@@ -329,7 +329,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       illustrator.set_svg(graph);
     }
 
-    if (svgid != undefined)
+    var newn = $('*[new=true]',description);
+    newn.removeAttr('new');
+
+    if (newn.attr('svg-id') != undefined)
+      adaptor.notify(newn.attr('svg-id'));
+    else if (svgid != undefined)
       adaptor.notify(svgid);
     else
       console.info('Something went horribly wrong');
