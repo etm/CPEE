@@ -138,6 +138,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     var svg = this.svg = {};
     this.draw = {};
     // private
+    var self = this;
     var adaptor = null;
   // }}}
   // Generic Functions {{{
@@ -263,8 +264,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 // WfDescription:
 // Manages the description. Is is further able to add/remove elements from the controlflow description.
 function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
-  // public variables
   var self = this;
+  // public variables
   this.elements = {};
   this.source = [];
   // private variables
@@ -339,12 +340,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.insert_after = function(new_node, target) { // {{{
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
-        var nn = source(v);
+        var nn = self.source(v);
         target.after(nn);
         nn.attr('new','true');
       });
     } else {
-      var nn = source(new_node);
+      var nn = self.source(new_node);
       target.after(nn);
       nn.attr('new','true');
     }
@@ -477,7 +478,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
         illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos, null, null, true);
       } else {
-        if ($.inArray(tname,noarrow) == -1)
+        if ($.inArray(tname,self.noarrow) == -1)
           for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos, null, null, true);
         else
           for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos, null, null, false);

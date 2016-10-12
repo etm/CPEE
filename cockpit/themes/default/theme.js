@@ -5,8 +5,8 @@ function WFAdaptorManifestation(adaptor) {
 
   this.noarrow = noarrow = ['alternative', 'otherwise'];
   this.source = source = function(rng) {
-    console.log('rrr');
-    var rngw = new RelaxNGui(rng,$('#relaxngworker'));
+    $('#relaxngworker').empty();
+    var rngw = new RelaxNGui(rng,$('#relaxngworker'),adaptor.description.context_eval);
     return rngw.save();
   };
 
@@ -73,8 +73,8 @@ function WFAdaptorManifestation(adaptor) {
     save[visid + '_target'] = { 'svgid': svgid, 'model': adaptor.description };
 
     tab.empty();
-    save[visid] = new RelaxNGui(adaptor.description.elements[$(node).attr('svg-type')],tab);
-    save[visid].content(node,adaptor.description.context_eval);
+    save[visid] = new RelaxNGui(adaptor.description.elements[$(node).attr('svg-type')],tab,adaptor.description.context_eval);
+    save[visid].content(node);
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
