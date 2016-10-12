@@ -133,7 +133,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     // public
     this.height = 40;
     this.width = 40;
-    var noarrow = this.noarrow = [];
+    this.noarrow = [];
     var elements = this.elements = {};
     var svg = this.svg = {};
     this.draw = {};
