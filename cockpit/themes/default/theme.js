@@ -9,7 +9,7 @@ function WFAdaptorManifestation(adaptor) {
   this.source = function(rng) {
     $('#relaxngworker').empty();
     var rngw = new RelaxNGui(rng,$('#relaxngworker'),self.adaptor.description.context_eval);
-    return rngw.save();
+    return $(rngw.save().documentElement);
   };
 
   // Events
