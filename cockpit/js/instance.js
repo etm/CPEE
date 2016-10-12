@@ -119,8 +119,8 @@ function check_subscription() { // {{{
       type: "PUT",
       url: url + "/notifications/subscriptions/" + subscription,
       data: (
-        'message-uid' + '=' + 'xxx' + '&' +
         sub_more + '&' +
+        'message-uid' + '=' + 'xxx' + '&' +
         'fingerprint-with-producer-secret' + '=' + 'xxx'
       )
     });
@@ -131,8 +131,8 @@ function check_subscription() { // {{{
       type: "PUT",
       url: url + "/notifications/subscriptions/" + subscription,
       data: (
-        'message-uid' + '=' + 'xxx' + '&' +
         sub_less + '&' +
+        'message-uid' + '=' + 'xxx' + '&' +
         'fingerprint-with-producer-secret' + '=' + 'xxx'
       )
     });
