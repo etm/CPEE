@@ -333,6 +333,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       adaptor.notify(newn.attr('svg-id'));
     else if (svgid != undefined)
       adaptor.notify(svgid);
+    else if (newn.parent('[svg-id]').length > 0)
+      adaptor.notify(newn.parent('[svg-id]').attr('svg-id'));
     else
       console.info('Something went horribly wrong');
   } // }}}
