@@ -1,4 +1,6 @@
 function WFAdaptorManifestation(adaptor) {
+  var self = this;
+
   this.adaptor = adaptor;
   this.elements = elements = {};
   this.events = events = {};
@@ -6,7 +8,7 @@ function WFAdaptorManifestation(adaptor) {
   this.noarrow = noarrow = ['alternative', 'otherwise'];
   this.source = source = function(rng) {
     $('#relaxngworker').empty();
-    var rngw = new RelaxNGui(rng,$('#relaxngworker'),adaptor.description.context_eval);
+    var rngw = new RelaxNGui(rng,$('#relaxngworker'),self.adaptor.description.context_eval);
     return rngw.save();
   };
 
@@ -15,7 +17,7 @@ function WFAdaptorManifestation(adaptor) {
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
     } else if(e.button == 2) { // right-click
-      var xml_node = adaptor.description.get_node_by_svg_id(svgid);
+      var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
       var group = null;
       var menu = {};
 
@@ -33,7 +35,7 @@ function WFAdaptorManifestation(adaptor) {
         icon.children('.rfill').css({'fill':'#ff7f7f','fill-opacity':'1'});
         menu['Delete'] = [{
           'label': 'Remove Element',
-          'function_call': adaptor.description.remove,
+          'function_call': self.adaptor.description.remove,
           'menu_icon': icon,
           'params': [null, xml_node]
         }];
@@ -42,7 +44,7 @@ function WFAdaptorManifestation(adaptor) {
         icon.children('.rfill:last').css({'fill':'#ff7f7f','fill-opacity':'1'});
         menu['Delete'].push({
           'label': 'Remove Scripts',
-          'function_call': adaptor.description.remove,
+          'function_call': self.adaptor.description.remove,
           'menu_icon': icon,
           'params': ['> finalize, > update', xml_node]
         });
@@ -52,7 +54,7 @@ function WFAdaptorManifestation(adaptor) {
     return false;
   } // }}}
   this.events.click = function(svgid, e) { // {{{
-    if (adaptor.description.get_node_by_svg_id(svgid).length == 0) {
+    if (self.adaptor.description.get_node_by_svg_id(svgid).length == 0) {
       return;
     }
 
@@ -68,12 +70,12 @@ function WFAdaptorManifestation(adaptor) {
 
     var visid = 'details';
     var tab   = $('#dat_' + visid);
-    var node  = adaptor.description.get_node_by_svg_id(svgid).get(0);
+    var node  = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
 
-    save[visid + '_target'] = { 'svgid': svgid, 'model': adaptor.description };
+    save[visid + '_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
 
     tab.empty();
-    save[visid] = new RelaxNGui(adaptor.description.elements[$(node).attr('svg-type')],tab,adaptor.description.context_eval);
+    save[visid] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
     save[visid].content(node);
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
@@ -93,28 +95,28 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.callmanipulate = { /*{{{*/
     'type'  : 'abstract',
     'parent': 'call',
-    'description': adaptor.theme_dir + 'rngs/callmanipulate.rng',
+    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
-      'svg': adaptor.theme_dir + 'symbols/callmanipulate.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
     },//}}}
   }; /*}}}*/
   this.elements.choose_inclusive = { /*{{{*/
     'type'  : 'abstract',
     'parent': 'choose',
     'illustrator': {//{{{
-      'svg': adaptor.theme_dir + 'symbols/choose_inclusive.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg'
     },//}}}
   };  /*}}}*/
   this.elements.choose_exclusive = { /*{{{*/
     'type' : 'abstract',
     'parent': 'choose',
     'illustrator': {//{{{
-      'svg': adaptor.theme_dir + 'symbols/choose_exclusive.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
     },//}}}
   };  /*}}}*/
   this.elements.scripts = { /*{{{*/
     'type' : 'abstract',
-    'description': [adaptor.theme_dir + 'rngs/update.rng',adaptor.theme_dir + 'rngs/finalize.rng']
+    'description': [self.adaptor.theme_dir + 'rngs/update.rng',self.adaptor.theme_dir + 'rngs/finalize.rng']
   }; /*}}}*/
 
   // Primitive Elements
@@ -135,16 +137,16 @@ function WFAdaptorManifestation(adaptor) {
           return'call';
         }
       },
-      'svg': adaptor.theme_dir + 'symbols/call.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/call.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'rngs/call.rng',
+    'description': self.adaptor.theme_dir + 'rngs/call.rng',
     'permissible_children': function(node) { //{{{
       if(node.children('finalize,update').length < 1)
         return [
          {'label': 'Scripts',
-          'function_call': adaptor.description.insert_last_into,
+          'function_call': self.adaptor.description.insert_last_into,
           'menu_icon': elements.callmanipulate.illustrator.svg.clone(),
-          'params': [adaptor.description.elements.scripts, node]}
+          'params': [self.adaptor.description.elements.scripts, node]}
         ];
       return [];
     }, //}}}
@@ -158,9 +160,9 @@ function WFAdaptorManifestation(adaptor) {
     'type' : 'primitive',
     'illustrator': {//{{{
       'endnodes' : 'this',
-      'svg': adaptor.theme_dir + 'symbols/manipulate.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/manipulate.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'rngs/manipulate.rng',
+    'description': self.adaptor.theme_dir + 'rngs/manipulate.rng',
     'permissible_children': function(node) { //{{{
       return [];
     }, //}}}
@@ -173,9 +175,9 @@ function WFAdaptorManifestation(adaptor) {
     'type' : 'primitive',
     'illustrator': {//{{{
       'endnodes' : 'this',
-      'svg': adaptor.theme_dir + 'symbols/escape.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/escape.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'rngs/escape.rng',
+    'description': self.adaptor.theme_dir + 'rngs/escape.rng',
     'permissible_children': function(node) { //{{{
       return [];
     }, //}}}
@@ -204,33 +206,33 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': adaptor.theme_dir + 'symbols/choose.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/choose.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'rngs/choose.rng',
+    'description': self.adaptor.theme_dir + 'rngs/choose.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if(node.get(0).tagName == 'choose') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       if(node.children('parallel_branch').length > 0) {
         return [{'label': 'Parallel Branch',
          'function_call': func,
          'menu_icon': elements.parallel_branch.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.parallel_branch, node]}];
+         'params': [self.adaptor.description.elements.parallel_branch, node]}];
       }
       var childs = [{'label': 'Alternative',
        'function_call': func,
        'menu_icon': elements.alternative.illustrator.svg.clone(),
-       'params': [adaptor.description.elements.alternative, node]}];
+       'params': [self.adaptor.description.elements.alternative, node]}];
       if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length)
         childs.push({'label': 'Otherwise',
          'function_call': func,
          'menu_icon': elements.otherwise.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.otherwise, node]});
+         'params': [self.adaptor.description.elements.otherwise, node]});
       if(node.parents('parallel').length > node.parents('parallel_branch').length)
         childs.push({'label': 'Parallel Branch',
          'function_call': func,
          'menu_icon': elements.parallel_branch.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.parallel_branch, node]});
+         'params': [self.adaptor.description.elements.parallel_branch, node]});
       return childs;
     }, //}}}
     'adaptor' : {//{{{
@@ -254,44 +256,44 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': adaptor.theme_dir + 'symbols/otherwise.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/otherwise.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'rngs/otherwise.rng',
+    'description': self.adaptor.theme_dir + 'rngs/otherwise.rng',
     'neverdelete': true,
     'permissible_children': function(node) { //{{{
       var func = null;
       var childs = null;
-      if(node.get(0).tagName == 'otherwise') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if(node.get(0).tagName == 'otherwise') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       return [
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': elements.callmanipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': elements.call.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.call, node]},
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
          'menu_icon': elements.manipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.manipulate, node]},
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
          'menu_icon': elements.parallel.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.parallel, node]},
+         'params': [self.adaptor.description.elements.parallel, node]},
         {'label': 'Choose',
          'function_call': func,
          'menu_icon': elements.choose.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.choose, node]},
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': elements.loop.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.loop, node]},
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': elements.critical.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.critical, node]}
+         'params': [self.adaptor.description.elements.critical, node]}
       ];
     }, //}}}
     'adaptor' : {//{{{
@@ -315,47 +317,47 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return false;
       },
-      'svg': adaptor.theme_dir + 'symbols/alternative.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/alternative.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'rngs/alternative.rng',
+    'description': self.adaptor.theme_dir + 'rngs/alternative.rng',
     'permissible_children': function(node) { //{{{
-      if(node.get(0).tagName == 'alternative') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if(node.get(0).tagName == 'alternative') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       if(node.parents('parallel').length > node.parents('parallel_branch').length && node.get(0).tagName == 'alternative') {
         return [{'label': 'Parallel Branch',
          'function_call': func,
          'menu_icon': elements.parallel_branch.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.parallel_branch, node]}];
+         'params': [self.adaptor.description.elements.parallel_branch, node]}];
       }
       return [
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': elements.callmanipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': elements.call.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.call, node]},
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
          'menu_icon': elements.manipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.manipulate, node]},
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
          'menu_icon': elements.parallel.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.parallel, node]},
+         'params': [self.adaptor.description.elements.parallel, node]},
         {'label': 'Choose',
          'function_call': func,
          'menu_icon': elements.choose.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.choose, node]},
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': elements.loop.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.loop, node]},
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': elements.critical.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.critical, node]}
+         'params': [self.adaptor.description.elements.critical, node]}
       ];
     }, //}}}
     'adaptor' : {//{{{
@@ -379,50 +381,50 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': adaptor.theme_dir + 'symbols/loop.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/loop.svg'
     },// }}}
-    'description': adaptor.theme_dir + 'rngs/loop.rng',
+    'description': self.adaptor.theme_dir + 'rngs/loop.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'loop') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if(node.get(0).tagName == 'loop') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       var childs = [
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': elements.callmanipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': elements.call.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.call, node]},
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Manipulate',
          'function_call': func,
          'menu_icon': elements.manipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.manipulate, node]},
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Choose',
          'function_call': func,
          'menu_icon': elements.choose.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.choose, node]},
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': elements.loop.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.loop, node]},
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': elements.critical.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.critical, node]}
+         'params': [self.adaptor.description.elements.critical, node]}
       ];
       if(node.parent('parallel').length > node.parent('parallel_branch').length) {
         childs.push({'label': 'Parallel Branch',
                      'function_call': func,
                      'menu_icon': elements.parallel_branch.illustrator.svg.clone(),
-                     'params': [adaptor.description.elements.parallel_branch, node]}
+                     'params': [self.adaptor.description.elements.parallel_branch, node]}
                     );
       } else {
         childs.push({'label': 'Parallel',
                      'function_call': func,
                      'menu_icon': elements.parallel.illustrator.svg.clone(),
-                     'params': [adaptor.description.elements.parallel, node]}
+                     'params': [self.adaptor.description.elements.parallel, node]}
                     );
       }
       return childs;
@@ -451,45 +453,45 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': adaptor.theme_dir + 'symbols/parallel.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/parallel.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'rngs/parallel.rng',
+    'description': self.adaptor.theme_dir + 'rngs/parallel.rng',
     'permissible_children': function(node) { //{{{
       var childs =  [
         {'label': 'Service Call with Scripts',
-         'function_call': adaptor.description.insert_last_into,
+         'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': elements.callmanipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
-         'function_call': adaptor.description.insert_last_into,
+         'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': elements.call.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.call, node]},
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Manipulate',
-         'function_call': adaptor.description.insert_last_into,
+         'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': elements.manipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.manipulate, node]},
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Choose',
-         'function_call': adaptor.description.insert_last_into,
+         'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': elements.choose.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.choose, node]},
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
-         'function_call': adaptor.description.insert_last_into,
+         'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': elements.loop.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.loop, node]},
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
-         'function_call': adaptor.description.insert_last_into,
+         'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': elements.critical.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.critical, node]},
+         'params': [self.adaptor.description.elements.critical, node]},
         {'label': 'Parallel Branch',
-         'function_call': adaptor.description.insert_last_into,
+         'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': elements.parallel_branch.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.parallel_branch, node]}
+         'params': [self.adaptor.description.elements.parallel_branch, node]}
       ];
       if(node.get(0).tagName != 'parallel')
         childs.push({'label': 'Parallel',
-           'function_call': adaptor.description.insert_last_into,
+           'function_call': self.adaptor.description.insert_last_into,
            'menu_icon': elements.parallel.illustrator.svg.clone(),
-           'params': [adaptor.description.elements.parallel, node]});
+           'params': [self.adaptor.description.elements.parallel, node]});
       return childs;
     }, //}}}
     'adaptor' : {//{{{
@@ -515,49 +517,49 @@ function WFAdaptorManifestation(adaptor) {
         if($(node).parents('parallel').first().children(':not(parallel_branch)').length > 0) return true;
         return false;
       },
-      'svg': adaptor.theme_dir + 'symbols/parallel_branch.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_branch.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'rngs/parallel_branch.rng',
+    'description': self.adaptor.theme_dir + 'rngs/parallel_branch.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
       var childs = null;
-      if(node.get(0).tagName == 'parallel_branch') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if(node.get(0).tagName == 'parallel_branch') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       childs =  [
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': elements.callmanipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': elements.call.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.call, node]},
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
          'menu_icon': elements.manipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.manipulate, node]},
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
          'menu_icon': elements.parallel.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.parallel, node]},
+         'params': [self.adaptor.description.elements.parallel, node]},
         {'label': 'Choose',
          'function_call': func,
          'menu_icon': elements.choose.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.choose, node]},
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': elements.loop.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.loop, node]},
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': elements.critical.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.critical, node]},
+         'params': [self.adaptor.description.elements.critical, node]},
       ];
       if(node.parents('choose').length > node.parents('alternative, otherwise').length && node.get(0).tagName == 'parallel_branch') {
         return [{'label': 'Alternative',
          'function_call': func,
          'menu_icon': elements.alternative.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.alternative, node]}];
+         'params': [self.adaptor.description.elements.alternative, node]}];
       }
       return childs;
     }, //}}}
@@ -583,42 +585,42 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': adaptor.theme_dir + 'symbols/critical.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/critical.svg'
     },//}}}
-    'description': adaptor.theme_dir + 'rngs/critical.rng',
+    'description': self.adaptor.theme_dir + 'rngs/critical.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'critical') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if(node.get(0).tagName == 'critical') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       return [
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': elements.callmanipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': elements.call.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.call, node]},
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
          'menu_icon': elements.manipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.manipulate, node]},
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
          'menu_icon': elements.parallel.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.parallel, node]},
+         'params': [self.adaptor.description.elements.parallel, node]},
         {'label': 'Choose',
          'function_call': func,
          'menu_icon': elements.choose.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.choose, node]},
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': elements.loop.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.loop, node]},
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': elements.critical.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.critical, node]},
+         'params': [self.adaptor.description.elements.critical, node]},
       ];
     }, //}}}
     'adaptor' : {//{{{
@@ -645,11 +647,11 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': null
     },//}}}
-    'description': adaptor.theme_dir + 'rngs/group.rng',
+    'description': self.adaptor.theme_dir + 'rngs/group.rng',
     'permissible_children': function(node) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'group') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if(node.get(0).tagName == 'group') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       return [
       ];
     }, //}}}
@@ -674,42 +676,42 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift' : function(node) {
         return true;
       },
-      'svg': adaptor.theme_dir + 'symbols/start.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/start.svg'
     },//}}}
     'description': null,
     'permissible_children': function(node) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'description') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if(node.get(0).tagName == 'description') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       return [
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': elements.callmanipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': elements.call.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.call, node]},
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script Task',
          'function_call': func,
          'menu_icon': elements.manipulate.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.manipulate, node]},
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
          'menu_icon': elements.parallel.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.parallel, node]},
+         'params': [self.adaptor.description.elements.parallel, node]},
         {'label': 'Choose',
          'function_call': func,
          'menu_icon': elements.choose.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.choose, node]},
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': elements.loop.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.loop, node]},
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': elements.critical.illustrator.svg.clone(),
-         'params': [adaptor.description.elements.critical, node]}
+         'params': [self.adaptor.description.elements.critical, node]}
       ];
     }, //}}}
     'adaptor' : {//{{{
