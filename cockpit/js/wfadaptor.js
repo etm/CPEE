@@ -131,8 +131,8 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
 function WfIllustrator(wf_adaptor) { // View  {{{
   // Variable {{{
     // public
-    var height = this.height = 40;
-    var width = this.width = 40;
+    this.height = 40;
+    this.width = 40;
     var noarrow = this.noarrow = [];
     var elements = this.elements = {};
     var svg = this.svg = {};
@@ -167,14 +167,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
-    svg.container.attr({'height': (graph.max.row+0.3)*height, 'width':(graph.max.col+0.65)*width});
+    svg.container.attr({'height': (graph.max.row+0.3)*self.height, 'width':(graph.max.col+0.65)*self.width});
     svg.container.append(graph.svg);
   } // }}}
   // }}}
   // Helper Functions {{{
   var draw_symbol = this.draw.draw_symbol = function (tname, sym_name, id, title, row, col, group) { // {{{
     if(elements[sym_name] == undefined || elements[sym_name].svg == undefined) sym_name = 'unknown';
-    var g = $X('<g class="element" element-type="' + sym_name + '" element-id="' + id  + '" transform="translate(' + String((col*width)-((width*0.39))) + ',' + String(row*height-((height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
+    var g = $X('<g class="element" element-type="' + sym_name + '" element-id="' + id  + '" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
                   '<text class="super" transform="translate(30,8.4)">' +
                     '<tspan class="active">0</tspan>' +
                     '<tspan class="colon">,</tspan>' +
@@ -196,17 +196,17 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return g;
   } // }}}
   var draw_border = this.draw.draw_border = function(id, p1, p2, group) { // {{{
-    group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*width + '" ' +
-        'y="' + (p1.row-0.80)*height + '" ' +
-        'width="' + ((p2.col+1.00)-p1.col)*width + '" ' +
-        'height="' + ((p2.row+1.00)-p1.row)*height +'" ' +
+    group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*self.width + '" ' +
+        'y="' + (p1.row-0.80)*self.height + '" ' +
+        'width="' + ((p2.col+1.00)-p1.col)*self.width + '" ' +
+        'height="' + ((p2.row+1.00)-p1.row)*self.height +'" ' +
         'class="block" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_tile = this.draw.draw_tile = function(id, p1, p2, group) { // {{{
-    group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*width + '" ' +
-        'y="' + (p1.row-0.80)*height + '" ' +
-        'width="' + ((p2.col+1.00)-p1.col)*width + '" ' +
-        'height="' + ((p2.row+1.00)-p1.row)*height +'" ' +
+    group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*self.width + '" ' +
+        'y="' + (p1.row-0.80)*self.height + '" ' +
+        'width="' + ((p2.col+1.00)-p1.col)*self.width + '" ' +
+        'height="' + ((p2.row+1.00)-p1.row)*self.height +'" ' +
         'class="tile" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_connection = this.draw.draw_connection = function(group, start, end, max_line, num_lines, arrow) { // {{{
@@ -217,36 +217,36 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     else
       line = $X('<path xmlns="http://www.w3.org/2000/svg" class="ourline"/>');
     if (end['row']-start['row'] == 0 || end['col']-start['col'] == 0) { // straight line
-      line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
-                                    String(end['col']*width) + "," + String(end['row']*height-15)
+      line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
+                                    String(end['col']*self.width) + "," + String(end['row']*self.height-15)
       );
     } else if (end['row']-start['row'] > 0) { // downwards
       if (end['col']-start['col'] > 0) {// left - right
-        line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
-                                      String(start['col']*width+14) + "," + String((end['row']-1)*height) +" "+ // first turn of hotizontal-line going away from node
-                                      String(end['col']*width) + "," + String((end['row']-1)*height) +" "+
-                                      String(end['col']*width) + "," + String(end['row']*height-15)
+        line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
+                                      String(start['col']*self.width+14) + "," + String((end['row']-1)*self.height) +" "+ // first turn of hotizontal-line going away from node
+                                      String(end['col']*self.width) + "," + String((end['row']-1)*self.height) +" "+
+                                      String(end['col']*self.width) + "," + String(end['row']*self.height-15)
         );
       } else { // right - left
-        line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
-                                      String(start['col']*width) + "," + String(end['row']*height-35) +" "+
-                                      String(end['col']*width+14) + "," + String(end['row']*height-35) +" "+ // last turn of horizontal-line going into the node
-                                      String(end['col']*width) + "," + String(end['row']*height-15)
+        line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
+                                      String(start['col']*self.width) + "," + String(end['row']*self.height-35) +" "+
+                                      String(end['col']*self.width+14) + "," + String(end['row']*self.height-35) +" "+ // last turn of horizontal-line going into the node
+                                      String(end['col']*self.width) + "," + String(end['row']*self.height-15)
         );
       }
     } else if(end['row']-start['row'] < 0) { // upwards
       if(num_lines > 1) {// ??? no idea
-        line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
-                                      String(start['col']*width) + "," + String((max_line-1)*height+5) +" "+
-                                      String(end['col']*width+20) + "," + String((max_line-1)*height+5) +" "+
-                                      String(end['col']*width+20) + "," + String(end['row']*height+25)+" "+
-                                      String(end['col']*width) + "," + String(end['row']*height-15)
+        line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
+                                      String(start['col']*self.width) + "," + String((max_line-1)*self.height+5) +" "+
+                                      String(end['col']*self.width+20) + "," + String((max_line-1)*self.height+5) +" "+
+                                      String(end['col']*self.width+20) + "," + String(end['row']*self.height+25)+" "+
+                                      String(end['col']*self.width) + "," + String(end['row']*self.height-15)
         );
       } else {
-        line.attr("d", "M " + String(start['col']*width) + "," + String(start['row']*height-15) +" "+
-                                      String(end['col']*width+20) + "," + String(start['row']*height-15) +" "+
-                                      String(end['col']*width+20) + "," + String(end['row']*height+25)+" "+
-                                      String(end['col']*width) + "," + String(end['row']*height-15)
+        line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
+                                      String(end['col']*self.width+20) + "," + String(start['row']*self.height-15) +" "+
+                                      String(end['col']*self.width+20) + "," + String(end['row']*self.height+25)+" "+
+                                      String(end['col']*self.width) + "," + String(end['row']*self.height-15)
         );
       }
     }
@@ -478,7 +478,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
         illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos, null, null, true);
       } else {
-        if ($.inArray(tname,self.noarrow) == -1)
+        if ($.inArray(tname,illustrator.noarrow) == -1)
           for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos, null, null, true);
         else
           for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos, null, null, false);
