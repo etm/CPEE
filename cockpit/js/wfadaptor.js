@@ -64,7 +64,6 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     // copy parent stuff
     for(element in manifestation.elements) {
       if (!manifestation.elements[element].description) {
-        console.log(element);
         if (manifestation.elements[element].parent) { // take from parent if empty
           manifestation.elements[element].description = manifestation.elements[manifestation.elements[element].parent].description;
         }

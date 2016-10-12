@@ -34,6 +34,11 @@ $(document).ready(function() {
           nnew.attr('svg-id',svgid);
           nnew.attr('trans-xmlns','http://cpee.org/ns/description/1.0');
 
+      if ($('*[svg-id]',node).length > 0) {
+        // TODO maybe not all children. Maybe only thingies that have svg-id but nothing with svg-id between it and node.
+        nnew.append(node.children());
+      }
+
       var ntxt = nnew.serializeXML();
           ntxt = ntxt.replace(/trans-xmlns/,'xmlns');
 
