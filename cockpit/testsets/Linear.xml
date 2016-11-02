@@ -3,6 +3,11 @@
   <positions><!--{{{-->
     <a1>after</a1>
   </positions><!--}}}-->
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Linear</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+    <theme>default</theme>
+  </attributes>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <dataelements><!--{{{-->
     <x/>

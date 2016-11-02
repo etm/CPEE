@@ -3,6 +3,7 @@ $(document).ready(function() {
   $.ajax({
     type: "GET",
     url: "rngs/dataelements.rng",
+    dataType: "xml",
     success: function(rng){
       save['dataelements'] = new RelaxNGui(rng,$('#dat_dataelements'));
     }
@@ -10,6 +11,7 @@ $(document).ready(function() {
   // hook up endpoints with relaxngui //{{{
   $.ajax({
     type: "GET",
+    dataType: "xml",
     url: "rngs/endpoints.rng",
     success: function(rng){
       save['endpoints'] = new RelaxNGui(rng,$('#dat_endpoints'));
@@ -18,6 +20,7 @@ $(document).ready(function() {
   // hook up attributes with relaxngui //{{{
   $.ajax({
     type: "GET",
+    dataType: "xml",
     url: "rngs/attributes.rng",
     success: function(rng){
       save['attributes'] = new RelaxNGui(rng,$('#dat_attributes'));
