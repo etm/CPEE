@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<testset>
+  <handlers>
+    <handler url="http://solo.wst.univie.ac.at:9299/log">
+      <events topic="activity">calling,done</events>
+    </handler>
+  </handlers>
+  <dataelements/>
+  <handlerwrapper>LogHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <start xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://solo.wst.univie.ac.at/log.php</start>
+  </endpoints>
+  <positions/>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a0" endpoint="start">
+        <parameters>
+          <label>"Task 1"</label>
+          <method/>
+          <type>:task</type>
+          <mid>'sid-7F616193-69F1-4097-A107-FC87404AE047'</mid>
+          <arguments/>
+        </parameters>
+        <finalize output="result"> data.x = result["n"]</finalize>
+      </call>
+      <choose mode="exclusive">
+        <alternative condition="data.x >= 100" language="text/javascript">
+          <call id="a11" endpoint="timeout">
+            <parameters>
+              <label>"Decision 2"</label>
+              <method/>
+              <type>:task</type>
+              <mid>'sid-F9FF9265-DAD9-4525-86DE-116C3F1FA44E'</mid>
+              <arguments>
+                <timeout>2</timeout>
+              </arguments>
+            </parameters>
+          </call>
+        </alternative>
+        <alternative condition="100 > data.x" language="text/javascript">
+          <call id="a10" endpoint="timeout">
+            <parameters>
+              <label>"Decision 1"</label>
+              <method/>
+              <type>:task</type>
+              <mid>'sid-603319C1-A371-4D9F-94DA-D9800C2E205F'</mid>
+              <arguments>
+                <timeout>2</timeout>
+              </arguments>
+            </parameters>
+          </call>
+        </alternative>
+      </choose>
+      <call id="a1" endpoint="timeout">
+        <parameters>
+          <label>"Task 2"</label>
+          <method/>
+          <type>:task</type>
+          <mid>'sid-B93496AA-15AA-4239-B301-8899F47204EE'</mid>
+              <arguments>
+                <timeout>2</timeout>
+              </arguments>
+        </parameters>
+      </call>
+      <parallel wait="-1">
+        <parallel_branch>
+          <call id="a4" endpoint="timeout">
+            <parameters>
+              <label>"P1"</label>
+              <method/>
+              <type>:task</type>
+              <mid>'sid-B410A048-6485-47AF-AA9A-3F570EC9799A'</mid>
+              <arguments>
+                <timeout>2</timeout>
+              </arguments>
+            </parameters>
+          </call>
+        </parallel_branch>
+        <parallel_branch>
+          <call id="a5" endpoint="timeout">
+            <parameters>
+              <label>"P2"</label>
+              <method/>
+              <type>:task</type>
+              <mid>'sid-E0C9C538-5D05-4578-8156-3947A40146A6'</mid>
+              <arguments>
+                <timeout>2</timeout>
+              </arguments>
+            </parameters>
+          </call>
+        </parallel_branch>
+      </parallel>
+      <call id="a7" endpoint="timeout">
+        <parameters>
+          <label>"Task 3"</label>
+          <method/>
+          <type>:task</type>
+          <mid>'sid-4692423B-174F-4460-B034-19E0624C585E'</mid>
+              <arguments>
+                <timeout>2</timeout>
+              </arguments>
+        </parameters>
+      </call>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">s</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Signavio</modeltype>
+  </attributes>
+</testset>
