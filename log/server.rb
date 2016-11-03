@@ -15,7 +15,7 @@ class Logging < Riddl::Implementation #{{{
   def response
     topic = @p[1].value
     event = @p[2].value
-    if(topic == 'activity' && (event=='done' || event == 'calling')) 
+    if(topic == 'activity' && (event=='done' || event == 'calling'))
       log_dir = ::File.dirname(__FILE__) + "/logs"
       instancenr = @h['CPEE_INSTANCE'].split('/').last
       notification = JSON.parse(@p[3].value)
@@ -35,7 +35,6 @@ class Logging < Riddl::Implementation #{{{
         event = trace.add "event"
         event.add 'string', :key => "concept:name", :value => log_hash["label"]
         event.add 'string', :key => "lifecycle:transition", :value => event=='done'?"complete":"start"
-        pp log_hash
         if log_hash.has_key?("data_send")
           list = event.add 'list', :key => "data_send"
           log_hash["data_send"].each do |k,v|
@@ -57,27 +56,31 @@ class Logging < Riddl::Implementation #{{{
             log_hash["data_received"].each{|e| list.add 'string', :key => e.keys[0] , :value => e.values[0]}
           end
         end
-        event.add 'date', :key => "time:timestamp", :value => Time.now unless time_added                                                                                
+        event.add 'date', :key => "time:timestamp", :value => Time.now unless time_added
       end
     else
-      pp "Something wrong" 
+      pp "Something wrong"
     end
 
 
 
 
   end
-end  #}}} 
+end  #}}}
 
 
-Riddl::Server.new(::File.dirname(__FILE__) + '/log.xml', :host => "solo.wst.univie.ac.at", :port => 9299) do #{{{
+Riddl::Server.new(::File.dirname(__FILE__) + '/log.xml', :host => "cpee.org", :port => 9299) do #{{{
   accessible_description true
   cross_site_xhr true
+  log_path = "/home/demo/Projects/cpee-helpers/log/logs"
 
-
-  interface 'events' do                                                                                                                                                                    
+  interface 'events' do
 	    run Logging if post 'event'
 	    #run CB if post 'vote'
   end
- 
+  interface 'logoverlay' do |r|
+    run Riddl::Utils::FileServe, log_path + r[:h]["RIDDL_DECLARATION_PATH"]+ ".xes","text/xml" if get
+  end
+
+
 end.loop! #}}}
