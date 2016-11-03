@@ -141,9 +141,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_container = function(con) { // {{{
     self.svg.container = con;
     self.svg.container.append($X('<defs xmlns="http://www.w3.org/2000/svg">' +
-        '<marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
-          '<path d="m 2 2 l 6 3 l -6 3 z"/>' +
-        '</marker>' +
+      '  <marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
+      '    <path d="m 2 2 l 6 3 l -6 3 z"/>' +
+      '  </marker>' +
       '</defs>'));
     self.svg.defs = {};
     self.svg.defs['unknown'] = $X('<g xmlns="http://www.w3.org/2000/svg" class="unknown">' +

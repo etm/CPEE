@@ -57,6 +57,8 @@ function WFAdaptorManifestation(adaptor) {
     if (self.adaptor.description.get_node_by_svg_id(svgid).length == 0) {
       return;
     }
+    $('g.activities').removeClass('clicked');
+    $(e.target).parent('g.activities').addClass('clicked');
 
     if ($('#state').text() != 'finished')
       $('#main ui-behind button').show();

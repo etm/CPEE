@@ -1,0 +1,36 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="black-glow">
+      <feColorMatrix type="matrix" values=
+  			"0 0 0 0   0
+  			 0 0 0 0   0
+  			 0 0 0 0   0
+  			 0 0 0 1   0"/>
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  	<filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow" width="1.5" height="1.5" x="-.25" y="-.25">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" result="blur"/>
+      <feColorMatrix result="bluralpha" type="matrix" values=
+              "1 0 0 0   0
+               0 1 0 0   0
+               0 0 1 0   0
+               0 0 0 0.4 0 "/>
+      <feOffset in="bluralpha" dx="3" dy="3" result="offsetBlur"/>
+      <feMerge>
+          <feMergeNode in="offsetBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>
