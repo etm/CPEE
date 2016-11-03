@@ -81,6 +81,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
           deferreds.push(
             $.ajax({
               type: "GET",
+              dataType: "xml",
               url: manifestation.elements[element].illustrator.svg,
               context: element,
               success: function(res){
@@ -101,6 +102,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
             deferreds.push(
               $.ajax({
                 type: "GET",
+                dataType: "xml",
                 url: val,
                 context: element,
                 success: function(res){
