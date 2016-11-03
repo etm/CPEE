@@ -12,7 +12,7 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
-class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
+class LogHandlerWrapper < WEEL::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @controller = arguments[0]
     @log_hash = {}
@@ -33,7 +33,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def activity_handle(passthrough, parameters) # {{{
-    @controller.notify("activity/calling", :instance => @controller.instance, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
+    @controller.notify("activity/calling", :instance => @controller.instance, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :log_hash => @log_hash)
     instancenr=@controller.instance.split('/').last
     instance_dir = @controller.instance_variable_get(:@opts)[:instances]
     unless File.exist?(instance_dir+'/'+instancenr+'/log.xes')
@@ -110,7 +110,7 @@ class PromiseHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def inform_activity_done # {{{
-    @controller.notify("activity/done", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position)
+    @controller.notify("activity/done", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position,:log_hash => @log_hash)
     p "log"
     p @log_hash
     time_added=false
