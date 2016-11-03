@@ -2,4 +2,5 @@ server/instances
 .stats
 .whitelist.old
 .statsrun
+log/logs/*
 pkg
