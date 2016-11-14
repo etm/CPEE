@@ -6,7 +6,7 @@
   			 0 0 0 0   0
   			 0 0 0 0   0
   			 0 0 0 1   0"/>
-      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
       <feMerge>
         <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>

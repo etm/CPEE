@@ -293,7 +293,7 @@ function adaptor_init(url,theme,dslx) {
         url: url + "/properties/values/description/",
 			 	data: ({'content': '<content>' + graphrealization.get_description() + '</content>'})
       });
-      manifestation.events.click(svgid,undefined);
+      // manifestation.events.click(svgid,undefined);
     };
     monitor_instance_pos();
   });
