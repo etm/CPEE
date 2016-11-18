@@ -39,8 +39,8 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   // }}}
 
   // helper funtions
-  this.set_description = function(desc) { // public {{{
-    this.description.set_description(desc);
+  this.set_description = function(desc,auto_update) { // public {{{
+    this.description.set_description(desc,auto_update);
   } // }}}
   this.get_description = function() { // public {{{
     return description.get_description();
@@ -168,6 +168,12 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.svg.container.attr({'height': (graph.max.row+0.3)*self.height, 'width':(graph.max.col+0.65)*self.width});
     self.svg.container.append(graph.svg);
   } // }}}
+  this.get_node_by_svg_id = function(svg_id) { // {{{
+    return $('[element-id = \'' + svg_id + '\'] g.activities', self.svg.container);
+  } // }}}
+  this.get_nodes = function() { // {{{
+    return $('g.activities', self.svg.container);
+  } // }}}
   // }}}
   // Helper Functions {{{
   var draw_symbol = this.draw.draw_symbol = function (tname, sym_name, id, title, row, col, group) { // {{{
@@ -275,7 +281,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
   // Generic Functions {{{
   this.set_description = function(desc, auto_update) { // public {{{
-    if(auto_update != undefined)  update_illustrator = auto_update;
+    if(auto_update != undefined) update_illustrator = auto_update;
     if(typeof desc == "string") {
       description = $($.parseXML(desc));
     } else if(desc instanceof jQuery) {

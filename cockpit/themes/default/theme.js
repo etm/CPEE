@@ -53,12 +53,16 @@ function WFAdaptorManifestation(adaptor) {
     }
     return false;
   } // }}}
-  this.events.click = function(svgid, e) { // {{{
+  this.events.click = function(svgid) { // {{{
     if (self.adaptor.description.get_node_by_svg_id(svgid).length == 0) {
       return;
     }
-    $('g.activities').removeClass('clicked');
-    $(e.target).parent('g.activities').addClass('clicked');
+    self.adaptor.illustrator.get_nodes().removeClass('clicked');
+
+    var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+    if (vtarget.length > 0) {
+      vtarget.addClass('clicked');
+    }
 
     if ($('#state').text() != 'finished')
       $('#main ui-behind button').show();
