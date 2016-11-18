@@ -69,8 +69,6 @@ function WFAdaptorManifestation(adaptor) {
       vtarget.addClass('clicked');
     }
 
-    console.log(svgid);
-
     if ($('#state').text() != 'finished')
       $('#main ui-behind button').show();
     if ($('#main ui-behind button').hasClass('highlight')) {
@@ -83,9 +81,11 @@ function WFAdaptorManifestation(adaptor) {
 
     var node  = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
 
-    save[visid + '_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
-    save[visid] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
-    save[visid].content(node);
+    if (self.adaptor.description.elements[$(node).attr('svg-type')]) {
+      save[visid + '_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
+      save[visid] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
+      save[visid].content(node);
+    }
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
