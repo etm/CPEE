@@ -30,7 +30,7 @@ function WFAdaptorManifestation(adaptor) {
         if(group.length > 0) menu['Insert after'] = group;
       }
 
-      if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete)
+      if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
         var icon =  self.elements[xml_node.get(0).tagName].illustrator.svg.clone();
         icon.children('.rfill').css({'fill':'#ff7f7f','fill-opacity':'1'});
         menu['Delete'] = [{
@@ -39,6 +39,7 @@ function WFAdaptorManifestation(adaptor) {
           'menu_icon': icon,
           'params': [null, xml_node]
         }];
+      }
       if($('> finalize, > update', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
         var icon =  self.elements.callmanipulate.illustrator.svg.clone();
         icon.children('.rfill:last').css({'fill':'#ff7f7f','fill-opacity':'1'});
@@ -54,6 +55,10 @@ function WFAdaptorManifestation(adaptor) {
     return false;
   } // }}}
   this.events.click = function(svgid) { // {{{
+    var visid = 'details';
+    var tab   = $('#dat_' + visid);
+        tab.empty();
+
     if (self.adaptor.description.get_node_by_svg_id(svgid).length == 0) {
       return;
     }
@@ -63,6 +68,8 @@ function WFAdaptorManifestation(adaptor) {
     if (vtarget.length > 0) {
       vtarget.addClass('clicked');
     }
+
+    console.log(svgid);
 
     if ($('#state').text() != 'finished')
       $('#main ui-behind button').show();
@@ -74,13 +81,9 @@ function WFAdaptorManifestation(adaptor) {
         return;
     }
 
-    var visid = 'details';
-    var tab   = $('#dat_' + visid);
     var node  = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
 
     save[visid + '_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
-
-    tab.empty();
     save[visid] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
     save[visid].content(node);
   } // }}}
