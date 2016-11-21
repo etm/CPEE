@@ -9,7 +9,12 @@ function WFAdaptorManifestation(adaptor) {
   this.source = function(rng) {
     $('#relaxngworker').empty();
     var rngw = new RelaxNGui(rng,$('#relaxngworker'),self.adaptor.description.context_eval);
-    return $(rngw.save().documentElement);
+    var nnew = $(rngw.save().documentElement);
+        nnew.attr('trans-xmlns','http://cpee.org/ns/description/1.0');
+    var ntxt = nnew.serializeXML();
+    ntxt = ntxt.replace(/trans-xmlns/,'xmlns');
+
+    return($X(ntxt));
   };
 
   // Events

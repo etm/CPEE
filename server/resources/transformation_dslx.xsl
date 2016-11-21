@@ -49,17 +49,12 @@
       <xsl:text>, parameters: { </xsl:text>
       <xsl:apply-templates select="d:parameters"/>
       <xsl:text> }</xsl:text>
-      <xsl:choose>
-        <xsl:when test="count(d:finalize | d:update)=2">
-          <xsl:text>, finalize: &lt;&lt;-END, update: &lt;&lt;-END</xsl:text>
-        </xsl:when>
-        <xsl:when test="d:finalize">
-          <xsl:text>, finalize: &lt;&lt;-END</xsl:text>
-        </xsl:when>
-        <xsl:when test="d:update">
-          <xsl:text>, update: &lt;&lt;-END</xsl:text>
-        </xsl:when>
-      </xsl:choose>
+      <xsl:if test="d:finalize and d:finalize/text()">
+        <xsl:text>, finalize: &lt;&lt;-END</xsl:text>
+      </xsl:if>
+      <xsl:if test="d:update and d:update/text()">
+        <xsl:text>, update: &lt;&lt;-END</xsl:text>
+      </xsl:if>
       <xsl:apply-templates select="d:finalize" mode="part-of-call">
         <xsl:with-param name="myspace">
           <xsl:value-of select="$myspace"/>
@@ -258,37 +253,39 @@
     <xsl:call-template name="print-newline"/>
   </xsl:template>
   <xsl:template match="d:otherwise">
-    <xsl:param name="myspace"/>
-    <xsl:call-template name="print-space">
-      <xsl:with-param name="i">1</xsl:with-param>
-      <xsl:with-param name="count">
-        <xsl:value-of select="$myspace+$myspacemultiplier"/>
-      </xsl:with-param>
-    </xsl:call-template>
-    <xsl:text>otherwise </xsl:text>
-    <xsl:for-each select="@*[not(name()='language' or name()='condition' or name()='svg-label')]">
-      <xsl:if test="position() &gt;1">, </xsl:if>
-      <xsl:text>:</xsl:text>
-      <xsl:value-of select="name(.)"/>
-      <xsl:text> => "</xsl:text>
-      <xsl:value-of select="."/>
-      <xsl:text>"</xsl:text>
-    </xsl:for-each>
-    <xsl:text> do</xsl:text>
-    <xsl:call-template name="print-newline"/>
-    <xsl:apply-templates>
-      <xsl:with-param name="myspace">
-        <xsl:value-of select="$myspace+$myspacemultiplier"/>
-      </xsl:with-param>
-    </xsl:apply-templates>
-    <xsl:call-template name="print-space">
-      <xsl:with-param name="i">1</xsl:with-param>
-      <xsl:with-param name="count">
-        <xsl:value-of select="$myspace+$myspacemultiplier"/>
-      </xsl:with-param>
-    </xsl:call-template>
-    <xsl:text>end</xsl:text>
-    <xsl:call-template name="print-newline"/>
+    <xsl:if test="text()">
+      <xsl:param name="myspace"/>
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>otherwise </xsl:text>
+      <xsl:for-each select="@*[not(name()='language' or name()='condition' or name()='svg-label')]">
+        <xsl:if test="position() &gt;1">, </xsl:if>
+        <xsl:text>:</xsl:text>
+        <xsl:value-of select="name(.)"/>
+        <xsl:text> => "</xsl:text>
+        <xsl:value-of select="."/>
+        <xsl:text>"</xsl:text>
+      </xsl:for-each>
+      <xsl:text> do</xsl:text>
+      <xsl:call-template name="print-newline"/>
+      <xsl:apply-templates>
+        <xsl:with-param name="myspace">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:apply-templates>
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>end</xsl:text>
+      <xsl:call-template name="print-newline"/>
+    </xsl:if>
   </xsl:template>
   <xsl:template match="d:parallel_branch">
     <xsl:param name="myspace"/>

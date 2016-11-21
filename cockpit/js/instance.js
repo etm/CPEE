@@ -532,7 +532,7 @@ function save_testset() {// {{{
                       var pars = $X('<description/>');
                       pars.append($(res.documentElement));
                       testset.append(pars);
-                      pars = $X('<transformation><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation>');
+                      pars = $X("<transformation>\n<description type='copy'/>\n<dataelements type='none'/>\n<endpoints type='none'/>\n</transformation>");
                       testset.append(pars);
                       $.ajax({
                         type: "GET",
