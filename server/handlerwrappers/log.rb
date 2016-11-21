@@ -13,6 +13,15 @@
 # <http://www.gnu.org/licenses/>.
 
 class LogHandlerWrapper < WEEL::HandlerWrapperBase
+  LOGTEMPLATE = <<-END
+    <log xmlns="http://www.xes-standard.org/" xes.version="1.0" xes.features="nested-attributes" openxes.version="1.0RC7">
+      <extension name="Time" prefix="time" uri="http://www.xes-standard.org/time.xesext"/>
+      <extension name="Concept" prefix="concept" uri="http://www.xes-standard.org/concept.xesext"/>
+      <extension name="Organizational" prefix="org" uri="http://www.xes-standard.org/org.xesext"/>
+      <trace/>
+    </log>
+  END
+
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @controller = arguments[0]
     @log_hash = {}
@@ -23,12 +32,10 @@ class LogHandlerWrapper < WEEL::HandlerWrapperBase
     @handler_returnValue = nil
     instancenr=@controller.instance.split('/').last
     instance_dir = @controller.instance_variable_get(:@opts)[:instances]
-    unless File.exist?(instance_dir+'/'+instancenr+'/log.xes')
-      FileUtils.cp(instance_dir+'/template.xes', instance_dir+'/'+instancenr+'/log.xes')
-      XML::Smart.modify(instance_dir+'/'+instancenr+'/log.xes') do |xml|
-        trace = xml.find("/xmlns:log/xmlns:trace").first
-        trace.add 'string', :key => "concept:name", :value => "Instance #{instancenr}"
-      end
+
+    XML::Smart.modify(instance_dir+'/'+instancenr+'/log.xes',LOGTEMPLATE) do |xml|
+      trace = xml.find("/xmlns:log/xmlns:trace").first
+      trace.add 'string', :key => "concept:name", :value => "Instance #{instancenr}"
     end
   end # }}}
 
@@ -111,8 +118,6 @@ class LogHandlerWrapper < WEEL::HandlerWrapperBase
 
   def inform_activity_done # {{{
     @controller.notify("activity/done", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position,:log_hash => @log_hash)
-    p "log"
-    p @log_hash
     time_added=false
     XML::Smart.modify(@controller.instance_variable_get(:@opts)[:instances]+'/'+@controller.instance.split('/').last+'/log.xes') do |xml|
       trace = xml.find("/xmlns:log/xmlns:trace").first
@@ -231,7 +236,6 @@ class LogHandlerWrapper < WEEL::HandlerWrapperBase
 
   def callback(result=nil,options={})
     result,notify_result = simplify_result(result)
-    pp result
     @controller.notify("activity/change", :instance => @controller.instance, :activity => @handler_position, :endpoint => @handler_endpoint, :params => notify_result)
     @log_hash[:data_received]||=notify_result unless notify_result.nil?
     if options['CPEE_UPDATE']

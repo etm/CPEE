@@ -532,7 +532,7 @@ function save_testset() {// {{{
                       var pars = $X('<description/>');
                       pars.append($(res.documentElement));
                       testset.append(pars);
-                      pars = $X("<transformation>\n<description type='copy'/>\n<dataelements type='none'/>\n<endpoints type='none'/>\n</transformation>");
+                      pars = $X("<transformation><description type='copy'/><dataelements type='none'/><endpoints type='none'/></transformation>");
                       testset.append(pars);
                       $.ajax({
                         type: "GET",
@@ -543,7 +543,7 @@ function save_testset() {// {{{
                           pars.append($(res.documentElement).children());
                           testset.append(pars);
                           $('#savetestset').attr('download',name + '.xml');
-                          $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializeXML()));
+                          $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializePrettyXML()));
                           document.getElementById('savetestset').click();
                         },
                         error: report_failure
