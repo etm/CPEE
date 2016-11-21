@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name             = "cpee"
-  s.version          = "1.3.187"
+  s.version          = "1.3.188"
   s.platform         = Gem::Platform::RUBY
   s.license          = "LGPL-3.0"
   s.summary          = "Preliminary release of cloud process execution engine (cpee). If you just need workflow execution, without a rest/xmpp service exposing it, then use WEEL"
@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ['README']
   s.test_files       = Dir['{test/*,test/*/tc_*.rb}']
 
-  s.required_ruby_version = '>=1.9.3'
+  s.required_ruby_version = '>=2.0.0'
 
   s.authors          = ['Juergen eTM Mangler','Ralph Vigne','Gerhard Stuermer','Florian Stertz']
 
