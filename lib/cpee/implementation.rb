@@ -35,6 +35,7 @@ module CPEE
     opts[:transformation_dslx]        ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation_dslx.xsl')
     opts[:transformation_service]     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation.xml')
     opts[:empty_dslx]                 ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/empty_dslx.xml')
+    opts[:notifications_init]         ||= nil
     opts[:infinite_loop_stop]         ||= 10000
 
     opts[:runtime_options]            << [

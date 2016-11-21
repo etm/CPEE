@@ -78,7 +78,8 @@ module CPEE
       )
       @notifications =  Riddl::Utils::Notifications::Producer::Backend.new(
         opts[:topics],
-        @directory + '/notifications/'
+        @directory + '/notifications/',
+        opts[:notifications_init]
       )
 
       @notifications.subscriptions.keys.each do |key|
