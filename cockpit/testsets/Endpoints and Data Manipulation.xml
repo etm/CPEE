@@ -9,7 +9,7 @@
   </dataelements>
   <endpoints>
     <ep1>Somewhere over the rainbow</ep1>
-  </endpoints>  
+  </endpoints>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <manipulate id="endpoints">
@@ -18,11 +18,9 @@
         endpoints.copy_of_ep1 = endpoints.ep1
         data.data_stores_endpoint = endpoints.ep1
       </manipulate>
-      <manipulate id="data">
-        data.a_new_one = "new dataelement"
-        data[:input] = "dataelement changed"
-        data.output = data[:input]
-      </manipulate>
+      <manipulate id="data">data.a_new_one = "new dataelement"
+data[:input] = "dataelement changed"
+data.output = data[:input]</manipulate>
     </description>
   </description>
   <transformation>

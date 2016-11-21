@@ -21,11 +21,11 @@
                 <to>"Vienna"</to>
               </arguments>
             </parameters>
-            <finalize output="result">        data.hotels &lt;&lt; result.value('id')
-        data.costs += result.value('costs').to_f</finalize>
+            <finalize output="result">data.hotels &lt;&lt; result.value('id')
+data.costs += result.value('costs').to_f</finalize>
           </call>
         </parallel_branch>
-        <manipulate id="a3">      data.persons -= 1</manipulate>
+        <manipulate id="a3">data.persons -= 1</manipulate>
       </loop>
     </parallel>
   </description>

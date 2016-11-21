@@ -19,7 +19,7 @@
             <bug>data.nasty</bug>
           </arguments>
         </parameters><!--}}}-->
-        <finalize output="result">  data.x += "done"</finalize>
+        <finalize output="result">data.x += "done"</finalize>
       </call>
       <parallel wait="2">
         <parallel_branch>
@@ -43,7 +43,7 @@
           </call>
         </parallel_branch>
       </parallel>
-      <manipulate id="a3">  data.x += '_end'</manipulate>
+      <manipulate id="a3">data.x += '_end'</manipulate>
       <choose>
         <alternative condition="data.x != nil">
           <call id="a4_1" endpoint="timeout">
