@@ -322,10 +322,18 @@
     <xsl:call-template name="print-newline"/>
   </xsl:template>
   <xsl:template match="d:parameters">
-    <xsl:apply-templates select="d:*" mode="parameter"/>
+    <xsl:apply-templates select="d:label" mode="parameter"/>
+    <xsl:apply-templates select="d:*[not(name()='label')]" mode="parameter"/>
   </xsl:template>
-  <xsl:template match="d:*" mode="parameter">
-    <xsl:if test="position() &gt;1">, </xsl:if>
+  <xsl:template match="d:label" mode="parameter">
+    <xsl:text>:</xsl:text>
+    <xsl:value-of select="name()"/>
+    <xsl:text> =&gt; "</xsl:text>
+    <xsl:value-of select="text()"/>
+    <xsl:text>"</xsl:text>
+  </xsl:template>
+  <xsl:template match="d:*[not(name()='label')]" mode="parameter">
+    <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
     <xsl:text>:</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text> =&gt; </xsl:text>
@@ -381,8 +389,9 @@
   <xsl:template name="print-content">
     <xsl:param name="myspace"/>
     <xsl:if test="text()">
-      <xsl:call-template name="print-newline"/>
-      <xsl:value-of select="text()"/>
+      <xsl:for-each select="str:tokenize(text(), '&#x0A;')">
+        <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),normalize-space(.)))" />
+      </xsl:for-each>
       <xsl:call-template name="print-newline"/>
       <xsl:call-template name="print-space">
         <xsl:with-param name="i">1</xsl:with-param>
@@ -409,8 +418,9 @@
           <xsl:text>, &lt;&lt;-END</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:call-template name="print-newline"/>
-      <xsl:value-of select="text()"/>
+      <xsl:for-each select="str:tokenize(text(), '&#x0A;')">
+        <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),normalize-space(.)))" />
+      </xsl:for-each>
       <xsl:call-template name="print-newline"/>
       <xsl:call-template name="print-space">
         <xsl:with-param name="i">1</xsl:with-param>
