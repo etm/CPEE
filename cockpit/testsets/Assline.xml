@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <testset>
   <dataelements/>
-  <handlerwrapper>PromiseHandlerWrapper</handlerwrapper>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
     <start xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://assline.wst.univie.ac.at:9200/start</start>

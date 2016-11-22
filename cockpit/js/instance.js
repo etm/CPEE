@@ -31,7 +31,7 @@ var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'handlerwrapper' + '&' +
-               'events' + '=' + 'result' + '&' +
+               'events' + '=' + 'error,change' + '&' +
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
 var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
@@ -51,7 +51,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'handlerwrapper' + '&' +
-               'events' + '=' + 'result' + '&' +
+               'events' + '=' + 'error,change' + '&' +
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
 
