@@ -15,6 +15,7 @@
 class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @controller = arguments[0]
+    @log_hash = {}
     @handler_continue = continue
     @handler_endpoint = endpoint
     @handler_position = position
@@ -147,6 +148,8 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
           result = XML::Smart::string(result[0].value.read) rescue nil
         elsif result[0].mimetype == 'text/plain'
           result = result[0].value.read
+        elsif result[0].mimetype == 'text/html'
+          result[0].value.read
         else
           result = result[0]
         end
@@ -155,7 +158,24 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     result
   end
 
+  def structurize_result(result)
+    result.map do |r|
+      if r.is_a? Riddl::Parameter::Simple
+        { r.name => r.value }
+      elsif r.is_a? Riddl::Parameter::Complex
+        {
+          r.name => {
+            'mimetype' => r.mimetype,
+            'content' => r.value.read
+          }
+        }
+        r.value.rewind
+      end
+    end
+  end
+
   def callback(result=nil,options={})
+    @controller.notify("activity/receiving", :instance => @controller.instance, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result))
     result = simplify_result(result)
     if options['CPEE_UPDATE']
       @handler_returnValue = result
