@@ -19,6 +19,7 @@ class Logging < Riddl::Implementation #{{{
       log_dir = ::File.dirname(__FILE__) + "/logs"
       instancenr = @h['CPEE_INSTANCE'].split('/').last
       notification = JSON.parse(@p[3].value)
+      parameters = notification['parameters']
       log_hash = notification['log_hash']
       Dir.mkdir(log_dir+'/'+instancenr) unless Dir.exist?(log_dir+'/'+instancenr)
       unless File.exist?(log_dir+'/'+instancenr+'/log.xes')
@@ -33,11 +34,12 @@ class Logging < Riddl::Implementation #{{{
       XML::Smart.modify(log_dir+'/'+instancenr+'/log.xes') do |xml|
         trace = xml.find("/xmlns:log/xmlns:trace").first
         event = trace.add "event"
-        event.add 'string', :key => "concept:name", :value => log_hash["label"]
+        event.add 'string', :key => "concept:name", :value => parameters["label"]
         event.add 'string', :key => "lifecycle:transition", :value => event=='done'?"complete":"start"
-        if log_hash.has_key?("data_send")
+        data_send = ((parameters[:arguments].nil? ? [] : parameters[:arguments]) rescue [])
+        if data_send.any?
           list = event.add 'list', :key => "data_send"
-          log_hash["data_send"].each do |k,v|
+          data_send.each do |k,v|
             list.add 'string', :key => k , :value => v
           end
         end

@@ -17,6 +17,7 @@
 <topics xmlns='http://riddl.org/ns/common-patterns/notifications-producer/1.0'>
   <topic id='activity'>
     <event>calling</event>
+    <event>receiving</event>
     <event>failed</event>
     <event>manipulating</event>
     <event>status</event>
