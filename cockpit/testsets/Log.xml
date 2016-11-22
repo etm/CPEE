@@ -16,7 +16,7 @@
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a0" endpoint="start">
         <parameters>
-          <label>"Task 1"</label>
+          <label>Task 1</label>
           <method/>
           <type>:task</type>
           <mid>'sid-7F616193-69F1-4097-A107-FC87404AE047'</mid>
@@ -28,7 +28,7 @@
         <alternative condition="data.x >= 100" language="text/javascript">
           <call id="a11" endpoint="timeout">
             <parameters>
-              <label>"Decision 2"</label>
+              <label>Decision 2</label>
               <method/>
               <type>:task</type>
               <mid>'sid-F9FF9265-DAD9-4525-86DE-116C3F1FA44E'</mid>
@@ -41,7 +41,7 @@
         <alternative condition="100 > data.x" language="text/javascript">
           <call id="a10" endpoint="timeout">
             <parameters>
-              <label>"Decision 1"</label>
+              <label>Decision 1</label>
               <method/>
               <type>:task</type>
               <mid>'sid-603319C1-A371-4D9F-94DA-D9800C2E205F'</mid>
@@ -54,7 +54,7 @@
       </choose>
       <call id="a1" endpoint="timeout">
         <parameters>
-          <label>"Task 2"</label>
+          <label>Task 2</label>
           <method/>
           <type>:task</type>
           <mid>'sid-B93496AA-15AA-4239-B301-8899F47204EE'</mid>
@@ -67,7 +67,7 @@
         <parallel_branch>
           <call id="a4" endpoint="timeout">
             <parameters>
-              <label>"P1"</label>
+              <label>P1</label>
               <method/>
               <type>:task</type>
               <mid>'sid-B410A048-6485-47AF-AA9A-3F570EC9799A'</mid>
@@ -80,7 +80,7 @@
         <parallel_branch>
           <call id="a5" endpoint="timeout">
             <parameters>
-              <label>"P2"</label>
+              <label>P2</label>
               <method/>
               <type>:task</type>
               <mid>'sid-E0C9C538-5D05-4578-8156-3947A40146A6'</mid>
@@ -93,7 +93,7 @@
       </parallel>
       <call id="a7" endpoint="timeout">
         <parameters>
-          <label>"Task 3"</label>
+          <label>Task 3</label>
           <method/>
           <type>:task</type>
           <mid>'sid-4692423B-174F-4460-B034-19E0624C585E'</mid>

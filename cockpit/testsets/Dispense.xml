@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<testset>
+  <dataelements>
+    <i xmlns="http://riddl.org/ns/common-patterns/properties/1.0">1</i>
+  </dataelements>
+  <handlerwrapper>PromiseHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <folders xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/folders</folders>
+    <ldown xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://pusher.wst.univie.ac.at:9200/lever/down</ldown>
+    <lup xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://pusher.wst.univie.ac.at:9200/lever/up</lup>
+    <speed xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/speed</speed>
+    <mstart xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/motor/start</mstart>
+    <mstop xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/motor/stop</mstop>
+    <sstop xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://pusher.wst.univie.ac.at:9200/sensor/stop</sstop>
+    <dispense xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://pusher.wst.univie.ac.at:9200/dispense</dispense>
+    <gpos xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/go_to_pos</gpos>
+    <gfolder xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/folder/next</gfolder>
+  </endpoints>
+  <positions/>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a15" endpoint="speed" svg-label="Set speed for going left">
+        <parameters>
+          <label>"Set speed for going left"</label>
+          <method>:put</method>
+          <parameters>
+            <speed>-750</speed>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a14" endpoint="gpos" svg-label="Go to left end">
+        <parameters>
+          <label>"Go to left end"</label>
+          <method>:post</method>
+          <parameters>
+            <pos>0</pos>
+            <methode>1</methode>
+          </parameters>
+        </parameters>
+      </call>
+      <loop pre_test="data.i&lt;3" svg-label="">
+        <call id="a13" endpoint="gfolder" svg-label="Go to next folder">
+          <parameters>
+            <label>"Go to next folder"</label>
+            <method>:post</method>
+            <parameters/>
+          </parameters>
+          <finalize output="result">data.i = data.i+1 </finalize>
+        </call>
+      </loop>
+      <call id="a2" endpoint="ldown" svg-label="Lever down">
+        <parameters>
+          <label>"Lever down"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <call id="a3" endpoint="gfolder" svg-label="Go to next folder">
+        <parameters>
+          <label>"Go to next folder"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <call id="a4" endpoint="dispense" svg-label="Dispense">
+        <parameters>
+          <label>"Dispense"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <call id="a5" endpoint="lup" svg-label="Lever up">
+        <parameters>
+          <label>"Lever up"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <call id="a16" endpoint="speed" svg-label="Set Speed for right">
+        <parameters>
+          <label>"Set Speed for right"</label>
+          <method>:put</method>
+          <parameters>
+            <speed>750</speed>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a17" endpoint="gpos" svg-label="Go to right end">
+        <parameters>
+          <label>"Go to right end"</label>
+          <method>:post</method>
+          <parameters>
+            <pos>3</pos>
+            <methode>1</methode>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a18" endpoint="ldown" svg-label="Lower Lever">
+        <parameters>
+          <label>"Lower Lever"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <parallel svg-label="">
+        <parallel_branch svg-label="">
+          <call id="a6" endpoint="speed">
+            <parameters>
+              <label>"Set Speed to go left"</label>
+              <method>:put</method>
+              <parameters>
+                <speed>-50</speed>
+              </parameters>
+            </parameters>
+          </call>
+          <call id="a7" endpoint="mstart" svg-label="Go left">
+            <parameters>
+              <label>"Go left"</label>
+              <method>:post</method>
+              <parameters/>
+            </parameters>
+          </call>
+        </parallel_branch>
+        <parallel_branch svg-label="">
+          <call id="a8" endpoint="sstop" svg-label="StopSensor pusher">
+            <parameters>
+              <label>"StopSensor pusher"</label>
+              <method>:post</method>
+              <parameters/>
+            </parameters>
+          </call>
+        </parallel_branch>
+      </parallel>
+      <call id="a9" endpoint="mstop" svg-label="Stop Motor">
+        <parameters>
+          <label>"Stop Motor"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <call id="a10" endpoint="lup" svg-label="Raise Lever">
+        <parameters>
+          <label>"Raise Lever"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <call id="a11" endpoint="speed" svg-label="Set Speed for right">
+        <parameters>
+          <label>"Set Speed for right"</label>
+          <method>:put</method>
+          <parameters>
+            <speed>750</speed>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a12" endpoint="gpos" svg-label="Go to right end">
+        <parameters>
+          <label>"Go to right end"</label>
+          <method>:post</method>
+          <parameters>
+            <pos>3</pos>
+            <methode>1</methode>
+          </parameters>
+        </parameters>
+      </call>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">fvfg</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+  </attributes>
+</testset>
