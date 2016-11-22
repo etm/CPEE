@@ -25,7 +25,7 @@
             <timeout>2</timeout>
           </arguments>
         </parameters><!--}}}-->
-        <finalize output="result">  data.x += "a1,"</finalize>
+        <finalize output="result">data.x += "a1,"</finalize>
       </call>
       <call id="a2" endpoint="timeout">
         <parameters><!--{{{-->
@@ -34,7 +34,7 @@
             <timeout>4</timeout>
           </arguments>
         </parameters><!--}}}-->
-        <finalize output="result">  data.x += "a2,"</finalize>
+        <finalize output="result">data.x += "a2,"</finalize>
       </call>
       <call id="a3" endpoint="timeout">
         <parameters><!--{{{-->
@@ -43,7 +43,7 @@
             <timeout>4</timeout>
           </arguments>
         </parameters><!--}}}-->
-        <finalize output="result">  data.x += "a3,"</finalize>
+        <finalize output="result">data.x += "a3,"</finalize>
       </call>
     </description><!--}}}-->
   </description>

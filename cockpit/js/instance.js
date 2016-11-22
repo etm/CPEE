@@ -5,6 +5,7 @@ var subscription_state = 'less';
 var save = {};
     save['state']= undefined;
     save['dsl'] = undefined;
+    save['graph'] = undefined;
     save['endpoints'] = undefined;
     save['dataelements'] = undefined;
     save['attributes'] = undefined;
@@ -228,7 +229,7 @@ function monitor_instance(load) {// {{{
                 case 'attributes':
                   monitor_instance_values("attributes");
                   monitor_instance_transformation();
-                  monitor_graph_change();
+                  monitor_graph_change(true);
                   break;
                 case 'state':
                   monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
@@ -288,33 +289,37 @@ function adaptor_init(url,theme,dslx) {
     graphrealization.set_svg_container($('#graphcanvas'));
     graphrealization.set_description($(dslx), true);
     graphrealization.notify = function(svgid) {
+      var g = graphrealization.get_description();
+      save['graph'] = $X(g);
       $.ajax({
         type: "PUT",
         url: url + "/properties/values/description/",
-			 	data: ({'content': '<content>' + graphrealization.get_description() + '</content>'})
+			 	data: ({'content': '<content>' + g + '</content>'})
       });
-      manifestation.events.click(svgid,undefined);
+      manifestation.events.click(svgid);
     };
     monitor_instance_pos();
   });
 }
 
-function monitor_graph_change() {
+function monitor_graph_change(force) {
   var url = $("#current-instance").text();
   $.ajax({
     type: "GET",
     url: url + "/properties/values/dslx/",
     success: function(dslx){
-      $.ajax({
-        type: "GET",
-        url: url + "/properties/values/attributes/theme/",
-        success: function(res){
-          adaptor_init(url,$('value',res).text(),dslx);
-        },
-        error: function() {
-          adaptor_init(url,'default',dslx);
-        }
-      });
+      if (force || !save['graph'] || (save['graph'] && save['graph'].serializePrettyXML() != $(dslx).serializePrettyXML())) {
+        $.ajax({
+          type: "GET",
+          url: url + "/properties/values/attributes/theme/",
+          success: function(res){
+            adaptor_init(url,$('value',res).text(),dslx);
+          },
+          error: function() {
+            adaptor_init(url,'default',dslx);
+          }
+        });
+      }
     }
   });
 }
@@ -336,7 +341,7 @@ function monitor_instance_dsl() {// {{{
         res = res.replace(/activity\s+\[:([A-Za-z][a-zA-Z0-9_]+)([^\]]*\])/g,"<span class='activities' id=\"activity-$1\">activity [:$1$2</span>");
 
         ctv.append(res);
-        monitor_graph_change();
+        monitor_graph_change(false);
       }
     }
   });
@@ -527,7 +532,7 @@ function save_testset() {// {{{
                       var pars = $X('<description/>');
                       pars.append($(res.documentElement));
                       testset.append(pars);
-                      pars = $X('<transformation><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation>');
+                      pars = $X("<transformation><description type='copy'/><dataelements type='none'/><endpoints type='none'/></transformation>");
                       testset.append(pars);
                       $.ajax({
                         type: "GET",
@@ -538,7 +543,7 @@ function save_testset() {// {{{
                           pars.append($(res.documentElement).children());
                           testset.append(pars);
                           $('#savetestset').attr('download',name + '.xml');
-                          $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializeXML()));
+                          $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializePrettyXML()));
                           document.getElementById('savetestset').click();
                         },
                         error: report_failure

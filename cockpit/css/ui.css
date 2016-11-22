@@ -9,11 +9,19 @@ body {
 
 #instance ui-content { height: 7em; }
 
-#areanew td:nth-child(1)       { width: 7em; padding-right: 1em; }
-#areanew td:nth-child(3)       { width: 16em; padding-left: 1em; }
-#areanew input                 { width: 100%;  }
-#areanew button[name=base]     { width: 100%;  }
-#areanew button[name=instance] { width: 100%;  }
+#areanew td:nth-child(1)       { width: 7em; padding-right: 2em; }
+#areanew td:nth-child(3)       { width: 16em; padding-left: 2em; }
+#areanew input                 {
+  width: 100%;
+  line-height: 1.5em;
+  height: 1.5em;
+  padding: 0.1em 0.5em;
+  border: 0.1em solid #a1a1a1;
+  border-radius: 0;
+}
+
+#areanew button[name=base]     { width: 100%; padding: 0.5em 1em; margin-bottom: 0.1em; }
+#areanew button[name=instance] { width: 100%; padding: 0.5em 1em; }
 
 ui-tabbed ui-tabbar ui-behind button {
   margin-left: 0.5em;

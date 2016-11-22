@@ -22,7 +22,7 @@
           <mid>'sid-7F616193-69F1-4097-A107-FC87404AE047'</mid>
           <arguments/>
         </parameters>
-        <finalize output="result"> data.x = result["n"]</finalize>
+        <finalize output="result">data.x = result["n"]</finalize>
       </call>
       <choose mode="exclusive">
         <alternative condition="data.x >= 100" language="text/javascript">

@@ -50,7 +50,7 @@
       </call>
       <parallel wait="1" svg-label="">
         <parallel_branch svg-label="">
-          <manipulate id="a16" svg-label=""> sleep 2 </manipulate>
+          <manipulate id="a16" svg-label="">sleep 2</manipulate>
           <call id="a14" endpoint="timeout1" svg-label="2-woechige Frist">
             <parameters>
               <label>"2-woechige Frist"</label>
@@ -73,7 +73,7 @@
           </call>
           <parallel wait="1" svg-label="">
             <parallel_branch svg-label="">
-              <manipulate id="a21" svg-label="">sleep 2 </manipulate>
+              <manipulate id="a21" svg-label="">sleep 2</manipulate>
               <call id="a7" endpoint="timeout2" svg-label="2-woechige Frist">
                 <parameters>
                   <label>"2-woechige Frist"</label>

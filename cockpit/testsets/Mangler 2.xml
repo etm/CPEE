@@ -27,8 +27,8 @@
             <persons>data.persons</persons>
           </arguments>
         </parameters>
-        <finalize output="result">  data.airline = result.value('id')
-    data.costs += result.value('costs').to_f</finalize>
+        <finalize output="result">data.airline = result.value('id')
+data.costs += result.value('costs').to_f</finalize>
       </call>
       <parallel>
         <loop mode="pre_test" condition="data.persons > 0">
@@ -40,11 +40,11 @@
                   <to>data.to</to>
                 </arguments>
               </parameters>
-              <finalize output="result">        data.hotels &lt;&lt; result.value('id')
-          data.costs += result.value('costs').to_f</finalize>
+              <finalize output="result">data.hotels &lt;&lt; result.value('id')
+data.costs += result.value('costs').to_f</finalize>
             </call>
           </parallel_branch>
-          <manipulate id="a3">      data.persons -= 1</manipulate>
+          <manipulate id="a3">data.persons -= 1</manipulate>
         </loop>
         <loop mode="pre_test" condition="data.persons > 0">
           <parallel_branch pass="data.persons" local="p">
@@ -55,8 +55,8 @@
                   <to>data.to</to>
                 </arguments>
               </parameters>
-              <finalize output="result">        data.hotels &lt;&lt; result.value('id')
-          data.costs += result.value('costs').to_f</finalize>
+              <finalize output="result">data.hotels &lt;&lt; result.value('id')
+data.costs += result.value('costs').to_f</finalize>
             </call>
           </parallel_branch>
           <parallel_branch pass="data.persons" local="p">
@@ -67,11 +67,11 @@
                   <to>data.to</to>
                 </arguments>
               </parameters>
-              <finalize output="result">        data.hotels &lt;&lt; result.value('id')
-          data.costs += result.value('costs').to_f</finalize>
+              <finalize output="result">data.hotels &lt;&lt; result.value('id')
+data.costs += result.value('costs').to_f</finalize>
             </call>
           </parallel_branch>
-          <manipulate id="a6">      data.persons -= 1</manipulate>
+          <manipulate id="a6">data.persons -= 1</manipulate>
         </loop>
       </parallel>
       <choose>

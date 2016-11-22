@@ -1,11 +1,31 @@
-<testset><dataelements/><handlerwrapper>DefaultHandlerWrapper</handlerwrapper><endpoints><cb xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/callback.simple.php</cb></endpoints><positions/><description><description xmlns="http://cpee.org/ns/description/1.0">
-  <call id="a1" endpoint="cb">
-    <parameters>
-      <label>"Update"</label>
-      <method>:post</method>
-      <arguments/>
-    </parameters>
-    <finalize>data.a = result.value</finalize>
-    <update>data.b = result.value</update>
-  </call>
-</description></description><transformation><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation><attributes><info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Enter info here</info><modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype></attributes></testset>
+<?xml version="1.0"?>
+<testset>
+  <dataelements/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <cb xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/callback.simple.php</cb>
+  </endpoints>
+  <positions/>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="cb">
+        <parameters>
+          <label>"Update"</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+        <finalize>data.a = result.value</finalize>
+        <update>data.b = result.value</update>
+      </call>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Enter info here</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+  </attributes>
+</testset>

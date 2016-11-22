@@ -1,13 +1,13 @@
 # This file is part of CPEE.
-# 
+#
 # CPEE is free software: you can redistribute it and/or modify it under the terms
 # of the GNU General Public License as published by the Free Software Foundation,
 # either version 3 of the License, or (at your option) any later version.
-# 
+#
 # CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License along with
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
@@ -29,7 +29,7 @@ module CPEE
         JSON::generate(value)
       elsif value.respond_to?(:to_s)
         value.to_s
-      end  
+      end
     end
 
     def self::parse(value)
@@ -40,13 +40,13 @@ module CPEE
           false
         when 'nil', 'null'
           nil
-        else  
+        else
           begin
             JSON::parse(value)
           rescue
             (Integer value rescue nil) || (Float value rescue nil) || value.to_s rescue nil || ''
           end
-      end    
+      end
     end
   end
 
@@ -67,7 +67,7 @@ module CPEE
       @mutex = Mutex.new
       @opts = opts
 
-      @properties = Riddl::Utils::Properties::Backend.new( 
+      @properties = Riddl::Utils::Properties::Backend.new(
         {
           :inactive => opts[:properties_schema_inactive],
           :active   => opts[:properties_schema_active],
@@ -78,7 +78,8 @@ module CPEE
       )
       @notifications =  Riddl::Utils::Notifications::Producer::Backend.new(
         opts[:topics],
-        @directory + '/notifications/'
+        @directory + '/notifications/',
+        opts[:notifications_init]
       )
 
       @notifications.subscriptions.keys.each do |key|
@@ -87,7 +88,7 @@ module CPEE
       unless ['stopped','ready','finished'].include?(@properties.data.find("string(/p:properties/p:state)"))
         @properties.modify do |doc|
           doc.find("/p:properties/p:state").first.text = 'stopped'
-        end  
+        end
       end
       unserialize_handlerwrapper!
       unserialize_dataelements!
@@ -104,19 +105,19 @@ module CPEE
     attr_reader :mutex
     attr_reader :attributes
 
-    def base_url 
+    def base_url
       @opts[:url]
     end
     def base_jid
       @opts[:jid]
     end
-    def instance_url 
+    def instance_url
       "#{@opts[:url]}/#{@id}"
     end
     def instance_jid
       "#{@opts[:jid]}/#{@id}"
     end
-    def xmpp 
+    def xmpp
       @opts[:xmpp]
     end
     def base
@@ -125,7 +126,7 @@ module CPEE
     def instance
       @opts[:jid] ? instance_url + "," + instance_jid : instance_url
     end
-    
+
     def sim # {{{
       @thread.join if !@thread.nil? && @thread.alive?
       @thread = @instance.sim
@@ -142,16 +143,16 @@ module CPEE
     def stop # {{{
       t = @instance.stop
       t.run
-      @callbacks.delete_if do |k,c| 
+      @callbacks.delete_if do |k,c|
         # only remove vote_callbacks, the other stuff is removed by
         # the instance stopping cleanup
         if c.method == :vote_callback
           c.callback
           true
-        else  
+        else
           false
         end
-      end  
+      end
       @thread.join if !@thread.nil? && @thread.alive?
       @callback = [] # everything should be empty now
     end # }}}
@@ -186,8 +187,8 @@ module CPEE
         @properties.modify do |doc|
           node = doc.find("/p:properties/p:state").first
           node.text = @instance.state
-        end 
-      end  
+        end
+      end
     end # }}}
     def serialize_positions! # {{{
       @properties.modify do |doc|
@@ -212,22 +213,22 @@ module CPEE
       case op
         when :del
           @notifications.subscriptions[key].delete if @notifications.subscriptions.include?(key)
-            
+
           @communication[key].io.close_connection if @communication[key].class == Riddl::Utils::Notifications::Producer::WS
           @communication.delete(key)
 
           @events.each do |eve,keys|
             keys.delete_if{|k,v| key == k}
-          end  
+          end
           @votes.each do |eve,keys|
             keys.delete_if do |k,v|
               if key == k
                 @callbacks.each{|voteid,cb|cb.delete_if!(eve,k)}
                 true
-              end  
+              end
             end
-          end  
-        when :upd 
+          end
+        when :upd
           if @notifications.subscriptions.include?(key)
             url = @communication[key]
             evs = []
@@ -235,7 +236,7 @@ module CPEE
             @events.each { |e,v| evs << e }
             @votes.each { |e,v| vos << e }
             @notifications.subscriptions[key].read do |doc|
-              turl = doc.find('string(/n:subscription/@url)') 
+              turl = doc.find('string(/n:subscription/@url)')
               url = turl == '' ? url : turl
               @communication[key] = url
               doc.find('/n:subscription/n:topic').each do |t|
@@ -252,14 +253,14 @@ module CPEE
               end
             end
             evs.each { |e| @events[e].delete(key) if @events[e] }
-            vos.each do |e| 
+            vos.each do |e|
               @callbacks.each{|voteid,cb|cb.delete_if!(e,key)}
               @votes[e].delete(key) if @votes[e]
-            end  
-          end  
+            end
+          end
         when :cre
           @notifications.subscriptions[key].read do |doc|
-            turl = doc.find('string(/n:subscription/@url)') 
+            turl = doc.find('string(/n:subscription/@url)')
             url = turl == '' ? nil : turl
             @communication[key] = url
             doc.find('/n:subscription/n:topic').each do |t|
@@ -272,10 +273,10 @@ module CPEE
                 @votes["#{t.attributes['id']}/#{e}"][key] = url
               end
             end
-          end  
-      end    
-    end # }}} 
-    
+          end
+      end
+    end # }}}
+
     def unserialize_attributes! #{{{
       @attributes = {}
       @properties.data.find("/p:properties/p:attributes/p:*").map do |ele|
@@ -294,7 +295,7 @@ module CPEE
         @instance.endpoints[e.qname.to_sym] = e.text
       end
     end #}}}
-    def unserialize_state! #{{{ 
+    def unserialize_state! #{{{
       state = @properties.data.find("string(/p:properties/p:state)")
       if call_vote("state/change", :instance => @id, :info => info, :state => state)
         case state
@@ -302,7 +303,7 @@ module CPEE
             stop
           when 'running'
             start
-          when 'simulating'  
+          when 'simulating'
             sim
           when 'ready'
             @instance.state_signal
@@ -318,14 +319,14 @@ module CPEE
       begin
         hw = eval(@properties.data.find("string(/p:properties/p:handlerwrapper)"))
         @instance.handlerwrapper = hw
-      rescue => e  
+      rescue => e
         @instance.handlerwrapper = DefaultHandlerWrapper
-      end  
+      end
       if hw != @instance.handlerwrapper
         @properties.modify do |doc|
           node = doc.find("/p:properties/p:handlerwrapper").first
           node.text = @instance.handlerwrapper.to_s
-        end 
+        end
       end
     end #}}}
     def unserialize_positions! #{{{
@@ -356,7 +357,7 @@ module CPEE
 
           if desc.children.empty?
             tdesctype = tdatatype = tendptype = 'clean'
-          end  
+          end
 
           ### description transformation, including dslx to dsl
           addit = if tdesctype == 'copy' || tdesc.empty?
@@ -367,17 +368,17 @@ module CPEE
               Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
               Riddl::Parameter::Simple.new("type","description")
             ]
-            if status >= 200 && status < 300 
-              XML::Smart::string(res[0].value.read).root 
-            else  
-              raise 'Could not extract dslx' 
-            end  
+            if status >= 200 && status < 300
+              XML::Smart::string(res[0].value.read).root
+            else
+              raise 'Could not extract dslx'
+            end
           elsif tdesctype == 'xslt' && !tdesc.empty?
             trans = XML::Smart::open_unprotected(tdesc.text)
             desc.children.first.to_doc.transform_with(trans).root
           elsif tdesctype == 'clean'
             XML::Smart::open_unprotected(@opts[:empty_dslx]).root
-          else  
+          else
             nil
           end
           unless addit.nil?
@@ -391,15 +392,15 @@ module CPEE
           ### dataelements extraction
           addit = if tdatatype == 'rest' && !tdata.empty?
             srv = Riddl::Client.interface(tdata.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
-            status, res = srv.post [ 
+            status, res = srv.post [
               Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
               Riddl::Parameter::Simple.new("type","dataelements")
             ]
-            if status >= 200 && status < 300 
+            if status >= 200 && status < 300
               res
-            else  
-              raise 'Could not extract dataelements' 
-            end  
+            else
+              raise 'Could not extract dataelements'
+            end
           elsif tdatatype == 'xslt' && !tdata.empty?
             trans = XML::Smart::open_unprotected(tdata.text)
             desc.children.first.to_doc.transform_with(trans)
@@ -407,7 +408,7 @@ module CPEE
             []
           else
             nil
-          end  
+          end
           unless addit.nil?
             node = doc.find("/p:properties/p:dataelements").first
             node.children.delete_all!
@@ -415,22 +416,22 @@ module CPEE
             addit.each_slice(2).each do |k,v|
               @instance.data[k.value.to_sym] = ValueHelper::parse(v.value)
               node.add(k.value,ValueHelper::generate(v.value))
-            end  
+            end
             nots << ["dataelements/change", {:instance => instance, :changed => JSON::generate(@instance.data)}]
-          end  
+          end
 
           ### endpoints extraction
           addit = if tendptype == 'rest' && !tdata.empty?
             srv = Riddl::Client.interface(tendp.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
-            status, res = srv.post [ 
+            status, res = srv.post [
               Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
               Riddl::Parameter::Simple.new("type","endpoints")
             ]
-            if status >= 200 && status < 300 
+            if status >= 200 && status < 300
               res
-            else  
-              raise 'Could not extract endpoints' 
-            end  
+            else
+              raise 'Could not extract endpoints'
+            end
           elsif tendptype == 'xslt' && !tdata.empty?
             trans = XML::Smart::open_unprotected(tendp.text)
             desc.children.first.to_doc.transform_with(trans)
@@ -438,7 +439,7 @@ module CPEE
             []
           else
             nil
-          end  
+          end
           unless addit.nil?
             node = doc.find("/p:properties/p:endpoints").first
             node.children.delete_all!
@@ -446,9 +447,9 @@ module CPEE
             addit.each_slice(2).each do |k,v|
               @instance.endpoints[k.value.to_sym] = ValueHelper::parse(v.value)
               node.add(k.value,ValueHelper::generate(v.value))
-            end  
+            end
             nots << ["endpoints/change", {:instance => instance, :changed => JSON::generate(@instance.endpoints)}]
-          end  
+          end
           nots << ["description/change", { :instance => instance }]
         rescue => err
           nots << ["description/error", { :instance => instance, :message => err.message }]
@@ -475,7 +476,7 @@ module CPEE
                 e.root.add(k,v)
               end
               url.send(e.to_s) rescue nil
-            end  
+            end
           end
         end
       end
@@ -493,7 +494,7 @@ module CPEE
             inum += 1
           elsif url.class == Riddl::Utils::Notifications::Producer::WS
             inum += 1 unless url.closed?
-          end  
+          end
         end
 
         item.each do |key,url|
@@ -515,7 +516,7 @@ module CPEE
                 else
                   vote_callback(result,nil,continue,voteid,callback,inum)
                 end
-              end  
+              end
             elsif u.class == Riddl::Utils::Notifications::Producer::WS
               @callbacks[callback] = Callback.new("vote #{notf.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :ws, continue, voteid, callback, inum)
               e = XML::Smart::string("<vote/>")
@@ -530,7 +531,7 @@ module CPEE
         continue.wait
 
         !@votes_results.delete(voteid).include?(false)
-      else  
+      else
         true
       end
     end # }}}
@@ -541,10 +542,10 @@ module CPEE
         @votes_results[voteid] << true
       else
         @votes_results[voteid] << (result && result[0] && result[0].value == 'true')
-      end  
+      end
       if (num == @votes_results[voteid].length)
         continue.continue
-      end  
+      end
     end # }}}
 
     def add_websocket(key,socket)# {{{
@@ -552,12 +553,12 @@ module CPEE
       @events.each do |a|
         if a[1].has_key?(key)
           a[1][key] = socket
-        end  
+        end
       end
       @votes.each do |a|
         if a[1].has_key?(key)
           a[1][key] = socket
-        end  
+        end
       end
     end # }}}
 
@@ -576,4 +577,4 @@ module CPEE
 
   end
 
-end  
+end
