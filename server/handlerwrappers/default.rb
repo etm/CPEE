@@ -163,13 +163,14 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       if r.is_a? Riddl::Parameter::Simple
         { r.name => r.value }
       elsif r.is_a? Riddl::Parameter::Complex
-        {
-          r.name => {
+        tmp = {
+          r.name == '' ? 'result' : r.name => {
             'mimetype' => r.mimetype,
             'content' => r.value.read
           }
         }
         r.value.rewind
+        tmp
       end
     end
   end
