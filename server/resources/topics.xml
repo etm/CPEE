@@ -50,6 +50,7 @@
     <event>change</event>
   </topic>
   <topic id='handlerwrapper'>
+    <event>error</event>
     <event>change</event>
   </topic>
   <topic id='transformation'>
