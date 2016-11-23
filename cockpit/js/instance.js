@@ -541,6 +541,7 @@ function save_testset() {// {{{
                           var name = $("value > info",res).text();
                           var pars = $X('<attributes/>');
                           pars.append($(res.documentElement).children());
+                          pars.find('uuid').remove();
                           testset.append(pars);
                           $('#savetestset').attr('download',name + '.xml');
                           $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializePrettyXML()));
@@ -788,15 +789,24 @@ function load_testset_dataelements(url,testset) {// {{{
 function load_testset_attributes(url,testset) {// {{{
   if ($("testset > attributes",testset).length == 0) { return; }
   var ser = '';
-  $("testset > attributes > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  var val = "<content>" + ser + "</content>";
   $.ajax({
-    type: "PUT",
-    url: url + "/properties/values/attributes",
-    data: ({content: val}),
-    error: report_failure
+    type: "GET",
+    url: url + "/properties/values/attributes/uuid",
+    success: function(res){
+      var uuid = $X('<uuid/>');
+          uuid.text($('value',res).text());
+      $("testset > attributes",testset).prepend(uuid);
+      $("testset > attributes > *",testset).each(function(){
+        ser += $(this).serializeXML() + "\n";
+      });
+      var val = "<content>" + ser + "</content>";
+      $.ajax({
+        type: "PUT",
+        url: url + "/properties/values/attributes",
+        data: ({content: val}),
+        error: report_failure
+      });
+    }
   });
 }// }}}
 function load_testset_endpoints(url,testset) {// {{{
