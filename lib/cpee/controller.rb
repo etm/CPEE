@@ -14,6 +14,7 @@
 
 require 'json'
 require 'pp'
+require 'securerandom'
 require ::File.dirname(__FILE__) + '/handler_properties'
 require ::File.dirname(__FILE__) + '/handler_notifications'
 require ::File.dirname(__FILE__) + '/callback'
@@ -96,6 +97,8 @@ module CPEE
       unserialize_dsl!
       unserialize_positions!
       unserialize_attributes!
+
+      @uuid = sync_uuid!
     end
 
     attr_reader :id
@@ -104,6 +107,7 @@ module CPEE
     attr_reader :callbacks
     attr_reader :mutex
     attr_reader :attributes
+    attr_reader :uuid
 
     def base_url
       @opts[:url]
@@ -456,6 +460,17 @@ module CPEE
         end
       end
       nots
+    end #}}}
+
+    def sync_uuid! #{{{
+      val = SecureRandom.uuid
+      uuid = @properties.data.find("/p:properties/p:attributes/p:uuid")
+      if uuid.empty?
+        @properties.modify { |doc| doc.find("/p:properties/p:attributes").first.prepend('p:uuid',val) }
+        val
+      else
+        uuid.first.text
+      end
     end #}}}
 
     def notify(what,content={})# {{{

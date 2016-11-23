@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<testset>
+  <dataelements/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <start xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://assline.wst.univie.ac.at:9200/start</start>
+    <stop xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://assline.wst.univie.ac.at:9200/stop</stop>
+    <centering xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://assline.wst.univie.ac.at:9200/centering</centering>
+    <calibrate xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://assline.wst.univie.ac.at:9200/calibrate</calibrate>
+  </endpoints>
+  <positions/>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a2" endpoint="calibrate">
+        <parameters>
+          <label>"Kalibrieren"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <call id="a1" endpoint="centering" >
+        <parameters>
+          <label>"Zentrieren"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <call id="a3" endpoint="start" >
+        <parameters>
+          <label>"Starten"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <call id="a4" endpoint="timeout" >
+        <parameters>
+          <label>"Timeout"</label>
+          <method>:post</method>
+          <parameters>
+            <timeout>6</timeout>
+          </parameters>
+        </parameters>
+      </call>
+      <call id="a5" endpoint="stop">
+        <parameters>
+          <label>"Stop"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+      <call id="a6" endpoint="calibrate">
+        <parameters>
+          <label>"Kalibrieren"</label>
+          <method>:post</method>
+          <parameters/>
+        </parameters>
+      </call>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Assline</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+  </attributes>
+</testset>

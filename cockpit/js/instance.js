@@ -31,7 +31,7 @@ var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'handlerwrapper' + '&' +
-               'events' + '=' + 'result' + '&' +
+               'events' + '=' + 'error,change' + '&' +
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
 var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
@@ -51,7 +51,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'handlerwrapper' + '&' +
-               'events' + '=' + 'result' + '&' +
+               'events' + '=' + 'error,change' + '&' +
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
 
@@ -185,7 +185,7 @@ function monitor_instance(load) {// {{{
       $("#current-instance").attr('href',url);
       $("#current-instance-properties").attr('href',url + 'properties/');
       $("#current-instance-properties").text('P');
-      $("#current-instance-subscriptions").attr('href',url + 'subscriptions/');
+      $("#current-instance-subscriptions").attr('href',url + 'notifications/subscriptions/');
       $("#current-instance-subscriptions").text('S');
       $("#current-instance-callbacks").attr('href',url + 'callbacks/');
       $("#current-instance-callbacks").text('C');

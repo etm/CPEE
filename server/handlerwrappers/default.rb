@@ -13,6 +13,26 @@
 # <http://www.gnu.org/licenses/>.
 
 class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
+  def self::inform_syntax_error(arguments,err,code)# {{{
+    controller = arguments[0]
+    controller.notify("description/error", :instance => controller.instance, :message => err.message)
+  end# }}}
+  def self::inform_state_change(arguments,newstate) # {{{
+    controller = arguments[0]
+		controller.serialize_state!
+		controller.notify("state/change", :instance => controller.instance, :state => newstate)
+  end # }}}
+  def self::inform_handlerwrapper_error(arguments,err) # {{{
+    controller = arguments[0]
+    controller.notify("handlerwrapper/error", :instance => controller.instance, :message => err.message)
+  end # }}}
+  def self::inform_position_change(arguments,ipc={}) # {{{
+    controller = arguments[0]
+    controller.serialize_positions!
+    ipc[:instance] = controller.instance
+    controller.notify("position/change", ipc)
+  end # }}}
+
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @controller = arguments[0]
     @log_hash = {}
@@ -100,10 +120,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     puts err.backtrace
     @controller.notify("activity/failed", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end # }}}
-
-  def inform_syntax_error(err,code)# {{{
-    @controller.notify("description/error", :instance => @controller.instance, :message => err.message)
-  end# }}}
   def inform_manipulate_change(status,changed_dataelements,changed_endpoints,dataelements,endpoints) # {{{
     unless status.nil?
       @controller.serialize_status!
@@ -116,17 +132,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     unless changed_endpoints.nil?
       @controller.serialize_endpoints!
       @controller.notify("endpoints/change", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position, :changed => changed_endpoints)
-    end
-  end # }}}
-  def inform_position_change(ipc={}) # {{{
-    @controller.serialize_positions!
-    ipc[:instance] = @controller.instance
-    @controller.notify("position/change", ipc)
-  end # }}}
-  def inform_state_change(newstate) # {{{
-    if @controller
-      @controller.serialize_state!
-      @controller.notify("state/change", :instance => @controller.instance, :state => newstate)
     end
   end # }}}
 
@@ -163,13 +168,14 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       if r.is_a? Riddl::Parameter::Simple
         { r.name => r.value }
       elsif r.is_a? Riddl::Parameter::Complex
-        {
-          r.name => {
+        tmp = {
+          r.name == '' ? 'result' : r.name => {
             'mimetype' => r.mimetype,
             'content' => r.value.read
           }
         }
         r.value.rewind
+        tmp
       end
     end
   end
@@ -191,7 +197,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     end
   end
 
-   def simulate(type,nesting,tid,parent,parameters={}) #{{{
+  def simulate(type,nesting,tid,parent,parameters={}) #{{{
     pp "#{type} - #{nesting} - #{tid} - #{parent} - #{parameters.inspect}"
 
     @controller.call_vote("simulating/step",

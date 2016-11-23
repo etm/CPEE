@@ -329,7 +329,7 @@
     <xsl:text>:</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text> =&gt; "</xsl:text>
-    <xsl:value-of select="text()"/>
+    <xsl:value-of select="str:replace(text(),'&quot;','\&quot;')"/>
     <xsl:text>"</xsl:text>
   </xsl:template>
   <xsl:template match="d:*[not(name()='label')]" mode="parameter">
@@ -390,7 +390,7 @@
     <xsl:param name="myspace"/>
     <xsl:if test="text()">
       <xsl:for-each select="str:tokenize(text(), '&#x0A;')">
-        <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),normalize-space(.)))" />
+        <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),string(.)))" />
       </xsl:for-each>
       <xsl:call-template name="print-newline"/>
       <xsl:call-template name="print-space">
@@ -419,7 +419,7 @@
         </xsl:otherwise>
       </xsl:choose>
       <xsl:for-each select="str:tokenize(text(), '&#x0A;')">
-        <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),normalize-space(.)))" />
+        <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),string(.)))" />
       </xsl:for-each>
       <xsl:call-template name="print-newline"/>
       <xsl:call-template name="print-space">
