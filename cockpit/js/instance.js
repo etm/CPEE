@@ -793,7 +793,7 @@ function load_testset_attributes(url,testset) {// {{{
     type: "GET",
     url: url + "/properties/values/attributes/uuid",
     success: function(res){
-      var uuid = $X('<uuid/>');
+      var uuid = $X('<uuid xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/>');
           uuid.text($('value',res).text());
       $("testset > attributes",testset).prepend(uuid);
       $("testset > attributes > *",testset).each(function(){
