@@ -45,7 +45,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
   def activity_handle(passthrough, parameters) # {{{
     @controller.notify("activity/calling", :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
-
     result = []
     if passthrough.nil?
       params = []
