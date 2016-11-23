@@ -9,7 +9,7 @@ require 'riddl/utils/properties'
 require 'riddl/utils/fileserve'
 require 'riddl/utils/downloadify'
 require 'riddl/utils/turtle'
-
+require 'time'
 
 class Logging < Riddl::Implementation #{{{
   LOGTEMPLATE = <<-END
@@ -17,6 +17,7 @@ class Logging < Riddl::Implementation #{{{
       <extension name="Time" prefix="time" uri="http://www.xes-standard.org/time.xesext"/>
       <extension name="Concept" prefix="concept" uri="http://www.xes-standard.org/concept.xesext"/>
       <extension name="Organizational" prefix="org" uri="http://www.xes-standard.org/org.xesext"/>
+	    <extension name="Lifecycle" prefix="lifecycle" uri="http://www.xes-standard.org/lifecycle.xesext"/>
       <trace/>
     </log>
   END
@@ -27,17 +28,23 @@ class Logging < Riddl::Implementation #{{{
       log_dir = ::File.dirname(__FILE__) + "/logs"
       instancenr = @h['CPEE_INSTANCE'].split('/').last
       notification = JSON.parse(@p[3].value)
+      uuid = notification['instance_uuid']
+      activity = notification["activity"]
       parameters = notification['parameters']
-      Dir.mkdir(log_dir+'/'+instancenr) unless Dir.exist?(log_dir+'/'+instancenr)
+      Dir.mkdir(log_dir+'/'+uuid) unless Dir.exist?(log_dir+'/'+uuid)
       time_added=false
-      XML::Smart.modify(log_dir+'/'+instancenr+'/log.xes',LOGTEMPLATE) do |xml|
+      XML::Smart.modify(log_dir+'/'+uuid+'/log.xes',LOGTEMPLATE) do |xml|
         begin
           trace = xml.find("/xmlns:log/xmlns:trace").first
           trace.add 'string', :key => "concept:name", :value => "Instance #{instancenr}" if trace.find('xmlns:string').empty?
           event = trace.add "event"
-          event.add 'string', :key => "concept:name", :value => parameters["label"] if parameters && parameters.has_key?('label')
+          if parameters && parameters.has_key?('label')
+            event.add 'string', :key => "concept:name", :value => parameters["label"] 
+          else
+            event.add 'string', :key => "concept:name", :value => trace.find("string(xmlns:event[xmlns:string[@key='id:id' and @value='#{activity}']]/xmlns:string[@key='concept:name']/@value)")
+          end
           event.add 'string', :key => "concept:instance", :value => notification["endpoint"] if notification["endpoint"]
-          event.add 'string', :key => "id:id", :value => notification["activity"]
+          event.add 'string', :key => "id:id", :value => activity
           event.add 'string', :key => "lifecycle:transition", :value => event_name=='done'?"complete":"start"
           data_send = ((parameters[:arguments].nil? ? [] : parameters[:arguments]) rescue [])
           if data_send.any?
@@ -46,7 +53,7 @@ class Logging < Riddl::Implementation #{{{
               list.add 'string', :key => k , :value => v
             end
           end
-          event.add 'date', :key => "time:timestamp", :value => Time.now unless time_added
+          event.add 'date', :key => "time:timestamp", :value => Time.now.iso8601 unless time_added
         rescue => e
           puts e.message
           puts e.backtrace
@@ -56,15 +63,17 @@ class Logging < Riddl::Implementation #{{{
       log_dir = ::File.dirname(__FILE__) + "/logs"
       instancenr = @h['CPEE_INSTANCE'].split('/').last
       notification = JSON.parse(@p[3].value)
+      uuid = notification['instance_uuid']
+      activity = notification["activity"]
       receiving = notification['received']
-      pp receiving
-      Dir.mkdir(log_dir+'/'+instancenr) unless Dir.exist?(log_dir+'/'+instancenr)
+      Dir.mkdir(log_dir+'/'+uuid) unless Dir.exist?(log_dir+'/'+uuid)
       time_added=false
-      XML::Smart.modify(log_dir+'/'+instancenr+'/log.xes',LOGTEMPLATE) do |xml|
+      XML::Smart.modify(log_dir+'/'+uuid+'/log.xes',LOGTEMPLATE) do |xml|
         begin
           trace = xml.find("/xmlns:log/xmlns:trace").first
           trace.add 'string', :key => "concept:name", :value => "Instance #{instancenr}" if trace.find('xmlns:string').empty?
           event = trace.add "event"
+          event.add 'string', :key => "concept:name", :value => trace.find("string(xmlns:event[xmlns:string[@key='id:id' and @value='#{activity}']]/xmlns:string[@key='concept:name']/@value)")
           event.add 'string', :key => "concept:instance", :value => notification["endpoint"] if notification["endpoint"]
           event.add 'string', :key => "id:id", :value => notification["activity"]
           event.add 'string', :key => "lifecycle:transition", :value => "unknown"
@@ -74,7 +83,7 @@ class Logging < Riddl::Implementation #{{{
               list.add 'string', :key => k, :value => v
             end
           end
-          event.add 'date', :key => "time:timestamp", :value => Time.now unless time_added
+          event.add 'date', :key => "time:timestamp", :value => Time.now.iso8601 unless time_added
         rescue => e
           puts e.message
           puts e.backtrace
