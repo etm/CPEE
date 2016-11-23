@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <testset>
   <dataelements/>
-  <handlerwrapper>PromiseHandlerWrapper</handlerwrapper>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout</timeout>
     <timeout1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout/1</timeout1>
@@ -24,7 +24,7 @@
     <credit_activate xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/activate</credit_activate>
   </endpoints>
   <attributes>
-    <theme>promise</theme>
+    <theme>default</theme>
   </attributes>
   <positions/>
   <description>
@@ -50,7 +50,6 @@
       </call>
       <parallel wait="1" svg-label="">
         <parallel_branch svg-label="">
-          <manipulate id="a16" svg-label="">sleep 2</manipulate>
           <call id="a14" endpoint="timeout1" svg-label="2-woechige Frist">
             <parameters>
               <label>"2-woechige Frist"</label>
@@ -73,7 +72,6 @@
           </call>
           <parallel wait="1" svg-label="">
             <parallel_branch svg-label="">
-              <manipulate id="a21" svg-label="">sleep 2</manipulate>
               <call id="a7" endpoint="timeout2" svg-label="2-woechige Frist">
                 <parameters>
                   <label>"2-woechige Frist"</label>
