@@ -27,10 +27,11 @@ class Logging < Riddl::Implementation #{{{
       log_dir = ::File.dirname(__FILE__) + "/logs"
       instancenr = @h['CPEE_INSTANCE'].split('/').last
       notification = JSON.parse(@p[3].value)
+      uuid = notification['instance_uuid']
       parameters = notification['parameters']
-      Dir.mkdir(log_dir+'/'+instancenr) unless Dir.exist?(log_dir+'/'+instancenr)
+      Dir.mkdir(log_dir+'/'+uuid) unless Dir.exist?(log_dir+'/'+uuid)
       time_added=false
-      XML::Smart.modify(log_dir+'/'+instancenr+'/log.xes',LOGTEMPLATE) do |xml|
+      XML::Smart.modify(log_dir+'/'+uuid+'/log.xes',LOGTEMPLATE) do |xml|
         begin
           trace = xml.find("/xmlns:log/xmlns:trace").first
           trace.add 'string', :key => "concept:name", :value => "Instance #{instancenr}" if trace.find('xmlns:string').empty?
@@ -56,11 +57,11 @@ class Logging < Riddl::Implementation #{{{
       log_dir = ::File.dirname(__FILE__) + "/logs"
       instancenr = @h['CPEE_INSTANCE'].split('/').last
       notification = JSON.parse(@p[3].value)
+      uuid = notification['instance_uuid']
       receiving = notification['received']
-      pp receiving
-      Dir.mkdir(log_dir+'/'+instancenr) unless Dir.exist?(log_dir+'/'+instancenr)
+      Dir.mkdir(log_dir+'/'+uuid) unless Dir.exist?(log_dir+'/'+uuid)
       time_added=false
-      XML::Smart.modify(log_dir+'/'+instancenr+'/log.xes',LOGTEMPLATE) do |xml|
+      XML::Smart.modify(log_dir+'/'+uuid+'/log.xes',LOGTEMPLATE) do |xml|
         begin
           trace = xml.find("/xmlns:log/xmlns:trace").first
           trace.add 'string', :key => "concept:name", :value => "Instance #{instancenr}" if trace.find('xmlns:string').empty?

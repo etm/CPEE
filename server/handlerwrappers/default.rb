@@ -44,7 +44,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def activity_handle(passthrough, parameters) # {{{
-    @controller.notify("activity/calling", :instance => @controller.instance, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
+    @controller.notify("activity/calling", :instance => @controller.instance, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters,:uuid => @controller.uuid)
 
     result = []
     if passthrough.nil?
@@ -110,7 +110,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def inform_activity_done # {{{
-    @controller.notify("activity/done", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position)
+    @controller.notify("activity/done", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position,:uuid => @controller.uuid)
   end # }}}
   def inform_activity_manipulate # {{{
     @controller.notify("activity/manipulating", :endpoint => @handler_endpoint, :instance => @controller.instance, :activity => @handler_position)
@@ -181,7 +181,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end
 
   def callback(result=nil,options={})
-    @controller.notify("activity/receiving", :instance => @controller.instance, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result))
+    @controller.notify("activity/receiving", :instance => @controller.instance, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result),:uuid => @controller.uuid)
     result = simplify_result(result)
     if options['CPEE_UPDATE']
       @handler_returnValue = result
