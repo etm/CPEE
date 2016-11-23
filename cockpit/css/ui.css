@@ -27,6 +27,9 @@ ui-tabbed ui-tabbar ui-behind button {
   margin-left: 0.5em;
 }
 
+#current-instance[href]:after {
+  content: "|";
+}
 #current-instance-properties[href]:after {
   content: "|";
 }
