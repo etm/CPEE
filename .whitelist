@@ -1,4 +1,6 @@
 .gitignore
+.statsauthors
+.whitelist
 AUTHORS
 COPYING
 FEATURES
@@ -23,13 +25,8 @@ cockpit/JS/helpers/doc-adaptor/demo.html
 cockpit/JS/helpers/doc-adaptor/demo1.html
 cockpit/JS/helpers/doc-adaptor/demo2.html
 cockpit/JS/helpers/doc-adaptor/index.html
-cockpit/JS/helpers/jquery.min.js
-cockpit/JS/helpers/jquery.svgdom.js
 cockpit/JS/helpers/parsequery.js
 cockpit/JS/helpers/printf.js
-cockpit/JS/helpers/strftime-min.js
-cockpit/JS/helpers/strftime.min.js
-cockpit/JS/helpers/underscore.min.js
 cockpit/JS/helpers/util.js
 cockpit/JS/main.js
 cockpit/JS/ui.js
@@ -66,6 +63,7 @@ cockpit/contrib/symbols.svg
 cockpit/contrib/transformation1.xsl
 cockpit/contrib/transformation2.xsl
 cockpit/contrib/tree_example.svg
+cockpit/css/filters.svg
 cockpit/css/ui.css
 cockpit/css/wfadaptor.css
 cockpit/index.css
@@ -120,16 +118,7 @@ cockpit/lib/highlight.js/styles/tomorrow.css
 cockpit/lib/highlight.js/styles/vs.css
 cockpit/lib/highlight.js/styles/xcode.css
 cockpit/lib/highlight.js/styles/zenburn.css
-cockpit/lib/jquery-ui.custom.min.js
-cockpit/lib/jquery-ui.custom.min.txt
 cockpit/lib/jquery.browser.js
-cockpit/lib/jquery.caret.min.js
-cockpit/lib/jquery.cookie.js
-cockpit/lib/jquery.min.js
-cockpit/lib/jquery.redraw.js
-cockpit/lib/jquery.svg.min.js
-cockpit/lib/jquery.svgdom.js
-cockpit/lib/jquery.svgdom.min.js
 cockpit/lib/parsequery.js
 cockpit/lib/printf.js
 cockpit/lib/relanxngui.js
@@ -144,6 +133,10 @@ cockpit/lib/wfadaptor-doc/demo2.html
 cockpit/lib/wfadaptor-doc/index.html
 cockpit/lib/wfadaptor.css
 cockpit/lib/wfadaptor.js
+cockpit/rngs/attributes.rng
+cockpit/rngs/call.rng
+cockpit/rngs/dataelements.rng
+cockpit/rngs/endpoints.rng
 cockpit/rngtest.html
 cockpit/rngtest.rng
 cockpit/rngtest.xml
@@ -159,15 +152,21 @@ cockpit/testsets/ADVENTURE Main Loop.xml
 cockpit/testsets/ADVENTURE Order.xml
 cockpit/testsets/ADVENTURE Performance Test 1.xml
 cockpit/testsets/ADVENTURE Performance Test 2.xml
+cockpit/testsets/Assline.xml
 cockpit/testsets/CPEE.xml
 cockpit/testsets/Concurrent.xml
 cockpit/testsets/Coopis Testset.xml
+cockpit/testsets/Dispense.xml
+cockpit/testsets/Ejector.xml
 cockpit/testsets/Endpoints and Data Manipulation.xml
 cockpit/testsets/ICSOC Testset.xml
 cockpit/testsets/Infinity.xml
+cockpit/testsets/LgLinear.xml
 cockpit/testsets/Linear.xml
+cockpit/testsets/Log.xml
 cockpit/testsets/Mangler 1.xml
 cockpit/testsets/Mangler 2.xml
+cockpit/testsets/Promise.xml
 cockpit/testsets/RESCUE - Book Movie - Local.xml
 cockpit/testsets/RESCUE - Book Movie.xml
 cockpit/testsets/RESCUE - Loop-Parallel Injection.xml
@@ -184,9 +183,126 @@ cockpit/testsets/Update.xml
 cockpit/testsets/Worklist Parallel.xml
 cockpit/testsets/Worklist Test CPEE.xml
 cockpit/testsets/Worklist Test.xml
+cockpit/testsets/Worklist Test2.xml
 cockpit/testsets/index.xml
 cockpit/testsets/testsets.xml
 cockpit/testsets/transformations.xml
+cockpit/themes/adventure/.gitignore
+cockpit/themes/adventure/rngs/alternative.rng
+cockpit/themes/adventure/rngs/call.rng
+cockpit/themes/adventure/rngs/callmanipulate.rng
+cockpit/themes/adventure/rngs/choose.rng
+cockpit/themes/adventure/rngs/critical.rng
+cockpit/themes/adventure/rngs/escape.rng
+cockpit/themes/adventure/rngs/finalize.rng
+cockpit/themes/adventure/rngs/group.rng
+cockpit/themes/adventure/rngs/loop.rng
+cockpit/themes/adventure/rngs/manipulate.rng
+cockpit/themes/adventure/rngs/otherwise.rng
+cockpit/themes/adventure/rngs/parallel.rng
+cockpit/themes/adventure/rngs/parallel_branch.rng
+cockpit/themes/adventure/rngs/update.rng
+cockpit/themes/adventure/symbols/alternative.svg
+cockpit/themes/adventure/symbols/call.svg
+cockpit/themes/adventure/symbols/callmanipulate.svg
+cockpit/themes/adventure/symbols/choose.svg
+cockpit/themes/adventure/symbols/choose_exclusive.svg
+cockpit/themes/adventure/symbols/choose_inclusive.svg
+cockpit/themes/adventure/symbols/critical.svg
+cockpit/themes/adventure/symbols/escape.svg
+cockpit/themes/adventure/symbols/loop.svg
+cockpit/themes/adventure/symbols/manipulate.svg
+cockpit/themes/adventure/symbols/otherwise.svg
+cockpit/themes/adventure/symbols/parallel.svg
+cockpit/themes/adventure/symbols/parallel_branch.svg
+cockpit/themes/adventure/symbols/scripts.svg
+cockpit/themes/adventure/symbols/start.svg
+cockpit/themes/adventure/theme.js
+cockpit/themes/default/.gitignore
+cockpit/themes/default/descriptions/call.xml
+cockpit/themes/default/rngs/alternative.rng
+cockpit/themes/default/rngs/call.rng
+cockpit/themes/default/rngs/callmanipulate.rng
+cockpit/themes/default/rngs/choose.rng
+cockpit/themes/default/rngs/critical.rng
+cockpit/themes/default/rngs/escape.rng
+cockpit/themes/default/rngs/finalize.rng
+cockpit/themes/default/rngs/group.rng
+cockpit/themes/default/rngs/loop.rng
+cockpit/themes/default/rngs/manipulate.rng
+cockpit/themes/default/rngs/otherwise.rng
+cockpit/themes/default/rngs/parallel.rng
+cockpit/themes/default/rngs/parallel_branch.rng
+cockpit/themes/default/rngs/update.rng
+cockpit/themes/default/symbols/alternative.svg
+cockpit/themes/default/symbols/call.svg
+cockpit/themes/default/symbols/callmanipulate.svg
+cockpit/themes/default/symbols/choose.svg
+cockpit/themes/default/symbols/choose_exclusive.svg
+cockpit/themes/default/symbols/choose_inclusive.svg
+cockpit/themes/default/symbols/critical.svg
+cockpit/themes/default/symbols/escape.svg
+cockpit/themes/default/symbols/loop.svg
+cockpit/themes/default/symbols/manipulate.svg
+cockpit/themes/default/symbols/otherwise.svg
+cockpit/themes/default/symbols/parallel.svg
+cockpit/themes/default/symbols/parallel_branch.svg
+cockpit/themes/default/symbols/scripts.svg
+cockpit/themes/default/symbols/start.svg
+cockpit/themes/default/theme.js
+cockpit/themes/lego/.gitignore
+cockpit/themes/lego/rngs/alternative.rng
+cockpit/themes/lego/rngs/call.rng
+cockpit/themes/lego/rngs/choose.rng
+cockpit/themes/lego/rngs/critical.rng
+cockpit/themes/lego/rngs/loop.rng
+cockpit/themes/lego/rngs/manipulate.rng
+cockpit/themes/lego/rngs/parallel.rng
+cockpit/themes/lego/rngs/parallel_branch.rng
+cockpit/themes/lego/symbols/alternative.svg
+cockpit/themes/lego/symbols/call.svg
+cockpit/themes/lego/symbols/callmanipulate.svg
+cockpit/themes/lego/symbols/callori.svg
+cockpit/themes/lego/symbols/choose.svg
+cockpit/themes/lego/symbols/choose_exclusive.svg
+cockpit/themes/lego/symbols/choose_inclusive.svg
+cockpit/themes/lego/symbols/critical.svg
+cockpit/themes/lego/symbols/escape.svg
+cockpit/themes/lego/symbols/lego.svg
+cockpit/themes/lego/symbols/loop.svg
+cockpit/themes/lego/symbols/manipulate.svg
+cockpit/themes/lego/symbols/otherwise.svg
+cockpit/themes/lego/symbols/parallel.svg
+cockpit/themes/lego/symbols/parallel_branch.svg
+cockpit/themes/lego/symbols/scripts.svg
+cockpit/themes/lego/symbols/start.svg
+cockpit/themes/lego/theme.js
+cockpit/themes/promise/.gitignore
+cockpit/themes/promise/rngs/alternative.rng
+cockpit/themes/promise/rngs/call.rng
+cockpit/themes/promise/rngs/choose.rng
+cockpit/themes/promise/rngs/critical.rng
+cockpit/themes/promise/rngs/loop.rng
+cockpit/themes/promise/rngs/manipulate.rng
+cockpit/themes/promise/rngs/parallel.rng
+cockpit/themes/promise/rngs/parallel_branch.rng
+cockpit/themes/promise/symbols/alternative.svg
+cockpit/themes/promise/symbols/call.svg
+cockpit/themes/promise/symbols/callmanipulate.svg
+cockpit/themes/promise/symbols/choose.svg
+cockpit/themes/promise/symbols/choose_exclusive.svg
+cockpit/themes/promise/symbols/choose_inclusive.svg
+cockpit/themes/promise/symbols/critical.svg
+cockpit/themes/promise/symbols/escape.svg
+cockpit/themes/promise/symbols/loop.svg
+cockpit/themes/promise/symbols/manipulate.svg
+cockpit/themes/promise/symbols/otherwise.svg
+cockpit/themes/promise/symbols/parallel.svg
+cockpit/themes/promise/symbols/parallel_branch.svg
+cockpit/themes/promise/symbols/preminder.svg
+cockpit/themes/promise/symbols/scripts.svg
+cockpit/themes/promise/symbols/start.svg
+cockpit/themes/promise/theme.js
 cockpit/ui.css
 contrib/BPEL/.vimrc
 contrib/BPEL/Repository/booking.bpel
@@ -227,10 +343,6 @@ examples/cpee-cockpit/JS/graph.js
 examples/cpee-cockpit/JS/helpers/browserdetect.js
 examples/cpee-cockpit/JS/helpers/clippy.swf
 examples/cpee-cockpit/JS/helpers/cors.js
-examples/cpee-cockpit/JS/helpers/jquery.min.js
-examples/cpee-cockpit/JS/helpers/parsequery.js
-examples/cpee-cockpit/JS/helpers/printf.js
-examples/cpee-cockpit/JS/helpers/strftime-min.js
 examples/cpee-cockpit/JS/helpers/util.js
 examples/cpee-cockpit/JS/helpers/yaml.js
 examples/cpee-cockpit/JS/main.js
@@ -364,7 +476,6 @@ examples/dist-wee-ui/static/StyleImages/uni_logo.png
 examples/dist-wee-ui/static/StyleImages/uni_siegel.png
 examples/dist-wee-ui/static/details.js
 examples/dist-wee-ui/static/index.js
-examples/dist-wee-ui/static/jquery-1.3.2.min.js
 examples/dist-wee-ui/static/makerequest.js
 examples/dist-wee-ui/styles/content.css
 examples/dist-wee-ui/styles/uni.css
@@ -506,7 +617,6 @@ examples/ui/content/Images/stop.png
 examples/ui/content/details.html
 examples/ui/content/example.html
 examples/ui/content/index.html
-examples/ui/content/jquery-1.3.2.min.js
 examples/ui/description.xml
 examples/ui/implementation/details.html
 examples/ui/implementation/details.xhtml
@@ -529,7 +639,6 @@ examples/ui/static/example.html
 examples/ui/static/index.css
 examples/ui/static/index.html
 examples/ui/static/index.js
-examples/ui/static/jquery-1.3.2.min.js
 examples/ui/static/makerequest.js
 examples/ui/styles/content.css
 examples/ui/styles/uni.css
@@ -595,6 +704,13 @@ lib/web/index.rb
 lib/web/mask.html
 lib/web/prototype.js
 lib/web/script.js
+log/.vimrc
+log/log.xml
+log/logoverlay.xml
+log/logs/.gitignore
+log/server.rb
+log/template.xes
+log/topics.xml
 nbproject/private/config.properties
 nbproject/private/private.properties
 nbproject/private/private.xml
@@ -678,6 +794,7 @@ server/engine/rngs/callbacks.rng
 server/engine/rngs/instance-info.rng
 server/engine/rngs/instances.rng
 server/handlerwrappers/default.rb
+server/handlerwrappers/log.rb
 server/handlerwrappers/rescue.rb
 server/handlerwrappers/soap.rb
 server/instances/.gitignore
@@ -812,6 +929,7 @@ transformation/signavio/transformation.rb
 transformation/signavio/transformation.xml
 transformation/signavio/translation.xml
 transformation/test/.vimrc
+transformation/test/Farming.bpmn
 transformation/test/Fire.bpmn
 transformation/test/Fire.tree
 transformation/test/Fire.xml
@@ -889,6 +1007,7 @@ transformation/test/Test 9.xml
 transformation/test/Translation Test Cases.pdf
 transformation/test/all.rb
 transformation/test/test.rb
+transformation/test/test.xml
 transformation/transformation.rb
 transformation/transformation.xml
 transformation/transformation_dec.xml

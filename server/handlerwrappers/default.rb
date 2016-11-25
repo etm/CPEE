@@ -35,7 +35,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
   def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
     @controller = arguments[0]
-    @log_hash = {}
     @handler_continue = continue
     @handler_endpoint = endpoint
     @handler_position = position
@@ -45,7 +44,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
   def activity_handle(passthrough, parameters) # {{{
     @controller.notify("activity/calling", :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
-    result = []
     if passthrough.nil?
       params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
@@ -63,6 +61,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       params << Riddl::Header.new("CPEE_BASE",@controller.base_url)
       params << Riddl::Header.new("CPEE_INSTANCE",@controller.instance_url)
       params << Riddl::Header.new("CPEE_CALLBACK",@controller.instance_url + '/callbacks/' + callback)
+      params << Riddl::Header.new("CPEE_CALLBACK_ID",callback)
       params << Riddl::Header.new("CPEE_ACTIVITY",@handler_position)
       params << Riddl::Header.new("CPEE_LABEL",parameters[:label])
       @controller.attributes.each do |key,value|
@@ -138,7 +137,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @controller.call_vote("activity/syncing_after", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position)
   end # }}}
   def vote_sync_before(parameters=nil) # {{{
-    @controller.call_vote("activity/syncing_before", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position)
+    @controller.call_vote("activity/syncing_before", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :parameters => parameters)
   end # }}}
 
   def simplify_result(result)
