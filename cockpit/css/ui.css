@@ -128,7 +128,6 @@ span.vote {
   min-width: 9em;
 }
 #detailcolumn {
-  padding-left: 1.5em;
 }
 
 #dat_log tr:nth-child(odd) { background-color: #e8e8e8; color: #333; }
