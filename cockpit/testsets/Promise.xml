@@ -36,7 +36,7 @@
       </call>
       <call id="a10" endpoint="sreminder1" svg-label="Sendung erste Mahnung">
         <parameters>
-          <label>"Sendung erste Mahnung"</label>
+          <label>"Sent first Reminder"</label>
           <method>:post</method>
           <arguments>
             <knr>data.knr</knr>
@@ -49,7 +49,7 @@
         <parallel_branch svg-label="">
           <call id="a14" endpoint="timeout1" svg-label="2-woechige Frist">
             <parameters>
-              <label>"2-woechige Frist"</label>
+              <label>"1. 2 week deadline"</label>
               <method>:post</method>
               <arguments>
                 <timeout>2</timeout>
@@ -58,7 +58,7 @@
           </call>
           <call id="a11" endpoint="sreminder2" svg-label="Senden zweite Mahnung">
             <parameters>
-              <label>"Senden zweite Mahnung"</label>
+              <label>"Send second reminder"</label>
               <method>:post</method>
               <arguments>
                 <knr>data.knr</knr>
@@ -71,7 +71,7 @@
             <parallel_branch svg-label="">
               <call id="a7" endpoint="timeout2" svg-label="2-woechige Frist">
                 <parameters>
-                  <label>"2-woechige Frist"</label>
+                  <label>"2. 2 week deadline"</label>
                   <method>:post</method>
                   <arguments>
                     <timeout>2</timeout>
@@ -80,7 +80,7 @@
               </call>
               <call id="a1" endpoint="inkasso" svg-label="Registrierung als Inkassokunde">
                 <parameters>
-                  <label>"Registrierung als Inkassokunde"</label>
+                  <label>"Register as debt customer"</label>
                   <method>:put</method>
                   <arguments>
                     <status>data.status</status>
@@ -92,7 +92,7 @@
                 <parallel_branch svg-label="">
                   <call id="a4" endpoint="activation" svg-label="Aktivierung Register fuer Guthaben und Anzeige am Display (Prepayment)">
                     <parameters>
-                      <label>"Aktivierung Register fuer Guthaben und Anzeige am Display (Prepayment)"</label>
+                      <label>"Activate register for credit and display (prepayment)"</label>
                       <method>:post</method>
                       <type>:task</type>
                       <mid>'sid-032C8450-4DF9-435B-8105-F0C13734A7A8'</mid>
@@ -105,7 +105,7 @@
                 <parallel_branch svg-label="">
                   <call id="a2" endpoint="inkasso" svg-label="Umparametrierung des Zaehlers von Normal- auf Inkassobetrieb">
                     <parameters>
-                      <label>"Umparametrierung des Zaehlers von Normal- auf Inkassobetrieb"</label>
+                      <label>"Parametrize meter from normal to debt operation "</label>
                       <method>:put</method>
                       <arguments>
                         <zaehlerid>data.zaehlerid</zaehlerid>
@@ -118,7 +118,7 @@
               </parallel>
               <call id="a6" endpoint="update" svg-label="Aktualisierung Guthaben">
                 <parameters>
-                  <label>"Aktualisierung Guthaben"</label>
+                  <label>"Create credit"</label>
                   <method>:post</method>
                   <arguments/>
                 </parameters>
@@ -126,7 +126,7 @@
               </call>
               <call id="a3" endpoint="timeout3" svg-label="Aufladen">
                 <parameters>
-                  <label>"Aufladen"</label>
+                  <label>"Upate Credit"</label>
                   <method>:post</method>
                   <arguments/>
                 </parameters>
@@ -136,7 +136,7 @@
                 <loop mode="pre_test" condition="data.guthaben&gt;0" svg-label="">
                   <call id="a5" endpoint="consume" svg-label="Verbrauchen">
                     <parameters>
-                      <label>"Verbrauchen"</label>
+                      <label>"Consume Credit"</label>
                       <method>:post</method>
                       <arguments>
                         <knr>data.knr</knr>
@@ -147,7 +147,7 @@
                 </loop>
                 <call id="a13" endpoint="decide" svg-label="Gesetzl. Frist">
                   <parameters>
-                    <label>"Gesetzl. Frist"</label>
+                    <label>"Legal waiting time"</label>
                     <method>:post</method>
                     <arguments>
                       <knr>data.knr</knr>
@@ -158,7 +158,7 @@
               </loop>
               <call id="a17" endpoint="timeout" svg-label="Abschaltung">
                 <parameters>
-                  <label>"Abschaltung"</label>
+                  <label>"Trigger switching off"</label>
                   <method>:post</method>
                   <arguments>
                     <knr>data.knr</knr>
@@ -168,7 +168,7 @@
               </call>
               <call id="a8" endpoint="credit_worthy" svg-label="Kreditwuerdig">
                 <parameters>
-                  <label>"Kreditwuerdig"</label>
+                  <label>"Creditworthy"</label>
                   <method>:post</method>
                   <arguments>
                     <knr>data.knr</knr>
@@ -221,7 +221,7 @@
             <parallel_branch svg-label="">
               <call id="a9" endpoint="preminder2" svg-label="Kunde zahlt">
                 <parameters>
-                  <label>"Kunde zahlt"</label>
+                  <label>"paying2 "</label>
                   <method>:post</method>
                   <arguments/>
                 </parameters>
@@ -232,7 +232,7 @@
         <parallel_branch svg-label="">
           <call id="a15" endpoint="preminder1" svg-label="Kunde zahlt">
             <parameters>
-              <label>"Kunde zahlt"</label>
+              <label>"paying1"</label>
               <method>:post</method>
               <arguments/>
             </parameters>
