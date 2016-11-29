@@ -291,6 +291,7 @@ function adaptor_init(url,theme,dslx) {
     graphrealization.notify = function(svgid) {
       var g = graphrealization.get_description();
       save['graph'] = $X(g);
+      save['graph'].find('[xmlns]').removeAttr('xmlns');
       $.ajax({
         type: "PUT",
         url: url + "/properties/values/description/",

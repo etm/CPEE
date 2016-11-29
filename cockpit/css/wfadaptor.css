@@ -71,11 +71,6 @@ svg .stand {
   stroke-opacity:1;
   stroke-dasharray:none;
 }
-svg .clicked {
-  fill: grey;
-  stroke: grey;
-  filter: url(filters.svg#black-glow);
-}
 svg .normal {
   fill:#000000;
   fill-opacity:1;
