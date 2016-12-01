@@ -253,8 +253,8 @@
     <xsl:call-template name="print-newline"/>
   </xsl:template>
   <xsl:template match="d:otherwise">
-    <xsl:if test="text()">
-      <xsl:param name="myspace"/>
+    <xsl:param name="myspace"/>
+    <xsl:if test="*">
       <xsl:call-template name="print-space">
         <xsl:with-param name="i">1</xsl:with-param>
         <xsl:with-param name="count">
