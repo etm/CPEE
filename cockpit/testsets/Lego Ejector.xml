@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<testset>
+  <dataelements/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <pickUp xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/pickUp</pickUp>
+    <eject xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/eject</eject>
+  </endpoints>
+  <positions/>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="pickUp">
+        <parameters>
+          <label>Pickup</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+      </call>
+      <call id="a2" endpoint="eject">
+        <parameters>
+          <label>Eject</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+      </call>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Lego Ejector</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+  </attributes>
+</testset>

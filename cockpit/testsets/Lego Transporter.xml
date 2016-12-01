@@ -3,7 +3,7 @@
   <dataelements>
     <i xmlns="http://riddl.org/ns/common-patterns/properties/1.0">1</i>
   </dataelements>
-  <handlerwrapper>PromiseHandlerWrapper</handlerwrapper>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <folders xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/folders</folders>
     <ldown xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://pusher.wst.univie.ac.at:9200/lever/down</ldown>
@@ -19,149 +19,149 @@
   <positions/>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <call id="a15" endpoint="speed" svg-label="Set speed for going left">
+      <call id="a15" endpoint="speed">
         <parameters>
-          <label>"Set speed for going left"</label>
+          <label>Set speed for going left</label>
           <method>:put</method>
-          <parameters>
+          <arguments>
             <speed>-750</speed>
-          </parameters>
+          </arguments>
         </parameters>
       </call>
-      <call id="a14" endpoint="gpos" svg-label="Go to left end">
+      <call id="a14" endpoint="gpos">
         <parameters>
-          <label>"Go to left end"</label>
+          <label>Go to left end</label>
           <method>:post</method>
-          <parameters>
+          <arguments>
             <pos>0</pos>
             <methode>1</methode>
-          </parameters>
+          </arguments>
         </parameters>
       </call>
-      <loop pre_test="data.i&lt;3" svg-label="">
-        <call id="a13" endpoint="gfolder" svg-label="Go to next folder">
+      <loop mode="pre_test" condition="data.i&lt;3">
+        <call id="a13" endpoint="gfolder">
           <parameters>
-            <label>"Go to next folder"</label>
+            <label>Go to next folder</label>
             <method>:post</method>
-            <parameters/>
+            <arguments/>
           </parameters>
           <finalize output="result">data.i = data.i+1 </finalize>
         </call>
       </loop>
-      <call id="a2" endpoint="ldown" svg-label="Lever down">
+      <call id="a2" endpoint="ldown">
         <parameters>
-          <label>"Lever down"</label>
+          <label>Lever down</label>
           <method>:post</method>
-          <parameters/>
+          <arguments/>
         </parameters>
       </call>
-      <call id="a3" endpoint="gfolder" svg-label="Go to next folder">
+      <call id="a3" endpoint="gfolder">
         <parameters>
-          <label>"Go to next folder"</label>
+          <label>Go to next folder</label>
           <method>:post</method>
-          <parameters/>
+          <arguments/>
         </parameters>
       </call>
-      <call id="a4" endpoint="dispense" svg-label="Dispense">
+      <call id="a4" endpoint="dispense">
         <parameters>
-          <label>"Dispense"</label>
+          <label>Dispense</label>
           <method>:post</method>
-          <parameters/>
+          <arguments/>
         </parameters>
       </call>
-      <call id="a5" endpoint="lup" svg-label="Lever up">
+      <call id="a5" endpoint="lup">
         <parameters>
-          <label>"Lever up"</label>
+          <label>Lever up</label>
           <method>:post</method>
-          <parameters/>
+          <arguments/>
         </parameters>
       </call>
-      <call id="a16" endpoint="speed" svg-label="Set Speed for right">
+      <call id="a16" endpoint="speed">
         <parameters>
-          <label>"Set Speed for right"</label>
+          <label>Set Speed for right</label>
           <method>:put</method>
-          <parameters>
+          <arguments>
             <speed>750</speed>
-          </parameters>
+          </arguments>
         </parameters>
       </call>
-      <call id="a17" endpoint="gpos" svg-label="Go to right end">
+      <call id="a17" endpoint="gpos">
         <parameters>
-          <label>"Go to right end"</label>
+          <label>Go to right end</label>
           <method>:post</method>
-          <parameters>
+          <arguments>
             <pos>3</pos>
             <methode>1</methode>
-          </parameters>
+          </arguments>
         </parameters>
       </call>
-      <call id="a18" endpoint="ldown" svg-label="Lower Lever">
+      <call id="a18" endpoint="ldown">
         <parameters>
-          <label>"Lower Lever"</label>
+          <label>Lower Lever</label>
           <method>:post</method>
-          <parameters/>
+          <arguments/>
         </parameters>
       </call>
       <parallel svg-label="">
         <parallel_branch svg-label="">
           <call id="a6" endpoint="speed">
             <parameters>
-              <label>"Set Speed to go left"</label>
+              <label>Set Speed to go left</label>
               <method>:put</method>
-              <parameters>
+              <arguments>
                 <speed>-50</speed>
-              </parameters>
+              </arguments>
             </parameters>
           </call>
-          <call id="a7" endpoint="mstart" svg-label="Go left">
+          <call id="a7" endpoint="mstart">
             <parameters>
-              <label>"Go left"</label>
+              <label>Go left</label>
               <method>:post</method>
-              <parameters/>
+              <arguments/>
             </parameters>
           </call>
         </parallel_branch>
         <parallel_branch svg-label="">
-          <call id="a8" endpoint="sstop" svg-label="StopSensor pusher">
+          <call id="a8" endpoint="sstop">
             <parameters>
-              <label>"StopSensor pusher"</label>
+              <label>StopSensor pusher</label>
               <method>:post</method>
-              <parameters/>
+              <arguments/>
             </parameters>
           </call>
         </parallel_branch>
       </parallel>
-      <call id="a9" endpoint="mstop" svg-label="Stop Motor">
+      <call id="a9" endpoint="mstop">
         <parameters>
-          <label>"Stop Motor"</label>
+          <label>Stop Motor</label>
           <method>:post</method>
-          <parameters/>
+          <arguments/>
         </parameters>
       </call>
-      <call id="a10" endpoint="lup" svg-label="Raise Lever">
+      <call id="a10" endpoint="lup">
         <parameters>
-          <label>"Raise Lever"</label>
+          <label>Raise Lever</label>
           <method>:post</method>
-          <parameters/>
+          <arguments/>
         </parameters>
       </call>
-      <call id="a11" endpoint="speed" svg-label="Set Speed for right">
+      <call id="a11" endpoint="speed">
         <parameters>
-          <label>"Set Speed for right"</label>
+          <label>Set Speed for right</label>
           <method>:put</method>
-          <parameters>
+          <arguments>
             <speed>750</speed>
-          </parameters>
+          </arguments>
         </parameters>
       </call>
-      <call id="a12" endpoint="gpos" svg-label="Go to right end">
+      <call id="a12" endpoint="gpos">
         <parameters>
-          <label>"Go to right end"</label>
+          <label>Go to right end</label>
           <method>:post</method>
-          <parameters>
+          <arguments>
             <pos>3</pos>
             <methode>1</methode>
-          </parameters>
+          </arguments>
         </parameters>
       </call>
     </description>
@@ -172,7 +172,7 @@
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">fvfg</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Lego Transporter</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
   </attributes>
 </testset>

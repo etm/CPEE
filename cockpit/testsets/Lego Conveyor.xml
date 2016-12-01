@@ -14,28 +14,28 @@
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a2" endpoint="calibrate">
         <parameters>
-          <label>"Kalibrieren"</label>
+          <label>Kalibrieren</label>
           <method>:post</method>
           <arguments/>
         </parameters>
       </call>
       <call id="a1" endpoint="centering" >
         <parameters>
-          <label>"Zentrieren"</label>
+          <label>Zentrieren</label>
           <method>:post</method>
           <arguments/>
         </parameters>
       </call>
       <call id="a3" endpoint="start" >
         <parameters>
-          <label>"Starten"</label>
+          <label>Starten</label>
           <method>:post</method>
           <arguments/>
         </parameters>
       </call>
       <call id="a4" endpoint="timeout" >
         <parameters>
-          <label>"Timeout"</label>
+          <label>Timeout</label>
           <method>:post</method>
           <arguments>
             <timeout>6</timeout>
@@ -44,14 +44,14 @@
       </call>
       <call id="a5" endpoint="stop">
         <parameters>
-          <label>"Stop"</label>
+          <label>Stop</label>
           <method>:post</method>
           <arguments/>
         </parameters>
       </call>
       <call id="a6" endpoint="calibrate">
         <parameters>
-          <label>"Kalibrieren"</label>
+          <label>Kalibrieren</label>
           <method>:post</method>
           <arguments/>
         </parameters>
@@ -64,7 +64,7 @@
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Assline</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Lego Conveyor</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
   </attributes>
 </testset>

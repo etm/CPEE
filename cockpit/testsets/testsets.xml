@@ -1,6 +1,5 @@
 <testsets>
   <testset>Log</testset>
-  <testset>Assline</testset>
   <testset>Infinity</testset>
   <testset>SOPROMO Test Sonification</testset>
   <testset>Linear</testset>
@@ -22,4 +21,7 @@
   <testset>Worklist Parallel</testset>
   <testset>Update</testset>
   <testset>Promise</testset>
+  <testset>Lego Conveyor</testset>
+  <testset>Lego Transporter</testset>
+  <testset>Lego Ejector</testset>
 </testsets>
