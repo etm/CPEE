@@ -211,7 +211,7 @@ function WFAdaptorManifestation(adaptor) {
        'params': [self.adaptor.description.elements.alternative, node]}];
       if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length)
         childs.push({'label': 'Otherwise',
-         'function_call': func,
+         'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.otherwise.illustrator.svg.clone(),
          'params': [self.adaptor.description.elements.otherwise, node]});
       if(node.parents('parallel').length > node.parents('parallel_branch').length)

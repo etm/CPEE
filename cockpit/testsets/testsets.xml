@@ -15,7 +15,6 @@
   <testset>Syncing P34 1</testset>
   <testset>Syncing P34 2</testset>
   <testset>Syncing P34 3</testset>
-  <testset>Signavio Model Base</testset>
   <testset>Worklist Test</testset>
   <testset>Worklist Test CPEE</testset>
   <testset>Worklist Parallel</testset>
@@ -24,4 +23,5 @@
   <testset>Lego Conveyor</testset>
   <testset>Lego Transporter</testset>
   <testset>Lego Ejector</testset>
+  <testset>Lego Crane</testset>
 </testsets>
