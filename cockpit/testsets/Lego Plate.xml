@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<testset>
+  <dataelements>
+    <i xmlns="http://riddl.org/ns/common-patterns/properties/1.0">0</i>
+  </dataelements>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <move xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://plate.wst.univie.ac.at:9200/go-next</move>
+  </endpoints>
+  <positions/>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <loop mode="pre_test" condition="data.i&lt;2">
+        <call id="a1" endpoint="move">
+          <parameters>
+            <label>Move to next station</label>
+            <method>:post</method>
+            <arguments/>
+          </parameters>
+          <finalize output="result">data.i= data.i + 1</finalize>
+          <update output="result"/>
+        </call>
+      </loop>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Lego Plate</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+  </attributes>
+</testset>

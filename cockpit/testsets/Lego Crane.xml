@@ -1,0 +1,113 @@
+<testset>
+  <dataelements/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <movex xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/move/x</movex>
+    <vacuum xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/vacuum</vacuum>
+    <movey xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/move/y</movey>
+  </endpoints>
+  <positions/>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="movex">
+        <parameters>
+          <label>Go to Conveyor</label>
+          <method>:post</method>
+          <arguments>
+            <pos>"conveyor"</pos>
+          </arguments>
+        </parameters>
+      </call>
+      <call id="a2" endpoint="vacuum">
+        <parameters>
+          <label/>
+          <method>:post</method>
+          <arguments>
+            <switch>true</switch>
+          </arguments>
+        </parameters>
+      </call>
+      <call id="a3" endpoint="movey">
+        <parameters>
+          <label>Raise Crane</label>
+          <method>:post</method>
+          <arguments>
+            <up>true</up>
+          </arguments>
+        </parameters>
+      </call>
+      <call id="a4" endpoint="movex">
+        <parameters>
+          <label>Go to Plate</label>
+          <method>:post</method>
+          <arguments>
+            <pos>"plate"</pos>
+          </arguments>
+        </parameters>
+      </call>
+      <call id="a5" endpoint="movey">
+        <parameters>
+          <label>Lower Crane</label>
+          <method>:post</method>
+          <arguments>
+            <up>false</up>
+          </arguments>
+        </parameters>
+      </call>
+      <call id="a6" endpoint="vacuum">
+        <parameters>
+          <label>Turn off vacuum</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+      </call>
+      <call id="a7" endpoint="timeout">
+        <parameters>
+          <label>Wait a bissl</label>
+          <method>:post</method>
+          <arguments>
+            <timeout>5</timeout>
+          </arguments>
+        </parameters>
+      </call>
+      <call id="a8" endpoint="movey">
+        <parameters>
+          <label>Raise Vacuum</label>
+          <method>:post</method>
+          <arguments>
+            <up>true</up>
+          </arguments>
+        </parameters>
+      </call>
+      <call id="a9" endpoint="movex">
+        <parameters>
+          <label>Go to Conveyor</label>
+          <method>:post</method>
+          <arguments>
+            <pos>"conveyor"</pos>
+          </arguments>
+        </parameters>
+      </call>
+      <call id="a10" endpoint="movey">
+        <parameters>
+          <label>Lower Crane</label>
+          <method>:post</method>
+          <arguments>
+            <up>false</up>
+          </arguments>
+        </parameters>
+      </call>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Lego Crane</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">default</theme>
+  </attributes>
+</testset>

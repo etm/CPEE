@@ -24,4 +24,5 @@
   <testset>Lego Transporter</testset>
   <testset>Lego Ejector</testset>
   <testset>Lego Crane</testset>
+  <testset>Lego Plate</testset>
 </testsets>

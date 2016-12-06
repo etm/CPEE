@@ -3,8 +3,8 @@
   <dataelements/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
-    <pickUp xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/pickUp</pickUp>
-    <eject xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/eject</eject>
+    <pickUp xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/pickUp</pickUp>
+    <eject xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/eject</eject>
   </endpoints>
   <positions/>
   <description>
