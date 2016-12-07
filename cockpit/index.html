@@ -105,11 +105,6 @@
     <style>
       /* has to be fucking inline, because firefox and chrome disagree how to handle filter urls */
       /* shit balls, no elegance is left in this world */
-      svg .clicked {
-        fill: grey;
-        stroke: grey;
-        filter: url(#black-glow);
-      }
     </style>
   </head>
   <body data-defaultport="9298" data-theme-base="themes" is="x-ui">
@@ -163,22 +158,6 @@
        </p>
     </div> <!--}}}-->
 
-    <svg xmlns="http://www.w3.org/2000/svg" height="0">
-      <defs>
-        <filter id="black-glow">
-          <feColorMatrix type="matrix" values=
-            "0 0 0 0   0
-             0 0 0 0   0
-             0 0 0 0   0
-             0 0 0 1   0"/>
-          <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-          <feMerge>
-            <feMergeNode in="coloredBlur"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-      </defs>
-    </svg>
     <div class='hidden' id='relaxngworker'></div>
 
     <div class='menu' id='predefinedtestsets'></div>

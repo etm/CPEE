@@ -94,6 +94,12 @@ svg .black {
   stroke-dasharray:none;
 }
 
+svg .clicked {
+  fill: grey;
+  stroke: grey;
+  filter: drop-shadow(16px 16px 0.5em rgba(0,0,0,0.9));
+}
+
 svg .unknown {
   fill:#FF0000;
   fill-opacity:1;
