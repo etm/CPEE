@@ -340,35 +340,9 @@
 
     <xsl:choose>
       <xsl:when test="count(*) &gt; 0">
-        <xsl:text>{</xsl:text>
-        <xsl:apply-templates select="d:*" mode="parameter"/>
-        <xsl:text>}</xsl:text>
-      </xsl:when>
-      <xsl:when test="count(@*) &gt; 0">
-        <xsl:text>Struct.new(:value,</xsl:text>
-        <xsl:for-each select="@*">
-          <xsl:if test="position() &gt;1">, </xsl:if>
-          <xsl:text>:</xsl:text>
-          <xsl:value-of select="name(.)"/>
-        </xsl:for-each>
-        <xsl:text>).new(</xsl:text>
-        <xsl:text></xsl:text>
-        <xsl:choose>
-          <xsl:when test="not(node())">
-            <xsl:text>nil</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="text()"/>
-          </xsl:otherwise>
-        </xsl:choose>
-        <xsl:text>,</xsl:text>
-        <xsl:for-each select="@*">
-          <xsl:if test="position() &gt;1">, </xsl:if>
-          <xsl:text>"</xsl:text>
-          <xsl:value-of select="string(.)"/>
-          <xsl:text>"</xsl:text>
-        </xsl:for-each>
-        <xsl:text>)</xsl:text>
+        <xsl:text>[</xsl:text>
+        <xsl:apply-templates select="d:*" mode="sub"/>
+        <xsl:text>]</xsl:text>
       </xsl:when>
       <xsl:when test="not(node())">
         <xsl:text>nil</xsl:text>
@@ -378,6 +352,39 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+  <xsl:template match="d:*" mode="sub">
+    <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
+    <xsl:text>Struct.new(:name, :value</xsl:text>
+
+    <xsl:if test="count(@*) &gt; 0">
+      <xsl:for-each select="@*">
+        <xsl:text>, </xsl:text>
+        <xsl:text>:</xsl:text>
+        <xsl:value-of select="name(.)"/>
+      </xsl:for-each>
+    </xsl:if>
+
+    <xsl:text>).new(</xsl:text>
+    <xsl:text>:</xsl:text>
+    <xsl:value-of select="name()"/>
+    <xsl:text>, </xsl:text>
+    <xsl:choose>
+      <xsl:when test="not(node())">
+        <xsl:text>nil</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="text()"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:for-each select="@*">
+      <xsl:text>, </xsl:text>
+      <xsl:text>"</xsl:text>
+      <xsl:value-of select="string(.)"/>
+      <xsl:text>"</xsl:text>
+    </xsl:for-each>
+    <xsl:text>)</xsl:text>
+  </xsl:template>
+
   <xsl:template match="d:finalize | d:update" mode="part-of-call">
     <xsl:param name="myspace"/>
     <xsl:call-template name="print-content">

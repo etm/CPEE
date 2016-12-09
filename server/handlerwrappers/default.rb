@@ -47,15 +47,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     if passthrough.nil?
       params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      (parameters[:arguments] || {}).each do |k,v|
-        if v.is_a?(Struct)
-          if v.respond_to?(:mimetype)
-            params <<  Riddl::Parameter::Complex.new("#{k}",v.mimetype,v.value)
-          else
-            params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v.value))
-          end
+      (parameters[:arguments] || []).each do |s|
+        if s.respond_to?(:mimetype)
+          params <<  Riddl::Parameter::Complex.new(s.name.to_s,v.mimetype,v.value)
         else
-          params <<  Riddl::Parameter::Simple.new("#{k}",CPEE::ValueHelper::generate(v))
+          params <<  Riddl::Parameter::Simple.new(s.name.to_s,CPEE::ValueHelper::generate(s.value))
         end
       end
       params << Riddl::Header.new("CPEE_BASE",@controller.base_url)
@@ -151,8 +147,12 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
           result = XML::Smart::string(result[0].value.read) rescue nil
         elsif result[0].mimetype == 'text/plain'
           result = result[0].value.read
+          result = result.to_f if result == result.to_f.to_s
+          result = result.to_i if result == result.to_i.to_s
         elsif result[0].mimetype == 'text/html'
-          result[0].value.read
+          result = result[0].value.read
+          result = result.to_f if result == result.to_f.to_s
+          result = result.to_i if result == result.to_i.to_s
         else
           result = result[0]
         end
