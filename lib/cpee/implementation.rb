@@ -19,6 +19,9 @@ require 'riddl/utils/notifications_producer'
 require 'riddl/utils/properties'
 require ::File.dirname(__FILE__) + '/controller'
 
+require 'ostruct'
+def →(a); OpenStruct.new(a); end
+
 module CPEE
 
   SERVER = File.expand_path(File.dirname(__FILE__) + '/../cpee.xml')

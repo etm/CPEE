@@ -354,20 +354,11 @@
   </xsl:template>
   <xsl:template match="d:*" mode="sub">
     <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
-    <xsl:text>Struct.new(:name, :value</xsl:text>
 
-    <xsl:if test="count(@*) &gt; 0">
-      <xsl:for-each select="@*">
-        <xsl:text>, </xsl:text>
-        <xsl:text>:</xsl:text>
-        <xsl:value-of select="name(.)"/>
-      </xsl:for-each>
-    </xsl:if>
-
-    <xsl:text>).new(</xsl:text>
-    <xsl:text>:</xsl:text>
+    <xsl:text>→(</xsl:text>
+    <xsl:text>:name =&gt; :</xsl:text>
     <xsl:value-of select="name()"/>
-    <xsl:text>, </xsl:text>
+    <xsl:text>, :value =&gt; </xsl:text>
     <xsl:choose>
       <xsl:when test="not(node())">
         <xsl:text>nil</xsl:text>
@@ -377,8 +368,9 @@
       </xsl:otherwise>
     </xsl:choose>
     <xsl:for-each select="@*">
-      <xsl:text>, </xsl:text>
-      <xsl:text>"</xsl:text>
+      <xsl:text>, :</xsl:text>
+      <xsl:value-of select="name()"/>
+      <xsl:text> =&gt; "</xsl:text>
       <xsl:value-of select="string(.)"/>
       <xsl:text>"</xsl:text>
     </xsl:for-each>
