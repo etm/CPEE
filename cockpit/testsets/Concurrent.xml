@@ -10,24 +10,26 @@
   <endpoints>
     <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
   </endpoints>
-  <description xmlns="http://cpee.org/ns/description/1.0">
-    <parallel>
-      <loop mode="pre_test" condition="data.persons > 0">
-        <parallel_branch pass="data.persons" local="p">
-          <call id="a2" endpoint="bookHotel">
-            <parameters>
-              <method>:post</method>
-              <arguments>
-                <to>"Vienna"</to>
-              </arguments>
-            </parameters>
-            <finalize output="result">data.hotels &lt;&lt; result.value('id')
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <parallel>
+        <loop mode="pre_test" condition="data.persons > 0">
+          <parallel_branch pass="data.persons" local="p">
+            <call id="a2" endpoint="bookHotel">
+              <parameters>
+                <method>:post</method>
+                <arguments>
+                  <to>"Vienna"</to>
+                </arguments>
+              </parameters>
+              <finalize output="result">data.hotels &lt;&lt; result.value('id')
 data.costs += result.value('costs').to_f</finalize>
-          </call>
-        </parallel_branch>
-        <manipulate id="a3">data.persons -= 1</manipulate>
-      </loop>
-    </parallel>
+            </call>
+          </parallel_branch>
+          <manipulate id="a3">data.persons -= 1</manipulate>
+        </loop>
+      </parallel>
+    </description>
   </description>
   <transformation>
     <description type='copy'/>
