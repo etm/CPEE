@@ -355,7 +355,7 @@
   <xsl:template match="d:*" mode="sub">
     <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
 
-    <xsl:text>→(</xsl:text>
+    <xsl:text>⭐(</xsl:text>
     <xsl:text>:name =&gt; :</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text>, :value =&gt; </xsl:text>
