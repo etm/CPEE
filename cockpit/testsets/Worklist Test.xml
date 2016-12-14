@@ -4,7 +4,7 @@
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <cb xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://solo.wst.univie.ac.at:9302</cb>
+    <cb xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org:9398</cb>
   </endpoints>
   <positions/>
   <description>
@@ -17,7 +17,7 @@
             <orgmodel>"organisation1"</orgmodel>
             <domain>"Virtual Business 1"</domain>
             <form>"http://solo.wst.univie.ac.at/form/form-f.html"</form>
-            <role>"regular"</role>
+            <role>"Regular"</role>
             <schaden>"55546"</schaden>
             <text>"fetzen hin"</text>
           </arguments>
