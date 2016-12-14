@@ -82,6 +82,17 @@ svg .normal {
   stroke-opacity:1;
   stroke-dasharray:none;
 }
+svg .white {
+  fill:#000000;
+  fill-opacity:1;
+  stroke:#ffffff;
+  stroke-width:2.06896567;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
 svg .black {
   fill:#000000;
   fill-opacity:1;

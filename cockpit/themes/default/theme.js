@@ -113,8 +113,14 @@ function WFAdaptorManifestation(adaptor) {
       'resolve_symbol' : function(node) {
         if($(node).attr('endpoint') == 'instantiation') {
           return 'callinstantiation';
-        } else if($(node).attr('endpoint') == 'correlation') {
-          return 'callcorrelation';
+        } else if($(node).attr('endpoint') == 'correlation_send') {
+          return 'callcorrelationsend';
+        } else if($(node).attr('endpoint') == 'correlation_receive') {
+          return 'callcorrelationreceive';
+        } else if($(node).attr('endpoint') == 'worklist' && $('finalize,update', node).length > 0) {
+          return 'callmanipulateworklist';
+        } else if($(node).attr('endpoint') == 'worklist') {
+          return 'callworklist';
         } else if($('parameters > service', node).length > 0) {
           return 'callinjection';
         } else if($('finalize,update', node).length > 0) {
@@ -740,4 +746,40 @@ function WFAdaptorManifestation(adaptor) {
     'type' : 'abstract',
     'description': [self.adaptor.theme_dir + 'rngs/update.rng',self.adaptor.theme_dir + 'rngs/finalize.rng']
   }; /*}}}*/
+  this.elements.callinstantiation = { /*{{{*/
+    'type' : 'abstract',
+    'parent': 'call',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callinstantiation.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.callcorrelationsend = { /*{{{*/
+    'type' : 'abstract',
+    'parent': 'call',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callcorrelationsend.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.callcorrelationreceive = { /*{{{*/
+    'type' : 'abstract',
+    'parent': 'call',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callcorrelationreceive.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.callworklist = { /*{{{*/
+    'type' : 'abstract',
+    'parent': 'call',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callworklist.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.callmanipulateworklist = { /*{{{*/
+    'type' : 'abstract',
+    'parent': 'call',
+    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callmanipulateworklist.svg'
+    },//}}}
+  };  /*}}}*/
 }
