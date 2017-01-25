@@ -136,6 +136,9 @@ span.vote {
 
 #dat_details { border: 0 none; border-top: 1em solid white; border-bottom: 1em solid white; width: inherit; border-right: 1em solid white; }
 
-#disclaimer { margin: 1em; }
+#disclaimer {
+  padding: 1em;
+  overflow: auto;
+}
 #disclaimer p { max-width: 80ex; text-align: justify; }
 #disclaimer input { margin:0; padding:0; vertical-align:bottom; margin-right: 0.5em; }
