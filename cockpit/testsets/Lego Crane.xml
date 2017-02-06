@@ -3,7 +3,7 @@
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <movex xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/move/x</movex>
+    <movex xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cranex.wst.univie.ac.at:9200/move/x</movex>
     <vacuum xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/vacuum</vacuum>
     <movey xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/move/y</movey>
   </endpoints>

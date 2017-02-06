@@ -111,15 +111,15 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes' : 'this',
       'resolve_symbol' : function(node) {
-        if($(node).attr('endpoint') == 'instantiation') {
+        if($(node).attr('endpoint').match(/^instantiation/)) {
           return 'callinstantiation';
-        } else if($(node).attr('endpoint') == 'correlation_send') {
+        } else if($(node).attr('endpoint').match(/^correlation_send/)) {
           return 'callcorrelationsend';
-        } else if($(node).attr('endpoint') == 'correlation_receive') {
+        } else if($(node).attr('endpoint').match(/^correlation_receive/)) {
           return 'callcorrelationreceive';
-        } else if($(node).attr('endpoint') == 'worklist' && $('finalize,update', node).length > 0) {
+        } else if($(node).attr('endpoint').match(/^worklist/) && $('finalize,update', node).length > 0) {
           return 'callmanipulateworklist';
-        } else if($(node).attr('endpoint') == 'worklist') {
+        } else if($(node).attr('endpoint').match(/^worklist/)) {
           return 'callworklist';
         } else if($('parameters > service', node).length > 0) {
           return 'callinjection';

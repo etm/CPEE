@@ -57,9 +57,9 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
 
 $(document).ready(function() {// {{{
   $("input[name=base-url]").val(location.protocol + "//" + location.host + ":" + $('body').data('defaultport'));
-  $("button[name=base]").click(function(){ create_instance(null); });
-  $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance(false); });
-  $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),load_testset); });
+  $("button[name=base]").click(function(){ create_instance(null,false); });
+  $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance(false,false); });
+  $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),function(){ load_testset(false) } ); });
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodelfile]").click(load_modelfile);
   $("button[name=loadmodeltype]").click(function(e){new CustomMenu(e).menu($('#modeltypes'),load_modeltype, $("button[name=loadmodeltype]")); });
@@ -84,18 +84,23 @@ $(document).ready(function() {// {{{
           if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
         });
         ui_activate_tab("#tabexecution");
-        monitor_instance(true);
+        monitor_instance(true,false);
       } else if (q.load) {
         $("#predefinedtestsets div.menuitem").each(function(k,v){
           if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
         });
         ui_activate_tab("#tabexecution");
-        create_instance(q.load);
+        create_instance(q.load,false);
       } else if (q.monitor) {
         $("input[name=instance-url]").val(q.monitor);
         ui_activate_tab("#tabexecution");
-        // ui_toggle_vis_tab($("#instance td.switch"));
-        monitor_instance(false);
+        monitor_instance(false,false);
+      } else if (q.exec) {
+        $("#predefinedtestsets div.menuitem").each(function(k,v){
+          if ($(v).text() == q.exec) { $(v).attr('data-selected','selected'); }
+        });
+        ui_activate_tab("#tabexecution");
+        create_instance(q.exec,true);
       }
     }
   });
@@ -142,7 +147,7 @@ function check_subscription() { // {{{
   }
 }// }}}
 
-function create_instance(ask) {// {{{
+function create_instance(ask,exec) {// {{{
   var info = ask ? ask: prompt("Instance info?", "Enter info here");
   if (info != null) {
     if (info.match(/\S/)) {
@@ -154,7 +159,7 @@ function create_instance(ask) {// {{{
         data: "info=" + info,
         success: function(res){
           $("input[name=instance-url]").val((base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://"));
-          if (ask) monitor_instance(true);
+          if (ask) monitor_instance(true,exec);
         },
         error: function(a,b,c) {
           alert("No CPEE running.");
@@ -166,7 +171,7 @@ function create_instance(ask) {// {{{
   }
 }// }}}
 
-function monitor_instance(load) {// {{{
+function monitor_instance(load,exec) {// {{{
   var url = $("input[name=instance-url]").val();
 
   $('.tabbehind button').hide();
@@ -255,7 +260,7 @@ function monitor_instance(load) {// {{{
           ws.onclose = function() {
             append_to_log("monitoring", "closed", "server down i assume.");
           };
-          if (load) load_testset();
+          if (load || exec) load_testset(exec);
         }
       });
 
@@ -591,7 +596,8 @@ function save_svg() {// {{{
     }
   });
 }// }}}
-function set_testset(testset) {// {{{
+function set_testset(testset,exec) {// {{{
+  console.log(exec);
   var url = $("#current-instance").text();
 
   $.ajax({
@@ -643,7 +649,10 @@ function set_testset(testset) {// {{{
         type: "PUT",
         url: url + "/properties/values/state",
         data: ({value: res}),
-        error: report_failure
+        error: report_failure,
+        success: function(res){
+          if (exec) start_instance();
+        }
       });
     }
   });
@@ -659,7 +668,7 @@ function load_testsetfile_after() { //{{{
   var files = $('#testsetfile').get(0).files;
   var reader = new FileReader();
   reader.onload = function(){
-    set_testset($.parseXML(reader.result));
+    set_testset($.parseXML(reader.result),false);
     running  = false;
   }
   reader.onerror = function(){ running  = false; }
@@ -694,7 +703,7 @@ function load_modelfile() {// {{{
   document.getElementById('modelfile').click();
 }// }}}
 
-function load_testset() {// {{{
+function load_testset(exec) {// {{{
   if (running) return;
   running  = true;
 
@@ -709,7 +718,7 @@ function load_testset() {// {{{
       $('#dat_details').empty();
 
       document.title = name;
-      set_testset(res);
+      set_testset(res,exec);
     },
     complete: function() {
       running  = false;
@@ -732,7 +741,7 @@ function load_modeltype() {// {{{
         url: url + "/properties/values/attributes/modeltype",
         data: ({value: name}),
         success: function(){
-          set_testset(res);
+          set_testset(res,false);
         },
         error: report_failure
       });

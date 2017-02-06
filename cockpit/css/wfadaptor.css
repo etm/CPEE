@@ -108,7 +108,7 @@ svg .black {
 svg .clicked {
   fill: grey;
   stroke: grey;
-  filter: drop-shadow(0 0 0.5em rgba(0,0,0,0.9));
+  filter: drop-shadow(0 0 0.15em rgba(0,0,0,0.9));
   padding: 1em;
 }
 
