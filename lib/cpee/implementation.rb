@@ -20,8 +20,13 @@ require 'riddl/utils/properties'
 require ::File.dirname(__FILE__) + '/controller'
 
 require 'ostruct'
-def →(a); OpenStruct.new(a); end
-def ⭐(a); OpenStruct.new(a); end
+class ParaStruct < OpenStruct
+  def to_json(*a)
+    table.to_json
+  end
+end
+def →(a); ParaStruct.new(a); end
+def ⭐(a); ParaStruct.new(a); end
 
 module CPEE
 
