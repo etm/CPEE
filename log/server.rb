@@ -39,7 +39,6 @@ class Logging < Riddl::Implementation #{{{
     activity = notification["activity"]
     parameters = notification['parameters']
     receiving = notification['received']
-    pp notification
     Dir.mkdir(log_dir+'/'+uuid) unless Dir.exist?(log_dir+'/'+uuid)
     time_added=false
     XML::Smart.modify(log_dir+'/'+uuid+'/log.xes',LOGTEMPLATE) do |xml|
@@ -59,23 +58,26 @@ class Logging < Riddl::Implementation #{{{
         else
           event.add 'string', :key => "lifecycle:transition", :value => "unknown"
         end
-        data_send = ((parameters[:arguments].nil? ? [] : parameters[:arguments]) rescue [])
+        data_send = ((parameters["arguments"].nil? ? [] : parameters["arguments"]) rescue [])
         if data_send && data_send.any?
           list = event.add 'list', :key => "data_send"
-          data_send.each do |k,v|
-            list.add 'string', :key => k , :value => v
+          data_send.each do |e|
+            list.add 'string', :key => e['name'] , :value => e['value']
           end
         end
         if receiving && receiving.any?
-          list = event.add 'list', :key => "data_received"
           if receiving.is_a? Array
             receiving.each do |e|
               e.each do |k,v|
                 case v['mimetype']
                   when /\/xml$/ 
+          					list = event.add 'list', :key => "data_received"
                     node = list.add 'string', :key => k
                     node.add XML::Smart.string(v['content']).root
+                  when /\/json$/
+                    rec_unjson(JSON.parse(v['content']),event,"data_received")
                   else
+          					list = event.add 'list', :key => "data_received"
                     list.add 'string', :key => k, :value => v['content']
                 end    
               end
@@ -91,6 +93,24 @@ class Logging < Riddl::Implementation #{{{
       end
     end
   end
+  
+	def rec_unjson(value,list,key)
+		case value
+			when Array then
+				li = list.add 'list', :key => key
+				value.each_with_index do |v,k|
+					rec_unjson(v,li,k)
+				end
+			when Hash then
+				li = list.add 'list', :key => key
+				value.each do |k,v|
+					rec_unjson(v,li,k)
+				end
+			else
+				list.add 'string', :key => key, :value => value
+		end
+	end
+
   def response
     topic = @p[1].value
     event_name = @p[2].value
