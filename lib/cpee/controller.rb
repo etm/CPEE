@@ -96,9 +96,9 @@ module CPEE
       unserialize_endpoints!
       unserialize_dsl!
       unserialize_positions!
-      unserialize_attributes!
 
       @uuid = sync_uuid!
+      unserialize_attributes!
     end
 
     attr_reader :id
@@ -285,6 +285,14 @@ module CPEE
       @attributes = {}
       @properties.data.find("/p:properties/p:attributes/p:*").map do |ele|
         @attributes[ele.qname.name] = ele.text
+      end
+      uuid = @properties.data.find("/p:properties/p:attributes/p:uuid")
+      if uuid.empty? || uuid.length != 1 || @properties.data.find("/p:properties/p:attributes/p:uuid[.=\"#{@uuid}\"]").empty?
+        @properties.modify do |doc|
+          attr = doc.find("/p:properties/p:attributes").first
+          attr.find('p:uuid').delete_all!
+          attr.prepend('uuid',@uuid)
+        end
       end
     end #}}}
     def unserialize_dataelements! #{{{
