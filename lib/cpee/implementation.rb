@@ -80,6 +80,9 @@ module CPEE
         on resource do |r|
           run CPEE::Info, controller if get
           run CPEE::DeleteInstance, controller, opts if delete
+          on resource 'console' do
+            run CPEE::Console, controller if get
+          end
           on resource 'callbacks' do
             run CPEE::Callbacks, controller, opts if get
             on resource do
@@ -182,6 +185,20 @@ module CPEE
           </info>
         END
         i.to_s
+      end
+    end
+  end #}}}
+
+  class Console < Riddl::Implementation #{{{
+    def response
+      controller = @a[0]
+      id = @r[0].to_i
+      unless controller[id]
+        @status = 400
+        return
+      end
+      Riddl::Parameter::Complex.new("res","text/plain") do
+        controller[id].console(@p[0])
       end
     end
   end #}}}
