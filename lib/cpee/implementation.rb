@@ -81,7 +81,7 @@ module CPEE
           run CPEE::Info, controller if get
           run CPEE::DeleteInstance, controller, opts if delete
           on resource 'console' do
-            run CPEE::Console, controller if get
+            run CPEE::Console, controller if get 'cmdin'
           end
           on resource 'callbacks' do
             run CPEE::Callbacks, controller, opts if get
@@ -198,7 +198,7 @@ module CPEE
         return
       end
       Riddl::Parameter::Complex.new("res","text/plain") do
-        controller[id].console(@p[0])
+        controller[id].console(@p[0].value)
       end
     end
   end #}}}
