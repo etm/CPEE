@@ -45,13 +45,20 @@
     <parameter name="xsl" mimetype="application/xml"/>
   </message>
 
+  <message name="cmdin">
+    <parameter name="cmd" type="string"/>
+  </message>
+  <message name="cmdout">
+    <parameter name="res" mimetype="text/plain"/>
+  </message>
+
   <message name="message">
     <parameter name="type" type="integer"/>
     <parameter name="message" type="string"/>
     <optional>
       <parameter name="details" mimetype="text/xml"/>
       <parameter name="details" mimetype="text/yaml"/>
-    </optional>  
+    </optional>
   </message>
 
   <resource>
@@ -63,6 +70,9 @@
     <resource>
       <get in="*" out="instance-info"/>
       <delete in="*"/>
+      <resource relative="console">
+        <get in="cmdin" out="cmdout"/>
+      </resource>
       <resource relative="callbacks">
         <doc:documentation>xb</doc:documentation>
         <get in="*" out="callbacks"/>

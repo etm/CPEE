@@ -109,6 +109,10 @@ module CPEE
     attr_reader :attributes
     attr_reader :uuid
 
+    def console(cmd)
+      eval(cmd).pretty_inspect
+    end
+
     def base_url
       @opts[:url]
     end
