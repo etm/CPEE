@@ -13,15 +13,15 @@
 # <http://www.gnu.org/licenses/>.
 
 class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
-  def self::inform_syntax_error(arguments,err,code)# {{{
-    controller = arguments[0]
-    controller.notify("description/error", :instance => controller.instance, :message => err.message)
-  end# }}}
   def self::inform_state_change(arguments,newstate) # {{{
     controller = arguments[0]
 		controller.serialize_state!
 		controller.notify("state/change", :instance => controller.instance, :state => newstate)
   end # }}}
+  def self::inform_syntax_error(arguments,err,code)# {{{
+    controller = arguments[0]
+    controller.notify("description/error", :instance => controller.instance, :message => err.message)
+  end# }}}
   def self::inform_handlerwrapper_error(arguments,err) # {{{
     controller = arguments[0]
     controller.notify("handlerwrapper/error", :instance => controller.instance, :message => err.message)
@@ -60,8 +60,15 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       params << Riddl::Header.new("CPEE_CALLBACK_ID",callback)
       params << Riddl::Header.new("CPEE_ACTIVITY",@handler_position)
       params << Riddl::Header.new("CPEE_LABEL",parameters[:label])
+      params << Riddl::Header.new("CPEE-BASE",@controller.base_url)
+      params << Riddl::Header.new("CPEE-INSTANCE",@controller.instance_url)
+      params << Riddl::Header.new("CPEE-CALLBACK",@controller.instance_url + '/callbacks/' + callback)
+      params << Riddl::Header.new("CPEE-CALLBACK_ID",callback)
+      params << Riddl::Header.new("CPEE-ACTIVITY",@handler_position)
+      params << Riddl::Header.new("CPEE-LABEL",parameters[:label])
       @controller.attributes.each do |key,value|
         params << Riddl::Header.new("CPEE_ATTR_#{key}",value)
+        params << Riddl::Header.new("CPEE-ATTR-#{key.gsub(/_/,'-')}",value)
       end
 
       type = parameters[:method] || 'post'
