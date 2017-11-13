@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<testset>
+  <positions/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <dataelements>
+    <losgroesse>3</losgroesse>
+    <spec>12345</spec>
+    <qualitaet>null</qualitaet>
+    <drilled>[]</drilled>
+    <typ>Typ A</typ>
+    <score>0</score>
+  </dataelements>
+  <endpoints>
+    <cut>http://gruppe.wst.univie.ac.at/~mangler/services/cut.php</cut>
+    <drill>http://gruppe.wst.univie.ac.at/~mangler/services/drill.php</drill>
+    <approve>http://gruppe.wst.univie.ac.at/~mangler/services/approval.php</approve>
+  </endpoints>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="cut">
+        <parameters>
+          <label>Schneiden</label>
+          <method>:post</method>
+          <arguments>
+            <typ>data.typ</typ>
+            <spec>data.spec</spec>
+            <losgroesse>data.losgroesse</losgroesse>
+          </arguments>
+        </parameters>
+        <finalize output="result">data.qualitaet = result.value('id')
+data.score += result.value('score').to_f
+status.update 1, 'Produziert'</finalize>
+      </call>
+      <parallel>
+        <loop mode="pre_test" condition="data.losgroesse > 0">
+          <parallel_branch pass="data.losgroesse" local="p">
+            <call id="a2" endpoint="drill">
+              <parameters>
+                <label>Bohren</label>
+                <method>:post</method>
+                <arguments>
+                  <to>data.to</to>
+                </arguments>
+              </parameters>
+              <finalize output="result">data.drilled &lt;&lt; result.value('id')
+data.score += result.value('score').to_f</finalize>
+            </call>
+          </parallel_branch>
+          <manipulate id="a3">data.losgroesse -= 1</manipulate>
+        </loop>
+      </parallel>
+      <choose>
+        <alternative condition="data.score > 700">
+          <call id="a4" endpoint="approve">
+            <parameters>
+              <label>Beurteilen</label>
+              <method>:post</method>
+              <arguments>
+                <score>data.score</score>
+              </arguments>
+            </parameters>
+          </call>
+        </alternative>
+      </choose>
+    </description>
+  </description>
+  <transformation>
+    <description type='copy'/>
+    <dataelements type='rest'/>
+    <endpoints type='rest'/>
+  </transformation>
+</testset>
