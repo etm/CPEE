@@ -1,4 +1,5 @@
 <testsets>
+  <testset>Centurio</testset>
   <testset>Log</testset>
   <testset>Infinity</testset>
   <testset>SOPROMO Test Sonification</testset>

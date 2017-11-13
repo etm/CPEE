@@ -597,7 +597,6 @@ function save_svg() {// {{{
   });
 }// }}}
 function set_testset(testset,exec) {// {{{
-  console.log(exec);
   var url = $("#current-instance").text();
 
   $.ajax({
@@ -669,10 +668,11 @@ function load_testsetfile_after() { //{{{
   var reader = new FileReader();
   reader.onload = function(){
     set_testset($.parseXML(reader.result),false);
+    document.getElementById("fuckchrome").reset();
     running  = false;
   }
-  reader.onerror = function(){ running  = false; }
-  reader.onabort = function(){ running  = false; }
+  reader.onerror = function(){ console.log('error reading file'); running  = false; }
+  reader.onabort = function(){ console.log('abort reading file'); running  = false; }
   reader.readAsText(files[0]);
 } //}}}
 function load_testsetfile() {// {{{
