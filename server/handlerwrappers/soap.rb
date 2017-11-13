@@ -31,30 +31,30 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
     if passthrough.nil?
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
       begin
-        client = Savon.client do 
+        client = Savon.client do
           wsdl @handler_endpoint
           log false
           log_level :info
           soap_header(
-            "CPEE_BASE" => @url, 
-            "CPEE_INSTANCE" => "#{@url}/#{@controller.id}", 
-            "CPEE_CALLBACK" => callback
+            "CPEE-BASE" => @url,
+            "CPEE-INSTANCE" => "#{@url}/#{@controller.id}",
+            "CPEE-CALLBACK" => callback
           )
-        end 
+        end
         params = {}
         (parameters[:parameters] || {}).each do |h|
           if h.class == Hash
             h.each do |k,v|
               params[k] = JSON::generate(v)
-            end  
-          end  
+            end
+          end
         end
         response = client.call parameters[:method].to_sym, params
         result = response.body.first[1].first[1]
       rescue Savon::Error => error
         raise "Could not soap #{@handler_endpoint}->#{parameters[:method].to_sym}'s back: #{error.to_s}"
       end
-      
+
       if response.http.headers["CPEE_CALLBACK"] && response.http.headers["CPEE_CALLBACK"] == 'true'
         @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
         @handler_passthrough = callback
@@ -112,7 +112,7 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
     unless status.nil?
       @controller.serialize_status!
       @controller.notify("status/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :id => status.id, :message => status.message)
-    end  
+    end
     unless dataelements.nil?
       @controller.serialize_dataelements!
       @controller.notify("dataelements/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => dataelements)
@@ -120,7 +120,7 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
     unless endpoints.nil?
       @controller.serialize_endpoints!
       @controller.notify("endpoints/change", :endpoint => @handler_endpoint, :instance => "#{@url}/#{@controller.id}", :activity => @handler_position, :changed => endpoints)
-    end  
+    end
   end # }}}
   def inform_position_change(ipc={}) # {{{
     @controller.serialize_positions!

@@ -54,12 +54,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
           params <<  Riddl::Parameter::Simple.new(s.name.to_s,CPEE::ValueHelper::generate(s.value))
         end
       end
-      params << Riddl::Header.new("CPEE_BASE",@controller.base_url)
-      params << Riddl::Header.new("CPEE_INSTANCE",@controller.instance_url)
-      params << Riddl::Header.new("CPEE_CALLBACK",@controller.instance_url + '/callbacks/' + callback)
-      params << Riddl::Header.new("CPEE_CALLBACK_ID",callback)
-      params << Riddl::Header.new("CPEE_ACTIVITY",@handler_position)
-      params << Riddl::Header.new("CPEE_LABEL",parameters[:label])
+
       params << Riddl::Header.new("CPEE-BASE",@controller.base_url)
       params << Riddl::Header.new("CPEE-INSTANCE",@controller.instance_url)
       params << Riddl::Header.new("CPEE-CALLBACK",@controller.instance_url + '/callbacks/' + callback)
@@ -67,7 +62,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       params << Riddl::Header.new("CPEE-ACTIVITY",@handler_position)
       params << Riddl::Header.new("CPEE-LABEL",parameters[:label])
       @controller.attributes.each do |key,value|
-        params << Riddl::Header.new("CPEE_ATTR_#{key}",value)
         params << Riddl::Header.new("CPEE-ATTR-#{key.gsub(/_/,'-')}",value)
       end
 

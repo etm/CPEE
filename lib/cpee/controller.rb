@@ -494,8 +494,6 @@ module CPEE
             if url.class == String
               client = Riddl::Client.new(url,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml',:xmpp => @opts[:xmpp])
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
-              params << Riddl::Header.new("CPEE_BASE",self.base)
-              params << Riddl::Header.new("CPEE_INSTANCE",self.instance)
               params << Riddl::Header.new("CPEE-BASE",self.base)
               params << Riddl::Header.new("CPEE-INSTANCE",self.instance)
               client.post params
@@ -535,9 +533,6 @@ module CPEE
             if u.class == String
               client = Riddl::Client.new(u,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml',:xmpp => @opts[:xmpp])
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
-              params << Riddl::Header.new("CPEE_BASE",self.base_url)
-              params << Riddl::Header.new("CPEE_INSTANCE",self.instance_url)
-              params << Riddl::Header.new("CPEE_CALLBACK",self.instance_url + '/callbacks/' + callback)
               params << Riddl::Header.new("CPEE-BASE",self.base_url)
               params << Riddl::Header.new("CPEE-INSTANCE",self.instance_url)
               params << Riddl::Header.new("CPEE-CALLBACK",self.instance_url + '/callbacks/' + callback)
