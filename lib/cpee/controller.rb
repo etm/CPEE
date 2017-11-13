@@ -96,9 +96,9 @@ module CPEE
       unserialize_endpoints!
       unserialize_dsl!
       unserialize_positions!
-      unserialize_attributes!
 
       @uuid = sync_uuid!
+      unserialize_attributes!
     end
 
     attr_reader :id
@@ -108,6 +108,10 @@ module CPEE
     attr_reader :mutex
     attr_reader :attributes
     attr_reader :uuid
+
+    def console(cmd)
+      eval(cmd).pretty_inspect
+    end
 
     def base_url
       @opts[:url]
@@ -285,6 +289,14 @@ module CPEE
       @attributes = {}
       @properties.data.find("/p:properties/p:attributes/p:*").map do |ele|
         @attributes[ele.qname.name] = ele.text
+      end
+      uuid = @properties.data.find("/p:properties/p:attributes/p:uuid")
+      if uuid.empty? || uuid.length != 1 || @properties.data.find("/p:properties/p:attributes/p:uuid[.=\"#{@uuid}\"]").empty?
+        @properties.modify do |doc|
+          attr = doc.find("/p:properties/p:attributes").first
+          attr.find('p:uuid').delete_all!
+          attr.prepend('uuid',@uuid)
+        end
       end
     end #}}}
     def unserialize_dataelements! #{{{
@@ -484,6 +496,8 @@ module CPEE
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
               params << Riddl::Header.new("CPEE_BASE",self.base)
               params << Riddl::Header.new("CPEE_INSTANCE",self.instance)
+              params << Riddl::Header.new("CPEE-BASE",self.base)
+              params << Riddl::Header.new("CPEE-INSTANCE",self.instance)
               client.post params
             elsif url.class == Riddl::Utils::Notifications::Producer::WS
               e = XML::Smart::string("<event/>")
@@ -524,6 +538,9 @@ module CPEE
               params << Riddl::Header.new("CPEE_BASE",self.base_url)
               params << Riddl::Header.new("CPEE_INSTANCE",self.instance_url)
               params << Riddl::Header.new("CPEE_CALLBACK",self.instance_url + '/callbacks/' + callback)
+              params << Riddl::Header.new("CPEE-BASE",self.base_url)
+              params << Riddl::Header.new("CPEE-INSTANCE",self.instance_url)
+              params << Riddl::Header.new("CPEE-CALLBACK",self.instance_url + '/callbacks/' + callback)
               @mutex.synchronize do
                 status, result, headers = client.post params
                 if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'

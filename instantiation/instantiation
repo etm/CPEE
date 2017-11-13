@@ -18,8 +18,6 @@ class Instantiate < Riddl::Implementation
       doc.register_namespace 'desc', 'http://cpee.org/ns/description/1.0'
       doc.register_namespace 'prop', 'http://riddl.org/ns/common-patterns/properties/1.0'
 
-      p $cpee
-
       srv = Riddl::Client.new($cpee, $cpee + "?riddl-description")
       res = srv.resource("/")
       status, response = res.post Riddl::Parameter::Simple.new("info",doc.find("string(/testset/attributes/prop:info)"))
@@ -30,12 +28,12 @@ class Instantiate < Riddl::Implementation
         params = []
 
         res = srv.resource("/#{ins}/properties/values")
-        ["handlerwrapper","positions","dataelements","endpoints","transformation"].each do |item|
+        ["handlerwrapper","positions","dataelements","endpoints","attributes","transformation"].each do |item|
           if doc.find("/testset/#{item}").any?
             params << Riddl::Parameter::Simple.new("name",item)
             params << Riddl::Parameter::Simple.new("content",doc.find("/testset/#{item}").first.dump)
           end
-        end  
+        end
         ["description"].each do |item|
           if doc.find("/testset/#{item}").any?
             params << Riddl::Parameter::Simple.new("name",item)

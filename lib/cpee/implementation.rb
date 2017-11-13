@@ -20,8 +20,13 @@ require 'riddl/utils/properties'
 require ::File.dirname(__FILE__) + '/controller'
 
 require 'ostruct'
-def →(a); OpenStruct.new(a); end
-def ⭐(a); OpenStruct.new(a); end
+class ParaStruct < OpenStruct
+  def to_json(*a)
+    table.to_json
+  end
+end
+def →(a); ParaStruct.new(a); end
+def ⭐(a); ParaStruct.new(a); end
 
 module CPEE
 
@@ -75,6 +80,9 @@ module CPEE
         on resource do |r|
           run CPEE::Info, controller if get
           run CPEE::DeleteInstance, controller, opts if delete
+          on resource 'console' do
+            run CPEE::Console, controller if get 'cmdin'
+          end
           on resource 'callbacks' do
             run CPEE::Callbacks, controller, opts if get
             on resource do
@@ -177,6 +185,20 @@ module CPEE
           </info>
         END
         i.to_s
+      end
+    end
+  end #}}}
+
+  class Console < Riddl::Implementation #{{{
+    def response
+      controller = @a[0]
+      id = @r[0].to_i
+      unless controller[id]
+        @status = 400
+        return
+      end
+      Riddl::Parameter::Complex.new("res","text/plain") do
+        controller[id].console(@p[0].value)
       end
     end
   end #}}}

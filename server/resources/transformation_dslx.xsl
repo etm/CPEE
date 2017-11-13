@@ -339,10 +339,15 @@
     <xsl:text> =&gt; </xsl:text>
 
     <xsl:choose>
-      <xsl:when test="count(*) &gt; 0">
+      <xsl:when test="count(*) &gt; 0 and name()='arguments'">
         <xsl:text>[</xsl:text>
         <xsl:apply-templates select="d:*" mode="sub"/>
         <xsl:text>]</xsl:text>
+      </xsl:when>
+      <xsl:when test="count(*) &gt; 0 and not(name()='arguments')">
+        <xsl:text>{</xsl:text>
+        <xsl:apply-templates select="d:*" mode="parameter"/>
+        <xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:when test="not(node())">
         <xsl:text>nil</xsl:text>
