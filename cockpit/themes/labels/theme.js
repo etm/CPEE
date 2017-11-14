@@ -4,7 +4,7 @@ function WFAdaptorManifestation(adaptor) {
   this.adaptor = adaptor;
   this.elements = {};
   this.events = {};
-  this.compact = true;
+  this.compact = false;
 
   this.noarrow = ['alternative', 'otherwise'];
   this.source = function(rng) {

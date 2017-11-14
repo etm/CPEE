@@ -59,6 +59,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   $.getScript(theme_base, function() {
     manifestation = new WFAdaptorManifestation(self);
     illustrator.noarrow = manifestation.noarrow;
+    illustrator.compact = manifestation.compact == true ? true : false;
     description.source = manifestation.source;
     var deferreds = [];
     // copy parent stuff
@@ -135,6 +136,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.elements = {}; // the svgs
     this.svg = {};
     this.draw = {};
+    this.compact = true;
     // private
     var self = this;
     var adaptor = null;
@@ -226,31 +228,38 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       );
     } else if (end['row']-start['row'] > 0) { // downwards
       if (end['col']-start['col'] > 0) {// left - right
-        line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                                      String(start['col']*self.width+14) + "," + String((end['row']-1)*self.height) +" "+ // first turn of hotizontal-line going away from node
-                                      String(end['col']*self.width) + "," + String((end['row']-1)*self.height) +" "+
-                                      String(end['col']*self.width) + "," + String(end['row']*self.height-15)
-        );
+        if (self.compact) {
+          line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
+                                String(start['col']*self.width+14) + "," + String((end['row']-1)*self.height) +" "+ // first turn of hotizontal-line going away from node
+                                String(end['col']*self.width) + "," + String((end['row']-1)*self.height) +" "+
+                                String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+          );
+        } else {
+          line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
+                                String(end['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
+                                String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+          );
+        }
       } else { // right - left
         line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                                      String(start['col']*self.width) + "," + String(end['row']*self.height-35) +" "+
-                                      String(end['col']*self.width+14) + "," + String(end['row']*self.height-35) +" "+ // last turn of horizontal-line going into the node
-                                      String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+                              String(start['col']*self.width) + "," + String(end['row']*self.height-35) +" "+
+                              String(end['col']*self.width+14) + "," + String(end['row']*self.height-35) +" "+ // last turn of horizontal-line going into the node
+                              String(end['col']*self.width) + "," + String(end['row']*self.height-15)
         );
       }
     } else if(end['row']-start['row'] < 0) { // upwards
       if(num_lines > 1) {// ??? no idea
         line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                                      String(start['col']*self.width) + "," + String((max_line-1)*self.height+5) +" "+
-                                      String(end['col']*self.width+20) + "," + String((max_line-1)*self.height+5) +" "+
-                                      String(end['col']*self.width+20) + "," + String(end['row']*self.height+25)+" "+
-                                      String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+                              String(start['col']*self.width) + "," + String((max_line-1)*self.height+5) +" "+
+                              String(end['col']*self.width+20) + "," + String((max_line-1)*self.height+5) +" "+
+                              String(end['col']*self.width+20) + "," + String(end['row']*self.height+25)+" "+
+                              String(end['col']*self.width) + "," + String(end['row']*self.height-15)
         );
       } else {
         line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                                      String(end['col']*self.width+20) + "," + String(start['row']*self.height-15) +" "+
-                                      String(end['col']*self.width+20) + "," + String(end['row']*self.height+25)+" "+
-                                      String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+                              String(end['col']*self.width+20) + "," + String(start['row']*self.height-15) +" "+
+                              String(end['col']*self.width+20) + "," + String(end['row']*self.height+25)+" "+
+                              String(end['col']*self.width) + "," + String(end['row']*self.height-15)
         );
       }
     }
@@ -449,7 +458,14 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if($(this).attr('collapsed') == undefined || $(this).attr('collapsed') == 'false') { collapsed = false; }
       else { collapsed = true; }
       if(root_expansion == 'vertical')  pos.row++;
-      if(root_expansion == 'horizontal')  pos.col++;
+      if(root_expansion == 'horizontal')  {
+        pos.col++;
+        if (!illustrator.compact) {
+          if (block.max.row) {
+            pos.row = block.max.row + 1;
+          }
+        }
+      }
       if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'complex' && !collapsed) {
         if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg) pos.row--;
         // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon

@@ -78,6 +78,10 @@ $(document).ready(function() {// {{{
         $('#predefinedtestsets').append($("<div class='menuitem'></div>").text(ts));
       });
       var q = $.parseQuerySimple();
+      if (q.min || q.min == "") {
+        ui_toggle_vis_tab($('#instance ui-tabbar'));
+        ui_toggle_vis_tab($('#parameters ui-tabbar'));
+      }
       if (q.monitor && q.load) {
         $("input[name=instance-url]").val(q.monitor);
         $("#predefinedtestsets div.menuitem").each(function(k,v){
@@ -194,7 +198,8 @@ function monitor_instance(load,exec) {// {{{
       $("#current-instance-subscriptions").text('S');
       $("#current-instance-callbacks").attr('href',url + 'callbacks/');
       $("#current-instance-callbacks").text('C');
-      history.replaceState({}, '', '?monitor='+url);
+      var q = $.parseQuerySimple();
+      history.replaceState({}, '', '?monitor='+url+ (q.min || q.min=="" ? "&min" : ""));
 
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").removeAttr('checked');
