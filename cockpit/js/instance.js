@@ -199,7 +199,7 @@ function monitor_instance(load,exec) {// {{{
       $("#current-instance-callbacks").attr('href',url + 'callbacks/');
       $("#current-instance-callbacks").text('C');
       var q = $.parseQuerySimple();
-      history.replaceState({}, '', '?monitor='+url+ (q.min || q.min=="" ? "&min" : ""));
+      history.replaceState({}, '', '?' + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").removeAttr('checked');
