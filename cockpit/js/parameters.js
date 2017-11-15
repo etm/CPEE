@@ -62,12 +62,11 @@ function do_parameters_save(event) { //{{{
   var visid = $('ui-tabbar ui-tab',$(event.target).parents('ui-tabbed')).not('.switch').not('.inactive').attr('data-tab');
   if (save[visid].has_changed()) {
     var url = $("#current-instance").text();
-    $('#parameters ui-tabbar ui-behind button:nth-child(2)').removeClass('highlight');
     save[visid].set_checkpoint();
     $.ajax({
-      type: "PUT",
-      url: url + "/properties/values/" + visid + "/",
-      data: ({'content': save[visid].save_text()}),
+       type: "PUT",
+       url: url + "/properties/values/" + visid + "/",
+       data: ({'content': save[visid].save_text()}),
     });
   }
 } //}}}
