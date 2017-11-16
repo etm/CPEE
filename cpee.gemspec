@@ -7,9 +7,11 @@ Gem::Specification.new do |s|
 
   s.description      = "see http://cpee.org"
 
-  s.files            = Dir['{example/**/*,server/**/*,lib/**/*,cockpit/**/*,contrib/logo*,contrib/Screen*,log/**/*}'] + %w(COPYING FEATURES INSTALL Rakefile cpee.gemspec README AUTHORS)
+  s.files            = Dir['{example/**/*,server/**/*,tools/**/*,lib/**/*,cockpit/**/*,contrib/logo*,contrib/Screen*,log/**/*}'] + %w(COPYING FEATURES INSTALL Rakefile cpee.gemspec README AUTHORS)
   s.require_path     = 'lib'
   s.extra_rdoc_files = ['README']
+  s.bindir           = 'tools'
+  s.executables      = ['cpee']
   s.test_files       = Dir['{test/*,test/*/tc_*.rb}']
 
   s.required_ruby_version = '>=2.0.0'

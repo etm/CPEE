@@ -1,0 +1,35 @@
+#!/usr/bin/ruby
+curpath = __dir__
+require 'rubygems'
+require 'optparse'
+require 'fileutils'
+
+ARGV.options { |opt|
+  opt.summary_indent = ' ' * 2
+  opt.banner = "Usage:\n#{opt.summary_indent}#{File.basename($0)} [options] [new|ui DIRECTORY]\n"
+  opt.on("Options:")
+  opt.on("--help", "-h", "This text") { puts opt; exit }
+  opt.on("[new DIRECTORY] scaffolds a sample execution engine. Everything except instances can be removed for default behaviour.")
+  opt.on("[ui  DIRECTORY] symlinks/updates the UI.")
+  opt.parse!
+}
+if ARGV.length != 2 || !%w(ui new).include?(ARGV[0])
+  puts ARGV.options
+  exit
+end
+command = ARGV[0]
+dir     = ARGV[1]
+
+if command == 'ui'
+  if !File.exists?(dir) || File.symlink?(dir)
+    FileUtils.ln_sf("#{curpath}/../cockpit",dir)
+  else
+    puts "File or directory with this name already exists."
+  end
+else
+  if !File.exists?(dir)
+    FileUtils.cp_r("#{curpath}/../server/",dir)
+  else
+    puts "Directory already exists."
+  end
+end
