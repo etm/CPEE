@@ -59,7 +59,7 @@ $(document).ready(function() {// {{{
   if (location.protocol.match(/^file/)) {
     $("input[name=base-url]").val("http://localhost:" + $('body').data('defaultport'));
   } else {
-    $("input[name=base-url]").val(location.protocol + "//" + location.host + ":" + $('body').data('defaultport'));
+    $("input[name=base-url]").val(location.protocol + "//" + location.hostname + ":" + $('body').data('defaultport'));
   }
   $("button[name=base]").click(function(){ create_instance(null,false); });
   $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance(false,false); });
