@@ -56,7 +56,12 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'change';// }}}
 
 $(document).ready(function() {// {{{
-  $("input[name=base-url]").val(location.protocol + "//" + location.host + ":" + $('body').data('defaultport'));
+  console.log(location.protocol);
+  if (location.protocol.match(/^file/)) {
+    $("input[name=base-url]").val("http://localhost:" + $('body').data('defaultport'));
+  } else {
+    $("input[name=base-url]").val(location.protocol + "//" + location.host + ":" + $('body').data('defaultport'));
+  }
   $("button[name=base]").click(function(){ create_instance(null,false); });
   $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance(false,false); });
   $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),function(){ load_testset(false) } ); });

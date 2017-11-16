@@ -29,6 +29,9 @@ if command == 'ui'
 else
   if !File.exists?(dir)
     FileUtils.cp_r("#{curpath}/server/",dir)
+    FileUtils.mkdir("#{dir}/instances") rescue nil
+    FileUtils.mkdir("#{dir}/resources") rescue nil
+    FileUtils.mkdir("#{dir}/handlerwrappers") rescue nil
   else
     puts "Directory already exists."
   end
