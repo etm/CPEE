@@ -43,7 +43,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def activity_handle(passthrough, parameters) # {{{
-    @controller.notify("activity/calling", :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
+    @controller.notify("activity/calling", :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :time=>Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
     if passthrough.nil?
       params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
@@ -105,15 +105,15 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def inform_activity_done # {{{
-    @controller.notify("activity/done", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position)
+    @controller.notify("activity/done", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :time=>Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end # }}}
   def inform_activity_manipulate # {{{
-    @controller.notify("activity/manipulating", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position)
+    @controller.notify("activity/manipulating", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :time=>Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end # }}}
   def inform_activity_failed(err) # {{{
     puts err.message
     puts err.backtrace
-    @controller.notify("activity/failed", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    @controller.notify("activity/failed", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1], :time=>Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end # }}}
   def inform_manipulate_change(status,changed_dataelements,changed_endpoints,dataelements,endpoints) # {{{
     unless status.nil?
@@ -131,10 +131,10 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def vote_sync_after # {{{
-    @controller.call_vote("activity/syncing_after", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position)
+    @controller.call_vote("activity/syncing_after", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :time=>Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end # }}}
   def vote_sync_before(parameters=nil) # {{{
-    @controller.call_vote("activity/syncing_before", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :parameters => parameters)
+    @controller.call_vote("activity/syncing_before", :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :parameters => parameters, :time=>Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end # }}}
 
   def simplify_result(result)
@@ -180,12 +180,12 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end
 
   def callback(result=nil,options={})
-    @controller.notify("activity/receiving", :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result))
+    @controller.notify("activity/receiving", :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :time=>Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
     result = simplify_result(result)
     if options['CPEE_UPDATE']
       @handler_returnValue = result
       if options['CPEE_UPDATE_STATUS']
-        @controller.notify("activity/status", :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'])
+        @controller.notify("activity/status", :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'], :time=>Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
       end
       @handler_continue.continue WEEL::Signal::Again
     else
