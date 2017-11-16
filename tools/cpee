@@ -28,7 +28,7 @@ if command == 'ui'
   end
 else
   if !File.exists?(dir)
-    FileUtils.cp_r("#{curpath}/../server/",dir)
+    FileUtils.cp_r("#{curpath}/server/",dir)
   else
     puts "Directory already exists."
   end
