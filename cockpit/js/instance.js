@@ -56,7 +56,6 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'change';// }}}
 
 $(document).ready(function() {// {{{
-  console.log(location.protocol);
   if (location.protocol.match(/^file/)) {
     $("input[name=base-url]").val("http://localhost:" + $('body').data('defaultport'));
   } else {
