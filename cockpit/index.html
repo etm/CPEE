@@ -22,7 +22,7 @@
 
     <!-- libs, do not modify. When local than load local libs. -->
     <script type="text/javascript">
-      if ((document.location.hostname == 'localhost') && (document.location.protocol == 'http:')) {
+      if ((document.location.host == 'localhost') && (document.location.protocol == 'http:')) {
         document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.min.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.browser.js">\x3C/script>');
         document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.svg.min.js">\x3C/script>');
@@ -44,7 +44,7 @@
         document.write('<link rel="stylesheet" href="http://localhost/js_libs/ui.css" type="text/css"/>');
 
         document.write('<link rel="stylesheet" href="http://localhost/js_libs/relaxngui.css" type="text/css"/>');
-      } else if ((document.location.hostname == 'localhost') && (document.location.protocol == 'https:')) {
+      } else if ((document.location.host == 'localhost') && (document.location.protocol == 'https:')) {
         document.write('<script type="text/javascript" src="https://localhost/js_libs/jquery.min.js">\x3C/script>');
         document.write('<script type="text/javascript" src="https://localhost/js_libs/jquery.browser.js">\x3C/script>');
         document.write('<script type="text/javascript" src="https://localhost/js_libs/jquery.svg.min.js">\x3C/script>');
