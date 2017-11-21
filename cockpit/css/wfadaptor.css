@@ -242,11 +242,10 @@ svg text.small {
   font-family:Arial;
 }
 
-svg text.label {
+svg text.label, svg text.label tspan {
   font-size:14px;
   font-style:normal;
   font-variant:normal;
-  font-weight:bold;
   font-stretch:normal;
   text-align:center;
   line-height:125%;
@@ -263,4 +262,13 @@ svg text.label {
   stroke: #000000;
   stroke-width: 2;
   fill: #000000;
+}
+
+svg g.element[element-id]:hover .rfill {
+  fill: #ad7fa8;
+  fill-opacity:1;
+}
+svg g.element[element-id]:hover > text.label tspan {
+  color: #ad7fa8;
+  fill: #ad7fa8;
 }

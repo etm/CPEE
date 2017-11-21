@@ -178,31 +178,33 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   // }}}
   // Helper Functions {{{
-  var draw_label = this.draw.draw_label = function (row, col, label, group) { // {{{
+  var draw_label = this.draw.draw_label = function (row, col, label, group, where) { // {{{
     var g = $X('<text class="label" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height+20-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
                     '<tspan>' + (label != '' ? '◤ ' : '')  + label + '</tspan>' +
                '</text>');
-    if(group) {group.append(g);}
+    if(group) { group.find('g.element[element-id=' + where + ']').append(g); }
     else {self.svg.container.children('g:first').append(g);}
     return g;
   } // }}}
   var draw_symbol = this.draw.draw_symbol = function (tname, sym_name, id, title, row, col, group) { // {{{
     if(self.elements[sym_name] == undefined || self.elements[sym_name].svg == undefined) sym_name = 'unknown';
-    var g = $X('<g class="element" element-type="' + sym_name + '" element-id="' + id  + '" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
-                  '<text class="super" transform="translate(30,8.4)">' +
-                    '<tspan class="active">0</tspan>' +
-                    '<tspan class="colon">,</tspan>' +
-                    '<tspan class="vote">0</tspan>' +
-                  '</text>' +
+    var g = $X('<g class="element" element-type="' + sym_name + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
+                  '<g transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height-((self.height*0.74))) + ')">' +
+                    '<text class="super" transform="translate(30,8.4)">' +
+                      '<tspan class="active">0</tspan>' +
+                      '<tspan class="colon">,</tspan>' +
+                      '<tspan class="vote">0</tspan>' +
+                    '</text>' +
+                  '</g>' +
                '</g>');
     var sym = self.svg.defs[sym_name].clone();
     sym.prepend($X('<title xmlns="http://www.w3.org/2000/svg">' + title  + '</title>'));
     sym.attr('class','activities');
-    g.append(sym);
+    $(g[0].childNodes[0]).append(sym);
 
     // Binding events for symbol
     for(event_name in adaptor.elements[tname]) {
-      sym.bind(event_name, {'function_call':adaptor.elements[tname][event_name]}, function(e) { e.data.function_call($(this).parents(':first').attr('element-id'),e)});
+      sym.bind(event_name, {'function_call':adaptor.elements[tname][event_name]}, function(e) { e.data.function_call($(this).parents('.element:first').attr('element-id'),e)});
       if(event_name == 'mousedown') sym.bind('contextmenu', false);
     }
     if(group) {group.append(g);}
@@ -315,7 +317,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if (illustrator.compact == false) {
       if (labels.length > 0) {
         _.each(labels,function(a,key) {
-          illustrator.draw.draw_label(a.row, graph.max.col + 1, a.label, graph.svg);
+          illustrator.draw.draw_label(a.row, graph.max.col + 1, a.label, graph.svg, a.element_id);
         });
         graph.max.col += 4;
       }
@@ -497,7 +499,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (illustrator.elements[tname].label) {
         var lab = illustrator.elements[tname].label(this);
         $(this).attr('svg-label', lab);
-        labels.push({row: pos.row, label: lab});
+        labels.push({row: pos.row, element_id: $(this).attr('svg-id'), label: lab});
       } else {
         $(this).attr('svg-label', '');
       } // }}}
