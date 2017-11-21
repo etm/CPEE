@@ -15,6 +15,7 @@
           <loop mode="pre_test" condition='data.feedback'>
             <call id="design" endpoint="timeout">
               <parameters><!--{{{-->
+                <label>Design</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>4</timeout>
@@ -23,6 +24,7 @@
             </call>
             <call id="validate" endpoint="timeout">
               <parameters><!--{{{-->
+                <label>Validate</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>2</timeout>
@@ -31,6 +33,7 @@
             </call>
             <call id="publish" endpoint="timeout">
               <parameters><!--{{{-->
+                <label>Publish</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>1</timeout>
@@ -43,6 +46,7 @@
           <loop mode="pre_test" condition='data.feedback'>
             <call id="prepare" endpoint="timeout">
               <parameters><!--{{{-->
+                <label>Prepare</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>4</timeout>
@@ -51,6 +55,7 @@
             </call>
             <call id="fab" endpoint="timeout">
               <parameters><!--{{{-->
+                <label>Fabricate</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>4</timeout>
@@ -59,6 +64,7 @@
             </call>
             <call id="evaluate" endpoint="timeout">
               <parameters><!--{{{-->
+                <label>Evaluate</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>4</timeout>

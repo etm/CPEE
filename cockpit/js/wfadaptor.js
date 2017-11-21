@@ -178,6 +178,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   // }}}
   // Helper Functions {{{
+  var draw_label = this.draw.draw_label = function (row, col, label, group) { // {{{
+    var g = $X('<text class="label" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height+20-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
+                    '<tspan>' + (label != '' ? '◤ ' : '')  + label + '</tspan>' +
+               '</text>');
+    if(group) {group.append(g);}
+    else {self.svg.container.children('g:first').append(g);}
+    return g;
+  } // }}}
   var draw_symbol = this.draw.draw_symbol = function (tname, sym_name, id, title, row, col, group) { // {{{
     if(self.elements[sym_name] == undefined || self.elements[sym_name].svg == undefined) sym_name = 'unknown';
     var g = $X('<g class="element" element-type="' + sym_name + '" element-id="' + id  + '" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
@@ -287,6 +295,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var description;
   var id_counter = {};
   var update_illustrator = true;
+  var labels = [];
 
   // Generic Functions {{{
   this.set_description = function(desc, auto_update) { // public {{{
@@ -302,6 +311,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+    // set labels
+    if (illustrator.compact == false) {
+      if (labels.length > 0) {
+        _.each(labels,function(a,key) {
+          illustrator.draw.draw_label(a.row, graph.max.col + 1, a.label, graph.svg);
+        });
+        graph.max.col += 4;
+      }
+    }
     illustrator.set_svg(graph);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
@@ -430,7 +448,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(root_expansion == 'horizontal') pos.row++;
     if(illustrator.elements[root.tagName].col_shift(root) == true && root_expansion != 'horizontal') pos.col++;
 
-    if(root.tagName == 'description') { // First parsing {{{
+    if(root .tagName == 'description') { // First parsing {{{
       pos.row++;
       max.row++;
       $(root).attr('svg-id','description');
@@ -441,19 +459,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     $(root).children().each(function() {
       var tname = this.tagName;
 
-      // Set SVG-ID {{{
-      if($(this).attr('id') == undefined) {
-        if(id_counter[tname] == undefined) id_counter[tname] = -1;
-        $(this).attr('svg-id', tname + '_' + (++id_counter[tname]));
-        $(this).attr('svg-label', '');
-      } else {
-        $(this).attr('svg-id',  $(this).attr('id'));
-        if ($(this).children('parameters').length > 0) {
-          $(this).attr('svg-label', $('label',$(this).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,''));
-        } else {
-          $(this).attr('svg-label', '');
-        }
-      }  // }}}
       // Calculate next position {{{
       if($(this).attr('collapsed') == undefined || $(this).attr('collapsed') == 'false') { collapsed = false; }
       else { collapsed = true; }
@@ -482,6 +487,20 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         }
       }
       // }}}
+      // Set SVG-ID and labels {{{
+      if($(this).attr('id') == undefined) {
+        if(id_counter[tname] == undefined) id_counter[tname] = -1;
+        $(this).attr('svg-id', tname + '_' + (++id_counter[tname]));
+      } else {
+        $(this).attr('svg-id',  $(this).attr('id'));
+      }
+      if (illustrator.elements[tname].label) {
+        var lab = illustrator.elements[tname].label(this);
+        $(this).attr('svg-label', lab);
+        labels.push({row: pos.row, label: lab});
+      } else {
+        $(this).attr('svg-label', '');
+      } // }}}
       // Draw symbol {{{
       var sym_name = '';
       if(!illustrator.elements[tname])                                         {sym_name = 'unknown';}

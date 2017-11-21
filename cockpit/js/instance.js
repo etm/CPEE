@@ -677,7 +677,7 @@ function load_testsetfile_after() { //{{{
   var reader = new FileReader();
   reader.onload = function(){
     set_testset($.parseXML(reader.result),false);
-    document.getElementById("fuckchrome").reset();
+    document.getElementById('fuckchrome').reset();
     running  = false;
   }
   reader.onerror = function(){ console.log('error reading file'); running  = false; }
