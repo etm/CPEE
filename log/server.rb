@@ -82,7 +82,8 @@ class Logging < Riddl::Implementation #{{{
                   when /\/json$/
                     rec_unjson(JSON.parse(v['content']),event,"data_received")
                   when /\/html$/
-                    
+          					list = event.add 'list', :key => "data_received"
+                    list.add 'string', :key => k, :value => v['content']
                   else 
           					list = event.add 'list', :key => "data_received"
                     list.add 'string', :key => k, :value => v
