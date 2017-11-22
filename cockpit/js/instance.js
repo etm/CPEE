@@ -6,6 +6,8 @@ var save = {};
     save['state']= undefined;
     save['dsl'] = undefined;
     save['graph'] = undefined;
+    save['graph_theme'] = undefined;
+    save['graph_adaptor'] = undefined;
     save['endpoints'] = undefined;
     save['dataelements'] = undefined;
     save['attributes'] = undefined;
@@ -299,25 +301,36 @@ function monitor_instance_values(val) {// {{{
 } // }}}
 
 function adaptor_init(url,theme,dslx) {
-  new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
-    graphrealization.set_svg_container($('#graphcanvas'));
-    graphrealization.set_description($(dslx), true);
-    graphrealization.notify = function(svgid) {
-      var g = graphrealization.get_description();
-      save['graph'] = $X(g);
-      save['graph'].find('[xmlns]').removeAttr('xmlns');
-      $.ajax({
-        type: "PUT",
-        url: url + "/properties/values/description/",
-			 	data: ({'content': '<content>' + g + '</content>'})
-      });
+  if (save['graph_theme'] != theme) {
+    save['graph_theme'] = theme;
+    save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
+      graphrealization.set_svg_container($('#graphcanvas'));
+      graphrealization.set_description($(dslx), true);
+      graphrealization.notify = function(svgid) {
+        var g = graphrealization.get_description();
+        save['graph'] = $X(g);
+        save['graph'].find('[xmlns]').removeAttr('xmlns');
+        $.ajax({
+          type: "PUT",
+          url: url + "/properties/values/description/",
+          data: ({'content': '<content>' + g + '</content>'})
+        });
+        manifestation.events.click(svgid);
+      };
+      monitor_instance_pos();
+      $('#dat_details').empty();
+    });
+  } else {
+    save['graph_adaptor'].update(function(graphrealization){
+      var svgid = manifestation.clicked();
+      graphrealization.set_description($(dslx));
       manifestation.events.click(svgid);
-    };
-    monitor_instance_pos();
-  });
+      monitor_instance_pos();
+    });
+  }
 }
 
-function monitor_graph_change(force) {
+function monitor_graph_change(force) { //{{{
   var url = $("#current-instance").text();
   $.ajax({
     type: "GET",
@@ -337,7 +350,7 @@ function monitor_graph_change(force) {
       }
     }
   });
-}
+} //}}}
 
 function monitor_instance_dsl() {// {{{
   var url = $("#current-instance").text();
@@ -945,12 +958,18 @@ function format_visual_set(what) {//{{{
 }//}}}
 function format_visual_clear() {//{{{
   node_state = {};
-  $('.super .active').each(function(a,b){b.setAttribute("class","active");});
-  $('.super .passive').each(function(a,b){b.setAttribute("class","passive");});
-  $('.super .vote').each(function(a,b){b.setAttribute("class","vote");});
-  $('.super .colon').each(function(a,b){b.setAttribute("class","colon");});
-  $('.activities').each(function(a,b){b.setAttribute("class","activities");});
-  $("#votes").empty();
+  $('.super .active').each(function(a,b){b.setAttribute('class','active');});
+  $('.super .passive').each(function(a,b){b.setAttribute('class','passive');});
+  $('.super .vote').each(function(a,b){b.setAttribute('class','vote');});
+  $('.super .colon').each(function(a,b){b.setAttribute('class','colon');});
+  $('.activities').each(function(a,b){
+    if (b.hasAttribute('clicked')) {
+      b.setAttribute('class','activities clicked');
+    } else {
+      b.setAttribute('class','activities');
+    }
+  });
+  $('#votes').empty();
 }//}}}
 function format_visual_vote_clear() {//{{{
   node_state = {};

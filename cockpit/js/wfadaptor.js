@@ -51,10 +51,11 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     illustrator.set_container(container); // TODO: shadowing the container element
   } // }}}
 
-
-  // initialze
+  // initialize
   this.illustrator = illustrator = new WfIllustrator(this);
   this.description = description = new WfDescription(this, this.illustrator);
+
+  this.update = function(doit){ doit(self); };
 
   $.getScript(theme_base, function() {
     manifestation = new WFAdaptorManifestation(self);
@@ -173,14 +174,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[element-id = \'' + svg_id + '\'] g.activities', self.svg.container);
   } // }}}
-  this.get_nodes = function() { // {{{
-    return $('g.activities', self.svg.container);
+  this.get_elements = function() { // {{{
+    return $('g.element', self.svg.container);
   } // }}}
   // }}}
   // Helper Functions {{{
   var draw_label = this.draw.draw_label = function (row, col, label, group, where) { // {{{
     var g = $X('<text class="label" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height+20-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
-                    '<tspan>' + (label != '' ? '◤ ' : '')  + label + '</tspan>' +
+                 (label != '' ? '◤ ' : '')  + label +
                '</text>');
     if(group) { group.find('g.element[element-id=' + where + ']').append(g); }
     else {self.svg.container.children('g:first').append(g);}
@@ -323,6 +324,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       description = null;
     }
     id_counter = {};
+    labels = [];
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0});
     self.set_labels(graph);
@@ -363,6 +365,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var update = this.update = function(svgid) { // {{{
     id_counter = {};
     if(update_illustrator){
+      labels = [];
       illustrator.clear();
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
       self.set_labels(graph);

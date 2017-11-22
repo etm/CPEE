@@ -105,6 +105,10 @@ svg .black {
   stroke-dasharray:none;
 }
 
+svg .clicked text.label {
+  color: #f57900;
+  fill: #f57900;
+}
 svg .clicked .cfill {
   fill:#f57900;
   fill-opacity:1;
@@ -256,7 +260,7 @@ svg text.small {
   font-family:Arial;
 }
 
-svg text.label, svg text.label tspan {
+svg text.label {
   font-size:14px;
   font-style:normal;
   font-variant:normal;
@@ -307,7 +311,7 @@ svg g.element[element-id]:hover .htext {
   stroke-dasharray:none;
   cursor: pointer;
 }
-svg g.element[element-id]:hover > text.label tspan {
+svg g.element[element-id]:hover > text.label {
   color: #f57900;
   fill: #f57900;
 }
