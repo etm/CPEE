@@ -23,24 +23,29 @@ class Logging < Riddl::Implementation #{{{
       </global>
       <global scope="event">
         <string key="concept:name" value="__INVALID__"/>
-        <string key="concept:endpoint" value=""/>
-        <string key="id:id" value=""/>
+        <string key="concept:endpoint" value="__ENDPOINT__"/>
+        <string key="id:id" value="__ID__"/>
         <string key="lifecycle:transition" value="complete" />
-        <date key="time:timestamp" value=""/>
+        <date key="time:timestamp" value="1990-02-17T09:45:00.000+01:00"/>
       </global>
 			<classifier name="Data" keys="data_send data_received"/>
 			<classifier name="Data_Received" keys="data_received"/>
-			<classifier name="Data_Send" keys="data_send"/>
+			<classifier name="Name" keys="concept:name"/>
+			<classifier name="Endpoint" keys="concept:endpoint"/>
+			<classifier name="ID" keys="id:id"/>
+			<classifier name="Lifecycle" keys="lifecycle:transition"/>
       <trace/>
     </log>
   END
   def doc(event_name,log_dir,instancenr,notification)
+    start_x = Time.now
     uuid = notification['instance_uuid']
     activity = notification["activity"]
     parameters = notification['parameters']
     receiving = notification['received']
     Dir.mkdir(log_dir+'/'+uuid) unless Dir.exist?(log_dir+'/'+uuid)
     time_added=false
+    cpee_time =  notification['time']
     XML::Smart.modify(log_dir+'/'+uuid+'/log.xes',LOGTEMPLATE) do |xml|
       begin
         trace = xml.find("/xmlns:log/xmlns:trace").first
@@ -76,9 +81,12 @@ class Logging < Riddl::Implementation #{{{
                     node.add XML::Smart.string(v['content']).root
                   when /\/json$/
                     rec_unjson(JSON.parse(v['content']),event,"data_received")
-                  else
+                  when /\/html$/
           					list = event.add 'list', :key => "data_received"
                     list.add 'string', :key => k, :value => v['content']
+                  else 
+          					list = event.add 'list', :key => "data_received"
+                    list.add 'string', :key => k, :value => v
                 end    
               end
             end
@@ -86,12 +94,17 @@ class Logging < Riddl::Implementation #{{{
             pp receiving
           end
         end
-        event.add 'date', :key => "time:timestamp", :value => Time.now.iso8601 unless time_added
+        event.add 'date', :key => "time:timestamp", :value => cpee_time unless time_added
+        pid, size = `ps ax -o pid,rss | grep -E "^[[:space:]]*#{$$}"`.strip.split.map(&:to_i)
+        File.open(log_dir+'/'+uuid+'/memory.file',"a+"){ |f| f<< size << "\n" }
       rescue => e
         puts e.message
         puts e.backtrace
       end
     end
+    end_x = Time.now
+    x = end_x - start_x
+    File.open(log_dir+'/'+uuid+'/time.file',"a+"){ |f| f<< x << "\n" }
   end
   
 	def rec_unjson(value,list,key)
@@ -127,12 +140,12 @@ Riddl::Server.new(::File.dirname(__FILE__) + '/log.xml', :host => "coruscant.wst
   cross_site_xhr true
   log_path = "/home/demo/Projects/cpee-helpers/log/logs"
 
-  interface 'events' do
+  interface 'events' do 
 	    run Logging if post 'event'
 	    #run CB if post 'vote'
   end
   interface 'logoverlay' do |r|
-    run Riddl::Utils::FileServe, log_path + r[:h]["RIDDL_DECLARATION_PATH"]+ ".xes","text/xml" if get
+    run Riddl::Utils::FileServe, "#{log_path}#{r[:h]["RIDDL_DECLARATION_PATH"]}.xes","text/xml" if get '*'
   end
 
 

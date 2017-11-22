@@ -40,6 +40,7 @@ class Logging < Riddl::Implementation #{{{
     }
   }
   def doc(event_name,log_dir,instancenr,notification)
+    x = Time.now
     log = LOGTEMPLATE
     uuid = notification['instance_uuid']
     activity = notification["activity"]
@@ -75,7 +76,12 @@ class Logging < Riddl::Implementation #{{{
     event["time:timestamp"]= Time.now.iso8601 unless time_added
     File.open(log_dir+'/'+uuid+'/log.xes',"a") do |f|
       f << {'event' => event}.to_yaml
+      pid, size = `ps ax -o pid,rss | grep -E "^[[:space:]]*#{$$}"`.strip.split.map(&:to_i)
+      File.open(log_dir+'/'+uuid+'/memory.file',"a+"){ |fl| fl<< size << "\n" }
     end
+    y = Time.now
+    z = y-x
+    File.open(log_dir+'/'+uuid+'/time.file',"a+"){ |f| f<< z << "\n" }
   end
   
 	def rec_unjson(value,list,key)

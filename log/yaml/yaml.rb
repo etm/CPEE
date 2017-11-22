@@ -4,16 +4,16 @@ require 'pp'
 
 def pbuf(buf)
   unless buf.empty?
-    pp YAML.load(buf)
-    pp '---'
+    x = YAML.load(buf)
   end
   buf.clear
+  x
 end
 
+result = []
 buf = ""
 File.open('log.xes').each do |line|
-  pbuf(buf) if line == "---\n"
+  result << pbuf(buf) if line == "---\n"
   buf += line
 end
-
-pbuf(buf)
+result << pbuf(buf)

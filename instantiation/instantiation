@@ -3,6 +3,8 @@ require 'rubygems'
 require 'riddl/server'
 require 'xml/smart'
 require 'base64'
+require 'pp'
+require 'uri'
 
 # $cpee = 'http://cpee.org:9298/'
 $cpee = 'http://localhost:9298/'
@@ -38,6 +40,20 @@ class Instantiate < Riddl::Implementation
           if doc.find("/testset/#{item}").any?
             params << Riddl::Parameter::Simple.new("name",item)
             params << Riddl::Parameter::Simple.new("content","<content>" + doc.find("/testset/#{item}/desc:*").first.dump + "</content>")
+          end
+        end
+        ["handlers"].each do |item|
+          doc.find("/testset/#{item}/handler").each do |han|
+            #pp han.children.first
+            url =  han.attributes['url']
+            inp = "url=" + URI.encode_www_form_component(url)
+            inp = inp + "&topic=" + han.children.first.attributes['topic']
+            inp = inp + "&" + han.children.first.qname.to_s + "=" + han.children.first.to_s
+            pp $cpee+ins+"/notifications/subscriptions/"
+            pp inp
+            status,body = Riddl::Client::new($cpee+ins+"/notifications/subscriptions/").post([Riddl::Parameter::Simple.new("url",han.attributes['url']),Riddl::Parameter::Simple.new("topic",han.children.first.attributes['topic']),Riddl::Parameter::Simple.new(han.children.first.qname.to_s,han.children.first.to_s)])
+            pp status
+            pp body
           end
         end
 

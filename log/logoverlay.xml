@@ -4,7 +4,7 @@
   </message>
 
   <resource>
-    <get out="logresponse"/>
+    <get in='*' out="logresponse"/>
   </resource>
 
 </description>
