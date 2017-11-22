@@ -56,7 +56,11 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'change';// }}}
 
 $(document).ready(function() {// {{{
-  $("input[name=base-url]").val(location.protocol + "//" + location.host + ":" + $('body').data('defaultport'));
+  if (location.protocol.match(/^file/)) {
+    $("input[name=base-url]").val("http://localhost:" + $('body').data('defaultport'));
+  } else {
+    $("input[name=base-url]").val(location.protocol + "//" + location.hostname + ":" + $('body').data('defaultport'));
+  }
   $("button[name=base]").click(function(){ create_instance(null,false); });
   $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance(false,false); });
   $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),function(){ load_testset(false) } ); });
@@ -78,6 +82,10 @@ $(document).ready(function() {// {{{
         $('#predefinedtestsets').append($("<div class='menuitem'></div>").text(ts));
       });
       var q = $.parseQuerySimple();
+      if (q.min || q.min == "") {
+        ui_toggle_vis_tab($('#instance ui-tabbar'));
+        ui_toggle_vis_tab($('#parameters ui-tabbar'));
+      }
       if (q.monitor && q.load) {
         $("input[name=instance-url]").val(q.monitor);
         $("#predefinedtestsets div.menuitem").each(function(k,v){
@@ -194,7 +202,8 @@ function monitor_instance(load,exec) {// {{{
       $("#current-instance-subscriptions").text('S');
       $("#current-instance-callbacks").attr('href',url + 'callbacks/');
       $("#current-instance-callbacks").text('C');
-      history.replaceState({}, '', '?monitor='+url);
+      var q = $.parseQuerySimple();
+      history.replaceState({}, '', '?' + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").removeAttr('checked');
@@ -597,7 +606,6 @@ function save_svg() {// {{{
   });
 }// }}}
 function set_testset(testset,exec) {// {{{
-  console.log(exec);
   var url = $("#current-instance").text();
 
   $.ajax({
@@ -669,10 +677,11 @@ function load_testsetfile_after() { //{{{
   var reader = new FileReader();
   reader.onload = function(){
     set_testset($.parseXML(reader.result),false);
+    document.getElementById('fuckchrome').reset();
     running  = false;
   }
-  reader.onerror = function(){ running  = false; }
-  reader.onabort = function(){ running  = false; }
+  reader.onerror = function(){ console.log('error reading file'); running  = false; }
+  reader.onabort = function(){ console.log('abort reading file'); running  = false; }
   reader.readAsText(files[0]);
 } //}}}
 function load_testsetfile() {// {{{

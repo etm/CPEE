@@ -1,0 +1,41 @@
+<element rngui:version="1.2" name="call" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <attribute name="id" rngui:label="ID" rngui:default="javascript:get_free_id()">
+    <data type="string" rngui:readonly="true"/>
+  </attribute>
+  <attribute name="endpoint" rngui:label="Endpoint">
+    <data type="string"/>
+  </attribute>
+  <element name='parameters' rngui:header="Parameters">
+    <element name="label" rngui:label="Label">
+      <data type="string" rngui:label="Short description of the task"/>
+    </element>
+    <element name="method" rngui:label="Method">
+      <choice>
+        <value>:post</value>
+        <value>:get</value>
+        <value>:put</value>
+        <value>:delete</value>
+      </choice>
+    </element>
+    <element name="arguments" rngui:header="Arguments">
+      <zeroOrMore rngui:label="Create Argument Pair">
+        <element rngui:label='Name'>
+          <anyName/>
+          <data type="string" rngui:label="Value"/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </element>
+  <element name="finalize" rngui:header="Finalize" rngui:label="Code">
+    <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+      <data type="string" rngui:readonly="true"/>
+    </attribute>
+    <text rngui:label='Script that is executed, when a service returns data'/>
+  </element>
+  <element name="update" rngui:header="Update" rngui:label="Code">
+    <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+      <data type="string" rngui:readonly="true"/>
+    </attribute>
+    <text rngui:label='Script that is executed, when a service sends intermediate data'/>
+  </element>
+</element>

@@ -1,166 +1,29 @@
-<?xml version="1.0"?>
 <testset>
-  <dataelements>
-    <i xmlns="http://riddl.org/ns/common-patterns/properties/1.0">1</i>
-  </dataelements>
+  <dataelements/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
-    <folders xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/folders</folders>
-    <ldown xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://pusher.wst.univie.ac.at:9200/lever/down</ldown>
-    <lup xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://pusher.wst.univie.ac.at:9200/lever/up</lup>
-    <speed xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/speed</speed>
-    <mstart xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/motor/start</mstart>
-    <mstop xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/motor/stop</mstop>
-    <sstop xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://pusher.wst.univie.ac.at:9200/sensor/stop</sstop>
-    <dispense xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://pusher.wst.univie.ac.at:9200/dispense</dispense>
-    <gpos xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/go_to_pos</gpos>
-    <gfolder xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://dispenser.wst.univie.ac.at:9200/folder/next</gfolder>
+    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <dispense xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://transporter.wst.univie.ac.at:9200/dispense</dispense>
+    <stein xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://transporter.wst.univie.ac.at:9200/stein</stein>
   </endpoints>
   <positions/>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <call id="a15" endpoint="speed">
+      <call id="a1" endpoint="stein">
         <parameters>
-          <label>Set speed for going left</label>
-          <method>:put</method>
+          <label>Take Stein</label>
+          <method>:post</method>
           <arguments>
-            <speed>-750</speed>
+            <data>2</data>
           </arguments>
         </parameters>
       </call>
-      <call id="a14" endpoint="gpos">
-        <parameters>
-          <label>Go to left end</label>
-          <method>:post</method>
-          <arguments>
-            <pos>0</pos>
-            <methode>1</methode>
-          </arguments>
-        </parameters>
-      </call>
-      <loop mode="pre_test" condition="data.i&lt;3">
-        <call id="a13" endpoint="gfolder">
-          <parameters>
-            <label>Go to next folder</label>
-            <method>:post</method>
-            <arguments/>
-          </parameters>
-          <finalize output="result">data.i = data.i+1 </finalize>
-        </call>
-      </loop>
-      <call id="a2" endpoint="ldown">
-        <parameters>
-          <label>Lever down</label>
-          <method>:post</method>
-          <arguments/>
-        </parameters>
-      </call>
-      <call id="a3" endpoint="gfolder">
-        <parameters>
-          <label>Go to next folder</label>
-          <method>:post</method>
-          <arguments/>
-        </parameters>
-      </call>
-      <call id="a4" endpoint="dispense">
+      <call id="a2" endpoint="dispense">
         <parameters>
           <label>Dispense</label>
           <method>:post</method>
-          <arguments/>
-        </parameters>
-      </call>
-      <call id="a5" endpoint="lup">
-        <parameters>
-          <label>Lever up</label>
-          <method>:post</method>
-          <arguments/>
-        </parameters>
-      </call>
-      <call id="a16" endpoint="speed">
-        <parameters>
-          <label>Set Speed for right</label>
-          <method>:put</method>
           <arguments>
-            <speed>750</speed>
-          </arguments>
-        </parameters>
-      </call>
-      <call id="a17" endpoint="gpos">
-        <parameters>
-          <label>Go to right end</label>
-          <method>:post</method>
-          <arguments>
-            <pos>3</pos>
-            <methode>1</methode>
-          </arguments>
-        </parameters>
-      </call>
-      <call id="a18" endpoint="ldown">
-        <parameters>
-          <label>Lower Lever</label>
-          <method>:post</method>
-          <arguments/>
-        </parameters>
-      </call>
-      <parallel svg-label="">
-        <parallel_branch svg-label="">
-          <call id="a6" endpoint="speed">
-            <parameters>
-              <label>Set Speed to go left</label>
-              <method>:put</method>
-              <arguments>
-                <speed>-50</speed>
-              </arguments>
-            </parameters>
-          </call>
-          <call id="a7" endpoint="mstart">
-            <parameters>
-              <label>Go left</label>
-              <method>:post</method>
-              <arguments/>
-            </parameters>
-          </call>
-        </parallel_branch>
-        <parallel_branch svg-label="">
-          <call id="a8" endpoint="sstop">
-            <parameters>
-              <label>StopSensor pusher</label>
-              <method>:post</method>
-              <arguments/>
-            </parameters>
-          </call>
-        </parallel_branch>
-      </parallel>
-      <call id="a9" endpoint="mstop">
-        <parameters>
-          <label>Stop Motor</label>
-          <method>:post</method>
-          <arguments/>
-        </parameters>
-      </call>
-      <call id="a10" endpoint="lup">
-        <parameters>
-          <label>Raise Lever</label>
-          <method>:post</method>
-          <arguments/>
-        </parameters>
-      </call>
-      <call id="a11" endpoint="speed">
-        <parameters>
-          <label>Set Speed for right</label>
-          <method>:put</method>
-          <arguments>
-            <speed>750</speed>
-          </arguments>
-        </parameters>
-      </call>
-      <call id="a12" endpoint="gpos">
-        <parameters>
-          <label>Go to right end</label>
-          <method>:post</method>
-          <arguments>
-            <pos>3</pos>
-            <methode>1</methode>
+            <data>2</data>
           </arguments>
         </parameters>
       </call>
@@ -172,7 +35,8 @@
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Lego Transporter</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">s</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">default</theme>
   </attributes>
 </testset>

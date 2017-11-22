@@ -1,12 +1,17 @@
 <?xml version="1.0"?>
 <testset>
+  <attributes>
+    <info>Syncing</info>
+    <modeltype>CPEE</modeltype>
+    <theme>default</theme>
+  </attributes>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <dataelements><!--{{{-->
     <x/>
   </dataelements><!--}}}-->
   <handlers><!--{{{-->
-    <handler url="http://localhost:9299/1/events">
+    <handler url="http://localhost:9399/1/events">
       <votes topic='activity'>syncing_before,syncing_after</votes>
     </handler>
   </handlers><!--}}}-->
@@ -18,6 +23,7 @@
     <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
       <call id="a1" endpoint="timeout">
         <parameters><!--{{{-->
+          <label>Task 1</label>
           <method>:post</method>
           <arguments>
             <timeout>2</timeout>
@@ -27,6 +33,7 @@
       </call>
       <call id="a2" endpoint="timeouts">
         <parameters><!--{{{-->
+          <label>Resource Synchronisation</label>
           <method>:post</method>
           <arguments>
             <timeout>4</timeout>
@@ -36,6 +43,7 @@
       </call>
       <call id="a3" endpoint="timeout">
         <parameters><!--{{{-->
+          <label>Task 3</label>
           <method>:post</method>
           <arguments>
             <timeout>4</timeout>

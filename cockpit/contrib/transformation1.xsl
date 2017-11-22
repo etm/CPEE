@@ -10,7 +10,7 @@
       <xsl:template match="//d:description">
         <xsl:apply-templates>
           <xsl:with-param name="myspace"><xsl:value-of select="-1*$myspacemultiplier"/></xsl:with-param>
-        </xsl:apply-templates>  
+        </xsl:apply-templates>
       </xsl:template>
 
       <xsl:template match="*">
@@ -20,7 +20,7 @@
           <xsl:with-param name="count"><xsl:value-of select="$myspace+$myspacemultiplier"/></xsl:with-param>
         </xsl:call-template>
         <xsl:if test="name()='call' or name()='manipulate'">
-          <xsl:choose>  
+          <xsl:choose>
             <xsl:when test="@lay">
               <xsl:text>activity [:</xsl:text>
               <xsl:value-of select="@id"/>
@@ -106,7 +106,7 @@
           <xsl:call-template name="print-newline"/>
         </xsl:if>
       </xsl:template>
-      
+
       <xsl:template match="d:alternative">
         <xsl:param name="myspace"/>
         <xsl:call-template name="print-space">
@@ -179,12 +179,12 @@
       <xsl:template match="d:parameters">
         <xsl:apply-templates select="d:*" mode="parameter"/>
       </xsl:template>
-        
+
       <xsl:template match="d:*" mode="parameter">
         <xsl:text>, :</xsl:text>
         <xsl:value-of select="name()"/>
         <xsl:text> => </xsl:text>
-        <xsl:choose>  
+        <xsl:choose>
           <xsl:when test="count(*) > 0">
             <xsl:text>[</xsl:text>
             <xsl:apply-templates select="d:*" mode="sub-parameter"/>
@@ -195,23 +195,23 @@
             <xsl:value-of select="text()"/>
             <xsl:text>"</xsl:text>
           </xsl:otherwise>
-        </xsl:choose>  
+        </xsl:choose>
       </xsl:template>
-      
+
       <xsl:template match="d:*" mode="sub-parameter">
         <xsl:text> { :</xsl:text>
         <xsl:value-of select="name()"/>
         <xsl:text> => </xsl:text>
         <xsl:value-of select="text()"/>
         <xsl:text> }</xsl:text>
-        <xsl:choose>  
+        <xsl:choose>
           <xsl:when test=". = ../*[last()]">
             <xsl:text> </xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>,</xsl:text>
           </xsl:otherwise>
-        </xsl:choose>  
+        </xsl:choose>
       </xsl:template>
 
       <xsl:template match="d:manipulate" mode="part-of-call">

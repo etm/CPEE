@@ -1,0 +1,6 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="15" cy="15" r="14" class="stand"/>
+  <circle cx="15" cy="15" r="11" class="stand"/>
+  <rect x="9" y="11" width="12" height="8" class="black" style="fill: none"/>
+  <path d="m 9,11 6,4 6,-4" class="black" style="fill: none"/>
+</svg>

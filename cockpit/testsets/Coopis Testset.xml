@@ -21,6 +21,7 @@
       <call id="a1" endpoint="bookAir">
         <parameters>
           <method>:post</method>
+          <label>Book Airline</label>
           <arguments>
             <from>data.from</from>
             <to>data.to</to>
@@ -37,6 +38,7 @@ status.update 1, 'Hotel'</finalize>
             <call id="a2" endpoint="bookHotel">
               <parameters>
                 <method>:post</method>
+                <label>Book Hotel</label>
                 <arguments>
                   <to>data.to</to>
                 </arguments>
@@ -48,11 +50,12 @@ data.costs += result.value('costs').to_f</finalize>
           <manipulate id="a3">data.persons -= 1</manipulate>
         </loop>
       </parallel>
-      <choose>
+      <choose mode="inclusive">
         <alternative condition="data.costs > 700">
           <call id="a4" endpoint="approve">
             <parameters>
               <method>:post</method>
+              <label>Approve Hotel</label>
               <arguments>
                 <costs>data.costs</costs>
               </arguments>

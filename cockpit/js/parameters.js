@@ -27,26 +27,6 @@ $(document).ready(function() {
     }
   }); //}}}
 
-  // color of save button when changeing tabs //{{{
-  $('#parameters ui-tabbar ui-tab:not(.switch)').click(function(event){
-    highlight_save_button(event);
-  }); //}}}
-
-  // save entries //{{{
-  $('#parameters ui-behind button:nth-child(2)').click(function(event){
-    var visid = $('ui-tabbar ui-tab',$(event.target).parents('ui-tabbed')).not('.switch').not('.inactive').attr('data-tab');
-    if (save[visid].has_changed()) {
-      var url = $("#current-instance").text();
-      $('#parameters ui-tabbar ui-behind button:nth-child(2)').removeClass('highlight');
-      save[visid].set_checkpoint();
-      $.ajax({
-        type: "PUT",
-        url: url + "/properties/values/" + visid + "/",
-        data: ({'content': save[visid].save_text()}),
-      });
-    }
-  }); //}}}
-
   // new entry //{{{
   $('#parameters ui-behind button:nth-child(1)').click(function(event){
     var but = $(document).find('#parameters ui-content ui-area:not(.inactive) button');
@@ -56,17 +36,37 @@ $(document).ready(function() {
         are.animate({ scrollTop: tab.height() }, "slow");
   }); //}}}
 
-  // when keyup in one of the inputs, highlight the save button //{{{
-  $(document).on('keyup','#dat_dataelements input, #dat_endpoints input, #dat_attributes input',function(event){
-    highlight_save_button(event);
+  var timer;
+  // when input in one of the inputs, save
+  $(document).on('input','#dat_dataelements input, #dat_endpoints input, #dat_attributes input',function(event){
+    clearTimeout(timer);
+    timer = setTimeout(function(){ do_parameters_save(event); }, 5000);
+  });
+  $(document).on('blur','#dat_dataelements input, #dat_endpoints input, #dat_attributes input',function(event){
+    clearTimeout(timer);
+    do_parameters_save(event);
   }); //}}}
+  $(document).on('keypress','#dat_dataelements input, #dat_endpoints input, #dat_attributes input',function(event){
+    if (event.keyCode == 13) {
+      clearTimeout(timer);
+      do_parameters_save(event);
+    }
+  }); //}}}
+  $(document).on('relaxngui_remove', '#dat_dataelements, #dat_endpoints, #dat_attributes', function(event){
+    clearTimeout(timer);
+    do_parameters_save(event);
+  });
 });
 
-function highlight_save_button(event) {
+function do_parameters_save(event) { //{{{
   var visid = $('ui-tabbar ui-tab',$(event.target).parents('ui-tabbed')).not('.switch').not('.inactive').attr('data-tab');
   if (save[visid].has_changed()) {
-    $('#parameters ui-tabbar ui-behind button:nth-child(2)').addClass('highlight');
-  } else {
-    $('#parameters ui-tabbar ui-behind button:nth-child(2)').removeClass('highlight');
+    var url = $("#current-instance").text();
+    save[visid].set_checkpoint();
+    $.ajax({
+       type: "PUT",
+       url: url + "/properties/values/" + visid + "/",
+       data: ({'content': save[visid].save_text()}),
+    });
   }
-}
+} //}}}

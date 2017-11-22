@@ -1,0 +1,7 @@
+<subscription xmlns="http://riddl.org/ns/common-patterns/notifications-producer/1.0" url="http://localhost:9300/log">
+  <topic id="activity">
+    <event>calling</event>
+    <event>receiving</event>
+    <event>done</event>
+  </topic>
+</subscription>
