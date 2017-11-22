@@ -299,6 +299,18 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var update_illustrator = true;
   var labels = [];
 
+  // Set Labels //{{{
+  this.set_labels = function(graph) {
+    if (illustrator.compact == false) {
+      if (labels.length > 0) {
+        _.each(labels,function(a,key) {
+          illustrator.draw.draw_label(a.row, graph.max.col + 1, a.label, graph.svg, a.element_id);
+        });
+        graph.max.col += 4;
+      }
+    }
+  } //}}}
+
   // Generic Functions {{{
   this.set_description = function(desc, auto_update) { // public {{{
     if(auto_update != undefined) update_illustrator = auto_update;
@@ -313,15 +325,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+    self.set_labels(graph);
     // set labels
-    if (illustrator.compact == false) {
-      if (labels.length > 0) {
-        _.each(labels,function(a,key) {
-          illustrator.draw.draw_label(a.row, graph.max.col + 1, a.label, graph.svg, a.element_id);
-        });
-        graph.max.col += 4;
-      }
-    }
     illustrator.set_svg(graph);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
@@ -360,6 +365,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(update_illustrator){
       illustrator.clear();
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+      self.set_labels(graph);
       illustrator.set_svg(graph);
     }
 
