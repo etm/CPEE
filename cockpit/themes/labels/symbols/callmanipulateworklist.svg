@@ -1,6 +1,6 @@
 <svg class="clickable" xmlns="http://www.w3.org/2000/svg">
-  <rect x="1" y="1" width="28" height="28" rx="4" class="rfill stand"/>
+  <rect x="1" y="1" width="28" height="28" rx="4" class="cline hfill rfill stand"/>
   <path transform="translate(-2,-2)" class="normal" style="fill:#000000;" d="m 15,6.5 a 3.9999995,4 0 0 0 -4,4 3.9999995,4 0 0 0 4,4 3.9999995,4 0 0 0 4,-4 3.9999995,4 0 0 0 -4,-4 z m 0,8 -3.5,0 c -1.108,0 -2,0.892 -2,2 l 0,5 c 0,1.108 0.892,2 2,2 l 7,0 c 1.108,0 2,-0.892 2,-2 l 0,-5 c 0,-1.108 -0.892,-2 -2,-2 l -3.5,0 z"/>
-  <circle cx="28" cy="27" r="9" class="rfill stand"/>
+  <circle cx="28" cy="27" r="9" class="cline hfill rfill stand"/>
   <text transform="translate(28,31)" class="small">s</text>
 </svg>
