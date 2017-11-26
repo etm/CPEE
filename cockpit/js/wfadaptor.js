@@ -180,9 +180,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // }}}
   // Helper Functions {{{
   var draw_label = this.draw.draw_label = function (row, col, label, group, where) { // {{{
-    var g = $X('<text class="label" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height+20-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
-                 (label != '' ? '◤ ' : '')  + label +
-               '</text>');
+    var g = $X('<text class="label" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height+20-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg"></text>');
+        g.text((label != '' ? '◤ ' : '')  + label);
     if(group) { group.find('g.element[element-id=' + where + ']').append(g); }
     else {self.svg.container.children('g:first').append(g);}
     return g;
@@ -199,7 +198,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
                   '</g>' +
                '</g>');
     var sym = self.svg.defs[sym_name].clone();
-    sym.prepend($X('<title xmlns="http://www.w3.org/2000/svg">' + title  + '</title>'));
+    var tit = $X('<title xmlns="http://www.w3.org/2000/svg"></title>');
+        tit.text(title);
+    sym.prepend(tit);
     sym.attr('class','activities');
     $(g[0].childNodes[0]).append(sym);
 
