@@ -572,7 +572,7 @@ function save_testset() {// {{{
                           pars.find('uuid').remove();
                           testset.append(pars);
                           $('#savetestset').attr('download',name + '.xml');
-                          $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(testset.serializePrettyXML()));
+                          $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(testset.serializePrettyXML()));
                           document.getElementById('savetestset').click();
                         },
                         error: report_failure
