@@ -329,7 +329,7 @@
     <xsl:text>:</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text> =&gt; "</xsl:text>
-    <xsl:value-of select="str:replace(text(),'&quot;','\&quot;')"/>
+    <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
     <xsl:text>"</xsl:text>
   </xsl:template>
   <xsl:template match="d:*[not(name()='label')]" mode="parameter">
