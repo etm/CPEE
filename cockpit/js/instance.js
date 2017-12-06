@@ -208,7 +208,7 @@ function monitor_instance(load,exec) {// {{{
       history.replaceState({}, '', '?' + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
       // Change url to return to current instance when reloading (because new subscription is made)
-      $("input[name=votecontinue]").removeAttr('checked');
+      $("input[name=votecontinue]").prop( "checked", false );
       subscription_state = 'less';
 
       $.ajax({
