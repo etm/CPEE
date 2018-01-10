@@ -600,7 +600,7 @@ function save_svg() {// {{{
   var gc = $('#graphcanvas').clone();
   $.ajax({
     type: "GET",
-    url: "lib/wfadaptor.css",
+    url: "css/wfadaptor.css",
     success: function(res){
       gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
       $.ajax({
@@ -610,7 +610,7 @@ function save_svg() {// {{{
           var name = $(res.documentElement).text();
 
           $('#savesvg').attr('download',name + '.svg');
-          $('#savesvg').attr('href','data:application/xml;charset=utf-8;base64,' + window.btoa(gc.serializeXML()));
+          $('#savesvg').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializeXML()));
           document.getElementById('savesvg').click();
         },
         error: report_failure

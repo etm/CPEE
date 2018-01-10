@@ -1,17 +1,19 @@
 <testsets>
-  <testset>Centurio</testset>
+  <!--testset>Centurio</testset-->
   <testset>Log</testset>
+  <testset>BCS</testset>
+  <testset>BCO</testset>
   <testset>Infinity</testset>
-  <testset>SOPROMO Test Sonification</testset>
+  <!--testset>SOPROMO Test Sonification</testset-->
   <testset>Linear</testset>
   <testset>Coopis Testset</testset>
   <testset>ICSOC Testset</testset>
   <testset>Mangler 1</testset>
   <testset>Mangler 2</testset>
   <testset>Concurrent</testset>
-  <testset>Endpoints and Data Manipulation</testset>
-  <testset>TEST - Wrong Positions</testset>
-  <testset>TEST - Bad Loop</testset>
+  <!--testset>Endpoints and Data Manipulation</testset-->
+  <!--testset>TEST - Wrong Positions</testset-->
+  <!--testset>TEST - Bad Loop</testset-->
   <testset>Syncing P34</testset>
   <testset>Syncing P34 1</testset>
   <testset>Syncing P34 2</testset>
@@ -21,9 +23,11 @@
   <testset>Worklist Parallel</testset>
   <testset>Update</testset>
   <testset>Promise</testset>
+  <testset>Lego Boxer</testset>
   <testset>Lego Conveyor</testset>
   <testset>Lego Transporter</testset>
   <testset>Lego Ejector</testset>
   <testset>Lego Crane</testset>
   <testset>Lego Plate</testset>
+  <!--testset>Manuel Labels</testset-->
 </testsets>

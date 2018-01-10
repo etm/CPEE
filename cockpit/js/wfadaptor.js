@@ -168,7 +168,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
-    self.svg.container.attr({'height': (graph.max.row+0.3)*self.height, 'width':(graph.max.col+0.65)*self.width});
+    self.svg.container.attr({'height': (graph.max.row+0.3)*self.height, 'style': "min-width: " + (graph.max.col+0.65)*self.width + "pt"});
     self.svg.container.append(graph.svg);
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
