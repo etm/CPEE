@@ -1,1 +1,1 @@
-map <F10> :!./server.rb -v start<CR>
+map <F10> :!./non_tamp.rb -v start<CR>
