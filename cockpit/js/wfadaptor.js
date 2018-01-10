@@ -51,10 +51,11 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     illustrator.set_container(container); // TODO: shadowing the container element
   } // }}}
 
-
-  // initialze
+  // initialize
   this.illustrator = illustrator = new WfIllustrator(this);
   this.description = description = new WfDescription(this, this.illustrator);
+
+  this.update = function(doit){ doit(self); };
 
   $.getScript(theme_base, function() {
     manifestation = new WFAdaptorManifestation(self);
@@ -173,42 +174,50 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[element-id = \'' + svg_id + '\'] g.activities', self.svg.container);
   } // }}}
-  this.get_nodes = function() { // {{{
-    return $('g.activities', self.svg.container);
+  this.get_elements = function() { // {{{
+    return $('g.element', self.svg.container);
   } // }}}
   // }}}
   // Helper Functions {{{
-  var draw_label = this.draw.draw_label = function (row, col, label, group) { // {{{
-    var g = $X('<text class="label" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height+20-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
-                    '<tspan>' + (label != '' ? '◤ ' : '')  + label + '</tspan>' +
-               '</text>');
-    if(group) {group.append(g);}
+  var draw_label = this.draw.draw_label = function (tname, id, label, row, col, group) { // {{{
+    var g = $X('<text class="label" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height+20-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg"></text>');
+        g.text((label != '' ? '◤ ' : '')  + label);
+    bind_event(g,tname);
+    if(group) { group.find('g.element[element-id=' + id + ']').append(g); }
     else {self.svg.container.children('g:first').append(g);}
     return g;
   } // }}}
   var draw_symbol = this.draw.draw_symbol = function (tname, sym_name, id, title, row, col, group) { // {{{
     if(self.elements[sym_name] == undefined || self.elements[sym_name].svg == undefined) sym_name = 'unknown';
-    var g = $X('<g class="element" element-type="' + sym_name + '" element-id="' + id  + '" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg">' +
-                  '<text class="super" transform="translate(30,8.4)">' +
-                    '<tspan class="active">0</tspan>' +
-                    '<tspan class="colon">,</tspan>' +
-                    '<tspan class="vote">0</tspan>' +
-                  '</text>' +
+    var g = $X('<g class="element" element-type="' + sym_name + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
+                  '<g transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height-((self.height*0.74))) + ')">' +
+                    '<text class="super" transform="translate(30,8.4)">' +
+                      '<tspan class="active">0</tspan>' +
+                      '<tspan class="colon">,</tspan>' +
+                      '<tspan class="vote">0</tspan>' +
+                    '</text>' +
+                  '</g>' +
                '</g>');
     var sym = self.svg.defs[sym_name].clone();
-    sym.prepend($X('<title xmlns="http://www.w3.org/2000/svg">' + title  + '</title>'));
+    var tit = $X('<title xmlns="http://www.w3.org/2000/svg"></title>');
+        tit.text(title);
+    sym.prepend(tit);
     sym.attr('class','activities');
-    g.append(sym);
+    $(g[0].childNodes[0]).append(sym);
 
     // Binding events for symbol
-    for(event_name in adaptor.elements[tname]) {
-      sym.bind(event_name, {'function_call':adaptor.elements[tname][event_name]}, function(e) { e.data.function_call($(this).parents(':first').attr('element-id'),e)});
-      if(event_name == 'mousedown') sym.bind('contextmenu', false);
-    }
+    bind_event(sym,tname);
+
     if(group) {group.append(g);}
     else {self.svg.container.children('g:first').append(g);}
     return g;
   } // }}}
+  var bind_event = this.draw.bind_event = function(sym,tname) { //{{{
+    for(event_name in adaptor.elements[tname]) {
+      sym.bind(event_name, {'function_call':adaptor.elements[tname][event_name]}, function(e) { e.data.function_call($(this).parents('.element:first').attr('element-id'),e)});
+      if(event_name == 'mousedown') sym.bind('contextmenu', false);
+    }
+  } //}}}
   var draw_border = this.draw.draw_border = function(id, p1, p2, group) { // {{{
     group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*self.width + '" ' +
         'y="' + (p1.row-0.80)*self.height + '" ' +
@@ -297,6 +306,18 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var update_illustrator = true;
   var labels = [];
 
+  // Set Labels //{{{
+  this.set_labels = function(graph) {
+    if (illustrator.compact == false) {
+      if (labels.length > 0) {
+        _.each(labels,function(a,key) {
+          illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
+        });
+        graph.max.col += 4;
+      }
+    }
+  } //}}}
+
   // Generic Functions {{{
   this.set_description = function(desc, auto_update) { // public {{{
     if(auto_update != undefined) update_illustrator = auto_update;
@@ -309,17 +330,11 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       description = null;
     }
     id_counter = {};
+    labels = [];
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+    self.set_labels(graph);
     // set labels
-    if (illustrator.compact == false) {
-      if (labels.length > 0) {
-        _.each(labels,function(a,key) {
-          illustrator.draw.draw_label(a.row, graph.max.col + 1, a.label, graph.svg);
-        });
-        graph.max.col += 4;
-      }
-    }
     illustrator.set_svg(graph);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
@@ -356,8 +371,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var update = this.update = function(svgid) { // {{{
     id_counter = {};
     if(update_illustrator){
+      labels = [];
       illustrator.clear();
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+      self.set_labels(graph);
       illustrator.set_svg(graph);
     }
 
@@ -497,7 +514,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (illustrator.elements[tname].label) {
         var lab = illustrator.elements[tname].label(this);
         $(this).attr('svg-label', lab);
-        labels.push({row: pos.row, label: lab});
+        labels.push({row: pos.row, element_id: $(this).attr('svg-id'), tname: tname, label: lab});
       } else {
         $(this).attr('svg-label', '');
       } // }}}

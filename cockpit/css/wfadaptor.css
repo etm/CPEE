@@ -105,11 +105,29 @@ svg .black {
   stroke-dasharray:none;
 }
 
-svg .clicked {
-  fill: grey;
-  stroke: grey;
-  filter: drop-shadow(0 0 0.15em rgba(0,0,0,0.9));
-  padding: 1em;
+svg .clicked text.label {
+  color: #f57900;
+  fill: #f57900;
+}
+svg .clicked .cfill {
+  fill:#f57900;
+  fill-opacity:1;
+  stroke:#f57900;
+  stroke-width:0.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
+svg .clicked .cline {
+  stroke:#f57900;
+  stroke-width:2.06896567;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
 }
 
 svg .unknown {
@@ -246,7 +264,6 @@ svg text.label {
   font-size:14px;
   font-style:normal;
   font-variant:normal;
-  font-weight:bold;
   font-stretch:normal;
   text-align:center;
   line-height:125%;
@@ -263,4 +280,38 @@ svg text.label {
   stroke: #000000;
   stroke-width: 2;
   fill: #000000;
+}
+
+svg g.element[element-id]:hover .hfill {
+  fill: #f57900;
+  fill-opacity:1;
+  cursor: pointer;
+}
+svg g.element[element-id]:hover .hline {
+  fill:#f57900;
+  fill-opacity:1;
+  stroke:#f57900;
+  stroke-width:2.06896567;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+  cursor: pointer;
+}
+svg g.element[element-id]:hover .htext {
+  fill:#f57900;
+  fill-opacity:1;
+  stroke:#f57900;
+  stroke-width:0.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+  cursor: pointer;
+}
+svg g.element[element-id]:hover > text.label {
+  color: #f57900;
+  fill: #f57900;
 }
