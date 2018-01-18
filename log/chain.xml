@@ -1,0 +1,27 @@
+<declaration xmlns="http://riddl.org/ns/declaration/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <interface name="events">
+    <xi:include href="http://www.riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml"/>
+  </interface>
+  <interface name="cpee" location="http://cpee.org:9298">
+    <xi:include href="http://cpee.org:9298/?riddl-description"/>
+  </interface>
+  <interface name="logoverlay">
+    <xi:include href="logoverlay.xml"/>
+  </interface>
+
+  <facade>
+    <tile>
+      <layer name="cpee"/>
+    </tile>
+    <tile>
+      <layer name="events">
+        <apply-to>/log</apply-to>
+      </layer>
+    </tile>
+    <tile>
+      <layer name="logoverlay">
+        <apply-to>/chain</apply-to>
+      </layer>
+    </tile>
+  </facade>
+</declaration>
