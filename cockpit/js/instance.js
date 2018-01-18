@@ -85,8 +85,8 @@ $(document).ready(function() {// {{{
       });
       var q = $.parseQuerySimple();
       if (q.min || q.min == "") {
-        ui_toggle_vis_tab($('#instance ui-tabbar'));
-        ui_toggle_vis_tab($('#parameters ui-tabbar'));
+        ui_toggle_vis_tab($('#instance'));
+        ui_toggle_vis_tab($('#parameters'));
       }
       if (q.monitor && q.load) {
         $("input[name=instance-url]").val(q.monitor);
