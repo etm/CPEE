@@ -66,7 +66,7 @@ module CPEE
       controller = {}
       Dir[opts[:instances] + '/*/properties.xml'].each do |e|
         id = ::File::basename(::File::dirname(e))
-        (controller[id.to_i] = Controller.new(id,opts)) rescue nil
+        (controller[id.to_i] = (Controller.new(id,opts)) rescue nil)
       end
 
       interface 'properties' do |r|
@@ -157,9 +157,12 @@ module CPEE
 
       while true
         id += 1
-        Dir.mkdir(opts[:instances] + "/#{id}") rescue nil
-        break
+        unless Dir.exists? opts[:instances] + "/#{id}"
+          Dir.mkdir(opts[:instances] + "/#{id}") rescue nil
+          break
+        end
       end
+
       controller[id] = Controller.new(id,opts)
       info = controller[id].properties.data.find("/p:properties/p:attributes/p:info")
       info.first.text = name if info.length == 1

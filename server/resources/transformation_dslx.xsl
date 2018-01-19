@@ -219,14 +219,14 @@
     <xsl:text>alternative </xsl:text>
     <xsl:choose>
       <xsl:when test="not(@language) or @language='application/x-ruby'">
-        <xsl:text>"</xsl:text>
+        <xsl:text>test{</xsl:text>
         <xsl:value-of select="@condition"/>
-        <xsl:text>"</xsl:text>
+        <xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text>"</xsl:text>
+        <xsl:text>test("</xsl:text>
         <xsl:value-of select="@condition"/>
-        <xsl:text>"</xsl:text>
+        <xsl:text>")</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:for-each select="@*[not(name()='language' or name()='condition' or name()='svg-label')]">
@@ -329,7 +329,7 @@
     <xsl:text>:</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text> =&gt; "</xsl:text>
-    <xsl:value-of select="str:replace(text(),'&quot;','\&quot;')"/>
+    <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
     <xsl:text>"</xsl:text>
   </xsl:template>
   <xsl:template match="d:*[not(name()='label')]" mode="parameter">

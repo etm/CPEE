@@ -85,8 +85,8 @@ $(document).ready(function() {// {{{
       });
       var q = $.parseQuerySimple();
       if (q.min || q.min == "") {
-        ui_toggle_vis_tab($('#instance ui-tabbar'));
-        ui_toggle_vis_tab($('#parameters ui-tabbar'));
+        ui_toggle_vis_tab($('#instance'));
+        ui_toggle_vis_tab($('#parameters'));
       }
       if (q.monitor && q.load) {
         $("input[name=instance-url]").val(q.monitor);
@@ -208,7 +208,7 @@ function monitor_instance(load,exec) {// {{{
       history.replaceState({}, '', '?' + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
       // Change url to return to current instance when reloading (because new subscription is made)
-      $("input[name=votecontinue]").removeAttr('checked');
+      $("input[name=votecontinue]").prop( "checked", false );
       subscription_state = 'less';
 
       $.ajax({

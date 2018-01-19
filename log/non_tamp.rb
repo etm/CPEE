@@ -1,16 +1,43 @@
 #!/usr/bin/ruby
 require 'pp'
 require 'json'
-require 'yaml'
 require 'rubygems'
+require 'fileutils'
 require 'riddl/server'
 require 'riddl/client'
 require 'riddl/utils/notifications_producer'
 require 'riddl/utils/properties'
-require 'riddl/utils/fileserve'
 require 'riddl/utils/downloadify'
 require 'riddl/utils/turtle'
 require 'time'
+
+class FileServe < Riddl::Implementation
+  def response
+    path = File.file?(@a[0]) ? @a[0] : "#{@a[0]}/#{@r[@match.length-1..-1].join('/')}".gsub(/\/+/,'/')
+
+    if File.directory?(path)
+      @status = 404
+      return []
+    end
+    if File.exists?(path)
+			fmt = @a[1] || begin
+				mt = MIME::Types.type_for(path).first
+				if mt.nil?
+					'text/plain;charset=utf-8'
+				else
+					apx = ''
+					if mt.ascii?
+						tstr = File.read(path,CharlockHolmes::EncodingDetector::DEFAULT_BINARY_SCAN_LEN)
+						apx = ';charset=' + CharlockHolmes::EncodingDetector.detect(tstr)[:encoding]
+					end
+					mt.to_s + apx
+				end
+			end
+			return Riddl::Parameter::Complex.new('file',fmt,File.open(path,'r'))
+    end
+    @status = 404
+  end
+end
 
 class Logging < Riddl::Implementation #{{{
   LOGTEMPLATE = {"log" =>
@@ -39,6 +66,9 @@ class Logging < Riddl::Implementation #{{{
       "trace" => {}
     }
   }
+
+
+
   def doc(event_name,log_dir,instancenr,notification)
     x = Time.now
     log = LOGTEMPLATE
@@ -46,10 +76,14 @@ class Logging < Riddl::Implementation #{{{
     activity = notification["activity"]
     parameters = notification['parameters']
     receiving = notification['received']
-    Dir.mkdir(log_dir+'/'+uuid) unless Dir.exist?(log_dir+'/'+uuid)
     time_added=false
     log["log"]["trace"]["concept:name"] ||= "Instance #{instancenr}" unless log["log"]["trace"]["concept:name"]
-    File.open(log_dir+'/'+uuid+'/log.xes','w'){|f| f.puts log.to_yaml} unless File.exists? log_dir+'/'+uuid+'/log.xes'
+    if File.exists? log_dir+'/log.xes'
+      previous_hash = File.read(log_dir+'/last.event').strip
+    else
+      File.open(log_dir+'/log.xes','w'){|f| f.puts log.to_yaml}
+      previous_hash = "0"
+    end
     event = {}
     event["trace:id"] = instancenr
     if parameters && parameters.has_key?('label')
@@ -74,55 +108,49 @@ class Logging < Riddl::Implementation #{{{
       end
     end
     event["time:timestamp"]= Time.now.iso8601 unless time_added
-    File.open(log_dir+'/'+uuid+'/log.xes',"a") do |f|
+    event["bc:hash"]= calc_hash(event.to_yaml,previous_hash)
+    event["bc:previous_hash"]= previous_hash
+    File.open(log_dir+'/log.xes',"a") do |f|
       f << {'event' => event}.to_yaml
-      pid, size = `ps ax -o pid,rss | grep -E "^[[:space:]]*#{$$}"`.strip.split.map(&:to_i)
-      File.open(log_dir+'/'+uuid+'/memory.file',"a+"){ |fl| fl<< size << "\n" }
     end
-    y = Time.now
-    z = y-x
-    File.open(log_dir+'/'+uuid+'/time.file',"a+"){ |f| f<< z << "\n" }
+    File.open(log_dir+'/last.event',"w"){ |fl| fl << event["bc:hash"] }
   end
 
-	def rec_unjson(value,list,key)
-		case value
-			when Array then
-				li = list.add 'list', :key => key
-				value.each_with_index do |v,k|
-					rec_unjson(v,li,k)
-				end
-			when Hash then
-				li = list.add 'list', :key => key
-				value.each do |k,v|
-					rec_unjson(v,li,k)
-				end
-			else
-				list.add 'string', :key => key, :value => value
-		end
-	end
+  def calc_hash(data, previous_hash) # data includes timestamp, index and payload
+    sha = Digest::SHA256.new
+    sha.update(data.to_s + previous_hash)
+    sha.hexdigest
+  end
 
   def response
-    topic = @p[1].value
-    event_name = @p[2].value
-    log_dir = ::File.dirname(__FILE__) + "/../logs_yaml"
-    instancenr = @h['CPEE_INSTANCE'].split('/').last
-    notification = JSON.parse(@p[3].value)
-    doc(event_name,log_dir,instancenr,notification)
+    log_dir = @a[0]
+    library = Riddl::Client.new(@h['CPEE_INSTANCE'] + "/properties/values/attributes/bc")
+    status, res = library.get
+    if status == 200
+      topic = @p[1].value
+      event_name = @p[2].value
+      notification = JSON.parse(@p[3].value)
+      if topic == 'state' && notification['state'] == 'ready' && XML::Smart.string(res[0].value.read).find('string(/*)') == "start"
+        FileUtils.rm_f Dir.glob(log_dir+'/*')
+      end
+      if topic == 'activity'
+        instancenr = @h['CPEE_INSTANCE'].split('/').last
+        doc(event_name,log_dir,instancenr,notification)
+      end
+    end
   end
 end  #}}}
 
-
-Riddl::Server.new(::File.dirname(__FILE__) + '/log.xml', :host => "coruscant.wst.univie.ac.at", :port => 9300) do #{{{
+Riddl::Server.new(::File.dirname(__FILE__) + '/chain.xml', :host => "coruscant.wst.univie.ac.at", :port => 9399) do #{{{
   accessible_description true
   cross_site_xhr true
-  log_dir = "/home/demo/Projects/cpee-helpers/log/logs_yaml"
+
+  @riddl_opts[:log_dir] = ::File.dirname(__FILE__) + "/non_tamp"
 
   interface 'events' do
-	    run Logging if post 'event'
+    run Logging, @riddl_opts[:log_dir] if post 'event'
   end
   interface 'logoverlay' do |r|
-    run Riddl::Utils::FileServe, log_dir + r[:h]["RIDDL_DECLARATION_PATH"]+ ".xes","text/xml" if get
+    run FileServe, "#{@riddl_opts[:log_dir]}/log.xes","application/x-yaml" if get '*'
   end
-
-
 end.loop! #}}}

@@ -179,10 +179,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   // }}}
   // Helper Functions {{{
-  var draw_label = this.draw.draw_label = function (row, col, label, group, where) { // {{{
+  var draw_label = this.draw.draw_label = function (tname, id, label, row, col, group) { // {{{
     var g = $X('<text class="label" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height+20-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg"></text>');
         g.text((label != '' ? '◤ ' : '')  + label);
-    if(group) { group.find('g.element[element-id=' + where + ']').append(g); }
+    bind_event(g,tname);
+    if(group) { group.find('g.element[element-id=' + id + ']').append(g); }
     else {self.svg.container.children('g:first').append(g);}
     return g;
   } // }}}
@@ -205,14 +206,18 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     $(g[0].childNodes[0]).append(sym);
 
     // Binding events for symbol
-    for(event_name in adaptor.elements[tname]) {
-      sym.bind(event_name, {'function_call':adaptor.elements[tname][event_name]}, function(e) { e.data.function_call($(this).parents('.element:first').attr('element-id'),e)});
-      if(event_name == 'mousedown') sym.bind('contextmenu', false);
-    }
+    bind_event(sym,tname);
+
     if(group) {group.append(g);}
     else {self.svg.container.children('g:first').append(g);}
     return g;
   } // }}}
+  var bind_event = this.draw.bind_event = function(sym,tname) { //{{{
+    for(event_name in adaptor.elements[tname]) {
+      sym.bind(event_name, {'function_call':adaptor.elements[tname][event_name]}, function(e) { e.data.function_call($(this).parents('.element:first').attr('element-id'),e)});
+      if(event_name == 'mousedown') sym.bind('contextmenu', false);
+    }
+  } //}}}
   var draw_border = this.draw.draw_border = function(id, p1, p2, group) { // {{{
     group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*self.width + '" ' +
         'y="' + (p1.row-0.80)*self.height + '" ' +
@@ -306,7 +311,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if (illustrator.compact == false) {
       if (labels.length > 0) {
         _.each(labels,function(a,key) {
-          illustrator.draw.draw_label(a.row, graph.max.col + 1, a.label, graph.svg, a.element_id);
+          illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
         });
         graph.max.col += 4;
       }
@@ -509,7 +514,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (illustrator.elements[tname].label) {
         var lab = illustrator.elements[tname].label(this);
         $(this).attr('svg-label', lab);
-        labels.push({row: pos.row, element_id: $(this).attr('svg-id'), label: lab});
+        labels.push({row: pos.row, element_id: $(this).attr('svg-id'), tname: tname, label: lab});
       } else {
         $(this).attr('svg-label', '');
       } // }}}
