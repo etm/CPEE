@@ -1,87 +1,52 @@
 <?xml version="1.0"?>
 <description xmlns="http://cpee.org/ns/description/1.0">
-  <call id="a4" endpoint="timeout">
-    <parameters>
-      <label>"A"</label>
-      <method/>
-      <type>:serviceTask</type>
-      <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
+  <manipulate id="a1" output="result" language="application/javascript">data.a = 0</manipulate>
+  <choose mode="exclusive">
+    <alternative condition="data.a &lt; 3" language="text/javascript"/>
+    <alternative condition="data.a &lt; 0" language="text/javascript">
+      <call id="a4" endpoint="timeout">
+        <parameters>
+          <label>"B"</label>
+          <method/>
+          <type>:serviceTask</type>
+          <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
+          <arguments>
+            <timeout>1</timeout>
+          </arguments>
+        </parameters>
+        <finalize output="result" language="application/javascript">data.a += 1</finalize>
+      </call>
+    </alternative>
+  </choose>
+  <loop mode="pre_test" condition="true">
+    <call id="a7" endpoint="timeout">
       <parameters>
-        <timeout>1</timeout>
+        <label>"C"</label>
+        <method/>
+        <type>:serviceTask</type>
+        <mid>'sid-69717BB0-7EFB-40A9-A450-CD4953893433'</mid>
+        <arguments>
+          <timeout>1</timeout>
+        </arguments>
       </parameters>
-    </parameters>
-  </call>
-  <call id="a5" endpoint="timeout">
-    <parameters>
-      <label>"B"</label>
-      <method/>
-      <type>:serviceTask</type>
-      <mid>'sid-0418754D-A9C4-4832-B8CA-8436A7372318'</mid>
-      <parameters>
-        <timeout>1</timeout>
-      </parameters>
-    </parameters>
-    <finalize output="result" language="application/javascript">data.a += 1</finalize>
-  </call>
-  <loop pre_test="true">
+    </call>
     <choose mode="exclusive">
-      <alternative condition="data.a &lt; 3" language="text/javascript">
+      <otherwise>
         <call id="a4" endpoint="timeout">
-          <parameters>
-            <label>"A"</label>
-            <method/>
-            <type>:serviceTask</type>
-            <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
-            <parameters>
-              <timeout>1</timeout>
-            </parameters>
-          </parameters>
-        </call>
-        <call id="a5" endpoint="timeout">
           <parameters>
             <label>"B"</label>
             <method/>
             <type>:serviceTask</type>
-            <mid>'sid-0418754D-A9C4-4832-B8CA-8436A7372318'</mid>
-            <parameters>
+            <mid>'sid-49FC5AAA-6F02-4F10-9379-6AB4AADDF819'</mid>
+            <arguments>
               <timeout>1</timeout>
-            </parameters>
+            </arguments>
           </parameters>
           <finalize output="result" language="application/javascript">data.a += 1</finalize>
         </call>
-      </alternative>
+      </otherwise>
       <otherwise>
-        <call id="a6" endpoint="timeout">
-          <parameters>
-            <label>"C"</label>
-            <method/>
-            <type>:serviceTask</type>
-            <mid>'sid-E2CECD87-A7C8-48E9-B3A8-02BB2F04E6AE'</mid>
-            <parameters>
-              <timeout>1</timeout>
-            </parameters>
-          </parameters>
-          <finalize output="result" language="application/javascript">data.a += 1</finalize>
-        </call>
-        <choose mode="exclusive">
-          <alternative condition="data.a &lt; 5" language="text/javascript">
-            <call id="a5" endpoint="timeout">
-              <parameters>
-                <label>"B"</label>
-                <method/>
-                <type>:serviceTask</type>
-                <mid>'sid-0418754D-A9C4-4832-B8CA-8436A7372318'</mid>
-                <parameters>
-                  <timeout>1</timeout>
-                </parameters>
-              </parameters>
-              <finalize output="result" language="application/javascript">data.a += 1</finalize>
-            </call>
-          </alternative>
-          <otherwise>
-            <escape/>
-          </otherwise>
-        </choose>
+        <escape/>
       </otherwise>
     </choose>
   </loop>

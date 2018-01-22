@@ -3,15 +3,15 @@
 # This file is part of CPEE.
 #
 # Apache License, Version 2.0
-# 
+#
 # Copyright (c) 2013 Juergen Mangler
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,7 @@ module CPEE
           @start = nil
 
           doc = XML::Smart.string(xml)
-          doc.register_namespace 'bm',  "http://www.omg.org/spec/BPMN/20100524/MODEL" 
+          doc.register_namespace 'bm',  "http://www.omg.org/spec/BPMN/20100524/MODEL"
 
           @dataelements = {}
           @endpoints = {}
@@ -51,27 +51,27 @@ module CPEE
           @traces = Traces.new [[@start]]
         end #}}}
 
-        def extract_dataelements(doc)
+        def extract_dataelements(doc) #{{{
           doc.find("/bm:definitions/bm:process/bm:property[bm:dataState/@name='cpee:dataelement']").each do |ref|
             if ref.attributes['itemSubjectRef']
               doc.find("/bm:definitions/bm:itemDefinition[@id=\"" + ref.attributes['itemSubjectRef'] + "\"]").each do |sref|
                 @dataelements[ref.attributes['name']] = sref.attributes['structureRef'].to_s
-              end 
+              end
             else
               @dataelements[ref.attributes['name']] = ''
-            end  
+            end
           end
-        end
+        end #}}}
 
-        def extract_endpoints(doc)
+        def extract_endpoints(doc) #{{{
           doc.find("/bm:definitions/bm:process/bm:property[bm:dataState/@name='cpee:endpoint']/@itemSubjectRef").each do |ref|
             doc.find("/bm:definitions/bm:itemDefinition[@id=\"" + ref.value + "\"]/@structureRef").each do |sref|
               @endpoints[ref.value] = sref.value
-            end  
+            end
           end
-        end
+        end #}}}
 
-        def extract_nodelink(doc)
+        def extract_nodelink(doc) #{{{
           doc.find("/bm:definitions/bm:process/bm:*[@id and @name and not(@itemSubjectRef) and not(name()='sequenceFlow')]").each do |e|
             n = Node.new(self.object_id,e.attributes['id'],e.qname.name.to_sym,e.attributes['name'].strip,e.find('count(bm:incoming)'),e.find('count(bm:outgoing)'))
 
@@ -94,7 +94,7 @@ module CPEE
               value = a.attributes['itemSubjectRef']
               if @dataelements.keys.include?(value)
                 n.parameters[name] = 'data.' + value
-              else  
+              else
                 n.parameters[name] = value
               end
             end
@@ -127,9 +127,9 @@ module CPEE
               true
             else
               false
-            end  
+            end
           end
-        end
+        end #}}}
 
         def build_traces #{{{
           build_extraces @traces, @start
@@ -140,14 +140,14 @@ module CPEE
           debug_print debug, 'Tree finished'
           @tree
         end #}}}
-    
+
         def  build_extraces(traces, node) #{{{
           dupt = traces.last.dup
           @graph.next_nodes(node).each_with_index do |n,i|
             traces << dupt.dup if i > 0
             if traces.last.include?(n)
               traces.last << n
-            else  
+            else
               traces.last << n
               build_extraces(traces,n)
             end
@@ -199,12 +199,12 @@ module CPEE
                   if branch.condition?
                     branch.condition << li.condition unless li.condition.nil?
                     branch.condition_type = "text/javascript"
-                  end  
+                  end
                   if branch.respond_to?(:attributes)
-                    branch.attributes.merge!(li.attributes) 
+                    branch.attributes.merge!(li.attributes)
                     li.attributes.delete_if{true}
-                  end  
-                end  
+                  end
+                end
               end
               if node == enode
                 traces.shift_all
@@ -228,13 +228,17 @@ module CPEE
                   ### if there is non (tail controlled, remove the loop target (last)
                   if node.type == :exclusiveGateway
                     loops.shift_all
-                    traces.shift_all 
+                    traces.shift_all
                   else
                     loops.pop_all
                   end
                   ### add the blank conditional to get a break
                   puts '--> down head_loop to ' + (down + 1).to_s if debug
-                  build_ttree branch, loops, nil, debug, down + 1
+                  if loops.same_first
+                    build_ttree branch.last.new_branch, loops, nil, debug, down + 1
+                  else
+                    build_ttree branch, loops, nil, debug, down + 1
+                  end
                   puts '--> up head_loop from ' + (down + 1).to_s if debug
                 else
                   ### throw away the loop traces, remove loop traces from front of all other traces
@@ -252,19 +256,20 @@ module CPEE
               puts "--> endnode #{endnode.nil? ? 'nil' : endnode.niceid}" if debug
               tracesgroup, endnode = traces.segment_by endnode
               tracesgroup.each do |trcs|
+                next unless branch.last.respond_to?(:new_branch)
                 nb = branch.last.new_branch
                 unless trcs.finished?
                   puts '--> branch down to ' + (down + 1).to_s if debug
                   build_ttree nb, trcs, endnode, debug, down + 1
                   puts '--> branch up from ' + (down + 1).to_s if debug
-                end  
+                end
               end
               # remove all traces that don't start with endnode to account for loops
               if endnode.nil?
                 traces.empty!
-              else  
+              else
                 traces.remove_by_endnode(endnode)
-              end  
+              end
             end
           end
         end
@@ -275,7 +280,7 @@ module CPEE
             puts '-' * @hl.output_cols, @tree.to_s
             puts traces.to_s
             @hl.ask('Continue ... '){ |q| q.echo = false }
-          end  
+          end
         end #}}}
         private :debug_print
 
@@ -283,7 +288,7 @@ module CPEE
           formater.new(@tree).generate
         end #}}}
 
-      end  
+      end
 
     end
 
