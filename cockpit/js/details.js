@@ -1,7 +1,7 @@
 $(document).ready(function() {
   var timer;
 
-  $(document).on('input','#dat_details input, #dat_details textarea',function(e){
+  $(document).on('input','#dat_details input, #dat_details textarea, #dat_details [contenteditable]',function(e){
     clearTimeout(timer);
     timer = setTimeout(do_main_save, 5000);
   });
@@ -9,7 +9,7 @@ $(document).ready(function() {
     clearTimeout(timer);
     do_main_save();
   });
-  $(document).on('blur','#dat_details input, #dat_details textarea',function(e){
+  $(document).on('blur','#dat_details input, #dat_details textarea, #dat_details [contenteditable]',function(e){
     clearTimeout(timer);
     do_main_save();
   });
