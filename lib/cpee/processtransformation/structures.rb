@@ -3,15 +3,15 @@
 # This file is part of CPEE.
 #
 # Apache License, Version 2.0
-# 
+#
 # Copyright (c) 2013 Juergen Mangler
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,10 +33,10 @@ module CPEE
       end
       def length
         @sub.length
-      end  
+      end
     end #}}}
 
-    class Node #{{{ 
+    class Node #{{{
       include Container
       @@niceid = {}
       attr_reader :id, :label, :niceid
@@ -59,7 +59,7 @@ module CPEE
         @outgoing = outgoing
         @attributes = {}
       end
-    end # }}} 
+    end # }}}
     class Link #{{{
       attr_accessor :from, :to
       attr_reader :condition, :attributes
@@ -116,7 +116,7 @@ module CPEE
         @sub = []
         @condition_type = nil
         @attributes = {}
-      end  
+      end
       def new_branch
         (@sub << Alternative.new(@id)).last
       end
@@ -138,7 +138,7 @@ module CPEE
       def new_branch
         (@sub << Branch.new(@id)).last
       end
-    end #}}} 
+    end #}}}
 
     class Conditional #{{{
       include Container
@@ -155,7 +155,7 @@ module CPEE
         @mode = mode
         @type = type
         @attributes = {}
-      end  
+      end
       def new_branch
         (@sub << Alternative.new(@id)).last
       end
@@ -182,7 +182,7 @@ module CPEE
         selnodes.each do |n|
           if n.incoming > 1 || n.outgoing > 1
             raise "#{n.inspect} - not a simple node to remove"
-          end  
+          end
           to,from = nil
           @links.each do |f|
             to = f if f.to == n.id
@@ -194,7 +194,7 @@ module CPEE
             @nodes.delete(n.id)
           else
             raise "#{n.inspect} - could not remove flow"
-          end  
+          end
         end
       end
 
@@ -204,7 +204,7 @@ module CPEE
 
       def add_node(n)
         @nodes[n.id] = n
-      end  
+      end
 
       def link(f,t)
         @links.find{ |x| x.from == f && x.to == t }
@@ -224,7 +224,7 @@ module CPEE
           nodes.first
         else
           raise "#{from.inspect} - multiple outgoing connections"
-        end  
+        end
       end
     end #}}}
 
@@ -263,11 +263,11 @@ module CPEE
         def remove(trcs)
           trcs.each do |t|
             self.delete(t)
-          end  
+          end
         end
         def remove_by_endnode(enode)
           self.delete_if do |t|
-            t[0] != enode 
+            t[0] != enode
           end
         end
 
@@ -290,16 +290,27 @@ module CPEE
           self.min_by{|e|e.length}
         end
 
+        def legend
+          ret = "Legend:\n"
+          a = self.flatten.uniq
+          a.each {|n| ret << "  " +  n.niceid.to_s + ' ' + n.type.to_s + ' ' + n.label.to_s + "\n" }
+          ret
+        end
+
         def to_s
           "TRACES: " + self.collect { |t| t.empty? ? '∅' : t.collect{|n| "%2d" % n.niceid }.join('→ ') }.join("\n        ")
         end
 
         def shift_all
           self.each{ |tr| tr.shift }
-        end  
-        def pop_all
-          self.each{ |tr| tr.pop }
-        end  
+        end
+        def pop_all(what=nil)
+          if node.nil?
+            self.each{ |tr| tr.pop }
+          else
+            self.each{ |tr| tr.pop if tr.last == what }
+          end
+        end
 
         def finished?
           self.reduce(0){|sum,t| sum += t.length} == 0
@@ -314,13 +325,13 @@ module CPEE
           self.each do |t|
             break if t.length == 1
             tcount += 1 if t.last == node
-          end  
+          end
           tcount
         end
 
         def include_in_all?(e)
           num = 0
-          self.each{|n| num += 1 if n.include?(e)} 
+          self.each{|n| num += 1 if n.include?(e)}
           num == self.length
         end
 
@@ -339,7 +350,7 @@ module CPEE
             self.each do |t|
               t << tb unless t.last == t.first ### an explicit break
             end
-          end  
+          end
         end
 
         def loops
@@ -365,7 +376,7 @@ module CPEE
               if self[i][j] == self[i].last
                 loops << self[i].shift(self[i].length)
               end
-            end  
+            end
           end
           loops.uniq!
           loops.remove_empty
@@ -403,9 +414,9 @@ module CPEE
               if t.index(last) && t.index(max)
                 (t.index(last) + 1).upto(t.index(max)) do |i|
                   t << t[i]
-                end 
+                end
               end
-            end  
+            end
           end
 
           max
@@ -424,11 +435,11 @@ module CPEE
               if trcs.include_in_all?(n)
                 enode = n
                 break
-              end  
+              end
             end
-          end  
+          end
           enode
-        end  
+        end
 
         def segment_by(endnode)
           # cut shit until common node, return the shit you cut away
