@@ -1,24 +1,40 @@
-<?xml version="1.0"?>
 <testset>
   <dataelements/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
-    <pickUp xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/pickUp</pickUp>
-    <eject xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/eject</eject>
+    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <klaueauf xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/klaue/auf</klaueauf>
+    <klauezu xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/klaue/zu</klauezu>
+    <plate xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/goto/plate</plate>
+    <goexit xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/goto/exit</goexit>
   </endpoints>
   <positions/>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <call id="a1" endpoint="pickUp">
+      <call id="a1" endpoint="plate">
         <parameters>
-          <label>Pickup</label>
+          <label>Go to plate</label>
           <method>:post</method>
           <arguments/>
         </parameters>
       </call>
-      <call id="a2" endpoint="eject">
+      <call id="a2" endpoint="klauezu">
         <parameters>
-          <label>Eject</label>
+          <label>Close Claw</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+      </call>
+      <call id="a3" endpoint="goexit">
+        <parameters>
+          <label>Go To Exit</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+      </call>
+      <call id="a4" endpoint="klaueauf">
+        <parameters>
+          <label>Claw open</label>
           <method>:post</method>
           <arguments/>
         </parameters>
@@ -31,7 +47,9 @@
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Lego Ejector</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">asda</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">labels</theme>
+    <bc>operate</bc>
   </attributes>
 </testset>

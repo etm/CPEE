@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<testset>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Linear</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+    <theme>labels</theme>
+    <bc>start</bc>
+  </attributes>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <dataelements><!--{{{-->
+    <x/>
+  </dataelements><!--}}}-->
+  <handlers/>
+  <endpoints><!--{{{-->
+    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+  </endpoints><!--}}}-->
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
+      <call id="a1" endpoint="timeout">
+        <parameters><!--{{{-->
+          <label>Step 1</label>
+          <method>:post</method>
+          <arguments>
+            <timeout>2</timeout>
+          </arguments>
+        </parameters><!--}}}-->
+        <finalize output="result">data.x += "a1,"</finalize>
+      </call>
+      <call id="a2" endpoint="timeout">
+        <parameters><!--{{{-->
+          <label>Step 2</label>
+          <method>:post</method>
+          <arguments>
+            <timeout>4</timeout>
+          </arguments>
+        </parameters><!--}}}-->
+        <finalize output="result">data.x += "a2,"</finalize>
+      </call>
+      <call id="a3" endpoint="timeout">
+        <parameters><!--{{{-->
+          <label>Step 3</label>
+          <method>:post</method>
+          <arguments>
+            <timeout>4</timeout>
+          </arguments>
+        </parameters><!--}}}-->
+        <finalize output="result">data.x += "a3,"</finalize>
+      </call>
+    </description><!--}}}-->
+  </description>
+  <transformation>
+    <description type='copy'/>
+    <dataelements type='rest'/>
+    <endpoints type='rest'/>
+  </transformation>
+</testset>

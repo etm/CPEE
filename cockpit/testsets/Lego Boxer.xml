@@ -3,14 +3,14 @@
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <gonext xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://plate.wst.univie.ac.at:9200/gonext</gonext>
+    <dispense xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://boxer.wst.univie.ac.at:9200/dispense</dispense>
   </endpoints>
   <positions/>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <call id="a1" endpoint="gonext">
+      <call id="a1" endpoint="dispense">
         <parameters>
-          <label>GoNext</label>
+          <label>Dispense</label>
           <method>:post</method>
           <arguments/>
         </parameters>
@@ -23,7 +23,7 @@
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ss</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">boxxxxxer</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">labels</theme>
     <bc>operate</bc>

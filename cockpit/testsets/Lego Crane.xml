@@ -3,99 +3,72 @@
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <movex xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cranex.wst.univie.ac.at:9200/move/x</movex>
-    <vacuum xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/vacuum</vacuum>
-    <movey xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://crane.wst.univie.ac.at:9200/move/y</movey>
+    <cranepos xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cranex.wst.univie.ac.at:9200/pos</cranepos>
+    <onoff xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://craney.wst.univie.ac.at:9200/onoff</onoff>
+    <raise xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://craney.wst.univie.ac.at:9200/raise</raise>
+    <lower xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://craney.wst.univie.ac.at:9200/lower</lower>
   </endpoints>
   <positions/>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <call id="a1" endpoint="movex">
+      <call id="a1" endpoint="onoff">
         <parameters>
-          <label>Go to Conveyor</label>
-          <method>:post</method>
-          <arguments>
-            <pos>"conveyor"</pos>
-          </arguments>
-        </parameters>
-      </call>
-      <call id="a2" endpoint="vacuum">
-        <parameters>
-          <label/>
-          <method>:post</method>
-          <arguments>
-            <switch>true</switch>
-          </arguments>
-        </parameters>
-      </call>
-      <call id="a3" endpoint="movey">
-        <parameters>
-          <label>Raise Crane</label>
-          <method>:post</method>
-          <arguments>
-            <up>true</up>
-          </arguments>
-        </parameters>
-      </call>
-      <call id="a4" endpoint="movex">
-        <parameters>
-          <label>Go to Plate</label>
-          <method>:post</method>
-          <arguments>
-            <pos>"plate"</pos>
-          </arguments>
-        </parameters>
-      </call>
-      <call id="a5" endpoint="movey">
-        <parameters>
-          <label>Lower Crane</label>
-          <method>:post</method>
-          <arguments>
-            <up>false</up>
-          </arguments>
-        </parameters>
-      </call>
-      <call id="a6" endpoint="vacuum">
-        <parameters>
-          <label>Turn off vacuum</label>
+          <label>TurnOn</label>
           <method>:post</method>
           <arguments/>
         </parameters>
       </call>
-      <call id="a7" endpoint="timeout">
+      <call id="a3" endpoint="raise">
         <parameters>
-          <label>Wait a bissl</label>
+          <label>Raise</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+      </call>
+      <call id="a2" endpoint="cranepos">
+        <parameters>
+          <label>Go To Plate</label>
           <method>:post</method>
           <arguments>
-            <timeout>5</timeout>
+            <data>2</data>
           </arguments>
         </parameters>
       </call>
-      <call id="a8" endpoint="movey">
+      <call id="a4" endpoint="lower">
         <parameters>
-          <label>Raise Vacuum</label>
+          <label>Lower</label>
           <method>:post</method>
-          <arguments>
-            <up>true</up>
-          </arguments>
+          <arguments/>
         </parameters>
       </call>
-      <call id="a9" endpoint="movex">
+      <call id="a5" endpoint="onoff">
+        <parameters>
+          <label>TurnOff</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+      </call>
+      <call id="a6" endpoint="raise">
+        <parameters>
+          <label>Raise</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+      </call>
+      <call id="a7" endpoint="cranepos">
         <parameters>
           <label>Go to Conveyor</label>
           <method>:post</method>
           <arguments>
-            <pos>"conveyor"</pos>
+            <data>0</data>
           </arguments>
         </parameters>
       </call>
-      <call id="a10" endpoint="movey">
+      <call id="a8" endpoint="lower">
         <parameters>
-          <label>Lower Crane</label>
+          <label>Lower</label>
           <method>:post</method>
-          <arguments>
-            <up>false</up>
-          </arguments>
+          <arguments/>
         </parameters>
       </call>
     </description>
@@ -106,8 +79,9 @@
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Lego Crane</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">s</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">default</theme>
+    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">labels</theme>
+    <bc>operate</bc>
   </attributes>
 </testset>

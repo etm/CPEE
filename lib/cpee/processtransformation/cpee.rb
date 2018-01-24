@@ -47,7 +47,11 @@ module CPEE
             generate_for_list(node.sub[0],s1)
           else
             s1 = res.add('loop', 'mode' => 'pre_test', 'condition' => 'true')
-            print_Conditional(node,s1)
+            if node.sub.length == 1
+              generate_for_list(node.sub[0],s1)
+            else
+              print_Conditional(node,s1)
+            end
           end
           s1
         end
