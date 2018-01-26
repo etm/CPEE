@@ -84,16 +84,6 @@ function WFAdaptorManifestation(adaptor) {
       vtarget.parents('g.element[element-id]').addClass('clicked');
     }
 
-    if ($('#state').text() != 'finished')
-      $('#main ui-behind button').show();
-    if ($('#main ui-behind button').hasClass('highlight')) {
-      var check = confirm("Discard changes?");
-      if (check)
-        $('#main ui-behind button').removeClass('highlight');
-      else
-        return;
-    }
-
     var node  = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
 
     if (self.adaptor.description.elements[$(node).attr('svg-type')]) {

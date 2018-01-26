@@ -53,10 +53,22 @@ function do_main_save() { //{{{
         ntxt = ntxt.replace(/trans-xmlns/,'xmlns');
 
     node.replaceWith($X(ntxt));
+    desc.refresh(function(graphrealization){
+      var vtarget = manifestation.adaptor.illustrator.get_node_by_svg_id(svgid);
+      if (vtarget.length > 0) {
+        vtarget.parents('g.element[element-id]').addClass('clicked');
+      }
+      var g = graphrealization.get_description();
+      save['graph'] = $X(g);
+      save['graph'].find('[xmlns]').removeAttr('xmlns');
+    });
 
     $.ajax({
       type: "PUT",
       url: url + "/properties/values/description/",
+      headers: {
+        "Event-Source": myid
+      },
       data: ({'content': '<content>' + desc.get_description() + '</content>'})
     });
   }

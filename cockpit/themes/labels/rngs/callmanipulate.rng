@@ -38,4 +38,7 @@
     </attribute>
     <text rngui:label='Script that is executed, when a service sends intermediate data'/>
   </element>
+  <element name="_notes" rngui:header="Notes" rngui:label='Output'>
+    <text rngui:label='Notes'/>
+  </element>
 </element>

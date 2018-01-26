@@ -368,6 +368,16 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     return 'a' + id;
   } // }}}
+  var refresh = this.refresh = function(doit) {
+    id_counter = {};
+    labels = [];
+    illustrator.clear();
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+    self.set_labels(graph);
+    // set labels
+    illustrator.set_svg(graph);
+    doit(self);
+  }
   var update = this.update = function(svgid) { // {{{
     id_counter = {};
     if(update_illustrator){
