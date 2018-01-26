@@ -572,7 +572,8 @@ function save_testset() {// {{{
                           pars.append($(res.documentElement).children());
                           pars.find('uuid').remove();
                           testset.append(pars);
-                          $('#savetestset').attr('download',name + '.xml');
+                          var ct = new Date();
+                          $('#savetestset').attr('download',name + '_' + ct.strftime("%Y-%m-%dT%H%M%S%z") + '.xml');
                           $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(testset.serializePrettyXML()));
                           document.getElementById('savetestset').click();
                         },
