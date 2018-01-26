@@ -26,7 +26,7 @@
       </zeroOrMore>
     </element>
   </element>
-  <element name="_notes" rngui:header="Notes" rngui:label='Output'>
+  <element name="_notes" rngui:header="Notes" rngui:label='General'>
     <text rngui:label='Notes'/>
   </element>
 </element>
