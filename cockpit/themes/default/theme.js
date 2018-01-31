@@ -37,11 +37,11 @@ function WFAdaptorManifestation(adaptor) {
       var menu = {};
 
       if (child) {
-        group = self.elements[xml_node.get(0).tagName].permissible_children(xml_node);
+        group = self.elements[xml_node.get(0).tagName].permissible_children(xml_node,'into');
         if(group.length > 0) menu['Insert into'] = group;
       }
       if (sibling) {
-        group = self.elements[xml_node.parent().get(0).tagName].permissible_children(xml_node);
+        group = self.elements[xml_node.parent().get(0).tagName].permissible_children(xml_node,'after');
         if(group.length > 0) menu['Insert after'] = group;
       }
 
@@ -69,37 +69,37 @@ function WFAdaptorManifestation(adaptor) {
     }
     return false;
   } // }}}
-  this.events.click = function(svgid) { // {{{
+  this.events.click = function(svgid, e) { // {{{
+    if (self.adaptor.description.get_node_by_svg_id(svgid).length == 0) {
+      return;
+    }
+
     var visid = 'details';
     var tab   = $('#dat_' + visid);
         tab.empty();
 
-    if (self.adaptor.description.get_node_by_svg_id(svgid).length == 0) {
-      return;
-    }
     self.adaptor.illustrator.get_elements().removeClass('clicked');
 
-    var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
-    if (vtarget.length > 0) {
-      vtarget.parents('g.element[element-id]').addClass('clicked');
-    }
+    if (e && e.ctrlKey) {
+      var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+      if (vtarget.length > 0) {
+        vtarget.parents('g.element[element-id]').toggleClass('marked');
+      }
+    } else {
+      self.adaptor.illustrator.get_elements().removeClass('marked');
 
-    if ($('#state').text() != 'finished')
-      $('#main ui-behind button').show();
-    if ($('#main ui-behind button').hasClass('highlight')) {
-      var check = confirm("Discard changes?");
-      if (check)
-        $('#main ui-behind button').removeClass('highlight');
-      else
-        return;
-    }
+      var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+      if (vtarget.length > 0) {
+        vtarget.parents('g.element[element-id]').addClass('clicked');
+      }
 
-    var node  = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
+      var node  = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
 
-    if (self.adaptor.description.elements[$(node).attr('svg-type')]) {
-      save[visid + '_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
-      save[visid] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
-      save[visid].content(node);
+      if (self.adaptor.description.elements[$(node).attr('svg-type')]) {
+        save[visid + '_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
+        save[visid] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
+        save[visid].content(node);
+      }
     }
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
@@ -143,7 +143,7 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/call.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/call.rng',
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       if(node.children('finalize,update').length < 1)
         return [
          {'label': 'Scripts',
@@ -163,10 +163,11 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
+      'label': function(node){return $(node).attr('label').replace(/^['"]/,'').replace(/['"]$/,'')},
       'svg': self.adaptor.theme_dir + 'symbols/manipulate.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/manipulate.rng',
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       return [];
     }, //}}}
   'adaptor': {//{{{
@@ -181,7 +182,7 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/escape.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/escape.rng',
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       return [];
     }, //}}}
     'adaptor': {//{{{
@@ -213,9 +214,9 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/choose.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/choose.rng',
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'choose') { func = self.adaptor.description.insert_first_into }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       if(node.children('parallel_branch').length > 0) {
         return [{'label': 'Parallel Branch',
@@ -264,10 +265,10 @@ function WFAdaptorManifestation(adaptor) {
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/otherwise.rng',
     'neverdelete': true,
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
       var childs = null;
-      if(node.get(0).tagName == 'otherwise') { func = self.adaptor.description.insert_first_into }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       return [
         {'label': 'Service Call with Scripts',
@@ -325,8 +326,8 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/alternative.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/alternative.rng',
-    'permissible_children': function(node) { //{{{
-      if(node.get(0).tagName == 'alternative') { func = self.adaptor.description.insert_first_into }
+    'permissible_children': function(node,mode) { //{{{
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       if(node.parents('parallel').length > node.parents('parallel_branch').length && node.get(0).tagName == 'alternative') {
         return [{'label': 'Parallel Branch',
@@ -390,9 +391,9 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/loop.svg'
     },// }}}
     'description': self.adaptor.theme_dir + 'rngs/loop.rng',
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'loop') { func = self.adaptor.description.insert_first_into }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
         {'label': 'Service Call with Scripts',
@@ -462,7 +463,7 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/parallel.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/parallel.rng',
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       var childs =  [
         {'label': 'Service Call with Scripts',
          'function_call': self.adaptor.description.insert_last_into,
@@ -526,10 +527,10 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/parallel_branch.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/parallel_branch.rng',
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
       var childs = null;
-      if(node.get(0).tagName == 'parallel_branch') { func = self.adaptor.description.insert_first_into }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       childs =  [
         {'label': 'Service Call with Scripts',
@@ -594,9 +595,9 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/critical.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/critical.rng',
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'critical') { func = self.adaptor.description.insert_first_into }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       return [
         {'label': 'Service Call with Scripts',
@@ -654,9 +655,9 @@ function WFAdaptorManifestation(adaptor) {
       'svg': null
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/group.rng',
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'group') { func = self.adaptor.description.insert_first_into }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       return [
       ];
@@ -685,9 +686,9 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/start.svg'
     },//}}}
     'description': null,
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'description') { func = self.adaptor.description.insert_first_into }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       return [
         {'label': 'Service Call with Scripts',
