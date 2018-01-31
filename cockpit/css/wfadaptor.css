@@ -106,6 +106,31 @@ svg .black {
   stroke-dasharray:none;
 }
 
+svg .marked text.label {
+  color: #d4d4d4;
+  fill: #d4d4d4;
+}
+svg .marked .cfill {
+  fill:#d4d4d4;
+  fill-opacity:1;
+  stroke:#d4d4d4;
+  stroke-width:0.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
+svg .marked .cline {
+  stroke:#d4d4d4;
+  stroke-width:2.06896567;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
+
 svg .clicked text.label {
   color: #f57900;
   fill: #f57900;

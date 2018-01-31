@@ -38,10 +38,21 @@
     </attribute>
     <text rngui:label='Script that is executed, when a service sends intermediate data'/>
   </element>
-  <element name="_notes" rngui:header="Notes" rngui:label='General'>
-    <text rngui:label='Notes'/>
+  <element name="_timing" rngui:header="Timing">
+    <element name="_timing_min" rngui:label='Min in m'>
+      <data type='float' rngui:label='Minutes'/>
+    </element>
+    <element name="_timing_max" rngui:label='Max in m'>
+      <data type='float' rngui:label='Minutes'/>
+    </element>
+    <element name="_timing_avg" rngui:label='Avg in m'>
+      <data type='float' rngui:label='Minutes'/>
+    </element>
   </element>
-  <element name="_notes_output" rngui:header="Notes" rngui:label='Output'>
-    <text rngui:label='Notes'/>
+  <element name="_notes" rngui:header="Notes" rngui:label='General'>
+    <text rngui:wrap='true' rngui:label='Notes'/>
+  </element>
+  <element name="_notes_output" rngui:label='Output'>
+    <text rngui:wrap='true' rngui:label='Notes'/>
   </element>
 </element>
