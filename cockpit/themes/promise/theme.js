@@ -1,84 +1,106 @@
 function WFAdaptorManifestation(adaptor) {
-  this.adaptor = adaptor;
-  this.elements = elements = {};
-  this.events = events = {};
+  var self = this;
 
-  this.noarrow = noarrow = ['alternative', 'otherwise'];
-  this.description_extract = function(rng) {
-    return new RelaxNGui(rng,null).example();
-  }
+  this.adaptor = adaptor;
+  this.elements = {};
+  this.events = {};
+  this.compact = false;
+
+  this.noarrow = ['alternative', 'otherwise'];
+  this.source = function(rng) {
+    $('#relaxngworker').empty();
+    var rngw = new RelaxNGui(rng,$('#relaxngworker'),self.adaptor.description.context_eval);
+    var nnew = $(rngw.save().documentElement);
+        nnew.attr('trans-xmlns','http://cpee.org/ns/description/1.0');
+    var ntxt = nnew.serializeXML();
+    ntxt = ntxt.replace(/trans-xmlns/,'xmlns');
+
+    return($X(ntxt));
+  };
+  this.clicked = function(){
+    var svgid = 'unknown';
+    _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
+      if ($(value).hasClass('clicked')) {
+        svgid = $(value).attr('element-id');
+      }
+    });
+    return svgid;
+  };
 
   // Events
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
     } else if(e.button == 2) { // right-click
-      var xml_node = adaptor.description.get_node_by_svg_id(svgid);
+      var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
       var group = null;
       var menu = {};
 
-      if(child) {
-        group = elements[xml_node.get(0).tagName].permissible_children(xml_node);
+      if (child) {
+        group = self.elements[xml_node.get(0).tagName].permissible_children(xml_node,'into');
         if(group.length > 0) menu['Insert into'] = group;
       }
-      if(sibling) {
-        group = elements[xml_node.parent().get(0).tagName].permissible_children(xml_node);
+      if (sibling) {
+        group = self.elements[xml_node.parent().get(0).tagName].permissible_children(xml_node,'after');
         if(group.length > 0) menu['Insert after'] = group;
       }
 
-      if(xml_node.get(0).tagName != 'description' && !elements[xml_node.get(0).tagName].neverdelete)
-        menu['Remove Element'] = [{'label': 'Actual Element',
-                        'function_call': adaptor.description.remove,
-                        'menu_icon': function() {
-                          var icon =  elements[xml_node.get(0).tagName].illustrator.svg();
-                          icon.children('.rfill').css({'fill':'red','fill-opacity':'0.5'});
-                          return icon;
-                        },
-                        'params': [null, xml_node]}];
-      if($('> manipulate', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
-        menu['Remove Element'].push({'label': 'Remove Scripts',
-                        'function_call': adaptor.description.remove,
-                        'menu_icon': function() {
-                          var icon =  elements.callmanipulate.illustrator.svg();
-                          icon.children('.rfill:last').css({'fill':'red','fill-opacity':'0.5'});
-                          return icon;
-                        },
-                        'params': ['> manipulate', xml_node]});
+      if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
+        var icon =  self.elements[xml_node.get(0).tagName].illustrator.svg.clone();
+        icon.children('.rfill').css({'fill':'#ff7f7f','fill-opacity':'1'});
+        menu['Delete'] = [{
+          'label': 'Remove Element',
+          'function_call': self.adaptor.description.remove,
+          'menu_icon': icon,
+          'params': [null, xml_node]
+        }];
+      }
+      if($('> finalize, > update', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
+        var icon =  self.elements.callmanipulate.illustrator.svg.clone();
+        icon.children('.rfill:last').css({'fill':'#ff7f7f','fill-opacity':'1'});
+        menu['Delete'].push({
+          'label': 'Remove Scripts',
+          'function_call': self.adaptor.description.remove,
+          'menu_icon': icon,
+          'params': ['> finalize, > update', xml_node]
+        });
       }
       new CustomMenu(e).contextmenu(menu);
     }
     return false;
   } // }}}
   this.events.click = function(svgid, e) { // {{{
-    if (adaptor.description.get_node_by_svg_id(svgid).length == 0) {
+    if (self.adaptor.description.get_node_by_svg_id(svgid).length == 0) {
       return;
-    }
-
-    if ($('#state').text() != 'finished')
-      $('#main ui-behind button').show();
-    if ($('#main ui-behind button').hasClass('highlight')) {
-      var check = confirm("Discard changes?");
-      if (check)
-        $('#main ui-behind button').removeClass('highlight');
-      else
-        return;
     }
 
     var visid = 'details';
     var tab   = $('#dat_' + visid);
-    var node  = adaptor.description.get_node_by_svg_id(svgid).get(0);
+        tab.empty();
 
-    save[visid + '_target'] = { 'svgid': svgid, 'model': adaptor.description };
+    self.adaptor.illustrator.get_elements().removeClass('clicked');
 
-    tab.empty();
-    $.ajax({
-      type: "GET",
-      url: adaptor.theme_dir + "rngs/" + node.nodeName + ".rng",
-      success: function(rng){
-        save[visid] = new RelaxNGui(rng,tab);
-        save[visid].content(node,adaptor.description.context_eval);
+    if (e && e.ctrlKey) {
+      var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+      if (vtarget.length > 0) {
+        vtarget.parents('g.element[element-id]').toggleClass('marked');
       }
-    });
+    } else {
+      self.adaptor.illustrator.get_elements().removeClass('marked');
+
+      var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+      if (vtarget.length > 0) {
+        vtarget.parents('g.element[element-id]').addClass('clicked');
+      }
+
+      var node  = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
+
+      if (self.adaptor.description.elements[$(node).attr('svg-type')]) {
+        save[visid + '_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
+        save[visid] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
+        save[visid].content(node);
+      }
+    }
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
@@ -93,42 +115,23 @@ function WFAdaptorManifestation(adaptor) {
   this.events.dragstart = function (svgid, e) { //{{{
   } //}}}
 
-  // Abstract Elements (they only have an illustrator)
-  this.elements.callmanipulate = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'abstract',
-      'svg': adaptor.theme_dir + 'symbols/callmanipulate.svg'
-    },//}}}
-  }; /*}}}*/
-  this.elements.choose_inclusive = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'abstract',
-      'svg': adaptor.theme_dir + 'symbols/choose_inclusive.svg'
-    },//}}}
-  };  /*}}}*/
-  this.elements.choose_exclusive = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'abstract',
-      'svg': adaptor.theme_dir + 'symbols/choose_exclusive.svg'
-    },//}}}
-  };  /*}}}*/
-  this.elements.callpreminder = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'abstract',
-      'svg': adaptor.theme_dir + 'symbols/preminder.svg'
-    },//}}}
-  };  /*}}}*/
-
   // Primitive Elements
   this.elements.call = { /*{{{*/
+    'type': 'primitive',
     'illustrator': {//{{{
-      'type' : 'primitive',
-      'endnodes' : 'this',
-      'resolve_symbol' : function(node) {
-        if($(node).attr('endpoint') == 'instantiation') {
+      'endnodes': 'this',
+      'label': function(node){return $('label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'')},
+      'resolve_symbol': function(node) {
+        if($(node).attr('endpoint').match(/^instantiation/)) {
           return 'callinstantiation';
-        } else if($(node).attr('endpoint') == 'preminder1' || $(node).attr('endpoint') == 'preminder2' ) {
-          return 'callpreminder';
+        } else if($(node).attr('endpoint').match(/^correlation_send/)) {
+          return 'callcorrelationsend';
+        } else if($(node).attr('endpoint').match(/^correlation_receive/)) {
+          return 'callcorrelationreceive';
+        } else if($(node).attr('endpoint').match(/^worklist/) && $('finalize,update', node).length > 0) {
+          return 'callmanipulateworklist';
+        } else if($(node).attr('endpoint').match(/^worklist/)) {
+          return 'callworklist';
         } else if($('parameters > service', node).length > 0) {
           return 'callinjection';
         } else if($('finalize,update', node).length > 0) {
@@ -137,606 +140,662 @@ function WFAdaptorManifestation(adaptor) {
           return'call';
         }
       },
-      'svg': adaptor.theme_dir + 'symbols/call.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/call.svg'
     },//}}}
-    'description': '<call id="###" endpoint="" xmlns="http://cpee.org/ns/description/1.0"><parameters xmlns="http://cpee.org/ns/description/1.0"><label>""</label><method>:post</method><parameters/></parameters></call>',
-    'permissible_children': function(node) { //{{{
+    'description': self.adaptor.theme_dir + 'rngs/call.rng',
+    'permissible_children': function(node,mode) { //{{{
       if(node.children('finalize,update').length < 1)
         return [
          {'label': 'Scripts',
-          'function_call': adaptor.description.insert_last_into,
-          'menu_icon': elements.callmanipulate.illustrator.svg,
-          'params': [adaptor.description.elements.scripts, node]}
+          'function_call': self.adaptor.description.insert_last_into,
+          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+          'params': [self.adaptor.description.elements.scripts, node]}
         ];
       return [];
     }, //}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) { events.mousedown(node,e,true, true); },
-    'click': events.click,
-    'dragstart': events.dragstart,
+  'adaptor': {//{{{
+    'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+    'click': self.events.click,
+    'dragstart': self.events.dragstart,
    }//}}}
   }; /*}}}*/
-  this.elements.scripts = { /*{{{*/
-    'illustrator': {//{{{
-      'type' : 'primitive',
-      'endnodes' : 'this',
-      'svg': adaptor.theme_dir + 'symbols/scripts.svg'
-    },//}}}
-    'description': ['<finalize xmlns="http://cpee.org/ns/description/1.0"/>','<update xmlns="http://cpee.org/ns/description/1.0"/>'],
-    'permissible_children': function(node) { //{{{
-      return [];
-    }, //}}}
-    'adaptor': { //{{{
-      'mousedown': function (node, e) { events.mousedown(node,e,false, true); },
-      'click': events.click,
-    } //}}}
-  }; /*}}}*/
   this.elements.manipulate = { /*{{{*/
+    'type': 'primitive',
     'illustrator': {//{{{
-      'type' : 'primitive',
-      'endnodes' : 'this',
-      'svg': adaptor.theme_dir + 'symbols/manipulate.svg'
+      'endnodes': 'this',
+      'label': function(node){return $(node).attr('label').replace(/^['"]/,'').replace(/['"]$/,'')},
+      'svg': self.adaptor.theme_dir + 'symbols/manipulate.svg'
     },//}}}
-    'description': '<manipulate id="###" xmlns="http://cpee.org/ns/description/1.0"/>',
-    'permissible_children': function(node) { //{{{
+    'description': self.adaptor.theme_dir + 'rngs/manipulate.rng',
+    'permissible_children': function(node,mode) { //{{{
       return [];
     }, //}}}
-  'adaptor' : {//{{{
-    'mousedown': function (node, e) { events.mousedown(node,e,false, true); },
-    'click': events.click,
+  'adaptor': {//{{{
+    'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+    'click': self.events.click,
    }//}}}
   }; /*}}}*/
   this.elements.escape = { /*{{{*/
+    'type': 'primitive',
     'illustrator': {//{{{
-      'type' : 'primitive',
-      'endnodes' : 'this',
-      'svg': adaptor.theme_dir + 'symbols/escape.svg'
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/escape.svg'
     },//}}}
-    'description': '<escape xmlns="http://cpee.org/ns/description/1.0"/>',
-    'permissible_children': function(node) { //{{{
+    'description': self.adaptor.theme_dir + 'rngs/escape.rng',
+    'permissible_children': function(node,mode) { //{{{
       return [];
     }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) { events.mousedown(node,e,false, true); },
-      'click': events.click,
+    'adaptor': {//{{{
+      'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'click': self.events.click,
     }//}}}
   }; /*}}}*/
 
   // Complex Elements
   this.elements.choose = { /*{{{*/
+    'type': 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
-      'endnodes' : 'aggregate',
+      'label': function(node){return $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' },
+      'endnodes': 'aggregate',
       'closeblock': false,
-      'expansion' : function(node) {
+      'expansion': function(node) {
         return 'horizontal';
       },
-      'resolve_symbol' : function(node) {
+      'resolve_symbol': function(node) {
         if($(node).attr('mode') == 'exclusive') {
           return 'choose_exclusive';
         } else {
           return 'choose_inclusive';
         }
       },
-      'col_shift' : function(node) {
+      'col_shift': function(node) {
         return false;
       },
-      'svg': adaptor.theme_dir + 'symbols/choose.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/choose.svg'
     },//}}}
-    'description': '<choose mode="exclusive" xmlns="http://cpee.org/ns/description/1.0"><otherwise/></choose>',
-    'permissible_children': function(node) { //{{{
+    'description': self.adaptor.theme_dir + 'rngs/choose.rng',
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'choose') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       if(node.children('parallel_branch').length > 0) {
         return [{'label': 'Parallel Branch',
          'function_call': func,
-         'menu_icon': elements.parallel_branch.illustrator.svg,
-         'params': [adaptor.description.elements.parallel_branch, node]}];
+         'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.parallel_branch, node]}];
       }
       var childs = [{'label': 'Alternative',
        'function_call': func,
-       'menu_icon': elements.alternative.illustrator.svg,
-       'params': [adaptor.description.elements.alternative, node]}];
+       'menu_icon': self.elements.alternative.illustrator.svg.clone(),
+       'params': [self.adaptor.description.elements.alternative, node]}];
       if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length)
         childs.push({'label': 'Otherwise',
-         'function_call': func,
-         'menu_icon': elements.otherwise.illustrator.svg,
-         'params': [adaptor.description.elements.otherwise, node]});
+         'function_call': self.adaptor.description.insert_last_into,
+         'menu_icon': self.elements.otherwise.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.otherwise, node]});
       if(node.parents('parallel').length > node.parents('parallel_branch').length)
         childs.push({'label': 'Parallel Branch',
          'function_call': func,
-         'menu_icon': elements.parallel_branch.illustrator.svg,
-         'params': [adaptor.description.elements.parallel_branch, node]});
+         'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.parallel_branch, node]});
       return childs;
     }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,true);
       },
-      'click': events.click,
-      'dblclick': events.dblclick,
-      'mouseover': events.mouseover,
-      'mouseout': events.mouseout,
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout,
     }//}}}
   };  /*}}}*/
   this.elements.otherwise = { /*{{{*/
+    'type': 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
-      'endnodes' : 'passthrough',
+      'endnodes': 'passthrough',
       'closeblock': false,
-      'expansion' : function(node) {
+      'expansion': function(node) {
         return 'vertical';
       },
-      'col_shift' : function(node) {
+      'col_shift': function(node) {
         return false;
       },
-      'svg': adaptor.theme_dir + 'symbols/otherwise.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/otherwise.svg'
     },//}}}
-    'description': '<otherwise xmlns="http://cpee.org/ns/description/1.0"/>',
+    'description': self.adaptor.theme_dir + 'rngs/otherwise.rng',
     'neverdelete': true,
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
       var childs = null;
-      if(node.get(0).tagName == 'otherwise') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       return [
         {'label': 'Service Call with Scripts',
          'function_call': func,
-         'menu_icon': elements.callmanipulate.illustrator.svg,
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
-         'menu_icon': elements.call.illustrator.svg,
-         'params': [adaptor.description.elements.call, node]},
+         'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
-         'menu_icon': elements.manipulate.illustrator.svg,
-         'params': [adaptor.description.elements.manipulate, node]},
+         'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
-         'menu_icon': elements.parallel.illustrator.svg,
-         'params': [adaptor.description.elements.parallel, node]},
-        {'label': 'Choose',
+         'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.parallel, node]},
+        {'label': 'Decision',
          'function_call': func,
-         'menu_icon': elements.choose.illustrator.svg,
-         'params': [adaptor.description.elements.choose, node]},
+         'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
-         'menu_icon': elements.loop.illustrator.svg,
-         'params': [adaptor.description.elements.loop, node]},
+         'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
-         'menu_icon': elements.critical.illustrator.svg,
-         'params': [adaptor.description.elements.critical, node]}
+         'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.critical, node]}
       ];
     }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, false);
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,false);
       },
-      'click': events.click,
-      'dblclick': events.dblclick,
-      'mouseover': events.mouseover,
-      'mouseout': events.mouseout,
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout,
     }//}}}
   }; /*}}}*/
   this.elements.alternative = { /*{{{*/
+    'type': 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
-      'endnodes' : 'passthrough',
+      'label': function(node){return $(node).attr('condition')},
+      'endnodes': 'passthrough',
       'closeblock':false,
-      'expansion' : function(node) {
+      'expansion': function(node) {
         return 'vertical';
       },
-      'col_shift' : function(node) {
+      'col_shift': function(node) {
         return false;
       },
-      'svg': adaptor.theme_dir + 'symbols/alternative.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/alternative.svg'
     },//}}}
-    'description': '<alternative condition="" xmlns="http://cpee.org/ns/description/1.0"/>',
-    'permissible_children': function(node) { //{{{
-      if(node.get(0).tagName == 'alternative') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+    'description': self.adaptor.theme_dir + 'rngs/alternative.rng',
+    'permissible_children': function(node,mode) { //{{{
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       if(node.parents('parallel').length > node.parents('parallel_branch').length && node.get(0).tagName == 'alternative') {
         return [{'label': 'Parallel Branch',
          'function_call': func,
-         'menu_icon': elements.parallel_branch.illustrator.svg,
-         'params': [adaptor.description.elements.parallel_branch, node]}];
+         'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.parallel_branch, node]}];
       }
       return [
         {'label': 'Service Call with Scripts',
          'function_call': func,
-         'menu_icon': elements.callmanipulate.illustrator.svg,
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
-         'menu_icon': elements.call.illustrator.svg,
-         'params': [adaptor.description.elements.call, node]},
+         'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
-         'menu_icon': elements.manipulate.illustrator.svg,
-         'params': [adaptor.description.elements.manipulate, node]},
+         'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
-         'menu_icon': elements.parallel.illustrator.svg,
-         'params': [adaptor.description.elements.parallel, node]},
-        {'label': 'Choose',
+         'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.parallel, node]},
+        {'label': 'Decision',
          'function_call': func,
-         'menu_icon': elements.choose.illustrator.svg,
-         'params': [adaptor.description.elements.choose, node]},
+         'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
-         'menu_icon': elements.loop.illustrator.svg,
-         'params': [adaptor.description.elements.loop, node]},
+         'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
-         'menu_icon': elements.critical.illustrator.svg,
-         'params': [adaptor.description.elements.critical, node]}
+         'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.critical, node]}
       ];
     }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, false);
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,false);
       },
-      'click': events.click,
-      'dblclick': events.dblclick,
-      'mouseover': events.mouseover,
-      'mouseout': events.mouseout,
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout,
     }//}}}
   };  /*}}}*/
   this.elements.loop = { /*{{{*/
+    'type': 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
-      'endnodes' : 'this',
-      'closeblock' : true,
-      'expansion' : function(node) {
+      'label': function(node){return  $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') },
+      'endnodes': 'this',
+      'closeblock': true,
+      'expansion': function(node) {
         return 'vertical';
       },
-      'col_shift' : function(node) {
+      'col_shift': function(node) {
         return true;
       },
-      'svg': adaptor.theme_dir + 'symbols/loop.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/loop.svg'
     },// }}}
-    'description': '<loop pre_test="" xmlns="http://cpee.org/ns/description/1.0"/>',
-    'permissible_children': function(node) { //{{{
+    'description': self.adaptor.theme_dir + 'rngs/loop.rng',
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'loop') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       var childs = [
         {'label': 'Service Call with Scripts',
          'function_call': func,
-         'menu_icon': elements.callmanipulate.illustrator.svg,
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
-         'menu_icon': elements.call.illustrator.svg,
-         'params': [adaptor.description.elements.call, node]},
+         'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Manipulate',
          'function_call': func,
-         'menu_icon': elements.manipulate.illustrator.svg,
-         'params': [adaptor.description.elements.manipulate, node]},
-        {'label': 'Choose',
+         'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.manipulate, node]},
+        {'label': 'Decision',
          'function_call': func,
-         'menu_icon': elements.choose.illustrator.svg,
-         'params': [adaptor.description.elements.choose, node]},
+         'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
-         'menu_icon': elements.loop.illustrator.svg,
-         'params': [adaptor.description.elements.loop, node]},
+         'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
-         'menu_icon': elements.critical.illustrator.svg,
-         'params': [adaptor.description.elements.critical, node]}
+         'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.critical, node]}
       ];
       if(node.parent('parallel').length > node.parent('parallel_branch').length) {
         childs.push({'label': 'Parallel Branch',
                      'function_call': func,
-                     'menu_icon': elements.parallel_branch.illustrator.svg,
-                     'params': [adaptor.description.elements.parallel_branch, node]}
+                     'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+                     'params': [self.adaptor.description.elements.parallel_branch, node]}
                     );
       } else {
         childs.push({'label': 'Parallel',
                      'function_call': func,
-                     'menu_icon': elements.parallel.illustrator.svg,
-                     'params': [adaptor.description.elements.parallel, node]}
+                     'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+                     'params': [self.adaptor.description.elements.parallel, node]}
                     );
       }
       return childs;
     }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,true);
       },
-      'click': events.click,
-      'dblclick': events.dblclick,
-      'mouseover': events.mouseover,
-      'mouseout': events.mouseout,
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout,
     }//}}}
   };  /*}}}*/
   this.elements.parallel = { /*{{{*/
+    'type': 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
-      'endnodes' : 'this',
-      'closeblock' : false,
+      'endnodes': 'this',
+      'closeblock': false,
       'border': true,
-      'expansion' : function(node) {
+      'expansion': function(node) {
         // check if any sibling other than 'parallel_branch' is present
         if($(node).children(':not(parallel_branch)').length > 0) return 'vertical';
         return 'horizontal';
       },
-      'col_shift' : function(node) {
+      'col_shift': function(node) {
         return true;
       },
-      'svg': adaptor.theme_dir + 'symbols/parallel.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/parallel.svg'
     },//}}}
-    'description': '<parallel xmlns="http://cpee.org/ns/description/1.0"/>',
-    'permissible_children': function(node) { //{{{
+    'description': self.adaptor.theme_dir + 'rngs/parallel.rng',
+    'permissible_children': function(node,mode) { //{{{
       var childs =  [
         {'label': 'Service Call with Scripts',
-         'function_call': adaptor.description.insert_last_into,
-         'menu_icon': elements.callmanipulate.illustrator.svg,
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'function_call': self.adaptor.description.insert_last_into,
+         'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
-         'function_call': adaptor.description.insert_last_into,
-         'menu_icon': elements.call.illustrator.svg,
-         'params': [adaptor.description.elements.call, node]},
+         'function_call': self.adaptor.description.insert_last_into,
+         'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Manipulate',
-         'function_call': adaptor.description.insert_last_into,
-         'menu_icon': elements.manipulate.illustrator.svg,
-         'params': [adaptor.description.elements.manipulate, node]},
-        {'label': 'Choose',
-         'function_call': adaptor.description.insert_last_into,
-         'menu_icon': elements.choose.illustrator.svg,
-         'params': [adaptor.description.elements.choose, node]},
+         'function_call': self.adaptor.description.insert_last_into,
+         'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.manipulate, node]},
+        {'label': 'Decision',
+         'function_call': self.adaptor.description.insert_last_into,
+         'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
-         'function_call': adaptor.description.insert_last_into,
-         'menu_icon': elements.loop.illustrator.svg,
-         'params': [adaptor.description.elements.loop, node]},
+         'function_call': self.adaptor.description.insert_last_into,
+         'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
-         'function_call': adaptor.description.insert_last_into,
-         'menu_icon': elements.critical.illustrator.svg,
-         'params': [adaptor.description.elements.critical, node]},
+         'function_call': self.adaptor.description.insert_last_into,
+         'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.critical, node]},
         {'label': 'Parallel Branch',
-         'function_call': adaptor.description.insert_last_into,
-         'menu_icon': elements.parallel_branch.illustrator.svg,
-         'params': [adaptor.description.elements.parallel_branch, node]}
+         'function_call': self.adaptor.description.insert_last_into,
+         'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.parallel_branch, node]}
       ];
       if(node.get(0).tagName != 'parallel')
         childs.push({'label': 'Parallel',
-           'function_call': adaptor.description.insert_last_into,
-           'menu_icon': elements.parallel.illustrator.svg,
-           'params': [adaptor.description.elements.parallel, node]});
+           'function_call': self.adaptor.description.insert_last_into,
+           'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+           'params': [self.adaptor.description.elements.parallel, node]});
       return childs;
     }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,true);
       },
-      'click': events.click,
-      'dblclick': events.dblclick,
-      'mouseover': events.mouseover,
-      'mouseout': events.mouseout,
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout,
     }//}}}
   };  /*}}}*/
   this.elements.parallel_branch = { /*{{{*/
+    'type': 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
-      'endnodes' : 'this',
-      'closeblock' : false,
-      'expansion' : function(node) {
+      'endnodes': 'this',
+      'closeblock': false,
+      'expansion': function(node) {
         return 'vertical';
       },
-      'col_shift' : function(node) {
+      'col_shift': function(node) {
         if(node.parentNode.tagName == 'choose') return false;
         if($(node).parents('parallel').first().children(':not(parallel_branch)').length > 0) return true;
         return false;
       },
-      'svg': adaptor.theme_dir + 'symbols/parallel_branch.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_branch.svg'
     },//}}}
-    'description': '<parallel_branch xmlns="http://cpee.org/ns/description/1.0"/>',
-    'permissible_children': function(node) { //{{{
+    'description': self.adaptor.theme_dir + 'rngs/parallel_branch.rng',
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
       var childs = null;
-      if(node.get(0).tagName == 'parallel_branch') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       childs =  [
         {'label': 'Service Call with Scripts',
          'function_call': func,
-         'menu_icon': elements.callmanipulate.illustrator.svg,
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
-         'menu_icon': elements.call.illustrator.svg,
-         'params': [adaptor.description.elements.call, node]},
+         'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
-         'menu_icon': elements.manipulate.illustrator.svg,
-         'params': [adaptor.description.elements.manipulate, node]},
+         'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
-         'menu_icon': elements.parallel.illustrator.svg,
-         'params': [adaptor.description.elements.parallel, node]},
-        {'label': 'Choose',
+         'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.parallel, node]},
+        {'label': 'Decision',
          'function_call': func,
-         'menu_icon': elements.choose.illustrator.svg,
-         'params': [adaptor.description.elements.choose, node]},
+         'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
-         'menu_icon': elements.loop.illustrator.svg,
-         'params': [adaptor.description.elements.loop, node]},
+         'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
-         'menu_icon': elements.critical.illustrator.svg,
-         'params': [adaptor.description.elements.critical, node]},
+         'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.critical, node]},
       ];
       if(node.parents('choose').length > node.parents('alternative, otherwise').length && node.get(0).tagName == 'parallel_branch') {
         return [{'label': 'Alternative',
          'function_call': func,
-         'menu_icon': elements.alternative.illustrator.svg,
-         'params': [adaptor.description.elements.alternative, node]}];
+         'menu_icon': self.elements.alternative.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.alternative, node]}];
       }
       return childs;
     }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, false);
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,false);
       },
-      'click': events.click,
-      'dblclick': events.dblclick,
-      'mouseover': events.mouseover,
-      'mouseout': events.mouseout,
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout,
     }//}}}
   };  /*}}}*/
   this.elements.critical = { /*{{{*/
+    'type': 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
-      'endnodes' : 'aggregate',
-      'closeblock' : false,
+      'endnodes': 'aggregate',
+      'closeblock': false,
       'border': true,
-      'expansion' : function(node) {
+      'expansion': function(node) {
         return 'vertical';
       },
-      'col_shift' : function(node) {
+      'col_shift': function(node) {
         return true;
       },
-      'svg': adaptor.theme_dir + 'symbols/critical.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/critical.svg'
     },//}}}
-    'description': '<critical sid="section" xmlns="http://cpee.org/ns/description/1.0"/>',
-    'permissible_children': function(node) { //{{{
+    'description': self.adaptor.theme_dir + 'rngs/critical.rng',
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'critical') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       return [
         {'label': 'Service Call with Scripts',
          'function_call': func,
-         'menu_icon': elements.callmanipulate.illustrator.svg,
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
-         'menu_icon': elements.call.illustrator.svg,
-         'params': [adaptor.description.elements.call, node]},
+         'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
-         'menu_icon': elements.manipulate.illustrator.svg,
-         'params': [adaptor.description.elements.manipulate, node]},
+         'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
-         'menu_icon': elements.parallel.illustrator.svg,
-         'params': [adaptor.description.elements.parallel, node]},
-        {'label': 'Choose',
+         'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.parallel, node]},
+        {'label': 'Decision',
          'function_call': func,
-         'menu_icon': elements.choose.illustrator.svg,
-         'params': [adaptor.description.elements.choose, node]},
+         'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
-         'menu_icon': elements.loop.illustrator.svg,
-         'params': [adaptor.description.elements.loop, node]},
+         'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
-         'menu_icon': elements.critical.illustrator.svg,
-         'params': [adaptor.description.elements.critical, node]},
+         'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.critical, node]},
       ];
     }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,true);
       },
-      'click': events.click,
-      'dblclick': events.dblclick,
-      'mouseover': events.mouseover,
-      'mouseout': events.mouseout,
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout,
     }//}}}
   };  /*}}}*/
   this.elements.group = { /*{{{*/
+    'type': 'complex',
     'illustrator': {//{{{
-      'type' : 'complex',
-      'endnodes' : 'aggregate',
-      'closeblock' : false,
+      'endnodes': 'aggregate',
+      'closeblock': false,
       'border': 'injectiongroup', // other value than true,false inidcates the used class for the svg-object
-      'expansion' : function(node) {
+      'expansion': function(node) {
         return 'vertical';
       },
-      'col_shift' : function(node) {
+      'col_shift': function(node) {
         return true;
       },
       'svg': null
     },//}}}
-    'description': '<group xmlns="http://cpee.org/ns/description/1.0"/>',
-    'permissible_children': function(node) { //{{{
+    'description': self.adaptor.theme_dir + 'rngs/group.rng',
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'group') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       return [
       ];
     }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, true);
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,true);
       },
-      'click': events.click,
-      'dblclick': events.dblclick,
-      'mouseover': events.mouseover,
-      'mouseout': events.mouseout,
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout,
     }//}}}
   };  /*}}}*/
   this.elements.start = this.elements.description = { /*{{{*/
+    'type': 'description',
     'illustrator': {//{{{
-      'type' : 'description',
-      'endnodes' : 'passthrough',
-      'closeblock' : false,
-      'expansion' : function(node) {
+      'endnodes': 'passthrough',
+      'closeblock': false,
+      'expansion': function(node) {
         return 'vertical';
       },
-      'col_shift' : function(node) {
+      'col_shift': function(node) {
         return true;
       },
-      'svg': adaptor.theme_dir + 'symbols/start.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/start.svg'
     },//}}}
     'description': null,
-    'permissible_children': function(node) { //{{{
+    'permissible_children': function(node,mode) { //{{{
       var func = null;
-      if(node.get(0).tagName == 'description') { func = adaptor.description.insert_first_into }
-      else { func = adaptor.description.insert_after }
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       return [
         {'label': 'Service Call with Scripts',
          'function_call': func,
-         'menu_icon': elements.callmanipulate.illustrator.svg,
-         'params': [adaptor.description.elements.callmanipulate, node]},
+         'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
-         'menu_icon': elements.call.illustrator.svg,
-         'params': [adaptor.description.elements.call, node]},
+         'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script Task',
          'function_call': func,
-         'menu_icon': elements.manipulate.illustrator.svg,
-         'params': [adaptor.description.elements.manipulate, node]},
+         'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
-         'menu_icon': elements.parallel.illustrator.svg,
-         'params': [adaptor.description.elements.parallel, node]},
-        {'label': 'Choose',
+         'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.parallel, node]},
+        {'label': 'Decision',
          'function_call': func,
-         'menu_icon': elements.choose.illustrator.svg,
-         'params': [adaptor.description.elements.choose, node]},
+         'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
-         'menu_icon': elements.loop.illustrator.svg,
-         'params': [adaptor.description.elements.loop, node]},
+         'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
-         'menu_icon': elements.critical.illustrator.svg,
-         'params': [adaptor.description.elements.critical, node]}
+         'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'params': [self.adaptor.description.elements.critical, node]}
       ];
     }, //}}}
-    'adaptor' : {//{{{
-      'mousedown': function (node, e) {
-        events.mousedown(node,e,true, false);
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,false);
       },
-      'click': events.click,
-      'dblclick': events.dblclick,
-      'mouseover': events.mouseover,
-      'mouseout': events.mouseout,
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout,
     }//}}}
   }; /*}}}*/
+
+  // Abstract Elements
+  // * they may only have an illustrator (or other parts)
+  // * they HAVE TO have a parent
+  this.elements.callmanipulate = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'call',
+    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
+    'illustrator': {//{{{
+      'label': function(node){return $('label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'')},
+      'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
+    },//}}}
+  }; /*}}}*/
+  this.elements.choose_inclusive = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'choose',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.choose_exclusive = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'choose',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.scripts = { /*{{{*/
+    'type': 'abstract',
+    'description': [self.adaptor.theme_dir + 'rngs/update.rng',self.adaptor.theme_dir + 'rngs/finalize.rng']
+  }; /*}}}*/
+  this.elements.callinstantiation = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'call',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callinstantiation.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.callcorrelationsend = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'call',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callcorrelationsend.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.callcorrelationreceive = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'call',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callcorrelationreceive.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.callworklist = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'call',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callworklist.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.callmanipulateworklist = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'call',
+    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callmanipulateworklist.svg'
+    },//}}}
+  };  /*}}}*/
 }
