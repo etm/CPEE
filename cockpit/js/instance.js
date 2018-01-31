@@ -127,6 +127,15 @@ $(document).ready(function() {// {{{
   });
 });// }}}
 
+function sanitize_url() {
+  var url = $("input[name=instance-url]").val();
+  var lastChar = url.substr(url.length - 1)
+  if (lastChar != '/') {
+    $("input[name=instance-url]").val(url + '/');
+  }
+  return $("input[name=instance-url]").val();
+}
+
 function check_subscription() { // {{{
   var url = $("#current-instance").text();
   var num = 0;
@@ -183,7 +192,7 @@ function create_instance(ask,exec) {// {{{
 }// }}}
 
 function monitor_instance(load,exec) {// {{{
-  var url = $("input[name=instance-url]").val();
+  var url = sanitize_url();
 
   $('.tabbehind button').hide();
   $('#dat_details').empty();
