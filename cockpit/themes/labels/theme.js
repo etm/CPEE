@@ -163,7 +163,14 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
-      'label': function(node){return $(node).attr('label').replace(/^['"]/,'').replace(/['"]$/,'')},
+      'label': function(node){
+        var lab = $(node).attr('label');
+        if (lab) {
+          return lab.replace(/^['"]/,'').replace(/['"]$/,'');
+        }  else {
+          return "";
+        }
+      },
       'svg': self.adaptor.theme_dir + 'symbols/manipulate.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/manipulate.rng',
