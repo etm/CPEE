@@ -1,0 +1,170 @@
+<!--
+  This file is part of CPEE.
+
+  CPEE is free software: you can redistribute it and/or modify it under the terms
+  of the GNU General Public License as published by the Free Software Foundation,
+  either version 3 of the License, or (at your option) any later version.
+
+  CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along with
+  CPEE (file COPYING in the main directory).  If not, see
+  <http://www.gnu.org/licenses/>.
+-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>CPEE Cockpit</title>
+
+    <!-- libs, do not modify. When local than load local libs. -->
+    <script type="text/javascript">
+      if ((document.location.host == 'localhost') && (document.location.protocol == 'http:')) {
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.browser.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.svg.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.svgdom.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/vkbeautify.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/util.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/printf.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/strftime.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/parsequery.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/underscore.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.caret.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/jquery.cookie.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/relaxngui.js">\x3C/script>');
+
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/ui.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://localhost/js_libs/custommenu.js">\x3C/script>');
+
+        document.write('<link rel="stylesheet" href="http://localhost/js_libs/custommenu.css" type="text/css"/>');
+        document.write('<link rel="stylesheet" href="http://localhost/js_libs/ui.css" type="text/css"/>');
+
+        document.write('<link rel="stylesheet" href="http://localhost/js_libs/relaxngui.css" type="text/css"/>');
+      } else if ((document.location.host == 'localhost') && (document.location.protocol == 'https:')) {
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/jquery.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/jquery.browser.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/jquery.svg.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/jquery.svgdom.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/vkbeautify.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/util.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/printf.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/strftime.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/parsequery.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/underscore.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/jquery.caret.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/jquery.cookie.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/relaxngui.js">\x3C/script>');
+
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/ui.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="https://localhost/js_libs/custommenu.js">\x3C/script>');
+
+        document.write('<link rel="stylesheet" href="https://localhost/js_libs/custommenu.css" type="text/css"/>');
+        document.write('<link rel="stylesheet" href="https://localhost/js_libs/ui.css" type="text/css"/>');
+
+        document.write('<link rel="stylesheet" href="https://localhost/js_libs/relaxngui.css" type="text/css"/>');
+      } else {
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.browser.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.svg.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.svgdom.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/vkbeautify.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/util.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/printf.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/strftime.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/parsequery.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/underscore.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.caret.min.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.cookie.js">\x3C/script>');
+
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/relaxngui.js">\x3C/script>');
+
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/ui.js">\x3C/script>');
+        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/custommenu.js">\x3C/script>');
+
+        document.write('<link rel="stylesheet" href="http://gruppe.wst.univie.ac.at/js_libs/custommenu.css" type="text/css"/>');
+        document.write('<link rel="stylesheet" href="http://gruppe.wst.univie.ac.at/js_libs/ui.css" type="text/css"/>');
+
+        document.write('<link rel="stylesheet" href="http://gruppe.wst.univie.ac.at/js_libs/relaxngui.css" type="text/css"/>');
+      }
+    </script>
+
+    <!-- modelling ui -->
+    <script type="text/javascript" src="js/wfadaptor.js"></script>
+    <link rel="stylesheet" href="css/wfadaptor.css" type="text/css"/>
+
+    <!-- custom stuff, play arround  -->
+    <script type="text/javascript" src="js/ui.js"></script>
+    <script type="text/javascript" src="js/instance.js"></script>
+    <script type="text/javascript" src="js/details.js"></script>
+    <script type="text/javascript" src="js/parameters.js"></script>
+    <link rel="stylesheet" href="css/ui.css" type="text/css"/>
+    <style>
+      /* has to be fucking inline, because firefox and chrome disagree how to handle filter urls */
+      /* shit balls, no elegance is left in this world */
+    </style>
+  </head>
+  <body data-defaultport="9298" data-theme-base="themes" is="x-ui">
+     <div id='disclaimer' class='hidden'> <!--{{{-->
+       <h1>Disclaimer</h1>
+
+       <p>
+         We use reasonable care in creating and presenting the functionality
+         found in this demonstrator. It is provided purely for demonstration purposes
+         and you should seek further guidance and make independent enquiries
+         before relying upon it.
+       </p>
+
+       <p>
+         All functionality included in this demonstrator is subject to change
+         without notice. We make no representation or warranty whatsoever
+         regarding the completeness, accuracy, adequacy, suitability or
+         operation of this demonstrator, or of the results it produces.
+       </p>
+
+       <p>
+         We assume no responsibility for process instances created with this
+         demonstrator and disclaim all liability arising from negligence or
+         otherwise in respect of such process instances. We will not be liable
+         for any damages (including, without limitation, damages for any
+         consequential loss or loss of business opportunities or projects, or
+         loss of profits) howsoever arising from use of or inability to use
+         this demonstrator, or from any action or omission taken as a result of
+         using this demonstrator.
+       </p>
+
+       <p>
+         This demonstrator was created in Austria. All liability is excluded to the extent
+         permitted by law including any implied terms. Any interpretation of its
+         content, claims or disputes (of whatever nature and not limited to contractual
+         issues) shall be subject to the exclusive jurisdiction of the Austrian Courts
+         under Austrian law.
+       </p>
+
+
+       <p>
+         All actions performed while using this demonstrator will be logged, including
+         the IP address of the user.
+       </p>
+
+       <p>
+         <input id='iagree' type='checkbox'/><label for='iagree'><strong>OK, I Agree with this terms. I will be a happy person, and do no evil.</strong></label>
+       </p>
+       <p>
+        <button id='icontinue' disabled='disabled'>Continue</button>
+       </p>
+    </div> <!--}}}-->
+
+    <div class='hidden' id='relaxngworker'></div>
+
+    <div class='menu' id='predefinedtestsets'></div>
+    <div class='menu' id='modeltypes'></div>
+
+    <div id='graphcolumn'>
+      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
+    </div>
+  </body>
+</html>
