@@ -62,21 +62,27 @@ function WFAdaptorManifestation(adaptor) {
             check2.push($(value.params[0]).attr('name'));
           });
           if (markymark.length > 0 && _.uniq(check1).length == _.intersection(check1,check2).length) {
+            var nodes = [];
+            $(markymark).each(function(key,svgid){
+              var node = self.adaptor.description.get_node_by_svg_id(svgid);
+              nodes.push(node);
+            });
+
             var iconm =  self.resources['arrow'].clone();
             var iconc =  self.resources['arrow'].clone();
             iconm.children('.rfill').addClass('menu');
             menu['Insert into'].push(
               {
                 'label': '<em>Move Marked Elements</em>',
-                'function_call': self.adaptor.description.move_many_into,
+                'function_call': self.adaptor.description.insert_into,
                 'menu_icon': iconm,
-                'params': [null, xml_node, markymark]
+                'params': [nodes, xml_node]
               },
               {
                 'label': '<em>Copy Marked Elements</em>',
-                'function_call': self.adaptor.description.copy_many_into,
+                'function_call': self.adaptor.description.insert_into,
                 'menu_icon': iconc,
-                'params': [null, xml_node, markymark]
+                'params': [nodes, xml_node]
               }
             );
           }

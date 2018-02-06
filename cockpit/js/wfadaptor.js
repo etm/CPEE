@@ -429,7 +429,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     update();
   } // }}}
-  this.insert_first_into = function(new_node, target, selector) { // {{{
+  this.insert_first_into = function(new_node, target) { // {{{
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
         var nn = self.source(v);
@@ -443,7 +443,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     update();
   } // }}}
-  this.insert_last_into = function(new_node, target, selector) { // {{{
+  this.insert_last_into = function(new_node, target) { // {{{
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
         var nn = self.source(v);
