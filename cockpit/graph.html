@@ -102,68 +102,14 @@
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
-    <style>
-      /* has to be fucking inline, because firefox and chrome disagree how to handle filter urls */
-      /* shit balls, no elegance is left in this world */
-    </style>
   </head>
   <body data-defaultport="9298" data-theme-base="themes" is="x-ui">
-     <div id='disclaimer' class='hidden'> <!--{{{-->
-       <h1>Disclaimer</h1>
-
-       <p>
-         We use reasonable care in creating and presenting the functionality
-         found in this demonstrator. It is provided purely for demonstration purposes
-         and you should seek further guidance and make independent enquiries
-         before relying upon it.
-       </p>
-
-       <p>
-         All functionality included in this demonstrator is subject to change
-         without notice. We make no representation or warranty whatsoever
-         regarding the completeness, accuracy, adequacy, suitability or
-         operation of this demonstrator, or of the results it produces.
-       </p>
-
-       <p>
-         We assume no responsibility for process instances created with this
-         demonstrator and disclaim all liability arising from negligence or
-         otherwise in respect of such process instances. We will not be liable
-         for any damages (including, without limitation, damages for any
-         consequential loss or loss of business opportunities or projects, or
-         loss of profits) howsoever arising from use of or inability to use
-         this demonstrator, or from any action or omission taken as a result of
-         using this demonstrator.
-       </p>
-
-       <p>
-         This demonstrator was created in Austria. All liability is excluded to the extent
-         permitted by law including any implied terms. Any interpretation of its
-         content, claims or disputes (of whatever nature and not limited to contractual
-         issues) shall be subject to the exclusive jurisdiction of the Austrian Courts
-         under Austrian law.
-       </p>
-
-
-       <p>
-         All actions performed while using this demonstrator will be logged, including
-         the IP address of the user.
-       </p>
-
-       <p>
-         <input id='iagree' type='checkbox'/><label for='iagree'><strong>OK, I Agree with this terms. I will be a happy person, and do no evil.</strong></label>
-       </p>
-       <p>
-        <button id='icontinue' disabled='disabled'>Continue</button>
-       </p>
-    </div> <!--}}}-->
-
-    <div class='hidden' id='relaxngworker'></div>
-
-    <div class='menu' id='predefinedtestsets'></div>
-    <div class='menu' id='modeltypes'></div>
-
-    <div id='graphcolumn'>
+    <div class='hidden'>
+       <input name="base-url" type="text" value=""/>
+       <input name="instance-url" type="text" value=""/>
+       <a id='current-instance' href=''></a>
+    </div>
+    <div id='graphcolumn' style='overflow: auto'>
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
     </div>
   </body>
