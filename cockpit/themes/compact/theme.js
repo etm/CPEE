@@ -2,20 +2,34 @@ function WFAdaptorManifestation(adaptor) {
   var self = this;
 
   this.adaptor = adaptor;
+  this.resources = {};
   this.elements = {};
   this.events = {};
   this.compact = true;
 
   this.noarrow = ['alternative', 'otherwise'];
-  this.source = function(rng) {
-    $('#relaxngworker').empty();
-    var rngw = new RelaxNGui(rng,$('#relaxngworker'),self.adaptor.description.context_eval);
-    var nnew = $(rngw.save().documentElement);
-        nnew.attr('trans-xmlns','http://cpee.org/ns/description/1.0');
-    var ntxt = nnew.serializeXML();
-    ntxt = ntxt.replace(/trans-xmlns/,'xmlns');
+  this.source = function(base,opts) {
+    if (base[0].namespaceURI == "http://relaxng.org/ns/structure/1.0") {
+      $('#relaxngworker').empty();
+      var rngw = new RelaxNGui(base,$('#relaxngworker'),self.adaptor.description.context_eval);
+      var nnew = $(rngw.save().documentElement);
+          nnew.attr('trans-xmlns','http://cpee.org/ns/description/1.0');
+      var ntxt = nnew.serializeXML();
+      ntxt = ntxt.replace(/trans-xmlns/,'xmlns');
 
-    return($X(ntxt));
+      return($X(ntxt));
+    } else {
+      if (opts && opts == 'clone') {
+        if (base.attr('id')) {
+          base = base.clone();
+          // not very generic, because it is assumed that id is attribute of top level
+          // a better solution would be to parse rng for get_free_id()
+          // but: there is lots of lock-in to element-id, so fuck it
+          base.attr('id',self.adaptor.description.get_free_id());
+        }
+      }
+      return base;
+    }
   };
   this.clicked = function(){
     var svgid = 'unknown';
@@ -26,6 +40,56 @@ function WFAdaptorManifestation(adaptor) {
     });
     return svgid;
   };
+  this.marked = function(){
+    var svgid = [];
+    _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
+      if ($(value).hasClass('marked')) {
+        svgid.push($(value).attr('element-id'));
+      }
+    });
+    return svgid;
+  };
+
+  function copyOrMove(menu,group,xml_node,mode) {
+    var markymark = self.marked();
+    var check1 = [];
+    var check2 = [];
+    $(markymark).each(function(key,svgid){
+      var node = self.adaptor.description.get_node_by_svg_id(svgid);
+      check1.push($(node).attr('svg-type'));
+    });
+    $(group).each(function(key,value){
+      check2.push(value.type);
+    });
+
+    if (markymark.length > 0 && _.uniq(check1).length == _.intersection(check1,check2).length) {
+      var nodes = [];
+      $(markymark).each(function(key,svgid){
+        var node = self.adaptor.description.get_node_by_svg_id(svgid);
+        nodes.unshift(node);
+      });
+
+      var iconm =  self.resources['arrow'].clone();
+      var iconc =  self.resources['arrow'].clone();
+      iconm.children('.rfill').addClass('menu');
+      menu.push(
+        {
+          'label': '<em>Move Marked Elements</em>',
+          'function_call': mode,
+          'menu_icon': iconm,
+          'type': undefined,
+          'params': [nodes, xml_node]
+        },
+        {
+          'label': '<em>Copy Marked Elements</em>',
+          'function_call': mode,
+          'menu_icon': iconc,
+          'type': undefined,
+          'params': [nodes, xml_node, 'clone']
+        }
+      );
+    }
+  }
 
   // Events
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
@@ -38,30 +102,38 @@ function WFAdaptorManifestation(adaptor) {
 
       if (child) {
         group = self.elements[xml_node.get(0).tagName].permissible_children(xml_node,'into');
-        if(group.length > 0) menu['Insert into'] = group;
+        if(group.length > 0) {
+          menu['Insert into'] = group;
+          copyOrMove(menu['Insert into'],group,self.adaptor.description.insert_first_into);
+        }
       }
       if (sibling) {
         group = self.elements[xml_node.parent().get(0).tagName].permissible_children(xml_node,'after');
-        if(group.length > 0) menu['Insert after'] = group;
+        if(group.length > 0) {
+          menu['Insert after'] = group;
+          copyOrMove(menu['Insert after'],group,xml_node,self.adaptor.description.insert_after);
+        }
       }
 
       if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
         var icon =  self.elements[xml_node.get(0).tagName].illustrator.svg.clone();
-        icon.children('.rfill').css({'fill':'#ff7f7f','fill-opacity':'1'});
+        icon.children('.rfill').addClass('menu');
         menu['Delete'] = [{
           'label': 'Remove Element',
           'function_call': self.adaptor.description.remove,
           'menu_icon': icon,
+          'type': undefined,
           'params': [null, xml_node]
         }];
       }
       if($('> finalize, > update', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
         var icon =  self.elements.callmanipulate.illustrator.svg.clone();
-        icon.children('.rfill:last').css({'fill':'#ff7f7f','fill-opacity':'1'});
+        icon.children('.rfill:last').addClass('menu');
         menu['Delete'].push({
           'label': 'Remove Scripts',
           'function_call': self.adaptor.description.remove,
           'menu_icon': icon,
+          'type': undefined,
           'params': ['> finalize, > update', xml_node]
         });
       }
@@ -115,6 +187,9 @@ function WFAdaptorManifestation(adaptor) {
   this.events.dragstart = function (svgid, e) { //{{{
   } //}}}
 
+  // other resources
+  this.resources.arrow =  self.adaptor.theme_dir + 'symbols/arrow.svg';
+
   // Primitive Elements
   this.elements.call = { /*{{{*/
     'type': 'primitive',
@@ -149,6 +224,7 @@ function WFAdaptorManifestation(adaptor) {
          {'label': 'Scripts',
           'function_call': self.adaptor.description.insert_last_into,
           'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+          'type': undefined,
           'params': [self.adaptor.description.elements.scripts, node]}
         ];
       return [];
@@ -163,7 +239,14 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
-      'label': function(node){return $(node).attr('label').replace(/^['"]/,'').replace(/['"]$/,'')},
+      'label': function(node){
+        var lab = $(node).attr('label');
+        if (lab) {
+          return lab.replace(/^['"]/,'').replace(/['"]$/,'');
+        }  else {
+          return "";
+        }
+      },
       'svg': self.adaptor.theme_dir + 'symbols/manipulate.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/manipulate.rng',
@@ -222,21 +305,25 @@ function WFAdaptorManifestation(adaptor) {
         return [{'label': 'Parallel Branch',
          'function_call': func,
          'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+         'type': 'parallel_branch',
          'params': [self.adaptor.description.elements.parallel_branch, node]}];
       }
       var childs = [{'label': 'Alternative',
        'function_call': func,
        'menu_icon': self.elements.alternative.illustrator.svg.clone(),
+       'type': 'alternative',
        'params': [self.adaptor.description.elements.alternative, node]}];
       if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length)
         childs.push({'label': 'Otherwise',
          'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.otherwise.illustrator.svg.clone(),
+         'type': 'otherwise',
          'params': [self.adaptor.description.elements.otherwise, node]});
       if(node.parents('parallel').length > node.parents('parallel_branch').length)
         childs.push({'label': 'Parallel Branch',
          'function_call': func,
          'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+         'type': 'parallel_branch',
          'params': [self.adaptor.description.elements.parallel_branch, node]});
       return childs;
     }, //}}}
@@ -274,30 +361,37 @@ function WFAdaptorManifestation(adaptor) {
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'type': 'call',
          'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
          'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'type': 'manipulate',
          'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
          'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+         'type': 'parallel',
          'params': [self.adaptor.description.elements.parallel, node]},
         {'label': 'Decision',
          'function_call': func,
          'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'type': 'choose',
          'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'type': 'critical',
          'params': [self.adaptor.description.elements.critical, node]}
       ];
     }, //}}}
@@ -333,36 +427,44 @@ function WFAdaptorManifestation(adaptor) {
         return [{'label': 'Parallel Branch',
          'function_call': func,
          'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+         'type': 'parallel_branch',
          'params': [self.adaptor.description.elements.parallel_branch, node]}];
       }
       return [
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'type': 'call',
          'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
          'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'type': 'manipulate',
          'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
          'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+         'type': 'parallel',
          'params': [self.adaptor.description.elements.parallel, node]},
         {'label': 'Decision',
          'function_call': func,
          'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'type': 'choose',
          'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'type': 'critical',
          'params': [self.adaptor.description.elements.critical, node]}
       ];
     }, //}}}
@@ -399,38 +501,46 @@ function WFAdaptorManifestation(adaptor) {
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'type': 'call',
          'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Manipulate',
          'function_call': func,
          'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'type': 'manipulate',
          'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Decision',
          'function_call': func,
          'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'type': 'choose',
          'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'type': 'critical',
          'params': [self.adaptor.description.elements.critical, node]}
       ];
       if(node.parent('parallel').length > node.parent('parallel_branch').length) {
         childs.push({'label': 'Parallel Branch',
                      'function_call': func,
                      'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+                     'type': 'parallel_branch',
                      'params': [self.adaptor.description.elements.parallel_branch, node]}
                     );
       } else {
         childs.push({'label': 'Parallel',
                      'function_call': func,
                      'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+                     'type': 'parallel',
                      'params': [self.adaptor.description.elements.parallel, node]}
                     );
       }
@@ -468,36 +578,44 @@ function WFAdaptorManifestation(adaptor) {
         {'label': 'Service Call with Scripts',
          'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'type': 'call',
          'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Manipulate',
          'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'type': 'manipulate',
          'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Decision',
          'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'type': 'choose',
          'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'type': 'critical',
          'params': [self.adaptor.description.elements.critical, node]},
         {'label': 'Parallel Branch',
          'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+         'type': 'parallel_branch',
          'params': [self.adaptor.description.elements.parallel_branch, node]}
       ];
       if(node.get(0).tagName != 'parallel')
         childs.push({'label': 'Parallel',
            'function_call': self.adaptor.description.insert_last_into,
            'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+           'type': 'parallel',
            'params': [self.adaptor.description.elements.parallel, node]});
       return childs;
     }, //}}}
@@ -536,36 +654,44 @@ function WFAdaptorManifestation(adaptor) {
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'type': 'call',
          'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
          'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'type': 'manipulate',
          'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
          'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+         'type': 'parallel',
          'params': [self.adaptor.description.elements.parallel, node]},
         {'label': 'Decision',
          'function_call': func,
          'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'type': 'choose',
          'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'type': 'critical',
          'params': [self.adaptor.description.elements.critical, node]},
       ];
       if(node.parents('choose').length > node.parents('alternative, otherwise').length && node.get(0).tagName == 'parallel_branch') {
         return [{'label': 'Alternative',
          'function_call': func,
          'menu_icon': self.elements.alternative.illustrator.svg.clone(),
+         'type': 'alternative',
          'params': [self.adaptor.description.elements.alternative, node]}];
       }
       return childs;
@@ -603,30 +729,37 @@ function WFAdaptorManifestation(adaptor) {
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'type': 'call',
          'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script',
          'function_call': func,
          'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'type': 'manipulate',
          'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
          'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+         'type': 'parallel',
          'params': [self.adaptor.description.elements.parallel, node]},
         {'label': 'Decision',
          'function_call': func,
          'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'type': 'choose',
          'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'type': 'critical',
          'params': [self.adaptor.description.elements.critical, node]},
       ];
     }, //}}}
@@ -694,30 +827,37 @@ function WFAdaptorManifestation(adaptor) {
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+         'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
+         'type': 'call',
          'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Script Task',
          'function_call': func,
          'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+         'type': 'manipulate',
          'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Parallel',
          'function_call': func,
          'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+         'type': 'parallel',
          'params': [self.adaptor.description.elements.parallel, node]},
         {'label': 'Decision',
          'function_call': func,
          'menu_icon': self.elements.choose.illustrator.svg.clone(),
+         'type': 'choose',
          'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
          'function_call': func,
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
+         'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
+         'type': 'critical',
          'params': [self.adaptor.description.elements.critical, node]}
       ];
     }, //}}}
