@@ -1,15 +1,7 @@
 $(document).ready(function() {
-  if (!($.cookie('cpee_iagree'))) {
-    var skip = false;
-
-    $('body').children().each(function(key,c){
-      if (skip) {
-        $(c).remove();
-      } else {
-        $(c).removeClass('hidden');
-      }
-      skip = true;
-    });
+  if (!($.cookie('cpee_iagree')) && $("body > div[id='disclaimer']").length > 0) {
+    $("body > :not([id='disclaimer'])").remove();
+    $("body > [id='disclaimer']").removeClass('hidden');
 
     $("#iagree").click(function(){
       if($(this).is(':checked')){
