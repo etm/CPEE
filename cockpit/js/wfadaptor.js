@@ -77,6 +77,19 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
       }
     }
     // doit
+    for(element in manifestation.resources) {
+      deferreds.push(
+        $.ajax({
+          type: "GET",
+          dataType: "xml",
+          url: manifestation.resources[element],
+          context: element,
+          success: function(res){
+            manifestation.resources[this] = $(res.documentElement);
+          }
+        })
+      );
+    }
     for(element in manifestation.elements) {
       if (manifestation.elements[element].illustrator) {
         if (manifestation.elements[element].illustrator.svg) {

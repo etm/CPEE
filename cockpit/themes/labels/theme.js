@@ -2,6 +2,7 @@ function WFAdaptorManifestation(adaptor) {
   var self = this;
 
   this.adaptor = adaptor;
+  this.resources = {};
   this.elements = {};
   this.events = {};
   this.compact = false;
@@ -26,6 +27,15 @@ function WFAdaptorManifestation(adaptor) {
     });
     return svgid;
   };
+  this.marked = function(){
+    var svgid = [];
+    _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
+      if ($(value).hasClass('marked')) {
+        svgid.push($(value).attr('element-id'));
+      }
+    });
+    return svgid;
+  };
 
   // Events
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
@@ -36,18 +46,81 @@ function WFAdaptorManifestation(adaptor) {
       var group = null;
       var menu = {};
 
+      var markymark = self.marked();
       if (child) {
         group = self.elements[xml_node.get(0).tagName].permissible_children(xml_node,'into');
-        if(group.length > 0) menu['Insert into'] = group;
+        if(group.length > 0) {
+          menu['Insert into'] = group;
+
+          var check1 = [];
+          var check2 = [];
+          $(markymark).each(function(key,svgid){
+            var node = self.adaptor.description.get_node_by_svg_id(svgid);
+            check1.push($(node).attr('svg-type'));
+          });
+          $(group).each(function(key,value){
+            check2.push($(value.params[0]).attr('name'));
+          });
+          if (markymark.length > 0 && _.uniq(check1).length == _.intersection(check1,check2).length) {
+            var iconm =  self.resources['arrow'].clone();
+            var iconc =  self.resources['arrow'].clone();
+            iconm.children('.rfill').addClass('menu');
+            menu['Insert into'].push(
+              {
+                'label': '<em>Move Marked Elements</em>',
+                'function_call': self.adaptor.description.move_many_into,
+                'menu_icon': iconm,
+                'params': [null, xml_node, markymark]
+              },
+              {
+                'label': '<em>Copy Marked Elements</em>',
+                'function_call': self.adaptor.description.copy_many_into,
+                'menu_icon': iconc,
+                'params': [null, xml_node, markymark]
+              }
+            );
+          }
+        }
       }
       if (sibling) {
         group = self.elements[xml_node.parent().get(0).tagName].permissible_children(xml_node,'after');
-        if(group.length > 0) menu['Insert after'] = group;
+        if(group.length > 0) {
+          menu['Insert after'] = group;
+
+          var check1 = [];
+          var check2 = [];
+          $(markymark).each(function(key,svgid){
+            var node = self.adaptor.description.get_node_by_svg_id(svgid);
+            check1.push($(node).attr('svg-type'));
+          });
+          $(group).each(function(key,value){
+            check2.push($(value.params[0]).attr('name'));
+          });
+          if (markymark.length > 0 && _.uniq(check1).length == _.intersection(check1,check2).length) {
+            var iconm =  self.resources['arrow'].clone();
+            var iconc =  self.resources['arrow'].clone();
+            iconm.children('.rfill').addClass('menu');
+            menu['Insert after'].push(
+              {
+                'label': '<em>Move Marked Elements</em>',
+                'function_call': self.adaptor.description.move_many_after,
+                'menu_icon': iconm,
+                'params': [null, xml_node, markymark]
+              },
+              {
+                'label': '<em>Copy Marked Elements</em>',
+                'function_call': self.adaptor.description.copy_many_after,
+                'menu_icon': iconc,
+                'params': [null, xml_node, markymark]
+              }
+            );
+          }
+        }
       }
 
       if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
         var icon =  self.elements[xml_node.get(0).tagName].illustrator.svg.clone();
-        icon.children('.rfill').css({'fill':'#ff7f7f','fill-opacity':'1'});
+        icon.children('.rfill').addClass('menu');
         menu['Delete'] = [{
           'label': 'Remove Element',
           'function_call': self.adaptor.description.remove,
@@ -57,7 +130,7 @@ function WFAdaptorManifestation(adaptor) {
       }
       if($('> finalize, > update', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
         var icon =  self.elements.callmanipulate.illustrator.svg.clone();
-        icon.children('.rfill:last').css({'fill':'#ff7f7f','fill-opacity':'1'});
+        icon.children('.rfill:last').addClass('menu');
         menu['Delete'].push({
           'label': 'Remove Scripts',
           'function_call': self.adaptor.description.remove,
@@ -114,6 +187,9 @@ function WFAdaptorManifestation(adaptor) {
   } // }}}
   this.events.dragstart = function (svgid, e) { //{{{
   } //}}}
+
+  // other resources
+  this.resources.arrow =  self.adaptor.theme_dir + 'symbols/arrow.svg';
 
   // Primitive Elements
   this.elements.call = { /*{{{*/
