@@ -58,7 +58,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
 
-$(document).ready(function() {// {{{
+function cockpit() {
   if (location.protocol.match(/^file/)) {
     $("input[name=base-url]").val("http://localhost:" + $('body').data('defaultport'));
   } else {
@@ -125,7 +125,7 @@ $(document).ready(function() {// {{{
       });
     }
   });
-});// }}}
+}
 
 function sanitize_url() {
   var url = $("input[name=instance-url]").val();

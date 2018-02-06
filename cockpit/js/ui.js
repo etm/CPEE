@@ -14,5 +14,7 @@ $(document).ready(function() {
       $.cookie('cpee_iagree','yes');
       location.reload();
     });
+  } else {
+    cockpit();
   }
 });
