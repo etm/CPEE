@@ -415,35 +415,35 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   } // }}}
   // }}}
   // Adaption functions {{{
-  this.insert_after = function(new_node, target) { // {{{
+  this.insert_after = function(new_node, target, source_opts) { // {{{
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
-        var nn = self.source(v);
+        var nn = self.source(v,source_opts);
         target.after(nn);
         nn.attr('new','true');
       });
     } else {
-      var nn = self.source(new_node);
+      var nn = self.source(new_node,source_opts);
       target.after(nn);
       nn.attr('new','true');
     }
     update();
   } // }}}
-  this.insert_first_into = function(new_node, target, selector) { // {{{
+  this.insert_first_into = function(new_node, target, source_opts) { // {{{
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
-        var nn = self.source(v);
+        var nn = self.source(v,source_opts);
         target.prepend(nn);
         nn.attr('new','true');
       });
     } else {
-      var nn = self.source(new_node);
+      var nn = self.source(new_node,source_opts);
       target.prepend(nn);
       nn.attr('new','true');
     }
     update();
   } // }}}
-  this.insert_last_into = function(new_node, target, selector) { // {{{
+  this.insert_last_into = function(new_node, target) { // {{{
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
         var nn = self.source(v);
