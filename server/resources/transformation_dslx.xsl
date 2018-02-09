@@ -368,6 +368,11 @@
       <xsl:when test="not(node())">
         <xsl:text>nil</xsl:text>
       </xsl:when>
+      <xsl:when test="child::node()[not(self::text())]">
+        <xsl:text>"{ </xsl:text>
+        <xsl:apply-templates select="*" mode="JSON"/>
+        <xsl:text> }"</xsl:text>
+      </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="text()"/>
       </xsl:otherwise>
@@ -460,5 +465,98 @@
   <xsl:template name="print-newline">
     <xsl:text>
 </xsl:text>
+  </xsl:template>
+
+  <!-- JSON Element -->
+  <xsl:template match="*" mode="JSON">
+    <xsl:text>\"</xsl:text>
+    <xsl:value-of select="name()"/>
+    <xsl:text>\": </xsl:text>
+    <xsl:call-template name="JSONProperties">
+      <xsl:with-param name="parent" select="'Yes'"></xsl:with-param>
+    </xsl:call-template>
+  </xsl:template>
+
+  <!-- JSON Array Element -->
+  <xsl:template match="*" mode="JSONArrayElement">
+      <xsl:call-template name="JSONProperties"/>
+  </xsl:template>
+
+  <!-- JSON Object Properties -->
+  <xsl:template name="JSONProperties">
+    <xsl:param name="parent"></xsl:param>
+    <xsl:variable name="childName" select="name(*[1])"/>
+    <xsl:choose>
+      <xsl:when test="not(*|@*)">
+        <xsl:choose>
+          <xsl:when test="$parent='Yes'">
+            <xsl:choose>
+              <xsl:when test="number(.) = .">
+                <xsl:value-of select="."/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>\"</xsl:text>
+                <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\\\&quot;')"/>
+                <xsl:text>\"</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>\"</xsl:text>
+            <xsl:value-of select="name()"/>
+            <xsl:text>\": </xsl:text>
+            <xsl:choose>
+              <xsl:when test="number(.) = .">
+                <xsl:value-of select="."/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>\"</xsl:text>
+                <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\\\&quot;')"/>
+                <xsl:text>\"</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:when test="count(*[name()=$childName]) > 1">
+        <xsl:text>{ \"</xsl:text>
+        <xsl:value-of select="$childName"/>
+        <xsl:text>\": [ </xsl:text>
+        <xsl:apply-templates select="*" mode="JSONArrayElement"/>
+        <xsl:text> ] }</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>{</xsl:text>
+        <xsl:apply-templates select="@*" mode="JSON"/>
+        <xsl:apply-templates select="*" mode="JSON"/>
+        <xsl:text>}</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:if test="following-sibling::*">, </xsl:if>
+  </xsl:template>
+
+  <!-- JSON Attribute Property -->
+  <xsl:template match="@*" mode="JSON">
+    <xsl:text> \"</xsl:text>
+    <xsl:value-of select="name()"/>
+    <xsl:text>\": </xsl:text>
+    <xsl:choose>
+      <xsl:when test="number(.) = .">
+        <xsl:value-of select="."/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>\"</xsl:text>
+        <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\\\&quot;')"/>
+        <xsl:text>\"</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:choose>
+      <xsl:when test="not(position() = last())">
+        <xsl:text>,</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text> </xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 </xsl:stylesheet>
