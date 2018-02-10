@@ -207,6 +207,10 @@ function WFAdaptorManifestation(adaptor) {
           return 'callmanipulateworklist';
         } else if($(node).attr('endpoint').match(/^worklist/)) {
           return 'callworklist';
+        } else if($(node).attr('endpoint').match(/^workqueue/) && $('finalize,update', node).length > 0) {
+          return 'callmanipulateworkqueue';
+        } else if($(node).attr('endpoint').match(/^workqueue/)) {
+          return 'callworkqueue';
         } else if($('parameters > service', node).length > 0) {
           return 'callinjection';
         } else if($('finalize,update', node).length > 0) {
@@ -933,9 +937,24 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.callmanipulateworklist = { /*{{{*/
     'type': 'abstract',
     'parent': 'call',
-    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulateworklist.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.callworkqueue = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'call',
+    'description': self.adaptor.theme_dir + 'rngs/callworkqueue.rng',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callworkqueue.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.callmanipulateworkqueue = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'call',
+    'description': self.adaptor.theme_dir + 'rngs/callmanipulateworkqueue.rng',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callmanipulateworkqueue.svg'
     },//}}}
   };  /*}}}*/
 }
