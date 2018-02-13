@@ -115,14 +115,14 @@ end  #}}}
 Riddl::Server.new(::File.dirname(__FILE__) + '/log.xml', :host => "coruscant.wst.univie.ac.at", :port => 9300) do #{{{
   accessible_description true
   cross_site_xhr true
-  log_dir = "/home/demo/Projects/cpee-helpers/log/logs_yaml"
+  log_dir = "/home/centurio/Projects/cpee/log/logs_yaml"
 
   interface 'events' do
 	    run Logging if post 'event'
   end
   interface 'logoverlay' do |r|
+    p log_dir + r[:h]["RIDDL_DECLARATION_PATH"]+ ".xes"
     run Riddl::Utils::FileServe, log_dir + r[:h]["RIDDL_DECLARATION_PATH"]+ ".xes","text/xml" if get
   end
-
 
 end.loop! #}}}

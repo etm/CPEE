@@ -359,10 +359,18 @@
   </xsl:template>
   <xsl:template match="d:*" mode="sub">
     <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
-
     <xsl:text>⭐(</xsl:text>
     <xsl:text>:name =&gt; :</xsl:text>
-    <xsl:value-of select="name()"/>
+    <xsl:choose>
+      <xsl:when test="contains(name(),'-')">
+        <xsl:text>'</xsl:text>
+        <xsl:value-of select="name()"/>
+        <xsl:text>'</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="name()"/>
+      </xsl:otherwise>
+    </xsl:choose>
     <xsl:text>, :value =&gt; </xsl:text>
     <xsl:choose>
       <xsl:when test="not(node())">
@@ -371,10 +379,19 @@
       <xsl:when test="child::node()[not(self::text())]">
         <xsl:text>"{ </xsl:text>
         <xsl:apply-templates select="*" mode="JSON"/>
-        <xsl:text> }"</xsl:text>
+        <xsl:text>}"</xsl:text>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="text()"/>
+        <xsl:choose>
+          <xsl:when test="substring(text(),1,1) = '!'">
+            <xsl:value-of select="substring(text(),2)"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>"</xsl:text>
+            <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
+            <xsl:text>"</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:for-each select="@*">
@@ -471,6 +488,17 @@
   <xsl:template match="*" mode="JSON">
     <xsl:text>\"</xsl:text>
     <xsl:value-of select="name()"/>
+    <xsl:text>-</xsl:text>
+    <xsl:value-of select="generate-id(.)"/>
+    <xsl:text>\": </xsl:text>
+    <xsl:call-template name="JSONProperties">
+      <xsl:with-param name="parent" select="'Yes'"></xsl:with-param>
+    </xsl:call-template>
+  </xsl:template>
+
+  <xsl:template match="*" mode="JSONSUB">
+    <xsl:text>\"</xsl:text>
+    <xsl:value-of select="name()"/>
     <xsl:text>\": </xsl:text>
     <xsl:call-template name="JSONProperties">
       <xsl:with-param name="parent" select="'Yes'"></xsl:with-param>
@@ -526,10 +554,21 @@
         <xsl:text> ] }</xsl:text>
       </xsl:when>
       <xsl:otherwise>
+        <xsl:if test="text()[normalize-space(.)]">
+          <xsl:text>[ </xsl:text>
+        </xsl:if>
         <xsl:text>{</xsl:text>
         <xsl:apply-templates select="@*" mode="JSON"/>
-        <xsl:apply-templates select="*" mode="JSON"/>
+        <xsl:apply-templates select="*" mode="JSONSUB"/>
         <xsl:text>}</xsl:text>
+        <xsl:if test="text()[normalize-space(.)]">
+          <xsl:text>, </xsl:text>
+          <xsl:text>\"</xsl:text>
+          <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\\\&quot;')"/>
+          <xsl:text>\"</xsl:text>
+          <xsl:text> ]</xsl:text>
+        </xsl:if>
+        <xsl:text> </xsl:text>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:if test="following-sibling::*">, </xsl:if>
@@ -537,7 +576,7 @@
 
   <!-- JSON Attribute Property -->
   <xsl:template match="@*" mode="JSON">
-    <xsl:text> \"</xsl:text>
+    <xsl:text> \"@</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text>\": </xsl:text>
     <xsl:choose>
