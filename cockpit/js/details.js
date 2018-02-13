@@ -27,10 +27,10 @@ $(document).ready(function() {
 
 function do_main_save() { //{{{
   if (save['details'].has_changed()) {
-    var visid = 'details';
-    var svgid = save[visid + '_target'].svgid;
-    var desc  = save[visid + '_target'].model;
-    var node  = desc.get_node_by_svg_id(svgid);
+    var svgid    = save['details_target'].svgid;
+    var desc     = save['details_target'].model;
+    var node     = desc.get_node_by_svg_id(svgid);
+    var origtype = save['graph_adaptor'].illustrator.get_node_by_svg_id(svgid).parents('g.element[element-id]').attr('element-type');
 
     var url = $("#current-instance").text();
     $('#main ui-tabbar ui-behind button').removeClass('highlight');
@@ -57,6 +57,10 @@ function do_main_save() { //{{{
       var vtarget = manifestation.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
         vtarget.parents('g.element[element-id]').addClass('clicked');
+      }
+      var newtype = vtarget.parents('g.element[element-id]').attr('element-type');
+      if (newtype != origtype) {
+        manifestation.update_details(svgid);
       }
       var g = graphrealization.get_description();
       save['graph'] = $X(g);

@@ -49,8 +49,18 @@ function WFAdaptorManifestation(adaptor) {
     });
     return svgid;
   };
+  this.update_details = function(svgid){
+    var tab  = $('#dat_details');
+    var node = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
+        tab.empty();
+    if (self.adaptor.description.elements[$(node).attr('svg-type')]) {
+      save['details_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
+      save['details'] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
+      save['details'].content(node);
+    }
+  };
 
-  function copyOrMove(menu,group,xml_node,mode) {
+  function copyOrMove(menu,group,xml_node,mode) { //{{{
     var markymark = self.marked();
     var check1 = [];
     var check2 = [];
@@ -89,7 +99,7 @@ function WFAdaptorManifestation(adaptor) {
         }
       );
     }
-  }
+  } //}}}
 
   // Events
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
@@ -146,13 +156,11 @@ function WFAdaptorManifestation(adaptor) {
       return;
     }
 
-    var visid = 'details';
-    var tab   = $('#dat_' + visid);
-        tab.empty();
-
     self.adaptor.illustrator.get_elements().removeClass('clicked');
 
     if (e && e.ctrlKey) {
+      var tab = $('#dat_details');
+          tab.empty();
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
         vtarget.parents('g.element[element-id]').toggleClass('marked');
@@ -165,13 +173,7 @@ function WFAdaptorManifestation(adaptor) {
         vtarget.parents('g.element[element-id]').addClass('clicked');
       }
 
-      var node  = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
-
-      if (self.adaptor.description.elements[$(node).attr('svg-type')]) {
-        save[visid + '_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
-        save[visid] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
-        save[visid].content(node);
-      }
+      self.update_details(svgid);
     }
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
