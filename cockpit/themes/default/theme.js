@@ -8,6 +8,8 @@ function WFAdaptorManifestation(adaptor) {
   this.compact = false;
 
   this.noarrow = ['alternative', 'otherwise'];
+
+  //{{{ transform the details data to description parts based on rng
   this.source = function(base,opts) {
     if (base[0].namespaceURI == "http://relaxng.org/ns/structure/1.0") {
       $('#relaxngworker').empty();
@@ -30,7 +32,8 @@ function WFAdaptorManifestation(adaptor) {
       }
       return base;
     }
-  };
+  }; //}}}
+  //{{{ Return the svgid for the clicked task
   this.clicked = function(){
     var svgid = 'unknown';
     _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
@@ -39,7 +42,8 @@ function WFAdaptorManifestation(adaptor) {
       }
     });
     return svgid;
-  };
+  }; //}}}
+  //{{{ Return the svgids for all marked tasks
   this.marked = function(){
     var svgid = [];
     _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
@@ -48,7 +52,8 @@ function WFAdaptorManifestation(adaptor) {
       }
     });
     return svgid;
-  };
+  }; //}}}
+  //{{{ Render the details from rng (right hand side of graph tab)
   this.update_details = function(svgid){
     var tab  = $('#dat_details');
     var node = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
@@ -58,7 +63,7 @@ function WFAdaptorManifestation(adaptor) {
       save['details'] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
       save['details'].content(node);
     }
-  };
+  }; //}}}
 
   function copyOrMove(menu,group,xml_node,mode) { //{{{
     var markymark = self.marked();
@@ -114,7 +119,7 @@ function WFAdaptorManifestation(adaptor) {
         group = self.elements[xml_node.get(0).tagName].permissible_children(xml_node,'into');
         if(group.length > 0) {
           menu['Insert into'] = group;
-          copyOrMove(menu['Insert into'],group,self.adaptor.description.insert_first_into);
+          copyOrMove(menu['Insert into'],group,xml_node,self.adaptor.description.insert_first_into);
         }
       }
       if (sibling) {
