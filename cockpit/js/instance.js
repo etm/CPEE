@@ -102,6 +102,9 @@ function cockpit() {
         });
         ui_activate_tab("#tabexecution");
         create_instance(q.load,false);
+      } else if (q.new || q.new == "" || q.load == "") {
+        ui_activate_tab("#tabinstance");
+        create_instance("Plain Instance",false);
       } else if (q.monitor) {
         $("input[name=instance-url]").val(q.monitor);
         ui_activate_tab("#tabexecution");
