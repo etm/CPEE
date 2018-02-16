@@ -21,76 +21,28 @@
     <title>CPEE Cockpit</title>
 
     <!-- libs, do not modify. When local than load local libs. -->
-    <script type="text/javascript">
-      if ((document.location.hostname == 'localhost') && (document.location.protocol == 'http:')) {
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/jquery.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/jquery.browser.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/jquery.svg.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/jquery.svgdom.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/vkbeautify.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/util.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/printf.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/strftime.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/parsequery.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/underscore.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/jquery.caret.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/jquery.cookie.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/relaxngui.js">\x3C/script>');
+    <script type="text/javascript" src="/js_libs/jquery.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.browser.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.svg.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.svgdom.min.js"></script>
+    <script type="text/javascript" src="/js_libs/vkbeautify.js"></script>
+    <script type="text/javascript" src="/js_libs/util.js"></script>
+    <script type="text/javascript" src="/js_libs/printf.js"></script>
+    <script type="text/javascript" src="/js_libs/strftime.min.js"></script>
+    <script type="text/javascript" src="/js_libs/parsequery.js"></script>
+    <script type="text/javascript" src="/js_libs/underscore.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.caret.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.cookie.js"></script>
 
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/ui.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://' + document.location.host + '/js_libs/custommenu.js">\x3C/script>');
+    <script type="text/javascript" src="/js_libs/relaxngui.js"></script>
 
-        document.write('<link rel="stylesheet"        href="http://' + document.location.host + '/js_libs/custommenu.css" type="text/css"/>');
-        document.write('<link rel="stylesheet"        href="http://' + document.location.host + '/js_libs/ui.css" type="text/css"/>');
+    <script type="text/javascript" src="/js_libs/ui.js"></script>
+    <script type="text/javascript" src="/js_libs/custommenu.js"></script>
 
-        document.write('<link rel="stylesheet"        href="http://' + document.location.host + '/js_libs/relaxngui.css" type="text/css"/>');
-      } else if ((document.location.hostname == 'localhost') && (document.location.protocol == 'https:')) {
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/jquery.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/jquery.browser.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/jquery.svg.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/jquery.svgdom.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/vkbeautify.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/util.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/printf.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/strftime.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/parsequery.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/underscore.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/jquery.caret.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/jquery.cookie.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/relaxngui.js">\x3C/script>');
+    <link   rel="stylesheet"      href="/js_libs/custommenu.css" type="text/css"/>
+    <link   rel="stylesheet"      href="/js_libs/ui.css" type="text/css"/>
 
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/ui.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="https://' + document.location.host + '/js_libs/custommenu.js">\x3C/script>');
-
-        document.write('<link rel="stylesheet"        href="https://' + document.location.host + '/js_libs/custommenu.css" type="text/css"/>');
-        document.write('<link rel="stylesheet"        href="https://' + document.location.host + '/js_libs/ui.css" type="text/css"/>');
-
-        document.write('<link rel="stylesheet"        href="https://' + document.location.host + '/js_libs/relaxngui.css" type="text/css"/>');
-      } else {
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.browser.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.svg.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.svgdom.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/vkbeautify.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/util.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/printf.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/strftime.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/parsequery.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/underscore.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.caret.min.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/jquery.cookie.js">\x3C/script>');
-
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/relaxngui.js">\x3C/script>');
-
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/ui.js">\x3C/script>');
-        document.write('<script type="text/javascript" src="http://gruppe.wst.univie.ac.at/js_libs/custommenu.js">\x3C/script>');
-
-        document.write('<link   rel="stylesheet"      href="http://gruppe.wst.univie.ac.at/js_libs/custommenu.css" type="text/css"/>');
-        document.write('<link   rel="stylesheet"      href="http://gruppe.wst.univie.ac.at/js_libs/ui.css" type="text/css"/>');
-
-        document.write('<link   rel="stylesheet"      href="http://gruppe.wst.univie.ac.at/js_libs/relaxngui.css" type="text/css"/>');
-      }
-    </script>
+    <link   rel="stylesheet"      href="/js_libs/relaxngui.css" type="text/css"/>
 
     <!-- modelling ui -->
     <script type="text/javascript" src="js/wfadaptor.js"></script>

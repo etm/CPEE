@@ -15,6 +15,20 @@ $(document).ready(function() {
       location.reload();
     });
   } else {
-    cockpit();
+    $.ajax({
+      url: "config.json",
+      success: function(res){
+        $("input[name=base-url]").val(res['base-url']);
+        cockpit();
+      },
+      error: function(){
+        if (location.protocol.match(/^file/)) {
+          $("input[name=base-url]").val("http://localhost:" + $('body').data('defaultport'));
+        } else {
+          $("input[name=base-url]").val(location.protocol + "//" + location.hostname + ":" + $('body').data('defaultport'));
+        }
+        cockpit();
+      }
+    });
   }
 });
