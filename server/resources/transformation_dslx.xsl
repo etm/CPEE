@@ -377,9 +377,9 @@
         <xsl:text>nil</xsl:text>
       </xsl:when>
       <xsl:when test="child::node()[not(self::text())]">
-        <xsl:text>"{ </xsl:text>
+        <xsl:text>"[</xsl:text>
         <xsl:apply-templates select="*" mode="JSON"/>
-        <xsl:text>}"</xsl:text>
+        <xsl:text> ]"</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
@@ -486,28 +486,32 @@
 
   <!-- JSON Element -->
   <xsl:template match="*" mode="JSON">
-    <xsl:text>\"</xsl:text>
+    <xsl:text> { \"</xsl:text>
     <xsl:value-of select="name()"/>
-    <xsl:text>-</xsl:text>
-    <xsl:value-of select="generate-id(.)"/>
     <xsl:text>\": </xsl:text>
     <xsl:call-template name="JSONProperties">
       <xsl:with-param name="parent" select="'Yes'"></xsl:with-param>
     </xsl:call-template>
+    <xsl:choose>
+      <xsl:when test="following-sibling::*"><xsl:text> </xsl:text></xsl:when>
+    </xsl:choose>
+    <xsl:text>}</xsl:text>
+    <xsl:if test="following-sibling::*">,</xsl:if>
   </xsl:template>
 
   <xsl:template match="*" mode="JSONSUB">
-    <xsl:text>\"</xsl:text>
+    <xsl:text> \"</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text>\": </xsl:text>
     <xsl:call-template name="JSONProperties">
       <xsl:with-param name="parent" select="'Yes'"></xsl:with-param>
     </xsl:call-template>
+    <xsl:if test="following-sibling::*">,</xsl:if>
   </xsl:template>
 
   <!-- JSON Array Element -->
   <xsl:template match="*" mode="JSONArrayElement">
-      <xsl:call-template name="JSONProperties"/>
+    <xsl:call-template name="JSONProperties"/>
   </xsl:template>
 
   <!-- JSON Object Properties -->
@@ -519,7 +523,7 @@
         <xsl:choose>
           <xsl:when test="$parent='Yes'">
             <xsl:choose>
-              <xsl:when test="number(.) = .">
+              <xsl:when test="string(number(.)) = .">
                 <xsl:value-of select="."/>
               </xsl:when>
               <xsl:otherwise>
@@ -534,7 +538,7 @@
             <xsl:value-of select="name()"/>
             <xsl:text>\": </xsl:text>
             <xsl:choose>
-              <xsl:when test="number(.) = .">
+              <xsl:when test="string(number(.)) = .">
                 <xsl:value-of select="."/>
               </xsl:when>
               <xsl:otherwise>
@@ -568,10 +572,12 @@
           <xsl:text>\"</xsl:text>
           <xsl:text> ]</xsl:text>
         </xsl:if>
-        <xsl:text> </xsl:text>
+        <xsl:choose>
+          <xsl:when test="following-sibling::*"></xsl:when>
+          <xsl:otherwise><xsl:text> </xsl:text></xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:if test="following-sibling::*">, </xsl:if>
   </xsl:template>
 
   <!-- JSON Attribute Property -->
