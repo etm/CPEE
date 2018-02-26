@@ -58,7 +58,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
 
-function cockpit() {
+function cockpit() { //{{{
   $("button[name=base]").click(function(){ create_instance(null,false); });
   $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance(false,false); });
   $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),function(){ load_testset(false) } ); });
@@ -123,9 +123,9 @@ function cockpit() {
       });
     }
   });
-}
+} //}}}
 
-function sanitize_url() {
+function sanitize_url() { //{{{
   var url = $("input[name=instance-url]").val();
   var lastChar = url.substr(url.length - 1)
   if (lastChar != '/') {
@@ -133,7 +133,7 @@ function sanitize_url() {
   }
   return $("input[name=instance-url]").val();
 }
-
+ //}}}
 function check_subscription() { // {{{
   var url = $("#current-instance").text();
   var num = 0;
@@ -189,6 +189,65 @@ function create_instance(ask,exec) {// {{{
   }
 }// }}}
 
+function websocket() {
+  var url = $("#current-instance").text();
+  var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+  if (ws) ws.close();
+  ws = new Socket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
+  ws.onopen = function() {
+    append_to_log("monitoring", "opened", "");
+  };
+  ws.onmessage = function(e) {
+    data = $.parseXML(e.data);
+    if ($('event > topic',data).length > 0) {
+      switch($('event > topic',data).text()) {
+        case 'dataelements':
+          monitor_instance_values("dataelements");
+          break;
+        case 'description':
+          monitor_instance_dsl();
+          break;
+        case 'endpoints':
+          monitor_instance_values("endpoints");
+          break;
+        case 'attributes':
+          monitor_instance_values("attributes");
+          monitor_instance_transformation();
+          monitor_graph_change(true);
+          break;
+        case 'state':
+          monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
+          break;
+        case 'position':
+          monitor_instance_pos_change($('event > notification',data).text());
+          break;
+        case 'transformation':
+          monitor_instance_transformation();
+          break;
+        case 'activity':
+          monitor_instance_running($('event > notification',data).text(),$('event > event',data).text());
+          break;
+      }
+      append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
+    }
+    if ($('vote > topic',data).length > 0) {
+      var notification = $('vote > notification',data).text();
+      append_to_log("vote", $('vote > topic',data).text() + "/" + $('vote > vote',data).text(), notification);
+      monitor_instance_vote_add(notification);
+    }
+  };
+  ws.onclose = function() {
+    append_to_log("monitoring", "closed", "server down i assume.");
+  };
+
+  monitor_instance_values("dataelements");
+  monitor_instance_values("endpoints");
+  monitor_instance_values("attributes");
+  monitor_instance_transformation();
+  monitor_instance_dsl();
+  monitor_instance_state();
+}
+
 function monitor_instance(load,exec) {// {{{
   var url = sanitize_url();
 
@@ -231,64 +290,12 @@ function monitor_instance(load,exec) {// {{{
             }
           });
           append_to_log("monitoring", "id", subscription);
-          var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
-          if (ws) ws.close();
-          ws = new Socket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
-          ws.onopen = function() {
-            append_to_log("monitoring", "opened", "");
-          };
-          ws.onmessage = function(e) {
-            data = $.parseXML(e.data);
-            if ($('event > topic',data).length > 0) {
-              switch($('event > topic',data).text()) {
-                case 'dataelements':
-                  monitor_instance_values("dataelements");
-                  break;
-                case 'description':
-                  monitor_instance_dsl();
-                  break;
-                case 'endpoints':
-                  monitor_instance_values("endpoints");
-                  break;
-                case 'attributes':
-                  monitor_instance_values("attributes");
-                  monitor_instance_transformation();
-                  monitor_graph_change(true);
-                  break;
-                case 'state':
-                  monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
-                  break;
-                case 'position':
-                  monitor_instance_pos_change($('event > notification',data).text());
-                  break;
-                case 'transformation':
-                  monitor_instance_transformation();
-                  break;
-                case 'activity':
-                  monitor_instance_running($('event > notification',data).text(),$('event > event',data).text());
-                  break;
-              }
-              append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
-            }
-            if ($('vote > topic',data).length > 0) {
-              var notification = $('vote > notification',data).text();
-              append_to_log("vote", $('vote > topic',data).text() + "/" + $('vote > vote',data).text(), notification);
-              monitor_instance_vote_add(notification);
-            }
-          };
-          ws.onclose = function() {
-            append_to_log("monitoring", "closed", "server down i assume.");
-          };
-          if (load || exec) load_testset(exec);
+          if (load || exec)
+            load_testset(exec);
+          else
+            websocket();
         }
       });
-
-      monitor_instance_values("dataelements");
-      monitor_instance_values("endpoints");
-      monitor_instance_values("attributes");
-      monitor_instance_transformation();
-      monitor_instance_dsl();
-      monitor_instance_state();
     },
     error: function(a,b,c) {
       alert("This ain't no CPEE instance");
@@ -629,6 +636,7 @@ function save_svg() {// {{{
 }// }}}
 function set_testset(testset,exec) {// {{{
   var url = $("#current-instance").text();
+  ws.close();
 
   $.ajax({
     type: "GET",
@@ -700,10 +708,10 @@ function load_testsetfile_after() { //{{{
   reader.onload = function(){
     set_testset($.parseXML(reader.result),false);
     document.getElementById('fuckchrome').reset();
-    running  = false;
+    running = false;
   }
-  reader.onerror = function(){ console.log('error reading file'); running  = false; }
-  reader.onabort = function(){ console.log('abort reading file'); running  = false; }
+  reader.onerror = function(){ console.log('error reading file'); running = false; }
+  reader.onabort = function(){ console.log('abort reading file'); running = false; }
   reader.readAsText(files[0]);
 } //}}}
 function load_testsetfile() {// {{{
@@ -723,10 +731,10 @@ function load_modelfile_after() { //{{{
   reader.onload = function(){
     var url = $("#current-instance").text();
     load_des(url,reader.result);
-    running  = false;
+    running = false;
   }
-  reader.onerror = function(){ running  = false; }
-  reader.onabort = function(){ running  = false; }
+  reader.onerror = function(){ running = false; }
+  reader.onabort = function(){ running = false; }
   reader.readAsText(files[0]);
 } //}}}
 function load_modelfile() {// {{{
@@ -736,7 +744,7 @@ function load_modelfile() {// {{{
 
 function load_testset(exec) {// {{{
   if (running) return;
-  running  = true;
+  running = true;
 
   var name = $("#predefinedtestsets div.menuitem[data-selected=selected]").text();
   $.ajax({
@@ -752,14 +760,14 @@ function load_testset(exec) {// {{{
       set_testset(res,exec);
     },
     complete: function() {
-      running  = false;
+      running = false;
     }
   });
 }// }}}
 function load_modeltype() {// {{{
   if (running) return;
   var url = $("#current-instance").text();
-  running  = true;
+  running = true;
 
   var name = $("#modeltypes div.menuitem[data-selected=selected]").text();
   $.ajax({
@@ -778,7 +786,7 @@ function load_modeltype() {// {{{
       });
     },
     complete: function() {
-      running  = false;
+      running = false;
     }
   });
 }// }}}
@@ -790,6 +798,9 @@ function load_des(url,model) { //{{{
     type: "PUT",
     url: url + "/properties/values/description",
     data: ({content: val}),
+    success: function() {
+      websocket();
+    },
     error: report_failure
   });
 }   //}}}
