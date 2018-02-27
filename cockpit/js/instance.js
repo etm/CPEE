@@ -1,6 +1,7 @@
 var ws;
+var suspended_monitoring = false;
 var myid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
-var running = false;
+var loading = false;
 var subscription;
 var subscription_state = 'less';
 var save = {};
@@ -198,6 +199,7 @@ function websocket() {
     append_to_log("monitoring", "opened", "");
   };
   ws.onmessage = function(e) {
+    if (suspended_monitoring) return;
     data = $.parseXML(e.data);
     if ($('event > topic',data).length > 0) {
       switch($('event > topic',data).text()) {
@@ -290,10 +292,9 @@ function monitor_instance(load,exec) {// {{{
             }
           });
           append_to_log("monitoring", "id", subscription);
+          websocket();
           if (load || exec)
             load_testset(exec);
-          else
-            websocket();
         }
       });
     },
@@ -636,7 +637,7 @@ function save_svg() {// {{{
 }// }}}
 function set_testset(testset,exec) {// {{{
   var url = $("#current-instance").text();
-  ws.close();
+  suspended_monitoring = true;
 
   $.ajax({
     type: "GET",
@@ -697,8 +698,8 @@ function set_testset(testset,exec) {// {{{
  }// }}}
 
 function load_testsetfile_after() { //{{{
-  if (running) return;
-  running = true;
+  if (loading) return;
+  loading = true;
   if (typeof window.FileReader !== 'function') {
     alert('FileReader not yet supportet');
     return;
@@ -708,20 +709,20 @@ function load_testsetfile_after() { //{{{
   reader.onload = function(){
     set_testset($.parseXML(reader.result),false);
     document.getElementById('fuckchrome').reset();
-    running = false;
+    loading = false;
   }
-  reader.onerror = function(){ console.log('error reading file'); running = false; }
-  reader.onabort = function(){ console.log('abort reading file'); running = false; }
+  reader.onerror = function(){ console.log('error reading file'); loading = false; }
+  reader.onabort = function(){ console.log('abort reading file'); loading = false; }
   reader.readAsText(files[0]);
 } //}}}
 function load_testsetfile() {// {{{
-  if (running) return;
+  if (loading) return;
   document.getElementById('testsetfile').click();
 }// }}}
 
 function load_modelfile_after() { //{{{
-  if (running) return;
-  running = true;
+  if (loading) return;
+  loading = true;
   if (typeof window.FileReader !== 'function') {
     alert('FileReader not yet supportet');
     return;
@@ -731,20 +732,20 @@ function load_modelfile_after() { //{{{
   reader.onload = function(){
     var url = $("#current-instance").text();
     load_des(url,reader.result);
-    running = false;
+    loading = false;
   }
-  reader.onerror = function(){ running = false; }
-  reader.onabort = function(){ running = false; }
+  reader.onerror = function(){ loading = false; }
+  reader.onabort = function(){ loading = false; }
   reader.readAsText(files[0]);
 } //}}}
 function load_modelfile() {// {{{
-  if (running) return;
+  if (loading) return;
   document.getElementById('modelfile').click();
 }// }}}
 
 function load_testset(exec) {// {{{
-  if (running) return;
-  running = true;
+  if (loading) return;
+  loading = true;
 
   var name = $("#predefinedtestsets div.menuitem[data-selected=selected]").text();
   $.ajax({
@@ -760,14 +761,14 @@ function load_testset(exec) {// {{{
       set_testset(res,exec);
     },
     complete: function() {
-      running = false;
+      loading = false;
     }
   });
 }// }}}
 function load_modeltype() {// {{{
-  if (running) return;
+  if (loading) return;
   var url = $("#current-instance").text();
-  running = true;
+  loading = true;
 
   var name = $("#modeltypes div.menuitem[data-selected=selected]").text();
   $.ajax({
@@ -786,7 +787,7 @@ function load_modeltype() {// {{{
       });
     },
     complete: function() {
-      running = false;
+      loading = false;
     }
   });
 }// }}}
@@ -799,7 +800,7 @@ function load_des(url,model) { //{{{
     url: url + "/properties/values/description",
     data: ({content: val}),
     success: function() {
-      websocket();
+      suspended_monitoring = false;
     },
     error: report_failure
   });
