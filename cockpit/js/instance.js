@@ -936,6 +936,10 @@ function format_visual_set(what) {//{{{
     var actives = node_state[what]['active'];
     var passives = node_state[what]['passive'];
 
+    // TODO scrollIntoView does not work in firefox
+    console.log(what);
+    $('g[element-id="' + what + '"]').each(function(a,b){ console.log('scroll'); b.scrollIntoView(); });
+
     if (actives > 0 && votes > 0)
       $('g[element-id="' + what + '"] .super .colon').each(function(a,b){
         b.setAttribute('class','colon necessary');
