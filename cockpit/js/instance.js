@@ -937,8 +937,8 @@ function format_visual_set(what) {//{{{
     var passives = node_state[what]['passive'];
 
     // TODO scrollIntoView does not work in firefox
-    console.log(what);
-    $('g[element-id="' + what + '"]').each(function(a,b){ console.log('scroll'); b.scrollIntoView(); });
+    // $('g[element-id="' + what + '"]').each(function(a,b){ b.scrollIntoView(true); $('#graphcolumn')[0].scrollTop -= 15; });
+    $('g[element-id="' + what + '"]').each(function(a,b){ $('#graphcolumn')[0].scrollTop = b.getBBox().y - 10; });
 
     if (actives > 0 && votes > 0)
       $('g[element-id="' + what + '"] .super .colon').each(function(a,b){
