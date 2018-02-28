@@ -199,7 +199,6 @@ function websocket() {
     append_to_log("monitoring", "opened", "");
   };
   ws.onmessage = function(e) {
-    if (suspended_monitoring) return;
     data = $.parseXML(e.data);
     if ($('event > topic',data).length > 0) {
       switch($('event > topic',data).text()) {
@@ -215,7 +214,11 @@ function websocket() {
         case 'attributes':
           monitor_instance_values("attributes");
           monitor_instance_transformation();
-          monitor_graph_change(true);
+          if (suspended_monitoring) {
+            suspended_monitoring = false;
+          } else {
+            monitor_graph_change(true);
+          }
           break;
         case 'state':
           monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
@@ -799,9 +802,6 @@ function load_des(url,model) { //{{{
     type: "PUT",
     url: url + "/properties/values/description",
     data: ({content: val}),
-    success: function() {
-      suspended_monitoring = false;
-    },
     error: report_failure
   });
 }   //}}}
