@@ -214,8 +214,11 @@ function websocket() {
         case 'attributes':
           monitor_instance_values("attributes");
           monitor_instance_transformation();
-          if (!suspended_monitoring)
+          if (suspended_monitoring) {
+            suspended_monitoring = false;
+          } else {
             monitor_graph_change(true);
+          }
           break;
         case 'state':
           monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
