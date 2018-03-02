@@ -1,6 +1,16 @@
 <description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <message name="instantiate">
+    <optional>
+      <parameter name="behavior" type="string">
+        <choice>
+          <value>fork_ready</value>
+          <value>fork_running</value>
+          <value>wait_ready</value>
+          <value>wait_running</value>
+        </choice>
+      </parameter>
+    </optional>
     <parameter name="xml" mimetype="*/xml"/>
   </message>
 
@@ -11,5 +21,5 @@
   <resource>
     <post in="instantiate" out="instance"/>
   </resource>
-   
+
 </description>
