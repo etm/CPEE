@@ -26,7 +26,6 @@ module CPEE
 
       def self::load(tdoc,cpee)
         ins = -1
-        puts tdoc.to_s
         XML::Smart.string(tdoc) do |doc|
           doc.register_namespace 'desc', 'http://cpee.org/ns/description/1.0'
           doc.register_namespace 'prop', 'http://riddl.org/ns/common-patterns/properties/1.0'
