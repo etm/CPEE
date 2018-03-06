@@ -18,17 +18,17 @@ $(document).ready(function() {
     $.ajax({
       url: "config.json",
       success: function(res){
-        $("input[name=res-url]").val(res['res-url']);
+        $("input[name=repo-url]").val(res['repo-url']);
         $("input[name=base-url]").val(res['base-url']);
         cockpit();
       },
       error: function(){
         if (location.protocol.match(/^file/)) {
           $("input[name=base-url]").val("http://localhost:" + $('body').data('base-port'));
-          $("input[name=res-url]").val("http://localhost:" + $('body').data('res-port'));
+          $("input[name=repo-url]").val("http://localhost:" + $('body').data('res-port'));
         } else {
           $("input[name=base-url]").val(location.protocol + "//" + location.hostname + ":" + $('body').data('base-port'));
-          $("input[name=res-url]").val(location.protocol + "//" + location.hostname + ":" + $('body').data('res-port'));
+          $("input[name=repo-url]").val(location.protocol + "//" + location.hostname + ":" + $('body').data('res-port'));
         }
         cockpit();
       }

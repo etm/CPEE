@@ -127,17 +127,17 @@ function cockpit() { //{{{
   });
 } //}}}
 
-function sanitize_url() { //{{{
-  var url = $("input[name=instance-url]").val();
+function sanitize_url(it) { //{{{
+  var url = it.val();
   var lastChar = url.substr(url.length - 1)
   if (lastChar != '/') {
-    $("input[name=instance-url]").val(url + '/');
+    it.val(url + '/');
   }
-  return $("input[name=instance-url]").val();
+  return it.val();
 }
  //}}}
 function check_subscription() { // {{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   var num = 0;
   if ($("input[name=votecontinue]").is(':checked')) num += 1;
   if (num > 0 && subscription_state == 'less') {
@@ -192,7 +192,7 @@ function create_instance(ask,exec) {// {{{
 }// }}}
 
 function websocket() {
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
   if (ws) ws.close();
   ws = new Socket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
@@ -255,7 +255,8 @@ function websocket() {
 }
 
 function monitor_instance(load,exec) {// {{{
-  var url = sanitize_url();
+  var url = sanitize_url($("input[name=instance-url]"));
+  var rep = sanitize_url($("input[name=repo-url]"));
 
   $('.tabbehind button').hide();
   $('#dat_details').empty();
@@ -267,6 +268,9 @@ function monitor_instance(load,exec) {// {{{
       $("ui-tabbed.hidden, ui-rest.hidden").removeClass("hidden");
       $("ui-resizehandle.hidden").removeClass("hidden");
       $("ui-tabbed ui-tab.hidden, ui-rest ui-tab.hidden").removeClass("hidden");
+
+      $("body").attr('current-instance',url);
+      $("body").attr('current-repo',rep);
 
       // Change url to return to current instance when reloading
       $("#current-instance").text(url);
@@ -310,7 +314,7 @@ function monitor_instance(load,exec) {// {{{
 }// }}}
 
 function monitor_instance_values(val) {// {{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
     url: url + "/properties/values/" + val + "/",
@@ -398,7 +402,7 @@ function adaptor_init(url,theme,dslx) {
 }
 
 function monitor_graph_change(force) { //{{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
     url: url + "/properties/values/dslx/",
@@ -420,7 +424,7 @@ function monitor_graph_change(force) { //{{{
 } //}}}
 
 function monitor_instance_dsl() {// {{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
     dataType: "text",
@@ -443,7 +447,7 @@ function monitor_instance_dsl() {// {{{
 }// }}}
 
 function monitor_instance_state() {// {{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
     url: url + "/properties/values/state/",
@@ -454,7 +458,7 @@ function monitor_instance_state() {// {{{
   });
 }// }}}
 function monitor_instance_transformation() {// {{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
     url: url + "/properties/values/attributes/modeltype",
@@ -468,7 +472,7 @@ function monitor_instance_transformation() {// {{{
 }// }}}
 
 function monitor_instance_pos() {// {{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
     url: url + "/properties/values/positions/",
@@ -550,7 +554,7 @@ function monitor_instance_vote_add(notification) {// {{{
   format_visual_add(parts.activity,"vote")
 }// }}}
 function monitor_instance_vote_remove(activity,callback,value) {//{{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
     url: url + "/callbacks/" + callback,
@@ -562,7 +566,7 @@ function monitor_instance_vote_remove(activity,callback,value) {//{{{
 }//}}}
 
 function start_instance() {// {{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
     url: url + "/properties/values/state",
@@ -571,7 +575,7 @@ function start_instance() {// {{{
   });
 }// }}}
 function sim_instance() {// {{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
     url: url + "/properties/values/state",
@@ -580,7 +584,7 @@ function sim_instance() {// {{{
   });
 }// }}}
 function stop_instance() {// {{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
     url: url + "/properties/values/state",
@@ -590,39 +594,39 @@ function stop_instance() {// {{{
 }// }}}
 
 function save_testset() {// {{{
-  var base = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   var testset = $X('<testset/>');
 
   $.ajax({
     type: "GET",
-    url: base + "/properties/values/dataelements/",
+    url: url + "/properties/values/dataelements/",
     success: function(res){
       var pars = $X('<dataelements/>');
       pars.append($(res.documentElement).children());
       testset.append(pars);
       $.ajax({
         type: "GET",
-        url: base + "/properties/values/handlerwrapper/",
+        url: url + "/properties/values/handlerwrapper/",
         success: function(res){
           var pars = $X('<handlerwrapper>' + res + '</handlerwrapper>');
           testset.append(pars);
           $.ajax({
             type: "GET",
-            url: base + "/properties/values/endpoints/",
+            url: url + "/properties/values/endpoints/",
             success: function(res){
               var pars = $X('<endpoints/>');
               pars.append($(res.documentElement).children());
               testset.append(pars);
               $.ajax({
                 type: "GET",
-                url: base + "/properties/values/positions/",
+                url: url + "/properties/values/positions/",
                 success: function(res){
                   var pars = $X('<positions/>');
                   pars.append($(res.documentElement).children());
                   testset.append(pars);
                   $.ajax({
                     type: "GET",
-                    url: base + "/properties/values/dslx/",
+                    url: url + "/properties/values/dslx/",
                     success: function(res){
                       var pars = $X('<description/>');
                       pars.append($(res.documentElement));
@@ -631,7 +635,7 @@ function save_testset() {// {{{
                       testset.append(pars);
                       $.ajax({
                         type: "GET",
-                        url: base + "/properties/values/attributes/",
+                        url: url + "/properties/values/attributes/",
                         success: function(res){
                           var name = $("value > info",res).text();
                           var pars = $X('<attributes/>');
@@ -662,7 +666,7 @@ function save_testset() {// {{{
   });
 }// }}}
 function save_svg() {// {{{
-  var base = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   var params = { mimetype: 'image/svg+xml' };
 
   var gc = $('#graphcanvas').clone();
@@ -673,7 +677,7 @@ function save_svg() {// {{{
       gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
       $.ajax({
         type: "GET",
-        url: base + "/properties/values/attributes/info/",
+        url: url + "/properties/values/attributes/info/",
         success: function(res){
           var name = $(res.documentElement).text();
 
@@ -687,7 +691,7 @@ function save_svg() {// {{{
   });
 }// }}}
 function set_testset(testset,exec) {// {{{
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   suspended_monitoring = true;
 
   $.ajax({
@@ -781,7 +785,7 @@ function load_modelfile_after() { //{{{
   var files = $('#modelfile').get(0).files;
   var reader = new FileReader();
   reader.onload = function(){
-    var url = $("#current-instance").text();
+    var url = $('body').attr('current-instance');
     load_des(url,reader.result);
     loading = false;
   }
@@ -818,7 +822,7 @@ function load_testset(exec) {// {{{
 }// }}}
 function load_modeltype() {// {{{
   if (loading) return;
-  var url = $("#current-instance").text();
+  var url = $('body').attr('current-instance');
   loading = true;
 
   var name = $("#modeltypes div.menuitem[data-selected=selected]").text();

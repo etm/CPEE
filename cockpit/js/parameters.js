@@ -61,7 +61,7 @@ $(document).ready(function() {
 function do_parameters_save(event) { //{{{
   var visid = $('ui-tabbar ui-tab',$(event.target).parents('ui-tabbed')).not('.switch').not('.inactive').attr('data-tab');
   if (save[visid].has_changed()) {
-    var url = $("#current-instance").text();
+    var url = $('body').attr('current-instance');
     save[visid].set_checkpoint();
     $.ajax({
        type: "PUT",

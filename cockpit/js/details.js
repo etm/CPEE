@@ -34,7 +34,7 @@ function do_main_save() { //{{{
     var origtype = orignode.attr('element-type') + '_' + orignode.attr('element-endpoint');
 
 
-    var url = $("#current-instance").text();
+    var url = $('body').attr('current-instance');
     $('#main ui-tabbar ui-behind button').removeClass('highlight');
     save['details'].set_checkpoint();
 
