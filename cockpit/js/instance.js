@@ -11,6 +11,7 @@ var save = {};
     save['graph_theme'] = undefined;
     save['graph_adaptor'] = undefined;
     save['endpoints'] = undefined;
+    save['endpoints_cache'] = {};
     save['dataelements'] = undefined;
     save['attributes'] = undefined;
     save['details'] = undefined;
@@ -315,9 +316,53 @@ function monitor_instance_values(val) {// {{{
     url: url + "/properties/values/" + val + "/",
     success: function(res){
       save[val].content(res);
+      if (val == "endpoints") {
+        var tmp = {};
+        $(res).find(" > value > *").each(function(k,v) {
+          $.ajax({
+            url: "https://centurio.work/plan/" + $(v).text(),
+            success: function() {
+              tmp[v.tagName] = {};
+              var deferreds = [];
+              deferreds.push(
+                $.ajax({
+                  url: "https://centurio.work/plan/" + $(v).text() + "/symbol.svg",
+                  success: function(res) {
+                    tmp[v.tagName]['symbol'] = res;
+                  }
+                })
+              );
+              deferreds.push(
+                $.ajax({
+                  url: "https://centurio.work/plan/" + $(v).text() + "/schema.rng",
+                  success: function(res) {
+                    tmp[v.tagName]['schema'] = res;
+                  }
+                })
+              );
+              $.when.apply($, deferreds).then(function(x) {
+                save['endpoints_cache'] = tmp;
+                // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
+                $('#dat_details').empty();
+                adaptor_update();
+              });
+            }
+          });
+        });
+      }
     }
   });
 } // }}}
+
+function adaptor_update() {
+  $('g.element[element-endpoint]').each(function(k,ele){
+    if (save['endpoints_cache'][$(ele).attr('element-endpoint')]) {
+      var c = $(ele).find('g.replace');
+      var symbol = save['endpoints_cache'][$(ele).attr('element-endpoint')].symbol.documentElement;
+      c.replaceWith($(symbol).clone());
+    }
+  });
+}
 
 function adaptor_init(url,theme,dslx) {
   if (save['graph_theme'] != theme) {
@@ -334,13 +379,16 @@ function adaptor_init(url,theme,dslx) {
           url: url + "/properties/values/description/",
           data: ({'content': '<content>' + g + '</content>'})
         });
+        adaptor_update();
         manifestation.events.click(svgid);
       };
+      adaptor_update();
       monitor_instance_pos();
       $('#dat_details').empty();
     });
   } else {
     save['graph_adaptor'].update(function(graphrealization){
+      adaptor_update();
       var svgid = manifestation.clicked();
       graphrealization.set_description($(dslx));
       manifestation.events.click(svgid);

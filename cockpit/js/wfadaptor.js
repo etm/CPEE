@@ -549,7 +549,13 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       else                                                                     {sym_name = tname;}
       $(this).attr('svg-type',sym_name);
       if((illustrator.elements[tname] && illustrator.elements[tname].svg) || sym_name == 'unknown') {
-        illustrator.draw.draw_symbol(tname, sym_name, $(this).attr('svg-id'), $(this).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[tname] ? illustrator.elements[tname].type : 'primitive unknown');
+        var g = illustrator.draw.draw_symbol(tname, sym_name, $(this).attr('svg-id'), $(this).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[tname] ? illustrator.elements[tname].type : 'primitive unknown');
+        if (illustrator.elements[sym_name].info) {
+          var info = illustrator.elements[sym_name].info(this);
+          _.each(info,function(val,key) {
+            g.attr(key, val);
+          });
+        }
       } else { console.log("no icon "+ tname);}
       if(illustrator.elements[tname] && illustrator.elements[tname].border) illustrator.draw.draw_border($(this).attr('svg-id'), pos, block.max, block.svg);
       if(illustrator.elements[tname] && illustrator.elements[tname].type == 'complex') illustrator.draw.draw_tile($(this).attr('svg-id'), pos, block.max, block.svg);

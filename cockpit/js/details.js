@@ -30,7 +30,9 @@ function do_main_save() { //{{{
     var svgid    = save['details_target'].svgid;
     var desc     = save['details_target'].model;
     var node     = desc.get_node_by_svg_id(svgid);
-    var origtype = save['graph_adaptor'].illustrator.get_node_by_svg_id(svgid).parents('g.element[element-id]').attr('element-type');
+    var orignode = save['graph_adaptor'].illustrator.get_node_by_svg_id(svgid).parents('g.element[element-id]');
+    var origtype = orignode.attr('element-type') + '_' + orignode.attr('element-endpoint');
+
 
     var url = $("#current-instance").text();
     $('#main ui-tabbar ui-behind button').removeClass('highlight');
@@ -58,13 +60,15 @@ function do_main_save() { //{{{
       if (vtarget.length > 0) {
         vtarget.parents('g.element[element-id]').addClass('clicked');
       }
-      var newtype = vtarget.parents('g.element[element-id]').attr('element-type');
-      if (newtype != origtype) {
-        manifestation.update_details(svgid);
-      }
+      var newnode = vtarget.parents('g.element[element-id]');
+      var newtype = newnode.attr('element-type') + '_' + newnode.attr('element-endpoint');
       var g = graphrealization.get_description();
       save['graph'] = $X(g);
       save['graph'].find('[xmlns]').removeAttr('xmlns');
+      if (newtype != origtype) {
+        manifestation.update_details(svgid);
+      }
+      adaptor_update();
     });
 
     $.ajax({

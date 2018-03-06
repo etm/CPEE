@@ -6,6 +6,7 @@ function WFAdaptorManifestation(adaptor) {
   this.elements = {};
   this.events = {};
   this.compact = false;
+  this.endpoints = {};
 
   this.noarrow = ['alternative', 'otherwise'];
 
@@ -60,7 +61,12 @@ function WFAdaptorManifestation(adaptor) {
         tab.empty();
     if (self.adaptor.description.elements[$(node).attr('svg-type')]) {
       save['details_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
-      save['details'] = new RelaxNGui(self.adaptor.description.elements[$(node).attr('svg-type')],tab,self.adaptor.description.context_eval);
+      var rng = self.adaptor.description.elements[$(node).attr('svg-type')].clone();
+      if (save['endpoints_cache'][$(node).attr('endpoint')]) {
+        var schema = save['endpoints_cache'][$(node).attr('endpoint')].schema.documentElement;
+        $(rng).find(' > element[name="parameters"] > element[name="arguments"]').replaceWith($(schema).clone());
+      }
+      save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval);
       save['details'].content(node);
     }
   }; //}}}
@@ -202,28 +208,13 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
-      'label': function(node){return $('label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'')},
+      'label': function(node){ return $('label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,''); },
+      'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
-        if($(node).attr('endpoint').match(/^instantiation/)) {
-          return 'callinstantiation';
-        } else if($(node).attr('endpoint').match(/^correlation_send/)) {
-          return 'callcorrelationsend';
-        } else if($(node).attr('endpoint').match(/^correlation_receive/)) {
-          return 'callcorrelationreceive';
-        } else if($(node).attr('endpoint').match(/^worklist/) && $('finalize,update', node).length > 0) {
-          return 'callmanipulateworklist';
-        } else if($(node).attr('endpoint').match(/^worklist/)) {
-          return 'callworklist';
-        } else if($(node).attr('endpoint').match(/^workqueue/) && $('finalize,update', node).length > 0) {
-          return 'callmanipulateworkqueue';
-        } else if($(node).attr('endpoint').match(/^workqueue/)) {
-          return 'callworkqueue';
-        } else if($('parameters > service', node).length > 0) {
-          return 'callinjection';
-        } else if($('finalize,update', node).length > 0) {
+        if($('finalize,update', node).length > 0) {
           return 'callmanipulate';
         } else {
-          return'call';
+          return 'call';
         }
       },
       'svg': self.adaptor.theme_dir + 'symbols/call.svg'
@@ -892,6 +883,7 @@ function WFAdaptorManifestation(adaptor) {
     'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
       'label': function(node){return $('label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'')},
+      'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
     },//}}}
   }; /*}}}*/
@@ -913,55 +905,4 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'abstract',
     'description': [self.adaptor.theme_dir + 'rngs/update.rng',self.adaptor.theme_dir + 'rngs/finalize.rng']
   }; /*}}}*/
-  this.elements.callinstantiation = { /*{{{*/
-    'type': 'abstract',
-    'parent': 'call',
-    'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/callinstantiation.svg'
-    },//}}}
-  };  /*}}}*/
-  this.elements.callcorrelationsend = { /*{{{*/
-    'type': 'abstract',
-    'parent': 'call',
-    'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/callcorrelationsend.svg'
-    },//}}}
-  };  /*}}}*/
-  this.elements.callcorrelationreceive = { /*{{{*/
-    'type': 'abstract',
-    'parent': 'call',
-    'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/callcorrelationreceive.svg'
-    },//}}}
-  };  /*}}}*/
-  this.elements.callworklist = { /*{{{*/
-    'type': 'abstract',
-    'parent': 'call',
-    'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/callworklist.svg'
-    },//}}}
-  };  /*}}}*/
-  this.elements.callmanipulateworklist = { /*{{{*/
-    'type': 'abstract',
-    'parent': 'call',
-    'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/callmanipulateworklist.svg'
-    },//}}}
-  };  /*}}}*/
-  this.elements.callworkqueue = { /*{{{*/
-    'type': 'abstract',
-    'parent': 'call',
-    'description': self.adaptor.theme_dir + 'rngs/callworkqueue.rng',
-    'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/callworkqueue.svg'
-    },//}}}
-  };  /*}}}*/
-  this.elements.callmanipulateworkqueue = { /*{{{*/
-    'type': 'abstract',
-    'parent': 'call',
-    'description': self.adaptor.theme_dir + 'rngs/callmanipulateworkqueue.rng',
-    'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/callmanipulateworkqueue.svg'
-    },//}}}
-  };  /*}}}*/
 }
