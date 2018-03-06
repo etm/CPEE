@@ -929,12 +929,14 @@ function format_visual_remove(what,cls) {//{{{
 
 function scroll_into_view(what) { //{{{
   var tcontainer = $('#graphcolumn')[0];
-  var telement   = $('g[element-id="' + what + '"]')[0].getBBox().y;
-  if (tcontainer.scrollTop > telement) {
-    tcontainer.scroll( { top: telement - 5, behavior: 'smooth' } );
-  }
-  if (tcontainer.scrollTop + tcontainer.offsetHeight - 40  < telement) {
-    tcontainer.scroll( { top: telement - tcontainer.offsetHeight + 40, behavior: 'smooth' } );
+  if ($('g[element-id="' + what + '"]').length > 0) {
+    var telement   = $('g[element-id="' + what + '"]')[0].getBBox().y;
+    if (tcontainer.scrollTop > telement) {
+      tcontainer.scroll( { top: telement - 5, behavior: 'smooth' } );
+    }
+    if (tcontainer.scrollTop + tcontainer.offsetHeight - 40  < telement) {
+      tcontainer.scroll( { top: telement - tcontainer.offsetHeight + 40, behavior: 'smooth' } );
+    }
   }
 } //}}}
 
@@ -948,8 +950,6 @@ function format_visual_set(what) {//{{{
     var actives = node_state[what]['active'];
     var passives = node_state[what]['passive'];
 
-    // TODO scrollIntoView does not work in firefox
-    // $('g[element-id="' + what + '"]').each(function(a,b){ b.scrollIntoView(true); $('#graphcolumn')[0].scrollTop -= 15; });
     scroll_into_view(what);
 
     if (actives > 0 && votes > 0)
