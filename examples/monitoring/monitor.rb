@@ -7,14 +7,14 @@ srv = Riddl::Client.new("http://localhost:9298/")
 
 # new instance
 status, response = srv.resource("/").post [
-  Riddl::Parameter::Simple.new("name","Monitor Test")
+  Riddl::Parameter::Simple.new("info","Monitor Test")
 ]
 ins = response.first.value
 
 # if instance not empty monitor it
 unless ins.empty?
   puts "Monitoring Instance #{ins}"
-  status, response = srv.resource("/#{ins}/notifications/subscriptions/").post [ 
+  status, response = srv.resource("/#{ins}/notifications/subscriptions/").post [
     Riddl::Parameter::Simple.new("topic","properties/description"),
     Riddl::Parameter::Simple.new("events","change"),
     Riddl::Parameter::Simple.new("topic","properties/state"),
@@ -27,5 +27,5 @@ unless ins.empty?
       puts msg
       puts '--------------'
     end
-  end  
+  end
 end
