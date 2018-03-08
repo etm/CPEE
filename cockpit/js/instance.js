@@ -191,7 +191,7 @@ function create_instance(ask,exec) {// {{{
   }
 }// }}}
 
-function websocket() {
+function websocket() { //{{{
   var url = $('body').attr('current-instance');
   var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
   if (ws) ws.close();
@@ -252,7 +252,7 @@ function websocket() {
   monitor_instance_transformation();
   monitor_instance_dsl();
   monitor_instance_state();
-}
+} //}}}
 
 function monitor_instance(load,exec) {// {{{
   var url = sanitize_url($("input[name=instance-url]"));
@@ -315,6 +315,7 @@ function monitor_instance(load,exec) {// {{{
 
 function monitor_instance_values(val) {// {{{
   var url = $('body').attr('current-instance');
+  var rep = $('body').attr('current-repo');
   $.ajax({
     type: "GET",
     url: url + "/properties/values/" + val + "/",
@@ -324,27 +325,28 @@ function monitor_instance_values(val) {// {{{
         var tmp = {};
         $(res).find(" > value > *").each(function(k,v) {
           $.ajax({
-            url: "https://centurio.work/plan/" + $(v).text(),
+            url: rep + encodeURIComponent($(v).text()),
             success: function() {
               tmp[v.tagName] = {};
-              var deferreds = [];
-              deferreds.push(
-                $.ajax({
-                  url: "https://centurio.work/plan/" + $(v).text() + "/symbol.svg",
-                  success: function(res) {
-                    tmp[v.tagName]['symbol'] = res;
-                  }
-                })
-              );
-              deferreds.push(
-                $.ajax({
-                  url: "https://centurio.work/plan/" + $(v).text() + "/schema.rng",
-                  success: function(res) {
-                    tmp[v.tagName]['schema'] = res;
-                  }
-                })
-              );
+              var deferreds = [new $.Deferred(), new $.Deferred()];
+              $.ajax({
+                url: rep + encodeURIComponent($(v).text()) + "/symbol.svg",
+                success: function(res) {
+                  tmp[v.tagName]['symbol'] = res;
+                  deferreds[0].resolve(true);
+                },
+                error: deferreds[0].resolve
+              })
+              $.ajax({
+                url: rep + encodeURIComponent($(v).text()) + "/schema.rng",
+                success: function(res) {
+                  tmp[v.tagName]['schema'] = res;
+                  deferreds[1].resolve(true);
+                },
+                error: deferreds[1].resolve
+              })
               $.when.apply($, deferreds).then(function(x) {
+                console.log('xxx');
                 save['endpoints_cache'] = tmp;
                 // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
                 $('#dat_details').empty();
