@@ -16,6 +16,7 @@ require 'riddl/server'
 require 'xml/smart'
 require 'base64'
 require 'uri'
+require 'json'
 
 module CPEE
   module Instantiation
@@ -76,20 +77,56 @@ module CPEE
     class Instantiate < Riddl::Implementation
       def response
         cpee = @a[0]
-        tdoc = @p[@p.length - 1].value.read
-        if @p[0].additional =~ /base64/
-          tdoc = Base64.decode64(tdoc)
+        tdoc = case @p[@p.length - 1].name
+          when 'url'
+            status, res = Riddl::Client.new(@p[@p.length - 1].value).get
+            if status >= 200 && status < 300
+              res[0].value.read
+            else
+              (@status = 500) && return
+            end
+          when 'xml'
+            if @p[@p.length - 1].additional =~ /base64/
+              Base64.decode64(@p[@p.length - 1].value.read)
+            else
+              @p[@p.length - 1].value.read
+            end
         end
 
         if (ins = Testset::load(tdoc,cpee)) == -1
           @status = 500
         else
-          if @p.length > 1 && @p[0].value == "fork_running" &&  @p[0].value == "wait_running"
+          if @p[0].value =~ /^wait/
+            @headers << Riddl::Header.new('CPEE_CALLBACK','true')
+            cb = @h['CPEE_CALLBACK']
+
+            if cb
+              srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+              status, response = srv.resource("/#{ins}/notifications/subscriptions/").post [
+                Riddl::Parameter::Simple.new("topic","state"),
+                Riddl::Parameter::Simple.new("events","change"),
+              ]
+              key = response.first.value
+
+              srv.resource("/#{ins}/notifications/subscriptions/#{key}/ws/").ws do |conn|
+                conn.on :message do |msg|
+                  if JSON::parse(XML::Smart::string(msg.data).find('string(/event/notification)'))['state'] == 'finished'
+                    conn.close
+                    Riddl::Client.new(cb).put [
+                      # TODO extract all dataelements from instance
+                      Riddl::Parameter::Simple.new('instance',ins)
+                    ]
+                  end
+                end
+              end
+            end
+          end
+          if @p.length > 1 && @p[0].value =~ /_running$/
             srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
             res = srv.resource("/#{ins}/properties/values")
             status, response = res.put [
-              params << Riddl::Parameter::Simple.new('name', 'state'),
-              params << Riddl::Parameter::Simple.new('value','running')
+              Riddl::Parameter::Simple.new('name', 'state'),
+              Riddl::Parameter::Simple.new('value','running')
             ]
           end
           return Riddl::Parameter::Simple.new("url",cpee + ins)

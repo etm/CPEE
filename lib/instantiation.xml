@@ -11,7 +11,10 @@
         </choice>
       </parameter>
     </optional>
-    <parameter name="xml" mimetype="*/xml"/>
+    <choice>
+      <parameter name="xml" mimetype="*/xml"/>
+      <parameter name="url" type="string"/>
+    </choice>
   </message>
 
   <message name="instance">
