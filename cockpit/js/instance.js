@@ -346,7 +346,6 @@ function monitor_instance_values(val) {// {{{
                 error: deferreds[1].resolve
               })
               $.when.apply($, deferreds).then(function(x) {
-                console.log('xxx');
                 save['endpoints_cache'] = tmp;
                 // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
                 $('#dat_details').empty();
