@@ -62,7 +62,7 @@ function WFAdaptorManifestation(adaptor) {
     if (self.adaptor.description.elements[$(node).attr('svg-type')]) {
       save['details_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
       var rng = self.adaptor.description.elements[$(node).attr('svg-type')].clone();
-      if (save['endpoints_cache'][$(node).attr('endpoint')]) {
+      if (save['endpoints_cache'][$(node).attr('endpoint')] && save['endpoints_cache'][$(node).attr('endpoint')].schema) {
         var schema = save['endpoints_cache'][$(node).attr('endpoint')].schema.documentElement;
         $(rng).find(' > element[name="parameters"] > element[name="arguments"]').replaceWith($(schema).clone());
       }

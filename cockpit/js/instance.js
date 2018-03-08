@@ -362,7 +362,7 @@ function monitor_instance_values(val) {// {{{
 
 function adaptor_update() {
   $('g.element[element-endpoint]').each(function(k,ele){
-    if (save['endpoints_cache'][$(ele).attr('element-endpoint')]) {
+    if (save['endpoints_cache'][$(ele).attr('element-endpoint')] && save['endpoints_cache'][$(node).attr('endpoint')].symbol) {
       var c = $(ele).find('g.replace');
       var symbol = save['endpoints_cache'][$(ele).attr('element-endpoint')].symbol.documentElement;
       c.replaceWith($(symbol).clone());
