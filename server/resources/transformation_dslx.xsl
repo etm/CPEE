@@ -377,9 +377,19 @@
         <xsl:text>nil</xsl:text>
       </xsl:when>
       <xsl:when test="child::node()[not(self::text())]">
-        <xsl:text>"[ </xsl:text>
-        <xsl:apply-templates select="*" mode="JSON"/>
-        <xsl:text>]"</xsl:text>
+        <!-- FUUUU, there is probably much more TODO -->
+        <xsl:choose>
+          <xsl:when test="child::*/child::* and count(child::*[not(name()=name(../child::*[1]))])=0">
+            <xsl:text>"[ </xsl:text>
+            <xsl:apply-templates select="*" mode="JSON"/>
+            <xsl:text>]"</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>"{ </xsl:text>
+            <xsl:apply-templates select="*" mode="JSONSUB"/>
+            <xsl:text>}"</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
@@ -563,7 +573,7 @@
           <xsl:text>[ </xsl:text>
         </xsl:if>
         <xsl:text>{ </xsl:text>
-        <xsl:apply-templates select="@*" mode="JSON"/>
+        <xsl:apply-templates select="@*" mode="JSONSUB"/>
         <xsl:apply-templates select="*" mode="JSONSUB"/>
         <xsl:text>}</xsl:text>
         <xsl:if test="text()[normalize-space(.)]">
@@ -578,7 +588,7 @@
   </xsl:template>
 
   <!-- JSON Attribute Property -->
-  <xsl:template match="@*" mode="JSON">
+  <xsl:template match="@*" mode="JSONSUB">
     <xsl:text>\"@</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text>\": </xsl:text>
