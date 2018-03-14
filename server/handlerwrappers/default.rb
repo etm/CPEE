@@ -148,8 +148,12 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
           result = XML::Smart::string(result[0].value.read) rescue nil
         elsif result[0].mimetype == 'text/plain'
           result = result[0].value.read
-          result = result.to_f if result == result.to_f.to_s
-          result = result.to_i if result == result.to_i.to_s
+          if result.start_with?("<?xml version=")
+            result = XML::Smart::string(result)
+          else
+            result = result.to_f if result == result.to_f.to_s
+            result = result.to_i if result == result.to_i.to_s
+          end
         elsif result[0].mimetype == 'text/html'
           result = result[0].value.read
           result = result.to_f if result == result.to_f.to_s
