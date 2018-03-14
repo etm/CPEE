@@ -1,28 +1,68 @@
 <description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 
-  <message name="instantiate">
+  <message name="xmlsimple">
+    <parameter name="xml" mimetype="*/xml"/>
+  </message>
+  <message name="xml">
+    <parameter name="behavior" type="string">
+      <choice>
+        <value>fork_ready</value>
+        <value>fork_running</value>
+        <value>wait_ready</value>
+        <value>wait_running</value>
+      </choice>
+    </parameter>
+    <parameter name="xml" mimetype="*/xml"/>
     <optional>
-      <parameter name="behavior" type="string">
-        <choice>
-          <value>fork_ready</value>
-          <value>fork_running</value>
-          <value>wait_ready</value>
-          <value>wait_running</value>
-        </choice>
-      </parameter>
+      <parameter name="init" type="string"/>
     </optional>
-    <choice>
-      <parameter name="xml" mimetype="*/xml"/>
-      <parameter name="url" type="string"/>
-    </choice>
+  </message>
+  <message name="url">
+    <parameter name="behavior" type="string">
+      <choice>
+        <value>fork_ready</value>
+        <value>fork_running</value>
+        <value>wait_ready</value>
+        <value>wait_running</value>
+      </choice>
+    </parameter>
+    <parameter name="url" type="string"/>
+    <optional>
+      <parameter name="init" type="string"/>
+    </optional>
+  </message>
+  <message name="instance">
+    <parameter name="behavior" type="string">
+      <choice>
+        <value>fork_ready</value>
+        <value>fork_running</value>
+        <value>wait_ready</value>
+        <value>wait_running</value>
+        <value>wait_stopped_running</value>
+        <value>wait_finished_running</value>
+      </choice>
+    </parameter>
+    <parameter name="instance" type="integer"/>
+    <optional>
+      <parameter name="init" type="string"/>
+    </optional>
   </message>
 
-  <message name="instance">
+  <message name="result">
     <parameter name="url" type="anyURI"/>
   </message>
 
   <resource>
-    <post in="instantiate" out="instance"/>
+    <post in="xmlsimple" out="result"/>
+    <resource relative="xml">
+      <post in="xml" out="result"/>
+    </resource>
+    <resource relative="instance">
+      <post in="instance" out="result"/>
+    </resource>
+    <resource relative="url">
+      <post in="url" out="result"/>
+    </resource>
   </resource>
 
 </description>
