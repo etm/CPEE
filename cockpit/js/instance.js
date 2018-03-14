@@ -374,6 +374,7 @@ function adaptor_init(url,theme,dslx) {
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       graphrealization.set_svg_container($('#graphcanvas'));
+      adaptor_update();
       graphrealization.set_description($(dslx), true);
       graphrealization.notify = function(svgid) {
         var g = graphrealization.get_description();
