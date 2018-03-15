@@ -152,7 +152,7 @@ module CPEE
 
       def response
         cpee     = @a[0]
-        behavior = @a[1] ? 'wait_running' : @p[0].value
+        behavior = @a[1] ? 'fork_ready' : @p[0].value
         data     = @a[1] ? 0 : 1
         tdoc = if @p[data].additional =~ /base64/
           Base64.decode64(@p[data].value.read)

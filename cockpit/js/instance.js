@@ -74,7 +74,7 @@ function cockpit() { //{{{
   $("input[name=modelfile]").change(load_modelfile_after);
 
   $.ajax({
-    url: "testsets/testsets.xml",
+    url: $('body').attr('current-testsets') + "testsets.xml",
     dataType: 'xml',
     success: function(res){
       $('testset',res).each(function(){
@@ -116,7 +116,7 @@ function cockpit() { //{{{
     }
   });
   $.ajax({
-    url: "testsets/transformations.xml",
+    url: $('body').attr('current-testsets') + "transformations.xml",
     dataType: 'xml',
     success: function(res){
       $('transformation',res).each(function(){
@@ -808,7 +808,7 @@ function load_testset(exec) {// {{{
   $.ajax({
     cache: false,
     dataType: 'xml',
-    url: "testsets/" + name + ".xml",
+    url: $('body').attr('current-testsets') + name + ".xml",
     success: function(res){
       save['dsl'] = null; // reload dsl and position under all circumstances
       $('#main .tabbehind button').hide();
@@ -831,7 +831,7 @@ function load_modeltype() {// {{{
   $.ajax({
     cache: false,
     dataType: 'xml',
-    url: "testsets/" + name + ".xml",
+    url: $('body').attr('current-testsets') + name + ".xml",
     success: function(res){
       $.ajax({
         type: "PUT",

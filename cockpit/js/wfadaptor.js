@@ -181,7 +181,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
-    self.svg.container.attr({'height': (graph.max.row+0.3)*self.height, 'style': "min-width: " + (graph.max.col+0.65)*self.width + "px"});
+    self.svg.container.attr({'height': (graph.max.row+0.3)*self.height, 'style': "min-width: " + (graph.max.col+0.55)*self.width + "px"});
     self.svg.container.append(graph.svg);
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
@@ -326,7 +326,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         _.each(labels,function(a,key) {
           illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
         });
-        graph.max.col += 4;
       }
     }
   } //}}}
