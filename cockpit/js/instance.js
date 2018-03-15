@@ -374,7 +374,6 @@ function adaptor_init(url,theme,dslx) {
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       graphrealization.set_svg_container($('#graphcanvas'));
-      adaptor_update();
       graphrealization.set_description($(dslx), true);
       graphrealization.notify = function(svgid) {
         var g = graphrealization.get_description();
@@ -394,9 +393,9 @@ function adaptor_init(url,theme,dslx) {
     });
   } else {
     save['graph_adaptor'].update(function(graphrealization){
-      adaptor_update();
       var svgid = manifestation.clicked();
       graphrealization.set_description($(dslx));
+      adaptor_update();
       manifestation.events.click(svgid);
       monitor_instance_pos();
     });
