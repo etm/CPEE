@@ -3,7 +3,7 @@ require 'rubygems'
 gem 'riddl', '>=0.99.30'
 require 'riddl/client'
 
-srv = Riddl::Client.new("https://centurio.work:9298/")
+srv = Riddl::Client.new("http://localhost:9298/")
 
 status, response = srv.resource("/").post [
   Riddl::Parameter::Simple.new("info","Monitor Test")
