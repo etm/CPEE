@@ -2,11 +2,17 @@
 require 'rubygems'
 require 'riddl/server'
 require 'xml/smart'
+require 'pp'
 
-$inst = 'http://cpee.org:9296/'
+$inst = 'http://localhost:9296/'
 
 srv = Riddl::Client.new($inst, $inst + "?riddl-description")
 
-status, res = srv.post Riddl::Parameter::Complex.new('xml','text/xml',File.read(File.dirname(__FILE__) + '/Infinity.xml'))
+status, res, headers = srv.post [
+  # Riddl::Parameter::Complex.new('xml','text/xml', File.read(__dir__ + '/testset.xml'))
+  Riddl::Parameter::Simple.new('behavior','wait_ready'),
+  Riddl::Parameter::Simple.new('url','https://centurio.work/customers/prime/Take%205.xml')
+]
 puts status
+pp headers
 p res

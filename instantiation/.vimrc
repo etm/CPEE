@@ -1,1 +1,1 @@
-map <F10> :!ruby instantiation -v start<CR>
+map <F10> :!ruby instantiation -v restart<CR>

@@ -28,6 +28,8 @@ ARGV.options { |opt|
 	opt.on("")
   opt.on(wrap("[new DIR]  scaffolds a sample execution engine. Everything except instances can be removed for default behaviour."))
 	opt.on("")
+  opt.on(wrap("[inst DIR] scaffolds a sample instantiation service. Post a testset to a model to keep going in one operation."))
+	opt.on("")
   opt.on(wrap("[cpui DIR] scaffolds a sample html client. New versions might require manual merging if you changed something."))
 	opt.on("")
   opt.on(wrap("[ui]       starts a simple static web server with the ui on http://localhost:8080. Use [cpui DIR] if you want stuff in apache or nginx."))
@@ -47,6 +49,12 @@ if command == 'ui'
 elsif command == "cpui"
   if !File.exists?(dir)
     FileUtils.cp_r("#{curpath}/../cockpit/",dir)
+  else
+    puts "Directory already exists."
+  end
+elsif command == "inst"
+  if !File.exists?(dir)
+    FileUtils.cp_r("#{curpath}/instantiation/",dir)
   else
     puts "Directory already exists."
   end

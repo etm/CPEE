@@ -59,7 +59,7 @@
       /* shit balls, no elegance is left in this world */
     </style>
   </head>
-  <body data-defaultport="9298" data-theme-base="themes" is="x-ui">
+  <body data-base-port="9298" data-res-port="9303" data-theme-base="themes" is="x-ui">
      <div id='disclaimer' class='hidden'> <!--{{{-->
        <h1>Disclaimer</h1>
 
@@ -127,12 +127,17 @@
         <ui-area data-belongs-to-tab="new" id="areanew"> <!--{{{-->
           <table class='layout'>
           <tr>
-            <td>Base Url:</td>
+            <td>Repository:</td>
+            <td><input name="repo-url" type="text" value=""/></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Engine:</td>
             <td><input name="base-url" type="text" value=""/></td>
             <td><button name="base">create new instance</button></td>
           </tr>
           <tr>
-            <td>Instance Url:</td>
+            <td>Instance:</td>
             <td><input name="instance-url" type="text" value=""/></td>
             <td><button name="instance">monitor instance</button></td>
           </tr>
