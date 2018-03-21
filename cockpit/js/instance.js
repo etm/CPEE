@@ -357,7 +357,7 @@ function monitor_instance_values(val) {// {{{
           });
         });
       } else if(val == "attributes") {
-        document.title = $(" > value > info",save[val].save()).text();
+        document.title = $(" > value > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
       }
     }
   });
