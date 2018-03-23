@@ -6,18 +6,13 @@ options = {
   :host => 'localhost',
   :port => 9296,
   :secure => false
-  # :secure_options => {
-  #   :private_key_file => '',
-  #   :cert_chain_file => '',
-  #   :verify_peer => false
-  # }
 }
 
 Riddl::Server.new(CPEE::Instantiation::SERVER, options) do
   accessible_description true
   cross_site_xhr true
 
-  @riddl_opts[:cpee] ||= 'https://centurio.work:9298/'
+  @riddl_opts[:cpee] ||= 'http://localhost:8298/'
 
   use CPEE::Instantiation::implementation(@riddl_opts)
 end.loop!
