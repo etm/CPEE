@@ -256,7 +256,9 @@ function websocket() { //{{{
 
 function monitor_instance(load,exec) {// {{{
   var url = sanitize_url($("input[name=instance-url]"));
+            sanitize_url($("input[name=base-url]"));
   var rep = sanitize_url($("input[name=repo-url]"));
+
 
   $('.tabbehind button').hide();
   $('#dat_details').empty();
@@ -354,12 +356,14 @@ function monitor_instance_values(val) {// {{{
             }
           });
         });
+      } else if(val == "attributes") {
+        document.title = $(" > value > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
       }
     }
   });
 } // }}}
 
-function adaptor_update() {
+function adaptor_update() { //{{{
   $('g.element[element-endpoint]').each(function(k,ele){
     if (save['endpoints_cache'][$(ele).attr('element-endpoint')] && save['endpoints_cache'][$(ele).attr('element-endpoint')]) {
       var c = $(ele).find('g.replace');
@@ -367,9 +371,8 @@ function adaptor_update() {
       c.replaceWith($(symbol).clone());
     }
   });
-}
-
-function adaptor_init(url,theme,dslx) {
+} //}}}
+function adaptor_init(url,theme,dslx) { //{{{
   if (save['graph_theme'] != theme) {
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
@@ -400,7 +403,7 @@ function adaptor_init(url,theme,dslx) {
       monitor_instance_pos();
     });
   }
-}
+} //}}}
 
 function monitor_graph_change(force) { //{{{
   var url = $('body').attr('current-instance');
@@ -620,36 +623,26 @@ function save_testset() {// {{{
               testset.append(pars);
               $.ajax({
                 type: "GET",
-                url: url + "/properties/values/positions/",
+                url: url + "/properties/values/dslx/",
                 success: function(res){
-                  var pars = $X('<positions/>');
-                  pars.append($(res.documentElement).children());
+                  var pars = $X('<description/>');
+                  pars.append($(res.documentElement));
+                  testset.append(pars);
+                  pars = $X("<transformation><description type='copy'/><dataelements type='none'/><endpoints type='none'/></transformation>");
                   testset.append(pars);
                   $.ajax({
                     type: "GET",
-                    url: url + "/properties/values/dslx/",
+                    url: url + "/properties/values/attributes/",
                     success: function(res){
-                      var pars = $X('<description/>');
-                      pars.append($(res.documentElement));
+                      var name = $("value > info",res).text();
+                      var pars = $X('<attributes/>');
+                      pars.append($(res.documentElement).children());
+                      pars.find('uuid').remove();
                       testset.append(pars);
-                      pars = $X("<transformation><description type='copy'/><dataelements type='none'/><endpoints type='none'/></transformation>");
-                      testset.append(pars);
-                      $.ajax({
-                        type: "GET",
-                        url: url + "/properties/values/attributes/",
-                        success: function(res){
-                          var name = $("value > info",res).text();
-                          var pars = $X('<attributes/>');
-                          pars.append($(res.documentElement).children());
-                          pars.find('uuid').remove();
-                          testset.append(pars);
-                          var ct = new Date();
-                          $('#savetestset').attr('download',name + '_' + ct.strftime("%Y-%m-%dT%H%M%S%z") + '.xml');
-                          $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(testset.serializePrettyXML()));
-                          document.getElementById('savetestset').click();
-                        },
-                        error: report_failure
-                      });
+                      var ct = new Date();
+                      $('#savetestset').attr('download',name + '_' + ct.strftime("%Y-%m-%dT%H%M%S%z") + '.xml');
+                      $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(testset.serializePrettyXML()));
+                      document.getElementById('savetestset').click();
                     },
                     error: report_failure
                   });
@@ -813,7 +806,7 @@ function load_testset(exec) {// {{{
       $('#main .tabbehind button').hide();
       $('#dat_details').empty();
 
-      document.title = name;
+      document.title = "Untitled";
       set_testset(res,exec);
     },
     complete: function() {

@@ -3,15 +3,12 @@ require 'rubygems'
 gem 'riddl', '>=0.99.30'
 require 'riddl/client'
 
-srv = Riddl::Client.new("https://centurio.work:9298/")
+srv = Riddl::Client.new("http://localhost:9298/")
 
-# new instance
-# status, response = srv.resource("/").post [
-#   Riddl::Parameter::Simple.new("info","Monitor Test")
-# ]
-# ins = response.first.value
-
-ins = "371"
+status, response = srv.resource("/").post [
+  Riddl::Parameter::Simple.new("info","Monitor Test")
+]
+ins = response.first.value
 
 # if instance not empty monitor it
 unless ins.empty?

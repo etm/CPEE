@@ -18,7 +18,7 @@ require 'rubygems'
 gem 'nokogiri'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee/implementation')
 
-Riddl::Server.new(CPEE::SERVER, :port => 9298) do
+Riddl::Server.new(CPEE::SERVER, :port => 8298) do
   accessible_description true
   cross_site_xhr true
 
