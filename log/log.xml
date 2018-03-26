@@ -2,25 +2,11 @@
   <interface name="events">
     <xi:include href="http://www.riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml"/>
   </interface>
-  <interface name="cpee" location="http://localhost:8298">
-    <xi:include href="http://localhost:8298/?riddl-description"/>
-  </interface>
-  <interface name="logoverlay">
-    <xi:include href="logoverlay.xml"/>
-  </interface>
 
   <facade>
     <tile>
-      <layer name="cpee"/>
-    </tile>
-    <tile>
       <layer name="events">
-        <apply-to>/log</apply-to>
-      </layer>
-    </tile>
-    <tile>
-      <layer name="logoverlay">
-        <apply-to>/{}/log</apply-to>
+        <apply-to>/</apply-to>
       </layer>
     </tile>
   </facade>

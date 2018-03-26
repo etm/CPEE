@@ -4,54 +4,67 @@ require 'json'
 require 'yaml'
 require 'rubygems'
 require 'riddl/server'
-require 'riddl/client'
-require 'riddl/utils/notifications_producer'
-require 'riddl/utils/properties'
 require 'riddl/utils/fileserve'
-require 'riddl/utils/downloadify'
-require 'riddl/utils/turtle'
 require 'time'
 
 class Logging < Riddl::Implementation #{{{
-  def doc(event_name,log_dir,template,instancenr,notification)
-    log = YAML::load(File.read(template))
+  def doc(topic,event_name,log_dir,template,instancenr,notification)
     uuid = notification['instance_uuid']
+    return unless uuid
+
     activity = notification["activity"]
     parameters = notification['parameters']
     receiving = notification['received']
 
-    Dir.mkdir(log_dir+'/'+uuid) unless Dir.exist?(log_dir+'/'+uuid)
-    time_added=false
-    log["log"]["trace"]["concept:name"] ||= "Instance #{instancenr}" unless log["log"]["trace"]["concept:name"]
-    File.open(log_dir+'/'+uuid+'/log.xes','w'){|f| f.puts log.to_yaml} unless File.exists? log_dir+'/'+uuid+'/log.xes'
+    log = YAML::load(File.read(template))
+    log["log"]["trace"]["concept:name"] ||= instancenr
+    log["log"]["trace"]["cpee:name"] ||= notification['instance_name'] if notification["instance_name"]
+    log["log"]["trace"]["cpee:uuid"] ||= notification['instance_uuid'] if notification["instance_uuid"]
+    File.open(File.join(log_dir,uuid+'.xes.yaml'),'w'){|f| f.puts log.to_yaml} unless File.exists? File.join(log_dir,uuid+'.xes.yaml')
     event = {}
     event["trace:id"] = instancenr
-    if parameters && parameters.has_key?('label')
-      event["concept:name"] = parameters["label"]
+    event["concept:name"] = notification["label"] if notification["label"]
+    if notification["endpoint"]
+      event["concept:endpoint"] = notification["endpoint"]
     else
-      event["concept:name"]= log["log"]["trace"]["concept:name"]
+      event["concept:name"] = 'Script Task'
     end
-    event["concept:endpoint"] = notification["endpoint"] if notification["endpoint"]
     event["id:id"] = activity
-    unless event_name=='receiving'
-      event["lifecycle:transition"]= event_name=='done'?"complete":"start"
-    else
-      event["lifecycle:transition"]="unknown"
+    case event_name
+      when 'receiving', 'change'
+        event["lifecycle:transition"] = "unknown"
+      when 'done'
+        event["lifecycle:transition"] = "complete"
+      else
+        event["lifecycle:transition"] = "start"
     end
+    event["cpee:lifecycle:transition"] = "#{topic}/#{event_name}"
     data_send = ((parameters["arguments"].nil? ? [] : parameters["arguments"]) rescue [])
     event["list"] = {"data_send" => data_send} unless data_send.empty?
-    if receiving && receiving.any?
+    if notification['changed']&.any?
+      if event.has_key? "list"
+        event["list"]["data_changed"] ||= notification['changed']
+      else
+        event["list"] = {"data_changer" => notification['changed']}
+      end
+    end
+    if notification['values']&.any?
+      if event.has_key? "list"
+        event["list"]["data_values"] ||= notification['values']
+      else
+        event["list"] = {"data_values" => notification['values']}
+      end
+    end
+    if receiving&.any?
       if event.has_key? "list"
         event["list"]["data_received"] ||= receiving
       else
         event["list"] = {"data_receiver" => receiving}
       end
     end
-    event["time:timestamp"]= Time.now.iso8601 unless time_added
-    File.open(log_dir+'/'+uuid+'/log.xes',"a") do |f|
+    event["time:timestamp"]= Time.now.iso8601
+    File.open(File.join(log_dir,uuid+'.xes.yaml'),'a') do |f|
       f << {'event' => event}.to_yaml
-      pid, size = `ps ax -o pid,rss | grep -E "^[[:space:]]*#{$$}"`.strip.split.map(&:to_i)
-      File.open(log_dir+'/'+uuid+'/memory.file',"a+"){ |fl| fl<< size << "\n" }
     end
   end
 
@@ -79,11 +92,11 @@ class Logging < Riddl::Implementation #{{{
     template     = @a[1]
     instancenr   = @h['CPEE_INSTANCE'].split('/').last
     notification = JSON.parse(@p[3].value)
-    doc event_name, log_dir, template, instancenr, notification
+    doc topic, event_name, log_dir, template, instancenr, notification
   end
-end  #}}}
+end #}}}
 
-Riddl::Server.new(File.join(__dir__,'/log.xml'), :host => 'localhost', :port => 9299) do #{{{
+Riddl::Server.new(File.join(__dir__,'/log.xml'), :host => 'localhost', :port => 9299) do
   accessible_description true
   cross_site_xhr true
   @riddl_opts[:log_dir] ||= File.join(__dir__,'logs')
@@ -95,5 +108,4 @@ Riddl::Server.new(File.join(__dir__,'/log.xml'), :host => 'localhost', :port => 
   interface 'logoverlay' do |r|
     run Riddl::Utils::FileServe, log_dir + r[:h]["RIDDL_DECLARATION_PATH"]+ ".xes","text/plain" if get
   end
-
-end.loop! #}}}
+end.loop!

@@ -5,17 +5,22 @@ log:
     concept: http://www.xes-standard.org/concept.xesext
     organisational: http://www.xes-standard.org/org.xesext
     lifecylce: http://www.xes-standard.org/lifecycle.xesext
+    cpee: http://cpee.org/cpee.xesext
   global:
     trace:
       concept:name: __INVALID__
+      cpee:name: __INVALID__
     event:
       concept:name: __INVALID__
       concept:endpoint: ''
       id:id: ''
       lifecycle:transition: complete
+      cpee:lifecycle:transition: activity/call
       time:timestamp: ''
   classifier:
-    Data: data_send data_received
+    Data: data_send data_received data_changed data_values
     Data_Received: data_receiver
     Data_Send: data_send
+    Data_Changed: data_changer
+    Data_Values: data_values
   trace: {}
