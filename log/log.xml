@@ -2,8 +2,8 @@
   <interface name="events">
     <xi:include href="http://www.riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml"/>
   </interface>
-  <interface name="cpee" location="http://cpee.org:9298">
-    <xi:include href="http://cpee.org:9298/?riddl-description"/>
+  <interface name="cpee" location="http://localhost:8298">
+    <xi:include href="http://localhost:8298/?riddl-description"/>
   </interface>
   <interface name="logoverlay">
     <xi:include href="logoverlay.xml"/>

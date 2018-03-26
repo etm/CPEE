@@ -12,33 +12,7 @@ require 'riddl/utils/turtle'
 require 'time'
 
 class Logging < Riddl::Implementation #{{{
-  LOGTEMPLATE = <<-END
-    <log xmlns="http://www.xes-standard.org/" xes.version="2.0" xes.features="nested-attributes">
-      <extension name="Time" prefix="time" uri="http://www.xes-standard.org/time.xesext"/>
-      <extension name="Concept" prefix="concept" uri="http://www.xes-standard.org/concept.xesext"/>
-      <extension name="Organizational" prefix="org" uri="http://www.xes-standard.org/org.xesext"/>
-	    <extension name="Lifecycle" prefix="lifecycle" uri="http://www.xes-standard.org/lifecycle.xesext"/>
-      <global scope="trace">                                                                                                                                          
-        <string key="concept:name" value="__INVALID__"/>
-      </global>
-      <global scope="event">
-        <string key="concept:name" value="__INVALID__"/>
-        <string key="concept:endpoint" value="__ENDPOINT__"/>
-        <string key="id:id" value="__ID__"/>
-        <string key="lifecycle:transition" value="complete" />
-        <date key="time:timestamp" value="1990-02-17T09:45:00.000+01:00"/>
-      </global>
-			<classifier name="Data" keys="data_send data_received"/>
-			<classifier name="Data_Received" keys="data_received"/>
-			<classifier name="Name" keys="concept:name"/>
-			<classifier name="Endpoint" keys="concept:endpoint"/>
-			<classifier name="ID" keys="id:id"/>
-			<classifier name="Lifecycle" keys="lifecycle:transition"/>
-      <trace/>
-    </log>
-  END
   def doc(event_name,log_dir,instancenr,notification)
-    start_x = Time.now
     uuid = notification['instance_uuid']
     activity = notification["activity"]
     parameters = notification['parameters']
@@ -75,7 +49,7 @@ class Logging < Riddl::Implementation #{{{
             receiving.each do |e|
               e.each do |k,v|
                 case v['mimetype']
-                  when /\/xml$/ 
+                  when /\/xml$/
           					list = event.add 'list', :key => "data_received"
                     node = list.add 'string', :key => k
                     node.add XML::Smart.string(v['content']).root
@@ -84,13 +58,13 @@ class Logging < Riddl::Implementation #{{{
                   when /\/html$/
           					list = event.add 'list', :key => "data_received"
                     list.add 'string', :key => k, :value => v['content']
-                  else 
+                  else
           					list = event.add 'list', :key => "data_received"
                     list.add 'string', :key => k, :value => v
-                end    
+                end
               end
             end
-          else 
+          else
             pp receiving
           end
         end
@@ -102,11 +76,8 @@ class Logging < Riddl::Implementation #{{{
         puts e.backtrace
       end
     end
-    end_x = Time.now
-    x = end_x - start_x
-    File.open(log_dir+'/'+uuid+'/time.file',"a+"){ |f| f<< x << "\n" }
   end
-  
+
 	def rec_unjson(value,list,key)
 		case value
 			when Array then
@@ -127,7 +98,7 @@ class Logging < Riddl::Implementation #{{{
   def response
     topic = @p[1].value
     event_name = @p[2].value
-    log_dir = ::File.dirname(__FILE__) + "/logs"
+    log_dir = @a[0]
     instancenr = @h['CPEE_INSTANCE'].split('/').last
     notification = JSON.parse(@p[3].value)
     doc(event_name,log_dir,instancenr,notification)
@@ -135,18 +106,16 @@ class Logging < Riddl::Implementation #{{{
 end  #}}}
 
 
-Riddl::Server.new(::File.dirname(__FILE__) + '/log.xml', :host => "coruscant.wst.univie.ac.at", :port => 9299) do #{{{
+Riddl::Server.new(File.join(__dir__,'/log.xml'), :host => 'localhost', :port => 9299) do #{{{
   accessible_description true
   cross_site_xhr true
-  log_path = "/home/demo/Projects/cpee-helpers/log/logs"
+  @riddllog_dir = File.join(__dir__,logs)"
 
-  interface 'events' do 
-	    run Logging if post 'event'
-	    #run CB if post 'vote'
+  interface 'events' do
+	  run Logging if post 'event'
   end
   interface 'logoverlay' do |r|
-    run Riddl::Utils::FileServe, "#{log_path}#{r[:h]["RIDDL_DECLARATION_PATH"]}.xes","text/xml" if get '*'
+    run Riddl::Utils::FileServe, log_dir + r[:h]["RIDDL_DECLARATION_PATH"]+ ".xes","text/xml" if get
   end
-
 
 end.loop! #}}}

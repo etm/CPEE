@@ -13,39 +13,13 @@ require 'riddl/utils/turtle'
 require 'time'
 
 class Logging < Riddl::Implementation #{{{
-  LOGTEMPLATE = {"log" =>
-    {"extension" =>
-      { "time" =>"http://www.xes-standard.org/time.xesext",
-        "concept" => "http://www.xes-standard.org/concept.xesext",
-        "organisational" => "http://www.xes-standard.org/org.xesext",
-        "lifecylce" => "http://www.xes-standard.org/lifecycle.xesext"
-      },
-      "global" =>
-        {
-          "trace" =>{"concept:name" => "__INVALID__"},
-          "event"=> {
-            "concept:name"=>"__INVALID__",
-            "concept:endpoint" => "",
-            "id:id" => "",
-            "lifecycle:transition" => "complete",
-            "time:timestamp" => ""
-          }
-        },
-      "classifier" =>{
-        "Data" => "data_send data_received",
-        "Data_Received"=>"data_receiver",
-        "Data_Send" => "data_send"
-      },
-      "trace" => {}
-    }
-  }
-  def doc(event_name,log_dir,instancenr,notification)
-    x = Time.now
-    log = LOGTEMPLATE
+  def doc(event_name,log_dir,template,instancenr,notification)
+    log = YAML::load(File.read(template))
     uuid = notification['instance_uuid']
     activity = notification["activity"]
     parameters = notification['parameters']
     receiving = notification['received']
+
     Dir.mkdir(log_dir+'/'+uuid) unless Dir.exist?(log_dir+'/'+uuid)
     time_added=false
     log["log"]["trace"]["concept:name"] ||= "Instance #{instancenr}" unless log["log"]["trace"]["concept:name"]
@@ -79,9 +53,6 @@ class Logging < Riddl::Implementation #{{{
       pid, size = `ps ax -o pid,rss | grep -E "^[[:space:]]*#{$$}"`.strip.split.map(&:to_i)
       File.open(log_dir+'/'+uuid+'/memory.file',"a+"){ |fl| fl<< size << "\n" }
     end
-    y = Time.now
-    z = y-x
-    File.open(log_dir+'/'+uuid+'/time.file',"a+"){ |f| f<< z << "\n" }
   end
 
 	def rec_unjson(value,list,key)
@@ -102,27 +73,27 @@ class Logging < Riddl::Implementation #{{{
 	end
 
   def response
-    topic = @p[1].value
-    event_name = @p[2].value
-    log_dir = ::File.dirname(__FILE__) + "/../logs_yaml"
-    instancenr = @h['CPEE_INSTANCE'].split('/').last
+    topic        = @p[1].value
+    event_name   = @p[2].value
+    log_dir      = @a[0]
+    template     = @a[1]
+    instancenr   = @h['CPEE_INSTANCE'].split('/').last
     notification = JSON.parse(@p[3].value)
-    doc(event_name,log_dir,instancenr,notification)
+    doc event_name, log_dir, template, instancenr, notification
   end
 end  #}}}
 
-
-Riddl::Server.new(::File.dirname(__FILE__) + '/log.xml', :host => "coruscant.wst.univie.ac.at", :port => 9300) do #{{{
+Riddl::Server.new(File.join(__dir__,'/log.xml'), :host => 'localhost', :port => 9299) do #{{{
   accessible_description true
   cross_site_xhr true
-  log_dir = "/home/centurio/Projects/cpee/log/logs_yaml"
+  @riddl_opts[:log_dir] ||= File.join(__dir__,'logs')
+  @riddl_opts[:template] ||= File.join(__dir__,'template.xes_yaml')
 
   interface 'events' do
-	    run Logging if post 'event'
+	  run Logging, @riddl_opts[:log_dir], @riddl_opts[:template] if post 'event'
   end
   interface 'logoverlay' do |r|
-    p log_dir + r[:h]["RIDDL_DECLARATION_PATH"]+ ".xes"
-    run Riddl::Utils::FileServe, log_dir + r[:h]["RIDDL_DECLARATION_PATH"]+ ".xes","text/xml" if get
+    run Riddl::Utils::FileServe, log_dir + r[:h]["RIDDL_DECLARATION_PATH"]+ ".xes","text/plain" if get
   end
 
 end.loop! #}}}

@@ -1,0 +1,21 @@
+---
+log:
+  extension:
+    time: http://www.xes-standard.org/time.xesext
+    concept: http://www.xes-standard.org/concept.xesext
+    organisational: http://www.xes-standard.org/org.xesext
+    lifecylce: http://www.xes-standard.org/lifecycle.xesext
+  global:
+    trace:
+      concept:name: __INVALID__
+    event:
+      concept:name: __INVALID__
+      concept:endpoint: ''
+      id:id: ''
+      lifecycle:transition: complete
+      time:timestamp: ''
+  classifier:
+    Data: data_send data_received
+    Data_Received: data_receiver
+    Data_Send: data_send
+  trace: {}

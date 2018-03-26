@@ -1,0 +1,23 @@
+<log xmlns="http://www.xes-standard.org/" xes.version="2.0" xes.features="nested-attributes">
+  <extension name="Time" prefix="time" uri="http://www.xes-standard.org/time.xesext"/>
+  <extension name="Concept" prefix="concept" uri="http://www.xes-standard.org/concept.xesext"/>
+  <extension name="Organizational" prefix="org" uri="http://www.xes-standard.org/org.xesext"/>
+  <extension name="Lifecycle" prefix="lifecycle" uri="http://www.xes-standard.org/lifecycle.xesext"/>
+  <global scope="trace">
+    <string key="concept:name" value="__INVALID__"/>
+  </global>
+  <global scope="event">
+    <string key="concept:name" value="__INVALID__"/>
+    <string key="concept:endpoint" value="__ENDPOINT__"/>
+    <string key="id:id" value="__ID__"/>
+    <string key="lifecycle:transition" value="complete" />
+    <date key="time:timestamp" value="1990-02-17T09:45:00.000+01:00"/>
+  </global>
+  <classifier name="Data" keys="data_send data_received"/>
+  <classifier name="Data_Received" keys="data_received"/>
+  <classifier name="Name" keys="concept:name"/>
+  <classifier name="Endpoint" keys="concept:endpoint"/>
+  <classifier name="ID" keys="id:id"/>
+  <classifier name="Lifecycle" keys="lifecycle:transition"/>
+  <trace/>
+</log>
