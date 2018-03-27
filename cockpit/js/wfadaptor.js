@@ -353,12 +353,16 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     var serxml = $(description.get(0).documentElement).clone(true);
     serxml.removeAttr('svg-id');
     serxml.removeAttr('svg-type');
+    serxml.removeAttr('svg-subtype');
     serxml.removeAttr('svg-label');
     $('*[svg-id]',serxml).each(function(){
       $(this).removeAttr('svg-id');
     });
     $('*[svg-type]',serxml).each(function(){
       $(this).removeAttr('svg-type');
+    });
+    $('*[svg-subtype]',serxml).each(function(){
+      $(this).removeAttr('svg-subtype');
     });
     $('*[svg-label]',serxml).each(function(){
       $(this).removeAttr('svg-label');
@@ -546,7 +550,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       else if(typeof illustrator.elements[tname].resolve_symbol == 'function') {sym_name = illustrator.elements[tname].resolve_symbol(this);}
       else if(typeof illustrator.elements[tname].resolve_symbol == 'string')   {sym_name = illustrator.elements[tname].resolve_symbol;}
       else                                                                     {sym_name = tname;}
-      $(this).attr('svg-type',sym_name);
+      $(this).attr('svg-type',tname);
+      $(this).attr('svg-subtype',sym_name);
       if((illustrator.elements[tname] && illustrator.elements[tname].svg) || sym_name == 'unknown') {
         var g = illustrator.draw.draw_symbol(tname, sym_name, $(this).attr('svg-id'), $(this).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[tname] ? illustrator.elements[tname].type : 'primitive unknown');
         if (illustrator.elements[sym_name].info) {
