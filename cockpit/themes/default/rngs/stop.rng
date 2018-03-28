@@ -1,0 +1,5 @@
+<element rngui:version="1.2" name="stop" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <attribute name="id" rngui:label="ID" rngui:default="javascript:get_free_id()">
+    <data type="string" rngui:readonly="true"/>
+  </attribute>
+</element>

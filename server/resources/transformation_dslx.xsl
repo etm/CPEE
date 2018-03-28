@@ -68,11 +68,25 @@
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='manipulate'">
+      <xsl:if test="@label">
+        <xsl:text>, { :label => "</xsl:text>
+          <xsl:value-of select="@label"/>
+        <xsl:text>" }</xsl:text>
+      </xsl:if>
       <xsl:call-template name="print-mcontent">
         <xsl:with-param name="myspace">
           <xsl:value-of select="$myspace"/>
         </xsl:with-param>
       </xsl:call-template>
+      <xsl:call-template name="print-newline"/>
+    </xsl:if>
+    <xsl:if test="name()='terminate'">
+      <xsl:text>terminate</xsl:text>
+      <xsl:call-template name="print-newline"/>
+    </xsl:if>
+    <xsl:if test="name()='stop'">
+      <xsl:text>stop :</xsl:text>
+      <xsl:value-of select="@id"/>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='escape'">

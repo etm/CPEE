@@ -84,6 +84,9 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       @handler_passthrough = passthrough
     end
   end # }}}
+  def activity_manipulate_handle(parameters) #{{{
+    @label = parameters[:label]
+  end #}}}
 
   def activity_result_status # {{{
     WEEL::Status.new(1, "everything okay")

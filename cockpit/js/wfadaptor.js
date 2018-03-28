@@ -344,7 +344,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false});
     self.set_labels(graph);
     // set labels
     illustrator.set_svg(graph);
@@ -501,6 +501,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
     $(root).children().each(function() {
       var tname = this.tagName;
+      pos.final = illustrator.elements[tname].final ? true : false;
 
       // Calculate next position {{{
       if($(this).attr('collapsed') == undefined || $(this).attr('collapsed') == 'false') { collapsed = false; }
@@ -570,14 +571,21 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       }
       if(illustrator.elements[tname] != undefined && illustrator.elements[tname].endnodes != 'this')  {
         for(i in block.endnodes) endnodes.push(block.endnodes[i]); // collects all endpoints from different childs e.g. alternatives from choose
-      } else { endnodes = [jQuery.extend(true, {}, pos)]; } // sets this element as only endpoint (aggreagte)
+      } else { endnodes = [jQuery.extend(true, {}, pos)]; } // sets this element as only endpoint (aggregate)
       if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
         illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos, null, null, true);
       } else {
-        if ($.inArray(tname,illustrator.noarrow) == -1)
-          for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos, null, null, true);
-        else
-          for(node in prev) illustrator.draw.draw_connection(group, prev[node], pos, null, null, false);
+        if ($.inArray(tname,illustrator.noarrow) == -1) {
+          for (node in prev) {
+            if (!prev[node].final)
+              illustrator.draw.draw_connection(group, prev[node], pos, null, null, true);
+          }
+        } else {
+          for(node in prev) {
+            if (!prev[node].final)
+              illustrator.draw.draw_connection(group, prev[node], pos, null, null, false);
+          }
+        }
       }
       // }}}
       // Prepare next iteration {{{

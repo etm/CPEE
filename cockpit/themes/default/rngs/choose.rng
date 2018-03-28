@@ -5,4 +5,8 @@
       <value>inclusive</value>
     </choice>
   </attribute>
+  <element name="alternative">
+    <attribute name="condition"><data type="string"/></attribute>
+  </element>
+  <element name="otherwise"/>
 </element>

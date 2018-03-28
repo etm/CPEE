@@ -1,0 +1,5 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="15" cy="15" r="14" class="hfill rfill cline stand"/>
+  <line x1="12.5" y1="22.5" x2="12.5" y2="8.5" class="stand"/>
+  <line x1="17.5" y1="22.5" x2="17.5" y2="8.5" class="stand"/>
+</svg>

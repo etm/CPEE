@@ -18,12 +18,12 @@
   <attributes type="complex" modifiable="true">
     <zeroOrMore>
       <element><anyName/><text/></element>
-    </zeroOrMore>  
-  </attributes>  
+    </zeroOrMore>
+  </attributes>
   <handlerwrapper type="simple" modifiable="true">
     <data type="string">
       <param name="pattern">[A-Z][a-zA-Z]*</param>
-    </data>  
+    </data>
   </handlerwrapper>
   <dsl type="simple" modifiable="false" mutable="false">
     <text/>
@@ -39,7 +39,7 @@
           <value>xslt</value>
           <value>clean</value>
           <value>none</value>
-        </choice>  
+        </choice>
       </attribute>
       <data type="anyURI"/>
     </element>
@@ -50,7 +50,7 @@
           <value>xslt</value>
           <value>clean</value>
           <value>none</value>
-        </choice>  
+        </choice>
       </attribute>
       <data type="anyURI"/>
     </element>
@@ -61,7 +61,7 @@
           <value>xslt</value>
           <value>clean</value>
           <value>none</value>
-        </choice>  
+        </choice>
       </attribute>
       <data type="anyURI"/>
     </element>
@@ -71,9 +71,10 @@
       <running putable="true"/>
       <ready putable="true"/>
       <simulating putable="true"/>
-    </ready>  
+    </ready>
     <running>
       <stopping putable="true"/>
+      <finishing putable="false"/>
       <finished putable="false"/>
     </running>
     <simulating>
@@ -87,9 +88,9 @@
       <stopped putable="true"/>
       <running putable="true"/>
       <simulating putable="true"/>
-    </stopped>  
+    </stopped>
     <finished/>
-  </state>  
+  </state>
   <status type="complex" modifiable="false" mutable="false">
     <optional>
       <element name='id'>
@@ -98,26 +99,26 @@
       <element name='message'>
         <data type="string"/>
       </element>
-    </optional>  
-  </status>  
+    </optional>
+  </status>
   <positions type="complex" modifiable="true">
     <zeroOrMore>
       <element>
         <anyName/>
         <data type="string">
           <param name="pattern">(at|after)(;[A-Za-z0-9]+)?</param>
-        </data>  
+        </data>
       </element>
-    </zeroOrMore>  
-  </positions>  
+    </zeroOrMore>
+  </positions>
   <dataelements type="complex" modifiable="true">
     <zeroOrMore>
       <element><anyName/><text/></element>
-    </zeroOrMore>  
-  </dataelements>  
+    </zeroOrMore>
+  </dataelements>
   <endpoints type="complex" modifiable="true">
     <zeroOrMore>
       <element><anyName/><text/></element>
-    </zeroOrMore>  
+    </zeroOrMore>
   </endpoints>
 </properties>

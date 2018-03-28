@@ -59,9 +59,9 @@ function WFAdaptorManifestation(adaptor) {
     var tab  = $('#dat_details');
     var node = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
         tab.empty();
-    if (self.adaptor.description.elements[$(node).attr('svg-type')]) {
+    if (self.adaptor.description.elements[$(node).attr('svg-subtype')]) {
       save['details_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
-      var rng = self.adaptor.description.elements[$(node).attr('svg-type')].clone();
+      var rng = self.adaptor.description.elements[$(node).attr('svg-subtype')].clone();
       if (save['endpoints_cache'][$(node).attr('endpoint')] && save['endpoints_cache'][$(node).attr('endpoint')].schema) {
         var schema = save['endpoints_cache'][$(node).attr('endpoint')].schema.documentElement;
         $(rng).find(' > element[name="parameters"] > element[name="arguments"]').replaceWith($(schema).clone());
@@ -275,6 +275,37 @@ function WFAdaptorManifestation(adaptor) {
       'click': self.events.click,
     }//}}}
   }; /*}}}*/
+  this.elements.stop = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/stop.svg'
+    },//}}}
+    'description': self.adaptor.theme_dir + 'rngs/stop.rng',
+    'permissible_children': function(node,mode) { //{{{
+      return [];
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'click': self.events.click,
+    }//}}}
+  }; /*}}}*/
+  this.elements.terminate = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'final': true,
+      'svg': self.adaptor.theme_dir + 'symbols/terminate.svg'
+    },//}}}
+    'description': self.adaptor.theme_dir + 'rngs/terminate.rng',
+    'permissible_children': function(node,mode) { //{{{
+      return [];
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'click': self.events.click,
+    }//}}}
+  }; /*}}}*/
 
   // Complex Elements
   this.elements.choose = { /*{{{*/
@@ -390,6 +421,16 @@ function WFAdaptorManifestation(adaptor) {
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
+        {'label': 'Terminate',
+         'function_call': func,
+         'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+         'type': 'terminate',
+         'params': [self.adaptor.description.elements.terminate, node]},
+        {'label': 'Stop',
+         'function_call': func,
+         'menu_icon': self.elements.stop.illustrator.svg.clone(),
+         'type': 'stop',
+         'params': [self.adaptor.description.elements.stop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
@@ -463,6 +504,16 @@ function WFAdaptorManifestation(adaptor) {
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
+        {'label': 'Terminate',
+         'function_call': func,
+         'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+         'type': 'terminate',
+         'params': [self.adaptor.description.elements.terminate, node]},
+        {'label': 'Stop',
+         'function_call': func,
+         'menu_icon': self.elements.stop.illustrator.svg.clone(),
+         'type': 'stop',
+         'params': [self.adaptor.description.elements.stop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
@@ -525,6 +576,16 @@ function WFAdaptorManifestation(adaptor) {
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
+        {'label': 'Terminate',
+         'function_call': func,
+         'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+         'type': 'terminate',
+         'params': [self.adaptor.description.elements.terminate, node]},
+        {'label': 'Stop',
+         'function_call': func,
+         'menu_icon': self.elements.stop.illustrator.svg.clone(),
+         'type': 'stop',
+         'params': [self.adaptor.description.elements.stop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
@@ -602,6 +663,16 @@ function WFAdaptorManifestation(adaptor) {
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
+        {'label': 'Terminate',
+         'function_call': self.adaptor.description.insert_last_into,
+         'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+         'type': 'terminate',
+         'params': [self.adaptor.description.elements.terminate, node]},
+        {'label': 'Stop',
+         'function_call': self.adaptor.description.insert_last_into,
+         'menu_icon': self.elements.stop.illustrator.svg.clone(),
+         'type': 'stop',
+         'params': [self.adaptor.description.elements.stop, node]},
         {'label': 'Critical',
          'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
@@ -683,6 +754,16 @@ function WFAdaptorManifestation(adaptor) {
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
+        {'label': 'Terminate',
+         'function_call': func,
+         'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+         'type': 'terminate',
+         'params': [self.adaptor.description.elements.terminate, node]},
+        {'label': 'Stop',
+         'function_call': func,
+         'menu_icon': self.elements.stop.illustrator.svg.clone(),
+         'type': 'stop',
+         'params': [self.adaptor.description.elements.stop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
@@ -758,6 +839,16 @@ function WFAdaptorManifestation(adaptor) {
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
+        {'label': 'Terminate',
+         'function_call': func,
+         'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+         'type': 'terminate',
+         'params': [self.adaptor.description.elements.terminate, node]},
+        {'label': 'Stop',
+         'function_call': func,
+         'menu_icon': self.elements.stop.illustrator.svg.clone(),
+         'type': 'stop',
+         'params': [self.adaptor.description.elements.stop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
@@ -856,6 +947,16 @@ function WFAdaptorManifestation(adaptor) {
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
+        {'label': 'Terminate',
+         'function_call': func,
+         'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+         'type': 'terminate',
+         'params': [self.adaptor.description.elements.terminate, node]},
+        {'label': 'Stop',
+         'function_call': func,
+         'menu_icon': self.elements.stop.illustrator.svg.clone(),
+         'type': 'stop',
+         'params': [self.adaptor.description.elements.stop, node]},
         {'label': 'Critical',
          'function_call': func,
          'menu_icon': self.elements.critical.illustrator.svg.clone(),
