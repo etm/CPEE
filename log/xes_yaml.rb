@@ -12,7 +12,7 @@ class Logging < Riddl::Implementation #{{{
     uuid = notification['instance_uuid']
     return unless uuid
 
-    activity = notification["activity"]
+    activity = notification['activity']
     parameters = notification['parameters']
     receiving = notification['received']
 
