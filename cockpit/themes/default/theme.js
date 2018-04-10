@@ -23,13 +23,13 @@ function WFAdaptorManifestation(adaptor) {
       return($X(ntxt));
     } else {
       if (opts && opts == 'clone') {
+        base = base.clone();
         if (base.attr('id')) {
-          base = base.clone();
-          // not very generic, because it is assumed that id is attribute of top level
-          // a better solution would be to parse rng for get_free_id()
-          // but: there is lots of lock-in to element-id, so fuck it
           base.attr('id',self.adaptor.description.get_free_id());
         }
+        base.find('*[id]').each(function(k,v){
+          $(v).attr('id',self.adaptor.description.get_free_id(base));
+        });
       }
       return base;
     }

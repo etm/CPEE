@@ -375,8 +375,16 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var context_eval = this.context_eval = function(what) { // {{{
     return eval(what);
   } // }}}
-  var get_free_id = this.get_free_id = function() { // {{{
+  var get_free_id = this.get_free_id = function(other) { // {{{
     var existing = new Array();
+    if (other) {
+      if ($(other).attr('id')) {
+        existing.push($(other).attr('id'));
+      }
+      $(other).find("[id]").each(function(k,v){
+        existing.push($(v).attr('id'));
+      });
+    }
     $('*[id]', description).each(function(){existing.push($(this).attr('id'))});
     var id = 1;
     while ($.inArray('a' + id,existing) != -1) {
