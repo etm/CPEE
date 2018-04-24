@@ -15,12 +15,13 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'rubygems'
+require 'memory_profiler'
 gem 'nokogiri'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee/implementation')
 
-Riddl::Server.new(CPEE::SERVER, :port => 8298) do
+Riddl::Server.new(CPEE::SERVER, :port => 8298) do |opts|
   accessible_description true
   cross_site_xhr true
 
-  use CPEE::implementation(@riddl_opts)
+  use CPEE::implementation(opts)
 end.loop!

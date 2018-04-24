@@ -17,7 +17,7 @@ require 'riddl/server'
 require 'riddl/client'
 require 'riddl/utils/notifications_producer'
 require 'riddl/utils/properties'
-require ::File.dirname(__FILE__) + '/controller'
+require_relative  'controller'
 
 require 'ostruct'
 class ParaStruct < OpenStruct
@@ -30,26 +30,26 @@ def ⭐(a); ParaStruct.new(a); end
 
 module CPEE
 
-  SERVER = File.expand_path(File.dirname(__FILE__) + '/../cpee.xml')
+  SERVER = File.expand_path(File.join(__dir__,'..','cpee.xml'))
 
   def self::implementation(opts)
-    opts[:instances]                  ||= File.expand_path(File.dirname(__FILE__) + '/../../server/instances')
-    opts[:global_handlerwrappers]     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/handlerwrappers')
+    opts[:instances]                  ||= File.expand_path(File.join(__dir__,'..','..','server','instances'))
+    opts[:global_handlerwrappers]     ||= File.expand_path(File.join(__dir__,'..','..','server','handlerwrappers'))
     opts[:handlerwrappers]            ||= ''
-    opts[:topics]                     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/topics.xml')
-    opts[:properties_init]            ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.init')
-    opts[:properties_schema_active]   ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.active')
-    opts[:properties_schema_finished] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.finished')
-    opts[:properties_schema_inactive] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.inactive')
-    opts[:transformation_dslx]        ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation_dslx.xsl')
-    opts[:transformation_service]     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation.xml')
-    opts[:empty_dslx]                 ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/empty_dslx.xml')
+    opts[:topics]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','topics.xml'))
+    opts[:properties_init]            ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.init'))
+    opts[:properties_schema_active]   ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.schema.active'))
+    opts[:properties_schema_finished] ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.schema.finished'))
+    opts[:properties_schema_inactive] ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.schema.inactive'))
+    opts[:transformation_dslx]        ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation_dslx.xsl'))
+    opts[:transformation_service]     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation.xml'))
+    opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
     opts[:notifications_init]         ||= nil
     opts[:infinite_loop_stop]         ||= 10000
 
-    opts[:runtime_options]            << [
+    opts[:runtime_cmds]               << [
       "startclean", "Delete instances before starting.", Proc.new { |status|
-        Dir.glob(File.expand_path(File.dirname(__FILE__) + '/../../server/instances/*')).each do |d|
+        Dir.glob(File.expand_path(File.join(opts[:instances],'*'))).each do |d|
           FileUtils.rm_r(d) if File.basename(d) =~ /^\d+$/
         end
       }
@@ -64,7 +64,7 @@ module CPEE
       end unless opts[:handlerwrappers].strip == ''
 
       controller = {}
-      Dir[opts[:instances] + '/*/properties.xml'].each do |e|
+      Dir[File.join(opts[:instances],'*','properties.xml')].each do |e|
         id = ::File::basename(::File::dirname(e))
         (controller[id.to_i] = (Controller.new(id,opts)) rescue nil)
       end
