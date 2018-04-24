@@ -127,11 +127,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     end
     unless changed_dataelements.nil?
       @controller.serialize_dataelements!
-      @controller.notify("dataelements/change", :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_dataelements, :values => dataelements)
+      @controller.notify("dataelements/change", :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_dataelements, :values => dataelements.select{|k,v| changed_dataelements.include?(k)})
     end
     unless changed_endpoints.nil?
       @controller.serialize_endpoints!
-      @controller.notify("endpoints/change", :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints)
+      @controller.notify("endpoints/change", :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints.select{|k,v| changed_endpoints.include?(k)})
     end
   end # }}}
 
