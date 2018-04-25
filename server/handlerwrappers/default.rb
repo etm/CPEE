@@ -167,15 +167,26 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     result
   end
 
+
   def structurize_result(result)
     result.map do |r|
       if r.is_a? Riddl::Parameter::Simple
         { r.name => r.value }
       elsif r.is_a? Riddl::Parameter::Complex
+        res = if r.mimetype == 'application/json'
+          JSON::parse(r.value.read) rescue nil
+        elsif r.mimetype == 'text/plain' || r.mimetype == 'text/html'
+          ttt = r.value.read
+          ttt = ttt.to_f if ttt == ttt.to_f.to_s
+          ttt = ttt.to_i if ttt == ttt.to_i.to_s
+          ttt
+        else
+          r.value.read
+        end
         tmp = {
           r.name == '' ? 'result' : r.name => {
             'mimetype' => r.mimetype,
-            'content' => r.value.read
+            'content' => res
           }
         }
         r.value.rewind
