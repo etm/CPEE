@@ -70,10 +70,6 @@ class SOAPHandlerWrapper < WEEL::HandlerWrapperBase
     @handler_continue.continue
   end # }}}
 
-  def activity_result_status # {{{
-    WEEL::Status.new(1, "everything okay")
-  end # }}}
-
   def activity_result_value # {{{
     @handler_returnValue
   end # }}}
