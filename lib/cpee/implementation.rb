@@ -141,7 +141,7 @@ module CPEE
         controller.each do |k,v|
           name = v.properties.data.find("string(/p:properties/p:attributes/p:info)")
           state = v.properties.data.find("string(/p:properties/p:state)")
-          ins.root.add('instance',name, 'id' => k, 'state' => state)
+          ins.root.add('instance',name, 'uuid' => v.uuid, 'id' => k, 'state' => state)
         end
         ins.to_s
       end
