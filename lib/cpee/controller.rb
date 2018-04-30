@@ -103,13 +103,22 @@ module CPEE
 
     def help
       "\033[1m\033[31mpm or public_methods(false)\033[0m\033[0m\n  Methods.\n" +
-      "\033[1m\033[31miv or instance_variables\033[0m\033[0m\n  Attributes.\n"
+      "\033[1m\033[31miv or instance_variables\033[0m\033[0m\n  Attributes.\n" +
+      "\033[1m\033[31mgc or GC.stat\033[0m\033[0m\n  GC stats to look for memleaks. Google for 'GC.stat ruby'.\n"
     end
     def pm
       public_methods(false)
     end
     def iv
       instance_variables
+    end
+    def gc
+      x = GC.stat
+      y = {}
+      y[:heap_live_slots]         = x[:heap_live_slots]
+      y[:total_allocated_objects] = x[:total_allocated_objects]
+      y[:total_freed_objects]     = x[:total_freed_objects]
+      y
     end
 
     attr_reader :id

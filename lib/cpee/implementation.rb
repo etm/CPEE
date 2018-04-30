@@ -17,7 +17,7 @@ require 'riddl/server'
 require 'riddl/client'
 require 'riddl/utils/notifications_producer'
 require 'riddl/utils/properties'
-require_relative  'controller'
+require_relative 'controller'
 
 require 'ostruct'
 class ParaStruct < OpenStruct
