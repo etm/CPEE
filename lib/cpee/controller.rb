@@ -102,8 +102,14 @@ module CPEE
     end
 
     def help
-      "\033[1m\033[31mpublic_methods(false)\033[0m\033[0m\n  Methods.\n" +
-      "\033[1m\033[31minstance_variables\033[0m\033[0m\n  Attributes.\n"
+      "\033[1m\033[31mpm or public_methods(false)\033[0m\033[0m\n  Methods.\n" +
+      "\033[1m\033[31miv or instance_variables\033[0m\033[0m\n  Attributes.\n"
+    end
+    def pm
+      public_methods(false)
+    end
+    def iv
+      instance_variables
     end
 
     attr_reader :id
