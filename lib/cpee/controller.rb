@@ -61,7 +61,6 @@ module CPEE
       @votes_results = {}
       @communication = {}
       @callbacks = {}
-      @instance = EmptyWorkflow.new(self)
       @positions = []
       @attributes = {}
       @thread = nil
@@ -91,14 +90,18 @@ module CPEE
           doc.find("/p:properties/p:state").first.text = 'stopped'
         end
       end
-      unserialize_handlerwrapper!
-      unserialize_dataelements!
-      unserialize_endpoints!
-      unserialize_dsl!
-      unserialize_positions!
-
       @uuid = sync_uuid!
-      unserialize_attributes!
+      if @properties.data.find("string(/p:properties/p:state)") == "finished"
+        @instance = nil
+      else
+        @instance = EmptyWorkflow.new(self)
+        unserialize_handlerwrapper!
+        unserialize_dataelements!
+        unserialize_endpoints!
+        unserialize_dsl!
+        unserialize_positions!
+        unserialize_attributes!
+      end
     end
 
     def help
@@ -182,6 +185,10 @@ module CPEE
 
     def info
       @properties.data.find("string(/p:properties/p:attributes/p:info)")
+    end
+
+    def finalize_if_finished
+      @instance = nil if @instance.state == :finished
     end
 
     def serialize_dataelements! #{{{

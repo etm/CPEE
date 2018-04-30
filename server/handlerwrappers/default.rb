@@ -17,6 +17,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     controller = arguments[0]
 		controller.serialize_state!
 		controller.notify("state/change", :instance => controller.instance, :state => newstate)
+		controller.finalize_if_finished
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{
     controller = arguments[0]
