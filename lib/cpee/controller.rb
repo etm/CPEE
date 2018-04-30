@@ -81,10 +81,6 @@ module CPEE
         @directory + '/notifications/',
         opts[:notifications_init]
       )
-
-      @notifications.subscriptions.keys.each do |key|
-        self.unserialize_notifications!(:cre,key)
-      end
       unless ['stopped','ready','finished'].include?(@properties.data.find("string(/p:properties/p:state)"))
         @properties.modify do |doc|
           doc.find("/p:properties/p:state").first.text = 'stopped'
@@ -95,6 +91,11 @@ module CPEE
         @instance = nil
       else
         @instance = EmptyWorkflow.new(self)
+
+        @notifications.subscriptions.keys.each do |key|
+          self.unserialize_notifications!(:cre,key)
+        end
+
         unserialize_handlerwrapper!
         unserialize_dataelements!
         unserialize_endpoints!
@@ -188,7 +189,12 @@ module CPEE
     end
 
     def finalize_if_finished
-      @instance = nil if @instance.state == :finished
+      if @instance.state == :finished
+        @instance = nil
+        @notifications.subscriptions.keys.each do |key|
+          unserialize_notifications!(:del,key)
+        end
+      end
     end
 
     def serialize_dataelements! #{{{
