@@ -134,6 +134,9 @@ module CPEE
       x.class == String ? x : x.pretty_inspect
     end
 
+    def host
+      @opts[:host]
+    end
     def base_url
       @opts[:url]
     end

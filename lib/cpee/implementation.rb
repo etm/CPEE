@@ -213,9 +213,9 @@ module CPEE
                 [contenteditable]:focus { outline: 0px solid transparent; }
                 body{ font-family: Courier,Courier New,Monospace}
               </style>
-              <script type="text/javascript" src="//localhost/js_libs/jquery.min.js"></script>
-              <script type="text/javascript" src="//localhost/js_libs/ansi_up.js"></script>
-              <script type="text/javascript" src="//localhost/js_libs/console.js"></script>
+              <script type="text/javascript" src="//#{controller[id].host}/js_libs/jquery.min.js"></script>
+              <script type="text/javascript" src="//#{controller[id].host}/js_libs/ansi_up.js"></script>
+              <script type="text/javascript" src="//#{controller[id].host}/js_libs/console.js"></script>
             </head>
             <body>
               <p>Instance Web Console. Type "help" to get started.</p>
