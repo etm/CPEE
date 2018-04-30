@@ -101,6 +101,10 @@ module CPEE
       unserialize_attributes!
     end
 
+    def help
+      "\n"
+    end
+
     attr_reader :id
     attr_reader :properties
     attr_reader :notifications

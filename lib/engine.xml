@@ -51,6 +51,9 @@
   <message name="cmdout">
     <parameter name="res" mimetype="text/plain"/>
   </message>
+  <message name="cmdui">
+    <parameter name="res" mimetype="text/html"/>
+  </message>
 
   <message name="message">
     <parameter name="type" type="integer"/>
@@ -71,6 +74,7 @@
       <get in="*" out="instance-info"/>
       <delete in="*"/>
       <resource relative="console">
+        <get out="cmdui"/>
         <get in="cmdin" out="cmdout"/>
       </resource>
       <resource relative="callbacks">

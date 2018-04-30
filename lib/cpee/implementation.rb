@@ -81,6 +81,7 @@ module CPEE
           run CPEE::Info, controller if get
           run CPEE::DeleteInstance, controller, opts if delete
           on resource 'console' do
+            run CPEE::ConsoleUI, controller if get
             run CPEE::Console, controller if get 'cmdin'
           end
           on resource 'callbacks' do
@@ -192,6 +193,44 @@ module CPEE
     end
   end #}}}
 
+  class ConsoleUI < Riddl::Implementation #{{{
+    def response
+      controller = @a[0]
+      id = @r[0].to_i
+      unless controller[id]
+        @status = 400
+        return
+      end
+      Riddl::Parameter::Complex.new("res","text/html") do
+        <<-END
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+              <title>Instance Web Console</title>
+              <style type="text/css">
+                [contenteditable] { display: inline; }
+                [contenteditable]:focus { outline: 0px solid transparent; }
+                body{ font-family: Courier,Courier New,Monospace}
+              </style>
+              <script type="text/javascript" src="//localhost/js_libs/jquery.min.js"></script>
+              <script type="text/javascript" src="//localhost/js_libs/ansi_up.js"></script>
+              <script type="text/javascript" src="//localhost/js_libs/console.js"></script>
+            </head>
+            <body>
+              <p>Instance Web Console. Type "help" to get started.</p>
+              <div class="console-line" id="console-template" style="display: none">
+                <strong>console$&nbsp;</strong><div class='edit' contenteditable="true" ></div>
+              </div>
+              <div class="console-line">
+                <strong>console$&nbsp;</strong><div class='edit' contenteditable="true"></div>
+              </div>
+            </body>
+          </html>
+        END
+      end
+    end
+  end #}}}
   class Console < Riddl::Implementation #{{{
     def response
       controller = @a[0]
