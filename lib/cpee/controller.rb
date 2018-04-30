@@ -102,7 +102,8 @@ module CPEE
     end
 
     def help
-      "\n"
+      "\033[1m\033[31mpublic_methods(false)\033[0m\033[0m\n  Methods.\n" +
+      "\033[1m\033[31minstance_variables\033[0m\033[0m\n  Attributes.\n"
     end
 
     attr_reader :id
@@ -114,7 +115,8 @@ module CPEE
     attr_reader :uuid
 
     def console(cmd)
-      eval(cmd).pretty_inspect
+      x = eval(cmd)
+      x.class == String ? x : x.pretty_inspect
     end
 
     def base_url
