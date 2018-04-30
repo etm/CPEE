@@ -17,7 +17,7 @@ require 'riddl/server'
 require 'riddl/client'
 require 'riddl/utils/notifications_producer'
 require 'riddl/utils/properties'
-require ::File.dirname(__FILE__) + '/controller'
+require_relative 'controller'
 
 require 'ostruct'
 class ParaStruct < OpenStruct
@@ -30,26 +30,26 @@ def ⭐(a); ParaStruct.new(a); end
 
 module CPEE
 
-  SERVER = File.expand_path(File.dirname(__FILE__) + '/../cpee.xml')
+  SERVER = File.expand_path(File.join(__dir__,'..','cpee.xml'))
 
   def self::implementation(opts)
-    opts[:instances]                  ||= File.expand_path(File.dirname(__FILE__) + '/../../server/instances')
-    opts[:global_handlerwrappers]     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/handlerwrappers')
+    opts[:instances]                  ||= File.expand_path(File.join(__dir__,'..','..','server','instances'))
+    opts[:global_handlerwrappers]     ||= File.expand_path(File.join(__dir__,'..','..','server','handlerwrappers'))
     opts[:handlerwrappers]            ||= ''
-    opts[:topics]                     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/topics.xml')
-    opts[:properties_init]            ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.init')
-    opts[:properties_schema_active]   ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.active')
-    opts[:properties_schema_finished] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.finished')
-    opts[:properties_schema_inactive] ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/properties.schema.inactive')
-    opts[:transformation_dslx]        ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation_dslx.xsl')
-    opts[:transformation_service]     ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/transformation.xml')
-    opts[:empty_dslx]                 ||= File.expand_path(File.dirname(__FILE__) + '/../../server/resources/empty_dslx.xml')
+    opts[:topics]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','topics.xml'))
+    opts[:properties_init]            ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.init'))
+    opts[:properties_schema_active]   ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.schema.active'))
+    opts[:properties_schema_finished] ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.schema.finished'))
+    opts[:properties_schema_inactive] ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.schema.inactive'))
+    opts[:transformation_dslx]        ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation_dslx.xsl'))
+    opts[:transformation_service]     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation.xml'))
+    opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
     opts[:notifications_init]         ||= nil
     opts[:infinite_loop_stop]         ||= 10000
 
-    opts[:runtime_options]            << [
+    opts[:runtime_cmds]               << [
       "startclean", "Delete instances before starting.", Proc.new { |status|
-        Dir.glob(File.expand_path(File.dirname(__FILE__) + '/../../server/instances/*')).each do |d|
+        Dir.glob(File.expand_path(File.join(opts[:instances],'*'))).each do |d|
           FileUtils.rm_r(d) if File.basename(d) =~ /^\d+$/
         end
       }
@@ -64,7 +64,7 @@ module CPEE
       end unless opts[:handlerwrappers].strip == ''
 
       controller = {}
-      Dir[opts[:instances] + '/*/properties.xml'].each do |e|
+      Dir[File.join(opts[:instances],'*','properties.xml')].each do |e|
         id = ::File::basename(::File::dirname(e))
         (controller[id.to_i] = (Controller.new(id,opts)) rescue nil)
       end
@@ -81,6 +81,7 @@ module CPEE
           run CPEE::Info, controller if get
           run CPEE::DeleteInstance, controller, opts if delete
           on resource 'console' do
+            run CPEE::ConsoleUI, controller if get
             run CPEE::Console, controller if get 'cmdin'
           end
           on resource 'callbacks' do
@@ -141,7 +142,7 @@ module CPEE
         controller.each do |k,v|
           name = v.properties.data.find("string(/p:properties/p:attributes/p:info)")
           state = v.properties.data.find("string(/p:properties/p:state)")
-          ins.root.add('instance',name, 'id' => k, 'state' => state)
+          ins.root.add('instance',name, 'uuid' => v.uuid, 'id' => k, 'state' => state)
         end
         ins.to_s
       end
@@ -192,6 +193,44 @@ module CPEE
     end
   end #}}}
 
+  class ConsoleUI < Riddl::Implementation #{{{
+    def response
+      controller = @a[0]
+      id = @r[0].to_i
+      unless controller[id]
+        @status = 400
+        return
+      end
+      Riddl::Parameter::Complex.new("res","text/html") do
+        <<-END
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+              <title>Instance Web Console</title>
+              <style type="text/css">
+                [contenteditable] { display: inline; }
+                [contenteditable]:focus { outline: 0px solid transparent; }
+                body{ font-family: Courier,Courier New,Monospace}
+              </style>
+              <script type="text/javascript" src="//localhost/js_libs/jquery.min.js"></script>
+              <script type="text/javascript" src="//localhost/js_libs/ansi_up.js"></script>
+              <script type="text/javascript" src="//localhost/js_libs/console.js"></script>
+            </head>
+            <body>
+              <p>Instance Web Console. Type "help" to get started.</p>
+              <div class="console-line" id="console-template" style="display: none">
+                <strong>console$&nbsp;</strong><div class='edit' contenteditable="true" ></div>
+              </div>
+              <div class="console-line">
+                <strong>console$&nbsp;</strong><div class='edit' contenteditable="true"></div>
+              </div>
+            </body>
+          </html>
+        END
+      end
+    end
+  end #}}}
   class Console < Riddl::Implementation #{{{
     def response
       controller = @a[0]

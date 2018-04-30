@@ -101,6 +101,26 @@ module CPEE
       unserialize_attributes!
     end
 
+    def help
+      "\033[1m\033[31mpm or public_methods(false)\033[0m\033[0m\n  Methods.\n" +
+      "\033[1m\033[31miv or instance_variables\033[0m\033[0m\n  Attributes.\n" +
+      "\033[1m\033[31mgc or GC.stat\033[0m\033[0m\n  GC stats to look for memleaks. Google for 'GC.stat ruby'.\n"
+    end
+    def pm
+      public_methods(false)
+    end
+    def iv
+      instance_variables
+    end
+    def gc
+      x = GC.stat
+      y = {}
+      y[:heap_live_slots]         = x[:heap_live_slots]
+      y[:total_allocated_objects] = x[:total_allocated_objects]
+      y[:total_freed_objects]     = x[:total_freed_objects]
+      y
+    end
+
     attr_reader :id
     attr_reader :properties
     attr_reader :notifications
@@ -110,29 +130,21 @@ module CPEE
     attr_reader :uuid
 
     def console(cmd)
-      eval(cmd).pretty_inspect
+      x = eval(cmd)
+      x.class == String ? x : x.pretty_inspect
     end
 
     def base_url
       @opts[:url]
     end
-    def base_jid
-      @opts[:jid]
-    end
     def instance_url
       "#{@opts[:url]}/#{@id}"
     end
-    def instance_jid
-      "#{@opts[:jid]}/#{@id}"
-    end
-    def xmpp
-      @opts[:xmpp]
-    end
     def base
-      @opts[:jid] ? base_url + "," + base_jid : base_url
+      base_url
     end
     def instance
-      @opts[:jid] ? instance_url + "," + instance_jid : instance_url
+      instance_url
     end
 
     def sim # {{{
@@ -379,7 +391,7 @@ module CPEE
           addit = if tdesctype == 'copy' || tdesc.empty?
             desc.children.first.to_doc.root
           elsif tdesctype == 'rest' && !tdesc.empty?
-            srv = Riddl::Client.interface(tdesc.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
+            srv = Riddl::Client.interface(tdesc.text,@opts[:transformation_service])
             status, res = srv.post [
               Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
               Riddl::Parameter::Simple.new("type","description")
@@ -407,7 +419,7 @@ module CPEE
 
           ### dataelements extraction
           addit = if tdatatype == 'rest' && !tdata.empty?
-            srv = Riddl::Client.interface(tdata.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
+            srv = Riddl::Client.interface(tdata.text,@opts[:transformation_service])
             status, res = srv.post [
               Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
               Riddl::Parameter::Simple.new("type","dataelements")
@@ -438,7 +450,7 @@ module CPEE
 
           ### endpoints extraction
           addit = if tendptype == 'rest' && !tdata.empty?
-            srv = Riddl::Client.interface(tendp.text,@opts[:transformation_service],:xmpp => @opts[:xmpp])
+            srv = Riddl::Client.interface(tendp.text,@opts[:transformation_service])
             status, res = srv.post [
               Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
               Riddl::Parameter::Simple.new("type","endpoints")
@@ -492,7 +504,7 @@ module CPEE
           Thread.new(ke,ur) do |key,url|
             notf = build_notification(key,what,content,'event')
             if url.class == String
-              client = Riddl::Client.new(url,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml',:xmpp => @opts[:xmpp])
+              client = Riddl::Client.new(url,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml')
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
               params << Riddl::Header.new("CPEE-BASE",self.base)
               params << Riddl::Header.new("CPEE-INSTANCE",self.instance)
@@ -531,7 +543,7 @@ module CPEE
             c['callback'] = callback
             notf = build_notification(k,what,c,'vote',callback)
             if u.class == String
-              client = Riddl::Client.new(u,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml',:xmpp => @opts[:xmpp])
+              client = Riddl::Client.new(u,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml')
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
               params << Riddl::Header.new("CPEE-BASE",self.base_url)
               params << Riddl::Header.new("CPEE-INSTANCE",self.instance_url)

@@ -88,10 +88,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @label = parameters[:label]
   end #}}}
 
-  def activity_result_status # {{{
-    WEEL::Status.new(1, "everything okay")
-  end # }}}
-
   def activity_result_value # {{{
     @handler_returnValue
   end # }}}
@@ -127,11 +123,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     end
     unless changed_dataelements.nil?
       @controller.serialize_dataelements!
-      @controller.notify("dataelements/change", :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_dataelements, :values => dataelements.select{|k,v| changed_dataelements.include?(k)})
+      @controller.notify("dataelements/change", :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_dataelements, :values => dataelements)
     end
     unless changed_endpoints.nil?
       @controller.serialize_endpoints!
-      @controller.notify("endpoints/change", :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints.select{|k,v| changed_endpoints.include?(k)})
+      @controller.notify("endpoints/change", :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints)
     end
   end # }}}
 
@@ -171,15 +167,26 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     result
   end
 
+
   def structurize_result(result)
     result.map do |r|
       if r.is_a? Riddl::Parameter::Simple
         { r.name => r.value }
       elsif r.is_a? Riddl::Parameter::Complex
+        res = if r.mimetype == 'application/json'
+          JSON::parse(r.value.read) rescue nil
+        elsif r.mimetype == 'text/plain' || r.mimetype == 'text/html'
+          ttt = r.value.read
+          ttt = ttt.to_f if ttt == ttt.to_f.to_s
+          ttt = ttt.to_i if ttt == ttt.to_i.to_s
+          ttt
+        else
+          r.value.read
+        end
         tmp = {
           r.name == '' ? 'result' : r.name => {
             'mimetype' => r.mimetype,
-            'content' => r.value.read
+            'content' => res
           }
         }
         r.value.rewind
