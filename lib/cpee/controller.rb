@@ -145,7 +145,7 @@ module CPEE
       @opts[:url]
     end
     def instance_url
-      "#{@opts[:url]}/#{@id}"
+      File.join(@opts[:url].to_s,@id.to_s)
     end
     def base
       base_url
