@@ -153,6 +153,12 @@ module CPEE
     def instance
       instance_url
     end
+    def endpoints
+      @instance.endpoints
+    end
+    def dataelements
+      @instance.data
+    end
 
     def sim # {{{
       @thread.join if !@thread.nil? && @thread.alive?

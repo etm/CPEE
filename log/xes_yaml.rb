@@ -26,10 +26,9 @@ class Logging < Riddl::Implementation #{{{
     event["concept:name"] = notification["label"] if notification["label"]
     if notification["endpoint"]
       event["concept:endpoint"] = notification["endpoint"]
-    else
-      event["concept:name"] = 'Script Task'
     end
-    event["id:id"] = activity
+    event["id:id"] = (activity.nil? || activity == "") ? 'external' : activity
+    event["cpee:uuid"] = notification['instance_uuid'] if notification["instance_uuid"]
     case event_name
       when 'receiving', 'change'
         event["lifecycle:transition"] = "unknown"
@@ -66,24 +65,8 @@ class Logging < Riddl::Implementation #{{{
     File.open(File.join(log_dir,uuid+'.xes.yaml'),'a') do |f|
       f << {'event' => event}.to_yaml
     end
+    nil
   end
-
-	def rec_unjson(value,list,key)
-		case value
-			when Array then
-				li = list.add 'list', :key => key
-				value.each_with_index do |v,k|
-					rec_unjson(v,li,k)
-				end
-			when Hash then
-				li = list.add 'list', :key => key
-				value.each do |k,v|
-					rec_unjson(v,li,k)
-				end
-			else
-				list.add 'string', :key => key, :value => value
-		end
-	end
 
   def response
     topic        = @p[1].value

@@ -1,13 +1,13 @@
 # This file is part of CPEE.
-# 
+#
 # CPEE is free software: you can redistribute it and/or modify it under the terms
 # of the GNU General Public License as published by the Free Software Foundation,
 # either version 3 of the License, or (at your option) any later version.
-# 
+#
 # CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License along with
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
@@ -25,19 +25,19 @@ class PropertiesHandler < Riddl::Utils::Properties::HandlerBase
         end
       when 'endpoints'
         @data.unserialize_endpoints!
-        @data.notify('endpoints/change', :instance => @data.instance)
+        @data.notify('endpoints/change', :label => 'external', :instance => @data.instance, :instance_name => @data.info, :instance_uuid => @data.uuid, :changed => @data.endpoints.keys, :values => @data.endpoints)
       when 'dataelements'
         @data.unserialize_dataelements!
-        @data.notify('dataelements/change', :instance => @data.instance)
+        @data.notify('dataelements/change', :label => 'external', :instance => @data.instance, :instance_name => @data.info, :instance_uuid => @data.uuid, :changed => @data.dataelements.keys, :values => @data.dataelements)
       when 'attributes'
         @data.unserialize_attributes!
-        @data.notify('attributes/change', :instance => @data.instance)
-      when 'positions'  
+        @data.notify('attributes/change', :label => 'external', :instance => @data.instance, :instance_name => @data.info, :instance_uuid => @data.uuid, :changed => @data.attributes.keys, :values => @data.attributes)
+      when 'positions'
         @data.unserialize_positions!
         @data.notify('position/change', :instance => @data.instance)
-      when 'transformation'  
+      when 'transformation'
         @data.notify('transformation/change', :instance => @data.instance)
-      when 'state'  
+      when 'state'
         @data.unserialize_state!
       else
         nil

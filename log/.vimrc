@@ -1,1 +1,1 @@
-map <F10> :!./xes_yaml.rb -v restart<CR>
+map <F10> :!./xes_elasticsearch.rb -v restart<CR>
