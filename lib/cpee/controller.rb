@@ -197,9 +197,6 @@ module CPEE
     def finalize_if_finished
       if @instance.state == :finished
         @instance = nil
-        @notifications.subscriptions.keys.each do |key|
-          unserialize_notifications!(:del,key)
-        end
       end
     end
 
@@ -521,6 +518,7 @@ module CPEE
 
     def notify(what,content={})# {{{
       item = @events[what]
+
       if item
         item.each do |ke,ur|
           Thread.new(ke,ur) do |key,url|
