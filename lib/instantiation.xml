@@ -18,6 +18,7 @@
     </optional>
   </message>
   <message name="url">
+    <parameter name="info" type="string"/>
     <parameter name="behavior" type="string">
       <choice>
         <value>fork_ready</value>

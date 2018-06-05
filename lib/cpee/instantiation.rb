@@ -24,7 +24,7 @@ module CPEE
     SERVER = File.expand_path(__dir__ + '/../instantiation.xml')
 
     module Helpers #{{{
-      def load_testset(tdoc,cpee) #{{{
+      def load_testset(tdoc,cpee,name=nil) #{{{
         ins = -1
         XML::Smart.string(tdoc) do |doc|
           doc.register_namespace 'desc', 'http://cpee.org/ns/description/1.0'
@@ -32,6 +32,12 @@ module CPEE
 
           srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
           res = srv.resource("/")
+          if name
+            doc.find("/testset/attributes/prop:info").each do |e|
+              e.text = name
+            end
+          end
+
           status, response = res.post Riddl::Parameter::Simple.new("info",doc.find("string(/testset/attributes/prop:info)"))
 
           if status == 200
@@ -129,19 +135,19 @@ module CPEE
 
       def response
         cpee = @a[0]
-        status, res = Riddl::Client.new(@p[1].value).get
+        status, res = Riddl::Client.new(@p[2].value).get
         tdoc = if status >= 200 && status < 300
           res[0].value.read
         else
           (@status = 500) && return
         end
 
-        if (instance = load_testset(tdoc,cpee)) == -1
+        if (instance = load_testset(tdoc,cpee,@p[0].value)) == -1
           @status = 500
         else
-          handle_data cpee, instance, @p[2]&.value
-          handle_waiting cpee, instance, @p[0].value
-          handle_starting cpee, instance, @p[0].value
+          handle_data cpee, instance, @p[3]&.value
+          handle_waiting cpee, instance, @p[1].value
+          handle_starting cpee, instance, @p[1].value
           return Riddl::Parameter::Simple.new("url",cpee + instance)
         end
       end
