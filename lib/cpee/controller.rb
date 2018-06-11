@@ -22,7 +22,7 @@ require ::File.dirname(__FILE__) + '/empty_workflow'
 
 module CPEE
 
-  class ValueHelper
+  class ValueHelper #{{{
     def self::generate(value)
       if [String, Integer, Float, TrueClass, FalseClass, Date].include? value.class
         value.to_s
@@ -49,7 +49,32 @@ module CPEE
           end
       end
     end
-  end
+  end #}}}
+
+  class AttributesHelper #{{{
+    def translate(__attributes__,__dataelements__,__endpoints__)
+      @data       = WEEL::ReadHash.new(__dataelements__)
+      @endpoints  = WEEL::ReadHash.new(__endpoints__)
+      @attributes = WEEL::ReadHash.new(__attributes__)
+      __attributes__.transform_values do |v|
+        v.gsub(/(!(attributes|data|endpoints)\.[\w_]+)/) do |m|
+          eval(m[1..-1])
+        end
+      end
+    end
+
+    def data
+      @data
+    end
+
+    def endpoints
+      @endpoints
+    end
+
+    def attributes
+      @attributes
+    end
+  end #}}}
 
   class Controller
 
@@ -63,6 +88,7 @@ module CPEE
       @callbacks = {}
       @positions = []
       @attributes = {}
+      @attributes_helper = AttributesHelper.new
       @thread = nil
       @mutex = Mutex.new
       @opts = opts
@@ -136,6 +162,10 @@ module CPEE
     def console(cmd)
       x = eval(cmd)
       x.class == String ? x : x.pretty_inspect
+    end
+
+    def attributes_translated
+      @attributes_helper.translate(attributes,dataelements,endpoints)
     end
 
     def host
@@ -319,7 +349,7 @@ module CPEE
     def unserialize_attributes! #{{{
       @attributes = {}
       @properties.data.find("/p:properties/p:attributes/p:*").map do |ele|
-        @attributes[ele.qname.name] = ele.text
+        @attributes[ele.qname.name.to_sym] = ele.text
       end
       uuid = @properties.data.find("/p:properties/p:attributes/p:uuid")
       if uuid.empty? || uuid.length != 1 || @properties.data.find("/p:properties/p:attributes/p:uuid[.=\"#{@uuid}\"]").empty?

@@ -25,8 +25,8 @@ class Logging < Riddl::Implementation #{{{
     log["log"]["trace"]["concept:name"] ||= instancenr.to_i
     log["log"]["trace"]["cpee:name"] ||= notification['instance_name'] if notification["instance_name"]
     log["log"]["trace"]["cpee:uuid"] ||= notification['instance_uuid'] if notification["instance_uuid"]
-    esc.indices.create index: 'trace',
-      body: {
+    unless esc.indices.exists? index: 'trace'
+      esc.indices.create index: 'trace', body: {
         "mappings" => {
           "entry" => {
             "properties" => {
@@ -42,8 +42,11 @@ class Logging < Riddl::Implementation #{{{
             }
           }
         }
-      } rescue nil
-    esc.index  index: 'trace', type: 'entry', body: log["log"]["trace"]
+      }
+    end
+
+    esc.index  index: 'trace', type: 'entry', id: log["log"]["trace"]["cpee:uuid"], body: log["log"]["trace"]
+    p notification['attributes']
 
     event = {}
     event["trace:id"] = instancenr
