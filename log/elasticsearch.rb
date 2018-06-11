@@ -1,11 +1,11 @@
 #!/usr/bin/ruby
 require 'pp'
-require 'json'
-require 'yaml'
 require 'rubygems'
 require 'riddl/server'
 require 'riddl/utils/fileserve'
 require 'json'
+require 'time'
+require 'digest'
 require 'time'
 
 require 'faraday'
@@ -17,26 +17,20 @@ class Logging < Riddl::Implementation #{{{
     uuid = notification['instance_uuid']
     return unless uuid
 
-    activity = notification['activity']
-    parameters = notification['parameters']
-    receiving = notification['received']
+    # activity   = notification['activity']
+    # parameters = notification['parameters']
+    # receiving  = notification['received']
+    # attributes = notification['attributes']
 
-    log = YAML::load(File.read(template))
-    log["log"]["trace"]["concept:name"] ||= instancenr.to_i
-    log["log"]["trace"]["cpee:name"] ||= notification['instance_name'] if notification["instance_name"]
-    log["log"]["trace"]["cpee:uuid"] ||= notification['instance_uuid'] if notification["instance_uuid"]
-    unless esc.indices.exists? index: 'trace'
-      esc.indices.create index: 'trace', body: {
+    unless esc.indices.exists? index: 'artefacts'
+      esc.indices.create index: 'artefacts', body: {
         "mappings" => {
           "entry" => {
             "properties" => {
-              "concept:name" => {
-                "type" => "integer"
-              },
-              "cpee:name" => {
+              "group" => {
                 "type" => "text"
               },
-              "cpee:uuid": {
+              "name" => {
                 "type" => "text"
               }
             }
@@ -44,55 +38,100 @@ class Logging < Riddl::Implementation #{{{
         }
       }
     end
-
-    esc.index  index: 'trace', type: 'entry', id: log["log"]["trace"]["cpee:uuid"], body: log["log"]["trace"]
-    p notification['attributes']
-
-    event = {}
-    event["trace:id"] = instancenr
-    event["concept:name"] = notification["label"] if notification["label"]
-    if notification["endpoint"]
-      event["concept:endpoint"] = notification["endpoint"]
+    unless esc.indices.exists? index: 'instances'
+      esc.indices.create index: 'instances', body: {
+        "mappings" => {
+          "entry" => {
+            "properties" => {
+              "uuid" => {
+                "type" => "text"
+              },
+              "group" => {
+                "type" => "text"
+              },
+              "name" => {
+                "type" => "text"
+              },
+              "date": {
+                "type": "date",
+                "format": "date_time_no_millis"
+              },
+              "info": {
+                "type": "text"
+              }
+            }
+          }
+        }
+      }
     end
-    event["id:id"] = (activity.nil? || activity == "") ? 'external' : activity
-    event["cpee:uuid"] = notification['instance_uuid'] if notification["instance_uuid"]
-    case event_name
-      when 'receiving', 'change'
-        event["lifecycle:transition"] = "unknown"
-      when 'done'
-        event["lifecycle:transition"] = "complete"
-      else
-        event["lifecycle:transition"] = "start"
-    end
-    event["cpee:lifecycle:transition"] = "#{topic}/#{event_name}"
-    data_send = ((parameters["arguments"].nil? ? [] : parameters["arguments"]) rescue [])
-    event["list"] = {"data_send" => data_send} unless data_send.empty?
-    if notification['changed']&.any?
-      if event.has_key? "list"
-        event["list"]["data_changed"] ||= notification['changed']
-      else
-        event["list"] = {"data_changer" => notification['changed']}
+
+    if notification.dig('attributes','artefact')
+      artefact = JSON.parse(notification.dig('attributes','artefact'))
+
+      artefact.each do |a|
+        aid = Digest::MD5.hexdigest(a['group'] + '_' + a['name'])
+        iid = Digest::MD5.hexdigest(a['group'] + '_' + a['name'] + '_' + notification.dig('attributes','uuid'))
+        esc.index  index: 'artefacts', type: 'entry', id: aid, body: a
+        esc.index  index: 'instances', type: 'entry', id: iid, body: {
+          'uuid':  notification.dig('attributes','uuid'),
+          'group': a['group'],
+          'name':  a['name'],
+          'date':  Time.now.iso8601,
+          'info':  notification.dig('attributes','info')
+        }
+
       end
     end
-    if notification['values']&.any?
-      if event.has_key? "list"
-        event["list"]["data_values"] ||= notification['values']
-      else
-        event["list"] = {"data_values" => notification['values']}
-      end
-    end
-    if receiving&.any?
-      if event.has_key? "list"
-        event["list"]["data_received"] ||= receiving
-      else
-        event["list"] = {"data_receiver" => receiving}
-      end
-    end
-    event["time:timestamp"]= Time.now.iso8601
 
-    iname = "instance_" + notification['instance_name'].downcase.gsub(/[^a-z]/,'_')
-    esc.indices.create index: iname rescue nil
-    esc.index  index: iname, type: 'entry', body: event
+    if notification.dig('attributes','sensor')
+      sensor = JSON.parse(notification.dig('attributes','sensor'))
+    end
+
+    # event = {}
+    # event["trace:id"] = instancenr
+    # event["concept:name"] = notification["label"] if notification["label"]
+    # if notification["endpoint"]
+    #   event["concept:endpoint"] = notification["endpoint"]
+    # end
+    # event["id:id"] = (activity.nil? || activity == "") ? 'external' : activity
+    # event["cpee:uuid"] = notification['instance_uuid'] if notification["instance_uuid"]
+    # case event_name
+    #   when 'receiving', 'change'
+    #     event["lifecycle:transition"] = "unknown"
+    #   when 'done'
+    #     event["lifecycle:transition"] = "complete"
+    #   else
+    #     event["lifecycle:transition"] = "start"
+    # end
+    # event["cpee:lifecycle:transition"] = "#{topic}/#{event_name}"
+    # data_send = ((parameters["arguments"].nil? ? [] : parameters["arguments"]) rescue [])
+    # event["list"] = {"data_send" => data_send} unless data_send.empty?
+    # if notification['changed']&.any?
+    #   if event.has_key? "list"
+    #     event["list"]["data_changed"] ||= notification['changed']
+    #   else
+    #     event["list"] = {"data_changer" => notification['changed']}
+    #   end
+    # end
+    # if notification['values']&.any?
+    #   if event.has_key? "list"
+    #     event["list"]["data_values"] ||= notification['values']
+    #   else
+    #     event["list"] = {"data_values" => notification['values']}
+    #   end
+    # end
+    # if receiving&.any?
+    #   if event.has_key? "list"
+    #     event["list"]["data_received"] ||= receiving
+    #   else
+    #     event["list"] = {"data_receiver" => receiving}
+    #   end
+    # end
+    # event["time:timestamp"]= Time.now.iso8601
+
+    # iname = "instance_" + notification['instance_name'].downcase.gsub(/[^a-z]/,'_')
+    # esc.indices.create index: iname rescue nil
+    # esc.index  index: iname, type: 'entry', body: event
     nil
   end
 
