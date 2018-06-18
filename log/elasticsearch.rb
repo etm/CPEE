@@ -83,9 +83,17 @@ class Logging < Riddl::Implementation #{{{
       end
     end
 
-    if notification.dig('attributes','sensor')
-      sensor = JSON.parse(notification.dig('attributes','sensor'))
+    case "#{topic}/#{event_name}"
+      when "dataelements/change", "endpoints/change"
+        if notification.dig('attributes','sensor')
+          sensor = JSON.parse(notification.dig('attributes','sensor'))
+          p sensor
+        end
+      when "activity/receiving"
+        # sensors
     end
+
+
 
     # event = {}
     # event["trace:id"] = instancenr

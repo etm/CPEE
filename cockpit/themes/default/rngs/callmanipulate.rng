@@ -25,6 +25,32 @@
         </element>
       </zeroOrMore>
     </element>
+    <element name="sensors" rngui:header="Sensors">
+      <zeroOrMore rngui:label="Add Sensor">
+        <element name="sensor">
+          <element name="sensor_name" rngui:label="Label">
+            <data type="string" rngui:label="Label"/>
+          </element>
+          <element name="extractor_url" rngui:label="Extractor Url">
+            <data type="string" rngui:label="Url"/>
+          </element>
+          <element name="extractor_arg" rngui:label="Extractor Argument">
+            <data type="string" rngui:label="Path"/>
+          </element>
+          <element name="visualizer_url" rngui:label="Visualizer Url">
+            <data type="string" rngui:label="Url"/>
+          </element>
+          <element name="visualizer_params" rngui:header="Visualizer Arguments">
+            <zeroOrMore rngui:label="Create Argument Pair">
+              <element rngui:label='Name'>
+                <anyName/>
+                <data type="string" rngui:label="Value"/>
+              </element>
+            </zeroOrMore>
+          </element>
+        </element>
+      </zeroOrMore>
+    </element>
   </element>
   <element name="finalize" rngui:header="Finalize" rngui:label="Code">
     <attribute name="output" rngui:label="Access Variable" rngui:default="result">
