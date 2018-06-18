@@ -359,9 +359,9 @@
         <xsl:text>]</xsl:text>
       </xsl:when>
       <xsl:when test="count(*) &gt; 0 and name()='sensors'">
-        <xsl:text>[</xsl:text>
-        <xsl:apply-templates select="d:*" mode="sub"/>
-        <xsl:text>]</xsl:text>
+        <xsl:text>"[ </xsl:text>
+        <xsl:apply-templates select="*" mode="JSON"/>
+        <xsl:text>]"</xsl:text>
       </xsl:when>
       <xsl:when test="count(*) &gt; 0 and not(name()='arguments')">
         <xsl:text>{</xsl:text>
