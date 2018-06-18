@@ -28,7 +28,7 @@
     <element name="sensors" rngui:header="Sensors">
       <zeroOrMore rngui:label="Add Sensor">
         <element name="sensor">
-          <element name="sensor_name" rngui:label="Label">
+          <element name="name" rngui:label="Label">
             <data type="string" rngui:label="Label"/>
           </element>
           <element name="extractor_url" rngui:label="Extractor Url">

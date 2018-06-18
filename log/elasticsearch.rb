@@ -65,10 +65,10 @@ class Logging < Riddl::Implementation #{{{
       }
     end
 
-    if notification.dig('attributes','artefact')
-      artefact = JSON.parse(notification.dig('attributes','artefact'))
+    if notification.dig('attributes','artefacts')
+      artefacts = JSON.parse(notification.dig('attributes','artefacts'))
 
-      artefact.each do |a|
+      artefacts.each do |a|
         aid = Digest::MD5.hexdigest(a['group'] + '_' + a['name'])
         iid = Digest::MD5.hexdigest(a['group'] + '_' + a['name'] + '_' + notification.dig('attributes','uuid'))
         esc.index  index: 'artefacts', type: 'entry', id: aid, body: a
@@ -85,15 +85,15 @@ class Logging < Riddl::Implementation #{{{
 
     case "#{topic}/#{event_name}"
       when "dataelements/change", "endpoints/change"
-        if notification.dig('attributes','sensor')
-          sensor = JSON.parse(notification.dig('attributes','sensor'))
-          p sensor
-        end
+        sensors = JSON.parse(notification.dig('attributes','sensors') || '{}')
+        p 'attributes'
+        p sensors
       when "activity/receiving"
-        # sensors
+        pp notification
+        sensors = JSON.parse(notification.dig('sensors') || '{}')
+        p 'receiving'
+        p sensors
     end
-
-
 
     # event = {}
     # event["trace:id"] = instancenr
