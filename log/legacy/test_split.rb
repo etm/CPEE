@@ -193,7 +193,6 @@ def extract_from_doc(doc,paths)
   ret
 end
 
-aaa = Time.now
 doc = YAML.load(yaml2)
 
 paths = [[]]
@@ -201,10 +200,12 @@ anal  = []
 traverse(doc,paths,anal)
 anal.uniq!
 
+paths.each do |p|
+  p p
+end
+
 res = duplicate(doc,paths,anal)
 
 res.each do |r|
   pp r
 end
-
-p Time.now.to_f-aaa.to_f

@@ -739,7 +739,8 @@ function set_testset(testset,exec) {// {{{
         data: ({value: res}),
         error: report_failure,
         success: function(res){
-          if (exec) start_instance();
+          // use promises you filthy animal
+          if (exec) setTimeout(start_instance,2000);
         }
       });
     }
