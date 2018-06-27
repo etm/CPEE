@@ -13,6 +13,7 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'riddl/server'
+require 'securerandom'
 require 'xml/smart'
 require 'base64'
 require 'uri'
@@ -77,31 +78,21 @@ module CPEE
         return ins
       end #}}}
       private :load_testset
-      def handle_waiting(cpee,instance,behavior) #{{{
+      def handle_waiting(cpee,instance,behavior,selfurl,cblist) #{{{
         if behavior =~ /^wait/
           condition = behavior.match(/_([^_]+)_/)&.[](1) || 'finished'
           @headers << Riddl::Header.new('CPEE_CALLBACK','true')
           cb = @h['CPEE_CALLBACK']
 
           if cb
+            cbk = SecureRandom.uuid
             srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
             status, response = srv.resource("/#{instance}/notifications/subscriptions/").post [
+              Riddl::Parameter::Simple.new("url",File.join(selfurl,'callback',cbk)),
               Riddl::Parameter::Simple.new("topic","state"),
-              Riddl::Parameter::Simple.new("events","change"),
+              Riddl::Parameter::Simple.new("events","change")
             ]
-            key = response.first.value
-
-            srv.resource("/#{instance}/notifications/subscriptions/#{key}/ws/").ws do |conn|
-              conn.on :message do |msg|
-                if JSON::parse(XML::Smart::string(msg.data).find('string(/event/notification)'))['state'] == condition
-                  conn.close
-                  Riddl::Client.new(cb).put [
-                    # TODO extract all dataelements from instance
-                    Riddl::Parameter::Simple.new('instance',instance)
-                  ]
-                end
-              end
-            end
+            cblist[cbk] = cb, condition, instance
           end
         end
       end #}}}
@@ -135,6 +126,8 @@ module CPEE
 
       def response
         cpee = @a[0]
+        selfurl = @a[1]
+        cblist = @a[2]
         status, res = Riddl::Client.new(@p[2].value).get
         tdoc = if status >= 200 && status < 300
           res[0].value.read
@@ -146,7 +139,7 @@ module CPEE
           @status = 500
         else
           handle_data cpee, instance, @p[3]&.value
-          handle_waiting cpee, instance, @p[1].value
+          handle_waiting cpee, instance, @p[1].value, selfurl, cblist
           handle_starting cpee, instance, @p[1].value
           return Riddl::Parameter::Simple.new("url",cpee + instance)
         end
@@ -191,8 +184,27 @@ module CPEE
       end
     end #}}}
 
+    class ContinueTask < Riddl::Implementation #{{{
+      def response
+        cblist       = @a[0]
+        topic        = @p[1].value
+        event_name   = @p[2].value
+        notification = JSON.parse(@p[3].value)
+
+        cb, condition, instance = cblist[@r.last]
+        if notification['state'] == condition
+          Riddl::Client.new(cb).put [
+            # TODO extract all dataelements from instance
+            Riddl::Parameter::Simple.new('instance',instance)
+          ]
+        end
+      end
+    end #}}}
+
     def self::implementation(opts)
       opts[:cpee] ||= 'http://localhost:9298/'
+      opts[:self] ||= "http#{opts[:secure] ? 's' : ''}://#{opts[:host]}:#{opts[:port]}/"
+      opts[:cblist] ||= {}
       Proc.new do
         on resource do
           run InstantiateXML, opts[:cpee],true if post 'xmlsimple'
@@ -200,10 +212,15 @@ module CPEE
             run InstantiateXML, opts[:cpee], false if post 'xml'
           end
           on resource 'url' do
-            run InstantiateUrl, opts[:cpee] if post 'url'
+            run InstantiateUrl, opts[:cpee], opts[:self], opts[:cblist] if post 'url'
           end
           on resource 'instance' do
             run HandleInstance, opts[:cpee] if post 'instance'
+          end
+          on resource 'callback' do
+            on resource do
+              run ContinueTask, opts[:cblist] if post
+            end
           end
         end
       end

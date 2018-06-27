@@ -12,7 +12,7 @@ Riddl::Server.new(CPEE::Instantiation::SERVER, options) do
   accessible_description true
   cross_site_xhr true
 
-  @riddl_opts[:cpee] ||= 'http://localhost:8298/'
+  @riddl_opts[:cpee] ||= 'https://centurio.work/flow/engine'
 
   use CPEE::Instantiation::implementation(@riddl_opts)
 end.loop!

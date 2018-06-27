@@ -226,7 +226,7 @@ module CPEE
 
     def finalize_if_finished
       if @instance.state == :finished
-        @instance = nil
+        #@instance = nil
       end
     end
 

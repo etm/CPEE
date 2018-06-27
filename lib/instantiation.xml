@@ -1,5 +1,4 @@
 <description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
-
   <message name="xmlsimple">
     <parameter name="xml" mimetype="*/xml"/>
   </message>
@@ -63,6 +62,11 @@
     </resource>
     <resource relative="url">
       <post in="url" out="result"/>
+    </resource>
+    <resource relative="callback">
+      <resource>
+        <post/>
+      </resource>
     </resource>
   </resource>
 

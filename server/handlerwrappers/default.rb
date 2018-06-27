@@ -16,21 +16,22 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def self::inform_state_change(arguments,newstate) # {{{
     controller = arguments[0]
 		controller.serialize_state!
-		controller.notify("state/change", :instance => controller.instance, :state => newstate, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+		controller.notify("state/change", :instance => controller.instance, :instance_uuid => controller.uuid, :state => newstate, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
 		controller.finalize_if_finished
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{
     controller = arguments[0]
-    controller.notify("description/error", :instance => controller.instance, :message => err.message, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+    controller.notify("description/error", :instance => controller.instance, :instance_uuid => controller.uuid, :message => err.message, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end# }}}
   def self::inform_handlerwrapper_error(arguments,err) # {{{
     controller = arguments[0]
-    controller.notify("handlerwrapper/error", :instance => controller.instance, :message => err.message, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+    controller.notify("handlerwrapper/error", :instance => controller.instance, :instance_uuid => controller.uuid, :message => err.message, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end # }}}
   def self::inform_position_change(arguments,ipc={}) # {{{
     controller = arguments[0]
     controller.serialize_positions!
     ipc[:instance] = controller.instance
+    ipc[:instance_uuid] = controller.uuid
     ipc[:timestamp] = Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z")
     controller.notify("position/change", ipc)
   end # }}}

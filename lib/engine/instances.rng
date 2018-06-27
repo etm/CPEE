@@ -19,7 +19,7 @@
     <element name="instances">
       <zeroOrMore>
         <ref name="instance"/>
-      </zeroOrMore>  
+      </zeroOrMore>
    	</element>
   </start>
 
@@ -28,11 +28,14 @@
       <attribute name='id'>
         <data type="integer"/>
       </attribute>
+      <attribute name='uuid'>
+        <data type="string"/>
+      </attribute>
       <attribute name='state'>
         <data type="string"/>
       </attribute>
       <data type="string"/>
     </element>
-  </define>  
+  </define>
 
 </grammar>
