@@ -58,11 +58,14 @@
   </topic>
   <topic id='handler'>
     <event>change</event>
-    <event>error</event>
-    <event>debug</event>
-    <event>info</event>
   </topic>
   <topic id='simulating'>
     <event>step</event>
+  </topic>
+  <topic id='task'>
+    <event>instantiation</event>
+    <event>error</event>
+    <event>debug</event>
+    <event>info</event>
   </topic>
 </topics>

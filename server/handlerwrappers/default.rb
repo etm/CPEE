@@ -201,6 +201,9 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def callback(result=nil,options={})
     @controller.notify("activity/receiving", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated, :sensors => @sensors)
     result = simplify_result(result)
+    if options['CPEE_INSTANTIATION']
+      @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+    end
     if options['CPEE_UPDATE']
       @handler_returnValue = result
       if options['CPEE_UPDATE_STATUS']

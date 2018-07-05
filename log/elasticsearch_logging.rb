@@ -25,10 +25,11 @@ class Logging < Riddl::Implementation
           "entry" => {
             "properties" => {
               "group" => {
-                "type" => "text"
+                "type" => "keyword"
+
               },
               "name" => {
-                "type" => "text"
+                "type" => "keyword"
               }
             }
           }
@@ -44,17 +45,17 @@ class Logging < Riddl::Implementation
                 "type" => "text"
               },
               "group" => {
-                "type" => "text"
+                "type" => "keyword"
               },
               "name" => {
-                "type" => "text"
+                "type" => "keyword"
               },
               "date": {
                 "type": "date",
                 "format": "date_time_no_millis"
               },
               "info": {
-                "type": "text"
+                "type": "keyword"
               }
             }
           }
@@ -70,10 +71,10 @@ class Logging < Riddl::Implementation
                 "type" => "text"
               },
               "sensor" => {
-                "type" => "text"
+                "type" => "keyword"
               },
               "task" => {
-                "type" => "text"
+                "type" => "keyword"
               },
               "visualizer_url" => {
                 "type" => "text"
@@ -95,10 +96,10 @@ class Logging < Riddl::Implementation
                 "type" => "text"
               },
               "sensor" => {
-                "type" => "text"
+                "type" => "keyword"
               },
               "task" => {
-                "type" => "text"
+                "type" => "keyword"
               },
               "timestamp": {
                 "type": "date",

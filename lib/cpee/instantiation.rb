@@ -81,7 +81,7 @@ module CPEE
       def handle_waiting(cpee,instance,behavior,selfurl,cblist) #{{{
         if behavior =~ /^wait/
           condition = behavior.match(/_([^_]+)_/)&.[](1) || 'finished'
-          @headers << Riddl::Header.new('CPEE_CALLBACK','true')
+          @headers << Riddl::Header.new('CPEE-CALLBACK','true')
           cb = @h['CPEE_CALLBACK']
 
           if cb
@@ -138,6 +138,7 @@ module CPEE
         if (instance = load_testset(tdoc,cpee,@p[0].value)) == -1
           @status = 500
         else
+          @headers << Riddl::Header.new('CPEE-INSTANTIATION',File.join(cpee,instance))
           handle_data cpee, instance, @p[3]&.value
           handle_waiting cpee, instance, @p[1].value, selfurl, cblist
           handle_starting cpee, instance, @p[1].value
@@ -153,6 +154,8 @@ module CPEE
         cpee     = @a[0]
         behavior = @a[1] ? 'fork_ready' : @p[0].value
         data     = @a[1] ? 0 : 1
+        selfurl  = @a[2]
+        cblist   = @a[3]
         tdoc = if @p[data].additional =~ /base64/
           Base64.decode64(@p[data].value.read)
         else
@@ -162,8 +165,9 @@ module CPEE
         if (instance = load_testset(tdoc,cpee)) == -1
           @status = 500
         else
+          @headers << Riddl::Header.new('CPEE-INSTANTIATION',File.join(cpee,instance))
           handle_data cpee, instance, @p[data+1]&.value
-          handle_waiting cpee, instance, behavior
+          handle_waiting cpee, instance, behavior, selfurl, cblist
           handle_starting cpee, instance, behavior
           return Riddl::Parameter::Simple.new("url",cpee + instance)
         end
@@ -175,10 +179,12 @@ module CPEE
 
       def response
         cpee     = @a[0]
+        selfurl  = @a[1]
+        cblist   = @a[2]
         instance = @p[1].value
 
         handle_data cpee, instance, @p[2]&.value
-        handle_waiting cpee, instance, @p[0].value
+        handle_waiting cpee, instance, @p[0].value, selfurl, cblist
         handle_starting cpee, instance, @p[0].value
         return Riddl::Parameter::Simple.new("url",cpee + instance)
       end
@@ -207,7 +213,7 @@ module CPEE
       opts[:cblist] ||= {}
       Proc.new do
         on resource do
-          run InstantiateXML, opts[:cpee],true if post 'xmlsimple'
+          run InstantiateXML, opts[:cpee], true if post 'xmlsimple'
           on resource 'xml' do
             run InstantiateXML, opts[:cpee], false if post 'xml'
           end
