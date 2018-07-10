@@ -62,6 +62,26 @@ class Logging < Riddl::Implementation
         }
       }
     end #}}}
+    unless esc.indices.exists? index: 'spawned' #{{{
+      esc.indices.create index: 'spawned', body: {
+        "mappings" => {
+          "entry" => {
+            "properties" => {
+              "uuid" => {
+                "type" => "text"
+              },
+              "spawned_uuid" => {
+                "type" => "spawned"
+              },
+              "date": {
+                "type": "date",
+                "format": "date_time_no_millis"
+              },
+            }
+          }
+        }
+      }
+    end #}}}
     unless  esc.indices.exists? index: 'sensors' #{{{
       esc.indices.create index: 'sensors', body: {
         "mappings" => {

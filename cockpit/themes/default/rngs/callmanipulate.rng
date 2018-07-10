@@ -40,6 +40,9 @@
           <element name="visualizer_url" rngui:label="Visualizer Url">
             <data type="string" rngui:label="Url"/>
           </element>
+          <element name="visualizer_config" rngui:label="Visualizer Config">
+            <data type="string" rngui:label="Url"/>
+          </element>
           <element name="visualizer_params" rngui:header="Visualizer Arguments">
             <zeroOrMore rngui:label="Create Argument Pair">
               <element rngui:label='Name'>
