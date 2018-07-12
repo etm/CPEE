@@ -71,7 +71,7 @@ class Logging < Riddl::Implementation
                 "type" => "text"
               },
               "spawned_uuid" => {
-                "type" => "spawned"
+                "type" => "text"
               },
               "date": {
                 "type": "date",
@@ -82,7 +82,7 @@ class Logging < Riddl::Implementation
         }
       }
     end #}}}
-    unless  esc.indices.exists? index: 'sensors' #{{{
+    unless esc.indices.exists? index: 'sensors' #{{{
       esc.indices.create index: 'sensors', body: {
         "mappings" => {
           "entry" => {
@@ -113,7 +113,7 @@ class Logging < Riddl::Implementation
           "entry" => {
             "properties" => {
               "uuid" => {
-                "type" => "text"
+                "type" => "keyword"
               },
               "sensor" => {
                 "type" => "keyword"
@@ -129,10 +129,12 @@ class Logging < Riddl::Implementation
                 "type" => "text",
                 "fields" => {
                   "value_f" => {
-                    "type" => "float"
+                    "type" => "float",
+                    "store" => true
                   },
                   "value_l" => {
-                    "type" => "long"
+                    "type" => "long",
+                    "store" => true
                   }
                 }
               }
