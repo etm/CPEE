@@ -65,15 +65,15 @@ ui-tabbed ui-tabbar ui-behind button {
 #areainstance div.section:nth-child(3) button[name=loadmodeltype]   { white-space: normal; width: 10em; height: 2em; }
 
 #areaexecution input { padding: 0; margin:0; }
-#areaexecution table.compact { width: 100%; }
-#areaexecution table.compact tr td:nth-child(1) { width: 15ex; }
+#areaexecution table.x-ui-compact { width: 100%; }
+#areaexecution table.x-ui-compact tr td:nth-child(1) { width: 15ex; }
 
-#areaexecution table.compact tbody.debug tr:last-child td { padding-bottom: 0.5em; }
-#areaexecution table.compact tbody.debug tr:last-child td input { vertical-align: middle; }
-#areaexecution table.compact tbody.exe tr:first-child td { padding-top: 0.5em; }
-#areaexecution table.compact tbody.exe { border-top: 1px solid #a1a1a1; }
+#areaexecution table.x-ui-compact tbody.debug tr:last-child td { padding-bottom: 0.5em; }
+#areaexecution table.x-ui-compact tbody.debug tr:last-child td input { vertical-align: middle; }
+#areaexecution table.x-ui-compact tbody.exe tr:first-child td { padding-top: 0.5em; }
+#areaexecution table.x-ui-compact tbody.exe { border-top: 1px solid #a1a1a1; }
 
-#areaexecution table.compact tbody.exe td { height: 2.2em; }
+#areaexecution table.x-ui-compact tbody.exe td { height: 2.2em; }
 
 #dat_endpoints {
   border-collapse:collapse;
