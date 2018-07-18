@@ -826,7 +826,7 @@ function load_modeltype() {// {{{
   $.ajax({
     cache: false,
     dataType: 'xml',
-    url: $('body').attr('current-testsets') + name + ".xml",
+    url: $('body').attr('current-testsets') + "." + name + ".xml",
     success: function(res){
       $.ajax({
         type: "PUT",
