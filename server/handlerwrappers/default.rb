@@ -74,13 +74,13 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       type = parameters[:method] || 'post'
       client = Riddl::Client.new(@handler_endpoint)
 
+      @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+      @handler_passthrough = callback
+
       status, result, headers = client.request type => params
       raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint}" if status < 200 || status >= 300
 
-      if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
-        @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
-        @handler_passthrough = callback
-      else
+      unless headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
         callback result
       end
     else
