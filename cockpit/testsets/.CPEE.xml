@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<testset>
+  <transformation>
+    <description type='copy'/>
+    <dataelements type='none'/>
+    <endpoints type='none'/>
+  </transformation>
+</testset>
