@@ -28,7 +28,7 @@ class Async < Riddl::Implementation
 end
 class Ret < Riddl::Implementation
   def response
-    Riddl::Header.new('text','text/plain',$cb)
+    Riddl::Parameter::Complex.new('text','text/plain',$cb.to_s)
   end
 end
 class Send < Riddl::Implementation
@@ -41,7 +41,7 @@ end
 
 options = {
   :host => 'localhost',
-  :port => 8301,
+  :port => 9301,
   :secure => false
 }
 

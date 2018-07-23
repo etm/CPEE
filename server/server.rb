@@ -15,7 +15,6 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'rubygems'
-require 'memory_profiler'
 gem 'nokogiri'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee/implementation')
 

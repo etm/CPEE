@@ -1,0 +1,42 @@
+<testset>
+  <dataelements/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <test xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://localhost:9301/</test>
+  </endpoints>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="test">
+        <parameters>
+          <label/>
+          <method>:post</method>
+          <arguments/>
+          <sensors/>
+        </parameters>
+        <finalize output="result"/>
+        <update output="result"/>
+        <_timing>
+          <_timing_min/>
+          <_timing_max/>
+          <_timing_avg/>
+        </_timing>
+        <_notes>
+          <_notes_general/>
+          <_notes_output/>
+          <_attachments/>
+        </_notes>
+      </call>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Enter info here</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">default</theme>
+  </attributes>
+</testset>
