@@ -33,7 +33,7 @@
       </layer>
       <layer name="notifications">
         <apply-to>/{}</apply-to>
-      </layer>  
+      </layer>
     </tile>
   </facade>
 </declaration>
