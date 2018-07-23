@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<testset>
+  <transformation>
+    <description type='rest'>http://localhost:9295/bpmn2/</description>
+    <dataelements type='rest'>http://localhost:9295/bpmn2/</dataelements>
+    <endpoints type='rest'>http://localhost:9295/bpmn2/</endpoints>
+  </transformation>
+</testset>
