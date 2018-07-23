@@ -1,5 +1,6 @@
 <testsets>
   <!--testset>Centurio</testset-->
+  <testset>Async</testset>
   <testset>Log</testset>
   <testset>BCS</testset>
   <testset>BCO</testset>
