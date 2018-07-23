@@ -108,6 +108,8 @@ module CPEE
       controller[id].mutex.synchronize do
         if controller[id].callbacks.has_key?(callback)
           controller[id].callbacks[callback].callback(@p,@h)
+        else
+          @status = 503
         end
       end
     end

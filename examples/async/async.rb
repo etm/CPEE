@@ -36,6 +36,8 @@ class Send < Riddl::Implementation
     status, res = Riddl::Client.new($cb).put [
       Riddl::Parameter::Complex.new('text','text/plain','hello world')
     ]
+    p status
+    nil
   end
 end
 
