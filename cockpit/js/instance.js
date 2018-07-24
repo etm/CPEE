@@ -1152,3 +1152,36 @@ function append_to_log(what,type,message) {//{{{
 }//}}}
 
 function report_failure(){}
+
+function ui_pos(e,bl) {
+  var url = $('body').attr('current-instance');
+  var coll = [];
+  $('g.element.primitive > g.activities.active, g.element.primitive > g.activities.passive').each(function(a,b){
+    coll.push($(b).parent().attr('element-id'));
+  });
+  coll = bl(coll);
+  var vals = "";
+  $(coll).each(function(k,ele){
+    vals += "<" + ele + ">at</"  + ele + ">";
+  });
+  vals = "<content>" + vals + "</content>";
+  $.ajax({
+    type: "PUT",
+    url: url + "/properties/values/positions/",
+    data: ({content: vals}),
+    success: monitor_instance_pos,
+    error: report_failure
+  });
+}
+function del_ui_pos(e) {
+  ui_pos(e,function(coll){
+    coll.splice(coll.indexOf($(e).attr('id')),1);
+    return coll;
+  });
+}
+function add_ui_pos(e) {
+  ui_pos(e,function(coll){
+    coll.push($(e).attr('id'));
+    return coll;
+  });
+}

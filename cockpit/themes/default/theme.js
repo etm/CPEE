@@ -161,6 +161,29 @@ function WFAdaptorManifestation(adaptor) {
           'params': ['> finalize, > update', xml_node]
         });
       }
+      if (xml_node.get(0).tagName == "call") {
+        var icon =  self.elements.call.illustrator.svg.clone();
+        icon.children('g.replace').addClass('active');
+        var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+        if (vtarget.length > 0) {
+          menu['Position'] = [{
+            'label': 'Execute from here',
+            'function_call': add_ui_pos,
+            'menu_icon': icon,
+            'type': undefined,
+            'params': xml_node
+          }];
+          if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
+            menu['Position'].push({
+              'label': 'No Execution from here',
+              'function_call': del_ui_pos,
+              'menu_icon': icon,
+              'type': undefined,
+              'params': xml_node
+            });
+          }
+        }
+      }
       new CustomMenu(e).contextmenu(menu);
     }
     return false;
