@@ -212,7 +212,7 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
-      'label': function(node){ return $('label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,''); },
+      'label': function(node){ return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,''); },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
         if($('finalize,update', node).length > 0) {
@@ -987,7 +987,7 @@ function WFAdaptorManifestation(adaptor) {
     'parent': 'call',
     'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
-      'label': function(node){return $('label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'')},
+      'label': function(node){return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'')},
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
     },//}}}
