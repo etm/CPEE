@@ -1,6 +1,7 @@
 var ws;
 var suspended_monitoring = false;
 var myid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+var paths = '#dat_details input, #dat_details textarea, #dat_details select, #dat_details button, #dat_details [contenteditable], #dat_dataelements input, #dat_dataelements textarea, #dat_dataelements select, #dat_dataelements button, #dat_dataelements [contenteditable], #dat_endpoints input, #dat_endpoints textarea, #dat_endpoints select, #dat_endpoints button, #dat_endpoints [contenteditable], #dat_attributes input, #dat_attributes textarea, #dat_attributes select, #dat_attributes button, #dat_attributes [contenteditable]';
 var loading = false;
 var subscription;
 var subscription_state = 'less';
@@ -524,6 +525,13 @@ function monitor_instance_state_change(notification) { //{{{
     }
     if (notification == "running") {
       but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button>";
+    }
+
+    // disable all input, also check themes
+    format_visual_forms();
+    // remove all markings with state change
+    if (save['graph_adaptor'] && save['graph_adaptor'].illustrator) {
+      save['graph_adaptor'].illustrator.get_elements().removeClass('marked');
     }
 
     if (notification == "finished") {
@@ -1062,6 +1070,18 @@ function format_visual_vote_clear() {//{{{
   $('.super .vote').each(function(a,b){b.setAttribute("class","vote");});
   $("#votes").empty();
 }//}}}
+
+function format_visual_forms() { //{{{
+  if (save['state'] != "ready" && save['state'] != "stopped") {
+    $(paths).each(function(k,e){
+      $(e).attr('disabled','disable');
+    });
+  } else {
+    $(paths).each(function(k,e){
+      $(e).removeAttr('disabled');
+    });
+  }
+} //}}}
 
 function format_code(res,skim,lnums) {// {{{
  try {

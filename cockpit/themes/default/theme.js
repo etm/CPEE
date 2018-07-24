@@ -68,6 +68,7 @@ function WFAdaptorManifestation(adaptor) {
       }
       save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval);
       save['details'].content(node);
+      format_visual_forms();
     }
   }; //}}}
 
@@ -117,6 +118,8 @@ function WFAdaptorManifestation(adaptor) {
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
     } else if(e.button == 2) { // right-click
+      if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
+
       var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
       var group = null;
       var menu = {};
@@ -170,6 +173,7 @@ function WFAdaptorManifestation(adaptor) {
     self.adaptor.illustrator.get_elements().removeClass('clicked');
 
     if (e && e.ctrlKey) {
+      if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
       var tab = $('#dat_details');
           tab.empty();
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
