@@ -1074,10 +1074,12 @@ function format_visual_vote_clear() {//{{{
 function format_visual_forms() { //{{{
   if (save['state'] != "ready" && save['state'] != "stopped") {
     $(paths).each(function(k,e){
+      if ($(e).attr('contenteditable')) { $(e).attr('contenteditable','false'); }
       $(e).attr('disabled','disable');
     });
   } else {
     $(paths).each(function(k,e){
+      if ($(e).attr('contenteditable')) { $(e).attr('contenteditable','true'); }
       $(e).removeAttr('disabled');
     });
   }
