@@ -166,21 +166,22 @@ function WFAdaptorManifestation(adaptor) {
         icon.children('g.replace').addClass('active');
         var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
         if (vtarget.length > 0) {
-          menu['Position'] = [{
-            'label': 'Execute from here',
-            'function_call': add_ui_pos,
-            'menu_icon': icon,
-            'type': undefined,
-            'params': xml_node
-          }];
           if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
-            menu['Position'].push({
+            menu['Position'] = [{
               'label': 'No Execution from here',
               'function_call': del_ui_pos,
               'menu_icon': icon,
               'type': undefined,
               'params': xml_node
-            });
+            }];
+          } else {
+            menu['Position'] = [{
+              'label': 'Execute from here',
+              'function_call': add_ui_pos,
+              'menu_icon': icon,
+              'type': undefined,
+              'params': xml_node
+            }];
           }
         }
       }
