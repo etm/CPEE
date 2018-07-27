@@ -24,7 +24,7 @@
   </message>
 
   <message name="instance-id">
-    <parameter name="id" type="integer"/>
+    <parameter name="id" type="string"/>
   </message>
 
   <message name="instance-new">

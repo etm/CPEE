@@ -17,6 +17,7 @@ require 'securerandom'
 require 'xml/smart'
 require 'base64'
 require 'uri'
+require 'redis'
 require 'json'
 
 module CPEE
@@ -92,7 +93,10 @@ module CPEE
               Riddl::Parameter::Simple.new("topic","state"),
               Riddl::Parameter::Simple.new("events","change")
             ]
-            cblist[cbk] = cb, condition, instance
+            cblist.rpush(cbk, cb)
+            cblist.rpush(cbk, condition)
+            cblist.rpush(cbk, instance)
+            cblist.rpush(cbk, File.join(cpee,instance))
           end
         end
       end #}}}
@@ -192,16 +196,29 @@ module CPEE
 
     class ContinueTask < Riddl::Implementation #{{{
       def response
-        cblist       = @a[0]
+        cpee         = @a[0]
+        cblist       = @a[1]
         topic        = @p[1].value
         event_name   = @p[2].value
         notification = JSON.parse(@p[3].value)
 
-        cb, condition, instance = cblist[@r.last]
+        key = @r.last
+        cb, condition, instance, instance_url = cblist.lrange(key,0,-1)
         if notification['state'] == condition
+          cblist.del(key)
+          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+          res = srv.resource("/#{instance}/properties/values/dataelements")
+          status, response = res.get
+          send = { 'CPEE-INSTANCE' => instance_url }
+          if status >= 200 && status < 300
+            doc = XML::Smart.string(response[0].value.read)
+            doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
+            doc.find('/p:value/*').each do |e|
+              send[e.qname.name] = e.text
+            end
+          end
           Riddl::Client.new(cb).put [
-            # TODO extract all dataelements from instance
-            Riddl::Parameter::Simple.new('instance',instance)
+            Riddl::Parameter::Complex.new('dataelements','application/json',JSON::generate(send))
           ]
         end
       end
@@ -210,7 +227,7 @@ module CPEE
     def self::implementation(opts)
       opts[:cpee] ||= 'http://localhost:9298/'
       opts[:self] ||= "http#{opts[:secure] ? 's' : ''}://#{opts[:host]}:#{opts[:port]}/"
-      opts[:cblist] ||= {}
+      opts[:cblist] = Redis.new(path: "/tmp/redis.sock", db: 14)
       Proc.new do
         on resource do
           run InstantiateXML, opts[:cpee], true if post 'xmlsimple'
@@ -225,7 +242,7 @@ module CPEE
           end
           on resource 'callback' do
             on resource do
-              run ContinueTask, opts[:cblist] if post
+              run ContinueTask, opts[:cpee], opts[:cblist] if post
             end
           end
         end
