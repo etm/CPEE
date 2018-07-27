@@ -71,7 +71,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
         params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
       end
 
-      type = parameters[:method] || 'post'
+      type = if @handler_endpoint.sub!(/^http(s)?-(get|put|post|delete):/,'http\\1:')
+        $2
+      else
+        parameters[:method] || 'post'
+      end
       client = Riddl::Client.new(@handler_endpoint)
 
       @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
