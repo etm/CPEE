@@ -61,7 +61,7 @@ class Logging < Riddl::Implementation #{{{
         event["list"] = {"data_receiver" => receiving}
       end
     end
-    event["time:timestamp"]= Time.now.iso8601
+    event["time:timestamp"]= event['cpee:timestamp'] || Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z")
     File.open(File.join(log_dir,uuid+'.xes.yaml'),'a') do |f|
       f << {'event' => event}.to_yaml
     end

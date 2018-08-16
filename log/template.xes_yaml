@@ -4,7 +4,7 @@ log:
     time: http://www.xes-standard.org/time.xesext
     concept: http://www.xes-standard.org/concept.xesext
     organisational: http://www.xes-standard.org/org.xesext
-    lifecylce: http://www.xes-standard.org/lifecycle.xesext
+    lifecycle: http://www.xes-standard.org/lifecycle.xesext
     cpee: http://cpee.org/cpee.xesext
   global:
     trace:
