@@ -120,6 +120,7 @@ module CPEE
             status, response = res.put [
               Riddl::Parameter::Simple.new('value',v)
             ]
+            sleep 0.42
           end rescue nil
         end
       end
