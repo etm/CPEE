@@ -21,19 +21,21 @@
       if (preg_match("/\.xes\.yaml$/",$entry)) {
         $stat = stat($entry);
         $yaml = yaml_parse_file($entry,0);
-        $dt = new DateTime();
-        $siz = formatBytes($stat['size']);
-        $file = array();
-        $file['info'] = $yaml['log']['trace']['cpee:name'];
-        $file['name'] = $entry;
-        $file['size'] = $siz[0];
-        $file['sizeunits'] = $siz[1];
+        if (isset($yaml['log']['trace']) && isset($yaml['log']['trace']['cpee:name'])) {
+          $dt = new DateTime();
+          $siz = formatBytes($stat['size']);
+          $file = array();
+          $file['info'] = $yaml['log']['trace']['cpee:name'];
+          $file['name'] = $entry;
+          $file['size'] = $siz[0];
+          $file['sizeunits'] = $siz[1];
 
-        $dt->setTimestamp($stat['mtime']);
-        $file['modified'] = $dt->format("Y-m-d H:i:s");
-        $file['modifieddate'] = intval($dt->format("Ymd"));
+          $dt->setTimestamp($stat['mtime']);
+          $file['modified'] = $dt->format("Y-m-d H:i:s");
+          $file['modifieddate'] = intval($dt->format("Ymd"));
 
-        $files[$stat['mtime']] = $file;
+          $files[$stat['mtime']] = $file;
+        }
       }
     }
     closedir($handle);
