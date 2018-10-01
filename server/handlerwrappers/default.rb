@@ -222,6 +222,12 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     end
   end
 
+  def test_condition(mr,code)
+    res = mr.instance_eval(code)
+    @controller.notify("condition/eval", :instance => @controller.instance, :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+    res
+  end
+
   def simulate(type,nesting,tid,parent,parameters={}) #{{{
     pp "#{type} - #{nesting} - #{tid} - #{parent} - #{parameters.inspect}"
 

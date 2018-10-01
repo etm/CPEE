@@ -119,28 +119,28 @@
       <xsl:text>loop </xsl:text>
       <xsl:if test="@mode='pre_test'">
         <xsl:choose>
-          <xsl:when test="not(@language) or @language='application/x-ruby'">
+          <xsl:when test="@language='application/x-ruby'">
             <xsl:text>pre_test{</xsl:text>
             <xsl:value-of select="@condition"/>
             <xsl:text>} </xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>pre_test("</xsl:text>
-            <xsl:value-of select="@condition"/>
+            <xsl:value-of select="str:replace(str:replace(@condition,'\','\\'),'&quot;','\&quot;')"/>
             <xsl:text>")</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
       <xsl:if test="@mode='post_test'">
         <xsl:choose>
-          <xsl:when test="not(@language) or @language='application/x-ruby'">
+          <xsl:when test="@language='application/x-ruby'">
             <xsl:text>post_test{</xsl:text>
             <xsl:value-of select="@condition"/>
             <xsl:text>} </xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>post_test("</xsl:text>
-            <xsl:value-of select="@condition"/>
+            <xsl:value-of select="str:replace(str:replace(@condition,'\','\\'),'&quot;','\&quot;')"/>
             <xsl:text>")</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
@@ -232,14 +232,14 @@
     </xsl:call-template>
     <xsl:text>alternative </xsl:text>
     <xsl:choose>
-      <xsl:when test="not(@language) or @language='application/x-ruby'">
+      <xsl:when test="@language='application/x-ruby'">
         <xsl:text>test{</xsl:text>
         <xsl:value-of select="@condition"/>
         <xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>test("</xsl:text>
-        <xsl:value-of select="@condition"/>
+        <xsl:value-of select="str:replace(str:replace(@condition,'\','\\'),'&quot;','\&quot;')"/>
         <xsl:text>")</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
