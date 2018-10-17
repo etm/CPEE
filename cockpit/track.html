@@ -1,0 +1,118 @@
+<!--
+  This file is part of CPEE.
+
+  CPEE is free software: you can redistribute it and/or modify it under the terms
+  of the GNU General Public License as published by the Free Software Foundation,
+  either version 3 of the License, or (at your option) any later version.
+
+  CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along with
+  CPEE (file COPYING in the main directory).  If not, see
+  <http://www.gnu.org/licenses/>.
+-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>CPEE Cockpit</title>
+
+    <!-- libs, do not modify. When local than load local libs. -->
+    <script type="text/javascript" src="/js_libs/jquery.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.browser.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.svg.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.svgdom.min.js"></script>
+    <script type="text/javascript" src="/js_libs/vkbeautify.js"></script>
+    <script type="text/javascript" src="/js_libs/util.js"></script>
+    <script type="text/javascript" src="/js_libs/printf.js"></script>
+    <script type="text/javascript" src="/js_libs/strftime.min.js"></script>
+    <script type="text/javascript" src="/js_libs/parsequery.js"></script>
+    <script type="text/javascript" src="/js_libs/underscore.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.caret.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.cookie.js"></script>
+
+    <script type="text/javascript" src="/js_libs/relaxngui.js"></script>
+
+    <script type="text/javascript" src="/js_libs/ui.js"></script>
+    <script type="text/javascript" src="/js_libs/custommenu.js"></script>
+
+    <link   rel="stylesheet"      href="/js_libs/custommenu.css" type="text/css"/>
+    <link   rel="stylesheet"      href="/js_libs/ui.css" type="text/css"/>
+
+    <link   rel="stylesheet"      href="/js_libs/relaxngui.css" type="text/css"/>
+    <script>
+      var lines;
+      var ws;
+      var acts = {};
+      var transitions = [];
+      var lastpos;
+
+      var sub = 'topic'  + '=' + 'activity' + '&' +// {{{
+                'events' + '=' + 'receiving';// }}}
+
+      function websocket(what) { //{{{
+        var url = $('body').attr('current-instance');
+        var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+        if (ws) ws.close();
+        ws = new Socket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + what + "/ws/");
+        ws.onopen = function() {
+          console.log("monitoring", "opened", "");
+        };
+        ws.onmessage = function(e) {
+          data = $.parseXML(e.data);
+          if ($('event > topic',data).length > 0) {
+            switch($('event > topic',data).text()) {
+              case 'activity':
+                var data = JSON.parse($('event > notification',data).text());
+                if (data.endpoint == "https://centurio.work/flow/start/url/") {
+                  var num = parseInt(data.received[0].data.match(/\d+$/)[0]);
+                  console.log(num);
+                  $('#bla1').attr('src','https://centurio.work/flow/graph.html?monitor=' + data.received[0].data);
+                  setTimeout(function(){ $('#bla2').attr('src','https://centurio.work/flow/graph.html?monitor=' + data.received[0].data.replace(/\d+$/,num+1)); }, 2000);
+                  setTimeout(function(){ $('#bla3').attr('src','https://centurio.work/flow/graph.html?monitor=' + data.received[0].data.replace(/\d+$/,num+2)); }, 4000);
+                }
+                break;
+            }
+          }
+          if ($('vote > topic',data).length > 0) {
+          }
+        };
+        ws.onclose = function() {
+          console.log("monitoring", "closed", "server down i assume.");
+        };
+      } //}}}
+
+      $(document).ready(function(){
+        var url = "https://centurio.work/flow/engine/11/";
+        $('body').attr('current-instance',url);
+        $.ajax({
+          type: "POST",
+          url: url + "/notifications/subscriptions/",
+          data: sub,
+          success: function(res){
+            res = res.unserialize();
+            $.each(res,function(a,b){
+              if (b[0] == 'key') {
+                websocket(b[1]);
+              }
+            });
+          }
+        });
+      });
+    </script>
+  </head>
+  <body data-base-port="8298" data-res-port="9303" data-theme-base="themes" is="x-ui" style="display: flex; flex-direction:row; align-items: stretch; height: 100vh;">
+     <div style="flex: 1 1 auto; display: flex; flex-direction:column; align-items: stretch; height: 100vh">
+       <iframe style="flex: 1 1 auto;" src="graph.html?monitor=https://centurio.work/flow/engine/11/"></iframe>
+       <iframe id="bla1" style="flex: 1 1 auto;" src=""></iframe>
+     </div>
+     <div style="flex: 1 1 auto; display: flex; flex-direction:column; align-items: stretch; height: 100vh">
+       <iframe id="bla2" style="flex: 1 1 auto;" src=""></iframe>
+       <iframe id="bla3" style="flex: 1 1 auto;" src=""></iframe>
+     </div>
+  </body>
+</html>
