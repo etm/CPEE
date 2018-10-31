@@ -4,19 +4,24 @@ require 'rubygems'
 require 'optparse'
 require 'fileutils'
 require 'webrick'
+require 'typhoeus'
+require 'xml/smart'
 
-def wrap(s, width=78, indent=11)
+def wrap(s, width=78, indent=18)
 	lines = []
 	line, s = s[0..indent-2], s[indent..-1]
-	s.split(/\s+/).each do |word|
-		if line.size + word.size >= width
-			lines << line
-			line = (" " * (indent)) + word
-		else
-		 line << " " << word
-	 end
-	 end
-	 lines << line if line
+  s.split(/\n/).each do |ss|
+    ss.split(/[ \t]+/).each do |word|
+      if line.size + word.size >= width
+        lines << line
+        line = (" " * (indent)) + word
+      else
+        line << " " << word
+      end
+    end
+    lines << line if line
+    line = (" " * (indent-1))
+  end
 	return lines.join "\n"
 end
 
@@ -26,37 +31,55 @@ ARGV.options { |opt|
   opt.on("Options:")
   opt.on("--help", "-h", "This text") { puts opt; exit }
 	opt.on("")
-  opt.on(wrap("[new DIR]  scaffolds a sample execution engine. Everything except instances can be removed for default behaviour."))
+  opt.on(wrap("[archive DIR URL] save properties from all finished instances listed at URL into DIR.\ne.g. cpee ./archive http://localhost:9298/"))
 	opt.on("")
-  opt.on(wrap("[inst DIR] scaffolds a sample instantiation service. Post a testset to a model to keep going in one operation."))
+  opt.on(wrap("[new DIR]         scaffolds a sample execution engine. Everything except instances can be removed for default behaviour."))
 	opt.on("")
-  opt.on(wrap("[cpui DIR] scaffolds a sample html client. New versions might require manual merging if you changed something."))
+  opt.on(wrap("[inst DIR]        scaffolds a sample instantiation service. Post a testset to a model to keep going in one operation."))
 	opt.on("")
-  opt.on(wrap("[ui]       starts a simple static web server with the ui on http://localhost:8080. Use [cpui DIR] if you want stuff in apache or nginx."))
+  opt.on(wrap("[cpui DIR]        scaffolds a sample html client. New versions might require manual merging if you changed something."))
+	opt.on("")
+  opt.on(wrap("[ui]              starts a simple static web server with the ui on http://localhost:8080. Use [cpui DIR] if you want stuff in apache or nginx."))
   opt.parse!
 }
-if ARGV.length == 0 || (ARGV.length == 1 && ARGV[0] != 'ui') || (ARGV.length == 2 && %w(cpui new).include?(ARGV[1])) || ARGV.length > 2
+if ARGV.length == 0 || (ARGV.length == 1 && ARGV[0] != 'ui') || (ARGV.length == 2 && %w(cpui new).include?(ARGV[1])) || (ARGV.length == 3 && ARGV[0] != 'archive') || ARGV.length > 3
   puts ARGV.options
   exit
 end
 command = ARGV[0]
 dir     = ARGV[1]
+url     = ARGV[2]
 
 if command == 'ui'
   s = WEBrick::HTTPServer.new(:Port => 8080,  :DocumentRoot => "#{curpath}/../cockpit/")
   trap("INT"){ s.shutdown }
   s.start
-elsif command == "cpui"
+elsif command == 'cpui'
   if !File.exists?(dir)
     FileUtils.cp_r("#{curpath}/../cockpit/",dir)
   else
     puts "Directory already exists."
   end
-elsif command == "inst"
+elsif command == 'inst'
   if !File.exists?(dir)
     FileUtils.cp_r("#{curpath}/instantiation/",dir)
   else
-    puts "Directory already exists."
+    puts 'Directory already exists.'
+  end
+elsif command == 'archive'
+  res = Typhoeus.get(url)
+  if res.success?
+    if res.headers['content-type'] == 'text/xml'
+      XML::Smart.string(res.body) do |doc|
+        puts doc.to_s
+        tcount = 0
+        fcount = 0
+        doc.root.children.each do |i|
+          p i.attributes['id']
+          p i.attributes['state']
+        end
+      end
+    end
   end
 else
   if !File.exists?(dir)
@@ -65,6 +88,6 @@ else
     FileUtils.mkdir("#{dir}/resources") rescue nil
     FileUtils.mkdir("#{dir}/handlerwrappers") rescue nil
   else
-    puts "Directory already exists."
+    puts 'Directory already exists.'
   end
 end
