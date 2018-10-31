@@ -5,7 +5,7 @@ function WFAdaptorManifestation(adaptor) {
   this.resources = {};
   this.elements = {};
   this.events = {};
-  this.compact = true;
+  this.compact = false;
   this.endpoints = {};
 
   this.noarrow = ['alternative', 'otherwise'];
@@ -236,7 +236,11 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
-      'label': function(node){ return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,''); },
+      'label': function(node){
+        var lid = $(node).attr('id');
+        var lnd = $(node).attr('endpoint');
+        return lid + ': ' + lnd + '\n' + $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'');
+      },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
         if($('finalize,update', node).length > 0) {
@@ -270,9 +274,10 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'label': function(node){
+        var lid = $(node).attr('id');
         var lab = $(node).attr('label');
         if (lab) {
-          return lab.replace(/^['"]/,'').replace(/['"]$/,'');
+          return lid + '\n' + lab.replace(/^['"]/,'').replace(/['"]$/,'');
         }  else {
           return "";
         }

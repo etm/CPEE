@@ -194,7 +194,18 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // Helper Functions {{{
   var draw_label = this.draw.draw_label = function (tname, id, label, row, col, group) { // {{{
     var g = $X('<text class="label" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height+20-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg"></text>');
-        g.text((label != '' ? '◤ ' : '')  + label);
+    var spli = $(label.split(/\n/));
+    spli.each(function(k,v) {
+      var tspan = $X('<tspan x="0" dy="' + (spli.length > 1 ? '-7' : '0') + '" xmlns="http://www.w3.org/2000/svg"></tspan>');
+      if (k == 0) {
+        tspan.text((label != '' ? '◤ ' : '')  + v);
+      } else {
+        tspan.text(v);
+        tspan.attr('dy','15');
+        tspan.attr('dx','15');
+      }
+      g.append(tspan);
+    });
     bind_event(g,tname);
     if(group) { group.find('g.element[element-id=' + id + ']').append(g); }
     else {self.svg.container.children('g:first').append(g);}
