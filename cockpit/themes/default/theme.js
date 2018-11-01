@@ -66,7 +66,7 @@ function WFAdaptorManifestation(adaptor) {
         var schema = save['endpoints_cache'][$(node).attr('endpoint')].schema.documentElement;
         $(rng).find(' > element[name="parameters"] > element[name="arguments"]').replaceWith($(schema).clone());
       }
-      save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval);
+      save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
       save['details'].content(node);
       format_visual_forms();
     }
@@ -236,7 +236,9 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
-      'label': function(node){ return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,''); },
+      'label': function(node){
+        return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'');
+      },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
         if($('finalize,update', node).length > 0) {

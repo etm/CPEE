@@ -5,8 +5,8 @@
       <value>inclusive</value>
     </choice>
   </attribute>
-  <element name="alternative">
+  <element rngui:ignore="true" name="alternative">
     <attribute name="condition"><data type="string"/></attribute>
   </element>
-  <element name="otherwise"/>
+  <element rngui:ignore="true" name="otherwise"/>
 </element>
