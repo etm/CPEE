@@ -304,7 +304,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         );
       }
     }
-    // Seems to solve injection groups-line problem, but I guess it will caus problem when collapsing elements
+    // Seems to solve injection groups-line problem, but I guess it will cause problem when collapsing elements
     //if(group) {group.prepend(line);}
     //else
     {self.svg.container.append(line);}
@@ -586,7 +586,11 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       // }}}
       // Calculate Connection {{{
       if(illustrator.elements[tname] != undefined && illustrator.elements[tname].closeblock) { // Close Block if element e.g. loop
-        for(node in block.endnodes) illustrator.draw.draw_connection(group, block.endnodes[node], pos, block.max.row+1, block.endnodes.length, true);
+        for(node in block.endnodes) {
+          if (!block.endnodes[node].final) {
+            illustrator.draw.draw_connection(group, block.endnodes[node], pos, block.max.row+1, block.endnodes.length, true);
+          }
+        }
       }
       if(illustrator.elements[tname] != undefined && illustrator.elements[tname].endnodes != 'this')  {
         for(i in block.endnodes) endnodes.push(block.endnodes[i]); // collects all endpoints from different childs e.g. alternatives from choose
