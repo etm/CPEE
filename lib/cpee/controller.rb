@@ -353,7 +353,7 @@ module CPEE
         @attributes[ele.qname.name.to_sym] = ele.text
       end
       uuid = @properties.data.find("/p:properties/p:attributes/p:uuid")
-      if uuid.empty? || uuid.length != 1 || @properties.data.find("/p:properties/p:attributes/p:uuid[.=\"#{@uuid}\"]").empty?
+      if uuid.empty? || uuid.length != 1 || uuid.first.text != @uuid
         @properties.modify do |doc|
           attr = doc.find("/p:properties/p:attributes").first
           attr.find('p:uuid').delete_all!
