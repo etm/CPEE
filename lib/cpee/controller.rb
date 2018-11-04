@@ -152,7 +152,6 @@ module CPEE
     end
 
     attr_reader :id
-    attr_reader :properties
     attr_reader :notifications
     attr_reader :callbacks
     attr_reader :mutex
