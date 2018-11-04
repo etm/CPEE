@@ -85,10 +85,12 @@
       <stopped putable="false"/>
     </stopping>
     <stopped>
+      <abandoned putable="true"/>
       <stopped putable="true"/>
       <running putable="true"/>
       <simulating putable="true"/>
     </stopped>
+    <abandoned/>
     <finished/>
   </state>
   <status type="complex" modifiable="false" mutable="true">

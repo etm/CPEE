@@ -255,6 +255,7 @@ module CPEE
       if [:finished, :stopped, :ready].include?(@instance.state)
         @properties.modify do |doc|
           node = doc.find("/p:properties/p:state").first
+          node.attributes['changed'] = Time.now.xmlschema
           node.text = @instance.state
         end
       end
@@ -373,7 +374,12 @@ module CPEE
       end
     end #}}}
     def unserialize_state! #{{{
-      state = @properties.data.find("string(/p:properties/p:state)")
+      state = 'ready'
+      @properties.modify do |doc|
+        node = doc.find("/p:properties/p:state").first
+        node.attributes['changed'] = Time.now.xmlschema
+        state = node.text
+      end
       if call_vote("state/change", :instance => @id, :info => info, :state => state)
         case state
           when 'stopping'
