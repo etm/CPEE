@@ -223,6 +223,15 @@ module CPEE
     def info
       @properties.data.find("string(/p:properties/p:attributes/p:info)")
     end
+    def info=(text)
+      @properties.modify do |doc|
+        node = doc.find("/p:properties/p:attributes/p:info").first
+        node.text = text if node
+      end
+    end
+    def state
+      data.find("string(/p:properties/p:state)")
+    end
 
     def finalize_if_finished
       if @instance.state == :finished
@@ -400,8 +409,8 @@ module CPEE
     def unserialize_handlerwrapper! #{{{
       hw = nil
       begin
-        hw = eval(@properties.data.find("string(/p:properties/p:handlerwrapper)"))
-        @instance.handlerwrapper = hw
+        hw = @properties.data.find("string(/p:properties/p:handlerwrapper)")
+        @instance.handlerwrapper = eval(hw)
       rescue => e
         @instance.handlerwrapper = DefaultHandlerWrapper
       end

@@ -142,9 +142,7 @@ module CPEE
       Riddl::Parameter::Complex.new("wis","text/xml") do
         ins = XML::Smart::string('<instances/>')
         controller.sort{|a,b| b[0] <=> a[0] }.each do |k,v|
-          name = v.properties.data.find("string(/p:properties/p:attributes/p:info)")
-          state = v.properties.data.find("string(/p:properties/p:state)")
-          ins.root.add('instance',name, 'uuid' => v.uuid, 'id' => k, 'state' => state)
+          ins.root.add('instance', v.info,  'uuid' => v.uuid, 'id' => k, 'state' => v.state)
         end
         ins.to_s
       end
@@ -167,8 +165,7 @@ module CPEE
       end
 
       controller[id] = Controller.new(id,opts)
-      info = controller[id].properties.data.find("/p:properties/p:attributes/p:info")
-      info.first.text = name if info.length == 1
+      controller[id].info = name
 
       Riddl::Parameter::Simple.new("id", id)
     end
