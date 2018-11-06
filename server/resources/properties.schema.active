@@ -71,6 +71,7 @@
       <running putable="true"/>
       <ready putable="true"/>
       <simulating putable="true"/>
+      <abandoned putable="true"/>
     </ready>
     <running>
       <stopping putable="true"/>
