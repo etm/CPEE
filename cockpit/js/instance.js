@@ -522,8 +522,10 @@ function monitor_instance_state_change(notification) { //{{{
     var but = "";
     if (notification == "ready" || notification == "stopped") {
       but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();'>simulate</button>";
-    }
-    if (notification == "running") {
+      if (notification == "ready" || notification == "stopped") {
+        but += " / <button onclick='$(this).attr(\"disabled\",\"disabled\");aba_instance();'>abandon</button>";
+      }
+    } else if (notification == "running") {
       but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button>";
     }
 
@@ -594,6 +596,15 @@ function sim_instance() {// {{{
     type: "PUT",
     url: url + "/properties/values/state",
     data: ({value: "simulating"}),
+    error: report_failure
+  });
+}// }}}
+function aba_instance() {// {{{
+  var url = $('body').attr('current-instance');
+  $.ajax({
+    type: "PUT",
+    url: url + "/properties/values/state",
+    data: ({value: "abandoned"}),
     error: report_failure
   });
 }// }}}
