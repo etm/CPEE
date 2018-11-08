@@ -34,6 +34,9 @@
       <attribute name='state'>
         <data type="string"/>
       </attribute>
+      <attribute name='state_changed'>
+        <data type="dateTime"/>
+      </attribute>
       <data type="string"/>
     </element>
   </define>

@@ -230,7 +230,18 @@ module CPEE
       end
     end
     def state
-      data.find("string(/p:properties/p:state)")
+      @properties.data.find("string(/p:properties/p:state)")
+    end
+    def state_changed
+      @properties.data.find("string(/p:properties/p:state/@changed)")
+    end
+    def state_change!(state=nil)
+      @properties.modify do |doc|
+        doc.find("/p:properties/p:state").each do |ele|
+          ele.attributes['changed'] = Time.now.xmlschema
+          ele.text = state if state
+        end
+      end
     end
 
     def finalize_if_finished
@@ -263,11 +274,7 @@ module CPEE
       @properties.activate_schema(:inactive) if @instance.state == :stopped || @instance.state == :ready
       @properties.activate_schema(:active)   if @instance.state == :running || @instance.state == :simulating
       if [:finished, :stopped, :ready].include?(@instance.state)
-        @properties.modify do |doc|
-          node = doc.find("/p:properties/p:state").first
-          node.attributes['changed'] = Time.now.xmlschema
-          node.text = @instance.state
-        end
+        state_change! @instance.state
       end
     end # }}}
     def serialize_positions! # {{{
@@ -387,7 +394,6 @@ module CPEE
       state = 'ready'
       @properties.modify do |doc|
         node = doc.find("/p:properties/p:state").first
-        node.attributes['changed'] = Time.now.xmlschema
         state = node.text
       end
       if call_vote("state/change", :instance => @id, :info => info, :state => state)
