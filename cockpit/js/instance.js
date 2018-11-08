@@ -546,12 +546,12 @@ function monitor_instance_pos_change(notification) {// {{{
   var parts = JSON.parse(notification);
   if (parts['unmark']) {
     $.each(parts['unmark'],function(a,b){
-      format_visual_remove(b,"passive")
+      format_visual_remove(b.position,"passive")
     });
   }
   if (parts['at']) {
     $.each(parts['at'],function(a,b){
-      format_visual_add(b,"passive")
+      format_visual_add(b.position,"passive")
     });
   }
 } // }}}
