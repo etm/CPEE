@@ -235,7 +235,8 @@ module CPEE
 
     def finalize_if_finished
       if @instance.state == :finished
-        #@instance = nil
+        # TODO unlink engine, be careful race condition
+        # @instance = nil
       end
     end
 
@@ -275,7 +276,7 @@ module CPEE
         pos.children.delete_all!
         @positions = @instance.positions
         @instance.positions.each do |p|
-          pos.add("#{p.position}",[p.detail,p.passthrough].compact.join(';'))
+          pos.add("#{p.position}",p.detail,'passthrough' => p.passthrough)
         end
       end
     end # }}}
@@ -425,7 +426,7 @@ module CPEE
       @positions = []
       @properties.data.find("/p:properties/p:positions/p:*").each do |e|
         val = e.text.split(';')
-        @positions << ::WEEL::Position.new(e.qname.to_s.to_sym,val[0].to_sym,val[1])
+        @positions << ::WEEL::Position.new(e.qname.to_s.to_sym,e.text.to_sym,e.attributes['passthrough'])
       end
     end #}}}
     def unserialize_dsl! #{{{

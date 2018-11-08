@@ -108,8 +108,13 @@
     <zeroOrMore>
       <element>
         <anyName/>
+        <optional>
+          <attribute name='passthrough'>
+            <data type="string"/>
+          </attribute>
+        </optional>
         <data type="string">
-          <param name="pattern">(at|after)(;[A-Za-z0-9]+)?</param>
+          <param name="pattern">(at|after)</param>
         </data>
       </element>
     </zeroOrMore>
