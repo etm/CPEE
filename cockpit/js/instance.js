@@ -488,7 +488,7 @@ function monitor_instance_pos() {// {{{
       format_visual_clear();
       values.each(function(){
         var what = this.nodeName;
-        format_visual_add(what,"passive");
+        format_visual_add(what,save['state'] == 'running' ? 'active' : 'passive');
       });
     }
   });
