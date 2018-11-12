@@ -553,6 +553,9 @@ function monitor_instance_pos_change(notification) {// {{{
       format_visual_add(b.position,"passive")
     });
   }
+  if (!parts['at'] && !parts['unmark'] && !parts['after'] && !parts['wait']) {
+    monitor_instance_pos();
+  }
 } // }}}
 
 function monitor_instance_vote_add(notification) {// {{{
