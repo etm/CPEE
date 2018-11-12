@@ -161,7 +161,7 @@ function WFAdaptorManifestation(adaptor) {
           'params': ['> finalize, > update', xml_node]
         });
       }
-      if (xml_node.get(0).tagName == "call" || xml_node.get(0).tagName == "manipulate") {
+      if (xml_node.get(0).tagName == "call" || xml_node.get(0).tagName == "manipulate" || xml_node.get(0).tagName == "stop") {
         var icon =  self.elements.call.illustrator.svg.clone();
         icon.children('g.replace').addClass('active');
         var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
