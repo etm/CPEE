@@ -17,6 +17,7 @@ var save = {};
     save['attributes'] = undefined;
     save['details'] = undefined;
     save['details_target'] = undefined;
+    save['instance_pos'] = [];
 var node_state = {};
 var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'calling,status,manipulating,failed,done' + '&' +
@@ -392,6 +393,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         });
         adaptor_update();
         manifestation.events.click(svgid);
+        format_instance_pos();
       };
       adaptor_update();
       monitor_instance_pos();
@@ -403,7 +405,7 @@ function adaptor_init(url,theme,dslx) { //{{{
       graphrealization.set_description($(dslx));
       adaptor_update();
       manifestation.events.click(svgid);
-      monitor_instance_pos();
+      format_instance_pos();
     });
   }
 } //}}}
@@ -484,12 +486,9 @@ function monitor_instance_pos() {// {{{
     type: "GET",
     url: url + "/properties/values/positions/",
     success: function(res){
-      var values = $("value > *",res);
+      save['instance_pos'] = $("value > *",res);
       format_visual_clear();
-      values.each(function(){
-        var what = this.nodeName;
-        format_visual_add(what,save['state'] == 'running' ? 'active' : 'passive');
-      });
+      format_instance_pos();
     }
   });
 }// }}}
@@ -1078,7 +1077,14 @@ function format_visual_vote_clear() {//{{{
   node_state = {};
   $('.super .vote').each(function(a,b){b.setAttribute("class","vote");});
   $("#votes").empty();
-}//}}}
+ }//}}}
+
+function format_instance_pos() { //{{{
+  $(save['instance_pos']).each(function(){
+    var what = this.nodeName;
+    format_visual_add(what,save['state'] == 'running' ? 'active' : 'passive');
+  });
+} //}}}
 
 function format_visual_forms() { //{{{
   if (save['state'] != "ready" && save['state'] != "stopped") {

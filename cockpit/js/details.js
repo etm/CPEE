@@ -69,6 +69,7 @@ function do_main_save() { //{{{
         manifestation.update_details(svgid);
       }
       adaptor_update();
+      format_instance_pos();
     });
 
     $.ajax({
