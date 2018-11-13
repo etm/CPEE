@@ -69,8 +69,9 @@ elsif command == 'inst'
 elsif command == 'archive'
   res = Typhoeus.get(url)
   if res.success?
-    if res.headers['content-type'] == 'text/xml'
-      XML::Smart.string(res.body) do |doc|
+    p res.headers['Content-Type']
+    if res.headers['Content-Type'] =~ /^(text|application)\/xml/
+      XML::Smart.string(res.response_body) do |doc|
         puts doc.to_s
         tcount = 0
         fcount = 0

@@ -270,10 +270,10 @@ module CPEE
       end
     end #}}}
     def serialize_state! # {{{
-      @properties.activate_schema(:finished) if @instance.state == :finished
-      @properties.activate_schema(:inactive) if @instance.state == :stopped || @instance.state == :ready
-      @properties.activate_schema(:active)   if @instance.state == :running || @instance.state == :simulating
-      if [:finished, :stopped, :ready].include?(@instance.state)
+      @properties.activate_schema(:finished) if @instance.state == :finished || @instance.state == :abandoned
+      @properties.activate_schema(:inactive) if @instance.state == :stopped  || @instance.state == :ready
+      @properties.activate_schema(:active)   if @instance.state == :running  || @instance.state == :simulating
+      if [:finished, :stopped, :ready, :abandoned].include?(@instance.state)
         state_change! @instance.state
       end
     end # }}}
