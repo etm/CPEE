@@ -69,15 +69,18 @@ elsif command == 'inst'
 elsif command == 'archive'
   res = Typhoeus.get(url)
   if res.success?
-    p res.headers['Content-Type']
     if res.headers['Content-Type'] =~ /^(text|application)\/xml/
       XML::Smart.string(res.response_body) do |doc|
-        puts doc.to_s
         tcount = 0
         fcount = 0
         doc.root.children.each do |i|
-          p i.attributes['id']
-          p i.attributes['state']
+          if ["finished","abandoned"].include?(i.attributes['state'])
+            prop = Typhoeus.get(File.join(url,i.attributes['id'],'properties/'))
+            if prop.success?
+              File.write(File.join(dir,i.attributes['uuid'] + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
+              Typhoeus.delete(File.join(url,i.attributes['id'])+'/')
+            end
+          end
         end
       end
     end

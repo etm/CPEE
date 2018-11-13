@@ -107,7 +107,7 @@ module CPEE
         @directory + '/notifications/',
         opts[:notifications_init]
       )
-      unless ['stopped','ready','finished'].include?(@properties.data.find("string(/p:properties/p:state)"))
+      unless ['stopped','ready','finished','abandoned'].include?(@properties.data.find("string(/p:properties/p:state)"))
         @properties.modify do |doc|
           doc.find("/p:properties/p:state").first.text = 'stopped'
         end
