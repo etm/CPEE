@@ -233,7 +233,7 @@ module CPEE
       @properties.data.find("string(/p:properties/p:state)")
     end
     def state_changed
-      @properties.data.find("string(/p:properties/p:state/@changed)")
+      (str = @properties.data.find("string(/p:properties/p:state/@changed)")).empty? ? Time.at(0).xmlschema : str
     end
     def state_change!(state=nil)
       @properties.modify do |doc|
