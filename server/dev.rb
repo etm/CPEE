@@ -1,3 +1,5 @@
+#!/usr/bin/ruby
+#
 # This file is part of CPEE.
 #
 # CPEE is free software: you can redistribute it and/or modify it under the terms
@@ -12,17 +14,20 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
-if Module.const_defined?(:CPEE) && CPEE.const_defined?(:DEVELOP) && CPEE::DEVELOP.const_defined?(:WEEL)
-  require File.join(CPEE::DEVELOP::WEEL,'weel')
-else
-  require 'weel'
-end
-require ::File.dirname(__FILE__) + '/../../server/handlerwrappers/default'
-
-class EmptyWorkflow < WEEL
-  handlerwrapper DefaultHandlerWrapper
-
-  control flow do
-    # control flow will be set externally
+module CPEE
+  module DEVELOP
+    RIDDL = "/home/mangler/Projects/riddl/lib/ruby"
+    WEEL = "/home/mangler/Projects/weel/lib/"
   end
 end
+
+require 'rubygems'
+gem 'nokogiri'
+require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee/implementation')
+
+Riddl::Server.new(CPEE::SERVER, :port => 8298) do |opts|
+  accessible_description true
+  cross_site_xhr true
+
+  use CPEE::implementation(opts)
+end.loop!
