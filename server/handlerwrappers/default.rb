@@ -82,6 +82,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       @handler_passthrough = callback
 
       status, result, headers = client.request type => params
+
       raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint} - status: #{status}: #{result&.dig(0)&.value&.read}" if status < 200 || status >= 300
 
       unless headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'

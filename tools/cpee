@@ -32,11 +32,11 @@ ARGV.options { |opt|
   opt.on("Options:")
   opt.on("--help", "-h", "This text") { puts opt; exit }
 	opt.on("")
-  opt.on(wrap("[archive DIR URL] save properties from all finished instances listed at URL into DIR.\ne.g. cpee archive ./archive http://localhost:9298/"))
+  opt.on(wrap("[archive DIR URL] save properties from all finished instances listed at URL into DIR. Examples:\ncpee archive ./archive http://localhost:9298/\ncpee archive ./archive http://localhost:9298/1/"))
 	opt.on("")
   opt.on(wrap("[abandon URL]     running processes are stopped; ready or stopped processes are abandoned.\ne.g. cpee abandon http://localhost:9298/1/"))
 	opt.on("")
-  opt.on(wrap("[delete! URL]      DANGER ZONE.\ne.g. cpee delete! http://localhost:9298/1/"))
+  opt.on(wrap("[delete! URL]     DANGER ZONE. Vanishes forever. Not in archive.\ne.g. cpee delete! http://localhost:9298/1/"))
 	opt.on("")
   opt.on(wrap("[new DIR]         scaffolds a sample execution engine. Everything except instances can be removed for default behaviour."))
 	opt.on("")
@@ -80,12 +80,26 @@ elsif command == 'archive'
   if res.success?
     if res.headers['Content-Type'] =~ /^(text|application)\/xml/
       XML::Smart.string(res.response_body) do |doc|
-        doc.root.children.each do |i|
-          if ["finished","abandoned"].include?(i.attributes['state'])
-            prop = Typhoeus.get(File.join(p2,i.attributes['id'],'properties','/'))
-            if prop.success?
-              File.write(File.join(p1,i.attributes['uuid'] + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
-              Typhoeus.delete(File.join(p2,i.attributes['id'],'/'))
+        if doc.root.qname.to_s == "instances"
+          doc.root.children.each do |i|
+            if ["finished","abandoned"].include?(i.attributes['state'])
+              prop = Typhoeus.get(File.join(p2,i.attributes['id'],'properties','/'))
+              if prop.success?
+                File.write(File.join(p1,i.attributes['uuid'] + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
+                Typhoeus.delete(File.join(p2,i.attributes['id'],'/'))
+              end
+            end
+          end
+        elsif doc.root.qname.to_s == "info"
+          prop = Typhoeus.get(File.join(p2,'properties','/'))
+          if prop.success?
+            xprop = XML::Smart::string(prop.response_body)
+            xprop.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
+            if ["finished","abandoned"].include?(xprop.find("string(/p:properties/p:state)"))
+              uuid = xprop.find("string(/p:properties/p:attributes/p:uuid)")
+              id = File.basename(p2)
+              File.write(File.join(p1,uuid + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
+              Typhoeus.delete(File.join(p2,'/'))
             end
           end
         end
