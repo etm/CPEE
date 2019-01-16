@@ -19,37 +19,9 @@ require ::File.dirname(__FILE__) + '/handler_properties'
 require ::File.dirname(__FILE__) + '/handler_notifications'
 require ::File.dirname(__FILE__) + '/callback'
 require ::File.dirname(__FILE__) + '/empty_workflow'
+require ::File.dirname(__FILE__) + '/value_helper'
 
 module CPEE
-
-  class ValueHelper #{{{
-    def self::generate(value)
-      if [String, Integer, Float, TrueClass, FalseClass, Date].include? value.class
-        value.to_s
-      elsif  [Hash, Array].include? value.class
-        JSON::generate(value)
-      elsif value.respond_to?(:to_s)
-        value.to_s
-      end
-    end
-
-    def self::parse(value)
-      case value.downcase
-        when 'true'
-          true
-        when 'false'
-          false
-        when 'nil', 'null'
-          nil
-        else
-          begin
-            JSON::parse(value)
-          rescue
-            (Integer value rescue nil) || (Float value rescue nil) || value.to_s rescue nil || ''
-          end
-      end
-    end
-  end #}}}
 
   class AttributesHelper #{{{
     def translate(__attributes__,__dataelements__,__endpoints__)
@@ -283,7 +255,7 @@ module CPEE
         pos.children.delete_all!
         @positions = @instance.positions
         @instance.positions.each do |p|
-          pos.add("#{p.position}",p.detail,'passthrough' => p.passthrough)
+          pos.add("#{p.position}",p.detail,'passthrough' => p.passthrough.to_s.empty? ? nil : p.passthrough)
         end
       end
     end # }}}

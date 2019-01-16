@@ -13,17 +13,10 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'fileutils'
-if Module.const_defined?(:CPEE) && CPEE.const_defined?(:DEVELOP) && CPEE::DEVELOP.const_defined?(:RIDDL)
-  require File.join(CPEE::DEVELOP::RIDDL,'riddl/server')
-  require File.join(CPEE::DEVELOP::RIDDL,'riddl/client')
-  require File.join(CPEE::DEVELOP::RIDDL,'riddl/utils/notifications_producer')
-  require File.join(CPEE::DEVELOP::RIDDL,'riddl/utils/properties')
-else
-  require 'riddl/server'
-  require 'riddl/client'
-  require 'riddl/utils/notifications_producer'
-  require 'riddl/utils/properties'
-end
+require 'riddl/server'
+require 'riddl/client'
+require 'riddl/utils/notifications_producer'
+require 'riddl/utils/properties'
 require_relative 'controller'
 
 require 'ostruct'
@@ -247,7 +240,11 @@ module CPEE
         return
       end
       Riddl::Parameter::Complex.new("res","text/plain") do
-        controller[id].console(@p[0].value)
+        begin
+          controller[id].console(@p[0].value)
+        rescue => e
+          e.message
+        end
       end
     end
   end #}}}

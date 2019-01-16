@@ -50,7 +50,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @label = parameters[:label]
     @sensors = parameters[:sensors]
     @controller.notify("activity/calling", :instance => @controller.instance, :instance_uuid => @controller.uuid, :label => @label, :instance_name => @controller.info, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
-    if passthrough.nil?
+    if passthrough.to_s.empty?
       params = []
       callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
       (parameters[:arguments] || []).each do |s|

@@ -19,6 +19,7 @@ require 'base64'
 require 'uri'
 require 'redis'
 require 'json'
+require ::File.dirname(__FILE__) + '/lib/cpee/value_helper'
 
 module CPEE
   module Instantiation
@@ -215,7 +216,7 @@ module CPEE
             doc = XML::Smart.string(response[0].value.read)
             doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
             doc.find('/p:value/*').each do |e|
-              send[e.qname.name] = e.text
+              send[e.qname.name] = CPEE::ValueHelper::parse(e.text)
             end
           end
           Riddl::Client.new(cb).put [
