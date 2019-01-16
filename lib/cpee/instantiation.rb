@@ -19,7 +19,7 @@ require 'base64'
 require 'uri'
 require 'redis'
 require 'json'
-require ::File.dirname(__FILE__) + '/lib/cpee/value_helper'
+require ::File.dirname(__FILE__) + '/value_helper'
 
 module CPEE
   module Instantiation
