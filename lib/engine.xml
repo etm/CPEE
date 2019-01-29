@@ -24,7 +24,8 @@
   </message>
 
   <message name="instance-id">
-    <parameter name="id" type="string"/>
+    <parameter name="id" type="nonNegativeInteger"/>
+    <parameter name="uuid" type="string"/>
   </message>
 
   <message name="instance-new">

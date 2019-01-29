@@ -168,7 +168,7 @@ module CPEE
       controller[id].info = name
       controller[id].state_change!
 
-      Riddl::Parameter::Simple.new("id", id)
+      [ Riddl::Parameter::Simple.new("id", id), Riddl::Parameter::Simple.new("uuid", controller['id].uuid) ]
     end
   end #}}}
 
