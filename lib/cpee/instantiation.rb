@@ -29,6 +29,7 @@ module CPEE
     module Helpers #{{{
       def load_testset(tdoc,cpee,name=nil) #{{{
         ins = -1
+        uuid = nil
         XML::Smart.string(tdoc) do |doc|
           doc.register_namespace 'desc', 'http://cpee.org/ns/description/1.0'
           doc.register_namespace 'prop', 'http://riddl.org/ns/common-patterns/properties/1.0'
@@ -41,10 +42,11 @@ module CPEE
             end
           end
 
-          status, response = res.post Riddl::Parameter::Simple.new("info",doc.find("string(/testset/attributes/prop:info)"))
+          status, response, headers = res.post Riddl::Parameter::Simple.new("info",doc.find("string(/testset/attributes/prop:info)"))
 
           if status == 200
             ins = response.first.value
+            uuid = headers['CPEE_INSTANCE_UUID']
             params = []
 
             res = srv.resource("/#{ins}/properties/values")
@@ -77,10 +79,10 @@ module CPEE
             end
           end
         end
-        return ins
+        [ins, uuid]
       end #}}}
       private :load_testset
-      def handle_waiting(cpee,instance,behavior,selfurl,cblist) #{{{
+      def handle_waiting(cpee,instance,uuid,behavior,selfurl,cblist) #{{{
         if behavior =~ /^wait/
           condition = behavior.match(/_([^_]+)_/)&.[](1) || 'finished'
           @headers << Riddl::Header.new('CPEE-CALLBACK','true')
@@ -97,6 +99,7 @@ module CPEE
             cblist.rpush(cbk, cb)
             cblist.rpush(cbk, condition)
             cblist.rpush(cbk, instance)
+            cblist.rpush(cbk, uuid)
             cblist.rpush(cbk, File.join(cpee,instance))
           end
         end
@@ -113,7 +116,7 @@ module CPEE
         end
       end #}}}
       private :handle_starting
-      def handle_data(cpee,instance,data)
+      def handle_data(cpee,instance,data) #{{{
         if data
           srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
           JSON::parse(data).each do |k,v|
@@ -124,7 +127,7 @@ module CPEE
             sleep 0.42
           end rescue nil
         end
-      end
+      end #}}}
     end #}}}
 
     class InstantiateUrl < Riddl::Implementation #{{{
@@ -141,17 +144,17 @@ module CPEE
           (@status = 500) && return
         end
 
-        if (instance = load_testset(tdoc,cpee,@p[0].value)) == -1
+        if (instance, uuid = load_testset(tdoc,cpee,@p[0].value)).first == -1
           @status = 500
         else
           @headers << Riddl::Header.new('CPEE-INSTANTIATION',File.join(cpee,instance))
           handle_data cpee, instance, @p[3]&.value
-          handle_waiting cpee, instance, @p[1].value, selfurl, cblist
+          handle_waiting cpee, instance, uuid, @p[1].value, selfurl, cblist
           handle_starting cpee, instance, @p[1].value
           return Riddl::Parameter::Simple.new("url",cpee + instance)
         end
       end
-    end #}}}
+    end  #}}}
 
     class InstantiateXML < Riddl::Implementation #{{{
       include Helpers
@@ -168,12 +171,12 @@ module CPEE
           @p[data].value.read
         end
 
-        if (instance = load_testset(tdoc,cpee)) == -1
+        if (instance, uuid = load_testset(tdoc,cpee)).first == -1
           @status = 500
         else
           @headers << Riddl::Header.new('CPEE-INSTANTIATION',File.join(cpee,instance))
           handle_data cpee, instance, @p[data+1]&.value
-          handle_waiting cpee, instance, behavior, selfurl, cblist
+          handle_waiting cpee, instance, uuid, behavior, selfurl, cblist
           handle_starting cpee, instance, behavior
           return Riddl::Parameter::Simple.new("url",cpee + instance)
         end
@@ -189,10 +192,17 @@ module CPEE
         cblist   = @a[2]
         instance = @p[1].value
 
-        handle_data cpee, instance, @p[2]&.value
-        handle_waiting cpee, instance, @p[0].value, selfurl, cblist
-        handle_starting cpee, instance, @p[0].value
-        return Riddl::Parameter::Simple.new("url",cpee + instance)
+        srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+        res = srv.resource("/#{instance}/properties/values/attributes/uuid")
+        status, response = res.get
+
+        if status >= 200 && status < 300
+          uuid = XML::Smart::string(response.first.value).root.text
+          handle_data cpee, instance, @p[2]&.value
+          handle_waiting cpee, instance, uuid, @p[0].value, selfurl, cblist
+          handle_starting cpee, instance, @p[0].value
+          return Riddl::Parameter::Simple.new("url",cpee + instance)
+        end
       end
     end #}}}
 
@@ -205,13 +215,19 @@ module CPEE
         notification = JSON.parse(@p[3].value)
 
         key = @r.last
-        cb, condition, instance, instance_url = cblist.lrange(key,0,-1)
+        cb, condition, instance, uuid, instance_url = cblist.lrange(key,0,-1)
+
+        send = {
+          'CPEE-INSTANCE' => instance,
+          'CPEE-INSTANCE-URL' => instance_url,
+          'CPEE-INSTANCE-UUID' => uuid
+        }
+
         if notification['state'] == condition
           cblist.del(key)
           srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
           res = srv.resource("/#{instance}/properties/values/dataelements")
           status, response = res.get
-          send = { 'CPEE-INSTANCE' => instance_url }
           if status >= 200 && status < 300
             doc = XML::Smart.string(response[0].value.read)
             doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
@@ -220,6 +236,12 @@ module CPEE
             end
           end
           Riddl::Client.new(cb).put [
+            Riddl::Parameter::Complex.new('dataelements','application/json',JSON::generate(send))
+          ]
+        else
+          send['state'] = notification['state']
+          Riddl::Client.new(cb).put [
+            Riddl::Header.new('CPEE-UPDATE','true'),
             Riddl::Parameter::Complex.new('dataelements','application/json',JSON::generate(send))
           ]
         end

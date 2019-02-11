@@ -99,7 +99,7 @@ class Logging < Riddl::Implementation #{{{
     topic = @p[1].value
     event_name = @p[2].value
     log_dir = @a[0]
-    instancenr = @h['CPEE_INSTANCE'].split('/').last
+    instancenr = @h['CPEE_INSTANCE_URL'].split('/').last
     notification = JSON.parse(@p[3].value)
     doc(event_name,log_dir,instancenr,notification)
   end

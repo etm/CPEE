@@ -15,7 +15,7 @@ log:
       concept:endpoint: ''
       id:id: ''
       lifecycle:transition: complete
-      cpee:lifecycle:transition: activity/call
+      cpee:lifecycle:transition: activity/calling
       time:timestamp: ''
   classifier:
     Data: data_send data_received data_changed data_values

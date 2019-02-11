@@ -62,6 +62,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       end
 
       params << Riddl::Header.new("CPEE-BASE",@controller.base_url)
+      params << Riddl::Header.new("CPEE-INSTANCE",@controller.instance)
       params << Riddl::Header.new("CPEE-INSTANCE-URL",@controller.instance_url)
       params << Riddl::Header.new("CPEE-INSTANCE-UUID",@controller.uuid)
       params << Riddl::Header.new("CPEE-CALLBACK",@controller.instance_url + '/callbacks/' + callback)
