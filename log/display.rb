@@ -26,26 +26,21 @@ def follow(fname,deep=0)
   io = File.open(fname)
   YAML.load_stream(io) do |e|
     if name = e.dig('log','trace','cpee:name')
-      FileUtils.cp(File.join(__dir__,'logs',File.basename(fname,'.xes.yaml') + '.xes.yaml'),'.') if ARGV[1] == 'copy'
       puts " " * deep + name + " (#{File.basename(fname,'.xes.yaml')})"
     end
     if e.dig('event','concept:endpoint') == 'https://centurio.work/flow/start/url/' && e.dig('event','cpee:lifecycle:transition') == 'activity/receiving'
       val = e.dig('event','list','data_receiver',0,'data','CPEE-INSTANCE')
-      res = Typhoeus.get(File.join(val,'/properties/values/attributes/uuid/'))
-      if res.success?
-        uuid = XML::Smart.string(res.body).find('string(/*)')
-        follow File.dirname(fname) + "/#{uuid}.xes.yaml",deep + 2
-      end
+      uuid = File.basename(`grep -l "concept:name: '#{File.basename(val)}" *`.strip,'.xes.yaml')
+      follow "#{uuid}.xes.yaml",deep + 2
     end
   end
 end
 
-fname =  File.join(__dir__,'logs',(ARGV[0].strip rescue '') + '.xes.yaml')
+fname =  File.join((ARGV[0].strip rescue '') + '.xes.yaml')
 if File.exists? fname
   follow fname
 else
-  puts 'Copies log files tree to current directory.'
+  puts 'Display log files tree to current directory.'
   puts
-  puts '  Example: sic.rb UUID'
-  puts '  Example: sic.rb UUID copy'
+  puts '  Example: display.rb UUID'
 end
