@@ -551,7 +551,8 @@ module CPEE
               client = Riddl::Client.new(url,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml')
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
               params << Riddl::Header.new("CPEE-BASE",self.base)
-              params << Riddl::Header.new("CPEE-INSTANCE",self.instance)
+              params << Riddl::Header.new("CPEE-INSTANCE-URL",self.instance_url)
+              params << Riddl::Header.new("CPEE-INSTANCE-UUID",self.uuid)
               client.post params
             elsif url.class == Riddl::Utils::Notifications::Producer::WS
               e = XML::Smart::string("<event/>")
@@ -590,7 +591,8 @@ module CPEE
               client = Riddl::Client.new(u,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml')
               params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
               params << Riddl::Header.new("CPEE-BASE",self.base_url)
-              params << Riddl::Header.new("CPEE-INSTANCE",self.instance_url)
+              params << Riddl::Header.new("CPEE-INSTANCE-URL",self.instance_url)
+              params << Riddl::Header.new("CPEE-INSTANCE-UUID",self.uuid)
               params << Riddl::Header.new("CPEE-CALLBACK",self.instance_url + '/callbacks/' + callback)
               @mutex.synchronize do
                 status, result, headers = client.post params
