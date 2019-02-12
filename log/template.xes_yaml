@@ -11,9 +11,11 @@ log:
       concept:name: __INVALID__
       cpee:name: __INVALID__
     event:
+      trace:id: -1
       concept:name: __INVALID__
       concept:endpoint: ''
       id:id: ''
+      cpee:uuid: ''
       lifecycle:transition: complete
       cpee:lifecycle:transition: activity/calling
       time:timestamp: ''
