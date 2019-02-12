@@ -220,7 +220,8 @@ module CPEE
         send = {
           'CPEE-INSTANCE' => instance,
           'CPEE-INSTANCE-URL' => instance_url,
-          'CPEE-INSTANCE-UUID' => uuid
+          'CPEE-INSTANCE-UUID' => uuid,
+          'CPEE-STATE' => notification['state']
         }
 
         if notification['state'] == condition
@@ -239,7 +240,6 @@ module CPEE
             Riddl::Parameter::Complex.new('dataelements','application/json',JSON::generate(send))
           ]
         else
-          send['state'] = notification['state']
           Riddl::Client.new(cb).put [
             Riddl::Header.new('CPEE-UPDATE','true'),
             Riddl::Parameter::Complex.new('dataelements','application/json',JSON::generate(send))
