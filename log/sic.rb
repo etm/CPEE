@@ -30,12 +30,17 @@ def follow(fname,deep=0)
       puts " " * deep + name + " (#{File.basename(fname,'.xes.yaml')})"
     end
     if e.dig('event','concept:endpoint') == 'https://centurio.work/flow/start/url/' && e.dig('event','cpee:lifecycle:transition') == 'activity/receiving'
-      val = e.dig('event','list','data_receiver',0,'data','CPEE-INSTANCE')
-      res = Typhoeus.get(File.join(val,'/properties/values/attributes/uuid/'))
-      if res.success?
-        uuid = XML::Smart.string(res.body).find('string(/*)')
-        follow File.dirname(fname) + "/#{uuid}.xes.yaml",deep + 2
+      p e.class
+      val = e.dig('event','list','data_receiver',0,'data')
+      uuid = e.dig('event','list','data_receiver',0,'data','CPEE-UUID')
+      p 'uuid'
+      if !uuid
+        res = Typhoeus.get(File.join(val,'/properties/values/attributes/uuid/'))
+        if res.success?
+          uuid = XML::Smart.string(res.body).find('string(/*)')
+        end
       end
+      follow File.dirname(fname) + "/#{uuid}.xes.yaml",deep + 2
     end
   end
 end
