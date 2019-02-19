@@ -30,7 +30,7 @@ class Logging < Riddl::Implementation #{{{
     event["id:id"] = (activity.nil? || activity == "") ? 'external' : activity
     event["cpee:uuid"] = notification['instance_uuid'] if notification["instance_uuid"]
     case event_name
-      when 'receiving', 'change'
+      when 'receiving', 'change', 'instantiation'
         event["lifecycle:transition"] = "unknown"
       when 'done'
         event["lifecycle:transition"] = "complete"
