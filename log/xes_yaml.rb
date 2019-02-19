@@ -22,7 +22,7 @@ class Logging < Riddl::Implementation #{{{
     log["log"]["trace"]["cpee:uuid"] ||= notification['instance_uuid'] if notification["instance_uuid"]
     File.open(File.join(log_dir,uuid+'.xes.yaml'),'w'){|f| f.puts log.to_yaml} unless File.exists? File.join(log_dir,uuid+'.xes.yaml')
     event = {}
-    event["trace:id"] = instancenr
+    event["concept:instance"] = instancenr
     event["concept:name"] = notification["label"] if notification["label"]
     if notification["endpoint"]
       event["concept:endpoint"] = notification["endpoint"]
