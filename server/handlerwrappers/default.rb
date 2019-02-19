@@ -87,7 +87,10 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
       raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint} - status: #{status}: #{result&.dig(0)&.value&.read}" if status < 200 || status >= 300
 
-      unless headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
+      if headers['CPEE_INSTANTIATION']
+        @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+      end
+      unless headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true'
         callback result
       end
     else
@@ -208,9 +211,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def callback(result=nil,options={})
     @controller.notify("activity/receiving", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated, :sensors => @sensors)
     result = simplify_result(result)
-    if options['CPEE_INSTANTIATION']
-      @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
-    end
     if options['CPEE_UPDATE']
       @handler_returnValue = result
       if options['CPEE_UPDATE_STATUS']

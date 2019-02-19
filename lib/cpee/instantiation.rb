@@ -70,11 +70,13 @@ module CPEE
                 inp = "url=" + URI.encode_www_form_component(url)
                 inp = inp + "&topic=" + han.children.first.attributes['topic']
                 inp = inp + "&" + han.children.first.qname.to_s + "=" + han.children.first.to_s
-                pp cpee+ins+"/notifications/subscriptions/"
-                pp inp
-                status,body = Riddl::Client::new(cpee+ins+"/notifications/subscriptions/").post([Riddl::Parameter::Simple.new("url",han.attributes['url']),Riddl::Parameter::Simple.new("topic",han.children.first.attributes['topic']),Riddl::Parameter::Simple.new(han.children.first.qname.to_s,han.children.first.to_s)])
-                pp status
-                pp body
+                status,body = Riddl::Client::new(cpee+ins+"/notifications/subscriptions/").post(
+                  [
+                    Riddl::Parameter::Simple.new("url",han.attributes['url']),
+                    Riddl::Parameter::Simple.new("topic",han.children.first.attributes['topic']),
+                    Riddl::Parameter::Simple.new(han.children.first.qname.to_s,han.children.first.to_s)
+                  ]
+                )
               end
             end
           end
@@ -147,7 +149,6 @@ module CPEE
         if (instance, uuid = load_testset(tdoc,cpee,@p[0].value)).first == -1
           @status = 500
         else
-          @headers << Riddl::Header.new('CPEE-INSTANTIATION',File.join(cpee,instance))
           handle_data cpee, instance, @p[3]&.value
           handle_waiting cpee, instance, uuid, @p[1].value, selfurl, cblist
           handle_starting cpee, instance, @p[1].value
@@ -156,9 +157,10 @@ module CPEE
             'CPEE-INSTANCE' => instance,
             'CPEE-INSTANCE-URL' => File.join(cpee,instance),
             'CPEE-INSTANCE-UUID' => uuid,
-            'CPEE-FORKED' => 'true'
+            'CPEE-BEHAVIOR' => @p[1].value
           }
-          return Riddl::Parameter::Complex.new('instance','application/json',JSON::generate(send))
+          @headers << Riddl::Header.new('CPEE-INSTANTIATION',JSON::generate(send))
+          Riddl::Parameter::Complex.new('instance','application/json',JSON::generate(send))
         end
       end
     end  #}}}
@@ -181,7 +183,6 @@ module CPEE
         if (instance, uuid = load_testset(tdoc,cpee)).first == -1
           @status = 500
         else
-          @headers << Riddl::Header.new('CPEE-INSTANTIATION',File.join(cpee,instance))
           handle_data cpee, instance, @p[data+1]&.value
           handle_waiting cpee, instance, uuid, behavior, selfurl, cblist
           handle_starting cpee, instance, behavior
@@ -190,9 +191,9 @@ module CPEE
             'CPEE-INSTANCE' => instance,
             'CPEE-INSTANCE-URL' => File.join(cpee,instance),
             'CPEE-INSTANCE-UUID' => uuid,
-            'CPEE-FORKED' => 'true'
+            'CPEE-BEHAVIOR' => behavior
           }
-          return Riddl::Parameter::Complex.new('instance','application/json',JSON::generate(send))
+          Riddl::Parameter::Complex.new('instance','application/json',JSON::generate(send))
         end
       end
     end #}}}
@@ -231,12 +232,13 @@ module CPEE
         key = @r.last
         cb, condition, instance, uuid, instance_url = cblist.lrange(key,0,-1)
 
-        send = {
+        orisend = {
           'CPEE-INSTANCE' => instance,
           'CPEE-INSTANCE-URL' => instance_url,
           'CPEE-INSTANCE-UUID' => uuid,
           'CPEE-STATE' => notification['state']
         }
+        send = orisend.dup
 
         if notification['state'] == condition
           cblist.del(key)
@@ -250,9 +252,7 @@ module CPEE
               send[e.qname.name] = CPEE::ValueHelper::parse(e.text)
             end
           end
-          Riddl::Client.new(cb).put [
-            Riddl::Parameter::Complex.new('dataelements','application/json',JSON::generate(send))
-          ]
+          Riddl::Client.new(cb).put Riddl::Parameter::Complex.new('dataelements','application/json',JSON::generate(send))
         else
           Riddl::Client.new(cb).put [
             Riddl::Header.new('CPEE-UPDATE','true'),

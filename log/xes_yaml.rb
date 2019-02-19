@@ -39,26 +39,26 @@ class Logging < Riddl::Implementation #{{{
     end
     event["cpee:lifecycle:transition"] = "#{topic}/#{event_name}"
     data_send = ((parameters["arguments"].nil? ? [] : parameters["arguments"]) rescue [])
-    event["list"] = {"data_send" => data_send} unless data_send.empty?
+    event["data"] = {"data_send" => data_send} unless data_send.empty?
     if notification['changed']&.any?
-      if event.has_key? "list"
-        event["list"]["data_changed"] ||= notification['changed']
+      if event.has_key? "data"
+        event["data"]["data_changed"] ||= notification['changed']
       else
-        event["list"] = {"data_changer" => notification['changed']}
+        event["data"] = {"data_changer" => notification['changed']}
       end
     end
     if notification['values']&.any?
-      if event.has_key? "list"
-        event["list"]["data_values"] ||= notification['values']
+      if event.has_key? "data"
+        event["data"]["data_values"] ||= notification['values']
       else
-        event["list"] = {"data_values" => notification['values']}
+        event["data"] = {"data_values" => notification['values']}
       end
     end
-    if receiving&.any?
-      if event.has_key? "list"
-        event["list"]["data_received"] ||= receiving
+    unless receiving&.empty?
+      if event.has_key? "data"
+        event["data"]["data_received"] ||= receiving
       else
-        event["list"] = {"data_receiver" => receiving}
+        event["data"] = {"data_receiver" => receiving}
       end
     end
     event["time:timestamp"]= event['cpee:timestamp'] || Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z")
@@ -69,12 +69,12 @@ class Logging < Riddl::Implementation #{{{
   end
 
   def response
-    topic        = @p[1].value
-    event_name   = @p[2].value
-    log_dir      = @a[0]
-    template     = @a[1]
-    instancenr   = @h['CPEE_INSTANCE_URL'].split('/').last
-    notification = JSON.parse(@p[3].value)
+    topic         = @p[1].value
+    event_name    = @p[2].value
+    log_dir       = @a[0]
+    template      = @a[1]
+    instancenr    = @h['CPEE_INSTANCE_URL'].split('/').last
+    notification  = JSON.parse(@p[3].value)
     doc topic, event_name, log_dir, template, instancenr, notification
   end
 end #}}}
