@@ -1,51 +1,61 @@
 #!/usr/bin/ruby
 require 'yaml'
 require 'typhoeus'
+require 'stringio'
 require 'xml/smart'
 
-# concept:endpoint: https://centurio.work/flow/start/url/
-# id:id: a17
-# cpee:uuid: bf93adcd-9421-495b-bafa-d34de608fc6c
-# lifecycle:transition: unknown
-# cpee:lifecycle:transition: activity/receiving
-# list:
-#   data_receiver:
-#   - name: dataelements
-#     mimetype: application/json
-#     data:
-#       CPEE-INSTANCE: https://centurio.work/flow/engine/547
-#       qr: "*269MFA466*TZHZE 000"
-#       queue: ''
-#       machine: MaxxTurn45
-#       program: _N_LOWERHOUSING2_MPF
-#       label: Lowerhousing Turn 2
-#       finished: no good
-# time:timestamp: '2019-01-16T11:24:41.162+01:00'
-
-def follow(fname,deep=0)
-  io = File.open(fname)
+def follow(fname,io,deep=0)
+  if ARGV[1] == 'copy'
+    File.write(File.basename(fname,'.xes.yaml') + '.xes.yaml',io.read)
+    io.rewind
+  end
   YAML.load_stream(io) do |e|
     if name = e.dig('log','trace','cpee:name')
-      FileUtils.cp(File.join(__dir__,'logs',File.basename(fname,'.xes.yaml') + '.xes.yaml'),'.') if ARGV[1] == 'copy'
-      puts " " * deep + name + " (#{File.basename(fname,'.xes.yaml')})"
+      puts " " * deep + name + " (#{File.basename(fname,'.xes.yaml')}) - #{e.dig('log','trace','concept:name')}"
     end
     if e.dig('event','concept:endpoint') == 'https://centurio.work/flow/start/url/' && e.dig('event','cpee:lifecycle:transition') == 'activity/receiving'
-      val = e.dig('event','list','data_receiver',0,'data','CPEE-INSTANCE')
-      res = Typhoeus.get(File.join(val,'/properties/values/attributes/uuid/'))
-      if res.success?
-        uuid = XML::Smart.string(res.body).find('string(/*)')
-        follow File.dirname(fname) + "/#{uuid}.xes.yaml",deep + 2
+      base = e.dig('event','list','data_receiver',0,'data')
+      val = base.dig('CPEE-INSTANCE') rescue nil
+      if val.nil?
+        val = File.basename(base)
       end
+      uuid = base.dig('CPEE-INSTANCE-UUID') rescue nil
+      unless uuid
+        res = Typhoeus.get(File.join('https://centurio.work/flow/engine/',val,'/properties/values/attributes/uuid/'))
+        if res.success?
+          uuid = XML::Smart.string(res.body).find('string(/*)')
+        end
+      end
+      next unless ((base.dig('CPEE-STATE') == 'running' || (base.dig('CPEE-FORKED') == 'true')) rescue true)
+
+      react File.dirname(fname) + "/#{uuid}.xes.yaml",deep + 2
     end
   end
 end
 
-fname =  File.join(__dir__,'logs',(ARGV[0].strip rescue '') + '.xes.yaml')
-if File.exists? fname
-  follow fname
-else
-  puts 'Copies log files tree to current directory.'
-  puts
-  puts '  Example: sic.rb UUID'
-  puts '  Example: sic.rb UUID copy'
+def react(name,deep=0)
+  if name =~ /^https?:\/\//
+    res = Typhoeus.get(name)
+    if res.success?
+      file = Tempfile.new('sic')
+      file.write(res.body)
+      file.rewind
+      follow name, file, deep
+      file.close
+      file.unlink
+    end
+  elsif File.exists? name
+    follow name, File.open(name), deep
+  end
 end
+
+def help
+  puts 'Views or copies log file trees to current directory.'
+  puts
+  puts '  View: sic.rb https://centurio.work/log/865916c6-2b18-4e9d-81d4-0fab0df248f4.xes.yaml'
+  puts '  Copy: sic.rb https://centurio.work/log/865916c6-2b18-4e9d-81d4-0fab0df248f4.xes.yaml copy'
+  puts '  Copy: sic.rb ~/Projects/cpee/log/logs/865916c6-2b18-4e9d-81d4-0fab0df248f4.xes.yaml copy'
+  puts '  View: sic.rb 865916c6-2b18-4e9d-81d4-0fab0df248f4.xes.yaml'
+end
+
+react(ARGV[0]) || help

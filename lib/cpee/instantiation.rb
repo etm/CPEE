@@ -151,7 +151,14 @@ module CPEE
           handle_data cpee, instance, @p[3]&.value
           handle_waiting cpee, instance, uuid, @p[1].value, selfurl, cblist
           handle_starting cpee, instance, @p[1].value
-          return Riddl::Parameter::Simple.new("url",cpee + instance)
+
+          send = {
+            'CPEE-INSTANCE' => instance,
+            'CPEE-INSTANCE-URL' => File.join(cpee,instance),
+            'CPEE-INSTANCE-UUID' => uuid,
+            'CPEE-FORKED' => 'true'
+          }
+          return Riddl::Parameter::Complex.new('instance','application/json',JSON::generate(send))
         end
       end
     end  #}}}
@@ -178,7 +185,14 @@ module CPEE
           handle_data cpee, instance, @p[data+1]&.value
           handle_waiting cpee, instance, uuid, behavior, selfurl, cblist
           handle_starting cpee, instance, behavior
-          return Riddl::Parameter::Simple.new("url",cpee + instance)
+
+          send = {
+            'CPEE-INSTANCE' => instance,
+            'CPEE-INSTANCE-URL' => File.join(cpee,instance),
+            'CPEE-INSTANCE-UUID' => uuid,
+            'CPEE-FORKED' => 'true'
+          }
+          return Riddl::Parameter::Complex.new('instance','application/json',JSON::generate(send))
         end
       end
     end #}}}
