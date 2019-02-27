@@ -34,7 +34,9 @@ def follow(fname,io,deep=0)
 end
 
 def react(name,deep=0)
-  if name =~ /^https?:\/\//
+  if name.nil?
+    help
+  elsif name =~ /^https?:\/\//
     res = Typhoeus.get(name)
     if res.success?
       file = Tempfile.new('sic')
@@ -46,6 +48,8 @@ def react(name,deep=0)
     end
   elsif File.exists? name
     follow name, File.open(name), deep
+  else
+    help
   end
 end
 

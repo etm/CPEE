@@ -57,7 +57,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
         if s.respond_to?(:mimetype)
           params <<  Riddl::Parameter::Complex.new(s.name.to_s,v.mimetype,v.value)
         else
-          params <<  Riddl::Parameter::Simple.new(s.name.to_s,CPEE::ValueHelper::generate(s.value))
+          if s.name.to_s =~ /__$/
+            params <<  Riddl::Parameter::Simple.new(s.name.to_s.chop.chop,CPEE::ValueHelper::generate(s.value),:query)
+          else
+            params <<  Riddl::Parameter::Simple.new(s.name.to_s,CPEE::ValueHelper::generate(s.value))
+          end
         end
       end
 
