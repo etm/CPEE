@@ -13,8 +13,8 @@ def follow(fname,io,deep=0)
     if name = e.dig('log','trace','cpee:name')
       puts " " * deep + name + " (#{File.basename(fname,'.xes.yaml')}) - #{e.dig('log','trace','concept:name')}"
     end
-    if e.dig('event','concept:endpoint') == 'https://centurio.work/flow/start/url/' && e.dig('event','cpee:lifecycle:transition') == 'activity/receiving'
-      base = e.dig('event','list','data_receiver',0,'data')
+    if e.dig('event','concept:endpoint') == 'https://centurio.work/flow/start/url/' && e.dig('event','cpee:lifecycle:transition') == 'task/instantiation'
+      base = e.dig('event','data','data_receiver')
       val = base.dig('CPEE-INSTANCE') rescue nil
       if val.nil?
         val = File.basename(base)
@@ -26,8 +26,6 @@ def follow(fname,io,deep=0)
           uuid = XML::Smart.string(res.body).find('string(/*)')
         end
       end
-      next unless ((base.dig('CPEE-STATE') == 'running' || (base.dig('CPEE-FORKED') == 'true')) rescue true)
-
       react File.dirname(fname) + "/#{uuid}.xes.yaml",deep + 2
     end
   end

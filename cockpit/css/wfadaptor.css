@@ -70,18 +70,7 @@ svg .stand {
   fill:#ffffff;
   fill-opacity:1;
   stroke:#000000;
-  stroke-width:2.06896567;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  stroke-miterlimit:4;
-  stroke-opacity:1;
-  stroke-dasharray:none;
-}
-svg .standthin {
-  fill:#ffffff;
-  fill-opacity:1;
-  stroke:#000000;
-  stroke-width:1.7;
+  stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -103,7 +92,7 @@ svg .white {
   fill:#000000;
   fill-opacity:1;
   stroke:#ffffff;
-  stroke-width:2.06896567;
+  stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -114,7 +103,7 @@ svg .black {
   fill:#000000;
   fill-opacity:1;
   stroke:#000000;
-  stroke-width:2.06896567;
+  stroke-width: 1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -139,7 +128,7 @@ svg .marked .cfill {
 }
 svg .marked .cline {
   stroke:#d4d4d4;
-  stroke-width:2.06896567;
+  stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -164,7 +153,7 @@ svg .clicked .cfill {
 }
 svg .clicked .cline {
   stroke:#f57900;
-  stroke-width:2.06896567;
+  stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -176,7 +165,7 @@ svg .unknown {
   fill:#FF0000;
   fill-opacity:1;
   stroke:#000000;
-  stroke-width:2.06896567;
+  stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -189,7 +178,7 @@ svg .gen {
   fill-opacity:1;
   stroke-opacity:0.7;
   stroke:#000000;
-  stroke-width:2.06896567;
+  stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -333,7 +322,7 @@ svg g.element[element-id]:hover .hline {
   fill:#f57900;
   fill-opacity:1;
   stroke:#f57900;
-  stroke-width:2.06896567;
+  stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
