@@ -41,6 +41,15 @@ svg g.vote .rfill {
   fill: #8ae234;
   fill-opacity:1;
 }
+svg g.passive .rline {
+  stroke: #729fcf;
+}
+svg g.active .rline {
+  stroke: #ef2929;
+}
+svg g.vote .rline {
+  stroke: #8ae234;
+}
 
 svg .rfill.menu {
   fill: #ff7f7f;

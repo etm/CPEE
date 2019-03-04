@@ -77,19 +77,17 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
         params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
       end
 
-      type = if @handler_endpoint.sub!(/^http(s)?-(get|put|post|delete):/,'http\\1:')
-        $2
-      else
-        parameters[:method] || 'post'
-      end
-      client = Riddl::Client.new(@handler_endpoint)
+      tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
+      type = $2 || parameters[:method] || 'post'
+
+      client = Riddl::Client.new(tendpoint)
 
       @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
       @handler_passthrough = callback
 
       status, result, headers = client.request type => params
 
-      raise "Could not #{parameters[:method] || 'post'} #{@handler_endpoint} - status: #{status}: #{result&.dig(0)&.value&.read}" if status < 200 || status >= 300
+      raise "Could not #{type || 'post'} #{tendpoint} - status: #{status}: #{result&.dig(0)&.value&.read}" if status < 200 || status >= 300
 
       if headers['CPEE_INSTANTIATION']
         @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
