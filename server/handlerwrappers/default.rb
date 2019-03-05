@@ -95,6 +95,8 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
         headers['CPEE_UPDATE'] = true
         callback result, headers
+      elsif headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.empty?
+        # do nothing, later on things will happend
       else
         callback result
       end
