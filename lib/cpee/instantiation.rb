@@ -121,14 +121,15 @@ module CPEE
       def handle_data(cpee,instance,data) #{{{
         if data
           srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+          content = XML::Smart.string('<content/>')
           JSON::parse(data).each do |k,v|
-            res = srv.resource("/#{instance}/properties/values/dataelements/#{k}")
-            status, response = res.put [
-              Riddl::Parameter::Simple.new('value',v)
-            ]
-            sleep 0.42
-          end rescue nil
-        end
+            content.root.add(k,v)
+          end
+          res = srv.resource("/#{instance}/properties/values/dataelements/")
+          status, response = res.patch [
+            Riddl::Parameter::Complex.new('content','text/xml',content.to_s)
+          ]
+        end # rescue nil
       end #}}}
     end #}}}
 
