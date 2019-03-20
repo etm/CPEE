@@ -90,15 +90,23 @@ function cockpit() { //{{{
       }
       if (q.monitor && q.load) {
         $("input[name=instance-url]").val(q.monitor);
-        $("#predefinedtestsets div.menuitem").each(function(k,v){
-          if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
-        });
+        if (q.load.match(/https?:\/\//)) {
+          $("#predefinedtestsets").attr('data-other',q.load);
+        } else {
+          $("#predefinedtestsets div.menuitem").each(function(k,v){
+            if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
+          });
+        }
         ui_activate_tab("#tabexecution");
         monitor_instance(true,false);
       } else if (q.load) {
-        $("#predefinedtestsets div.menuitem").each(function(k,v){
-          if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
-        });
+        if (q.load.match(/https?:\/\//)) {
+          $("#predefinedtestsets").attr('data-other',q.load);
+        } else {
+          $("#predefinedtestsets div.menuitem").each(function(k,v){
+            if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
+          });
+        }
         ui_activate_tab("#tabexecution");
         create_instance(q.load,false);
       } else if (q.new || q.new == "" || q.load == "") {
@@ -109,9 +117,13 @@ function cockpit() { //{{{
         ui_activate_tab("#tabexecution");
         monitor_instance(false,false);
       } else if (q.exec) {
-        $("#predefinedtestsets div.menuitem").each(function(k,v){
-          if ($(v).text() == q.exec) { $(v).attr('data-selected','selected'); }
-        });
+        if (q.exec.match(/https?:\/\//)) {
+          $("#predefinedtestsets").attr('data-other',q.load);
+        } else {
+          $("#predefinedtestsets div.menuitem").each(function(k,v){
+            if ($(v).text() == q.exec) { $(v).attr('data-selected','selected'); }
+          });
+        }
         ui_activate_tab("#tabexecution");
         create_instance(q.exec,true);
       }
@@ -819,22 +831,30 @@ function load_testset(exec) {// {{{
   loading = true;
 
   var name = $("#predefinedtestsets div.menuitem[data-selected=selected]").text();
-  $.ajax({
-    cache: false,
-    dataType: 'xml',
-    url: $('body').attr('current-testsets') + name + ".xml",
-    success: function(res){
-      save['dsl'] = null; // reload dsl and position under all circumstances
-      $('#main .tabbehind button').hide();
-      $('#dat_details').empty();
+  var url;
+  if (name) {
+    url = $('body').attr('current-testsets') + name + ".xml";
+  } else {
+    url = $("#predefinedtestsets").attr('data-other');
+  }
+  if (url) {
+    $.ajax({
+      cache: false,
+      dataType: 'xml',
+      url: url,
+      success: function(res){
+        save['dsl'] = null; // reload dsl and position under all circumstances
+        $('#main .tabbehind button').hide();
+        $('#dat_details').empty();
 
-      document.title = "Untitled";
-      set_testset(res,exec);
-    },
-    complete: function() {
-      loading = false;
-    }
-  });
+        document.title = "Untitled";
+        set_testset(res,exec);
+      },
+      complete: function() {
+        loading = false;
+      }
+    });
+  }
 }// }}}
 function load_modeltype() {// {{{
   if (loading) return;
