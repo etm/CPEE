@@ -694,7 +694,6 @@ function save_testset() {// {{{
 }// }}}
 function save_svg() {// {{{
   var url = $('body').attr('current-instance');
-  var params = { mimetype: 'image/svg+xml' };
 
   var gc = $('#graphcanvas').clone();
   $.ajax({
@@ -702,6 +701,14 @@ function save_svg() {// {{{
     url: "css/wfadaptor.css",
     success: function(res){
       gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
+      $(window.document.styleSheets).each(function(i,x){
+        if (x && x.href && x.href.match(/wfadaptor\.css$/)) {
+          $(x.cssRules).each(function(j,y){
+            var loc = $(gc).find(y.selectorText.replace(/^svg /,''));
+            loc.attr('style',y.style.cssText);
+          });
+        }
+      });
       $.ajax({
         type: "GET",
         url: url + "/properties/values/attributes/info/",
