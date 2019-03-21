@@ -259,7 +259,6 @@ svg text.super {
   fill-opacity:1;
   stroke:none;
   font-family:Arial;
-  display: none;
 }
 svg tspan.active {
   fill:#cc0000;

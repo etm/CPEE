@@ -707,6 +707,8 @@ function save_svg() {// {{{
             var loc = $(gc).find(y.selectorText.replace(/^svg /,''));
             loc.attr('style',y.style.cssText);
           });
+          var loc = $(gc).find('text.super');
+          loc.attr('style',loc.attr('style') + ' display: none');
         }
       });
       $.ajax({
