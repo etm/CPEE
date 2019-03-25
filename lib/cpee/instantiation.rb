@@ -137,7 +137,7 @@ module CPEE
       include Helpers
 
       def response
-        cpee = @a[0]
+        cpee = @h['X_CPEE'] || @a[0]
         selfurl = @a[1]
         cblist = @a[2]
         status, res = Riddl::Client.new(@p[2].value).get
@@ -170,7 +170,7 @@ module CPEE
       include Helpers
 
       def response
-        cpee     = @a[0]
+        cpee     = @h['X_CPEE'] || @a[0]
         behavior = @a[1] ? 'fork_ready' : @p[0].value
         data     = @a[1] ? 0 : 1
         selfurl  = @a[2]
@@ -203,7 +203,7 @@ module CPEE
       include Helpers
 
       def response
-        cpee     = @a[0]
+        cpee     = @h['X_CPEE'] || @a[0]
         selfurl  = @a[1]
         cblist   = @a[2]
         instance = @p[1].value
@@ -224,7 +224,7 @@ module CPEE
 
     class ContinueTask < Riddl::Implementation #{{{
       def response
-        cpee         = @a[0]
+        cpee         = @h['X_CPEE'] || @a[0]
         cblist       = @a[1]
         topic        = @p[1].value
         event_name   = @p[2].value
