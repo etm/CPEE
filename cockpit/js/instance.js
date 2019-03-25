@@ -270,9 +270,6 @@ function websocket() { //{{{
 } //}}}
 
 function monitor_instance(cin,rep,load,exec) {// {{{
-  console.log(cin);
-  console.log(rep);
-
   $("body").attr('current-instance',sanitize_url(cin));
   $("body").attr('current-repo',    sanitize_url(rep));
 
@@ -1031,7 +1028,7 @@ function format_visual_remove(what,cls) {//{{{
 }//}}}
 
 function scroll_into_view(what) { //{{{
-  var tcontainer = $('#graphcolumn')[0];
+  var tcontainer = $('#graphcanvas').parent()[0];
   if ($('g[element-id="' + what + '"]').length > 0) {
     var telement   = $('g[element-id="' + what + '"]')[0].getBBox().y;
     if (tcontainer.scrollTop > telement) {
