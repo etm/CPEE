@@ -63,8 +63,8 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'change';// }}}
 
 function cockpit() { //{{{
-  $("button[name=base]").click(function(){ create_instance(null,false); });
-  $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance(false,false); });
+  $("button[name=base]").click(function(){ create_instance($("input[name=base-url]").val(),null,false); });
+  $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance($("input[name=instance-url]").val(),$("input[name=repo-url]").val(),false,false); });
   $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),function(){ load_testset(false) } ); });
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodelfile]").click(load_modelfile);
@@ -89,7 +89,6 @@ function cockpit() { //{{{
         ui_toggle_vis_tab($('#parameters'));
       }
       if (q.monitor && q.load) {
-        $("input[name=instance-url]").val(q.monitor);
         if (q.load.match(/https?:\/\//)) {
           $("#predefinedtestsets").attr('data-other',q.load);
         } else {
@@ -98,7 +97,7 @@ function cockpit() { //{{{
           });
         }
         ui_activate_tab("#tabexecution");
-        monitor_instance(true,false);
+        monitor_instance(q.monitor,$("body").attr('current-repo'),true,false);
       } else if (q.load) {
         if (q.load.match(/https?:\/\//)) {
           $("#predefinedtestsets").attr('data-other',q.load);
@@ -108,14 +107,13 @@ function cockpit() { //{{{
           });
         }
         ui_activate_tab("#tabexecution");
-        create_instance(q.load,false);
+        create_instance($("body").attr('current-base'),q.load,false);
       } else if (q.new || q.new == "" || q.load == "") {
         ui_activate_tab("#tabinstance");
-        create_instance("Plain Instance",false);
+        create_instance($("body").attr('current-base'),"Plain Instance",false);
       } else if (q.monitor) {
-        $("input[name=instance-url]").val(q.monitor);
         ui_activate_tab("#tabexecution");
-        monitor_instance(false,false);
+        monitor_instance(q.monitor,$("body").attr('current-repo'),false,false);
       } else if (q.exec) {
         if (q.exec.match(/https?:\/\//)) {
           $("#predefinedtestsets").attr('data-other',q.load);
@@ -125,7 +123,7 @@ function cockpit() { //{{{
           });
         }
         ui_activate_tab("#tabexecution");
-        create_instance(q.exec,true);
+        create_instance($("body").attr('current-base'),q.exec,true);
       }
     }
   });
@@ -141,13 +139,12 @@ function cockpit() { //{{{
   });
 } //}}}
 
-function sanitize_url(it) { //{{{
-  var url = it.val();
+function sanitize_url(url) { //{{{
   var lastChar = url.substr(url.length - 1)
   if (lastChar != '/') {
-    it.val(url + '/');
+    url = (url + '/');
   }
-  return it.val();
+  return url;
 }
  //}}}
 function check_subscription() { // {{{
@@ -181,19 +178,23 @@ function check_subscription() { // {{{
   }
 }// }}}
 
-function create_instance(ask,exec) {// {{{
+function create_instance(base,ask,exec) {// {{{
   var info = ask ? ask: prompt("Instance info?", "Enter info here");
   if (info != null) {
     if (info.match(/\S/)) {
-      var base = $("input[name=base-url]").val();
       $.ajax({
         type: "POST",
         url: base,
         dataType: "text",
         data: "info=" + info,
         success: function(res){
-          $("input[name=instance-url]").val((base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://"));
-          if (ask) monitor_instance(true,exec);
+          var iu = (base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://");
+          if (ask) {
+            monitor_instance(iu,$("body").attr('current-repo'),true,exec);
+          } else {
+            $("body").attr('current-instance', sanitize_url(iu));
+            $("input[name=instance-url]").val(iu);
+          }
         },
         error: function(a,b,c) {
           alert("No CPEE running.");
@@ -268,14 +269,20 @@ function websocket() { //{{{
   monitor_instance_state();
 } //}}}
 
-function monitor_instance(load,exec) {// {{{
-  var url = sanitize_url($("input[name=instance-url]"));
-            sanitize_url($("input[name=base-url]"));
-  var rep = sanitize_url($("input[name=repo-url]"));
+function monitor_instance(cin,rep,load,exec) {// {{{
+  console.log(cin);
+  console.log(rep);
 
+  $("body").attr('current-instance',sanitize_url(cin));
+  $("body").attr('current-repo',    sanitize_url(rep));
+
+  $("input[name=instance-url]").val($("body").attr('current-instance'));
+  $("input[name=repo-url]").val($("body").attr('current-repo'));
 
   $('.tabbehind button').hide();
   $('#dat_details').empty();
+
+  url = $("body").attr('current-instance');
 
   $.ajax({
     type: "GET",
@@ -284,9 +291,6 @@ function monitor_instance(load,exec) {// {{{
       $("ui-tabbed.hidden, ui-rest.hidden").removeClass("hidden");
       $("ui-resizehandle.hidden").removeClass("hidden");
       $("ui-tabbed ui-tab.hidden, ui-rest ui-tab.hidden").removeClass("hidden");
-
-      $("body").attr('current-instance',url);
-      $("body").attr('current-repo',rep);
 
       // Change url to return to current instance when reloading
       $("#current-instance").text(url);
@@ -332,6 +336,8 @@ function monitor_instance(load,exec) {// {{{
 function monitor_instance_values(val) {// {{{
   var url = $('body').attr('current-instance');
   var rep = $('body').attr('current-repo');
+  var bas = $('body').attr('current-base');
+
   $.ajax({
     type: "GET",
     url: url + "/properties/values/" + val + "/",
