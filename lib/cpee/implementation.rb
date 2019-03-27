@@ -142,7 +142,7 @@ module CPEE
       Riddl::Parameter::Complex.new("wis","text/xml") do
         ins = XML::Smart::string('<instances/>')
         controller.sort{|a,b| b[0] <=> a[0] }.each do |k,v|
-          ins.root.add('instance', v.info,  'uuid' => v.uuid, 'id' => k, 'state' => v.state, 'state_changed' => v.state_changed )
+          ins.root.add('instance', v.info,  'uuid' => v.uuid, 'id' => k, 'state' => v.state, 'state_changed' => v.state_changed ) unless v.nil?
         end
         ins.to_s
       end
