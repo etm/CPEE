@@ -63,7 +63,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'change';// }}}
 
 function cockpit() { //{{{
-  $("button[name=base]").click(function(){ create_instance($("input[name=base-url]").val(),null,false); });
+  $("button[name=base]").click(function(){ create_instance($("input[name=base-url]").val(),null,false,false); });
   $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance($("input[name=instance-url]").val(),$("input[name=repo-url]").val(),false,false); });
   $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),function(){ load_testset(false) } ); });
   $("button[name=loadtestsetfile]").click(load_testsetfile);
@@ -107,10 +107,10 @@ function cockpit() { //{{{
           });
         }
         ui_activate_tab("#tabexecution");
-        create_instance($("body").attr('current-base'),q.load,false);
-      } else if (q.new || q.new == "" || q.load == "") {
+        create_instance($("body").attr('current-base'),q.load,true,false);
+      } else if (q.new || q.new == "") {
         ui_activate_tab("#tabinstance");
-        create_instance($("body").attr('current-base'),"Plain Instance",false);
+        create_instance($("body").attr('current-base'),"Plain Instance",false,false);
       } else if (q.monitor) {
         ui_activate_tab("#tabexecution");
         monitor_instance(q.monitor,$("body").attr('current-repo'),false,false);
@@ -123,7 +123,7 @@ function cockpit() { //{{{
           });
         }
         ui_activate_tab("#tabexecution");
-        create_instance($("body").attr('current-base'),q.exec,true);
+        create_instance($("body").attr('current-base'),q.exec,true,true);
       }
     }
   });
@@ -178,8 +178,8 @@ function check_subscription() { // {{{
   }
 }// }}}
 
-function create_instance(base,ask,exec) {// {{{
-  var info = ask ? ask: prompt("Instance info?", "Enter info here");
+function create_instance(base,name,load,exec) {// {{{
+  var info = name ? name : prompt("Instance info?", "Enter info here");
   if (info != null) {
     if (info.match(/\S/)) {
       $.ajax({
@@ -189,8 +189,8 @@ function create_instance(base,ask,exec) {// {{{
         data: "info=" + info,
         success: function(res){
           var iu = (base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://");
-          if (ask) {
-            monitor_instance(iu,$("body").attr('current-repo'),true,exec);
+          if (name) {
+            monitor_instance(iu,$("body").attr('current-repo'),load,exec);
           } else {
             $("body").attr('current-instance', sanitize_url(iu));
             $("input[name=instance-url]").val(iu);
