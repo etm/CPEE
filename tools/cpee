@@ -49,7 +49,7 @@ ARGV.options { |opt|
 }
 if (ARGV.length == 0) ||
    (ARGV.length == 1  && ARGV[0] != 'ui') ||
-   (ARGV.length == 2  && %w(abandon delete! cpui new).include?(ARGV[1])) ||
+   (ARGV.length == 2  && !(%w(abandon delete! cpui new).include?(ARGV[0]))) ||
    (ARGV.length == 3  && ARGV[0] != 'archive') ||
    (ARGV.length >  3)
   puts ARGV.options
@@ -76,30 +76,39 @@ elsif command == 'inst'
     puts 'Directory already exists.'
   end
 elsif command == 'archive'
-  res = Typhoeus.get(File.join(p2,'/'))
-  if res.success?
-    if res.headers['Content-Type'] =~ /^(text|application)\/xml/
-      XML::Smart.string(res.response_body) do |doc|
-        if doc.root.qname.to_s == "instances"
-          doc.root.children.each do |i|
-            if ["finished","abandoned"].include?(i.attributes['state'])
-              prop = Typhoeus.get(File.join(p2,i.attributes['id'],'properties','/'))
-              if prop.success?
-                File.write(File.join(p1,i.attributes['uuid'] + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
-                Typhoeus.delete(File.join(p2,i.attributes['id'],'/'))
+  base = File.dirname(p2)
+  names = []
+  if File.basename(p2) =~ /(\d+)-(\d+)/
+    names = ($1.to_i..$2.to_i).to_a
+  else
+    names << File.basename(p2)
+  end
+  names.each do |name|
+    res = Typhoeus.get(File.join(base,name.to_s,'/'))
+    if res.success?
+      if res.headers['Content-Type'] =~ /^(text|application)\/xml/
+        XML::Smart.string(res.response_body) do |doc|
+          if doc.root.qname.to_s == "instances"
+            doc.root.children.each do |i|
+              if ["finished","abandoned"].include?(i.attributes['state'])
+                prop = Typhoeus.get(File.join(base,name.to_s,i.attributes['id'],'properties','/'))
+                if prop.success?
+                  File.write(File.join(p1,i.attributes['uuid'] + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
+                  Typhoeus.delete(File.join(base,name.to_s,i.attributes['id'],'/'))
+                end
               end
             end
-          end
-        elsif doc.root.qname.to_s == "info"
-          prop = Typhoeus.get(File.join(p2,'properties','/'))
-          if prop.success?
-            xprop = XML::Smart::string(prop.response_body)
-            xprop.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
-            if ["finished","abandoned"].include?(xprop.find("string(/p:properties/p:state)"))
-              uuid = xprop.find("string(/p:properties/p:attributes/p:uuid)")
-              id = File.basename(p2)
-              File.write(File.join(p1,uuid + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
-              Typhoeus.delete(File.join(p2,'/'))
+          elsif doc.root.qname.to_s == "info"
+            prop = Typhoeus.get(File.join(base,name.to_s,'properties','/'))
+            if prop.success?
+              xprop = XML::Smart::string(prop.response_body)
+              xprop.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
+              if ["finished","abandoned"].include?(xprop.find("string(/p:properties/p:state)"))
+                uuid = xprop.find("string(/p:properties/p:attributes/p:uuid)")
+                id = name.to_s
+                File.write(File.join(p1,uuid + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
+                Typhoeus.delete(File.join(base,name.to_s,'/'))
+              end
             end
           end
         end
@@ -107,13 +116,24 @@ elsif command == 'archive'
     end
   end
 elsif command == 'abandon'
-  res = Typhoeus.get(File.join(p1,'properties','values','state','/'))
-  if res.success?
-    case res.response_body
-      when "ready", "stopped" then
-        Typhoeus.put(File.join(p1,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
-      when "running" then
-        Typhoeus.put(File.join(p1,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=stopped")
+  base = File.dirname(p1)
+  names = []
+  if File.basename(p1) =~ /(\d+)-(\d+)/
+    names = ($1.to_i..$2.to_i).to_a
+  else
+    names << File.basename(p1)
+  end
+  names.each do |name|
+    res = Typhoeus.get(File.join(base,name.to_s,'properties','values','state','/'))
+    if res.success?
+      case res.response_body
+        when "ready", "stopped" then
+          Typhoeus.put(File.join(base,name.to_s,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
+        when "running" then
+          Typhoeus.put(File.join(base,name.to_s,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=stopped")
+          sleep 1
+          Typhoeus.put(File.join(base,name.to_s,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
+      end
     end
   end
 elsif command == 'delete!'
