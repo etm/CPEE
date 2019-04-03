@@ -518,7 +518,9 @@ function monitor_instance_state_change(notification) { //{{{
   if (notification == "ready" || notification == "stopped" || notification == "running") {
     $("#state button").removeAttr('disabled');
   }
-  if (notification != save['state']) {
+  // sometimes, out of sheer network routingness, stopping comes after stopped, which fucks the UI hard
+  // thus, we are having none of it
+  if (notification != save['state'] && notification != 'stopping' && save['state'] != 'stopped') {
     save['state'] = notification;
 
     var ctv = $("#state");
