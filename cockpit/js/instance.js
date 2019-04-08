@@ -520,7 +520,9 @@ function monitor_instance_state_change(notification) { //{{{
   }
   // sometimes, out of sheer network routingness, stopping comes after stopped, which fucks the UI hard
   // thus, we are having none of it
-  if (notification != save['state'] && notification != 'stopping' && save['state'] != 'stopped') {
+  if (notification == 'stopping' && save['state'] == 'stopped')
+    return;
+  if (notification != save['state']) {
     save['state'] = notification;
 
     var ctv = $("#state");
