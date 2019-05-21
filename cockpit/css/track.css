@@ -7,7 +7,7 @@
 #graphcolumn {
   flex: 0 0 auto;
   overflow: auto;
-  min-width: 45em;
+  min-width: 35em;
   border-right: 0 none;
 }
 #trackcolumn {

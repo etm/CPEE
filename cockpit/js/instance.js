@@ -388,7 +388,9 @@ function monitor_instance_values(val) {// {{{
           });
         });
       } else if(val == "attributes") {
-        document.title = $(" > value > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
+        var text = $(" > value > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
+        $('#title').text(text);
+        document.title = text;
       }
     }
   });
