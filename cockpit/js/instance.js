@@ -241,11 +241,17 @@ function websocket() { //{{{
         case 'task':
           if ($('#trackcolumn').length > 0) {
             var details = JSON.parse($('event > notification',data).text());
-            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + details.instance + '"></iframe>'));
+            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + details.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
           }
           break;
         case 'state':
           monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
+          if ($('#trackcolumn').length > 0) {
+            var details = JSON.parse($('event > notification',data).text());
+            if (details.state == "finished") {
+              parent.closeIFrame(window.location.search);
+            }
+          }
           break;
         case 'position':
           monitor_instance_pos_change($('event > notification',data).text());

@@ -14,7 +14,7 @@ body {
 #areanew input                 {
   width: 100%;
   padding: 0.1em 0.5em;
-  border: 0.1em solid #a1a1a1;
+  border: 0.1em solid var(--x-ui-border-color);
   border-radius: 0;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -49,9 +49,9 @@ ui-tabbed ui-tabbar ui-behind button {
 
 #areainstance input[type=file]         { display: none; }
 #areainstance div.section              { display: table-cell; vertical-align: middle; }
-#areainstance div.section:nth-child(1) {                                      padding: 0 0.5em 0 0; white-space: nowrap; }
-#areainstance div.section:nth-child(2) { border-left: 1px solid #a1a1a1;      padding: 0 0.5em;     white-space: nowrap; }
-#areainstance div.section:nth-child(3) { border-left: 1px solid #a1a1a1;      padding: 0 0 0 0.5em; white-space: nowrap; }
+#areainstance div.section:nth-child(1) {                                                  padding: 0 0.5em 0 0; white-space: nowrap; }
+#areainstance div.section:nth-child(2) { border-left: 1px solid var(--x-ui-border-color); padding: 0 0.5em;     white-space: nowrap; }
+#areainstance div.section:nth-child(3) { border-left: 1px solid var(--x-ui-border-color); padding: 0 0 0 0.5em; white-space: nowrap; }
 
 #areainstance div.section:nth-child(1) div                          { white-space: normal; vertical-align: middle; margin: 0; padding: 0; }
 #areainstance div.section:nth-child(1) button                       { white-space: normal; vertical-align: middle; margin: 0; padding: 0; }
@@ -71,7 +71,7 @@ ui-tabbed ui-tabbar ui-behind button {
 #areaexecution table.x-ui-compact tbody.debug tr:last-child td { padding-bottom: 0.5em; }
 #areaexecution table.x-ui-compact tbody.debug tr:last-child td input { vertical-align: middle; }
 #areaexecution table.x-ui-compact tbody.exe tr:first-child td { padding-top: 0.5em; }
-#areaexecution table.x-ui-compact tbody.exe { border-top: 1px solid #a1a1a1; }
+#areaexecution table.x-ui-compact tbody.exe { border-top: 1px solid var(--x-ui-border-color); }
 
 #areaexecution table.x-ui-compact tbody.exe td { height: 2.2em; }
 
@@ -125,7 +125,7 @@ span.vote {
 #graphcolumn {
   margin: 0;
   padding: 0;
-  border-right: 1px solid #a1a1a1;
+  border-right: 1px solid var(--x-ui-border-color);
   min-width: 9em;
 }
 #detailcolumn {
