@@ -555,9 +555,9 @@ function monitor_instance_state_change(notification) { //{{{
 
     var but = "";
     if (notification == "ready" || notification == "stopped") {
-      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();'>simulate</button> / <button onclick='aba_instance();'>abandon</button>";
+      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();' title='start'>⏵</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();' title='simulate'>🎜</button> / <button onclick='aba_instance();' title='abandon'>⛌</button>";
     } else if (notification == "running") {
-      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button>";
+      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();' title='stop'>⏸</button>";
     }
 
     // disable all input, also check themes

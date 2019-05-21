@@ -29,7 +29,12 @@
 #usage {
   line-height: 2em;
   margin-left: 2em;
-  margin-right: 2em;
+  margin-right: 1em;
+}
+#usage button{
+  width: 2em;
+  height: 2em;
+  vertical-align: center;
 }
 #current-instance[href]:after {
   content: "";
