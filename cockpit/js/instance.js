@@ -246,12 +246,6 @@ function websocket() { //{{{
           break;
         case 'state':
           monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
-          if ($('#trackcolumn').length > 0) {
-            var details = JSON.parse($('event > notification',data).text());
-            if (details.state == "finished") {
-              parent.closeIFrame(window.location.search);
-            }
-          }
           break;
         case 'position':
           monitor_instance_pos_change($('event > notification',data).text());
@@ -533,9 +527,15 @@ function monitor_instance_running(notification,event) {// {{{
     format_visual_remove(parts.activity,"active")
 } // }}}
 function monitor_instance_state_change(notification) { //{{{
+  if ($('#trackcolumn').length > 0) {
+    if (notification == "finished") {
+      parent.closeIFrame(window.location.search);
+    }
+  }
   if (notification == "ready" || notification == "stopped" || notification == "running") {
     $("#state button").removeAttr('disabled');
   }
+
   // sometimes, out of sheer network routingness, stopping comes after stopped, which fucks the UI hard
   // thus, we are having none of it
   if (notification == 'stopping' && save['state'] == 'stopped')
