@@ -728,7 +728,7 @@ function save_svg() {// {{{
         if (x && x.href && x.href.match(/wfadaptor\.css$/)) {
           $(x.cssRules).each(function(j,y){
             var loc = $(gc).find(y.selectorText.replace(/^svg /,''));
-            loc.attr('style',y.style.cssText);
+            loc.attr('style',y.style.cssText + loc.attr('style') + ';');
           });
           var loc = $(gc).find('text.super');
           loc.attr('style',loc.attr('style') + ' display: none');
