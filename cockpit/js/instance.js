@@ -35,6 +35,8 @@ var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'attributes' + '&' +
                'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'task' + '&' +
+               'events' + '=' + 'instantiation' + '&' +
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'handlerwrapper' + '&' +
@@ -55,6 +57,8 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'attributes' + '&' +
                'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'task' + '&' +
+               'events' + '=' + 'instantiation' + '&' +
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'handlerwrapper' + '&' +
@@ -90,7 +94,7 @@ function cockpit() { //{{{
       }
       if (q.monitor && q.load) {
         if (q.load.match(/https?:\/\//)) {
-          $("#predefinedtestsets").attr('data-other',q.load);
+          $('body').attr('load-testset',q.load);
         } else {
           $("#predefinedtestsets div.menuitem").each(function(k,v){
             if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
@@ -100,7 +104,7 @@ function cockpit() { //{{{
         monitor_instance(q.monitor,$("body").attr('current-repo'),true,false);
       } else if (q.load) {
         if (q.load.match(/https?:\/\//)) {
-          $("#predefinedtestsets").attr('data-other',q.load);
+          $('body').attr('load-testset',q.load);
         } else {
           $("#predefinedtestsets div.menuitem").each(function(k,v){
             if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
@@ -116,7 +120,7 @@ function cockpit() { //{{{
         monitor_instance(q.monitor,$("body").attr('current-repo'),false,false);
       } else if (q.exec) {
         if (q.exec.match(/https?:\/\//)) {
-          $("#predefinedtestsets").attr('data-other',q.load);
+          $('body').attr('load-testset',q.load);
         } else {
           $("#predefinedtestsets div.menuitem").each(function(k,v){
             if ($(v).text() == q.exec) { $(v).attr('data-selected','selected'); }
@@ -232,6 +236,12 @@ function websocket() { //{{{
           monitor_instance_transformation();
           if (!suspended_monitoring) { // or else it would load twice, because dsl changes also
             monitor_graph_change(true);
+          }
+          break;
+        case 'task':
+          if ($('#trackcolumn').length > 0) {
+            var details = JSON.parse($('event > notification',data).text());
+            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + details.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
           }
           break;
         case 'state':
@@ -372,7 +382,9 @@ function monitor_instance_values(val) {// {{{
           });
         });
       } else if(val == "attributes") {
-        document.title = $(" > value > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
+        var text = $(" > value > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
+        $('#title').text(text);
+        document.title = text;
       }
     }
   });
@@ -515,9 +527,15 @@ function monitor_instance_running(notification,event) {// {{{
     format_visual_remove(parts.activity,"active")
 } // }}}
 function monitor_instance_state_change(notification) { //{{{
+  if ($('#trackcolumn').length > 0) {
+    if (notification == "finished") {
+      parent.closeIFrame(window.location.search);
+    }
+  }
   if (notification == "ready" || notification == "stopped" || notification == "running") {
     $("#state button").removeAttr('disabled');
   }
+
   // sometimes, out of sheer network routingness, stopping comes after stopped, which fucks the UI hard
   // thus, we are having none of it
   if (notification == 'stopping' && save['state'] == 'stopped')
@@ -537,9 +555,9 @@ function monitor_instance_state_change(notification) { //{{{
 
     var but = "";
     if (notification == "ready" || notification == "stopped") {
-      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();'>start</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();'>simulate</button> / <button onclick='aba_instance();'>abandon</button>";
+      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();' title='start'>⏵</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();' title='simulate'>🎜</button> / <button onclick='aba_instance();' title='abandon'>⛌</button>";
     } else if (notification == "running") {
-      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();'>stop</button>";
+      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();' title='stop'>⏸</button>";
     }
 
     // disable all input, also check themes
@@ -710,7 +728,7 @@ function save_svg() {// {{{
         if (x && x.href && x.href.match(/wfadaptor\.css$/)) {
           $(x.cssRules).each(function(j,y){
             var loc = $(gc).find(y.selectorText.replace(/^svg /,''));
-            loc.attr('style',y.style.cssText);
+            loc.attr('style',y.style.cssText + loc.attr('style') + ';');
           });
           var loc = $(gc).find('text.super');
           loc.attr('style',loc.attr('style') + ' display: none');
@@ -854,7 +872,9 @@ function load_testset(exec) {// {{{
   if (name) {
     url = $('body').attr('current-testsets') + name + ".xml";
   } else {
-    url = $("#predefinedtestsets").attr('data-other');
+    if ($('body').attr('load-testset').length > 0) {
+      url = $('body').attr('load-testset');
+    }
   }
   if (url) {
     $.ajax({
