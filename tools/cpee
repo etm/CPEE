@@ -6,6 +6,7 @@ require 'fileutils'
 require 'webrick'
 require 'typhoeus'
 require 'xml/smart'
+require 'zip'
 require 'pp'
 
 def wrap(s, width=78, indent=18)
@@ -58,16 +59,44 @@ end
 command = ARGV[0]
 p1      = ARGV[1]
 p2      = ARGV[2]
+cockpit = "#{curpath}/../cockpit/"
+
+def js_libs(cockpit)
+  res = Typhoeus.get('http://cpee.org/js_libs/js_libs.zip')
+  if res.success?
+    File.write(File.join(cockpit,'js_libs.zip'),res.response_body)
+    Zip::File.open(File.join(cockpit,'js_libs.zip')) do |zip_file|
+      zip_file.each do |entry|
+        case entry.ftype
+          when :directory
+            Dir.mkdir(File.join(cockpit,entry.name)) rescue nil
+          when :file
+            File.write(File.join(cockpit,entry.name),entry.get_input_stream.read)
+          when :symlink
+            FileUtils.ln_s(File.join('.',entry.get_input_stream.read),File.join(cockpit,entry.name), force: true)
+        end
+      end
+    end
+    true
+  else
+    puts 'Internet access required to download javascript libs from "http://cpee.org/js_libs/js_libs.zip".'
+    false
+  end
+end
 
 if command == 'ui'
-  s = WEBrick::HTTPServer.new(:Port => 8080,  :DocumentRoot => "#{curpath}/../cockpit/")
-  trap("INT"){ s.shutdown }
-  s.start
+  if js_libs(cockpit)
+    s = WEBrick::HTTPServer.new(:Port => 8080,  :DocumentRoot => "#{curpath}/../cockpit/")
+    trap("INT"){ s.shutdown }
+    s.start
+  end
 elsif command == 'cpui'
-  if !File.exists?(p1)
-    FileUtils.cp_r("#{curpath}/../cockpit/",p1)
-  else
-    puts "Directory already exists."
+  if js_libs(cockpit)
+    if !File.exists?(p1)
+      FileUtils.cp_r("#{curpath}/../cockpit/",p1)
+    else
+      puts "Directory already exists."
+    end
   end
 elsif command == 'inst'
   if !File.exists?(p1)
