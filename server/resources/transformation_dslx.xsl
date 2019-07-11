@@ -445,7 +445,7 @@
     <xsl:param name="myspace"/>
     <xsl:if test="text()">
       <xsl:for-each select="str:tokenize(text(), '&#x0A;')">
-        <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),str:replace(str:replace(string(.),'\','\\'),'&quot;','\&quot;')))" />
+        <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),str:replace(str:replace(str:replace(string(.),'\','\\'),'&quot;','\&quot;'),'#','\#')))" />
       </xsl:for-each>
       <xsl:call-template name="print-newline"/>
       <xsl:call-template name="print-space">
@@ -474,7 +474,7 @@
         </xsl:otherwise>
       </xsl:choose>
       <xsl:for-each select="str:tokenize(text(), '&#x0A;')">
-        <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),str:replace(str:replace(string(.),'\','\\'),'&quot;','\&quot;')))" />
+        <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),str:replace(str:replace(str:replace(string(.),'\','\\'),'&quot;','\&quot;'),'#','\#')))" />
       </xsl:for-each>
       <xsl:call-template name="print-newline"/>
       <xsl:call-template name="print-space">
