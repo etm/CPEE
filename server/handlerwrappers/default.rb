@@ -12,6 +12,8 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
+require '/home/centurio/Projects/opcua-smart/lib/opcua/client'
+
 class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def self::inform_state_change(arguments,newstate) # {{{
     controller = arguments[0]
@@ -51,54 +53,105 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @sensors = parameters[:sensors]
     @controller.notify("activity/calling", :instance => @controller.instance, :instance_uuid => @controller.uuid, :label => @label, :instance_name => @controller.info, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
     if passthrough.to_s.empty?
-      params = []
-      callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      (parameters[:arguments] || []).each do |s|
-        if s.respond_to?(:mimetype)
-          params <<  Riddl::Parameter::Complex.new(s.name.to_s,v.mimetype,v.value)
-        else
-          if s.name.to_s =~ /__$/
-            params <<  Riddl::Parameter::Simple.new(s.name.to_s.chop.chop,CPEE::ValueHelper::generate(s.value),:query)
+      if @handler_endpoint.start_with?('opc.tcp')
+        if @handler_endpoint =~ /^opc.tcp.read:\/\/([^\/]+)\/(\d+)\/(.+)/
+          nid = $3 == $3.to_i.to_s ? $3.to_i : $3
+          ns  = $2
+          url = 'opc.tcp://' + $1
+          client = OPCUA::Client.new(url)
+          if (node = client.get ns.to_i, nid)
+            result = node.value
           else
-            params <<  Riddl::Parameter::Simple.new(s.name.to_s,CPEE::ValueHelper::generate(s.value))
+            raise 'invalid nodeid'
+          end
+          client.disconnect
+          callback [Riddl::Parameter::Simple.new('value',result)], {}
+        elsif @handler_endpoint =~ /^opc.tcp.write:\/\/([^\/]+)\/(\d+)\/([^\?]+)(\?value=(.*))?/
+          nid = $3 == $3.to_i.to_s ? $3.to_i : $3
+          ns  = $2
+          par = $5
+          url = 'opc.tcp://' + $1
+          client = OPCUA::Client.new(url)
+          if (node = client.get ns.to_i, nid)
+            (parameters[:arguments] || [→(:name => 'value', :value => par)] || []).each do |ele|
+              what = CPEE::ValueHelper::parse(ele.value)
+              node.value = what
+              result = what
+            end
+          else
+            raise 'invalid nodeid'
+          end
+          client.disconnect
+          callback [Riddl::Parameter::Simple.new('value',result)], {}
+        elsif @handler_endpoint =~ /^opc.tcp.execute:\/\/([^\/]+)\/(\d+)\/([^\?]+)(\?value=(.*))?/
+          nid = $3 == $3.to_i.to_s ? $3.to_i : $3
+          ns  = $2
+          par = $5
+          url = 'opc.tcp://' + $1
+          client = OPCUA::Client.new(url)
+          if (node = client.get ns.to_i, nid)
+            params = []
+            (parameters[:arguments] || []).each do |ele|
+              what = CPEE::ValueHelper::parse(ele.value)
+              params << what
+            end
+            result = node.call *params
+          else
+            raise 'invalid nodeid'
+          end
+          client.disconnect
+          callback [Riddl::Parameter::Simple.new('value',result)], {}
+        end
+      else
+        params = []
+        callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
+        (parameters[:arguments] || []).each do |s|
+          if s.respond_to?(:mimetype)
+            params <<  Riddl::Parameter::Complex.new(s.name.to_s,v.mimetype,v.value)
+          else
+            if s.name.to_s =~ /__$/
+              params <<  Riddl::Parameter::Simple.new(s.name.to_s.chop.chop,CPEE::ValueHelper::generate(s.value),:query)
+            else
+              params <<  Riddl::Parameter::Simple.new(s.name.to_s,CPEE::ValueHelper::generate(s.value))
+            end
           end
         end
-      end
 
-      params << Riddl::Header.new("CPEE-BASE",@controller.base_url)
-      params << Riddl::Header.new("CPEE-INSTANCE",@controller.instance)
-      params << Riddl::Header.new("CPEE-INSTANCE-URL",@controller.instance_url)
-      params << Riddl::Header.new("CPEE-INSTANCE-UUID",@controller.uuid)
-      params << Riddl::Header.new("CPEE-CALLBACK",@controller.instance_url + '/callbacks/' + callback)
-      params << Riddl::Header.new("CPEE-CALLBACK-ID",callback)
-      params << Riddl::Header.new("CPEE-ACTIVITY",@handler_position)
-      params << Riddl::Header.new("CPEE-LABEL",parameters[:label]||'')
-      @controller.attributes.each do |key,value|
-        params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
-      end
+        params << Riddl::Header.new("CPEE-BASE",@controller.base_url)
+        params << Riddl::Header.new("CPEE-INSTANCE",@controller.instance)
+        params << Riddl::Header.new("CPEE-INSTANCE-URL",@controller.instance_url)
+        params << Riddl::Header.new("CPEE-INSTANCE-UUID",@controller.uuid)
+        params << Riddl::Header.new("CPEE-CALLBACK",@controller.instance_url + '/callbacks/' + callback)
+        params << Riddl::Header.new("CPEE-CALLBACK-ID",callback)
+        params << Riddl::Header.new("CPEE-ACTIVITY",@handler_position)
+        params << Riddl::Header.new("CPEE-LABEL",parameters[:label]||'')
+        @controller.attributes.each do |key,value|
+          params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
+        end
 
-      tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
-      type = $2 || parameters[:method] || 'post'
+        tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
+        type = $2 || parameters[:method] || 'post'
 
-      client = Riddl::Client.new(tendpoint)
+        client = Riddl::Client.new(tendpoint)
 
-      @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
-      @handler_passthrough = callback
+        @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+        @handler_passthrough = callback
 
-      status, result, headers = client.request type => params
+        status, result, headers = client.request type => params
 
-      raise "Could not #{type || 'post'} #{tendpoint} - status: #{status}: #{result&.dig(0)&.value&.read}" if status < 200 || status >= 300
+        raise "Could not #{type || 'post'} #{tendpoint} - status: #{status}: #{result&.dig(0)&.value&.read}" if status < 200 || status >= 300
 
-      if headers['CPEE_INSTANTIATION']
-        @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
-      end
-      if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
-        headers['CPEE_UPDATE'] = true
-        callback result, headers
-      elsif headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.empty?
-        # do nothing, later on things will happend
-      else
-        callback result
+        if headers['CPEE_INSTANTIATION']
+          @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+        end
+        if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
+          headers['CPEE_UPDATE'] = true
+          callback result, headers
+        elsif headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.empty?
+          # do nothing, later on things will happend
+        else
+          callback result
+        end
       end
     else
       @controller.callbacks[passthrough] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
