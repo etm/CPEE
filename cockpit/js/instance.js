@@ -75,6 +75,10 @@ function cockpit() { //{{{
   $("button[name=loadmodeltype]").click(function(e){new CustomMenu(e).menu($('#modeltypes'),load_modeltype, $("button[name=loadmodeltype]")); });
   $("button[name=savetestset]").click(function(){ save_testset(); });
   $("button[name=savesvg]").click(function(){ save_svg(); });
+  $("button[name=state_start]").click(function(){ $(this).attr("disabled","disabled");start_instance(); });
+  $("button[name=state_stop]").click(function(){ $(this).attr("disabled","disabled");stop_instance(); });
+  $("button[name=state_simulate]").click(function(){ $(this).attr("disabled","disabled");sim_instance(); });
+  $("button[name=state_abandon]").click(function(){ aba_instance(); });
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=testsetfile]").change(load_testsetfile_after);
   $("input[name=modelfile]").change(load_modelfile_after);
@@ -543,9 +547,6 @@ function monitor_instance_state_change(notification) { //{{{
   if (notification != save['state']) {
     save['state'] = notification;
 
-    var ctv = $("#state");
-    ctv.empty();
-
     if (notification == "stopped") {
       monitor_instance_pos();
     }
@@ -555,9 +556,15 @@ function monitor_instance_state_change(notification) { //{{{
 
     var but = "";
     if (notification == "ready" || notification == "stopped") {
-      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");start_instance();' title='start'>⏵</button> / <button onclick='$(this).attr(\"disabled\",\"disabled\");sim_instance();' title='simulate'>🎜</button> / <button onclick='aba_instance();' title='abandon'>⛌</button>";
+      $("button[name=state_start]").show();
+      $("button[name=state_stop]").hide();
+      $("button[name=state_sim]").show();
+      $("button[name=state_abandon]").show();
     } else if (notification == "running") {
-      but = " ⇒ <button onclick='$(this).attr(\"disabled\",\"disabled\");stop_instance();' title='stop'>⏸</button>";
+      $("button[name=state_start]").hide();
+      $("button[name=state_stop]").show();
+      $("button[name=state_sim]").hide();
+      $("button[name=state_abandon]").hide();
     }
 
     // disable all input, also check themes
@@ -573,7 +580,7 @@ function monitor_instance_state_change(notification) { //{{{
       $('#parameters .tabbehind button').show();
     }
 
-    ctv.append(notification + but);
+    $("#state_text").text(notification);
   }
 }   //}}}
 function monitor_instance_pos_change(notification) {// {{{
