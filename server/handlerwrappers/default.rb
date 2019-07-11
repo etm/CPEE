@@ -12,7 +12,7 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
-require '/home/centurio/Projects/opcua-smart/lib/opcua/client'
+require 'opcua/client'
 
 class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def self::inform_state_change(arguments,newstate) # {{{
