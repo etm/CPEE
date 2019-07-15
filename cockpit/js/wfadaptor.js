@@ -518,7 +518,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       illustrator.draw.draw_symbol('start', 'start', 'description', 'START', pos.row, pos.col, group);
     } // }}}
 
-    $(root).children().each(function() {
+    $(root).children().filter(function(){ return this.localName[0] != '_'; }).each(function() {
       var tname = this.tagName;
       pos.final = illustrator.elements[tname].final ? true : false;
 
@@ -619,12 +619,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       // }}}
     });
 
-    if($(root).children().length == 0) { // empty complex found
+    if($(root).children().filter(function(){ return this.attributes['svg-id'] != undefined; }).length == 0) { // empty complex found
       endnodes = [parent_pos];
       max.row = parent_pos.row;
       max.col = parent_pos.col;
     }
-    if(illustrator.elements[root.tagName].endnodes == 'this' && illustrator.elements[root.tagName].closeblock == false) {endnodes = [prev];} // closeblock == false, allows loop to close himselfe
+    if(illustrator.elements[root.tagName].endnodes == 'this' && illustrator.elements[root.tagName].closeblock == false) {endnodes = [prev];} // closeblock == false, allows loop to close himself
     return {'endnodes': endnodes, 'max':max, 'svg':group};
   } // }}}
   // }}}

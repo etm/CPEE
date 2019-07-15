@@ -47,8 +47,7 @@ function do_main_save() { //{{{
         nnew.attr('trans-xmlns','http://cpee.org/ns/description/1.0');
 
     if ($('*[svg-id]',node).length > 0) {
-      // TODO maybe not all children. Maybe only thingies that have svg-id but nothing with svg-id between it and node.
-      nnew.append(node.children());
+      nnew.append(node.children().filter(function(){ return this.attributes['svg-id'] != undefined; }));
     }
 
     var ntxt = nnew.serializeXML();
