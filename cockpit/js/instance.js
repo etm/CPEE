@@ -13,6 +13,7 @@ var save = {};
     save['graph_adaptor'] = undefined;
     save['endpoints'] = undefined;
     save['endpoints_cache'] = {};
+    save['endpoints_list'] = {};
     save['dataelements'] = undefined;
     save['attributes'] = undefined;
     save['details'] = undefined;
@@ -353,8 +354,10 @@ function monitor_instance_values(val) {// {{{
     success: function(res){
       save[val].content(res);
       if (val == "endpoints") {
+        save['endpoints_list'] = {};
         var tmp = {};
         $(res).find(" > value > *").each(function(k,v) {
+          save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
           $.ajax({
             url: rep + encodeURIComponent($(v).text()),
             success: function() {
@@ -409,6 +412,7 @@ function adaptor_init(url,theme,dslx) { //{{{
   if (save['graph_theme'] != theme) {
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
+      manifestation.endpoints = save.endpoints_list;
       graphrealization.set_svg_container($('#graphcanvas'));
       graphrealization.set_description($(dslx), true);
       graphrealization.notify = function(svgid) {

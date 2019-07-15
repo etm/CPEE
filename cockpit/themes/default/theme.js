@@ -237,7 +237,20 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'label': function(node){
-        return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'');
+        var ep = self.endpoints[$(node).attr('endpoint')];
+        var eplen = 1;
+        if (ep != undefined && ep[0] == '[') {
+          try {
+            eplen = JSON.parse(ep).length;
+          } catch(e) {
+            eplen = 1;
+          }
+        } else {
+          eplen = 1;
+        }
+        var avg = $('> _timing_avg',$(node).children('_timing')).text();
+        var lnd = $(node).attr('endpoint');
+        return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') + (lnd == '' ? '' : ' (Resource ' + lnd + (eplen > 1 ? ' - ' + (eplen) + ' Alternatives': ' - 1 Alternative') + ')') + (avg == '' ? '' : ' (Avg. Duration ' + avg + ' Min)');
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
@@ -403,6 +416,10 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.otherwise = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
+      'label': function(node){
+        var avg = $('> _probability_avg',$(node).children('_probability')).text();
+        return (avg == '' ? '' : ' (Avg. Probability ' + avg + '%)');
+      },
       'endnodes': 'passthrough',
       'closeblock': false,
       'expansion': function(node) {
@@ -481,7 +498,10 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.alternative = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){return $(node).attr('condition')},
+      'label': function(node){
+        var avg = $('> _probability_avg',$(node).children('_probability')).text();
+        return $(node).attr('condition') + (avg == '' ? '' : ' (Avg. Probability ' + avg + '%)');
+      },
       'endnodes': 'passthrough',
       'closeblock':false,
       'expansion': function(node) {
@@ -564,7 +584,10 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.loop = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){return  $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') },
+      'label': function(node){
+        var avg = $('> _probability_avg',$(node).children('_probability')).text();
+        return $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') + (avg == '' ? '' : ' (Avg. ' + avg + ' Times)');
+      },
       'endnodes': 'this',
       'closeblock': true,
       'expansion': function(node) {

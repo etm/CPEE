@@ -56,13 +56,13 @@
     </element>
   </element>
   <element name="_timing" rngui:header="Timing">
-    <element name="_timing_min" rngui:label='Min in m'>
+    <element name="_timing_min" rngui:label='Min in min'>
       <data type='float' rngui:label='Minutes'/>
     </element>
-    <element name="_timing_max" rngui:label='Max in m'>
+    <element name="_timing_max" rngui:label='Max in min'>
       <data type='float' rngui:label='Minutes'/>
     </element>
-    <element name="_timing_avg" rngui:label='Avg in m'>
+    <element name="_timing_avg" rngui:label='Avg in min'>
       <data type='float' rngui:label='Minutes'/>
     </element>
   </element>
