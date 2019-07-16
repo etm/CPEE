@@ -357,6 +357,7 @@ function WFAdaptorManifestation(adaptor) {
       'label': function(node){return $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' },
       'endnodes': 'aggregate',
       'closeblock': false,
+      'balance': true,
       'expansion': function(node) {
         return 'horizontal';
       },
