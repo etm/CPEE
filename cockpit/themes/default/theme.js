@@ -349,6 +349,30 @@ function WFAdaptorManifestation(adaptor) {
       'click': self.events.click,
     }//}}}
   }; /*}}}*/
+  this.elements.choose_finish = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'final': true,
+      'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg',
+      'resolve_symbol': function(node) {
+        if($(node).attr('mode') == 'exclusive') {
+          return 'choose_exclusive';
+        } else {
+          return 'choose_inclusive';
+        }
+      },
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,true);
+      },
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
+  }; /*}}}*/
 
   // Complex Elements
   this.elements.choose = { /*{{{*/
@@ -957,6 +981,7 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'passthrough',
       'closeblock': false,
+      'balance': true,
       'expansion': function(node) {
         return 'vertical';
       },
@@ -1047,7 +1072,7 @@ function WFAdaptorManifestation(adaptor) {
     'parent': 'choose',
     'illustrator': {//{{{
       'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg'
-    },//}}}
+    }//}}}
   };  /*}}}*/
   this.elements.choose_exclusive = { /*{{{*/
     'type': 'abstract',
