@@ -189,6 +189,9 @@ function WFAdaptorManifestation(adaptor) {
     }
     return false;
   } // }}}
+  this.events.suppress = function(svgid, e, child, sibling) { // {{{
+    return false;
+  } // }}}
   this.events.click = function(svgid, e) { // {{{
     if (self.adaptor.description.get_node_by_svg_id(svgid).length == 0) {
       return;
@@ -349,6 +352,19 @@ function WFAdaptorManifestation(adaptor) {
       'click': self.events.click,
     }//}}}
   }; /*}}}*/
+  this.elements.end = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'final': true,
+      'svg': self.adaptor.theme_dir + 'symbols/end.svg'
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.suppress();
+      }
+    }//}}}
+  }; /*}}}*/
   this.elements.choose_finish = { /*{{{*/
     'type': 'primitive',
     'illustrator': {//{{{
@@ -381,7 +397,7 @@ function WFAdaptorManifestation(adaptor) {
       'label': function(node){return $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' },
       'endnodes': 'aggregate',
       'closeblock': false,
-      'balance': true,
+      'closing_symbol': 'choose_finish',
       'expansion': function(node) {
         return 'horizontal';
       },
@@ -985,6 +1001,7 @@ function WFAdaptorManifestation(adaptor) {
       'expansion': function(node) {
         return 'vertical';
       },
+      'closing_symbol': 'end',
       'col_shift': function(node) {
         return true;
       },
