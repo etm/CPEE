@@ -8,8 +8,6 @@ function WFAdaptorManifestation(adaptor) {
   this.compact = false;
   this.endpoints = {};
 
-  this.noarrow = ['alternative', 'otherwise'];
-
   //{{{ transform the details data to description parts based on rng
   this.source = function(base,opts) {
     if (base[0].namespaceURI == "http://relaxng.org/ns/structure/1.0") {
@@ -389,6 +387,30 @@ function WFAdaptorManifestation(adaptor) {
       'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
+  this.elements.parallel_finish = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'final': true,
+      'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg',
+      'resolve_symbol': function(node) {
+        if($(node).attr('wait') == '-1') {
+          return 'parallel_simple';
+        } else {
+          return 'parallel_complex';
+        }
+      },
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,true);
+      },
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
+  }; /*}}}*/
 
   // Complex Elements
   this.elements.choose = { /*{{{*/
@@ -463,6 +485,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'endnodes': 'passthrough',
       'closeblock': false,
+      'noarrow': true,
       'expansion': function(node) {
         return 'vertical';
       },
@@ -544,6 +567,7 @@ function WFAdaptorManifestation(adaptor) {
         return $(node).attr('condition') + (avg == '' ? '' : ' (Avg. Probability ' + avg + '%)');
       },
       'endnodes': 'passthrough',
+      'noarrow': true,
       'closeblock':false,
       'expansion': function(node) {
         return 'vertical';
@@ -716,8 +740,9 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.parallel = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'endnodes': 'this',
+      'endnodes': 'aggregate',
       'closeblock': false,
+      'closing_symbol': 'parallel_finish',
       'border': true,
       'expansion': function(node) {
         // check if any sibling other than 'parallel_branch' is present
@@ -799,10 +824,18 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.parallel_branch = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'endnodes': 'this',
+      'endnodes': 'passthrough',
       'closeblock': false,
+      'noarrow': true,
       'expansion': function(node) {
         return 'vertical';
+      },
+      'resolve_symbol': function(node,shift) {
+        if(shift == true) {
+          return 'parallel_branch_event';
+        } else {
+          return 'parallel_branch_normal';
+        }
       },
       'col_shift': function(node) {
         if(node.parentNode.tagName == 'choose') return false;
@@ -1097,6 +1130,35 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
     },//}}}
+  };  /*}}}*/
+  this.elements.parallel_simple = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'parallel_finish',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/parallel.svg'
+    }//}}}
+  };  /*}}}*/
+  this.elements.parallel_complex = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'parallel_finish',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/parallel.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.parallel_branch_normal = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'parallel_branch',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_normal.svg'
+    }//}}}
+  };  /*}}}*/
+  this.elements.parallel_branch_event = { /*{{{*/
+    'type': 'abstract',
+    'parent': 'parallel_branch',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_event.svg'
+    }//}}}
   };  /*}}}*/
   this.elements.scripts = { /*{{{*/
     'type': 'abstract',

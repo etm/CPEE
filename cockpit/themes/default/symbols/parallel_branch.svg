@@ -1,4 +1,5 @@
 <svg class="clickable" xmlns="http://www.w3.org/2000/svg">
-  <rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="cline hfill stand"/>
-  <text transform="translate(15,20)" class="small">|||</text>
+  <path class="cline hfill stand" d="M 11,5 C  2,9  2,21 11,25 M 20,5 C 29,9 29,21 20,25" style="stroke-dasharray:1,4;"/>
+  <rect x="11" y="7" width="9" height="16" rx="r0" class="hline white"/>
+  <line x1="15.6" y1="6" x2="15.6" y2="25" class="ourline"/>
 </svg>
