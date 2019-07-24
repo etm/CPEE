@@ -309,8 +309,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         );
       } else {
         line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                              String(end['col']*self.width+20) + "," + String(start['row']*self.height-15) +" "+
-                              String(end['col']*self.width+20) + "," + String(end['row']*self.height+25)+" "+
+                              String(end['col']*self.width+15) + "," + String(start['row']*self.height-15) +" "+
+                              String(end['col']*self.width+15) + "," + String(end['row']*self.height+15)+" "+
                               String(end['col']*self.width) + "," + String(end['row']*self.height-15)
         );
       }
@@ -363,7 +363,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false});
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
     self.set_labels(graph);
     // set labels
     illustrator.set_svg(graph);
@@ -531,6 +531,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       var tname = context.tagName;
       var sname = sym_name(tname,context);
       pos.final = illustrator.elements[sname].final ? true : false;
+      pos.wide = illustrator.elements[sname].wide ? true : false;
 
       // Calculate next position {{{
       if(root_expansion == 'vertical')  pos.row++;
@@ -680,8 +681,17 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     } else {
       if (illustrator.elements[sname].noarrow == undefined || illustrator.elements[sname].noarrow == false) {
         for (node in prev) {
-          if (!prev[node].final)
-            illustrator.draw.draw_connection(group, prev[node], pos, null, null, true);
+          if (!prev[node].final) {
+            if (prev[node].wide) {
+              var pn = jQuery.extend(true, {}, prev[node]);
+              if (pos.col > prev[node].col) {
+                pn.col = pos.col;
+              }
+              illustrator.draw.draw_connection(group, pn, pos, null, null, true);
+            } else {
+              illustrator.draw.draw_connection(group, prev[node], pos, null, null, true);
+            }
+          }
         }
       } else {
         for(node in prev) {
