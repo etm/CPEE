@@ -361,6 +361,22 @@ function WFAdaptorManifestation(adaptor) {
       }
     }//}}}
   }; /*}}}*/
+  this.elements.event_end = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/event_end.svg'
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.suppress();
+      },
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
+  }; /*}}}*/
   this.elements.choose_finish = { /*{{{*/
     'type': 'primitive',
     'illustrator': {//{{{
@@ -739,7 +755,6 @@ function WFAdaptorManifestation(adaptor) {
       'endnodes': 'aggregate',
       'closeblock': false,
       'closing_symbol': 'parallel_finish',
-      'border': true,
       'expansion': function(node) {
         // check if any sibling other than 'parallel_branch' is present
         if($(node).children(':not(parallel_branch)').length > 0) return 'vertical';
@@ -1152,8 +1167,9 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'noarrow': false,
+      'border': true,
       'wide': true,
-      'closing_symbol': 'end',
+      'closing_symbol': 'event_end',
       'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_event.svg'
     }//}}}
   };  /*}}}*/
