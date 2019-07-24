@@ -1152,6 +1152,7 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'noarrow': false,
+      'wide': true,
       'closing_symbol': 'end',
       'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_event.svg'
     }//}}}

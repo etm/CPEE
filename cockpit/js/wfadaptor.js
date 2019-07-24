@@ -77,6 +77,9 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
             manifestation.elements[element].illustrator[key] = ill[key];
           }
         }
+        if (manifestation.elements[element].type == undefined) {
+          manifestation.elements[element].type = manifestation.elements[manifestation.elements[element].parent].type;
+        }
       }
     }
     // doit
@@ -644,13 +647,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         }
       } else { console.log("no icon "+ sname);}
       if(illustrator.elements[sname] && illustrator.elements[sname].border) illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: block.max.col, row: (illustrator.elements[sname].closing_symbol ? block.max.row+1 : block.max.row) }, block.svg);
-      console.log(sname);
-      console.log(illustrator.elements[sname].type);
-      if(illustrator.elements[tname] && illustrator.elements[tname].type == 'complex') {
+      if(illustrator.elements[sname] && illustrator.elements[sname].type == 'complex') {
+        var wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
         if (illustrator.elements[sname].closing_symbol) {
-          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: block.max.col, row: block.max.row + 1 } , block.svg);
+          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg);
         } else {
-          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, block.max, block.svg);
+          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg);
         }
       }
     }
