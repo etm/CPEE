@@ -42,10 +42,13 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   this.set_description = function(desc,auto_update) { // public {{{
     this.description.set_description(desc,auto_update);
   } // }}}
+
   this.get_description = function() { // public {{{
     return description.get_description();
   } // }}}
   this.notify = function() { // public {{{
+  } // }}}
+  this.draw_labels = function(max,labels){ // public {{{
   } // }}}
   this.set_svg_container = function (container) { // {{{
     illustrator.set_container(container); // TODO: shadowing the container element
@@ -341,12 +344,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // Set Labels //{{{
   this.set_labels = function(graph) {
     if (illustrator.compact == false) {
-      if (labels.length > 0) {
-        _.each(labels,function(a,key) {
-          illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
-        });
-      }
+      adaptor.draw_labels(graph.max,labels);
     }
+    // if (illustrator.compact == false) {
+    //   if (labels.length > 0) {
+    //     _.each(labels,function(a,key) {
+    //       illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
+    //     });
+    //   }
+    // }
   } //}}}
 
   // Generic Functions {{{
@@ -519,8 +525,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(illustrator.elements[root.tagName].col_shift(root) == true && root_expansion != 'horizontal') pos.col++;
 
     if(root.tagName == 'description') { // First parsing {{{
-      pos.row ++;
-      max.row ++;
+      pos.row++;
       $(root).attr('svg-id','description');
       group.attr('element-id','group-description');
       illustrator.draw.draw_symbol('start', 'description', 'START', pos.row, pos.col, group);
@@ -613,11 +618,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if((illustrator.elements[root.tagName].endnodes == 'this' || illustrator.elements[sname].endnodes == 'this') && illustrator.elements[root.tagName].closeblock == false) {endnodes = prev;} // closeblock == false, allows loop to close himself
 
     if(root.tagName == 'description' && illustrator.elements[root.tagName].closing_symbol) {
-      pos.row ++;
-      max.row ++;
+      pos.row++;
+      max.row = pos.row;
       draw_position(illustrator.elements['start'].closing_symbol,pos,prev,block,group,[],this,group);
-      pos.row ++;
-      max.row ++;
     }
 
     return {'endnodes': endnodes, 'max':max, 'svg':group};
