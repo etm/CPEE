@@ -614,18 +614,18 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       draw_position(illustrator.elements['start'].closing_symbol,pos,prev,block,group,[],this,group);
       pos.row ++;
       max.row ++;
-    } // }}}
+    }
 
     return {'endnodes': endnodes, 'max':max, 'svg':group};
   } // }}}
-  var sym_name = function(tname,context) {
+  var sym_name = function(tname,context) { //{{{
     var sname;
     if(!illustrator.elements[tname])                                         {sname = 'unknown';}
     else if(typeof illustrator.elements[tname].resolve_symbol == 'function') {sname = illustrator.elements[tname].resolve_symbol(context,illustrator.elements[tname].col_shift ? illustrator.elements[tname].col_shift(context) : undefined);}
     else if(typeof illustrator.elements[tname].resolve_symbol == 'string')   {sname = illustrator.elements[tname].resolve_symbol;}
     else                                                                     {sname = tname;}
     return sname;
-  }
+  } //}}}
   var draw_position = function(tname,pos,prev,block,group,endnodes,context,second) { // private {{{
     var sname = sym_name(tname,context);
     // Draw Symbol {{{
