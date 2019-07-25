@@ -26,6 +26,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'savon', '~> 2'
   s.add_runtime_dependency 'highline', '~> 1.6'
   s.add_runtime_dependency 'json', '~>2.1'
-  s.add_runtime_dependency 'opca', '~>0', '>= 0.13'
+  s.add_runtime_dependency 'opcua', '~>0', '>= 0.13'
   s.add_runtime_dependency 'rubyzip', '~>1.2'
 end
