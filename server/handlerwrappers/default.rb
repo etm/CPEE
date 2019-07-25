@@ -74,7 +74,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
           client = OPCUA::Client.new(url)
           if (node = client.get ns.to_i, nid)
             (parameters[:arguments] || [→(:name => 'value', :value => par)] || []).each do |ele|
-              what = CPEE::ValueHelper::parse(ele.value)
+              what = CPEE::ValueHelper::parse_extended(ele.value)
               node.value = what
               result = what
             end
@@ -92,7 +92,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
           if (node = client.get ns.to_i, nid)
             params = []
             (parameters[:arguments] || []).each do |ele|
-              what = CPEE::ValueHelper::parse(ele.value)
+              what = CPEE::ValueHelper::parse_extended(ele.value)
               params << what
             end
             result = node.call *params

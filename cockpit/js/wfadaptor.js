@@ -346,13 +346,13 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if (illustrator.compact == false) {
       adaptor.draw_labels(graph.max,labels);
     }
-    // if (illustrator.compact == false) {
-    //   if (labels.length > 0) {
-    //     _.each(labels,function(a,key) {
-    //       illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
-    //     });
-    //   }
-    // }
+    if (illustrator.compact == false) {
+      if (labels.length > 0) {
+        _.each(labels,function(a,key) {
+          illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
+        });
+      }
+    }
   } //}}}
 
   // Generic Functions {{{
