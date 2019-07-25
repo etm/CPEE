@@ -15,7 +15,7 @@ module CPEE
     end
 
     def self::parse(value)
-      case value.to_s.downcase
+      case value.downcase
         when 'true'
           true
         when 'false'
