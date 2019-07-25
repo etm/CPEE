@@ -331,6 +331,11 @@ svg text.label {
   fill: #000000;
 }
 
+svg g.element[element-id]:hover .nfill {
+  stroke-width: 0;
+  fill: #c2daf7;
+}
+
 svg g.element[element-id]:hover .hfill {
   fill: #f57900;
   fill-opacity:1;

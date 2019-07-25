@@ -413,6 +413,10 @@ function adaptor_init(url,theme,dslx) { //{{{
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       manifestation.endpoints = save.endpoints_list;
+      graphrealization.draw_labels = function(max,labels) {
+        console.log(max);
+        console.log(labels);
+      };
       graphrealization.set_svg_container($('#graphcanvas'));
       graphrealization.set_description($(dslx), true);
       graphrealization.notify = function(svgid) {
