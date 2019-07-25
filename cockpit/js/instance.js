@@ -564,11 +564,13 @@ function monitor_instance_state_change(notification) { //{{{
 
     var but = "";
     if (notification == "ready" || notification == "stopped") {
+      $('#state_extended').show();
       $("button[name=state_start]").show();
       $("button[name=state_stop]").hide();
       $("button[name=state_sim]").show();
       $("button[name=state_abandon]").show();
     } else if (notification == "running") {
+      $('#state_extended').hide();
       $("button[name=state_start]").hide();
       $("button[name=state_stop]").show();
       $("button[name=state_sim]").hide();
@@ -582,8 +584,9 @@ function monitor_instance_state_change(notification) { //{{{
       save['graph_adaptor'].illustrator.get_elements().removeClass('marked');
     }
 
-    if (notification == "finished") {
+    if (notification == "finished" || notification == "abandoned") {
       $('.tabbehind button').hide();
+      $('#state_any').hide();
     } else {
       $('#parameters .tabbehind button').show();
     }
