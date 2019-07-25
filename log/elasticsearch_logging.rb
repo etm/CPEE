@@ -164,6 +164,7 @@ class Logging < Riddl::Implementation
       end
     end #}}}
 
+    pp notification
     case "#{topic}/#{event_name}"
       when "dataelements/change", "endpoints/change"
         sensors = JSON.parse(notification.dig('attributes','sensors') || '[]')

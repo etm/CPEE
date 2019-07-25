@@ -182,13 +182,17 @@
                 <td>State:</td>
                 <td id='state'>
                   <span id="state_text"></span>
-                  <span> ⇒ </span>
-                  <button name="state_start" title='start'>Start</button>
-                  <button name="state_stop" title='stop'>Stop</button>
-                  <span> / </span>
-                  <button name="state_sim" title='simulate'>Sim</button>
-                  <span> / </span>
-                  <button name="state_abandon" title='abandon'>Abandon</button>
+                  <span id="state_any">
+                    <span> ⇒ </span>
+                    <button name="state_start" title='start'>Start</button>
+                    <button name="state_stop" title='stop'>Stop</button>
+                    <span id="state_extended">
+                      <span> / </span>
+                      <button name="state_sim" title='simulate'>Sim</button>
+                      <span> / </span>
+                      <button name="state_abandon" title='abandon'>Abandon</button>
+                    </span>
+                  </span>
                 </td>
               </tr>
               <tr>
