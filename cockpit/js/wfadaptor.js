@@ -155,6 +155,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     // public
     this.height = 40;
     this.width = 40;
+    this.shift = this.height * 0.26;
     this.elements = {}; // the svgs
     this.svg = {};
     this.draw = {};
@@ -189,7 +190,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
-    self.svg.container.attr({'height': (graph.max.row+0.3)*self.height, 'style': "min-width: " + (graph.max.col+0.55)*self.width + "px"});
+    self.svg.container.attr('height',   (graph.max.row) * self.height + self.shift);
+    self.svg.container.attr('width',    (graph.max.col+0.55) * self.width );
     self.svg.container.append(graph.svg);
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
@@ -344,7 +346,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // Set Labels //{{{
   this.set_labels = function(graph) {
     if (illustrator.compact == false) {
-      adaptor.draw_labels(graph.max,labels);
+      adaptor.draw_labels(graph.max,labels,illustrator.shift);
     }
     if (illustrator.compact == false) {
       if (labels.length > 0) {

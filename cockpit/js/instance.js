@@ -413,9 +413,19 @@ function adaptor_init(url,theme,dslx) { //{{{
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       manifestation.endpoints = save.endpoints_list;
-      graphrealization.draw_labels = function(max,labels) {
-        console.log(max);
-        console.log(labels);
+      graphrealization.draw_labels = function(max,labels,shift) {
+        $('#graphcanvas').css('grid-row', '1/span ' +( max.row + 1));
+        $('#graphgrid .graphlabel').remove();
+        $('#graphgrid').css('grid-template-rows', shift + 'px repeat(' + max.row + ', 1fr)');
+        var tlabels = {};
+        _.each(labels,function(val,key){
+          if (val.label != "") {
+            tlabels[val.row] = val;
+          }
+        });
+        for (var i = 0; i < max.row; i++) {
+          $('#graphgrid').append($('<div class="graphlabel" style="grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px"><span>' + (tlabels[i+1] == undefined ? '' : tlabels[i+1].label) + '</span></div>'));
+        }
       };
       graphrealization.set_svg_container($('#graphcanvas'));
       graphrealization.set_description($(dslx), true);
