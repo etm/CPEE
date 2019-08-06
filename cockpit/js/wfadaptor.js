@@ -51,7 +51,10 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   this.draw_labels = function(max,labels){ // public {{{
   } // }}}
   this.set_svg_container = function (container) { // {{{
-    illustrator.set_container(container); // TODO: shadowing the container element
+    illustrator.set_svg_container(container); // TODO: shadowing the container element
+  } // }}}
+  this.set_css_container = function(container) { // {{{
+    illustrator.set_css_container(container);
   } // }}}
 
   // initialize
@@ -165,7 +168,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     var adaptor = null;
   // }}}
   // Generic Functions {{{
-  this.set_container = function(con) { // {{{
+  this.set_css_container = function(con) { // {{{
+    self.svg.css = con;
+  } // }}}
+  this.set_svg_container = function(con) { // {{{
     self.svg.container = con;
     self.svg.container.append($X('<defs xmlns="http://www.w3.org/2000/svg">' +
       '  <marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
@@ -183,7 +189,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         $.each(self.elements[element].svg.attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
         self.svg.defs[element] = sym;
       }
-  }  // }}}
+  } // }}}
   var clear = this.clear = function() { // {{{
     $('> :not(defs)', self.svg.container).each(function() {$(this).remove()});
   } // }}}

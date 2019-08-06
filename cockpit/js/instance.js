@@ -414,6 +414,7 @@ function adaptor_init(url,theme,dslx) { //{{{
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       manifestation.endpoints = save.endpoints_list;
       graphrealization.draw_labels = function(max,labels,shift) {
+        console.log(labels);
         $('#graphcanvas').css('grid-row', '1/span ' +( max.row + 1));
         $('#graphgrid .graphlabel').remove();
         $('#graphgrid').css('grid-template-rows', shift + 'px repeat(' + max.row + ', 1fr)');
@@ -428,6 +429,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         }
       };
       graphrealization.set_svg_container($('#graphcanvas'));
+      graphrealization.set_css_container($('#graphgrid'));
       graphrealization.set_description($(dslx), true);
       graphrealization.notify = function(svgid) {
         var g = graphrealization.get_description();
