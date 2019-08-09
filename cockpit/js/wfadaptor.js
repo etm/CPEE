@@ -356,9 +356,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     if (illustrator.compact == false) {
       if (labels.length > 0) {
+        var csscol = 0;
         _.each(labels,function(a,key) {
-          illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
+
+          // illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
         });
+        console.log(illustrator.svg.css);
       }
     }
   } //}}}

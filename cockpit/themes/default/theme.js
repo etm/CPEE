@@ -32,11 +32,11 @@ function WFAdaptorManifestation(adaptor) {
       return base;
     }
   }; //}}}
-  //{{{ Return the svgid for the clicked task
-  this.clicked = function(){
+  //{{{ Return the svgid for the selected task
+  this.selected = function(){
     var svgid = 'unknown';
     _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
-      if ($(value).hasClass('clicked')) {
+      if ($(value).hasClass('selected')) {
         svgid = $(value).attr('element-id');
       }
     });
@@ -195,7 +195,7 @@ function WFAdaptorManifestation(adaptor) {
       return;
     }
 
-    self.adaptor.illustrator.get_elements().removeClass('clicked');
+    self.adaptor.illustrator.get_elements().removeClass('selected');
 
     if (e && e.ctrlKey) {
       if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
@@ -210,7 +210,7 @@ function WFAdaptorManifestation(adaptor) {
 
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
-        vtarget.parents('g.element[element-id]').addClass('clicked');
+        vtarget.parents('g.element[element-id]').addClass('selected');
       }
 
       self.update_details(svgid);

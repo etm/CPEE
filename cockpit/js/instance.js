@@ -450,7 +450,7 @@ function adaptor_init(url,theme,dslx) { //{{{
     });
   } else {
     save['graph_adaptor'].update(function(graphrealization){
-      var svgid = manifestation.clicked();
+      var svgid = manifestation.selected();
       graphrealization.set_description($(dslx));
       adaptor_update();
       manifestation.events.click(svgid);
@@ -1169,8 +1169,8 @@ function format_visual_clear() {//{{{
   $('.super .vote').each(function(a,b){b.setAttribute('class','vote');});
   $('.super .colon').each(function(a,b){b.setAttribute('class','colon');});
   $('.activities').each(function(a,b){
-    if (b.hasAttribute('clicked')) {
-      b.setAttribute('class','activities clicked');
+    if (b.hasAttribute('selected')) {
+      b.setAttribute('class','activities selected');
     } else {
       b.setAttribute('class','activities');
     }
