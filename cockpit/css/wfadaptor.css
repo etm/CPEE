@@ -14,11 +14,7 @@
   <http://www.gnu.org/licenses/>.
 */
 
-/* Browser Bug, set textarea explicitly */
-svg {
-  display:inline;
-  margin:0;
-  padding:0;
+:root {
   --wfadaptor-exec-passive: #729fcf;
   --wfadaptor-exec-active: #ef2929;
   --wfadaptor-exec-active-text: #cc0000;
@@ -31,6 +27,12 @@ svg {
   --wfadaptor-selected: #f57900;
   --wfadaptor-background: #ffffff;
   --wfadaptor-background-menu: #ff7f7f;
+}
+
+svg {
+  display:inline;
+  margin:0;
+  padding:0;
 }
 
 svg rect.group {

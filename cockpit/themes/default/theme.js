@@ -251,7 +251,15 @@ function WFAdaptorManifestation(adaptor) {
         }
         var avg = $('> _timing_avg',$(node).children('_timing')).text();
         var lnd = $(node).attr('endpoint');
-        return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') + (lnd == '' ? '' : ' (Resource ' + lnd + (eplen > 1 ? ' - ' + (eplen) + ' Alternatives': ' - 1 Alternative') + ')') + (avg == '' ? '' : ' (Avg. Duration ' + avg + ' Min)');
+        var ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
+        if (lnd != '') {
+          ret.push({ column: 'Resource', value: lnd });
+          ret.push({ column: 'R#', value: eplen });
+        }
+        if (avg != '') {
+          ret.push({ column: 'Average', value: avg + '%' });
+        }
+        return ret;
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
@@ -288,9 +296,9 @@ function WFAdaptorManifestation(adaptor) {
       'label': function(node){
         var lab = $(node).attr('label');
         if (lab) {
-          return lab.replace(/^['"]/,'').replace(/['"]$/,'');
+          return [ { column: 'Label', value: lab.replace(/^['"]/,'').replace(/['"]$/,'') } ];
         }  else {
-          return "";
+          return [];
         }
       },
       'svg': self.adaptor.theme_dir + 'symbols/manipulate.svg'
@@ -428,7 +436,7 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.choose = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){return $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' },
+      'label': function(node){ return [ { column: 'Label', value: $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' } ]; },
       'endnodes': 'aggregate',
       'closeblock': false,
       'closing_symbol': 'choose_finish',
@@ -493,7 +501,7 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'label': function(node){
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        return (avg == '' ? '' : ' (Avg. Probability ' + avg + '%)');
+        return (avg == '' ? [] : [ { column: 'Average', value: avg + '%' } ]);
       },
       'endnodes': 'passthrough',
       'closeblock': false,
@@ -576,7 +584,11 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'label': function(node){
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        return $(node).attr('condition') + (avg == '' ? '' : ' (Avg. Probability ' + avg + '%)');
+        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        if (avg != '') {
+          ret.push({ column: 'Average', value: avg + '%' });
+        }
+        return ret;
       },
       'endnodes': 'passthrough',
       'noarrow': true,
@@ -663,7 +675,11 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'label': function(node){
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        return $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') + (avg == '' ? '' : ' (Avg. ' + avg + ' Times)');
+        var ret = [ { column: 'Label', value: $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') } ];
+        if (avg != '') {
+          ret.push({ column: 'Average', value: avg + '%' });
+        }
+        return ret;
       },
       'endnodes': 'this',
       'closeblock': true,
@@ -1115,7 +1131,6 @@ function WFAdaptorManifestation(adaptor) {
     'parent': 'call',
     'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
-      'label': function(node){return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'')},
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
     },//}}}
