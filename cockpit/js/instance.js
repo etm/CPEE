@@ -413,11 +413,33 @@ function adaptor_init(url,theme,dslx) { //{{{
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       manifestation.endpoints = save.endpoints_list;
-      graphrealization.draw_labels = function(max,labels) {
-        console.log(max);
-        console.log(labels);
+      graphrealization.draw_labels = function(max,labels,shift) {
+        $('#graphcanvas').css('grid-row', '1/span ' +( max.row + 1));
+        $('#graphgrid .graphlabel').remove();
+        $('#graphgrid').css('grid-template-rows', shift + 'px repeat(' + max.row + ', 1fr)');
+        var tlabels = {};
+        var tcolumns = [];
+        _.each(labels,function(val){
+          if (val.label != "") {
+            tlabels[val.row] = [];
+            _.each(val.label,function(col) {
+              if (!tcolumns.includes(col.column)) {
+                tcolumns.push(col.column);
+              }
+              tlabels[val.row][tcolumns.indexOf(col.column)] = col.value;
+            });
+          }
+        });
+        for (var i = 0; i < max.row; i++) {
+          _.each(tlabels[i+1],function(col,j) {
+            if (col != undefined) {
+              $('#graphgrid').append($('<div class="graphlabel" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px"><span>' + col + '</span></div>'));
+            }
+          });
+        }
       };
       graphrealization.set_svg_container($('#graphcanvas'));
+      graphrealization.set_css_container($('#graphgrid'));
       graphrealization.set_description($(dslx), true);
       graphrealization.notify = function(svgid) {
         var g = graphrealization.get_description();
@@ -438,7 +460,7 @@ function adaptor_init(url,theme,dslx) { //{{{
     });
   } else {
     save['graph_adaptor'].update(function(graphrealization){
-      var svgid = manifestation.clicked();
+      var svgid = manifestation.selected();
       graphrealization.set_description($(dslx));
       adaptor_update();
       manifestation.events.click(svgid);
@@ -1157,8 +1179,8 @@ function format_visual_clear() {//{{{
   $('.super .vote').each(function(a,b){b.setAttribute('class','vote');});
   $('.super .colon').each(function(a,b){b.setAttribute('class','colon');});
   $('.activities').each(function(a,b){
-    if (b.hasAttribute('clicked')) {
-      b.setAttribute('class','activities clicked');
+    if (b.hasAttribute('selected')) {
+      b.setAttribute('class','activities selected');
     } else {
       b.setAttribute('class','activities');
     }

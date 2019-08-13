@@ -17,10 +17,10 @@ function WFAdaptorManifestation(adaptor) {
 
     return($X(ntxt));
   };
-  this.clicked = function(){
+  this.selected = function(){
     var svgid = 'unknown';
     _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
-      if ($(value).hasClass('clicked')) {
+      if ($(value).hasClass('selected')) {
         svgid = $(value).attr('element-id');
       }
     });
@@ -78,7 +78,7 @@ function WFAdaptorManifestation(adaptor) {
     var tab   = $('#dat_' + visid);
         tab.empty();
 
-    self.adaptor.illustrator.get_elements().removeClass('clicked');
+    self.adaptor.illustrator.get_elements().removeClass('selected');
 
     if (e && e.ctrlKey) {
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
@@ -90,7 +90,7 @@ function WFAdaptorManifestation(adaptor) {
 
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
-        vtarget.parents('g.element[element-id]').addClass('clicked');
+        vtarget.parents('g.element[element-id]').addClass('selected');
       }
 
       var node  = self.adaptor.description.get_node_by_svg_id(svgid).get(0);

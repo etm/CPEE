@@ -51,7 +51,10 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   this.draw_labels = function(max,labels){ // public {{{
   } // }}}
   this.set_svg_container = function (container) { // {{{
-    illustrator.set_container(container); // TODO: shadowing the container element
+    illustrator.set_svg_container(container); // TODO: shadowing the container element
+  } // }}}
+  this.set_css_container = function(container) { // {{{
+    illustrator.set_css_container(container);
   } // }}}
 
   // initialize
@@ -155,6 +158,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     // public
     this.height = 40;
     this.width = 40;
+    this.shift = this.height * 0.26;
     this.elements = {}; // the svgs
     this.svg = {};
     this.draw = {};
@@ -164,7 +168,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     var adaptor = null;
   // }}}
   // Generic Functions {{{
-  this.set_container = function(con) { // {{{
+  this.set_css_container = function(con) { // {{{
+    self.svg.css = con;
+  } // }}}
+  this.set_svg_container = function(con) { // {{{
     self.svg.container = con;
     self.svg.container.append($X('<defs xmlns="http://www.w3.org/2000/svg">' +
       '  <marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
@@ -182,14 +189,15 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         $.each(self.elements[element].svg.attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
         self.svg.defs[element] = sym;
       }
-  }  // }}}
+  } // }}}
   var clear = this.clear = function() { // {{{
     $('> :not(defs)', self.svg.container).each(function() {$(this).remove()});
   } // }}}
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
-    self.svg.container.attr({'height': (graph.max.row+0.3)*self.height, 'style': "min-width: " + (graph.max.col+0.55)*self.width + "px"});
+    self.svg.container.attr('height',   (graph.max.row) * self.height + self.shift);
+    self.svg.container.attr('width',    (graph.max.col+0.55) * self.width );
     self.svg.container.append(graph.svg);
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
@@ -344,15 +352,16 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // Set Labels //{{{
   this.set_labels = function(graph) {
     if (illustrator.compact == false) {
-      adaptor.draw_labels(graph.max,labels);
+      adaptor.draw_labels(graph.max,labels,illustrator.shift);
     }
-    if (illustrator.compact == false) {
-      if (labels.length > 0) {
-        _.each(labels,function(a,key) {
-          illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
-        });
-      }
-    }
+    // if (illustrator.compact == false) {
+    //   if (labels.length > 0) {
+    //     var csscol = 0;
+    //     _.each(labels,function(a,key) {
+    //       // illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
+    //     });
+    //   }
+    // }
   } //}}}
 
   // Generic Functions {{{

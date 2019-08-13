@@ -14,71 +14,82 @@
   <http://www.gnu.org/licenses/>.
 */
 
-/* Browser Bug, set textarea explicitly */
+:root {
+  --wfadaptor-exec-passive: #729fcf;
+  --wfadaptor-exec-active: #ef2929;
+  --wfadaptor-exec-active-text: #cc0000;
+  --wfadaptor-exec-vote: #8ae234;
+  --wfadaptor-exec-vote-text: #73d216;
+  --wfadaptor-highlight: Highlight;
+  --wfadaptor-base: #000000;
+  --wfadaptor-label: #d4d4d4;
+  --wfadaptor-mark: #d4d4d4;
+  --wfadaptor-selected: #f57900;
+  --wfadaptor-background: #ffffff;
+  --wfadaptor-background-menu: #ff7f7f;
+}
+
 svg {
-  fill: #DDDDDD;
-  fill-opacity:1;
   display:inline;
   margin:0;
   padding:0;
-  width: 100%;
 }
 
 svg rect.group {
-  fill: Highlight;
+  fill: var(--wfadaptor-highlight);
   fill-opacity: 0.2;
 }
 
 svg g.passive .rfill {
-  fill: #729fcf;
+  fill: var(--wfadaptor-exec-passive);
   fill-opacity:1;
 }
 svg g.active .rfill {
-  fill: #ef2929;
+  fill: var(--wfadaptor-exec-active);
   fill-opacity:1;
 }
 svg g.vote .rfill {
-  fill: #8ae234;
+  fill: var(--wfadaptor-exec-vote);
   fill-opacity:1;
 }
 svg g.passive .rline {
-  stroke: #729fcf;
+  stroke: var(--wfadaptor-exec-passive);
 }
 svg g.active .rline {
-  stroke: #ef2929;
+  stroke: var(--wfadaptor-exec-active);
 }
 svg g.vote .rline {
-  stroke: #8ae234;
+  stroke: var(--wfadaptor-exec-vote);
 }
 
 svg .rfill.menu {
-  fill: #ff7f7f;
+  fill: var(--wfadaptor-background-menu);
   fill-opacity:1;
 }
 
 svg line.ourline, svg path.ourline {
   stroke-opacity:1;
-  stroke:#000000;
+  stroke: var(--wfadaptor-base);
   stroke-width: 2;
   fill: none;
 }
 svg rect.block {
   stroke-width: 1;
   stroke-dasharray: 3,5;
-  stroke: #000000;
+  stroke: var(--wfadaptor-base);
   fill: none;
 }
 svg rect.tile {
   stroke-width: 1;
   stroke-dasharray: 3,5;
-  fill: Highlight;
+  fill: var(--wfadaptor-highlight);
   fill-opacity: 0.3;
   display: none;
 }
 svg .stand {
-  fill:#ffffff;
+  fill: var(--wfadaptor-background);
   fill-opacity:1;
-  stroke:#000000;
+  stroke: var(--wfadaptor-base);
   stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -87,9 +98,9 @@ svg .stand {
   stroke-dasharray:none;
 }
 svg .standfat {
-  fill:#ffffff;
+  fill: var(--wfadaptor-background);
   fill-opacity:1;
-  stroke:#000000;
+  stroke: var(--wfadaptor-base);
   stroke-width:3;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -98,9 +109,9 @@ svg .standfat {
   stroke-dasharray:none;
 }
 svg .normal {
-  fill:#000000;
+  fill: var(--wfadaptor-base);
   fill-opacity:1;
-  stroke:#000000;
+  stroke: var(--wfadaptor-base);
   stroke-width:0.2;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -109,9 +120,9 @@ svg .normal {
   stroke-dasharray:none;
 }
 svg .white {
-  fill:#ffffff;
+  fill: var(--wfadaptor-background);
   fill-opacity:1;
-  stroke:#ffffff;
+  stroke: var(--wfadaptor-background);
   stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -120,9 +131,9 @@ svg .white {
   stroke-dasharray:none;
 }
 svg .black {
-  fill:#000000;
+  fill: var(--wfadaptor-base);
   fill-opacity:1;
-  stroke:#000000;
+  stroke: var(--wfadaptor-base);
   stroke-width: 1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -132,13 +143,13 @@ svg .black {
 }
 
 svg .marked text.label {
-  color: #d4d4d4;
-  fill: #d4d4d4;
+  color: var(--wfadaptor-label);
+  fill: var(--wfadaptor-label);
 }
 svg .marked .cfill {
-  fill:#d4d4d4;
+  fill: var(--wfadaptor-mark);
   fill-opacity:1;
-  stroke:#d4d4d4;
+  stroke: var(--wfadaptor-mark);
   stroke-width:0.2;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -147,7 +158,7 @@ svg .marked .cfill {
   stroke-dasharray:none;
 }
 svg .marked .cline {
-  stroke:#d4d4d4;
+  stroke: var(--wfadaptor-mark);
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -155,14 +166,14 @@ svg .marked .cline {
   stroke-dasharray:none;
 }
 
-svg .clicked text.label {
-  color: #f57900;
-  fill: #f57900;
+svg .selected text.label {
+  color: var(--wfadaptor-selected);
+  fill: var(--wfadaptor-selected);
 }
-svg .clicked .cfill {
-  fill:#f57900;
+svg .selected .cfill {
+  fill: var(--wfadaptor-selected);
   fill-opacity:1;
-  stroke:#f57900;
+  stroke: var(--wfadaptor-selected);
   stroke-width:0.2;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -170,8 +181,8 @@ svg .clicked .cfill {
   stroke-opacity:1;
   stroke-dasharray:none;
 }
-svg .clicked .cline {
-  stroke:#f57900;
+svg .selected .cline {
+  stroke: var(--wfadaptor-selected);
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -180,9 +191,9 @@ svg .clicked .cline {
 }
 
 svg .unknown {
-  fill:#FF0000;
+  fill: var(--wfadaptor-background);
   fill-opacity:1;
-  stroke:#000000;
+  stroke: var(--wfadaptor-base);
   stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -195,7 +206,7 @@ svg .gen {
   fill:ButtonFace;
   fill-opacity:1;
   stroke-opacity:0.7;
-  stroke:#000000;
+  stroke: var(--wfadaptor-base);
   stroke-width:1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -204,11 +215,11 @@ svg .gen {
   stroke-dasharray:none;
 }
 svg .standwithout {
-  fill:#ffffff;
+  fill: var(--wfadaptor-background);
   fill-opacity:1;
 }
 svg .standtrans {
-  fill:#ffffff;
+  fill: var(--wfadaptor-background);
   fill-opacity:0;
 }
 svg text.normal {
@@ -221,8 +232,8 @@ svg text.normal {
   line-height:125%;
   writing-mode:horizontal-tb;
   text-anchor:middle;
-  color:#000000;
-  fill:#000000;
+  color: var(--wfadaptor-base);
+  fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
   font-family:Arial;
@@ -237,8 +248,8 @@ svg text.inverted {
   line-height:125%;
   writing-mode:horizontal-tb;
   text-anchor:middle;
-  color:#ffffff;
-  fill:#ffffff;
+  color: var(--wfadaptor-background);
+  fill: var(--wfadaptor-background);
   fill-opacity:1;
   stroke:none;
   font-family:Arial;
@@ -254,18 +265,18 @@ svg text.super {
   line-height:100%;
   writing-mode:horizontal-tb;
   text-anchor:start;
-  color:#000000;
-  fill:#000000;
+  color: var(--wfadaptor-base);
+  fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
   font-family:Arial;
 }
 svg tspan.active {
-  fill:#cc0000;
+  fill: var(--wfadaptor-exec-active-text);
   display: none;
 }
 svg tspan.vote {
-  fill:#73d216;
+  fill: var(--wfadaptor-exec-vote-text);
   display: none;
 }
 svg tspan.colon {
@@ -285,8 +296,8 @@ svg text.normallarge {
   line-height:125%;
   writing-mode:horizontal-tb;
   text-anchor:middle;
-  color:#000000;
-  fill:#000000;
+  color: var(--wfadaptor-base);
+  fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
   font-family:Arial;
@@ -302,8 +313,8 @@ svg text.small {
   line-height:125%;
   writing-mode:horizontal-tb;
   text-anchor:middle;
-  color:#000000;
-  fill:#000000;
+  color: var(--wfadaptor-base);
+  fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
   font-family:Arial;
@@ -318,33 +329,28 @@ svg text.label {
   line-height:125%;
   writing-mode:horizontal-tb;
   text-anchor:left;
-  color: #a1a1a1;
-  fill: #a1a1a1;
+  color: var(--wfadaptor-text);
+  fill: var(--wfadaptor-text);
   fill-opacity:1;
   stroke:none;
   font-family:Arial;
 }
 
 #arrow {
-  stroke: #000000;
+  stroke: var(--wfadaptor-base);
   stroke-width: 2;
-  fill: #000000;
-}
-
-svg g.element[element-id]:hover .nfill {
-  stroke-width: 0;
-  fill: #c2daf7;
+  fill: var(--wfadaptor-base);
 }
 
 svg g.element[element-id]:hover .hfill {
-  fill: #f57900;
+  fill: var(--wfadaptor-selected);
   fill-opacity:1;
   cursor: pointer;
 }
 svg g.element[element-id]:hover .hline {
-  fill:#f57900;
+  fill: var(--wfadaptor-selected);
   fill-opacity:1;
-  stroke:#f57900;
+  stroke: var(--wfadaptor-selected);
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -353,9 +359,9 @@ svg g.element[element-id]:hover .hline {
   cursor: pointer;
 }
 svg g.element[element-id]:hover .htext {
-  fill:#f57900;
+  fill: var(--wfadaptor-selected);
   fill-opacity:1;
-  stroke:#f57900;
+  stroke: var(--wfadaptor-selected);
   stroke-width:0.2;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -365,13 +371,13 @@ svg g.element[element-id]:hover .htext {
   cursor: pointer;
 }
 svg g.element[element-id]:hover > text.label {
-  color: #f57900;
-  fill: #f57900;
+  color: var(--wfadaptor-selected);
+  fill: var(--wfadaptor-selected);
 }
 svg g.element[element-id]:hover .cfill {
-  fill:#000000;
+  fill: var(--wfadaptor-base);
   fill-opacity:1;
-  stroke:#000000;
+  stroke: var(--wfadaptor-base);
   stroke-width:0.2;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -380,7 +386,7 @@ svg g.element[element-id]:hover .cfill {
   stroke-dasharray:none;
 }
 svg g.element[element-id]:hover .cline {
-  stroke:#000000;
+  stroke: var(--wfadaptor-base);
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
