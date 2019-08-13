@@ -418,13 +418,24 @@ function adaptor_init(url,theme,dslx) { //{{{
         $('#graphgrid .graphlabel').remove();
         $('#graphgrid').css('grid-template-rows', shift + 'px repeat(' + max.row + ', 1fr)');
         var tlabels = {};
-        _.each(labels,function(val,key){
+        var tcolumns = [];
+        _.each(labels,function(val){
           if (val.label != "") {
-            tlabels[val.row] = val;
+            tlabels[val.row] = [];
+            _.each(val.label,function(col) {
+              if (!tcolumns.includes(col.column)) {
+                tcolumns.push(col.column);
+              }
+              tlabels[val.row][tcolumns.indexOf(col.column)] = col.value;
+            });
           }
         });
         for (var i = 0; i < max.row; i++) {
-          $('#graphgrid').append($('<div class="graphlabel" style="grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px"><span>' + (tlabels[i+1] == undefined ? '' : tlabels[i+1].label[0].value) + '</span></div>'));
+          _.each(tlabels[i+1],function(col,j) {
+            if (col != undefined) {
+              $('#graphgrid').append($('<div class="graphlabel" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px"><span>' + col + '</span></div>'));
+            }
+          });
         }
       };
       graphrealization.set_svg_container($('#graphcanvas'));

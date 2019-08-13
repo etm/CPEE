@@ -10,7 +10,7 @@ body {
 #graphgrid {
   display: grid;
   grid-gap: 0;
-  grid-template-columns: max-content auto;
+  grid-template-columns: max-content repeat(100,min-content);
   width: 100%;
 }
 #graphcanvas {
@@ -24,10 +24,10 @@ body {
   padding-left: 0.5em;
   display: flex;
   flex-direction: row;
-  grid-column: 2;
 }
 .graphlabel > span {
   align-self: center;
+  white-space: nowrap;
 }
 
 #instance ui-content { height: 7em; }
