@@ -76,7 +76,7 @@ class Logging < Riddl::Implementation
               "date": {
                 "type": "date",
                 "format": "date_time_no_millis"
-              },
+              }
             }
           }
         }
