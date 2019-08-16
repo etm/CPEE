@@ -517,7 +517,7 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'label': function(node){
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        return (avg == '' ? [] : [ {}, {}, {}, {}, { column: 'Average', value: avg + '%' } ]);
+        return (avg == '' ? [] : [ { column: 'Average', value: avg + '%' } ]);
       },
       'endnodes': 'passthrough',
       'closeblock': false,
@@ -602,7 +602,7 @@ function WFAdaptorManifestation(adaptor) {
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
         var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
         if (avg != '') {
-          ret.push({}, {}, {}, {},{ column: 'Average', value: avg + '%' });
+          ret.push({ column: 'Average', value: avg + '%' });
         }
         return ret;
       },

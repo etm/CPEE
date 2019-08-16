@@ -8,19 +8,27 @@ body {
 }
 
 #graphgrid {
+  --graphgrid-columns: 100;
   display: grid;
   grid-gap: 0;
-  grid-template-columns: max-content repeat(100,min-content);
+  grid-template-columns: max-content repeat(var(--graphgrid-columns),max-content) auto;
   width: 100%;
 }
 #graphcanvas {
   grid-column: 1;
 }
-.graphspacer {
-  grid-row: 1;
-  grid-column: 2;
-}
 .graphlabel {
+  padding-left: 0.5em;
+  display: flex;
+  flex-direction: row;
+}
+.graphlabel.even, .graphempty.even {
+  background-color: #e9e9e9;
+}
+.graphlabel.even.hover, .graphempty.even.hover {
+  background-color: #b2d9ee;
+}
+.graphempty {
   padding-left: 0.5em;
   display: flex;
   flex-direction: row;
