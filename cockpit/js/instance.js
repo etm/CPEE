@@ -433,7 +433,9 @@ function adaptor_init(url,theme,dslx) { //{{{
         for (var i = 0; i < max.row; i++) {
           _.each(tlabels[i+1],function(col,j) {
             if (col.label != undefined) {
-              $('#graphgrid').append($('<div class="graphlabel" element-type="' + col.type + '" element-id="' + col.id + '"style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px"><span>' + col.label + '</span></div>'));
+              var ele = $('<div class="graphlabel" element-type="' + col.type + '" element-id="' + col.id + '"style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px"><span>' + col.label + '</span></div>');
+              graphrealization.illustrator.draw.bind_event(ele,col.type,false);
+              $('#graphgrid').append(ele);
             }
           });
         }

@@ -203,8 +203,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[element-id = \'' + svg_id + '\'] g.activities', self.svg.container);
   } // }}}
+  this.get_label_by_svg_id = function(svg_id) { // {{{
+    return $('[element-id = \'' + svg_id + '\']', self.svg.label_container);
+  } // }}}
   this.get_elements = function() { // {{{
     return $('g.element', self.svg.container);
+  } // }}}
+  this.get_label_elements = function() { // {{{
+    return $('[element-id]', self.svg.label_container);
   } // }}}
   // }}}
   // Helper Functions {{{
@@ -251,13 +257,13 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     $(g[0].childNodes[0]).append(sym);
 
     // Binding events for symbol
-    bind_event(g,sname);
+    bind_event(g,sname,true);
 
     if(group) {group.append(g);}
     else {self.svg.container.children('g:first').append(g);}
     return g;
   } // }}}
-  var bind_event = this.draw.bind_event = function(sym,tname) { //{{{
+  var bind_event = this.draw.bind_event = function(sym,tname,context) { //{{{
     for(event_name in adaptor.elements[tname]) {
       sym.bind(event_name, {'function_call':adaptor.elements[tname][event_name]}, function(e) { e.data.function_call($(this).attr('element-id'),e)});
       if(event_name == 'mousedown') sym.bind('contextmenu', false);

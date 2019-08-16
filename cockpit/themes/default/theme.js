@@ -196,6 +196,7 @@ function WFAdaptorManifestation(adaptor) {
     }
 
     self.adaptor.illustrator.get_elements().removeClass('selected');
+    self.adaptor.illustrator.get_label_elements().removeClass('selected');
 
     if (e && e.ctrlKey) {
       if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
@@ -212,6 +213,7 @@ function WFAdaptorManifestation(adaptor) {
       if (vtarget.length > 0) {
         vtarget.parents('g.element[element-id]').addClass('selected');
       }
+      self.adaptor.illustrator.get_label_by_svg_id(svgid).addClass('selected');
 
       self.update_details(svgid);
     }
