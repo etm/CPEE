@@ -64,37 +64,41 @@
         <div id="usage">
           <span id="title"></span> | <span id='state'>
             <span id="state_text"></span>
-            <span> ⇒ </span>
-            <button name="state_start" title='start'>
-              <svg viewBox="0 -1.5 7 12" width="10" height="16">
-                <path
-                  style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                  d="M 1.1000001e-6,1.0403124e-6 5.0000006e-7,10.583335 6.6145841,5.2916677 Z"/>
-              </svg>
-            </button>
-            <button name="state_stop" title='stop'>
-              <svg viewBox="0 -1.5 7 12" width="10" height="16">
-                <path
-                  style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                  d="m 3.9687505,1.3375769 1e-6,7.9374995 2.645832,1e-6 V 1.3375772 Z m -3.96875,0 v 7.9375005 h 2.645833 V 1.3375769 Z"/>
-              </svg>
-            </button>
-            <span> / </span>
-            <button name="state_sim" title='simulate'>
-              <svg viewBox="0 -1.5 7 12" width="10" height="16">
-                <path
-                  style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                  d="M 0,7.0741552 1.598154,6.8788136 q 0.144277,1.0115903 0.58266,1.4859901 0.443932,0.474402 1.193067,0.474402 0.793528,0 1.193066,-0.418589 0.405089,-0.4255654 0.405089,-0.990661 0,-0.362777 -0.172025,-0.6139303 Q 4.633538,6.5578953 4.211802,6.3695302 3.923247,6.2439536 2.896654,5.9230353 1.575957,5.5114228 1.04324,4.911445 0.294105,4.0672905 0.294105,2.8533821 q 0,-0.7813662 0.349596,-1.4580852 Q 0.998846,0.7116014 1.659195,0.3558006 2.325092,0 3.262898,0 4.794462,0 5.565794,0.8441546 6.342674,1.6883092 6.381518,3.0975591 L 4.73897,3.1882531 Q 4.633538,2.3999106 4.283941,2.0580629 3.939894,1.7092386 3.246251,1.7092386 q -0.71584,0 -1.120927,0.3697537 -0.260811,0.2372006 -0.260811,0.6348602 0,0.3627771 0.244164,0.6209071 0.31075,0.3278947 1.509366,0.6836954 1.198616,0.3558008 1.770178,0.7395073 0.577111,0.3767302 0.898962,1.0394962 0.327399,0.6557896 0.327399,1.6255215 0,0.8790367 -0.388439,1.6464517 -0.388442,0.767412 -1.098732,1.1441413 -0.710291,0.369755 -1.770178,0.369755 -1.542663,0 -2.369485,-0.8929903 Q 0.160924,8.7903717 0,7.0741552 Z"/>
-              </svg>
-            </button>
-            <span> / </span>
-            <button name="state_abandon" title='abandon'>
-              <svg viewBox="0 -1.5 7 12" width="10" height="16">
-                <path
-                  style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                  d="m 5e-7,1.3229172 h 2.645833 V 5.0000007e-7 h 1.322917 V 1.3229172 h 2.645833 V 2.6458339 H 5e-7 Z m 2.645833,2.6458332 v 3.96875 l 1.322917,10e-8 v -3.96875 z M 5e-7,10.583333 l 6.614584,1e-6 -1e-6,-6.6145835 h -1.322916 v 5.2916667 h -3.96875 V 3.9687505 H 5e-7 Z"/>
-              </svg>
-            </button>
+            <span id="state_any">
+              <span> ⇒ </span>
+              <button name="state_start" title='start'>
+                <svg viewBox="0 -1.5 7 12" width="10" height="16">
+                  <path
+                    style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                    d="M 1.1000001e-6,1.0403124e-6 5.0000006e-7,10.583335 6.6145841,5.2916677 Z"/>
+                </svg>
+              </button>
+              <button name="state_stop" title='stop'>
+                <svg viewBox="0 -1.5 7 12" width="10" height="16">
+                  <path
+                    style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                    d="m 3.9687505,1.3375769 1e-6,7.9374995 2.645832,1e-6 V 1.3375772 Z m -3.96875,0 v 7.9375005 h 2.645833 V 1.3375769 Z"/>
+                </svg>
+              </button>
+              <span id="state_extended">
+                <span> / </span>
+                <button name="state_sim" title='simulate'>
+                  <svg viewBox="0 -1.5 7 12" width="10" height="16">
+                    <path
+                      style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                      d="M 0,7.0741552 1.598154,6.8788136 q 0.144277,1.0115903 0.58266,1.4859901 0.443932,0.474402 1.193067,0.474402 0.793528,0 1.193066,-0.418589 0.405089,-0.4255654 0.405089,-0.990661 0,-0.362777 -0.172025,-0.6139303 Q 4.633538,6.5578953 4.211802,6.3695302 3.923247,6.2439536 2.896654,5.9230353 1.575957,5.5114228 1.04324,4.911445 0.294105,4.0672905 0.294105,2.8533821 q 0,-0.7813662 0.349596,-1.4580852 Q 0.998846,0.7116014 1.659195,0.3558006 2.325092,0 3.262898,0 4.794462,0 5.565794,0.8441546 6.342674,1.6883092 6.381518,3.0975591 L 4.73897,3.1882531 Q 4.633538,2.3999106 4.283941,2.0580629 3.939894,1.7092386 3.246251,1.7092386 q -0.71584,0 -1.120927,0.3697537 -0.260811,0.2372006 -0.260811,0.6348602 0,0.3627771 0.244164,0.6209071 0.31075,0.3278947 1.509366,0.6836954 1.198616,0.3558008 1.770178,0.7395073 0.577111,0.3767302 0.898962,1.0394962 0.327399,0.6557896 0.327399,1.6255215 0,0.8790367 -0.388439,1.6464517 -0.388442,0.767412 -1.098732,1.1441413 -0.710291,0.369755 -1.770178,0.369755 -1.542663,0 -2.369485,-0.8929903 Q 0.160924,8.7903717 0,7.0741552 Z"/>
+                  </svg>
+                </button>
+                <span> / </span>
+                <button name="state_abandon" title='abandon'>
+                  <svg viewBox="0 -1.5 7 12" width="10" height="16">
+                    <path
+                      style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                      d="m 5e-7,1.3229172 h 2.645833 V 5.0000007e-7 h 1.322917 V 1.3229172 h 2.645833 V 2.6458339 H 5e-7 Z m 2.645833,2.6458332 v 3.96875 l 1.322917,10e-8 v -3.96875 z M 5e-7,10.583333 l 6.614584,1e-6 -1e-6,-6.6145835 h -1.322916 v 5.2916667 h -3.96875 V 3.9687505 H 5e-7 Z"/>
+                  </svg>
+                </button>
+              </span>
+            </span>
           </span>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>

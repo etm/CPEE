@@ -34,7 +34,7 @@ module CPEE
     def self::parse_extended(value)
       if [String].include? value.class
         self::parse(value)
-      elsif [Array, NilClass, Integer, Float, TrueClass, FalseClass, Date].inclu
+      elsif [Array, NilClass, Integer, Float, TrueClass, FalseClass, Date].include? value.class
         value
       elsif value.respond_to?(:to_s)
         value.to_s
