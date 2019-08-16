@@ -219,11 +219,15 @@ function WFAdaptorManifestation(adaptor) {
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
   this.events.mouseover = function(svgid, e) { // {{{
-    $('.tile[element-id = "' + svgid + '"]').css('display','block');
+    self.adaptor.illustrator.svg.container.find('.tile[element-id = "' + svgid + '"]').css('display','block');
+    self.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"]').addClass('hover');
+    self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').addClass('hover');
     return false;
   } // }}}
   this.events.mouseout = function(svgid, e) { // {{{
-    $('.tile[element-id = "' + svgid + '"]').css('display','none');
+    self.adaptor.illustrator.svg.container.find('.tile[element-id = "' + svgid + '"]').css('display','none');
+    self.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"]').removeClass('hover');
+    self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').removeClass('hover');
     return false;
   } // }}}
   this.events.dragstart = function (svgid, e) { //{{{
@@ -283,11 +287,13 @@ function WFAdaptorManifestation(adaptor) {
         ];
       return [];
     }, //}}}
-  'adaptor': {//{{{
-    'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
-    'click': self.events.click,
-    'dragstart': self.events.dragstart,
-   }//}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'click': self.events.click,
+      'dragstart': self.events.dragstart,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
   }; /*}}}*/
   this.elements.manipulate = { /*{{{*/
     'type': 'primitive',
@@ -307,10 +313,12 @@ function WFAdaptorManifestation(adaptor) {
     'permissible_children': function(node,mode) { //{{{
       return [];
     }, //}}}
-  'adaptor': {//{{{
-    'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
-    'click': self.events.click,
-   }//}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'click': self.events.click,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
   }; /*}}}*/
   this.elements.escape = { /*{{{*/
     'type': 'primitive',
@@ -325,6 +333,8 @@ function WFAdaptorManifestation(adaptor) {
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
       'click': self.events.click,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
   this.elements.stop = { /*{{{*/
@@ -340,6 +350,8 @@ function WFAdaptorManifestation(adaptor) {
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
       'click': self.events.click,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
   this.elements.terminate = { /*{{{*/
@@ -355,6 +367,8 @@ function WFAdaptorManifestation(adaptor) {
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,false); },
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
   this.elements.end = { /*{{{*/
@@ -493,7 +507,7 @@ function WFAdaptorManifestation(adaptor) {
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
-      'mouseout': self.events.mouseout,
+      'mouseout': self.events.mouseout
     }//}}}
   };  /*}}}*/
   this.elements.otherwise = { /*{{{*/

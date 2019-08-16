@@ -220,7 +220,6 @@ svg .standwithout {
 }
 svg .standtrans {
   fill: var(--wfadaptor-background);
-  fill-opacity:0;
 }
 svg text.normal {
   font-size:20px;
@@ -342,12 +341,12 @@ svg text.label {
   fill: var(--wfadaptor-base);
 }
 
-svg g.element[element-id]:hover .hfill {
+svg g.element[element-id].hover .hfill {
   fill: var(--wfadaptor-selected);
   fill-opacity:1;
   cursor: pointer;
 }
-svg g.element[element-id]:hover .hline {
+svg g.element[element-id].hover .hline {
   fill: var(--wfadaptor-selected);
   fill-opacity:1;
   stroke: var(--wfadaptor-selected);
@@ -358,7 +357,7 @@ svg g.element[element-id]:hover .hline {
   stroke-dasharray:none;
   cursor: pointer;
 }
-svg g.element[element-id]:hover .htext {
+svg g.element[element-id].hover .htext {
   fill: var(--wfadaptor-selected);
   fill-opacity:1;
   stroke: var(--wfadaptor-selected);
@@ -370,11 +369,11 @@ svg g.element[element-id]:hover .htext {
   stroke-dasharray:none;
   cursor: pointer;
 }
-svg g.element[element-id]:hover > text.label {
+svg g.element[element-id].hover > text.label {
   color: var(--wfadaptor-selected);
   fill: var(--wfadaptor-selected);
 }
-svg g.element[element-id]:hover .cfill {
+svg g.element[element-id].hover .cfill {
   fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke: var(--wfadaptor-base);
@@ -385,7 +384,7 @@ svg g.element[element-id]:hover .cfill {
   stroke-opacity:1;
   stroke-dasharray:none;
 }
-svg g.element[element-id]:hover .cline {
+svg g.element[element-id].hover .cline {
   stroke: var(--wfadaptor-base);
   stroke-linecap:round;
   stroke-linejoin:round;

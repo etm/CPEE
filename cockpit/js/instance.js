@@ -426,20 +426,20 @@ function adaptor_init(url,theme,dslx) { //{{{
               if (!tcolumns.includes(col.column)) {
                 tcolumns.push(col.column);
               }
-              tlabels[val.row][tcolumns.indexOf(col.column)] = col.value;
+              tlabels[val.row][tcolumns.indexOf(col.column)] = { label: col.value, type: val.tname, id: val.element_id };
             });
           }
         });
         for (var i = 0; i < max.row; i++) {
           _.each(tlabels[i+1],function(col,j) {
-            if (col != undefined) {
-              $('#graphgrid').append($('<div class="graphlabel" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px"><span>' + col + '</span></div>'));
+            if (col.label != undefined) {
+              $('#graphgrid').append($('<div class="graphlabel" element-type="' + col.type + '" element-id="' + col.id + '"style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px"><span>' + col.label + '</span></div>'));
             }
           });
         }
       };
       graphrealization.set_svg_container($('#graphcanvas'));
-      graphrealization.set_css_container($('#graphgrid'));
+      graphrealization.set_label_container($('#graphgrid'));
       graphrealization.set_description($(dslx), true);
       graphrealization.notify = function(svgid) {
         var g = graphrealization.get_description();

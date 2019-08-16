@@ -53,8 +53,8 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   this.set_svg_container = function (container) { // {{{
     illustrator.set_svg_container(container); // TODO: shadowing the container element
   } // }}}
-  this.set_css_container = function(container) { // {{{
-    illustrator.set_css_container(container);
+  this.set_label_container = function(container) { // {{{
+    illustrator.set_label_container(container);
   } // }}}
 
   // initialize
@@ -168,8 +168,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     var adaptor = null;
   // }}}
   // Generic Functions {{{
-  this.set_css_container = function(con) { // {{{
-    self.svg.css = con;
+  this.set_label_container = function(con) { // {{{
+    self.svg.label_container = con;
   } // }}}
   this.set_svg_container = function(con) { // {{{
     self.svg.container = con;
@@ -222,7 +222,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       }
       g.append(tspan);
     });
-    bind_event(g,tname);
     if(group) { group.find('g.element[element-id=' + id + ']').append(g); }
     else {self.svg.container.children('g:first').append(g);}
     return g;
@@ -252,7 +251,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     $(g[0].childNodes[0]).append(sym);
 
     // Binding events for symbol
-    bind_event(sym,sname);
+    bind_event(g,sname);
 
     if(group) {group.append(g);}
     else {self.svg.container.children('g:first').append(g);}
@@ -260,7 +259,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   var bind_event = this.draw.bind_event = function(sym,tname) { //{{{
     for(event_name in adaptor.elements[tname]) {
-      sym.bind(event_name, {'function_call':adaptor.elements[tname][event_name]}, function(e) { e.data.function_call($(this).parents('.element:first').attr('element-id'),e)});
+      sym.bind(event_name, {'function_call':adaptor.elements[tname][event_name]}, function(e) { e.data.function_call($(this).attr('element-id'),e)});
       if(event_name == 'mousedown') sym.bind('contextmenu', false);
     }
   } //}}}
@@ -354,14 +353,17 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if (illustrator.compact == false) {
       adaptor.draw_labels(graph.max,labels,illustrator.shift);
     }
-    // if (illustrator.compact == false) {
-    //   if (labels.length > 0) {
-    //     var csscol = 0;
-    //     _.each(labels,function(a,key) {
-    //       // illustrator.draw.draw_label(a.tname, a.element_id, a.label, a.row, graph.max.col + 1, graph.svg);
-    //     });
-    //   }
-    // }
+    if (illustrator.compact == false) {
+      if (labels.length > 0) {
+        _.each(labels,function(a,key) {
+          var lab = a.label[0];
+          if (lab.value) {
+            // TODO labels not shown in export?!
+            illustrator.draw.draw_label(a.tname, a.element_id, lab.value, a.row, graph.max.col + 1, graph.svg);
+          }
+        });
+      }
+    }
   } //}}}
 
   // Generic Functions {{{
