@@ -209,7 +209,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.get_elements = function() { // {{{
     return $('g.element', self.svg.container);
   } // }}}
-  this.get_label_elements = function() { // {{{
+  this.get_labels = function() { // {{{
     return $('[element-id]', self.svg.label_container);
   } // }}}
   // }}}
