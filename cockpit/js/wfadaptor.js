@@ -591,10 +591,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       }
       if (illustrator.elements[sname].label) {
         var lab = illustrator.elements[sname].label(context);
-        $(context).attr('svg-label', lab);
+        if (lab && lab[0] && lab[0].value && lab[0].value != '') {
+          $(context).attr('svg-label', lab[0].value);
+        }
         labels.push({row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab});
-      } else {
-        $(context).attr('svg-label', '');
       } // }}}
 
       var g;
