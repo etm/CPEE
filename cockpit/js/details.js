@@ -59,6 +59,9 @@ function do_main_save() { //{{{
       if (vtarget.length > 0) {
         vtarget.parents('g.element[element-id]').addClass('selected');
       }
+      manifestation.adaptor.illustrator.get_label_by_svg_id(svgid).addClass('selected');
+
+
       var newnode = vtarget.parents('g.element[element-id]');
       var newtype = newnode.attr('element-type') + '_' + newnode.attr('element-endpoint');
       var g = graphrealization.get_description();

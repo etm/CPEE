@@ -415,7 +415,6 @@ function adaptor_init(url,theme,dslx) { //{{{
       manifestation.endpoints = save.endpoints_list;
       graphrealization.draw_labels = function(max,labels,shift,striped) {
         $('#graphcanvas').css('grid-row', '1/span ' + (max.row + 2));
-        console.log(striped);
         if (striped == true) {
           if (!$('#graphgrid').hasClass('striped')) {
             $('#graphgrid').addClass('striped');
@@ -472,6 +471,7 @@ function adaptor_init(url,theme,dslx) { //{{{
           data: ({'content': '<content>' + g + '</content>'})
         });
         adaptor_update();
+      console.log('rrrrraaaaib');
         manifestation.events.click(svgid);
         format_instance_pos();
       };
