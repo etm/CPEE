@@ -416,7 +416,6 @@ function adaptor_init(url,theme,dslx) { //{{{
       graphrealization.draw_labels = function(max,labels,shift) {
         $('#graphcanvas').css('grid-row', '1/span ' + (max.row + 2));
         $('#graphgrid .graphlabel').remove();
-        $('#graphgrid').css('grid-template-rows', (shift/2) + 'px repeat(' + max.row + ', 1fr) ' + (shift/2) + 'px');
         var tlabels = {};
         var tcolumns = [];
         _.each(labels,function(val){
@@ -430,8 +429,12 @@ function adaptor_init(url,theme,dslx) { //{{{
             });
           }
         });
+        $('#graphgrid').css({
+          'grid-template-rows': (shift/2) + 'px repeat(' + max.row + ', 1fr) ' + (shift/2) + 'px',
+          '--graphgrid-columns': tcolumns.length.toString()
+        });
         for (var i = 0; i < max.row; i++) {
-          for (var j =0; j < tcolumns.length; j++) {
+          for (var j =0; j <= tcolumns.length; j++) {
             if (tlabels[i+1] != undefined && tlabels[i+1][j] != undefined && tlabels[i+1][j].label != undefined && tlabels[i+1][j].label != '') {
               var col = tlabels[i+1][j];
               var ele = $('<div class="graphlabel ' + (i % 2 == 0 ? 'odd' : 'even') + '" element-type="' + col.type + '" element-id="' + col.id + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '"><span>' + col.label + '</span></div>');
