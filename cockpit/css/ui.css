@@ -15,37 +15,37 @@ body {
 #graphcanvas {
   grid-column: 1;
 }
-.graphlabel {
+#graphgrid .graphlabel {
   padding-left: 0.5em;
   padding-right: 0.5em;
   display: flex;
   flex-direction: row;
 }
-.graphempty {
+#graphgrid .graphempty {
   padding-left: 0.5em;
   display: flex;
   flex-direction: row;
 }
-.graphlast {
+#graphgrid .graphlast {
   padding-left: 0.5em;
   display: flex;
   flex-direction: row;
 }
-.graphlabel, .graphempty {
+#graphgrid.striped .graphlabel, #graphgrid.striped .graphempty {
   border-left: 1pt solid var(--wfadaptor-border);
 }
-.graphlabel.even, .graphempty.even, .graphlast.even {
+#graphgrid.striped .graphlabel.even, #graphgrid.striped .graphempty.even, #graphgrid.striped .graphlast.even {
   background-color: #e9e9e9;
 }
-.graphlabel > span {
+#graphgrid .graphlabel > span {
   align-self: center;
   white-space: nowrap;
 }
-.graphlabel.hover {
+#graphgrid .graphlabel.hover {
   color: var(--wfadaptor-selected);
   cursor: pointer;
 }
-.graphlabel.selected {
+#graphgrid .graphlabel.selected {
   color: var(--wfadaptor-selected);
 }
 

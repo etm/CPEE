@@ -413,8 +413,17 @@ function adaptor_init(url,theme,dslx) { //{{{
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       manifestation.endpoints = save.endpoints_list;
-      graphrealization.draw_labels = function(max,labels,shift) {
+      graphrealization.draw_labels = function(max,labels,shift,striped) {
         $('#graphcanvas').css('grid-row', '1/span ' + (max.row + 2));
+        console.log(striped);
+        if (striped == true) {
+          if (!$('#graphgrid').hasClass('striped')) {
+            $('#graphgrid').addClass('striped');
+          }
+        } else {
+          $('#graphgrid').removeClass('striped');
+        }
+
         $('#graphgrid .graphlabel, #graphgrid .graphempty, #graphgrid .graphlast').remove();
         var tlabels = {};
         var tcolumns = [];

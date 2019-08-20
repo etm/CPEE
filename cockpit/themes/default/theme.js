@@ -6,6 +6,7 @@ function WFAdaptorManifestation(adaptor) {
   this.elements = {};
   this.events = {};
   this.compact = false;
+  this.striped = false;
   this.endpoints = {};
 
   //{{{ transform the details data to description parts based on rng

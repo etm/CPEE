@@ -48,7 +48,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   } // }}}
   this.notify = function() { // public {{{
   } // }}}
-  this.draw_labels = function(max,labels){ // public {{{
+  this.draw_labels = function(max,labels,height_shift,striped){ // public {{{
   } // }}}
   this.set_svg_container = function (container) { // {{{
     illustrator.set_svg_container(container); // TODO: shadowing the container element
@@ -66,6 +66,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   $.getScript(theme_base, function() {
     manifestation = new WFAdaptorManifestation(self);
     illustrator.compact = manifestation.compact == true ? true : false;
+    illustrator.striped = manifestation.striped == true ? true : false;
     description.source = manifestation.source;
     var deferreds = [];
     // copy parent stuff
@@ -164,6 +165,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.svg = {};
     this.draw = {};
     this.compact = true;
+    this.striped = true;
     // private
     var self = this;
     var adaptor = null;
@@ -365,10 +367,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // Set Labels //{{{
   this.set_labels = function(graph) {
     if (illustrator.compact == false) {
-      adaptor.draw_labels(graph.max,labels,illustrator.height_shift);
+      adaptor.draw_labels(graph.max,labels,illustrator.height_shift,illustrator.striped == true ? true : false);
     }
-    for (var i=0; i < graph.max.row; i++) {
-      illustrator.draw.draw_stripe(i,graph.max.col);
+    if (illustrator.striped == true) {
+      for (var i=0; i < graph.max.row; i++) {
+        illustrator.draw.draw_stripe(i,graph.max.col);
+      }
     }
     if (illustrator.compact == false) {
       if (labels.length > 0) {
