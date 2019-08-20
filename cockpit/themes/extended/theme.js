@@ -6,9 +6,8 @@ function WFAdaptorManifestation(adaptor) {
   this.elements = {};
   this.events = {};
   this.compact = false;
+  this.striped = true;
   this.endpoints = {};
-
-  this.noarrow = ['alternative', 'otherwise'];
 
   //{{{ transform the details data to description parts based on rng
   this.source = function(base,opts) {
@@ -34,11 +33,11 @@ function WFAdaptorManifestation(adaptor) {
       return base;
     }
   }; //}}}
-  //{{{ Return the svgid for the clicked task
-  this.clicked = function(){
+  //{{{ Return the svgid for the selected task
+  this.selected = function(){
     var svgid = 'unknown';
     _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
-      if ($(value).hasClass('clicked')) {
+      if ($(value).hasClass('selected')) {
         svgid = $(value).attr('element-id');
       }
     });
@@ -189,12 +188,16 @@ function WFAdaptorManifestation(adaptor) {
     }
     return false;
   } // }}}
+  this.events.suppress = function(svgid, e, child, sibling) { // {{{
+    return false;
+  } // }}}
   this.events.click = function(svgid, e) { // {{{
     if (self.adaptor.description.get_node_by_svg_id(svgid).length == 0) {
       return;
     }
 
-    self.adaptor.illustrator.get_elements().removeClass('clicked');
+    self.adaptor.illustrator.get_elements().removeClass('selected');
+    self.adaptor.illustrator.get_labels().removeClass('selected');
 
     if (e && e.ctrlKey) {
       if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
@@ -209,8 +212,9 @@ function WFAdaptorManifestation(adaptor) {
 
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
-        vtarget.parents('g.element[element-id]').addClass('clicked');
+        vtarget.parents('g.element[element-id]').addClass('selected');
       }
+      self.adaptor.illustrator.get_label_by_svg_id(svgid).addClass('selected');
 
       self.update_details(svgid);
     }
@@ -218,11 +222,15 @@ function WFAdaptorManifestation(adaptor) {
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
   this.events.mouseover = function(svgid, e) { // {{{
-    $('.tile[element-id = "' + svgid + '"]').css('display','block');
+    self.adaptor.illustrator.svg.container.find('.tile[element-id = "' + svgid + '"]').css('display','block');
+    self.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"]').addClass('hover');
+    self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').addClass('hover');
     return false;
   } // }}}
   this.events.mouseout = function(svgid, e) { // {{{
-    $('.tile[element-id = "' + svgid + '"]').css('display','none');
+    self.adaptor.illustrator.svg.container.find('.tile[element-id = "' + svgid + '"]').css('display','none');
+    self.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"]').removeClass('hover');
+    self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').removeClass('hover');
     return false;
   } // }}}
   this.events.dragstart = function (svgid, e) { //{{{
@@ -237,9 +245,28 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'label': function(node){
-        var lid = $(node).attr('id');
+        var ep = self.endpoints[$(node).attr('endpoint')];
+        var eplen = 1;
+        if (ep != undefined && ep[0] == '[') {
+          try {
+            eplen = JSON.parse(ep).length;
+          } catch(e) {
+            eplen = 1;
+          }
+        } else {
+          eplen = 1;
+        }
+        var avg = $('> _timing_avg',$(node).children('_timing')).text();
         var lnd = $(node).attr('endpoint');
-        return lid + ': ' + lnd + '\n' + $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'');
+        var ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
+        if (lnd != '') {
+          ret.push({ column: 'Resource', value: lnd });
+          ret.push({ column: 'R#', value: eplen });
+        }
+        if (avg != '') {
+          ret.push({ column: 'Average', value: avg + 'min' });
+        }
+        return ret;
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
@@ -263,23 +290,24 @@ function WFAdaptorManifestation(adaptor) {
         ];
       return [];
     }, //}}}
-  'adaptor': {//{{{
-    'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
-    'click': self.events.click,
-    'dragstart': self.events.dragstart,
-   }//}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'click': self.events.click,
+      'dragstart': self.events.dragstart,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
   }; /*}}}*/
   this.elements.manipulate = { /*{{{*/
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
       'label': function(node){
-        var lid = $(node).attr('id');
         var lab = $(node).attr('label');
         if (lab) {
-          return lid + '\n' + lab.replace(/^['"]/,'').replace(/['"]$/,'');
+          return [ { column: 'Label', value: lab.replace(/^['"]/,'').replace(/['"]$/,'') } ];
         }  else {
-          return "";
+          return [];
         }
       },
       'svg': self.adaptor.theme_dir + 'symbols/manipulate.svg'
@@ -288,10 +316,12 @@ function WFAdaptorManifestation(adaptor) {
     'permissible_children': function(node,mode) { //{{{
       return [];
     }, //}}}
-  'adaptor': {//{{{
-    'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
-    'click': self.events.click,
-   }//}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'click': self.events.click,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
   }; /*}}}*/
   this.elements.escape = { /*{{{*/
     'type': 'primitive',
@@ -306,6 +336,8 @@ function WFAdaptorManifestation(adaptor) {
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
       'click': self.events.click,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
   this.elements.stop = { /*{{{*/
@@ -321,6 +353,8 @@ function WFAdaptorManifestation(adaptor) {
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
       'click': self.events.click,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
   this.elements.terminate = { /*{{{*/
@@ -335,8 +369,83 @@ function WFAdaptorManifestation(adaptor) {
       return [];
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,false,false); },
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
+  }; /*}}}*/
+  this.elements.end = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/end.svg'
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.suppress();
+      }
+    }//}}}
+  }; /*}}}*/
+  this.elements.event_end = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/event_end.svg'
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.suppress();
+      },
       'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
+  }; /*}}}*/
+  this.elements.choose_finish = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg',
+      'resolve_symbol': function(node) {
+        if($(node).attr('mode') == 'exclusive') {
+          return 'choose_exclusive_finish';
+        } else {
+          return 'choose_inclusive_finish';
+        }
+      },
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,true);
+      },
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
+  }; /*}}}*/
+  this.elements.parallel_finish = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/parallel.svg',
+      'resolve_symbol': function(node) {
+        if($(node).attr('wait') == '-1') {
+          return 'parallel_simple';
+        } else {
+          return 'parallel_complex';
+        }
+      },
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,true);
+      },
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
 
@@ -344,9 +453,10 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.choose = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){return $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' },
+      'label': function(node){ return [ { column: 'Label', value: $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' } ]; },
       'endnodes': 'aggregate',
       'closeblock': false,
+      'closing_symbol': 'choose_finish',
       'expansion': function(node) {
         return 'horizontal';
       },
@@ -400,14 +510,19 @@ function WFAdaptorManifestation(adaptor) {
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
-      'mouseout': self.events.mouseout,
+      'mouseout': self.events.mouseout
     }//}}}
   };  /*}}}*/
   this.elements.otherwise = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
+      'label': function(node){
+        var avg = $('> _probability_avg',$(node).children('_probability')).text();
+        return (avg == '' ? [] : [ { column: 'Average', value: avg + '%' } ]);
+      },
       'endnodes': 'passthrough',
       'closeblock': false,
+      'noarrow': true,
       'expansion': function(node) {
         return 'vertical';
       },
@@ -484,8 +599,16 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.alternative = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){return $(node).attr('condition')},
+      'label': function(node){
+        var avg = $('> _probability_avg',$(node).children('_probability')).text();
+        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        if (avg != '') {
+          ret.push({ column: 'Average', value: avg + '%' });
+        }
+        return ret;
+      },
       'endnodes': 'passthrough',
+      'noarrow': true,
       'closeblock':false,
       'expansion': function(node) {
         return 'vertical';
@@ -567,7 +690,14 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.loop = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){return  $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') },
+      'label': function(node){
+        var avg = $('> _probability_avg',$(node).children('_probability')).text();
+        var ret = [ { column: 'Label', value: $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') } ];
+        if (avg != '') {
+          ret.push({ column: 'Average', value: avg + 'ｘ' });
+        }
+        return ret;
+      },
       'endnodes': 'this',
       'closeblock': true,
       'expansion': function(node) {
@@ -655,9 +785,9 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.parallel = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'endnodes': 'this',
+      'endnodes': 'aggregate',
       'closeblock': false,
-      'border': true,
+      'closing_symbol': 'parallel_finish',
       'expansion': function(node) {
         // check if any sibling other than 'parallel_branch' is present
         if($(node).children(':not(parallel_branch)').length > 0) return 'vertical';
@@ -670,49 +800,37 @@ function WFAdaptorManifestation(adaptor) {
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/parallel.rng',
     'permissible_children': function(node,mode) { //{{{
+      var func = null;
+      if (mode == 'into') { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
       var childs =  [
         {'label': 'Service Call with Scripts',
-         'function_call': self.adaptor.description.insert_last_into,
+         'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
          'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
         {'label': 'Service Call',
-         'function_call': self.adaptor.description.insert_last_into,
+         'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
          'type': 'call',
          'params': [self.adaptor.description.elements.call, node]},
         {'label': 'Manipulate',
-         'function_call': self.adaptor.description.insert_last_into,
+         'function_call': func,
          'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
          'type': 'manipulate',
          'params': [self.adaptor.description.elements.manipulate, node]},
         {'label': 'Decision',
-         'function_call': self.adaptor.description.insert_last_into,
+         'function_call': func,
          'menu_icon': self.elements.choose.illustrator.svg.clone(),
          'type': 'choose',
          'params': [self.adaptor.description.elements.choose, node]},
         {'label': 'Loop',
-         'function_call': self.adaptor.description.insert_last_into,
+         'function_call': func,
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
-        {'label': 'Terminate',
-         'function_call': self.adaptor.description.insert_last_into,
-         'menu_icon': self.elements.terminate.illustrator.svg.clone(),
-         'type': 'terminate',
-         'params': [self.adaptor.description.elements.terminate, node]},
-        {'label': 'Stop',
-         'function_call': self.adaptor.description.insert_last_into,
-         'menu_icon': self.elements.stop.illustrator.svg.clone(),
-         'type': 'stop',
-         'params': [self.adaptor.description.elements.stop, node]},
-        {'label': 'Critical',
-         'function_call': self.adaptor.description.insert_last_into,
-         'menu_icon': self.elements.critical.illustrator.svg.clone(),
-         'type': 'critical',
-         'params': [self.adaptor.description.elements.critical, node]},
         {'label': 'Parallel Branch',
-         'function_call': self.adaptor.description.insert_last_into,
+         'function_call': func,
          'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
          'type': 'parallel_branch',
          'params': [self.adaptor.description.elements.parallel_branch, node]}
@@ -738,10 +856,18 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.parallel_branch = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'endnodes': 'this',
+      'endnodes': 'passthrough',
       'closeblock': false,
+      'noarrow': true,
       'expansion': function(node) {
         return 'vertical';
+      },
+      'resolve_symbol': function(node,shift) {
+        if(shift == true) {
+          return 'parallel_branch_event';
+        } else {
+          return 'parallel_branch_normal';
+        }
       },
       'col_shift': function(node) {
         if(node.parentNode.tagName == 'choose') return false;
@@ -814,7 +940,12 @@ function WFAdaptorManifestation(adaptor) {
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,false);
+        var xml_node = self.adaptor.description.get_node_by_svg_id(node);
+        if(xml_node.get(0).parentNode.tagName == 'parallel') {
+          self.events.mousedown(node,e,true,false);
+        } else {
+          self.events.mousedown(node,e,true,true);
+        }
       },
       'click': self.events.click,
       'dblclick': self.events.dblclick,
@@ -936,9 +1067,11 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'passthrough',
       'closeblock': false,
+      'balance': true,
       'expansion': function(node) {
         return 'vertical';
       },
+      'closing_symbol': 'end',
       'col_shift': function(node) {
         return true;
       },
@@ -1012,31 +1145,74 @@ function WFAdaptorManifestation(adaptor) {
   // * they may only have an illustrator (or other parts)
   // * they HAVE TO have a parent
   this.elements.callmanipulate = { /*{{{*/
-    'type': 'abstract',
     'parent': 'call',
     'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
-      'label': function(node){return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'')},
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
     },//}}}
   }; /*}}}*/
   this.elements.choose_inclusive = { /*{{{*/
-    'type': 'abstract',
     'parent': 'choose',
     'illustrator': {//{{{
       'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg'
-    },//}}}
+    }//}}}
   };  /*}}}*/
   this.elements.choose_exclusive = { /*{{{*/
-    'type': 'abstract',
     'parent': 'choose',
     'illustrator': {//{{{
       'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
     },//}}}
   };  /*}}}*/
+  this.elements.choose_inclusive_finish = { /*{{{*/
+    'parent': 'choose_finish',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg'
+    }//}}}
+  };  /*}}}*/
+  this.elements.choose_exclusive_finish = { /*{{{*/
+    'parent': 'choose_finish',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.parallel_simple = { /*{{{*/
+    'parent': 'parallel_finish',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/parallel.svg'
+    }//}}}
+  };  /*}}}*/
+  this.elements.parallel_complex = { /*{{{*/
+    'parent': 'parallel_finish',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/complex.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.parallel_branch_normal = { /*{{{*/
+    'parent': 'parallel_branch',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_normal.svg'
+    }//}}}
+  };  /*}}}*/
+  this.elements.parallel_branch_event = { /*{{{*/
+    'parent': 'parallel_branch',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'noarrow': false,
+      'border': true,
+      'wide': true,
+      'closing_symbol': 'event_end',
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_event.svg'
+    }//}}}
+  };  /*}}}*/
+  this.elements.parallel_branch_compact = { /*{{{*/
+    'parent': 'parallel_branch',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_compact.svg'
+    }//}}}
+  };  /*}}}*/
   this.elements.scripts = { /*{{{*/
-    'type': 'abstract',
     'description': [self.adaptor.theme_dir + 'rngs/update.rng',self.adaptor.theme_dir + 'rngs/finalize.rng']
   }; /*}}}*/
 }

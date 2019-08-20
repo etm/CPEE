@@ -1,5 +1,0 @@
-<element rngui:version="1.2" name="alternative" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
-  <attribute name="condition" rngui:label="Condition">
-    <data type="string" rngui:label="Condition"/>
-  </attribute>
-</element>

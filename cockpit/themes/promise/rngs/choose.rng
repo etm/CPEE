@@ -1,8 +1,0 @@
-<element rngui:version="1.2" name="choose" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
-  <attribute name="mode" rngui:label="Mode" rngui:default="exclusive">
-    <choice>
-      <value>exclusive</value>
-      <value>inclusive</value>
-    </choice>
-  </attribute>
-</element>

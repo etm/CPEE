@@ -245,27 +245,7 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'label': function(node){
-        var ep = self.endpoints[$(node).attr('endpoint')];
-        var eplen = 1;
-        if (ep != undefined && ep[0] == '[') {
-          try {
-            eplen = JSON.parse(ep).length;
-          } catch(e) {
-            eplen = 1;
-          }
-        } else {
-          eplen = 1;
-        }
-        var avg = $('> _timing_avg',$(node).children('_timing')).text();
-        var lnd = $(node).attr('endpoint');
         var ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
-        if (lnd != '') {
-          ret.push({ column: 'Resource', value: lnd });
-          ret.push({ column: 'R#', value: eplen });
-        }
-        if (avg != '') {
-          ret.push({ column: 'Average', value: avg + 'min' });
-        }
         return ret;
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
@@ -516,10 +496,6 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.otherwise = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){
-        var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        return (avg == '' ? [] : [ { column: 'Average', value: avg + '%' } ]);
-      },
       'endnodes': 'passthrough',
       'closeblock': false,
       'noarrow': true,
@@ -600,11 +576,7 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'complex',
     'illustrator': {//{{{
       'label': function(node){
-        var avg = $('> _probability_avg',$(node).children('_probability')).text();
         var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
-        if (avg != '') {
-          ret.push({ column: 'Average', value: avg + '%' });
-        }
         return ret;
       },
       'endnodes': 'passthrough',
@@ -691,11 +663,7 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'complex',
     'illustrator': {//{{{
       'label': function(node){
-        var avg = $('> _probability_avg',$(node).children('_probability')).text();
         var ret = [ { column: 'Label', value: $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') } ];
-        if (avg != '') {
-          ret.push({ column: 'Average', value: avg + 'ｘ' });
-        }
         return ret;
       },
       'endnodes': 'this',
@@ -1203,6 +1171,13 @@ function WFAdaptorManifestation(adaptor) {
       'wide': true,
       'closing_symbol': 'event_end',
       'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_event.svg'
+    }//}}}
+  };  /*}}}*/
+  this.elements.parallel_branch_compact = { /*{{{*/
+    'parent': 'parallel_branch',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_compact.svg'
     }//}}}
   };  /*}}}*/
   this.elements.scripts = { /*{{{*/

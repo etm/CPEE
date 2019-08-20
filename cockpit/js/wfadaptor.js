@@ -368,8 +368,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.set_labels = function(graph) {
     if (illustrator.compact == false) {
       adaptor.draw_labels(graph.max,labels,illustrator.height_shift,illustrator.striped == true ? true : false);
+    } else {
+      adaptor.draw_labels(graph.max,[],illustrator.height_shift,false);
     }
-    if (illustrator.striped == true) {
+    if (illustrator.striped == true && illustrator.compact == false) {
       for (var i=0; i < graph.max.row; i++) {
         illustrator.draw.draw_stripe(i,graph.max.col);
       }

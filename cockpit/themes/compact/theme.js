@@ -1,11 +1,12 @@
-function WFAdaptorManifestation(adaptor) {
+f -nction WFAdaptorManifestation(adaptor) {
   var self = this;
 
   this.adaptor = adaptor;
   this.resources = {};
   this.elements = {};
   this.events = {};
-  this.compact = true;
+  this.compact = false;
+  this.striped = false;
   this.endpoints = {};
 
   //{{{ transform the details data to description parts based on rng
@@ -32,11 +33,11 @@ function WFAdaptorManifestation(adaptor) {
       return base;
     }
   }; //}}}
-  //{{{ Return the svgid for the clicked task
-  this.clicked = function(){
+  //{{{ Return the svgid for the selected task
+  this.selected = function(){
     var svgid = 'unknown';
     _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
-      if ($(value).hasClass('clicked')) {
+      if ($(value).hasClass('selected')) {
         svgid = $(value).attr('element-id');
       }
     });
@@ -195,7 +196,8 @@ function WFAdaptorManifestation(adaptor) {
       return;
     }
 
-    self.adaptor.illustrator.get_elements().removeClass('clicked');
+    self.adaptor.illustrator.get_elements().removeClass('selected');
+    self.adaptor.illustrator.get_labels().removeClass('selected');
 
     if (e && e.ctrlKey) {
       if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
@@ -210,8 +212,9 @@ function WFAdaptorManifestation(adaptor) {
 
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
-        vtarget.parents('g.element[element-id]').addClass('clicked');
+        vtarget.parents('g.element[element-id]').addClass('selected');
       }
+      self.adaptor.illustrator.get_label_by_svg_id(svgid).addClass('selected');
 
       self.update_details(svgid);
     }
@@ -219,11 +222,15 @@ function WFAdaptorManifestation(adaptor) {
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
   this.events.mouseover = function(svgid, e) { // {{{
-    $('.tile[element-id = "' + svgid + '"]').css('display','block');
+    self.adaptor.illustrator.svg.container.find('.tile[element-id = "' + svgid + '"]').css('display','block');
+    self.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"]').addClass('hover');
+    self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').addClass('hover');
     return false;
   } // }}}
   this.events.mouseout = function(svgid, e) { // {{{
-    $('.tile[element-id = "' + svgid + '"]').css('display','none');
+    self.adaptor.illustrator.svg.container.find('.tile[element-id = "' + svgid + '"]').css('display','none');
+    self.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"]').removeClass('hover');
+    self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').removeClass('hover');
     return false;
   } // }}}
   this.events.dragstart = function (svgid, e) { //{{{
@@ -238,20 +245,8 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'label': function(node){
-        var ep = self.endpoints[$(node).attr('endpoint')];
-        var eplen = 1;
-        if (ep != undefined && ep[0] == '[') {
-          try {
-            eplen = JSON.parse(ep).length;
-          } catch(e) {
-            eplen = 1;
-          }
-        } else {
-          eplen = 1;
-        }
-        var avg = $('> _timing_avg',$(node).children('_timing')).text();
-        var lnd = $(node).attr('endpoint');
-        return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') + (lnd == '' ? '' : ' (Resource ' + lnd + (eplen > 1 ? ' - ' + (eplen) + ' Alternatives': ' - 1 Alternative') + ')') + (avg == '' ? '' : ' (Avg. Duration ' + avg + ' Min)');
+        var ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
+        return ret;
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
@@ -275,11 +270,13 @@ function WFAdaptorManifestation(adaptor) {
         ];
       return [];
     }, //}}}
-  'adaptor': {//{{{
-    'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
-    'click': self.events.click,
-    'dragstart': self.events.dragstart,
-   }//}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'click': self.events.click,
+      'dragstart': self.events.dragstart,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
   }; /*}}}*/
   this.elements.manipulate = { /*{{{*/
     'type': 'primitive',
@@ -288,9 +285,9 @@ function WFAdaptorManifestation(adaptor) {
       'label': function(node){
         var lab = $(node).attr('label');
         if (lab) {
-          return lab.replace(/^['"]/,'').replace(/['"]$/,'');
+          return [ { column: 'Label', value: lab.replace(/^['"]/,'').replace(/['"]$/,'') } ];
         }  else {
-          return "";
+          return [];
         }
       },
       'svg': self.adaptor.theme_dir + 'symbols/manipulate.svg'
@@ -299,10 +296,12 @@ function WFAdaptorManifestation(adaptor) {
     'permissible_children': function(node,mode) { //{{{
       return [];
     }, //}}}
-  'adaptor': {//{{{
-    'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
-    'click': self.events.click,
-   }//}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'click': self.events.click,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
   }; /*}}}*/
   this.elements.escape = { /*{{{*/
     'type': 'primitive',
@@ -317,6 +316,8 @@ function WFAdaptorManifestation(adaptor) {
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
       'click': self.events.click,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
   this.elements.stop = { /*{{{*/
@@ -332,6 +333,8 @@ function WFAdaptorManifestation(adaptor) {
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
       'click': self.events.click,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
   this.elements.terminate = { /*{{{*/
@@ -347,6 +350,8 @@ function WFAdaptorManifestation(adaptor) {
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,false); },
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
   this.elements.end = { /*{{{*/
@@ -428,10 +433,9 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.choose = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){return $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' },
+      'label': function(node){ return [ { column: 'Label', value: $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' } ]; },
       'endnodes': 'aggregate',
       'closeblock': false,
-      'closing_symbol': 'choose_finish',
       'expansion': function(node) {
         return 'horizontal';
       },
@@ -485,16 +489,12 @@ function WFAdaptorManifestation(adaptor) {
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
-      'mouseout': self.events.mouseout,
+      'mouseout': self.events.mouseout
     }//}}}
   };  /*}}}*/
   this.elements.otherwise = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){
-        var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        return (avg == '' ? '' : ' (Avg. Probability ' + avg + '%)');
-      },
       'endnodes': 'passthrough',
       'closeblock': false,
       'noarrow': true,
@@ -575,8 +575,8 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'complex',
     'illustrator': {//{{{
       'label': function(node){
-        var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        return $(node).attr('condition') + (avg == '' ? '' : ' (Avg. Probability ' + avg + '%)');
+        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        return ret;
       },
       'endnodes': 'passthrough',
       'noarrow': true,
@@ -662,8 +662,8 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'complex',
     'illustrator': {//{{{
       'label': function(node){
-        var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        return $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') + (avg == '' ? '' : ' (Avg. ' + avg + ' Times)');
+        var ret = [ { column: 'Label', value: $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') } ];
+        return ret;
       },
       'endnodes': 'this',
       'closeblock': true,
@@ -831,7 +831,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'resolve_symbol': function(node,shift) {
         if(shift == true) {
-          return 'parallel_branch_event';
+          return 'parallel_branch_compact';
         } else {
           return 'parallel_branch_normal';
         }
@@ -1115,7 +1115,6 @@ function WFAdaptorManifestation(adaptor) {
     'parent': 'call',
     'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
-      'label': function(node){return $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'')},
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
     },//}}}
@@ -1171,6 +1170,13 @@ function WFAdaptorManifestation(adaptor) {
       'wide': true,
       'closing_symbol': 'event_end',
       'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_event.svg'
+    }//}}}
+  };  /*}}}*/
+  this.elements.parallel_branch_compact = { /*{{{*/
+    'parent': 'parallel_branch',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_compact.svg'
     }//}}}
   };  /*}}}*/
   this.elements.scripts = { /*{{{*/
