@@ -216,6 +216,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // }}}
   // Helper Functions {{{
   var draw_stripe = this.draw.draw_stripe = function (row, maxcol) { // {{{
+    if (maxcol < 1) maxcol = 1;
     var g = $X('<rect class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + (self.width * maxcol + self.width - self.width_shift) + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
     self.svg.container.prepend(g);
     return g;
@@ -373,7 +374,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (labels.length > 0) {
         _.each(labels,function(a,key) {
           var lab = a.label[0];
-          if (lab.value) {
+          if (lab && lab.value) {
             // TODO labels not shown in export?!
             illustrator.draw.draw_label(a.tname, a.element_id, lab.value, a.row, graph.max.col + 1, graph.svg);
           }

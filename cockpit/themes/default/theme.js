@@ -693,7 +693,7 @@ function WFAdaptorManifestation(adaptor) {
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
         var ret = [ { column: 'Label', value: $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') } ];
         if (avg != '') {
-          ret.push({ column: 'Average', value: avg + '⨉' });
+          ret.push({ column: 'Average', value: avg + 'ｘ' });
         }
         return ret;
       },

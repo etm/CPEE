@@ -10,7 +10,6 @@ body {
 #graphgrid {
   display: grid;
   grid-gap: 0;
-  grid-template-columns: max-content repeat(var(--graphgrid-columns),max-content) auto;
   width: 100%;
 }
 #graphcanvas {
@@ -18,16 +17,25 @@ body {
 }
 .graphlabel {
   padding-left: 0.5em;
+  padding-right: 0.5em;
   display: flex;
   flex-direction: row;
-}
-.graphlabel.even, .graphempty.even {
-  background-color: #e9e9e9;
 }
 .graphempty {
   padding-left: 0.5em;
   display: flex;
   flex-direction: row;
+}
+.graphlast {
+  padding-left: 0.5em;
+  display: flex;
+  flex-direction: row;
+}
+.graphlabel, .graphempty {
+  border-left: 1pt solid var(--wfadaptor-border);
+}
+.graphlabel.even, .graphempty.even, .graphlast.even {
+  background-color: #e9e9e9;
 }
 .graphlabel > span {
   align-self: center;
