@@ -431,7 +431,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         });
         $('#graphgrid').css({
           'grid-template-rows': (shift/2) + 'px repeat(' + max.row + ', 1fr) ' + (shift/2) + 'px',
-          'grid-template-columns': 'max-content' + (tcolumns.length > 0 ? 'repeat(' + tcolumns.length.toString() + ',max-content)' : '') +  ' auto'
+          'grid-template-columns': 'max-content' + (tcolumns.length > 0 ? ' repeat(' + tcolumns.length.toString() + ',max-content)' : '') +  ' auto'
         });
         for (var i = 0; i < max.row; i++) {
           for (var j =0; j < tcolumns.length; j++) {
