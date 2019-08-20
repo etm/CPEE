@@ -158,7 +158,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     // public
     this.height = 40;
     this.width = 40;
-    this.shift = this.height * 0.26;
+    this.height_shift = this.height * 0.26;
+    this.width_shift = this.width * 0.39;
     this.elements = {}; // the svgs
     this.svg = {};
     this.draw = {};
@@ -196,7 +197,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
-    self.svg.container.attr('height',   (graph.max.row) * self.height + self.shift);
+    self.svg.container.attr('height',   (graph.max.row) * self.height + self.height_shift);
     self.svg.container.attr('width',    (graph.max.col+0.55) * self.width );
     self.svg.container.append(graph.svg);
   } // }}}
@@ -214,8 +215,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   // }}}
   // Helper Functions {{{
+  var draw_stripe = this.draw.draw_stripe = function (row, maxcol) { // {{{
+    var g = $X('<rect class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + (self.width * maxcol + self.width - self.width_shift) + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
+    self.svg.container.prepend(g);
+    return g;
+  } // }}}
+
   var draw_label = this.draw.draw_label = function (tname, id, label, row, col, group) { // {{{
-    var g = $X('<text class="label" transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height+20-((self.height*0.74))) + ')" xmlns="http://www.w3.org/2000/svg"></text>');
+    var g = $X('<text class="label" transform="translate(' + String(col*self.width-self.width_shift) + ',' + String(row*self.height+20-(self.height-self.height_shift)) + ')" xmlns="http://www.w3.org/2000/svg"></text>');
     var spli = $(label.split(/\n/));
     spli.each(function(k,v) {
       var tspan = $X('<tspan x="0" dy="' + (spli.length > 1 ? '-7' : '0') + '" xmlns="http://www.w3.org/2000/svg"></tspan>');
@@ -229,18 +236,18 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       g.append(tspan);
     });
     if(group) { group.find('g.element[element-id=' + id + ']').append(g); }
-    else {self.svg.container.children('g:first').append(g);}
+    else {self.svg.container.append(g);}
     return g;
   } // }}}
   var draw_symbol = this.draw.draw_symbol = function (sname, id, title, row, col, group, addition) { // {{{
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
     if (addition) {
       var g = $X('<g class="element" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
-                    '<g transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height-((self.height*0.74))) + ')"></g>' +
+                    '<g transform="translate(' + String(col*self.width-self.width_shift) + ',' + String(row*self.height-(self.height-self.height_shift)) + ')"></g>' +
                  '</g>');
     } else {
       var g = $X('<g class="element" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
-                    '<g transform="translate(' + String((col*self.width)-((self.width*0.39))) + ',' + String(row*self.height-((self.height*0.74))) + ')">' +
+                    '<g transform="translate(' + String(col*self.width-self.width_shift) + ',' + String(row*self.height-(self.height-self.height_shift)) + ')">' +
                       '<text class="super" transform="translate(30,8.4)">' +
                         '<tspan class="active">0</tspan>' +
                         '<tspan class="colon">,</tspan>' +
@@ -277,10 +284,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         'class="block" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_tile = this.draw.draw_tile = function(id, p1, p2, group) { // {{{
-    group.prepend($X('<rect element-id="' + id + '" x="' + (p1.col-0.50)*self.width + '" ' +
-        'y="' + (p1.row-0.80)*self.height + '" ' +
-        'width="' + ((p2.col+1.00)-p1.col)*self.width + '" ' +
-        'height="' + ((p2.row+1.00)-p1.row)*self.height +'" ' +
+    group.prepend($X('<rect element-id="' + id + '" x="' + ((p1.col-1)*self.width + 1.3 * self.width_shift) + '" ' +
+        'y="' + ((p1.row-1)*self.height+self.height_shift/2) + '" ' +
+        'width="' + ((p2.col+1)-p1.col)*self.width + '" ' +
+        'height="' + ((p2.row+1)-p1.row)*self.height +'" ' +
         'class="tile" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_connection = this.draw.draw_connection = function(group, start, end, max_line, num_lines, arrow) { // {{{
@@ -357,7 +364,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // Set Labels //{{{
   this.set_labels = function(graph) {
     if (illustrator.compact == false) {
-      adaptor.draw_labels(graph.max,labels,illustrator.shift);
+      adaptor.draw_labels(graph.max,labels,illustrator.height_shift);
+    }
+    for (var i=0; i < graph.max.row; i++) {
+      illustrator.draw.draw_stripe(i,graph.max.col);
     }
     if (illustrator.compact == false) {
       if (labels.length > 0) {
