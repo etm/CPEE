@@ -18,9 +18,9 @@ $(document).ready(function() {
     $.ajax({
       url: "config.json",
       success: function(res){
-        $("input[name=repo-url]").val(res['repo-url']);
+        $("input[name=res-url]").val(res['res-url']);
         $("input[name=base-url]").val(res['base-url']);
-        $("body").attr('current-resources',res['repo-url']);
+        $("body").attr('current-resources',res['res-url']);
         $("body").attr('current-base',res['base-url']);
         $("body").attr('current-testsets',res['testsets-url']);
         cockpit();
@@ -34,7 +34,7 @@ $(document).ready(function() {
           $("body").attr('current-resources',location.protocol + "//" + location.hostname + ":" + $('body').data('res-port'));
           $("body").attr('current-base',location.protocol + "//" + location.hostname + ":" + $('body').data('base-port'));
         }
-        $("input[name=repo-url]").val($("body").attr('current-resources'));
+        $("input[name=res-url]").val($("body").attr('current-resources'));
         $("input[name=base-url]").val($("body").attr('current-base'));
         cockpit();
       }
