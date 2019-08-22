@@ -284,7 +284,7 @@ function websocket() { //{{{
 
 function monitor_instance(cin,rep,load,exec) {// {{{
   $("body").attr('current-instance',sanitize_url(cin));
-  $("body").attr('current-resources',    sanitize_url(rep));
+  $("body").attr('current-resources',sanitize_url(rep));
 
   $("input[name=instance-url]").val($("body").attr('current-instance'));
   $("input[name=res-url]").val($("body").attr('current-resources'));
@@ -362,7 +362,7 @@ function monitor_instance_values(val) {// {{{
             url: rep + encodeURIComponent($(v).text()),
             success: function() {
               tmp[v.tagName] = {};
-              var deferreds = [new $.Deferred(), new $.Deferred()];
+              var deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
               $.ajax({
                 url: rep + encodeURIComponent($(v).text()) + "/symbol.svg",
                 success: function(res) {
@@ -378,6 +378,14 @@ function monitor_instance_values(val) {// {{{
                   deferreds[1].resolve(true);
                 },
                 error: deferreds[1].resolve
+              })
+              $.ajax({
+                url: rep + encodeURIComponent($(v).text()) + "/properties.json",
+                success: function(res) {
+                  tmp[v.tagName]['properties'] = res;
+                  deferreds[2].resolve(true);
+                },
+                error: deferreds[2].resolve
               })
               $.when.apply($, deferreds).then(function(x) {
                 save['endpoints_cache'] = tmp;

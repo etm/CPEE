@@ -245,24 +245,28 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'label': function(node){
-        var rep = $('body').attr('current-repo');
+        var rep = $('body').attr('current-resources');
         var ep = self.endpoints[$(node).attr('endpoint')];
-        var eplen = 1;
-        if (ep != undefined && ep[0] == '[') {
-          try {
-            eplen = JSON.parse(ep).length;
-          } catch(e) {
-            eplen = 1;
-          }
-        } else {
-          eplen = 1;
-        }
         var avg = $('> _timing_avg',$(node).children('_timing')).text();
-        var lnd = $(node).attr('endpoint');
         var ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
-        if (lnd != '') {
+        if (ep != undefined) {
+          var lnd = $(node).attr('endpoint');
           ret.push({ column: 'Resource', value: lnd });
-          ret.push({ column: 'R#', value: eplen });
+          if (save['endpoints_cache'][lnd].properties) {
+            var prop = save['endpoints_cache'][lnd].properties;
+            if (prop.resource) {
+              if (prop.resource == 'exclusive' && prop.lock) {
+                ret.push({ column: 'RP', value: prop.resource + ' (' + prop.lock + ')' });
+              } else {
+                ret.push({ column: 'RP', value: prop.resource });
+              }
+            }
+            if (prop.alternatives) {
+              ret.push({ column: 'R#', value: prop.alternatives.length + 1});
+            } else {
+              ret.push({ column: 'R#', value: '1' });
+            }
+          }
         }
         if (avg != '') {
           ret.push({ column: 'Average', value: avg + 'min' });
