@@ -20,7 +20,7 @@ $(document).ready(function() {
       success: function(res){
         $("input[name=repo-url]").val(res['repo-url']);
         $("input[name=base-url]").val(res['base-url']);
-        $("body").attr('current-repo',res['repo-url']);
+        $("body").attr('current-resources',res['repo-url']);
         $("body").attr('current-base',res['base-url']);
         $("body").attr('current-testsets',res['testsets-url']);
         cockpit();
@@ -28,13 +28,13 @@ $(document).ready(function() {
       error: function(){
         $("body").attr('current-testsets','testsets/');
         if (location.protocol.match(/^file/)) {
-          $("body").attr('current-repo',"http://localhost:" + $('body').data('res-port'));
+          $("body").attr('current-resources',"http://localhost:" + $('body').data('res-port'));
           $("body").attr('current-base',"http://localhost:" + $('body').data('base-port'));
         } else {
-          $("body").attr('current-repo',location.protocol + "//" + location.hostname + ":" + $('body').data('res-port'));
+          $("body").attr('current-resources',location.protocol + "//" + location.hostname + ":" + $('body').data('res-port'));
           $("body").attr('current-base',location.protocol + "//" + location.hostname + ":" + $('body').data('base-port'));
         }
-        $("input[name=repo-url]").val($("body").attr('current-repo'));
+        $("input[name=repo-url]").val($("body").attr('current-resources'));
         $("input[name=base-url]").val($("body").attr('current-base'));
         cockpit();
       }

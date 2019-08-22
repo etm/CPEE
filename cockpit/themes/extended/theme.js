@@ -245,6 +245,7 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'label': function(node){
+        var rep = $('body').attr('current-repo');
         var ep = self.endpoints[$(node).attr('endpoint')];
         var eplen = 1;
         if (ep != undefined && ep[0] == '[') {

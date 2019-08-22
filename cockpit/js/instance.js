@@ -69,7 +69,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
 
 function cockpit() { //{{{
   $("button[name=base]").click(function(){ create_instance($("input[name=base-url]").val(),null,false,false); });
-  $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance($("input[name=instance-url]").val(),$("input[name=repo-url]").val(),false,false); });
+  $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance($("input[name=instance-url]").val(),$("input[name=res-url]").val(),false,false); });
   $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),function(){ load_testset(false) } ); });
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodelfile]").click(load_modelfile);
@@ -106,7 +106,7 @@ function cockpit() { //{{{
           });
         }
         ui_activate_tab("#tabexecution");
-        monitor_instance(q.monitor,$("body").attr('current-repo'),true,false);
+        monitor_instance(q.monitor,$("body").attr('current-resources'),true,false);
       } else if (q.load) {
         if (q.load.match(/https?:\/\//)) {
           $('body').attr('load-testset',q.load);
@@ -122,7 +122,7 @@ function cockpit() { //{{{
         create_instance($("body").attr('current-base'),"Plain Instance",false,false);
       } else if (q.monitor) {
         ui_activate_tab("#tabexecution");
-        monitor_instance(q.monitor,$("body").attr('current-repo'),false,false);
+        monitor_instance(q.monitor,$("body").attr('current-resources'),false,false);
       } else if (q.exec) {
         if (q.exec.match(/https?:\/\//)) {
           $('body').attr('load-testset',q.load);
@@ -199,7 +199,7 @@ function create_instance(base,name,load,exec) {// {{{
         success: function(res){
           var iu = (base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://");
           if (name) {
-            monitor_instance(iu,$("body").attr('current-repo'),load,exec);
+            monitor_instance(iu,$("body").attr('current-resources'),load,exec);
           } else {
             $("body").attr('current-instance', sanitize_url(iu));
             $("input[name=instance-url]").val(iu);
@@ -284,10 +284,10 @@ function websocket() { //{{{
 
 function monitor_instance(cin,rep,load,exec) {// {{{
   $("body").attr('current-instance',sanitize_url(cin));
-  $("body").attr('current-repo',    sanitize_url(rep));
+  $("body").attr('current-resources',    sanitize_url(rep));
 
   $("input[name=instance-url]").val($("body").attr('current-instance'));
-  $("input[name=repo-url]").val($("body").attr('current-repo'));
+  $("input[name=res-url]").val($("body").attr('current-resources'));
 
   $('.tabbehind button').hide();
   $('#dat_details').empty();
@@ -345,7 +345,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
 
 function monitor_instance_values(val) {// {{{
   var url = $('body').attr('current-instance');
-  var rep = $('body').attr('current-repo');
+  var rep = $('body').attr('current-resources');
   var bas = $('body').attr('current-base');
 
   $.ajax({

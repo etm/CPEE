@@ -224,7 +224,7 @@ class Logging < Riddl::Implementation
 
     when "activity/receiving"
       sensors = JSON.parse(notification.dig('sensors') || '[]')
-     #tdoc = notification.dig('received')
+      # tdoc = notification.dig('received')
       tdoc = notification
       # DEBUG:
       # pp notification
@@ -244,17 +244,17 @@ class Logging < Riddl::Implementation
         ]
 
         if status >= 200 && status < 300
-         # ret = JSON::parse(result[0]&.value.read) rescue []
+          # ret = JSON::parse(result[0]&.value.read) rescue []
           ret = JSON.parse(result[0]&.value.read) rescue []
           ret.each do |v, t|
-            esc.index  index: 'test_values', type: 'entry', body: {
+            esc.index index: 'values', type: 'entry', body: {
               'uuid': uuid,
               'sensor': s['name'],
               # REVIEW: Why generate the timestamp in the PHP extractor?
               # 'timestamp': "#{t}",
+              # 'timestamp': notification.dig('timestamp'),
               'timestamp': t,
-             # 'value': v
-              'value': "#{v}"
+              'value': v
             }
           end
         end
