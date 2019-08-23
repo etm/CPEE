@@ -801,9 +801,22 @@ function save_svg() {// {{{
       gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
       $(window.document.styleSheets).each(function(i,x){
         if (x && x.href && x.href.match(/wfadaptor\.css$/)) {
+					var varreps = {};
           $(x.cssRules).each(function(j,y){
-            var loc = $(gc).find(y.selectorText.replace(/^svg /,''));
-            loc.attr('style',y.style.cssText + loc.attr('style') + ';');
+            if (y.selectorText == ":root") {
+              $(y.style).each(function(k,z) {
+								varreps['var\\(' + z + '\\)'] = getComputedStyle(document.documentElement).getPropertyValue(z).toString();
+							});
+            }
+            var loc = $(gc).find(y.selectorText.replace(/svg /g,''));
+						var cst = y.style.cssText;
+            for (k in varreps) {
+							cst = cst.replace(new RegExp(k,'g'),varreps[k]);
+						}
+            loc.each(function(k,loco) {
+              var sty = $(loco).attr('style') == undefined ? '' : $(loco).attr('style');
+              $(loco).attr('style',cst + sty);
+            });
           });
           var loc = $(gc).find('text.super');
           loc.attr('style',loc.attr('style') + ' display: none');

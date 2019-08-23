@@ -83,6 +83,7 @@ svg line.ourline, svg path.ourline {
   stroke-width: 2;
   fill: none;
 }
+
 svg rect.block {
   stroke-width: 1;
   stroke-dasharray: 3,5;
@@ -338,8 +339,8 @@ svg text.label {
   line-height:125%;
   writing-mode:horizontal-tb;
   text-anchor:left;
-  color: var(--wfadaptor-text);
-  fill: var(--wfadaptor-text);
+  color: var(--wfadaptor-base);
+  fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
   font-family:Arial;
