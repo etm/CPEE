@@ -379,10 +379,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if (illustrator.compact == false) {
       if (labels.length > 0) {
         _.each(labels,function(a,key) {
-          var lab = a.label[0];
-          if (lab && lab.value) {
-            // TODO labels not shown in export?!
-            illustrator.draw.draw_label(a.tname, a.element_id, lab.value, a.row, graph.max.col + 1, graph.svg);
+          if (a.label && a.label[0] && a.label[0].value) {
+            illustrator.draw.draw_label(a.tname, a.element_id, a.label[0].value, a.row, graph.max.col + 1, graph.svg);
           }
         });
       }
@@ -562,6 +560,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       pos.row++;
       $(root).attr('svg-id','description');
       group.attr('element-id','group-description');
+      if (illustrator.elements[sname].label) {
+        labels.push({row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)});
+      }
       illustrator.draw.draw_symbol('start', 'description', 'START', pos.row, pos.col, group);
     } // }}}
 
@@ -599,22 +600,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         }
       }
       // }}}
-      // Set SVG-ID and labels {{{
-      if($(context).attr('id') == undefined) {
-        if(id_counter[tname] == undefined) id_counter[tname] = -1;
-        $(context).attr('svg-id', tname + '_' + (++id_counter[tname]));
-      } else {
-        $(context).attr('svg-id',  $(context).attr('id'));
-      }
-      if (illustrator.elements[sname].label) {
-        var lab = illustrator.elements[sname].label(context);
-        if (lab && lab[0] && lab[0].value && lab[0].value != '') {
-          $(context).attr('svg-label', lab[0].value);
-        }
-        labels.push({row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab});
-      } // }}}
 
       var g;
+      set_details(tname,sname,pos,context);
       [g, endnodes] = draw_position(tname,pos,prev,block,group,endnodes,context);
 
       // Prepare next iteration {{{
@@ -666,6 +654,21 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     else if(typeof illustrator.elements[tname].resolve_symbol == 'string')   {sname = illustrator.elements[tname].resolve_symbol;}
     else                                                                     {sname = tname;}
     return sname;
+  } //}}}
+  var set_details = function(tname,sname,pos,context) { //{{{
+    if($(context).attr('id') == undefined) {
+      if(id_counter[tname] == undefined) id_counter[tname] = -1;
+      $(context).attr('svg-id', tname + '_' + (++id_counter[tname]));
+    } else {
+      $(context).attr('svg-id',  $(context).attr('id'));
+    }
+    if (illustrator.elements[sname].label) {
+      var lab = illustrator.elements[sname].label(context);
+      if (lab && lab[0] && lab[0].value && lab[0].value != '') {
+        $(context).attr('svg-label', lab[0].value);
+      }
+      labels.push({row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab});
+    }
   } //}}}
   var draw_position = function(tname,pos,prev,block,group,endnodes,context,second) { // private {{{
     var sname = sym_name(tname,context);

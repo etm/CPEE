@@ -434,12 +434,17 @@ function adaptor_init(url,theme,dslx) { //{{{
         $('#graphgrid .graphlabel, #graphgrid .graphempty, #graphgrid .graphlast').remove();
         var tlabels = {};
         var tcolumns = [];
+        var tcolumncount = {}
         _.each(labels,function(val){
           if (val.label != "") {
             tlabels[val.row] = [];
             _.each(val.label,function(col) {
               if (!tcolumns.includes(col.column)) {
                 tcolumns.push(col.column);
+                tcolumncount[col.column] = 0;
+              }
+              if (col.value != undefined) {
+                tcolumncount[col.column] += 1;
               }
               tlabels[val.row][tcolumns.indexOf(col.column)] = { label: col.value, type: val.tname, id: val.element_id };
             });
@@ -457,8 +462,10 @@ function adaptor_init(url,theme,dslx) { //{{{
               graphrealization.illustrator.draw.bind_event(ele,col.type,false);
               $('#graphgrid').append(ele);
             } else {
-              var ele = $('<div class="graphempty ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px">&#032;</div>');
-              $('#graphgrid').append(ele);
+              if (tcolumncount[tcolumns[j]] != 0) {
+                var ele = $('<div class="graphempty ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px">&#032;</div>');
+                $('#graphgrid').append(ele);
+              }
             }
           }
           var j = tcolumns.length;
@@ -479,7 +486,6 @@ function adaptor_init(url,theme,dslx) { //{{{
           data: ({'content': '<content>' + g + '</content>'})
         });
         adaptor_update();
-      console.log('rrrrraaaaib');
         manifestation.events.click(svgid);
         format_instance_pos();
       };

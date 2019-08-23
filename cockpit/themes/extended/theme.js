@@ -248,11 +248,15 @@ function WFAdaptorManifestation(adaptor) {
         var rep = $('body').attr('current-resources');
         var ep = self.endpoints[$(node).attr('endpoint')];
         var avg = $('> _timing_avg',$(node).children('_timing')).text();
-        var ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
+        var lab = $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'');
+        var ret = [ { column: 'ID', value: $(node).attr('id') } ];
+        if (lab != '') {
+          ret.unshift( { column: 'Label', value: lab } );
+        }
         if (ep != undefined) {
           var lnd = $(node).attr('endpoint');
           ret.push({ column: 'Resource', value: lnd });
-          if (save['endpoints_cache'][lnd].properties) {
+          if (save['endpoints_cache'][lnd] && save['endpoints_cache'][lnd].properties) {
             var prop = save['endpoints_cache'][lnd].properties;
             if (prop.resource) {
               if (prop.resource == 'exclusive' && prop.lock) {
@@ -310,9 +314,9 @@ function WFAdaptorManifestation(adaptor) {
       'label': function(node){
         var lab = $(node).attr('label');
         if (lab) {
-          return [ { column: 'Label', value: lab.replace(/^['"]/,'').replace(/['"]$/,'') } ];
+          return [ { column: 'Label', value: lab.replace(/^['"]/,'').replace(/['"]$/,'') }, { column: 'ID', value: $(node).attr('id') } ];
         }  else {
-          return [];
+          return [ { column: 'ID', value: $(node).attr('id') } ];
         }
       },
       'svg': self.adaptor.theme_dir + 'symbols/manipulate.svg'
@@ -349,6 +353,9 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
+      'label': function(node){
+        return [ { column: 'ID', value: $(node).attr('id') } ];
+      },
       'svg': self.adaptor.theme_dir + 'symbols/stop.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/stop.rng',
@@ -1071,6 +1078,7 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'description',
     'illustrator': {//{{{
       'endnodes': 'passthrough',
+      'label': function(node){ return [ { column: 'Label'}, { column: 'ID' }, { column: 'Resource' }, { column: 'RP' }, { column: 'R#' } ]; },
       'closeblock': false,
       'balance': true,
       'expansion': function(node) {
