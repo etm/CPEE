@@ -820,6 +820,8 @@ function save_svg() {// {{{
           });
           var loc = $(gc).find('text.super');
           loc.attr('style',loc.attr('style') + ' display: none');
+          var loc = $(gc).find('.stripe');
+          loc.attr('style',loc.attr('style') + ' display: none');
         }
       });
       $.ajax({
