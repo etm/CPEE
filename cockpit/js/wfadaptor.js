@@ -379,7 +379,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if (illustrator.compact == false) {
       if (labels.length > 0) {
         _.each(labels,function(a,key) {
-          if (a.label && a.label[0] && a.label[0].value) {
+          if (a.label && a.label[0] && a.label[0].column == 'Label' && a.label[0].value) {
             illustrator.draw.draw_label(a.tname, a.element_id, a.label[0].value, a.row, graph.max.col + 1, graph.svg);
           }
         });
@@ -664,7 +664,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     if (illustrator.elements[sname].label) {
       var lab = illustrator.elements[sname].label(context);
-      if (lab && lab[0] && lab[0].value && lab[0].value != '') {
+      if (lab && lab[0] && lab[0].value && lab[0].column == 'Label' && lab[0].value != '') {
         $(context).attr('svg-label', lab[0].value);
       }
       labels.push({row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab});
