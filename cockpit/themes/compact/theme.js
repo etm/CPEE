@@ -1,4 +1,4 @@
-f -nction WFAdaptorManifestation(adaptor) {
+function WFAdaptorManifestation(adaptor) {
   var self = this;
 
   this.adaptor = adaptor;
@@ -64,6 +64,9 @@ f -nction WFAdaptorManifestation(adaptor) {
       if (save['endpoints_cache'][$(node).attr('endpoint')] && save['endpoints_cache'][$(node).attr('endpoint')].schema) {
         var schema = save['endpoints_cache'][$(node).attr('endpoint')].schema.documentElement;
         $(rng).find(' > element[name="parameters"] > element[name="arguments"]').replaceWith($(schema).clone());
+      }
+      if (save['endpoints_list'][$(node).attr('endpoint')] && !save['endpoints_list'][$(node).attr('endpoint')].startsWith('http')) {
+        $(rng).find(' > element[name="parameters"] > element[name="method"]').remove();
       }
       save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
       save['details'].content(node);
