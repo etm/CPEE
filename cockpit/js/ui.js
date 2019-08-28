@@ -41,3 +41,30 @@ $(document).ready(function() {
     });
   }
 });
+
+$(document).on('copy', '[contenteditable]', function (e) {
+  e = e.originalEvent;
+  var selectedText = window.getSelection();
+  var range = selectedText.getRangeAt(0);
+  var selectedTextReplacement = range.toString()
+  e.clipboardData.setData('text/plain', selectedTextReplacement);
+  e.preventDefault(); // default behaviour is to copy any selected text
+});
+
+// Paste fix for contenteditable
+$(document).on('paste', '[contenteditable]', function (e) {
+    e.preventDefault();
+
+    if (window.clipboardData) {
+        content = window.clipboardData.getData('Text');
+        if (window.getSelection) {
+            var selObj = window.getSelection();
+            var selRange = selObj.getRangeAt(0);
+            selRange.deleteContents();
+            selRange.insertNode(document.createTextNode(content));
+        }
+    } else if (e.originalEvent.clipboardData) {
+        content = (e.originalEvent || e).clipboardData.getData('text/plain');
+        document.execCommand('insertText', false, content);
+    }
+});

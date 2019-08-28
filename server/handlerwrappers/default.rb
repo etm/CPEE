@@ -54,7 +54,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @controller.notify("activity/calling", :instance => @controller.instance, :instance_uuid => @controller.uuid, :label => @label, :instance_name => @controller.info, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
     if passthrough.to_s.empty?
       if @handler_endpoint.start_with?('opc.tcp')
-        if @handler_endpoint =~ /^opc.tcp.read:\/\/([^\/]+)\/(\d+)\/(.+)/
+        if @handler_endpoint =~ /^opc\.tcp-read:\/\/([^\/]+)\/(\d+)\/(.+)/
           nid = $3 == $3.to_i.to_s ? $3.to_i : $3
           ns  = $2
           url = 'opc.tcp://' + $1
@@ -66,7 +66,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
           end
           client.disconnect
           callback [Riddl::Parameter::Simple.new('value',result)], {}
-        elsif @handler_endpoint =~ /^opc.tcp.write:\/\/([^\/]+)\/(\d+)\/([^\?]+)(\?value=(.*))?/
+        elsif @handler_endpoint =~ /^opc\.tcp-write:\/\/([^\/]+)\/(\d+)\/([^\?]+)(\?value=(.*))?/
           nid = $3 == $3.to_i.to_s ? $3.to_i : $3
           ns  = $2
           par = $5
@@ -83,7 +83,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
           end
           client.disconnect
           callback [Riddl::Parameter::Simple.new('value',result)], {}
-        elsif @handler_endpoint =~ /^opc.tcp.execute:\/\/([^\/]+)\/(\d+)\/([^\?]+)(\?value=(.*))?/
+        elsif @handler_endpoint =~ /^opc\.tcp-execute:\/\/([^\/]+)\/(\d+)\/([^\?]+)(\?value=(.*))?/
           nid = $3 == $3.to_i.to_s ? $3.to_i : $3
           ns  = $2
           par = $5

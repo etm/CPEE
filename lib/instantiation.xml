@@ -30,6 +30,9 @@
     <optional>
       <parameter name="init" type="string"/>
     </optional>
+    <optional>
+      <parameter name="endpoints" type="string"/>
+    </optional>
   </message>
   <message name="instance">
     <parameter name="behavior" type="string">
