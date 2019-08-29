@@ -119,30 +119,30 @@ module CPEE
       end #}}}
       private :handle_starting
       def handle_data(cpee,instance,data) #{{{
-        if data
-          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+        if data && !data.empty?
           content = XML::Smart.string('<content/>')
           JSON::parse(data).each do |k,v|
             content.root.add(k,v)
           end
+          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
           res = srv.resource("/#{instance}/properties/values/dataelements/")
           status, response = res.patch [
             Riddl::Parameter::Complex.new('content','text/xml',content.to_s)
           ]
-        end # rescue nil
+        end rescue nil
       end #}}}
       def handle_endpoints(cpee,instance,data) #{{{
-        if data
-          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+        if data && !data.empty?
           content = XML::Smart.string('<content/>')
           JSON::parse(data).each do |k,v|
             content.root.add(k,v)
           end
+          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
           res = srv.resource("/#{instance}/properties/values/endpoints/")
           status, response = res.patch [
             Riddl::Parameter::Complex.new('content','text/xml',content.to_s)
           ]
-        end # rescue nil
+        end rescue nil
       end #}}}
     end #}}}
 
@@ -163,6 +163,7 @@ module CPEE
         if (instance, uuid = load_testset(tdoc,cpee,@p[0].value)).first == -1
           @status = 500
         else
+          p @p[4]&.value
           handle_data cpee, instance, @p[3]&.value if @p[3]&.name == 'init'
           handle_endpoints cpee, instance, @p[3]&.value if @p[3]&.name == 'endpoints'
           handle_endpoints cpee, instance, @p[4]&.value if @p[4]&.name == 'endpoints'
