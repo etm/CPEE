@@ -153,7 +153,8 @@ module CPEE
         cpee = @h['X_CPEE'] || @a[0]
         selfurl = @a[1]
         cblist = @a[2]
-        status, res = Riddl::Client.new(@p[2].value).get
+
+        status, res = Riddl::Client.new(@p[2].value.gsub(/ /,'%20')).get
         tdoc = if status >= 200 && status < 300
           res[0].value.read
         else
@@ -163,7 +164,6 @@ module CPEE
         if (instance, uuid = load_testset(tdoc,cpee,@p[0].value)).first == -1
           @status = 500
         else
-          p @p[4]&.value
           handle_data cpee, instance, @p[3]&.value if @p[3]&.name == 'init'
           handle_endpoints cpee, instance, @p[3]&.value if @p[3]&.name == 'endpoints'
           handle_endpoints cpee, instance, @p[4]&.value if @p[4]&.name == 'endpoints'

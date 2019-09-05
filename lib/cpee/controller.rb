@@ -378,6 +378,8 @@ module CPEE
             sim
           when 'ready'
             @instance.state_signal
+          when 'abandoned'
+            @instance.state_signal
         end
       else
         if node = @properties.data.find("/p:properties/p:state").first
