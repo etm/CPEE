@@ -90,7 +90,6 @@ function WFAdaptorManifestation(adaptor) {
       var nodes = [];
       $(markymark).each(function(key,svgid){
         var node = self.adaptor.description.get_node_by_svg_id(svgid);
-        console.log(node);
         nodes.unshift(node);
       });
 
