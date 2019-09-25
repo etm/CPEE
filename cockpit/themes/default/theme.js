@@ -75,7 +75,7 @@ function WFAdaptorManifestation(adaptor) {
   }; //}}}
 
   function copyOrMove(menu,group,xml_node,mode) { //{{{
-    var markymark = self.marked();
+    var markymark = _.uniq(self.marked());
     var check1 = [];
     var check2 = [];
     $(markymark).each(function(key,svgid){
@@ -90,6 +90,7 @@ function WFAdaptorManifestation(adaptor) {
       var nodes = [];
       $(markymark).each(function(key,svgid){
         var node = self.adaptor.description.get_node_by_svg_id(svgid);
+        console.log(node);
         nodes.unshift(node);
       });
 

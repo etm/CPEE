@@ -75,7 +75,7 @@ function WFAdaptorManifestation(adaptor) {
   }; //}}}
 
   function copyOrMove(menu,group,xml_node,mode) { //{{{
-    var markymark = self.marked();
+    var markymark = _.uniq(self.marked());
     var check1 = [];
     var check2 = [];
     $(markymark).each(function(key,svgid){
