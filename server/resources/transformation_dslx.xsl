@@ -557,18 +557,18 @@
                 <xsl:value-of select="."/>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:text>\"</xsl:text>
                 <xsl:choose>
                   <xsl:when test="substring(.,1,1) = '!'">
                     <xsl:text>#{</xsl:text>
                     <xsl:value-of select="str:replace(str:replace(substring(.,2),'\','\\'),'&quot;','\\\&quot;')"/>
-                    <xsl:text>}</xsl:text>
+                    <xsl:text>.to_json}</xsl:text>
                   </xsl:when>
                   <xsl:otherwise>
+                    <xsl:text>\"</xsl:text>
                     <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\\\&quot;')"/>
+                    <xsl:text>\"</xsl:text>
                   </xsl:otherwise>
                 </xsl:choose>
-                <xsl:text>\"</xsl:text>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
