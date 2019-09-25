@@ -19,6 +19,12 @@ $(document).ready(function() {
       do_main_save();
     }
   });
+  $(document).on('keypress','#dat_details [contenteditable]',function(e){
+    if (e.keyCode == 13) {
+      document.execCommand('insertText', false, '\n');
+      return false;
+    }
+  });
   $(document).on('relaxngui_remove', '#dat_details', function(e){
     clearTimeout(timer);
     do_main_save();
