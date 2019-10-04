@@ -49,18 +49,34 @@
       <xsl:text>, parameters: { </xsl:text>
       <xsl:apply-templates select="d:parameters"/>
       <xsl:text> }</xsl:text>
-      <xsl:if test="d:finalize and d:finalize/text()">
+      <xsl:if test="(d:finalize or d:code/d:finalize) and (d:finalize/text() or d:code/d:finalize/text())">
         <xsl:text>, finalize: &lt;&lt;-END</xsl:text>
       </xsl:if>
-      <xsl:if test="d:update and d:update/text()">
+      <xsl:if test="(d:update or d:code/d:update) and (d:update/text() or d:code/d:update/text())">
         <xsl:text>, update: &lt;&lt;-END</xsl:text>
       </xsl:if>
-      <xsl:apply-templates select="d:finalize" mode="part-of-call">
+      <xsl:if test="(d:prepare or d:code/d:prepare) and (d:prepare/text() or d:code/d:prepare/text())">
+        <xsl:text>, prepare: &lt;&lt;-END</xsl:text>
+      </xsl:if>
+      <xsl:if test="(d:rescue or d:code/d:rescue) and (d:rescue/text() or d:code/d:rescue/text())">
+        <xsl:text>, salvage: &lt;&lt;-END</xsl:text>
+      </xsl:if>
+      <xsl:apply-templates select="d:finalize | d:code/d:finalize" mode="part-of-call">
         <xsl:with-param name="myspace">
           <xsl:value-of select="$myspace"/>
         </xsl:with-param>
       </xsl:apply-templates>
-      <xsl:apply-templates select="d:update" mode="part-of-call">
+      <xsl:apply-templates select="d:update | d:code/d:update" mode="part-of-call">
+        <xsl:with-param name="myspace">
+          <xsl:value-of select="$myspace"/>
+        </xsl:with-param>
+      </xsl:apply-templates>
+      <xsl:apply-templates select="d:prepare | d:code/d:prepare" mode="part-of-call">
+        <xsl:with-param name="myspace">
+          <xsl:value-of select="$myspace"/>
+        </xsl:with-param>
+      </xsl:apply-templates>
+      <xsl:apply-templates select="d:rescue | d:code/d:rescue" mode="part-of-call">
         <xsl:with-param name="myspace">
           <xsl:value-of select="$myspace"/>
         </xsl:with-param>
@@ -390,7 +406,7 @@
         <xsl:value-of select="name()"/>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:text>, :value =&gt; </xsl:text>
+    <xsl:text>, :value =&gt; -&gt;{ </xsl:text>
     <xsl:choose>
       <xsl:when test="not(node())">
         <xsl:text>nil</xsl:text>
@@ -423,6 +439,7 @@
         </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
+    <xsl:text> }</xsl:text>
     <xsl:for-each select="@*">
       <xsl:text>, :</xsl:text>
       <xsl:value-of select="name()"/>
@@ -433,7 +450,7 @@
     <xsl:text>)</xsl:text>
   </xsl:template>
 
-  <xsl:template match="d:finalize | d:update" mode="part-of-call">
+  <xsl:template match="d:finalize | d:update | d:prepare | d:rescue" mode="part-of-call">
     <xsl:param name="myspace"/>
     <xsl:call-template name="print-content">
       <xsl:with-param name="myspace">

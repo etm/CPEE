@@ -38,19 +38,31 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     controller.notify("position/change", ipc)
   end # }}}
 
-  def initialize(arguments,endpoint=nil,position=nil,continue=nil) # {{{
+  def initialize(arguments,position=nil,continue=nil) # {{{
     @controller = arguments[0]
     @handler_continue = continue
-    @handler_endpoint = endpoint
     @handler_position = position
     @handler_passthrough = nil
     @handler_returnValue = nil
     @label = ''
   end # }}}
 
+  def prepare(readonly, endpoints, parameters)
+    @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
+    parameters[:arguments].each do |ele|
+      if ele.value.is_a?(Proc)
+        ele.value = readonly.instance_exec &ele.value
+      end
+    end
+    parameters
+  end
+
   def activity_handle(passthrough, parameters) # {{{
+    raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
     @sensors = parameters[:sensors]
+    @aggregators = parameters[:aggregators]
+    @costs = parameters[:costs]
     @controller.notify("activity/calling", :instance => @controller.instance, :instance_uuid => @controller.uuid, :label => @label, :instance_name => @controller.info, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
     if passthrough.to_s.empty?
       if @handler_endpoint.start_with?('opc.tcp')
@@ -138,19 +150,20 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
         @handler_passthrough = callback
 
         status, result, headers = client.request type => params
-
-        raise "Could not #{type || 'post'} #{tendpoint} - status: #{status}: #{result&.dig(0)&.value&.read}" if status < 200 || status >= 300
-
-        if headers['CPEE_INSTANTIATION']
-          @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
-        end
-        if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
-          headers['CPEE_UPDATE'] = true
-          callback result, headers
-        elsif headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.empty?
-          # do nothing, later on things will happend
+        if status < 200 || status >= 300
+          callback([ Riddl::Parameter::Complex.new('error','application/json',StringIO.new(JSON::generate({ 'status' => status, 'error' => result[0].value.read }))) ], 'CPEE_SALVAGE' => true)
         else
-          callback result
+          if headers['CPEE_INSTANTIATION']
+            @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+          end
+          if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
+            headers['CPEE_UPDATE'] = true
+            callback result, headers
+          elsif headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.empty?
+            # do nothing, later on things will happend
+          else
+            callback result
+          end
         end
       end
     else
@@ -241,7 +254,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     result
   end
 
-
   def structurize_result(result)
     result.map do |r|
       if r.is_a? Riddl::Parameter::Simple
@@ -269,7 +281,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end
 
   def callback(result=nil,options={})
-    @controller.notify("activity/receiving", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated, :sensors => @sensors)
+    @controller.notify("activity/receiving", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated, :sensors => @sensors, :aggregators => @aggregators, :costs => @costs)
     result = simplify_result(result)
     if options['CPEE_UPDATE']
       @handler_returnValue = result
@@ -281,7 +293,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       @controller.callbacks.delete(@handler_passthrough)
       @handler_returnValue = result
       @handler_passthrough = nil
-      @handler_continue.continue
+      if options['CPEE_SALVAGE']
+        @handler_continue.continue WEEL::Signal::Salvage
+      else
+        @handler_continue.continue
+      end
     end
   end
 
