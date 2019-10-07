@@ -20,7 +20,7 @@
   <attributes>
     <info/>
     <modeltype>CPEE</modeltype>
-    <theme>default</theme>
+    <theme>preset</theme>
   </attributes>
   <state>ready</state>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
