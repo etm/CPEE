@@ -45,15 +45,15 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @label = ''
   end # }}}
 
-  def prepare(readonly, endpoints, parameters)
+  def prepare(readonly, endpoints, parameters) #{{{
     @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
-    parameters[:arguments].each do |ele|
+    parameters[:arguments]&.each do |ele|
       if ele.value.is_a?(Proc)
         ele.value = readonly.instance_exec &ele.value
       end
     end
     parameters
-  end
+  end #}}}
 
   def activity_handle(passthrough, parameters) # {{{
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
