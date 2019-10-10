@@ -99,7 +99,9 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
       status, result, headers = client.request type => params
       if status < 200 || status >= 300
-        callback([ Riddl::Parameter::Complex.new('error','application/json',StringIO.new(JSON::generate({ 'status' => status, 'error' => result[0].value.read }))) ], 'CPEE_SALVAGE' => true)
+        c = result[0]&.value
+        c = c.read if c.respond_to? :read
+        callback([ Riddl::Parameter::Complex.new('error','application/json',StringIO.new(JSON::generate({ 'status' => status, 'error' => c }))) ], 'CPEE_SALVAGE' => true)
       else
         if headers['CPEE_INSTANTIATION']
           @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)

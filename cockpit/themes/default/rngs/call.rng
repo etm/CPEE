@@ -19,7 +19,7 @@
     </element>
     <element name="arguments" rngui:header="Arguments">
       <zeroOrMore rngui:label="Create Argument Pair">
-        <element rngui:label='Name'>
+        <element rngui:label='Name' rngui:labeltype='xml'>
           <anyName/>
           <data type="string" rngui:label="Value"/>
         </element>
@@ -40,9 +40,6 @@
           <element name="visualizer_url" rngui:label="Visualizer Url">
             <data type="string" rngui:label="Url"/>
           </element>
-          <element name="visualizer_config" rngui:label="Visualizer Config">
-            <data type="string" rngui:label="Url"/>
-          </element>
           <element name="visualizer_params" rngui:header="Visualizer Arguments">
             <zeroOrMore rngui:label="Create Argument Pair">
               <element rngui:label='Name'>
@@ -50,21 +47,6 @@
                 <data type="string" rngui:label="Value"/>
               </element>
             </zeroOrMore>
-          </element>
-        </element>
-      </zeroOrMore>
-    </element>
-    <element name="aggregators" rngui:header="Aggregators">
-      <zeroOrMore rngui:label="Add Aggregator">
-        <element name="aggregator">
-          <element name="name" rngui:label="Label">
-            <data type="string" rngui:label="Label"/>
-          </element>
-          <element name="aggregator_url" rngui:label="Aggregator Url">
-            <data type="string" rngui:label="Url"/>
-          </element>
-          <element name="aggregator_arg" rngui:label="Aggregator Argument">
-            <data type="string" rngui:label="Path"/>
           </element>
         </element>
       </zeroOrMore>
@@ -80,24 +62,6 @@
     <element name="_timing_avg" rngui:label='Avg in min'>
       <data type='float' rngui:label='Minutes'/>
     </element>
-  </element>
-  <element name="_cost" rngui:header="Costs">
-    <zeroOrMore rngui:label="Create Cost Factor">
-      <element name='_cost_factor'>
-        <element name="name" rngui:label="Label">
-          <data type="string" rngui:label="Label"/>
-        </element>
-        <element name="target" rngui:label="Target Value">
-          <data type="string" rngui:label="Value"/>
-        </element>
-        <element name="vfunc" rngui:label="Violation Function">
-          <data type="string" rngui:label="Url"/>
-        </element>
-        <element name="vcost" rngui:label="Violation Cost">
-          <data type="string" rngui:label="Value"/>
-        </element>
-      </element>
-    </zeroOrMore>
   </element>
   <element name="_notes" rngui:header="Notes">
     <element name="_notes_general" rngui:label='General'>

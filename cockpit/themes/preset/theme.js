@@ -1184,6 +1184,6 @@ function WFAdaptorManifestation(adaptor) {
     }//}}}
   };  /*}}}*/
   this.elements.scripts = { /*{{{*/
-    'description': [self.adaptor.theme_dir + 'rngs/update.rng',self.adaptor.theme_dir + 'rngs/finalize.rng']
+    'description': [self.adaptor.theme_dir + 'rngs/scripts.rng']
   }; /*}}}*/
 }
