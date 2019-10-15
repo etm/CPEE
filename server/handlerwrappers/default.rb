@@ -42,17 +42,22 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @handler_position = position
     @handler_passthrough = nil
     @handler_returnValue = nil
+    @handler_returnOptions = nil
     @label = ''
   end # }}}
 
   def prepare(readonly, endpoints, parameters) #{{{
     @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
-    parameters[:arguments]&.each do |ele|
-      if ele.value.is_a?(Proc)
-        ele.value = readonly.instance_exec &ele.value
+    params = parameters.dup
+    params[:arguments] = params[:arguments].dup if params[:arguments]
+    params[:arguments]&.map! do |ele|
+      t = ele.dup
+      if t.value.is_a?(Proc)
+        t.value = readonly.instance_exec &t.value
       end
+      t
     end
-    parameters
+    params
   end #}}}
 
   def activity_handle(passthrough, parameters) # {{{
@@ -118,7 +123,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
         elsif headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.empty?
           # do nothing, later on things will happend
         else
-          callback result
+          callback result, headers
         end
       end
     else
@@ -132,6 +137,9 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
   def activity_result_value # {{{
     @handler_returnValue
+  end # }}}
+  def activity_result_options # {{{
+    @handler_returnOptions
   end # }}}
 
   def activity_stop # {{{
@@ -238,15 +246,15 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def callback(result=nil,options={})
     @controller.notify("activity/receiving", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated, :sensors => @sensors, :aggregators => @aggregators, :costs => @costs)
     result = simplify_result(result)
+    @handler_returnValue = result
+    @handler_returnOptions = options
     if options['CPEE_UPDATE']
-      @handler_returnValue = result
       if options['CPEE_UPDATE_STATUS']
         @controller.notify("activity/status", :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'], :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
       end
       @handler_continue.continue WEEL::Signal::Again
     else
       @controller.callbacks.delete(@handler_passthrough)
-      @handler_returnValue = result
       @handler_passthrough = nil
       if options['CPEE_SALVAGE']
         @handler_continue.continue WEEL::Signal::Salvage
