@@ -1,0 +1,5 @@
+<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <resource>
+    <post in="*"/>
+  </resource>
+</description>
