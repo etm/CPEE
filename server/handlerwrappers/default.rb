@@ -46,7 +46,8 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @label = ''
   end # }}}
 
-  def prepare(readonly, endpoints, parameters) #{{{
+  def prepare(readonly, endpoints, parameters, replay=false) #{{{
+    p replay
     @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
     params = parameters.dup
     params[:arguments] = params[:arguments].dup if params[:arguments]

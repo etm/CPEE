@@ -167,6 +167,11 @@ module CPEE
       @thread = @instance.sim
     end # }}}
 
+    def replay # {{{
+      @thread.join if !@thread.nil? && @thread.alive?
+      @thread = @instance.replay
+    end # }}}
+
     def start # {{{
       @thread.join if !@thread.nil? && @thread.alive?
       unless @positions.empty?
@@ -244,7 +249,7 @@ module CPEE
     def serialize_state! # {{{
       @properties.activate_schema(:finished) if @instance.state == :finished || @instance.state == :abandoned
       @properties.activate_schema(:inactive) if @instance.state == :stopped  || @instance.state == :ready
-      @properties.activate_schema(:active)   if @instance.state == :running  || @instance.state == :simulating
+      @properties.activate_schema(:active)   if @instance.state == :running  || @instance.state == :simulating || @instance.state == :replaying
       if [:finished, :stopped, :ready, :abandoned].include?(@instance.state)
         state_change! @instance.state
       end
@@ -376,6 +381,8 @@ module CPEE
             start
           when 'simulating'
             sim
+          when 'replaying'
+            replay
           when 'ready'
             @instance.state_signal
           when 'abandoned'

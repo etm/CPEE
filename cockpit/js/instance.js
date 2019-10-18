@@ -78,7 +78,7 @@ function cockpit() { //{{{
   $("button[name=savesvg]").click(function(){ save_svg(); });
   $("button[name=state_start]").click(function(){ $(this).attr("disabled","disabled");start_instance(); });
   $("button[name=state_stop]").click(function(){ $(this).attr("disabled","disabled");stop_instance(); });
-  $("button[name=state_simulate]").click(function(){ $(this).attr("disabled","disabled");sim_instance(); });
+  $("button[name=state_replay]").click(function(){ $(this).attr("disabled","disabled");replay_instance(); });
   $("button[name=state_abandon]").click(function(){ aba_instance(); });
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=testsetfile]").change(load_testsetfile_after);
@@ -624,13 +624,13 @@ function monitor_instance_state_change(notification) { //{{{
       $('#state_extended').show();
       $("button[name=state_start]").show();
       $("button[name=state_stop]").hide();
-      $("button[name=state_sim]").show();
+      $("button[name=state_replay]").show();
       $("button[name=state_abandon]").show();
     } else if (notification == "running") {
       $('#state_extended').hide();
       $("button[name=state_start]").hide();
       $("button[name=state_stop]").show();
-      $("button[name=state_sim]").hide();
+      $("button[name=state_replay]").hide();
       $("button[name=state_abandon]").hide();
     }
 
@@ -699,12 +699,12 @@ function start_instance() {// {{{
     error: report_failure
   });
 }// }}}
-function sim_instance() {// {{{
+function replay_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
     url: url + "/properties/values/state",
-    data: ({value: "simulating"}),
+    data: ({value: "replaying"}),
     error: report_failure
   });
 }// }}}

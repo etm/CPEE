@@ -71,6 +71,7 @@
       <running putable="true"/>
       <ready putable="true"/>
       <simulating putable="true"/>
+      <replaying putable="true"/>
       <abandoned putable="true"/>
     </ready>
     <running>
@@ -82,6 +83,11 @@
       <ready putable="false"/>
       <stopped putable="false"/>
     </simulating>
+    <replaying>
+      <stopping putable="true"/>
+      <finishing putable="false"/>
+      <finished putable="false"/>
+    </replaying>
     <stopping>
       <stopped putable="false"/>
     </stopping>
@@ -89,6 +95,7 @@
       <abandoned putable="true"/>
       <stopped putable="true"/>
       <running putable="true"/>
+      <replaying putable="true"/>
       <simulating putable="true"/>
     </stopped>
     <abandoned/>
