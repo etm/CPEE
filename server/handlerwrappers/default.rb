@@ -64,6 +64,69 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     params
   end #}}}
 
+  def proto_curl(parameters) #{{{
+    params = []
+    callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
+    (parameters[:arguments] || []).each do |s|
+      if s.respond_to?(:mimetype)
+        params <<  Riddl::Parameter::Complex.new(s.name.to_s,v.mimetype,v.value)
+      else
+        if s.name.to_s =~ /^__Q_/
+          params <<  Riddl::Parameter::Simple.new(s.name.to_s.sub(/^__Q_/,''),CPEE::ValueHelper::generate(s.value),:query)
+        elsif s.name.to_s =~ /^__B_/
+          params <<  Riddl::Parameter::Simple.new(s.name.to_s.sub(/^__B_/,''),CPEE::ValueHelper::generate(s.value),:body)
+        elsif s.name.to_s =~ /^__H_/
+          params <<  Riddl::Header.new(s.name.to_s.sub(/^__H_/,''),CPEE::ValueHelper::generate(s.value))
+        elsif s.name.to_s =~ /^__C_/
+          params <<  Riddl::Parameter::Complex.new(s.name.to_s.sub(/^__C_/,''),*CPEE::ValueHelper::generate(s.value).split(';',2))
+        else
+          params <<  Riddl::Parameter::Simple.new(s.name.to_s,CPEE::ValueHelper::generate(s.value))
+        end
+      end
+    end
+
+    params << Riddl::Header.new("CPEE-BASE",@controller.base_url)
+    params << Riddl::Header.new("CPEE-INSTANCE",@controller.instance)
+    params << Riddl::Header.new("CPEE-INSTANCE-URL",@controller.instance_url)
+    params << Riddl::Header.new("CPEE-INSTANCE-UUID",@controller.uuid)
+    params << Riddl::Header.new("CPEE-CALLBACK",@controller.instance_url + '/callbacks/' + callback)
+    params << Riddl::Header.new("CPEE-CALLBACK-ID",callback)
+    params << Riddl::Header.new("CPEE-ACTIVITY",@handler_position)
+    params << Riddl::Header.new("CPEE-LABEL",@label||'')
+    params << Riddl::Header.new("CPEE-REPLAY",@controller.attributes['replayer_args'])
+    @controller.attributes.each do |key,value|
+      params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
+    end
+
+    tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
+    type = $2 || parameters[:method] || 'post'
+
+    client = Riddl::Client.new(tendpoint)
+
+    @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+    @handler_passthrough = callback
+
+    status, result, headers = client.request type => params
+    if status < 200 || status >= 300
+      headers['CPEE_SALVAGE'] = true
+      c = result[0]&.value
+      c = c.read if c.respond_to? :read
+      callback([ Riddl::Parameter::Complex.new('error','application/json',StringIO.new(JSON::generate({ 'status' => status, 'error' => c }))) ], headers)
+    else
+      if headers['CPEE_INSTANTIATION']
+        @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+      end
+      if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
+        headers['CPEE_UPDATE'] = true
+        callback result, headers
+      elsif headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.empty?
+        # do nothing, later on things will happend
+      else
+        callback result, headers
+      end
+    end
+  end #}}}
+
   def activity_handle(passthrough, parameters) # {{{
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
@@ -72,66 +135,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @costs = parameters[:costs]
     @controller.notify("activity/calling", :instance => @controller.instance, :instance_uuid => @controller.uuid, :label => @label, :instance_name => @controller.info, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
     if passthrough.to_s.empty?
-      params = []
-      callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      (parameters[:arguments] || []).each do |s|
-        if s.respond_to?(:mimetype)
-          params <<  Riddl::Parameter::Complex.new(s.name.to_s,v.mimetype,v.value)
-        else
-          if s.name.to_s =~ /^__Q_/
-            params <<  Riddl::Parameter::Simple.new(s.name.to_s.sub(/^__Q_/,''),CPEE::ValueHelper::generate(s.value),:query)
-          elsif s.name.to_s =~ /^__B_/
-            params <<  Riddl::Parameter::Simple.new(s.name.to_s.sub(/^__B_/,''),CPEE::ValueHelper::generate(s.value),:body)
-          elsif s.name.to_s =~ /^__H_/
-            params <<  Riddl::Header.new(s.name.to_s.sub(/^__H_/,''),CPEE::ValueHelper::generate(s.value))
-          elsif s.name.to_s =~ /^__C_/
-            params <<  Riddl::Parameter::Complex.new(s.name.to_s.sub(/^__C_/,''),*CPEE::ValueHelper::generate(s.value).split(';',2))
-          else
-            params <<  Riddl::Parameter::Simple.new(s.name.to_s,CPEE::ValueHelper::generate(s.value))
-          end
-        end
-      end
-
-      params << Riddl::Header.new("CPEE-BASE",@controller.base_url)
-      params << Riddl::Header.new("CPEE-INSTANCE",@controller.instance)
-      params << Riddl::Header.new("CPEE-INSTANCE-URL",@controller.instance_url)
-      params << Riddl::Header.new("CPEE-INSTANCE-UUID",@controller.uuid)
-      params << Riddl::Header.new("CPEE-CALLBACK",@controller.instance_url + '/callbacks/' + callback)
-      params << Riddl::Header.new("CPEE-CALLBACK-ID",callback)
-      params << Riddl::Header.new("CPEE-ACTIVITY",@handler_position)
-      params << Riddl::Header.new("CPEE-LABEL",parameters[:label]||'')
-      params << Riddl::Header.new("CPEE-REPLAY",@controller.attributes['replayer_args'])
-      @controller.attributes.each do |key,value|
-        params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
-      end
-
-      tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
-      type = $2 || parameters[:method] || 'post'
-
-      client = Riddl::Client.new(tendpoint)
-
-      @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
-      @handler_passthrough = callback
-
-      status, result, headers = client.request type => params
-      if status < 200 || status >= 300
-        headers['CPEE_SALVAGE'] = true
-        c = result[0]&.value
-        c = c.read if c.respond_to? :read
-        callback([ Riddl::Parameter::Complex.new('error','application/json',StringIO.new(JSON::generate({ 'status' => status, 'error' => c }))) ], headers)
-      else
-        if headers['CPEE_INSTANTIATION']
-          @controller.notify("task/instantiation", :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
-        end
-        if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
-          headers['CPEE_UPDATE'] = true
-          callback result, headers
-        elsif headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.empty?
-          # do nothing, later on things will happend
-        else
-          callback result, headers
-        end
-      end
+      proto_curl parameters
     else
       @controller.callbacks[passthrough] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
       @handler_passthrough = passthrough
