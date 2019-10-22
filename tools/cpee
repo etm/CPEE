@@ -52,7 +52,7 @@ ARGV.options { |opt|
 }
 if (ARGV.length == 0) ||
    (ARGV.length == 1  && ARGV[0] != 'ui') ||
-   (ARGV.length == 2  && !(%w(abandon delete! cpui new).include?(ARGV[0]))) ||
+   (ARGV.length == 2  && !(%w(abandon inst start delete! cpui new).include?(ARGV[0]))) ||
    (ARGV.length == 3  && ARGV[0] != 'archive') ||
    (ARGV.length >  3)
   puts ARGV.options
