@@ -637,8 +637,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       max.col = parent_pos.col;
     }
 
-    if((illustrator.elements[root.tagName].endnodes == 'this' || illustrator.elements[sname].endnodes == 'this') && illustrator.elements[root.tagName].closeblock == false) {endnodes = prev;} // closeblock == false, allows loop to close himself
-
     if(root.tagName == 'description' && illustrator.elements[root.tagName].closing_symbol) {
       pos.row++;
       max.row = pos.row;
@@ -690,9 +688,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(illustrator.elements[sname] && illustrator.elements[sname].border) {
         var wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
         if (illustrator.elements[sname].closing_symbol) {
-          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: (illustrator.elements[sname].closing_symbol ? block.max.row+1 : block.max.row) }, block.svg);
+          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg);
         } else {
-          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: (illustrator.elements[sname].closing_symbol ? block.max.row+1 : block.max.row) }, block.svg);
+          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg);
         }
       }
       if(illustrator.elements[sname] && illustrator.elements[sname].type == 'complex') {
