@@ -615,6 +615,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       // }}}
 
       if (illustrator.elements[sname].closing_symbol) {
+        var ctname = illustrator.elements[sname].closing_symbol;
+        var csname = sym_name(ctname,context);
         pos.row++;
         max.row++;
         block.max.row = pos.row;
@@ -624,11 +626,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
             max.col++;
             block.max.col = pos.col;
           }
-          draw_position(illustrator.elements[sname].closing_symbol,pos,block.endnodes,block,group,[],context,{svg: g, pos: origpos});
+          draw_position(ctname,pos,block.endnodes,block,group,[],context,{svg: g, pos: origpos});
           pos.col--;
         } else {
-          [undefined, endnodes] = draw_position(illustrator.elements[sname].closing_symbol,pos,prev,block,group,[],context,{svg: g, pos: origpos});
+          [undefined, endnodes] = draw_position(ctname,pos,prev,block,group,[],context,{svg: g, pos: origpos});
         }
+        set_details(ctname,csname,pos,context,true);
         prev = jQuery.extend(true, {}, endnodes);
       }
     });
@@ -655,12 +658,14 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     else                                                                     {sname = tname;}
     return sname;
   } //}}}
-  var set_details = function(tname,sname,pos,context) { //{{{
-    if($(context).attr('id') == undefined) {
-      if(id_counter[tname] == undefined) id_counter[tname] = -1;
-      $(context).attr('svg-id', tname + '_' + (++id_counter[tname]));
-    } else {
-      $(context).attr('svg-id',  $(context).attr('id'));
+  var set_details = function(tname,sname,pos,context,simple) { //{{{
+    if (simple == undefined || simple == false) {
+      if($(context).attr('id') == undefined) {
+        if(id_counter[tname] == undefined) id_counter[tname] = -1;
+        $(context).attr('svg-id', tname + '_' + (++id_counter[tname]));
+      } else {
+        $(context).attr('svg-id',  $(context).attr('id'));
+      }
     }
     if (illustrator.elements[sname].label) {
       var lab = illustrator.elements[sname].label(context);

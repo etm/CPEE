@@ -413,6 +413,10 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'closeblock': true,
+      'label': function(node){
+        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        return ret;
+      },
       'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg',
     }, //}}}
     'adaptor': {//{{{
@@ -688,10 +692,6 @@ function WFAdaptorManifestation(adaptor) {
         } else {
           return 'loop_tail';
         }
-      },
-      'label': function(node){
-        var ret = [ { column: 'Label', value: $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') } ];
-        return ret;
       },
       'expansion': function(node) {
         return 'vertical';
@@ -1149,7 +1149,11 @@ function WFAdaptorManifestation(adaptor) {
     'parent': 'loop',
     'illustrator': {//{{{
       'endnodes': 'this',
-      'closeblock': true
+      'closeblock': true,
+      'label': function(node){
+        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        return ret;
+      },
     }//}}}
   };  /*}}}*/
   this.elements.loop_tail = { /*{{{*/
