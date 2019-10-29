@@ -713,7 +713,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     // Calculate Connection {{{
     if(illustrator.elements[sname] != undefined && illustrator.elements[sname].closeblock == true) { // Close Block if element e.g. loop
       if (second) {
-        illustrator.draw.draw_connection(group, pos, second.pos, block.max.row+1, 1, true);
+        if (second.pos.row+1 < pos.row) { // when no content, dont paint the up arrow
+          illustrator.draw.draw_connection(group, pos, second.pos, block.max.row+1, 1, true);
+        }
       } else {
         for(node in block.endnodes) {
           if (!block.endnodes[node].final) {
