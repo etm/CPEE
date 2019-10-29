@@ -75,7 +75,7 @@ function WFAdaptorManifestation(adaptor) {
   }; //}}}
 
   function copyOrMove(menu,group,xml_node,mode) { //{{{
-    var markymark = self.marked();
+    var markymark = _.uniq(self.marked());
     var check1 = [];
     var check2 = [];
     $(markymark).each(function(key,svgid){
@@ -493,7 +493,7 @@ function WFAdaptorManifestation(adaptor) {
        'menu_icon': self.elements.alternative.illustrator.svg.clone(),
        'type': 'alternative',
        'params': [self.adaptor.description.elements.alternative, node]}];
-      if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length)
+      if((node.children('otherwise').length == 0) && node.parents('parallel').length == node.parents('parallel_branch').length && node.parent('choose').length == 0)
         childs.push({'label': 'Otherwise',
          'function_call': self.adaptor.description.insert_last_into,
          'menu_icon': self.elements.otherwise.illustrator.svg.clone(),
@@ -675,7 +675,7 @@ function WFAdaptorManifestation(adaptor) {
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,false);
+        self.events.mousedown(node,e,true,true);
       },
       'click': self.events.click,
       'dblclick': self.events.dblclick,

@@ -440,6 +440,31 @@ function WFAdaptorManifestation(adaptor) {
       'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
+  this.elements.loop_finish = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'closeblock': true,
+      'label': function(node){
+        var avg = $('> _probability_avg',$(node).children('_probability')).text();
+        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        if (avg != '') {
+          ret.push({ column: 'Average', value: avg + 'ｘ' });
+        }
+        return ret;
+      },
+      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg',
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) {
+        self.events.mousedown(node,e,true,true);
+      },
+      'click': self.events.click,
+      'dblclick': self.events.dblclick,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
+  }; /*}}}*/
   this.elements.parallel_finish = { /*{{{*/
     'type': 'primitive',
     'illustrator': {//{{{
@@ -705,16 +730,13 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.loop = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){
-        var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        var ret = [ { column: 'Label', value: $(node).attr('condition') + ($(node).attr('mode') == 'pre_test' ? ' (⭱)' : ' (⭳)') } ];
-        if (avg != '') {
-          ret.push({ column: 'Average', value: avg + 'ｘ' });
+      'resolve_symbol': function(node) {
+        if($(node).attr('mode') == 'pre_test') {
+          return 'loop_head';
+        } else {
+          return 'loop_tail';
         }
-        return ret;
       },
-      'endnodes': 'this',
-      'closeblock': true,
       'expansion': function(node) {
         return 'vertical';
       },
@@ -1168,6 +1190,29 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
     },//}}}
   }; /*}}}*/
+  this.elements.loop_head = { /*{{{*/
+    'parent': 'loop',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'closeblock': true,
+      'label': function(node){
+        var avg = $('> _probability_avg',$(node).children('_probability')).text();
+        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        if (avg != '') {
+          ret.push({ column: 'Average', value: avg + 'ｘ' });
+        }
+        return ret;
+      },
+    }//}}}
+  };  /*}}}*/
+  this.elements.loop_tail = { /*{{{*/
+    'parent': 'loop',
+    'illustrator': {//{{{
+      'endnodes': 'aggregate',
+      'closeblock': false,
+      'closing_symbol': 'loop_finish'
+    },//}}}
+  };  /*}}}*/
   this.elements.choose_inclusive = { /*{{{*/
     'parent': 'choose',
     'illustrator': {//{{{
@@ -1189,6 +1234,22 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.choose_exclusive_finish = { /*{{{*/
     'parent': 'choose_finish',
     'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
+    },//}}}
+  };  /*}}}*/
+  this.elements.loop_head_finish = { /*{{{*/
+    'parent': 'loop_finish',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'closeblock': true,
+      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
+    }//}}}
+  };  /*}}}*/
+  this.elements.loop_tail_finish = { /*{{{*/
+    'parent': 'loop_finish',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'closeblock': false,
       'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
     },//}}}
   };  /*}}}*/
