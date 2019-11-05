@@ -16,6 +16,24 @@
       <parameter name="init" type="string"/>
     </optional>
   </message>
+  <message name="url_info">
+    <parameter name="info" type="string"/>
+    <parameter name="behavior" type="string">
+      <choice>
+        <value>fork_ready</value>
+        <value>fork_running</value>
+        <value>wait_ready</value>
+        <value>wait_running</value>
+      </choice>
+    </parameter>
+    <parameter name="url" type="string"/>
+    <optional>
+      <parameter name="init" type="string"/>
+    </optional>
+    <optional>
+      <parameter name="endpoints" type="string"/>
+    </optional>
+  </message>
   <message name="url">
     <parameter name="behavior" type="string">
       <choice>
@@ -83,6 +101,7 @@
     </resource>
     <resource relative="url">
       <post in="url" out="result"/>
+      <post in="url_info" out="result"/>
     </resource>
     <resource relative="callback">
       <resource>

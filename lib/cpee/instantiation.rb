@@ -187,9 +187,10 @@ module CPEE
       include Helpers
 
       def response
-        cpee = @h['X_CPEE'] || @a[0]
+        cpee    = @h['X_CPEE'] || @a[0]
         selfurl = @a[1]
-        cblist = @a[2]
+        cblist  = @a[2]
+        name    = @a[3] ? @p.pop.value : nil
 
         status, res = Riddl::Client.new(@p[1].value.gsub(/ /,'%20')).get
         tdoc = if status >= 200 && status < 300
@@ -198,7 +199,7 @@ module CPEE
           (@status = 500) && return
         end
 
-        if (instance, uuid = load_testset(tdoc,cpee)).first == -1
+        if (instance, uuid = load_testset(tdoc,cpee,name)).first == -1
           @status = 500
         else
           handle_data cpee, instance, @p[2]&.value if @p[2]&.name == 'init'
@@ -328,7 +329,8 @@ module CPEE
             run InstantiateXML, opts[:cpee], false if post 'xml'
           end
           on resource 'url' do
-            run InstantiateUrl, opts[:cpee], opts[:self], opts[:cblist] if post 'url'
+            run InstantiateUrl, opts[:cpee], opts[:self], opts[:cblist], false if post 'url'
+            run InstantiateUrl, opts[:cpee], opts[:self], opts[:cblist], true  if post 'url_info'
           end
           on resource 'instance' do
             run HandleInstance, opts[:cpee] if post 'instance'
