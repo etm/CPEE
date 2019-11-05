@@ -146,6 +146,43 @@ module CPEE
       end #}}}
     end #}}}
 
+    class InstantiateGit < Riddl::Implementation #{{{
+      include Helpers
+
+      def response
+        cpee = @h['X_CPEE'] || @a[0]
+        selfurl = @a[1]
+        cblist = @a[2]
+
+        status, res = Riddl::Client.new(File.join(@p[1].value,'raw',File.join(@p[2].value,File.join(@p[3].value).gsub(/ /,'%20')).get
+        tdoc = if status >= 200 && status < 300
+          res[0].value.read
+        else
+          (@status = 500) && return
+        end
+
+        if (instance, uuid = load_testset(tdoc,cpee)).first == -1
+          @status = 500
+        else
+          handle_data cpee, instance, @p[4]&.value if @p[4]&.name == 'init'
+          handle_endpoints cpee, instance, @p[4]&.value if @p[4]&.name == 'endpoints'
+          handle_endpoints cpee, instance, @p[5]&.value if @p[5]&.name == 'endpoints'
+
+          handle_waiting cpee, instance, uuid, @p[0].value, selfurl, cblist
+          handle_starting cpee, instance, @p[0].value
+
+          send = {
+            'CPEE-INSTANCE' => instance,
+            'CPEE-INSTANCE-URL' => File.join(cpee,instance),
+            'CPEE-INSTANCE-UUID' => uuid,
+            'CPEE-BEHAVIOR' => @p[0].value
+          }
+          @headers << Riddl::Header.new('CPEE-INSTANTIATION',JSON::generate(send))
+          Riddl::Parameter::Complex.new('instance','application/json',JSON::generate(send))
+        end
+      end
+    end  #}}}
+
     class InstantiateUrl < Riddl::Implementation #{{{
       include Helpers
 
@@ -154,28 +191,28 @@ module CPEE
         selfurl = @a[1]
         cblist = @a[2]
 
-        status, res = Riddl::Client.new(@p[2].value.gsub(/ /,'%20')).get
+        status, res = Riddl::Client.new(@p[1].value.gsub(/ /,'%20')).get
         tdoc = if status >= 200 && status < 300
           res[0].value.read
         else
           (@status = 500) && return
         end
 
-        if (instance, uuid = load_testset(tdoc,cpee,@p[0].value)).first == -1
+        if (instance, uuid = load_testset(tdoc,cpee)).first == -1
           @status = 500
         else
-          handle_data cpee, instance, @p[3]&.value if @p[3]&.name == 'init'
+          handle_data cpee, instance, @p[2]&.value if @p[2]&.name == 'init'
+          handle_endpoints cpee, instance, @p[2]&.value if @p[2]&.name == 'endpoints'
           handle_endpoints cpee, instance, @p[3]&.value if @p[3]&.name == 'endpoints'
-          handle_endpoints cpee, instance, @p[4]&.value if @p[4]&.name == 'endpoints'
 
-          handle_waiting cpee, instance, uuid, @p[1].value, selfurl, cblist
-          handle_starting cpee, instance, @p[1].value
+          handle_waiting cpee, instance, uuid, @p[0].value, selfurl, cblist
+          handle_starting cpee, instance, @p[0].value
 
           send = {
             'CPEE-INSTANCE' => instance,
             'CPEE-INSTANCE-URL' => File.join(cpee,instance),
             'CPEE-INSTANCE-UUID' => uuid,
-            'CPEE-BEHAVIOR' => @p[1].value
+            'CPEE-BEHAVIOR' => @p[0].value
           }
           @headers << Riddl::Header.new('CPEE-INSTANTIATION',JSON::generate(send))
           Riddl::Parameter::Complex.new('instance','application/json',JSON::generate(send))
