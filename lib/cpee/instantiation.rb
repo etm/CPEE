@@ -154,7 +154,7 @@ module CPEE
         selfurl = @a[1]
         cblist = @a[2]
 
-        status, res = Riddl::Client.new(File.join(@p[1].value,'raw',File.join(@p[2].value,File.join(@p[3].value).gsub(/ /,'%20')).get
+        status, res = Riddl::Client.new(File.join(@p[1].value,'raw',@p[2].value,@p[3].value).gsub(/ /,'%20')).get
         tdoc = if status >= 200 && status < 300
           res[0].value.read
         else
@@ -331,6 +331,9 @@ module CPEE
           on resource 'url' do
             run InstantiateUrl, opts[:cpee], opts[:self], opts[:cblist], false if post 'url'
             run InstantiateUrl, opts[:cpee], opts[:self], opts[:cblist], true  if post 'url_info'
+          end
+          on resource 'git' do
+            run InstantiateGit, opts[:cpee], opts[:self], opts[:cblist] if post 'git'
           end
           on resource 'instance' do
             run HandleInstance, opts[:cpee] if post 'instance'

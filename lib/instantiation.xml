@@ -103,6 +103,9 @@
       <post in="url" out="result"/>
       <post in="url_info" out="result"/>
     </resource>
+    <resource relative="git">
+      <post in="git" out="result"/>
+    </resource>
     <resource relative="callback">
       <resource>
         <post/>
