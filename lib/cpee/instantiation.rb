@@ -190,7 +190,7 @@ module CPEE
         cpee    = @h['X_CPEE'] || @a[0]
         selfurl = @a[1]
         cblist  = @a[2]
-        name    = @a[3] ? @p.pop.value : nil
+        name    = @a[3] ? @p.shift.value : nil
 
         status, res = Riddl::Client.new(@p[1].value.gsub(/ /,'%20')).get
         tdoc = if status >= 200 && status < 300
