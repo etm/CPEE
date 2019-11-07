@@ -113,7 +113,7 @@ elsif command == 'archive'
   if File.basename(p2) =~ /(\d+)-(\d+)/
     names = ($1.to_i..$2.to_i).to_a
   elsif File.basename(p2) == '*'
-    res = Typhoeus.get(File.join(base))
+    res = Typhoeus.get(File.join(base,'/'))
     if res.success?
       XML::Smart.string(res.response_body) do |doc|
         doc.find('//instance/@id').each do |ele|
@@ -166,7 +166,7 @@ elsif command == 'abandon'
   if File.basename(p1) =~ /(\d+)-(\d+)/
     names = ($1.to_i..$2.to_i).to_a
   elsif File.basename(p1) == '*'
-    res = Typhoeus.get(File.join(base))
+    res = Typhoeus.get(File.join(base,'/'))
     if res.success?
       XML::Smart.string(res.response_body) do |doc|
         doc.find('//instance/@id').each do |ele|
@@ -196,7 +196,7 @@ elsif command == 'start'
   if File.basename(p1) =~ /(\d+)-(\d+)/
     names = ($1.to_i..$2.to_i).to_a
   elsif File.basename(p1) == '*'
-    res = Typhoeus.get(File.join(base))
+    res = Typhoeus.get(File.join(base,'/'))
     if res.success?
       XML::Smart.string(res.response_body) do |doc|
         doc.find('//instance/@id').each do |ele|
