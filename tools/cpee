@@ -33,11 +33,11 @@ ARGV.options { |opt|
   opt.on("Options:")
   opt.on("--help", "-h", "This text") { puts opt; exit }
 	opt.on("")
-  opt.on(wrap("[archive DIR URL] save properties from all finished instances listed at URL into DIR. Examples:\ncpee archive ./archive http://localhost:9298/\ncpee archive ./archive http://localhost:9298/1/\ncpee archive ./archive http://localhost:9298/1-200"))
+  opt.on(wrap("[archive DIR URL] save properties from all finished instances listed at URL into DIR. Examples:\ncpee archive ./archive http://localhost:9298/1/\ncpee archive ./archive http://localhost:9298/1-200\ncpee archive ./archive http://localhost:9298/*"))
 	opt.on("")
-  opt.on(wrap("[abandon URL]     running processes are stopped; ready or stopped processes are abandoned. Examples:\ncpee abandon http://localhost:9298/1/\ncpee abandon http://localhost:9298/1-200"))
+  opt.on(wrap("[abandon URL]     running processes are stopped; ready or stopped processes are abandoned. Examples:\ncpee abandon http://localhost:9298/1/\ncpee abandon http://localhost:9298/1-200\ncpee abandon http://localhost:9298/*"))
 	opt.on("")
-  opt.on(wrap("[start URL]       stopped processes are started; all others are not touched. Examples:\ncpee start http://localhost:9298/1-200"))
+  opt.on(wrap("[start URL]       stopped processes are started; all others are not touched. Examples:\ncpee start http://localhost:9298/1\ncpee start http://localhost:9298/1-200\ncpee start http://localhost:9298/*"))
 	opt.on("")
   opt.on(wrap("[delete! URL]     DANGER ZONE. Vanishes forever. Not in archive. Examples:\ncpee delete! http://localhost:9298/1/"))
 	opt.on("")
@@ -107,10 +107,23 @@ elsif command == 'inst'
     puts 'Directory already exists.'
   end
 elsif command == 'archive'
+  p2 = File.join(p2,'*') if p2 =~ /([a-zA-Z]|\/)$/
   base = File.dirname(p2)
   names = []
   if File.basename(p2) =~ /(\d+)-(\d+)/
     names = ($1.to_i..$2.to_i).to_a
+  elsif File.basename(p2) == '*'
+    res = Typhoeus.get(File.join(base))
+    if res.success?
+      XML::Smart.string(res.response_body) do |doc|
+        doc.find('//instance/@id').each do |ele|
+          names << ele.value
+        end
+      end
+      names.reverse!
+    else
+      exit
+    end
   else
     names << File.basename(p2)
   end
@@ -147,10 +160,23 @@ elsif command == 'archive'
     end
   end
 elsif command == 'abandon'
+  p1 = File.join(p1,'*') if p1 =~ /([a-zA-Z]|\/)$/
   base = File.dirname(p1)
   names = []
   if File.basename(p1) =~ /(\d+)-(\d+)/
     names = ($1.to_i..$2.to_i).to_a
+  elsif File.basename(p1) == '*'
+    res = Typhoeus.get(File.join(base))
+    if res.success?
+      XML::Smart.string(res.response_body) do |doc|
+        doc.find('//instance/@id').each do |ele|
+          names << ele.value
+        end
+      end
+      names.reverse!
+    else
+      exit
+    end
   else
     names << File.basename(p1)
   end
@@ -160,18 +186,27 @@ elsif command == 'abandon'
       case res.response_body
         when "ready", "stopped" then
           Typhoeus.put(File.join(base,name.to_s,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
-        when "running" then
-          Typhoeus.put(File.join(base,name.to_s,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=stopped")
-          sleep 1
-          Typhoeus.put(File.join(base,name.to_s,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
       end
     end
   end
 elsif command == 'start'
+  p1 = File.join(p1,'*') if p1 =~ /([a-zA-Z]|\/)$/
   base = File.dirname(p1)
   names = []
   if File.basename(p1) =~ /(\d+)-(\d+)/
     names = ($1.to_i..$2.to_i).to_a
+  elsif File.basename(p1) == '*'
+    res = Typhoeus.get(File.join(base))
+    if res.success?
+      XML::Smart.string(res.response_body) do |doc|
+        doc.find('//instance/@id').each do |ele|
+          names << ele.value
+        end
+      end
+      names.reverse!
+    else
+      exit
+    end
   else
     names << File.basename(p1)
   end
@@ -180,13 +215,16 @@ elsif command == 'start'
     if res.success?
       case res.response_body
         when "stopped" then
-          Typhoeus.put(File.join(base,name.to_s,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=running")
+          keep_alive = Typhoeus.get(File.join(base,name.to_s,'properties','values','attributes','keep_alive','/'))
+          if keep_alive.success?
+            Typhoeus.put(File.join(base,name.to_s,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=running")
+          end
       end
     end
   end
 elsif command == 'delete!'
   Typhoeus.delete(File.join(p1,'/'))
-else
+elsif command == 'new'
   if !File.exists?(p1)
     FileUtils.cp_r("#{curpath}/server/",p1)
     FileUtils.mkdir("#{p1}/instances") rescue nil
