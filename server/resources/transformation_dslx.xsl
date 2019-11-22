@@ -384,7 +384,7 @@
         <xsl:apply-templates select="d:*" mode="plainmulti"/>
         <xsl:text>]</xsl:text>
       </xsl:when>
-      <xsl:when test="count(*) &gt; 0 and name()='cost'">
+      <xsl:when test="count(*) &gt; 0 and name()='costs'">
         <xsl:text>[</xsl:text>
         <xsl:apply-templates select="d:*" mode="plainmulti"/>
         <xsl:text>]</xsl:text>

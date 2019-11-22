@@ -9,8 +9,8 @@ require 'time'
 
 class Logging < Riddl::Implementation #{{{
   def doc(topic,event_name,log_dir,template,instancenr,notification)
-    uuid = notification['instance_uuid']
-    return unless uuid
+    instance = notification['instance_uuid']
+    return unless instance
 
     activity = notification['activity']
     parameters = notification['parameters']
@@ -18,9 +18,9 @@ class Logging < Riddl::Implementation #{{{
 
     log = YAML::load(File.read(template))
     log["log"]["trace"]["concept:name"] ||= instancenr
-    log["log"]["trace"]["cpee:name"] ||= notification['instance_name'] if notification["instance_name"]
-    log["log"]["trace"]["cpee:uuid"] ||= notification['instance_uuid'] if notification["instance_uuid"]
-    File.open(File.join(log_dir,uuid+'.xes.yaml'),'w'){|f| f.puts log.to_yaml} unless File.exists? File.join(log_dir,uuid+'.xes.yaml')
+    log["log"]["trace"]["cpee:name"] ||= notification['instance_name'] if notification['instance_name']
+    log["log"]["trace"]["cpee:instance"] ||= instance
+    File.open(File.join(log_dir,instance+'.xes.yaml'),'w'){|f| f.puts log.to_yaml} unless File.exists? File.join(log_dir,instance+'.xes.yaml')
     event = {}
     event["concept:instance"] = instancenr
     event["concept:name"] = notification["label"] if notification["label"]
@@ -28,7 +28,9 @@ class Logging < Riddl::Implementation #{{{
       event["concept:endpoint"] = notification["endpoint"]
     end
     event["id:id"] = (activity.nil? || activity == "") ? 'external' : activity
-    event["cpee:uuid"] = notification['instance_uuid'] if notification["instance_uuid"]
+    event["cpee:activity"] = event["id:id"]
+    event["cpee:activity_uuid"] = notification['activity_uuid'] if notification['activity_uuid']
+    event["cpee:instance"] = instance
     case event_name
       when 'receiving', 'change', 'instantiation'
         event["lifecycle:transition"] = "unknown"
@@ -62,7 +64,7 @@ class Logging < Riddl::Implementation #{{{
       end
     end
     event["time:timestamp"]= event['cpee:timestamp'] || Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z")
-    File.open(File.join(log_dir,uuid+'.xes.yaml'),'a') do |f|
+    File.open(File.join(log_dir,instance+'.xes.yaml'),'a') do |f|
       f << {'event' => event}.to_yaml
     end
     nil
