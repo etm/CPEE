@@ -375,9 +375,24 @@
         <xsl:text>]</xsl:text>
       </xsl:when>
       <xsl:when test="count(*) &gt; 0 and name()='sensors'">
-        <xsl:text>"[ </xsl:text>
-        <xsl:apply-templates select="*" mode="JSON"/>
-        <xsl:text>]"</xsl:text>
+        <xsl:text>[</xsl:text>
+        <xsl:apply-templates select="d:*" mode="plainmulti"/>
+        <xsl:text>]</xsl:text>
+      </xsl:when>
+      <xsl:when test="count(*) &gt; 0 and name()='aggregators'">
+        <xsl:text>[</xsl:text>
+        <xsl:apply-templates select="d:*" mode="plainmulti"/>
+        <xsl:text>]</xsl:text>
+      </xsl:when>
+      <xsl:when test="count(*) &gt; 0 and name()='cost'">
+        <xsl:text>[</xsl:text>
+        <xsl:apply-templates select="d:*" mode="plainmulti"/>
+        <xsl:text>]</xsl:text>
+      </xsl:when>
+      <xsl:when test="count(*) &gt; 0 and name()='_cost'">
+        <xsl:text>[</xsl:text>
+        <xsl:apply-templates select="d:*" mode="plainmulti"/>
+        <xsl:text>]</xsl:text>
       </xsl:when>
       <xsl:when test="count(*) &gt; 0 and not(name()='arguments')">
         <xsl:text>{</xsl:text>
@@ -391,6 +406,69 @@
         <xsl:value-of select="text()"/>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+  <xsl:template match="d:*" mode="plain">
+    <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
+    <xsl:text>:</xsl:text>
+    <xsl:value-of select="name()"/>
+    <xsl:text> =&gt; </xsl:text>
+    <xsl:choose>
+      <xsl:when test="count(*) &gt; 0 and count(*) = count(*[name()=name(../*[1])])">
+        <xsl:text>[</xsl:text>
+        <xsl:apply-templates select="d:*" mode="plainmulti"/>
+        <xsl:text>]</xsl:text>
+      </xsl:when>
+      <xsl:when test="count(*) &gt; 0">
+        <xsl:text>{</xsl:text>
+        <xsl:apply-templates select="d:*" mode="plain"/>
+        <xsl:text>}</xsl:text>
+      </xsl:when>
+      <xsl:when test="not(node())">
+        <xsl:text>nil</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="substring(text(),1,1) = '!'">
+            <xsl:value-of select="substring(text(),2)"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>"</xsl:text>
+            <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
+            <xsl:text>"</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  <xsl:template match="d:*" mode="plainmulti">
+    <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
+    <xsl:text>{ </xsl:text>
+    <xsl:text>:</xsl:text>
+    <xsl:value-of select="name()"/>
+    <xsl:text> =&gt; </xsl:text>
+    <xsl:choose>
+      <xsl:when test="count(*) &gt; 0">
+        <xsl:text>{</xsl:text>
+        <xsl:apply-templates select="d:*" mode="plain"/>
+        <xsl:text>}</xsl:text>
+      </xsl:when>
+      <xsl:when test="not(node())">
+        <xsl:text>nil</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="substring(text(),1,1) = '!'">
+            <xsl:value-of select="substring(text(),2)"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>"</xsl:text>
+            <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
+            <xsl:text>"</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text> }</xsl:text>
   </xsl:template>
   <xsl:template match="d:*" mode="sub">
     <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
