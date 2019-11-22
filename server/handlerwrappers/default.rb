@@ -130,9 +130,9 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def activity_handle(passthrough, parameters) # {{{
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
-    @sensors = parameters[:sensors]
-    @aggregators = parameters[:aggregators]
-    @costs = parameters[:costs]
+    @sensors = parameters.dig(:stream,:sensors)
+    @aggregators = parameters.dig(:stream,:aggregators)
+    @costs = parameters.dig(:stream,:costs)
     @controller.notify("activity/calling", :instance => @controller.instance, :instance_uuid => @controller.uuid, :label => @label, :instance_name => @controller.info, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
     if passthrough.to_s.empty?
       proto_curl parameters

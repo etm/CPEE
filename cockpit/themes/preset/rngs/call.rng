@@ -67,9 +67,9 @@
           </element>
         </zeroOrMore>
       </element>
-      <element name="_cost" rngui:header="Costs" rngui:fold="closed">
+      <element name="costs" rngui:header="Costs" rngui:fold="closed">
         <zeroOrMore rngui:label="Create Cost Factor">
-          <element name='_cost_factor'>
+          <element name='cost_factor'>
             <element name="name" rngui:label="Label">
               <data type="string" rngui:label="Label"/>
             </element>
