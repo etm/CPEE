@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
@@ -13,12 +12,12 @@
   </dataelements>
   <handlers>
     <handler url="http://localhost:9299/events">
-      <events topic='activity'>calling,failed,manipulating,done</events>
-      <events topic='dataelements'>change</events>
-      <events topic='endpoints'>change</events>
-      <events topic='description'>error</events>
-      <events topic='state'>change</events>
-      <events topic='status'>change</events>
+      <events topic="activity">calling,failed,manipulating,done</events>
+      <events topic="dataelements">change</events>
+      <events topic="endpoints">change</events>
+      <events topic="description">error</events>
+      <events topic="state">change</events>
+      <events topic="status">change</events>
     </handler>
   </handlers>
   <endpoints>
@@ -37,12 +36,14 @@
             <persons>data.persons</persons>
           </arguments>
         </parameters>
-        <finalize output="result">data.airline = result.value('id')
+        <code>
+          <finalize output="result">data.airline = result.value('id')
 data.costs += result.value('costs').to_f
 status.update 1, 'Hotel'</finalize>
+        </code>
       </call>
       <parallel>
-        <loop mode="pre_test" condition="data.persons > 0">
+        <loop mode="pre_test" condition="data.persons &gt; 0">
           <parallel_branch pass="data.persons" local="p">
             <call id="a2" endpoint="bookHotel">
               <parameters>
@@ -51,15 +52,17 @@ status.update 1, 'Hotel'</finalize>
                   <to>data.to</to>
                 </arguments>
               </parameters>
-              <finalize output="result">data.hotels &lt;&lt; result.value('id')
+              <code>
+                <finalize output="result">data.hotels &lt;&lt; result.value('id')
 data.costs += result.value('costs').to_f</finalize>
+              </code>
             </call>
           </parallel_branch>
           <manipulate id="a3">data.persons -= 1</manipulate>
         </loop>
       </parallel>
       <choose>
-        <alternative condition="data.costs > 700">
+        <alternative condition="data.costs &gt; 700">
           <call id="a4" endpoint="approve">
             <parameters>
               <method>:post</method>
@@ -73,8 +76,8 @@ data.costs += result.value('costs').to_f</finalize>
     </description>
   </description>
   <transformation>
-    <description type='copy'/>
-    <dataelements type='rest'/>
-    <endpoints type='rest'/>
+    <description type="copy"/>
+    <dataelements type="rest"/>
+    <endpoints type="rest"/>
   </transformation>
 </testset>

@@ -15,18 +15,22 @@
           <arguments/>
           <sensors/>
         </parameters>
-        <finalize output="result"/>
-        <update output="result"/>
-        <_timing>
-          <_timing_min/>
-          <_timing_max/>
-          <_timing_avg/>
-        </_timing>
-        <_notes>
-          <_notes_general/>
-          <_notes_output/>
-          <_attachments/>
-        </_notes>
+        <code>
+          <finalize output="result"/>
+          <update output="result"/>
+        </code>
+        <annotations>
+          <_timing>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+            <_notes_output/>
+            <_attachments/>
+          </_notes>
+        </annotations>
       </call>
     </description>
   </description>

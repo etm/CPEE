@@ -14,7 +14,9 @@
               <pid>data.pid</pid>
             </arguments>
           </parameters>
-          <finalize>data.progress = result["progress"]</finalize>
+          <code>
+            <finalize>data.progress = result["progress"]</finalize>
+          </code>
         </call>
       </loop>
     </description>

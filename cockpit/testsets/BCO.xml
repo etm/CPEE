@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <testset>
   <attributes>
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Linear</info>
@@ -7,50 +6,68 @@
     <bc>operate</bc>
   </attributes>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <dataelements><!--{{{-->
+  <dataelements>
+    <!--{{{-->
     <x/>
-  </dataelements><!--}}}-->
+  </dataelements>
+  <!--}}}-->
   <handlers/>
-  <endpoints><!--{{{-->
+  <endpoints>
+    <!--{{{-->
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-  </endpoints><!--}}}-->
+  </endpoints>
+  <!--}}}-->
   <description>
-    <description xmlns="http://cpee.org/ns/description/1.0"><!--{{{-->
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <!--{{{-->
       <call id="a1" endpoint="timeout">
-        <parameters><!--{{{-->
+        <parameters>
+          <!--{{{-->
           <label>Step 1</label>
           <method>:post</method>
           <arguments>
             <timeout>2</timeout>
           </arguments>
-        </parameters><!--}}}-->
-        <finalize output="result">data.x += "a1,"</finalize>
+        </parameters>
+        <!--}}}-->
+        <code>
+          <finalize output="result">data.x += "a1,"</finalize>
+        </code>
       </call>
       <call id="a2" endpoint="timeout">
-        <parameters><!--{{{-->
+        <parameters>
+          <!--{{{-->
           <label>Step 2</label>
           <method>:post</method>
           <arguments>
             <timeout>4</timeout>
           </arguments>
-        </parameters><!--}}}-->
-        <finalize output="result">data.x += "a2,"</finalize>
+        </parameters>
+        <!--}}}-->
+        <code>
+          <finalize output="result">data.x += "a2,"</finalize>
+        </code>
       </call>
       <call id="a3" endpoint="timeout">
-        <parameters><!--{{{-->
+        <parameters>
+          <!--{{{-->
           <label>Step 3</label>
           <method>:post</method>
           <arguments>
             <timeout>4</timeout>
           </arguments>
-        </parameters><!--}}}-->
-        <finalize output="result">data.x += "a3,"</finalize>
+        </parameters>
+        <!--}}}-->
+        <code>
+          <finalize output="result">data.x += "a3,"</finalize>
+        </code>
       </call>
-    </description><!--}}}-->
+    </description>
+    <!--}}}-->
   </description>
   <transformation>
-    <description type='copy'/>
-    <dataelements type='rest'/>
-    <endpoints type='rest'/>
+    <description type="copy"/>
+    <dataelements type="rest"/>
+    <endpoints type="rest"/>
   </transformation>
 </testset>
