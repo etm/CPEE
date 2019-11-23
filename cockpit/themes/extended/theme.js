@@ -250,7 +250,7 @@ function WFAdaptorManifestation(adaptor) {
       'label': function(node){
         var rep = $('body').attr('current-resources');
         var ep = self.endpoints[$(node).attr('endpoint')];
-        var avg = $('> _timing_avg',$(node).children('_timing')).text();
+        var avg = $('_timing_avg',$(node).children('annotations')).text();
         var lab = $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'');
         var ret = [ { column: 'ID', value: $(node).attr('id') } ];
         if (lab != '') {
