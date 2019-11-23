@@ -1,0 +1,142 @@
+<testset>
+  <dataelements>
+  </dataelements>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <deploy xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://coruscant.wst.univie.ac.at:9296/url</deploy>
+  </endpoints>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <loop mode="pre_test" condition="true">
+        <parallel wait="-1">
+          <parallel_branch pass="" local="">
+            <call id="a2" endpoint="deploy">
+              <parameters>
+                <label>Dispense</label>
+                <method>:post</method>
+                <arguments>
+                  <info>Lego1</info>
+                  <behavior>wait_running</behavior>
+                  <url>http://cpee.org/~demo/cpee-cockpit/testsets/Lego_Part_1.xml</url>
+                </arguments>
+                <sensors/>
+              </parameters>
+              <_timing>
+                <_timing_min/>
+                <_timing_max/>
+                <_timing_avg/>
+              </_timing>
+              <_notes>
+                <_notes_general/>
+                <_attachments/>
+              </_notes>
+            </call>
+          </parallel_branch>
+          <parallel_branch pass="" local="">
+            <call id="a3" endpoint="deploy">
+              <parameters>
+                <label>Boxer</label>
+                <method>:post</method>
+                <arguments>
+                  <info>Boxer</info>
+                  <behavior>wait_running</behavior>
+                  <url>http://cpee.org/~demo/cpee-cockpit/testsets/Lego%20Boxer.xml</url>
+                </arguments>
+                <sensors/>
+              </parameters>
+              <_timing>
+                <_timing_min/>
+                <_timing_max/>
+                <_timing_avg/>
+              </_timing>
+              <_notes>
+                <_notes_general/>
+                <_attachments/>
+              </_notes>
+            </call>
+          </parallel_branch>
+          <parallel_branch pass="" local="">
+            <call id="a4" endpoint="deploy">
+              <parameters>
+                <label>Liddy</label>
+                <method>:post</method>
+                <arguments>
+                  <info>Liddy</info>
+                  <behavior>wait_running</behavior>
+                  <url>http://cpee.org/~demo/cpee-cockpit/testsets/Lego%20Liddy.xml</url>
+                </arguments>
+                <sensors/>
+              </parameters>
+              <_timing>
+                <_timing_min/>
+                <_timing_max/>
+                <_timing_avg/>
+              </_timing>
+              <_notes>
+                <_notes_general/>
+                <_attachments/>
+              </_notes>
+            </call>
+          </parallel_branch>
+          <parallel_branch pass="" local="">
+            <call id="a5" endpoint="deploy">
+              <parameters>
+                <label>Ejector</label>
+                <method>:post</method>
+                <arguments>
+                  <info>Ejector</info>
+                  <behavior>wait_running</behavior>
+                  <url>http://cpee.org/~demo/cpee-cockpit/testsets/Lego%20Ejector.xml</url>
+                </arguments>
+                <sensors/>
+              </parameters>
+              <_timing>
+                <_timing_min/>
+                <_timing_max/>
+                <_timing_avg/>
+              </_timing>
+              <_notes>
+                <_notes_general/>
+                <_attachments/>
+              </_notes>
+            </call>
+          </parallel_branch>
+        </parallel>
+        <call id="a6" endpoint="deploy">
+          <parameters>
+            <label>Plate</label>
+            <method>:post</method>
+            <arguments>
+              <info>Plate</info>
+              <behavior>wait_running</behavior>
+              <url>http://cpee.org/~demo/cpee-cockpit/testsets/Lego%20Plate.xml</url>
+            </arguments>
+            <sensors/>
+          </parameters>
+          <_timing>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+            <_notes_output/>
+            <_attachments/>
+          </_notes>
+        </call>
+        <stop id="a1"/>
+      </loop>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Super_Lego</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
+  </attributes>
+</testset>

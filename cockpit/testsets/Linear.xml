@@ -7,7 +7,7 @@
   <attributes>
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Linear</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme>default</theme>
+    <theme>preset</theme>
   </attributes>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <dataelements>

@@ -518,7 +518,7 @@ function monitor_graph_change(force) { //{{{
             adaptor_init(url,$('value',res).text(),dslx);
           },
           error: function() {
-            adaptor_init(url,'labels',dslx);
+            adaptor_init(url,'preset',dslx);
           }
         });
       }

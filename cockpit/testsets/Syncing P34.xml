@@ -2,7 +2,7 @@
   <attributes>
     <info>Syncing</info>
     <modeltype>CPEE</modeltype>
-    <theme>default</theme>
+    <theme>preset</theme>
   </attributes>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>

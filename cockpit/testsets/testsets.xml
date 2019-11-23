@@ -31,5 +31,7 @@
   <testset>Lego Ejector</testset>
   <testset>Lego Crane</testset>
   <testset>Lego Plate</testset>
+  <testset>Lego Liddy</testset>
+  <testset>Lego Full</testset>
   <!--testset>Manuel Labels</testset-->
 </testsets>

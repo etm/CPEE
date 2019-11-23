@@ -2,7 +2,7 @@
   <attributes>
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Linear</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme>labels</theme>
+    <theme>preset</theme>
     <bc>start</bc>
   </attributes>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
