@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
@@ -13,7 +12,7 @@
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <parallel>
-        <loop mode="pre_test" condition="data.persons > 0">
+        <loop mode="pre_test" condition="data.persons &gt; 0">
           <parallel_branch pass="data.persons" local="p">
             <call id="a2" endpoint="bookHotel">
               <parameters>
@@ -22,8 +21,10 @@
                   <to>"Vienna"</to>
                 </arguments>
               </parameters>
-              <finalize output="result">data.hotels &lt;&lt; result.value('id')
+              <code>
+                <finalize output="result">data.hotels &lt;&lt; result.value('id')
 data.costs += result.value('costs').to_f</finalize>
+              </code>
             </call>
           </parallel_branch>
           <manipulate id="a3">data.persons -= 1</manipulate>
@@ -32,8 +33,8 @@ data.costs += result.value('costs').to_f</finalize>
     </description>
   </description>
   <transformation>
-    <description type='copy'/>
-    <dataelements type='rest'/>
-    <endpoints type='rest'/>
+    <description type="copy"/>
+    <dataelements type="rest"/>
+    <endpoints type="rest"/>
   </transformation>
 </testset>

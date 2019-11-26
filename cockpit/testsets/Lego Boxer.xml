@@ -25,7 +25,7 @@
   <attributes>
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">boxxxxxer</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">labels</theme>
+    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
     <bc>operate</bc>
   </attributes>
 </testset>

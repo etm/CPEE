@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
@@ -14,112 +13,152 @@
       <parallel>
         <parallel_branch>
           <call id="b1_a01" endpoint="services">
-            <parameters><!--{{{-->
+            <parameters>
+              <!--{{{-->
               <service/>
               <parameters>
                 <op1>data.wait</op1>
               </parameters>
-            </parameters><!--}}}-->
-            <finalize output="result">data.wait -= 1</finalize>
+            </parameters>
+            <!--}}}-->
+            <code>
+              <finalize output="result">data.wait -= 1</finalize>
+            </code>
           </call>
           <manipulate id="b1_a02">data.wait += 1</manipulate>
           <parallel>
             <parallel_branch>
               <call id="b1_a03" endpoint="services">
-                <parameters><!--{{{-->
+                <parameters>
+                  <!--{{{-->
                   <service/>
                   <parameters>
                     <op1>data.wait</op1>
                   </parameters>
-                </parameters><!--}}}-->
-                <finalize output="result">data.wait -= 1</finalize>
+                </parameters>
+                <!--}}}-->
+                <code>
+                  <finalize output="result">data.wait -= 1</finalize>
+                </code>
               </call>
               <call id="b1_a04" endpoint="services">
-                <parameters><!--{{{-->
+                <parameters>
+                  <!--{{{-->
                   <service/>
                   <parameters>
                     <op1>data.wait</op1>
                   </parameters>
-                </parameters><!--}}}-->
-                <finalize output="result">data.wait -= 1</finalize>
+                </parameters>
+                <!--}}}-->
+                <code>
+                  <finalize output="result">data.wait -= 1</finalize>
+                </code>
               </call>
               <manipulate id="b1_a05">data.wait += 1</manipulate>
             </parallel_branch>
             <parallel_branch>
               <call id="b1_a06" endpoint="services">
-                <parameters><!--{{{-->
+                <parameters>
+                  <!--{{{-->
                   <service/>
                   <parameters>
                     <op1>data.wait</op1>
                   </parameters>
-                </parameters><!--}}}-->
-                <finalize output="result">data.wait -= 1</finalize>
+                </parameters>
+                <!--}}}-->
+                <code>
+                  <finalize output="result">data.wait -= 1</finalize>
+                </code>
               </call>
               <manipulate id="b1_a07">data.wait += 1</manipulate>
               <call id="b1_a08" endpoint="services">
-                <parameters><!--{{{-->
+                <parameters>
+                  <!--{{{-->
                   <service/>
                   <parameters>
                     <op1>data.wait</op1>
                   </parameters>
-                </parameters><!--}}}-->
-                <finalize output="result">data.wait -= 1</finalize>
+                </parameters>
+                <!--}}}-->
+                <code>
+                  <finalize output="result">data.wait -= 1</finalize>
+                </code>
               </call>
             </parallel_branch>
           </parallel>
         </parallel_branch>
         <parallel_branch>
           <call id="b2_a01" endpoint="services">
-            <parameters><!--{{{-->
+            <parameters>
+              <!--{{{-->
               <service/>
               <parameters>
                 <op1>data.wait</op1>
               </parameters>
-            </parameters><!--}}}-->
-            <finalize output="result">data.wait -= 1</finalize>
+            </parameters>
+            <!--}}}-->
+            <code>
+              <finalize output="result">data.wait -= 1</finalize>
+            </code>
           </call>
           <manipulate id="b2_a02">data.wait += 1</manipulate>
           <parallel>
             <parallel_branch>
               <call id="b2_a03" endpoint="services">
-                <parameters><!--{{{-->
+                <parameters>
+                  <!--{{{-->
                   <service/>
                   <parameters>
                     <op1>data.wait</op1>
                   </parameters>
-                </parameters><!--}}}-->
-                <finalize output="result">data.wait -= 1</finalize>
+                </parameters>
+                <!--}}}-->
+                <code>
+                  <finalize output="result">data.wait -= 1</finalize>
+                </code>
               </call>
               <call id="b2_a04" endpoint="services">
-                <parameters><!--{{{-->
+                <parameters>
+                  <!--{{{-->
                   <service/>
                   <parameters>
                     <op1>data.wait</op1>
                   </parameters>
-                </parameters><!--}}}-->
-                <finalize output="result">data.wait -= 1</finalize>
+                </parameters>
+                <!--}}}-->
+                <code>
+                  <finalize output="result">data.wait -= 1</finalize>
+                </code>
               </call>
               <manipulate id="b2_a05">data.wait += 1</manipulate>
             </parallel_branch>
             <parallel_branch>
               <call id="b2_a06" endpoint="services">
-                <parameters><!--{{{-->
+                <parameters>
+                  <!--{{{-->
                   <service/>
                   <parameters>
                     <op1>data.wait</op1>
                   </parameters>
-                </parameters><!--}}}-->
-                <finalize output="result">data.wait -= 1</finalize>
+                </parameters>
+                <!--}}}-->
+                <code>
+                  <finalize output="result">data.wait -= 1</finalize>
+                </code>
               </call>
               <manipulate id="b2_a07">data.wait += 1</manipulate>
               <call id="b2_a08" endpoint="services">
-                <parameters><!--{{{-->
+                <parameters>
+                  <!--{{{-->
                   <service/>
                   <parameters>
                     <op1>data.wait</op1>
                   </parameters>
-                </parameters><!--}}}-->
-                <finalize output="result">data.wait -= 1</finalize>
+                </parameters>
+                <!--}}}-->
+                <code>
+                  <finalize output="result">data.wait -= 1</finalize>
+                </code>
               </call>
             </parallel_branch>
           </parallel>
@@ -128,8 +167,8 @@
     </description>
   </description>
   <transformation>
-    <description type='copy'/>
-    <dataelements type='rest'/>
-    <endpoints type='rest'/>
+    <description type="copy"/>
+    <dataelements type="rest"/>
+    <endpoints type="rest"/>
   </transformation>
 </testset>

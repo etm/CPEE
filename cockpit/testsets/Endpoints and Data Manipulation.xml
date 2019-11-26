@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <testset>
   <positions/>
   <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
@@ -24,8 +23,8 @@ data.output = data[:input]</manipulate>
     </description>
   </description>
   <transformation>
-    <description type='external'/>
-    <dataelements type='external'/>
-    <endpoints type='external'/>
+    <description type="external"/>
+    <dataelements type="external"/>
+    <endpoints type="external"/>
   </transformation>
 </testset>

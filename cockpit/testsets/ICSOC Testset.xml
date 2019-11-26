@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <testset>
   <positions/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
@@ -12,64 +11,76 @@
     <description xmlns="http://cpee.org/ns/description/1.0">
       <parallel>
         <parallel_branch>
-          <loop mode="pre_test" condition='data.feedback'>
+          <loop mode="pre_test" condition="data.feedback">
             <call id="design" endpoint="timeout">
-              <parameters><!--{{{-->
+              <parameters>
+                <!--{{{-->
                 <label>Design</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>4</timeout>
                 </arguments>
-              </parameters><!--}}}-->
+              </parameters>
+              <!--}}}-->
             </call>
             <call id="validate" endpoint="timeout">
-              <parameters><!--{{{-->
+              <parameters>
+                <!--{{{-->
                 <label>Validate</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>2</timeout>
                 </arguments>
-              </parameters><!--}}}-->
+              </parameters>
+              <!--}}}-->
             </call>
             <call id="publish" endpoint="timeout">
-              <parameters><!--{{{-->
+              <parameters>
+                <!--{{{-->
                 <label>Publish</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>1</timeout>
                 </arguments>
-              </parameters><!--}}}-->
+              </parameters>
+              <!--}}}-->
             </call>
           </loop>
         </parallel_branch>
         <parallel_branch>
-          <loop mode="pre_test" condition='data.feedback'>
+          <loop mode="pre_test" condition="data.feedback">
             <call id="prepare" endpoint="timeout">
-              <parameters><!--{{{-->
+              <parameters>
+                <!--{{{-->
                 <label>Prepare</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>4</timeout>
                 </arguments>
-              </parameters><!--}}}-->
+              </parameters>
+              <!--}}}-->
             </call>
             <call id="fab" endpoint="timeout">
-              <parameters><!--{{{-->
+              <parameters>
+                <!--{{{-->
                 <label>Fabricate</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>4</timeout>
                 </arguments>
-              </parameters><!--}}}-->
+              </parameters>
+              <!--}}}-->
             </call>
             <call id="evaluate" endpoint="timeout">
-              <parameters><!--{{{-->
+              <parameters>
+                <!--{{{-->
                 <label>Evaluate</label>
                 <method>:post</method>
                 <arguments>
                   <timeout>4</timeout>
                 </arguments>
-              </parameters><!--}}}-->
+              </parameters>
+              <!--}}}-->
             </call>
           </loop>
         </parallel_branch>
@@ -77,8 +88,8 @@
     </description>
   </description>
   <transformation>
-    <description type='copy'/>
-    <dataelements type='rest'/>
-    <endpoints type='rest'/>
+    <description type="copy"/>
+    <dataelements type="rest"/>
+    <endpoints type="rest"/>
   </transformation>
 </testset>

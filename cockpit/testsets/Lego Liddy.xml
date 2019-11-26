@@ -3,17 +3,26 @@
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <conveyor xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://conveyor.wst.univie.ac.at:9200/centering</conveyor>
+    <dispense xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://liddy.wst.univie.ac.at:9200/press</dispense>
   </endpoints>
-  <positions/>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <call id="a1" endpoint="conveyor">
+      <call id="a1" endpoint="dispense">
         <parameters>
-          <label>Centers the piece</label>
+          <label>Press Lid</label>
           <method>:post</method>
           <arguments/>
+          <sensors/>
         </parameters>
+        <_timing>
+          <_timing_min/>
+          <_timing_max/>
+          <_timing_avg/>
+        </_timing>
+        <_notes>
+          <_notes_general/>
+          <_attachments/>
+        </_notes>
       </call>
     </description>
   </description>
@@ -23,9 +32,9 @@
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">sdas</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Liddy</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
-    <bc>operate</bc>
+    <bc xmlns="http://riddl.org/ns/common-patterns/properties/1.0">operate</bc>
   </attributes>
 </testset>

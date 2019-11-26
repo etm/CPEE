@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <testset>
   <dataelements/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
@@ -14,8 +13,10 @@
           <method>:post</method>
           <arguments/>
         </parameters>
-        <finalize>data.a = result.value</finalize>
-        <update>data.b = result.value</update>
+        <code>
+          <finalize>data.a = result.value</finalize>
+          <update>data.b = result.value</update>
+        </code>
       </call>
     </description>
   </description>
