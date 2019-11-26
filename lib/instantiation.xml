@@ -33,6 +33,9 @@
     <optional>
       <parameter name="endpoints" type="string"/>
     </optional>
+    <optional>
+      <parameter name="stream" type="string"/>
+    </optional>
   </message>
   <message name="url">
     <parameter name="behavior" type="string">
@@ -49,6 +52,9 @@
     </optional>
     <optional>
       <parameter name="endpoints" type="string"/>
+    </optional>
+    <optional>
+      <parameter name="stream" type="string"/>
     </optional>
   </message>
   <message name="git">
@@ -68,6 +74,9 @@
     </optional>
     <optional>
       <parameter name="endpoints" type="string"/>
+    </optional>
+    <optional>
+      <parameter name="stream" type="string"/>
     </optional>
   </message>
   <message name="instance">

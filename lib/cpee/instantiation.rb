@@ -27,7 +27,7 @@ module CPEE
     SERVER = File.expand_path(__dir__ + '/../instantiation.xml')
 
     module Helpers #{{{
-      def load_testset(tdoc,cpee,name=nil) #{{{
+      def load_testset(tdoc,cpee,name=nil,stream=nil) #{{{
         ins = -1
         uuid = nil
         XML::Smart.string(tdoc) do |doc|
@@ -39,6 +39,23 @@ module CPEE
           if name
             doc.find("/testset/attributes/prop:info").each do |e|
               e.text = name
+            end
+          end
+          if stream && !stream.empty?
+            JSON.parse(stream).each do |e|
+              begin
+                stream = Typhoeus.get e['url']
+                if stream.success?
+                  XML::Smart::string(stream.response_body) do |str|
+                    doc.find("//desc:call[@id=\"#{e['id']}\"]/desc:parameters/desc:stream").each do |ele|
+                      ele.replace_by str.root
+                    end
+                  end
+                end
+              rescue => e
+                puts e.message
+                puts e.backtrace
+              end
             end
           end
 
@@ -160,8 +177,8 @@ module CPEE
         else
           (@status = 500) && return
         end
-
-        if (instance, uuid = load_testset(tdoc,cpee)).first == -1
+        stream = @p.find{ |e| e.name == 'stream' }&.value
+        if (instance, uuid = load_testset(tdoc,cpee,nil,stream)).first == -1
           @status = 500
         else
           handle_data cpee, instance, @p[4]&.value if @p[4]&.name == 'init'
@@ -198,8 +215,8 @@ module CPEE
         else
           (@status = 500) && return
         end
-
-        if (instance, uuid = load_testset(tdoc,cpee,name)).first == -1
+        stream = @p.find{ |e| e.name == 'stream' }&.value
+        if (instance, uuid = load_testset(tdoc,cpee,name,stream)).first == -1
           @status = 500
         else
           handle_data cpee, instance, @p[2]&.value if @p[2]&.name == 'init'
