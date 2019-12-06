@@ -230,7 +230,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     spli.each(function(k,v) {
       var tspan = $X('<tspan x="0" dy="' + (spli.length > 1 ? '-7' : '0') + '" xmlns="http://www.w3.org/2000/svg"></tspan>');
       if (k == 0) {
-        tspan.text((label != '' ? '◤ ' : '')  + v);
+        tspan.text(v);
       } else {
         tspan.text(v);
         tspan.attr('dy','15');

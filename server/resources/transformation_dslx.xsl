@@ -465,18 +465,37 @@
     </xsl:choose>
     <xsl:text> }</xsl:text>
   </xsl:template>
+  <xsl:template name="format-name">
+    <xsl:param name="tname"/>
+    <xsl:choose>
+      <xsl:when test="contains($tname,'-')">
+        <xsl:text>'</xsl:text>
+        <xsl:value-of select="$tname"/>
+        <xsl:text>'</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$tname"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
   <xsl:template match="d:*" mode="sub">
     <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
     <xsl:text>⭐(</xsl:text>
     <xsl:text>:name =&gt; :</xsl:text>
     <xsl:choose>
-      <xsl:when test="contains(name(),'-')">
-        <xsl:text>'</xsl:text>
-        <xsl:value-of select="name()"/>
-        <xsl:text>'</xsl:text>
+      <xsl:when test="substring(name(),1,1) = '_'">
+        <xsl:call-template name="format-name">
+          <xsl:with-param name="tname">
+            <xsl:value-of select="substring(name(),2)"/>
+          </xsl:with-param>
+        </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="name()"/>
+        <xsl:call-template name="format-name">
+          <xsl:with-param name="tname">
+            <xsl:value-of select="name()"/>
+          </xsl:with-param>
+        </xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:text>, :value =&gt; -&gt;{ </xsl:text>

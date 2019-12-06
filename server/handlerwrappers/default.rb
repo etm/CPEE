@@ -72,14 +72,14 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       if s.respond_to?(:mimetype)
         params <<  Riddl::Parameter::Complex.new(s.name.to_s,v.mimetype,v.value)
       else
-        if s.name.to_s =~ /^__Q_/
-          params <<  Riddl::Parameter::Simple.new(s.name.to_s.sub(/^__Q_/,''),CPEE::ValueHelper::generate(s.value),:query)
-        elsif s.name.to_s =~ /^__B_/
-          params <<  Riddl::Parameter::Simple.new(s.name.to_s.sub(/^__B_/,''),CPEE::ValueHelper::generate(s.value),:body)
-        elsif s.name.to_s =~ /^__H_/
-          params <<  Riddl::Header.new(s.name.to_s.sub(/^__H_/,''),CPEE::ValueHelper::generate(s.value))
-        elsif s.name.to_s =~ /^__C_/
-          params <<  Riddl::Parameter::Complex.new(s.name.to_s.sub(/^__C_/,''),*CPEE::ValueHelper::generate(s.value).split(';',2))
+        if s.name.to_s =~ /^_Q_/
+          params <<  Riddl::Parameter::Simple.new(s.name.to_s.sub(/^_Q_/,''),CPEE::ValueHelper::generate(s.value),:query)
+        elsif s.name.to_s =~ /^_B_/
+          params <<  Riddl::Parameter::Simple.new(s.name.to_s.sub(/^_B_/,''),CPEE::ValueHelper::generate(s.value),:body)
+        elsif s.name.to_s =~ /^_H_/
+          params <<  Riddl::Header.new(s.name.to_s.sub(/^_H_/,''),CPEE::ValueHelper::generate(s.value))
+        elsif s.name.to_s =~ /^_C_/
+          params <<  Riddl::Parameter::Complex.new(s.name.to_s.sub(/^_C_/,''),*CPEE::ValueHelper::generate(s.value).split(';',2))
         else
           params <<  Riddl::Parameter::Simple.new(s.name.to_s,CPEE::ValueHelper::generate(s.value))
         end
