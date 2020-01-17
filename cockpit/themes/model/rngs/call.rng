@@ -4,10 +4,10 @@
   </attribute>
   <attribute name="endpoint" rngui:label="Type">
     <choice>
-      <value>Machine Invocation</value>
-      <value>Read From Sensor</value>
-      <value>Human Task</value>
-      <value>Subprocess</value>
+      <value id="machine">Machine Invocation</value>
+      <value id="sensor">Read From Sensor</value>
+      <value id="human">Human Task</value>
+      <value id="subprocess">Subprocess</value>
     </choice>
   </attribute>
   <element name='parameters' rngui:header="Properties">
