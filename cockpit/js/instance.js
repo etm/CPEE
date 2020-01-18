@@ -74,8 +74,8 @@ function cockpit() { //{{{
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodelfile]").click(load_modelfile);
   $("button[name=loadmodeltype]").click(function(e){new CustomMenu(e).menu($('#modeltypes'),load_modeltype, $("button[name=loadmodeltype]")); });
-  $("button[name=savetestset]").click(function(){ save_testset(); });
-  $("button[name=savesvg]").click(function(){ save_svg(); });
+  $("button[name=savetestsetfile]").click(function(){ save_testsetfile(); });
+  $("button[name=savesvgfile]").click(function(){ save_svgfile(); });
   $("button[name=state_start]").click(function(){ $(this).attr("disabled","disabled");start_instance(); });
   $("button[name=state_stop]").click(function(){ $(this).attr("disabled","disabled");stop_instance(); });
   $("button[name=state_replay]").click(function(){ $(this).attr("disabled","disabled");replay_instance(); });
@@ -728,7 +728,18 @@ function stop_instance() {// {{{
   });
 }// }}}
 
-function save_testset() {// {{{
+function save_testsetfile() {// {{{
+  var def = new $.Deferred();
+  def.done(function(name,testset) {
+    var ct = new Date();
+    $('#savetestsetfile').attr('download',name + '_' + ct.strftime("%Y-%m-%dT%H%M%S%z") + '.xml');
+    $('#savetestsetfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(testset.serializePrettyXML()));
+    document.getElementById('savetestsetfile').click();
+  });
+  get_testset(def);
+}// }}}
+
+function get_testset(deferred) {// {{{
   var url = $('body').attr('current-instance');
   var testset = $X('<testset/>');
 
@@ -770,27 +781,24 @@ function save_testset() {// {{{
                       pars.append($(res.documentElement).children());
                       pars.find('uuid').remove();
                       testset.append(pars);
-                      var ct = new Date();
-                      $('#savetestset').attr('download',name + '_' + ct.strftime("%Y-%m-%dT%H%M%S%z") + '.xml');
-                      $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(testset.serializePrettyXML()));
-                      document.getElementById('savetestset').click();
+                      deferred.resolve(name,testset);
                     },
-                    error: report_failure
+                    error: function() { deferred.reject(); report_failure(); }
                   });
                 },
-                error: report_failure
+                error: function() { deferred.reject(); report_failure(); }
               });
             },
-            error: report_failure
+            error: function() { deferred.reject(); report_failure(); }
           });
         },
-        error: report_failure
+        error: function() { deferred.reject(); report_failure(); }
       });
     },
-    error: report_failure
+    error: function() { deferred.reject(); report_failure(); }
   });
 }// }}}
-function save_svg() {// {{{
+function save_svgfile() {// {{{
   var url = $('body').attr('current-instance');
 
   var gc = $('#graphcanvas').clone();
@@ -830,9 +838,9 @@ function save_svg() {// {{{
         success: function(res){
           var name = $(res.documentElement).text();
 
-          $('#savesvg').attr('download',name + '.svg');
-          $('#savesvg').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializeXML()));
-          document.getElementById('savesvg').click();
+          $('#savesvgfile').attr('download',name + '.svg');
+          $('#savesvgfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializeXML()));
+          document.getElementById('savesvgfile').click();
         },
         error: report_failure
       });

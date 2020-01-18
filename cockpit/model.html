@@ -53,6 +53,7 @@
     <script type="text/javascript" src="js/instance.js"></script>
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
+    <script type="text/javascript" src="js/model.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="css/model.css" type="text/css"/>
     <style>
@@ -118,8 +119,7 @@
         <ui-tab class="switch"                                               ></ui-tab>
         <ui-tab class=""         data-tab="model"        id="tabmodel"       >Model</ui-tab>
         <ui-tab class="inactive" data-tab="dataelements" id="tabdataelements">Data Elements</ui-tab>
-        <ui-tab class="inactive" data-tab="attributes"   id="tabattributes"  >Attributes</ui-tab>
-        <ui-behind                                                           ><button title='add entry'>New</button></ui-behind>
+        <ui-behind                                                           ><button title='add entry' class="hidden">New</button></ui-behind>
       </ui-tabbar>
       <ui-content>
         <ui-area data-belongs-to-tab="model" id="areamodel"> <!--{{{-->
@@ -140,12 +140,12 @@
           </div>
           <div class='section'>
             <div>
-              <a id="savetestset" href="" download=""></a>
-              <button title='a testset includes various settings, subscriptions and a model' name="savetestset">save file</button>
+              <a id="savetestsetfile" href="" download=""></a>
+              <button title='a testset includes various settings, subscriptions and a model' name="savetestsetfile">save file</button>
             </div>
             <div>
-              <a id="savesvg" href="" download=""></a>
-              <button title='a testset includes various settings, subscriptions and a model' name="savesvg">save SVG</button>
+              <a id="savesvgfile" href="" download=""></a>
+              <button title='a testset includes various settings, subscriptions and a model' name="savesvgfile">save SVG</button>
             </div>
           </div>
           <div class='section'>
@@ -159,9 +159,6 @@
         </ui-area> <!--}}}-->
         <ui-area data-belongs-to-tab="dataelements" id="areadataelements" class="inactive"> <!--{{{-->
           <div id="dat_dataelements"></div>
-        </ui-area> <!--}}}-->
-        <ui-area data-belongs-to-tab="attributes" id="areaattributes" class="inactive"> <!--{{{-->
-          <table id="dat_attributes"></table>
         </ui-area> <!--}}}-->
       </ui-content>
     </ui-tabbed>
