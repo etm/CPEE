@@ -15,6 +15,20 @@ $(document).ready(function() {
   });
 
   $("button[name=save]").click(function(){
-    console.log($('body').attr('current-save'));
+    var def = new $.Deferred();
+    def.done(function(name,testset) {
+      $.ajax({
+        url: $('body').attr('current-save'),
+        type: 'PUT',
+        body: testset.serializePrettyXML(),
+        success: function() {
+
+        },
+        error: function() {
+          alert('rrrrr');
+        }
+      });
+    });
+    get_testset(def);
   });
 });
