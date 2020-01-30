@@ -1,3 +1,7 @@
+document.addEventListener('graph:changed', function (e) {
+  $("button[name=save]").prop("disabled",false);
+}, false);
+
 $(document).ready(function() {
   $('#tabmodel').click(function(event){
     $('#model ui-behind button:nth-child(1)').addClass('hidden');
@@ -20,12 +24,14 @@ $(document).ready(function() {
       $.ajax({
         url: $('body').attr('current-save'),
         type: 'PUT',
-        body: testset.serializePrettyXML(),
+        contentType: 'application/xml',
+        data: testset.serializePrettyXML(),
         success: function() {
-
-        },
-        error: function() {
-          alert('rrrrr');
+          $("button[name=save]").prop("disabled",true);
+          $("#lastsavedline").removeClass('hidden');
+          var dt = new Date();
+          var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+          $("#lastsaved").text(time);
         }
       });
     });

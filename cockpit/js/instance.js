@@ -5,6 +5,7 @@ var paths = '#dat_details input, #dat_details textarea, #dat_details select, #da
 var loading = false;
 var subscription;
 var subscription_state = 'less';
+var graph_changed = new Event("graph:changed", {"bubbles":true, "cancelable":false});
 var save = {};
     save['state']= undefined;
     save['dsl'] = undefined;
@@ -117,6 +118,13 @@ function cockpit() { //{{{
         }
         ui_activate_tab("#tabexecution");
         create_instance($("body").attr('current-base'),q.load,true,false);
+      } else if (q.instantiate) {
+        if (q.instantiate.match(/https?:\/\//)) {
+          ui_activate_tab("#tabexecution");
+          create_instance_from($("body").attr('current-base'),q.instantiate,false);
+        } else {
+          alert('Nope. Url!');
+        }
       } else if (q.new || q.new == "") {
         ui_activate_tab("#tabinstance");
         create_instance($("body").attr('current-base'),"Plain Instance",false,false);
@@ -187,6 +195,29 @@ function check_subscription() { // {{{
   }
 }// }}}
 
+function create_instance_from(base,url,exec) {// {{{
+  $.get({
+    url: url,
+    dataType: "text",
+    success: function(res) {
+      $.ajax({
+        type: "POST",
+        url: base,
+        contentType: 'application/xml',
+        dataType: "text",
+        headers: { 'CONTENT-ID': 'xml' },
+        data: res,
+        success: function(res){
+          var iu = (base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://");
+          monitor_instance(iu,$("body").attr('current-resources'),false,exec);
+        },
+        error: function(a,b,c) {
+          alert("No CPEE running.");
+        }
+      });
+    }
+  });
+}// }}}
 function create_instance(base,name,load,exec) {// {{{
   var info = name ? name : prompt("Instance info?", "Enter info here");
   if (info != null) {
@@ -331,8 +362,9 @@ function monitor_instance(cin,rep,load,exec) {// {{{
           });
           append_to_log("monitoring", "id", subscription);
           websocket();
-          if (load || exec)
+          if (load || exec) {
             load_testset(exec);
+          }
         }
       });
     },
@@ -417,6 +449,7 @@ function adaptor_update() { //{{{
   });
 } //}}}
 function adaptor_init(url,theme,dslx) { //{{{
+  document.dispatchEvent(graph_changed);
   if (save['graph_theme'] != theme) {
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
@@ -480,6 +513,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         var g = graphrealization.get_description();
         save['graph'] = $X(g);
         save['graph'].find('[xmlns]').removeAttr('xmlns');
+        document.dispatchEvent(graph_changed);
         $.ajax({
           type: "PUT",
           url: url + "/properties/values/description/",

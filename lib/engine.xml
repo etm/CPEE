@@ -30,6 +30,9 @@
   <message name="instance-new">
     <parameter name="info" type="string"/>
   </message>
+  <message name="instance-new-xml">
+    <parameter name="xml" mimetype="application/xml"/>
+  </message>
 
   <message name="instance-info">
     <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
@@ -70,6 +73,7 @@
       <doc:documentation>a</doc:documentation>
     </get>
     <post in="instance-new" out="instance-id"/>
+    <post in="instance-new-xml" out="instance-id"/>
     <resource>
       <get in="*" out="instance-info"/>
       <delete in="*"/>
