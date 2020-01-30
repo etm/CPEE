@@ -88,5 +88,7 @@ function do_main_save() { //{{{
       },
       data: ({'content': '<content>' + desc.get_description() + '</content>'})
     });
+
+    document.dispatchEvent(graph_changed);
   }
 } //}}}

@@ -449,7 +449,6 @@ function adaptor_update() { //{{{
   });
 } //}}}
 function adaptor_init(url,theme,dslx) { //{{{
-  document.dispatchEvent(graph_changed);
   if (save['graph_theme'] != theme) {
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
