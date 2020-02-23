@@ -22,10 +22,11 @@ $(document).ready(function() {
     var def = new $.Deferred();
     def.done(function(name,testset) {
       $.ajax({
-        url: $('body').attr('current-save'),
+        url: $('body').attr('current-save') + name + '.xml',
         type: 'PUT',
         contentType: 'application/xml',
         data: testset.serializePrettyXML(),
+        headers: { 'Content-ID': 'content' },
         success: function() {
           $("button[name=save]").prop("disabled",true);
           $("#lastsavedline").removeClass('hidden');
