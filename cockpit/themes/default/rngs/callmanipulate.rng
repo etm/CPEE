@@ -52,6 +52,11 @@
       </zeroOrMore>
     </element>
   </element>
+  <element name="report" rngui:header="Reporting Annotation" rngui:fold="closed">
+    <element name="url" rngui:label='HTML Snippet'>
+      <data type="string" rngui:label="url to report snippet"/>
+    </element>
+  </element>
   <element name="finalize" rngui:header="Finalize" rngui:label="Code">
     <attribute name="output" rngui:label="Access Variable" rngui:default="result">
       <data type="string" rngui:readonly="true"/>

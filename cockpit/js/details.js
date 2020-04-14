@@ -29,6 +29,10 @@ $(document).ready(function() {
     clearTimeout(timer);
     do_main_save();
   });
+  $(document).on('relaxngui_move', '#dat_details', function(e){
+    clearTimeout(timer);
+    do_main_save();
+  });
 });
 
 function do_main_save() { //{{{
