@@ -160,10 +160,10 @@ function WFAdaptorManifestation(adaptor) {
         icon.children('.rfill').addClass('menu');
         menu['Delete'] = [{
           'label': 'Remove Element',
-          'function_call': self.adaptor.description.remove,
+          'function_call': function(selector,target,selected){ self.adaptor.description.remove(selector,target); self.adaptor.illustrator.get_label_by_svg_id(selected).addClass('selected'); },
           'menu_icon': icon,
           'type': undefined,
-          'params': [null, xml_node]
+          'params': [null, xml_node, self.selected()]
         }];
       }
       if($('> finalize, > update', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {

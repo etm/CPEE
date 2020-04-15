@@ -521,6 +521,9 @@ function adaptor_init(url,theme,dslx) { //{{{
         adaptor_update();
         manifestation.events.click(svgid);
         format_instance_pos();
+        if (manifestation.selected() == "unknown") { // nothing selected
+          $('#dat_details').empty();
+        }
       };
       adaptor_update();
       monitor_instance_pos();
