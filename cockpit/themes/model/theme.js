@@ -238,7 +238,12 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'label': function(node){
-        var ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
+        var ret;
+        if ($('> url',$(node).children('parameters').children('arguments')).length > 0) {
+          ret = [ { column: 'Label', value: '<a target="blank_" href="' + $('> url',$(node).children('parameters').children('arguments')).text() + '">' + $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') + '</a>' } ];
+        } else {
+          ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
+        }
         return ret;
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
