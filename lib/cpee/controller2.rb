@@ -12,9 +12,20 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
-require 'json'
+require 'yaml'
 require 'securerandom'
 require 'riddl/client'
+require_relative 'callback'
+require_relative 'value_helper'
+
+require 'ostruct'
+class ParaStruct < OpenStruct
+  def to_json(*a)
+    table.to_json
+  end
+end
+def →(a); ParaStruct.new(a); end
+def ⭐(a); ParaStruct.new(a); end
 
 module CPEE
 
@@ -45,25 +56,29 @@ module CPEE
 
   class Controller
 
-    def initialize(id,opts)
+    def initialize(id,dir,opts)
       @id = id
+
       @events = {}
       @votes = {}
       @votes_results = {}
       @callbacks = {}
+
+      @attributes = YAML::load_file(File.join(dir,'attributes.yaml'))
       @attributes_helper = AttributesHelper.new
-      @thread = nil
       @mutex = Mutex.new
       @opts = opts
+      @instance = nil
     end
 
     attr_reader :id
-    attr_reader :notifications
-    attr_reader :properties
     attr_reader :callbacks
     attr_reader :mutex
     attr_reader :attributes
-    attr_reader :uuid
+
+    def uuid
+      @attributes['uuid']
+    end
 
     def attributes_translated
       @attributes_helper.translate(attributes,dataelements,endpoints)
@@ -84,21 +99,27 @@ module CPEE
     def instance
       instance_url
     end
+    def instance=(inst)
+      @instance = inst
+    end
     def endpoints
-      {}
-      # @instance.endpoints
+      @instance.endpoints
     end
     def dataelements
-      {}
-      # @instance.data
+      @instance.data
+    end
+
+    def start
+      execution = @instance.start
+      execution.join
     end
 
     def info
-      'xxxx'
-      # @properties.data.find("string(/p:properties/p:attributes/p:info)")
+      @attributes['info']
     end
 
     def notify(what,content={})# {{{
+      p what
       # item = @events[what]
 
       # if item

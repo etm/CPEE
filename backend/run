@@ -1,0 +1,13 @@
+#!/usr/bin/ruby
+require 'weel'
+if File.exists? '../lib/cpee/controller2.rb'
+  require '../lib/cpee/controller2'
+else
+  require 'cpee/controller2'
+end
+require_relative 'handlerwrappers/default'
+require_relative 'instance'
+
+controller = CPEE::Controller.new(12, __dir__,:host => 'localhost', :url => 'http://localhost:8298/')
+controller.instance = Instance.new controller
+controller.start
