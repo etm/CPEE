@@ -7,6 +7,13 @@ body {
   font-size: 1em;
 }
 
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf?v=4.7.0') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 #graphgrid {
   display: grid;
   grid-gap: 0;
@@ -46,6 +53,24 @@ body {
   cursor: pointer;
 }
 #graphgrid .graphlabel.selected {
+  color: var(--wfadaptor-selected);
+}
+
+#graphgrid .graphlabel.selected a, #graphgrid .graphlabel.hover a {
+  color: var(--wfadaptor-selected);
+}
+#graphgrid .graphlabel a {
+  color: var(--x-ui-light-text-color);
+}
+#graphgrid .graphlabel a::after {
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 0.8em;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+	content: ' ';
+}
+#graphgrid .graphlabel.selected a::after, graphgrid .graphlabel.hover a::after {
   color: var(--wfadaptor-selected);
 }
 
