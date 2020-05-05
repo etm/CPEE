@@ -12,6 +12,7 @@ spec = eval(File.read('cpee.gemspec'))
 Gem::PackageTask.new(spec) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
+  puts `ls -al pkg/*`
   `rm pkg/* -rf`
   `ln -sf #{pkg.name}.gem pkg/cpee.gem`
 end

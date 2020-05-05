@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
 
   s.description      = "see http://cpee.org"
 
-  s.files            = Dir['{example/**/*,server/**/*,tools/**/*,lib/**/*,cockpit/**/*,contrib/logo*,contrib/Screen*,log/**/*}'] - Dir['{server/instances/**/*,cockpit/js_libs/**/*,log/logs/**/*}'] + %w(COPYING FEATURES INSTALL Rakefile cpee.gemspec README AUTHORS)
+  s.files            = Dir['{example/**/*,server/**/*,tools/**/*,lib/**/*,cockpit/**/*,cockpit/themes/*/*/*,contrib/logo*,contrib/Screen*,log/**/*}'] - Dir['{server/instances/**/*,cockpit/js_libs/**/*,log/logs/**/*}'] + %w(COPYING FEATURES INSTALL Rakefile cpee.gemspec README AUTHORS)
   s.require_path     = 'lib'
   s.extra_rdoc_files = ['README']
   s.bindir           = 'tools'
@@ -23,8 +23,8 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'riddl', '~> 0.99'
   s.add_runtime_dependency 'weel', '~> 1.99', '>= 1.99.80'
-  s.add_runtime_dependency 'savon', '~> 2'
   s.add_runtime_dependency 'highline', '~> 1.6'
   s.add_runtime_dependency 'json', '~>2.1'
   s.add_runtime_dependency 'rubyzip', '~>1.2'
+  s.add_runtime_dependency 'ffi-rzmq', '~>2.0'
 end

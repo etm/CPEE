@@ -13,6 +13,7 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'yaml'
+require 'ffi-rzmq'
 require 'securerandom'
 require 'riddl/client'
 require_relative 'callback'
@@ -58,6 +59,13 @@ module CPEE
 
     def initialize(id,dir,opts)
       @id = id
+
+      @zmqc = ZMQ::Context.new
+      @pub = @zmqc.socket(ZMQ::PUB)
+      @pub.bind("ipc://" + File.join(dir,"pub"))
+
+      @sub = @zmqc.socket(ZMQ::SUB)
+      @sub.bind("ipc://" + File.join(dir,"sub"))
 
       @events = {}
       @votes = {}
@@ -120,6 +128,8 @@ module CPEE
 
     def notify(what,content={})# {{{
       p what
+      @pub.send_strings [@id.to_s,what,content[:activity_uuid],content.to_s]
+      p [@id.to_s,what,content[:activity_uuid],content.to_s]
       # item = @events[what]
 
       # if item

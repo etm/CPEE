@@ -3,7 +3,7 @@ class Instance < WEEL
 
   endpoint :timeout => "http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php"
   data :x => ''
-  search Position.new(:a2,:after,nil), Position.new(:a1,:after,nil)
+  # search Position.new(:a1,:after,nil)
 
   control flow do
     call :a1, :timeout, parameters: { :label => "Step 1", :method => :post, :arguments => [⭐(:name => :timeout, :value => ->{ "2" })] }, finalize: <<-END

@@ -10,4 +10,5 @@ require_relative 'instance'
 
 controller = CPEE::Controller.new(12, __dir__,:host => 'localhost', :url => 'http://localhost:8298/')
 controller.instance = Instance.new controller
+sleep 1
 controller.start
