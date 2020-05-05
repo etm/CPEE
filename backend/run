@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 require 'weel'
+require 'yaml'
 if File.exists? '../lib/cpee/controller2.rb'
   require '../lib/cpee/controller2'
 else
@@ -8,7 +9,8 @@ end
 require_relative 'handlerwrappers/default'
 require_relative 'instance'
 
-controller = CPEE::Controller.new(12, __dir__,:host => 'localhost', :url => 'http://localhost:8298/')
+opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
+opts[:attributes] = YAML::load_file(File.join(__dir__,'attributes.yaml'))
+controller = CPEE::Controller.new(File.basename(__dir__).to_i, __dir__, opts)
 controller.instance = Instance.new controller
-sleep 1
 controller.start

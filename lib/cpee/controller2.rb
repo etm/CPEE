@@ -12,8 +12,7 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
-require 'yaml'
-require 'ffi-rzmq'
+require 'redis'
 require 'securerandom'
 require 'riddl/client'
 require_relative 'callback'
@@ -60,19 +59,14 @@ module CPEE
     def initialize(id,dir,opts)
       @id = id
 
-      @zmqc = ZMQ::Context.new
-      @pub = @zmqc.socket(ZMQ::PUB)
-      @pub.bind("ipc://" + File.join(dir,"pub"))
-
-      @sub = @zmqc.socket(ZMQ::SUB)
-      @sub.bind("ipc://" + File.join(dir,"sub"))
+      @redis = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
 
       @events = {}
       @votes = {}
       @votes_results = {}
       @callbacks = {}
 
-      @attributes = YAML::load_file(File.join(dir,'attributes.yaml'))
+      @attributes = opts[:attributes]
       @attributes_helper = AttributesHelper.new
       @mutex = Mutex.new
       @opts = opts
@@ -128,9 +122,11 @@ module CPEE
 
     def notify(what,content={})# {{{
       p what
-      @pub.send_strings [@id.to_s,what,content[:activity_uuid],content.to_s]
-      p [@id.to_s,what,content[:activity_uuid],content.to_s]
-      # item = @events[what]
+
+      # @pub.send_strings [@id.to_s,what,content[:activity_uuid],content.to_s]
+      # p [@id.to_s,what,content[:activity_uuid],content.to_s]
+      # # item = @events[what]
+      # redis.publish(
 
       # if item
       #   item.each do |ke,ur|
@@ -154,7 +150,7 @@ module CPEE
       #     end
       #   end
       # end
-    end # }}}
+     end # }}}
 
     def call_vote(what,content={})# {{{
       voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
@@ -223,7 +219,7 @@ module CPEE
       res << ['callback'                        , callback] unless callback.nil?
       res << ['fingerprint-with-consumer-secret', Digest::MD5.hexdigest(res.join(''))]
       # TODO add secret to fp
-    end # }}}
+     end # }}}
 
   end
 
