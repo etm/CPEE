@@ -23,6 +23,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end# }}}
   def self::inform_handlerwrapper_error(arguments,err) # {{{
     controller = arguments[0]
+    p err.backtrace
     controller.notify("handlerwrapper/error", :instance => controller.instance, :instance_uuid => controller.uuid, :message => err.message, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end # }}}
   def self::inform_position_change(arguments,ipc={}) # {{{
