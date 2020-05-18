@@ -18,9 +18,9 @@
   <interface name="main">
     <xi:include href="engine.xml"/>
   </interface>
-  <interface name="properties">
-    <xi:include href="http://www.riddl.org/ns/common-patterns/properties/1.0/properties.xml"/>
-  </interface>
+  <!--interface name="properties">
+    <xi:include href="properties.xml"/>
+  </interface-->
   <interface name="notifications">
     <xi:include href="http://www.riddl.org/ns/common-patterns/notifications-producer/1.0/producer.xml"/>
   </interface>
@@ -28,9 +28,9 @@
   <facade>
     <tile>
       <layer name="main"/>
-      <layer name="properties">
+      <!--layer name="properties">
         <apply-to>/{}/properties</apply-to>
-      </layer>
+      </layer-->
       <layer name="notifications">
         <apply-to>/{}</apply-to>
       </layer>

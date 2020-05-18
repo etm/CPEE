@@ -121,7 +121,6 @@ module CPEE
     end
 
     def notify(what,content={})
-      p what
       @redis.publish('event:' + what, JSON::generate({ 'instance' => @id, 'topic' => ::File::dirname(what), 'event' => ::File::basename(what), 'content' => content }))
     end
 

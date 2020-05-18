@@ -13,20 +13,12 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'fileutils'
+require 'redis'
 require 'riddl/server'
 require 'riddl/client'
 require 'riddl/utils/notifications_producer'
 require 'riddl/utils/properties'
 require_relative 'controller'
-
-require 'ostruct'
-class ParaStruct < OpenStruct
-  def to_json(*a)
-    table.to_json
-  end
-end
-def →(a); ParaStruct.new(a); end
-def ⭐(a); ParaStruct.new(a); end
 
 module CPEE
 
@@ -46,6 +38,10 @@ module CPEE
     opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
     opts[:notifications_init]         ||= File.expand_path(File.join(__dir__,'..','..','server','resources','notifications'))
     opts[:infinite_loop_stop]         ||= 10000
+    opts[:redis_path]                 ||= '/tmp/redis.sock'
+    opts[:redis_db]                   ||= 3
+
+    opts[:redis]                      = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
 
     opts[:runtime_cmds]               << [
       "startclean", "Delete instances before starting.", Proc.new { |status|
@@ -63,31 +59,21 @@ module CPEE
         require h
       end unless opts[:handlerwrappers].strip == ''
 
-      controller = {}
-      Dir[File.join(opts[:instances],'*','properties.xml')].each do |e|
-        id = ::File::basename(::File::dirname(e))
-        (controller[id.to_i] = (Controller.new(id,opts)) rescue nil)
-      end
-
       interface 'properties' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use Riddl::Utils::Properties::implementation(controller[id].properties, PropertiesHandler.new(controller[id]), opts[:mode]) if controller[id]
+        use CPEE::Properties::implementation(id, opts[:mode])
       end
 
       interface 'main' do
-        run CPEE::Instances, controller if get '*'
-        run CPEE::NewInstance, controller, opts if post 'instance-new'
+        run CPEE::Instances if get '*'
+        run CPEE::NewInstance, opts if post 'instance-new'
         on resource do |r|
-          run CPEE::Info, controller if get
-          run CPEE::DeleteInstance, controller, opts if delete
-          on resource 'console' do
-            run CPEE::ConsoleUI, controller if get
-            run CPEE::Console, controller if get 'cmdin'
-          end
+          run CPEE::Info, opts if get
+          run CPEE::DeleteInstance, opts if delete
           on resource 'callbacks' do
-            run CPEE::Callbacks, controller, opts if get
+            run CPEE::Callbacks, opts if get
             on resource do
-              run CPEE::ExCallback, controller if get || put || post || delete
+              run CPEE::ExCallback, opts if get || put || post || delete
             end
           end
         end
@@ -95,7 +81,7 @@ module CPEE
 
       interface 'notifications' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use Riddl::Utils::Notifications::Producer::implementation(controller[id].notifications, NotificationsHandler.new(controller[id]), opts[:mode]) if controller[id]
+        use CPEE::Notifications::Producer::implementation(id, opts[:mode])
       end
     end
   end
@@ -178,15 +164,15 @@ module CPEE
 
   class Info < Riddl::Implementation #{{{
     def response
-      controller = @a[0]
+      opts = @a[0]
       id = @r[0].to_i
-      unless controller[id]
+      unless opts[:redis].exists("instance:#{id}/state")
         @status = 400
         return
       end
       Riddl::Parameter::Complex.new("info","text/xml") do
         i = XML::Smart::string <<-END
-          <info instance='#{@r[0]}'>
+          <info instance='#{id}'>
             <notifications/>
             <properties/>
             <callbacks/>

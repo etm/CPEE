@@ -29,34 +29,53 @@ Daemonite.new do |opts|
       on.pmessage do |pat, what, message|
         mess = JSON.parse(message)
         case what
-          when  'event:state/change'
+          when 'event:state/change'
             redis.multi do |multi|
               multi.set("instance:#{mess.dig('instance')}/state",mess.dig('content','state'))
-              multi.set("instance:#{mess.dig('instance')}/state_changed",mess.dig('content','timestamp'))
+              multi.set("instance:#{mess.dig('instance')}/state/@changed",mess.dig('content','timestamp'))
             end
-          when 'event:dataelements/change', 'event:endpoints/change'
+          when 'event:handlerwrapper/change'
+            redis.set("instance:#{mess.dig('instance')}/handlerwrapper",mess.dig('content','handlerwrapper'))
+          when 'event:description/change'
+            redis.set("instance:#{mess.dig('instance')}/description",mess.dig('content','description'))
+          when 'event:handler/add'
+            redis.multi do |multi|
+              multi.set("instance:#{mess.dig('instance')}/handlers/#{mess.dig('content','id')}/@url",mess.dig('content','url'))
+              multi.set("instance:#{mess.dig('instance')}/handlers/#{mess.dig('content','id')}",mess.dig('topics','topics'))
+            end
+          when 'event:handler/delete'
+            redis.del("instance:#{mess.dig('instance')}/handlers/#{mess.dig('content','id')}")
+          when 'event:dataelements/change', 'event:endpoints/change', 'event:attributes/change'
             redis.multi do |multi|
               mess.dig('content','changed').each do |c|
-                multi.hset("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",c,mess.dig('content','values',c))
+                multi.set("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}",mess.dig('content','values',c))
               end
+            end
+          when 'event:transformation/change'
+            redis.multi do |multi|
+              multi.set("instance:#{mess.dig('instance')}/transformation/description/",mess.dig('content','description'))
+              multi.set("instance:#{mess.dig('instance')}/transformation/description/@type",mess.dig('content','description_type'))
+              multi.set("instance:#{mess.dig('instance')}/transformation/dataelements/",mess.dig('content','dataelements'))
+              multi.set("instance:#{mess.dig('instance')}/transformation/dataelements/@type",mess.dig('content','dataelements_type'))
+              multi.set("instance:#{mess.dig('instance')}/transformation/endpoints/",mess.dig('content','endpoints'))
+              multi.set("instance:#{mess.dig('instance')}/transformation/endpoints/@type",mess.dig('content','endpoints_type'))
             end
           when 'event:status/change'
             redis.multi do |multi|
-              multi.set("instance:#{mess.dig('instance')}/status_id",mess.dig('content','id'))
-              multi.set("instance:#{mess.dig('instance')}/status_message",mess.dig('content','message'))
+              multi.set("instance:#{mess.dig('instance')}/status/id",mess.dig('content','id'))
+              multi.set("instance:#{mess.dig('instance')}/status/message",mess.dig('content','message'))
             end
           when 'event:position/change'
             redis.multi do |multi|
               c = mess.dig('content')
               c.dig('at')&.each do |ele|
-                p ele
-                multi.hset("instance:#{mess.dig('instance')}/positions",ele['position'],'at')
+                multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}",'at')
               end
               c.dig('after')&.each do |ele|
-                multi.hset("instance:#{mess.dig('instance')}/positions",ele['position'],'after')
+                multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}",'after')
               end
               c.dig('unmark')&.each do |ele|
-                multi.hdel("instance:#{mess.dig('instance')}/positions",ele['position'])
+                multi.del("instance:#{mess.dig('instance')}/positions/#{ele['position']}")
               end
             end
         end
