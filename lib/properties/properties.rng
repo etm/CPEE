@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://riddl.org/ns/common-patterns/properties/1.0">
+  <include href="state.rng"/>
+  <include href="status.rng"/>
+  <include href="handlerwrapper.rng"/>
+  <include href="positions.rng"/>
+  <include href="dataelements.rng"/>
+  <include href="endpoints.rng"/>
+  <include href="attributes.rng"/>
+  <include href="dsl.rng"/>
+  <include href="dslx.rng"/>
+  <include href="description.rng"/>
+  <include href="transformation.rng"/>
+
+  <start>
+    <element name="properties" ns="http://cpee.org/ns/properties/2.0">
+      <ref name="state"/>
+      <ref name="status"/>
+      <ref name="handlerwrapper"/>
+      <ref name="positions"/>
+      <ref name="dataelements"/>
+      <ref name="endpoints"/>
+      <ref name="attributes"/>
+      <ref name="dsl"/>
+      <ref name="dslx"/>
+      <ref name="description"/>
+      <ref name="transformation"/>
+    </element>
+  </start>
+</grammar>

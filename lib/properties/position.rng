@@ -1,0 +1,15 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://relaxng.org/ns/structure/1.0">
+  <define name="position">
+    <element ns="http://cpee.org/ns/properties/2.0">
+      <anyName/>
+      <optional>
+        <attribute name="passthrough">
+          <data type="string"/>
+        </attribute>
+      </optional>
+      <data type="string">
+        <param name="pattern">(at|after)(;[A-Za-z0-9]+)?</param>
+      </data>
+    </element>
+  </define>
+</grammar>

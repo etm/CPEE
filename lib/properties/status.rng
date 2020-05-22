@@ -1,0 +1,12 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://relaxng.org/ns/structure/1.0">
+  <define name="status">
+    <element name="status" ns="http://cpee.org/ns/properties/2.0">
+      <element name="id">
+        <data type="integer"/>
+      </element>
+      <element name="message">
+        <data type="string"/>
+      </element>
+    </element>
+  </define>
+</grammar>

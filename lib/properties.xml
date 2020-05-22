@@ -15,59 +15,141 @@
 -->
 
 <description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:doc="http://cpee.org/ns/documentation">
-
-  <message name="list-of-workflow-instances">
-    <parameter name="wis" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <doc:documentation>d</doc:documentation>
-      <xi:include href="engine/instances.rng"/>
+  <message name="properties">
+    <parameter name="properties" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/properties.rng"/>
+    </parameter>
+  </message>
+  <message name="set-properties">
+    <parameter name="properties" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/set-properties.rng"/>
+    </parameter>
+  </message>
+  <message name="set-some-properties">
+    <parameter name="properties" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/set-some-properties.rng"/>
     </parameter>
   </message>
 
-  <message name="instance-id">
-    <parameter name="id" type="nonNegativeInteger"/>
+  <message name="statemachine">
+    <parameter name="statemachine" type="string"/>
   </message>
-
-  <message name="instance-new">
-    <parameter name="info" type="string"/>
+  <message name="statediagram">
+    <parameter name="statemachine" mimetype="text/plain"/>
   </message>
-
-  <message name="instance-info">
-    <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="engine/instance-info.rng"/>
+  <message name="state">
+    <parameter name="state" type="string">
+      <choice>
+        <value>ready</value>
+        <value>running</value>
+        <value>simulating</value>
+        <value>replaying</value>
+        <value>stopping</value>
+        <value>stopped</value>
+        <value>abandoned</value>
+        <value>finished</value>
+      </choice>
     </parameter>
   </message>
-  <message name="callbacks">
-    <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="engine/callbacks.rng"/>
+
+  <message name="changed">
+    <parameter name="state" type="dateTime"/>
+  </message>
+
+  <message name="status">
+    <parameter name="properties" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/status.rng"/>
     </parameter>
   </message>
-  <message name="xsl">
-    <parameter name="xsl" mimetype="application/xml"/>
+  <message name="integer">
+    <parameter name="value" type="integer"/>
+  </message>
+  <message name="string">
+    <parameter name="value" type="string"/>
   </message>
 
-  <message name="cmdin">
-    <parameter name="cmd" type="string"/>
-  </message>
-  <message name="cmdout">
-    <parameter name="res" mimetype="text/plain"/>
-  </message>
-  <message name="cmdui">
-    <parameter name="res" mimetype="text/html"/>
+  <message name="handlerwrapper">
+    <parameter name="value" type="string">
+      <param name="pattern">[A-Z][a-zA-Z]*</param>
+    </parameter>
   </message>
 
-  <message name="message">
-    <parameter name="type" type="integer"/>
-    <parameter name="message" type="string"/>
-    <optional>
-      <parameter name="details" mimetype="text/xml"/>
-      <parameter name="details" mimetype="text/yaml"/>
-    </optional>
+  <message name="id">
+    <parameter name="value" type="string"/>
+  </message>
+
+  <message name="position">
+    <parameter name="position" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/position.rng"/>
+    </parameter>
+  </message>
+  <message name="positions">
+    <parameter name="positions" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/positions.rng"/>
+    </parameter>
+  </message>
+  <message name="detail">
+    <parameter name="detail" type="string">
+      <choice>
+        <value>at</value>
+        <value>after</value>
+      </choice>
+    </parameter>
+  </message>
+
+  <message name="dataelement">
+    <parameter name="dataelement" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/simple.rng"/>
+    </parameter>
+  </message>
+  <message name="dataelements">
+    <parameter name="dataelements" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/dataelements.rng"/>
+    </parameter>
+  </message>
+
+  <message name="endpoint">
+    <parameter name="endpoint" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/simple.rng"/>
+    </parameter>
+  </message>
+  <message name="endpoints">
+    <parameter name="endpoints" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/endpoints.rng"/>
+    </parameter>
+  </message>
+
+  <message name="attribute">
+    <parameter name="attribute" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/simple.rng"/>
+    </parameter>
+  </message>
+  <message name="attributes">
+    <parameter name="attributes" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/attributes.rng"/>
+    </parameter>
+  </message>
+
+  <message name="dsl">
+    <parameter name="dsl" mimetype="text/plain"/>
+  </message>
+  <message name="dslx">
+    <parameter name="dslx" mimetype="*/xml"/>
+  </message>
+  <message name="description">
+    <parameter name="description" mimetype="*/xml"/>
+  </message>
+
+  <message name="transformation">
+    <parameter name="transformation" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/transformation.rng"/>
+    </parameter>
   </message>
 
   <resource>
     <get out="properties"/>
-    <put in="properties"/>
-    <patch in="some-properties"/>
+    <put in="set-properties"/>
+    <patch in="set-some-properties"/>
 
     <resource relative="state">
       <get in="statemachine" out="statediagram"/>
@@ -81,16 +163,60 @@
       <get out="status"/>
       <put in="status"/>
       <resource relative="id">
-        <get out="id"/>
+        <get out="integer"/>
       </resource>
       <resource relative="message">
-        <get out="message"/>
+        <get out="string"/>
       </resource>
     </resource>
     <resource relative="handlerwrapper">
       <put in="handlerwrapper"/>
       <get out="handlerwrapper"/>
     </resource>
+    <resource relative="positions">
+      <post in="position" out="id"/>
+      <patch in="positions"/>
+      <put in="positions"/>
+      <resource>
+        <get out="detail"/>
+        <put in="detail"/>
+        <delete/>
+        <resource relative="@passthrough">
+          <get out="string"/>
+        </resource>
+      </resource>
+    </resource>
+    <resource relative="dataelements">
+      <post in="dataelement" out="id"/>
+      <patch in="dataelements"/>
+      <put in="dataelements"/>
+      <resource>
+        <get out="string"/>
+        <put in="string"/>
+        <delete/>
+      </resource>
+    </resource>
+    <resource relative="endpoints">
+      <post in="endpoint" out="id"/>
+      <patch in="endpoints"/>
+      <put in="endpoints"/>
+      <resource>
+        <get out="string"/>
+        <put in="string"/>
+        <delete/>
+      </resource>
+    </resource>
+    <resource relative="attributes">
+      <post in="attribute" out="id"/>
+      <patch in="attributes"/>
+      <put in="attributes"/>
+      <resource>
+        <get out="string"/>
+        <put in="string"/>
+        <delete/>
+      </resource>
+    </resource>
+
     <resource relative="dsl">
       <get out="dsl"/>
     </resource>
@@ -100,47 +226,6 @@
     <resource relative="description">
       <get out="description"/>
       <put in="description"/>
-    </resource>
-
-    <resource relative="attributes">
-      <post in="attribute" out="attribute_id"/>
-      <patch in="attributes"/>
-      <put in="attributes"/>
-      <resource>
-        <get out="attribute"/>
-        <put in="attribute"/>
-        <delete/>
-      </resource>
-    </resource>
-    <resource relative="positions">
-      <post in="position" out="position_id"/>
-      <patch in="positions"/>
-      <put in="positions"/>
-      <resource>
-        <get out="position"/>
-        <put in="position"/>
-        <delete/>
-      </resource>
-    </resource>
-    <resource relative="dataelements">
-      <post in="dataelement" out="dataelement_id"/>
-      <patch in="dataelements"/>
-      <put in="dataelements"/>
-      <resource>
-        <get out="dataelement"/>
-        <put in="dataelement"/>
-        <delete/>
-      </resource>
-    </resource>
-    <resource relative="endpoints">
-      <post in="endpoint" out="endpoint_id"/>
-      <patch in="endpoints"/>
-      <put in="endpoints"/>
-      <resource>
-        <get out="endpoint"/>
-        <put in="endpoint"/>
-        <delete/>
-      </resource>
     </resource>
 
     <resource relative="transformation">

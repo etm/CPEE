@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" xmlns:p="http://riddl.org/ns/common-patterns/properties/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://riddl.org/ns/common-patterns/properties/1.0">
+  <define name="arbitrary" combine="choice">
+    <zeroOrMore>
+      <choice>
+        <text/>
+        <ref name="any"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="any" combine="choice">
+    <element>
+      <anyName/>
+      <zeroOrMore>
+        <attribute>
+          <anyName/>
+        </attribute>
+      </zeroOrMore>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="any"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+</grammar>

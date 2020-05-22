@@ -1,0 +1,8 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://relaxng.org/ns/structure/1.0">
+  <include href="arbitrary.rng"/>
+  <define name="description">
+    <element name="description" ns="http://cpee.org/ns/properties/2.0">
+      <ref name="arbitrary"/>
+    </element>
+  </define>
+</grammar>

@@ -16,9 +16,7 @@ require 'fileutils'
 require 'redis'
 require 'riddl/server'
 require 'riddl/client'
-require 'riddl/utils/notifications_producer'
-require 'riddl/utils/properties'
-require_relative 'controller'
+require_relative 'implementation_properties'
 
 module CPEE
 
@@ -30,9 +28,6 @@ module CPEE
     opts[:handlerwrappers]            ||= ''
     opts[:topics]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','topics.xml'))
     opts[:properties_init]            ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.init'))
-    opts[:properties_schema_active]   ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.schema.active'))
-    opts[:properties_schema_finished] ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.schema.finished'))
-    opts[:properties_schema_inactive] ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.schema.inactive'))
     opts[:transformation_dslx]        ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation_dslx.xsl'))
     opts[:transformation_service]     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation.xml'))
     opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
@@ -52,16 +47,9 @@ module CPEE
     ]
 
     Proc.new do
-      Dir[opts[:global_handlerwrappers] + "/*.rb"].each do |h|
-        require h
-      end unless opts[:global_handlerwrappers].strip == ''
-      Dir[opts[:handlerwrappers] + "/*.rb"].each do |h|
-        require h
-      end unless opts[:handlerwrappers].strip == ''
-
       interface 'properties' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use CPEE::Properties::implementation(id, opts[:mode])
+        use CPEE::Properties::implementation(id, opts)
       end
 
       interface 'main' do
@@ -80,8 +68,8 @@ module CPEE
       end
 
       interface 'notifications' do |r|
-        id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use CPEE::Notifications::Producer::implementation(id, opts[:mode])
+        #id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
+        #use CPEE::Notifications::Producer::implementation(id, opts[:mode])
       end
     end
   end
@@ -179,62 +167,6 @@ module CPEE
           </info>
         END
         i.to_s
-      end
-    end
-  end #}}}
-
-  class ConsoleUI < Riddl::Implementation #{{{
-    def response
-      controller = @a[0]
-      id = @r[0].to_i
-      unless controller[id]
-        @status = 400
-        return
-      end
-      Riddl::Parameter::Complex.new("res","text/html") do
-        <<-END
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-              <title>Instance Web Console</title>
-              <style type="text/css">
-                [contenteditable] { display: inline; }
-                [contenteditable]:focus { outline: 0px solid transparent; }
-                body{ font-family: Courier,Courier New,Monospace}
-              </style>
-              <script type="text/javascript" src="//#{controller[id].host}/js_libs/jquery.min.js"></script>
-              <script type="text/javascript" src="//#{controller[id].host}/js_libs/ansi_up.js"></script>
-              <script type="text/javascript" src="//#{controller[id].host}/js_libs/console.js"></script>
-            </head>
-            <body>
-              <p>Instance Web Console. Type "help" to get started.</p>
-              <div class="console-line" id="console-template" style="display: none">
-                <strong>console$&nbsp;</strong><div class='edit' contenteditable="true" ></div>
-              </div>
-              <div class="console-line">
-                <strong>console$&nbsp;</strong><div class='edit' contenteditable="true"></div>
-              </div>
-            </body>
-          </html>
-        END
-      end
-    end
-  end #}}}
-  class Console < Riddl::Implementation #{{{
-    def response
-      controller = @a[0]
-      id = @r[0].to_i
-      unless controller[id]
-        @status = 400
-        return
-      end
-      Riddl::Parameter::Complex.new("res","text/plain") do
-        begin
-          controller[id].console(@p[0].value)
-        rescue => e
-          e.message
-        end
       end
     end
   end #}}}

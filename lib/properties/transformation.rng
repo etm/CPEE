@@ -1,0 +1,40 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://relaxng.org/ns/structure/1.0">
+  <define name="transformation">
+    <element name="transformation" ns="http://cpee.org/ns/properties/2.0">
+      <element name="description">
+        <attribute name="type">
+          <choice>
+            <value>copy</value>
+            <value>rest</value>
+            <value>xslt</value>
+            <value>clean</value>
+            <value>none</value>
+          </choice>
+        </attribute>
+        <data type="anyURI"/>
+      </element>
+      <element name="dataelements">
+        <attribute name="type">
+          <choice>
+            <value>rest</value>
+            <value>xslt</value>
+            <value>clean</value>
+            <value>none</value>
+          </choice>
+        </attribute>
+        <data type="anyURI"/>
+      </element>
+      <element name="endpoints">
+        <attribute name="type">
+          <choice>
+            <value>rest</value>
+            <value>xslt</value>
+            <value>clean</value>
+            <value>none</value>
+          </choice>
+        </attribute>
+        <data type="anyURI"/>
+      </element>
+    </element>
+  </define>
+</grammar>

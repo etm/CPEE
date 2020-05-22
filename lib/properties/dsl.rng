@@ -1,0 +1,7 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://relaxng.org/ns/structure/1.0">
+  <define name="dsl" ns="http://cpee.org/ns/properties/2.0">
+    <element name="dsl">
+      <text/>
+    </element>
+  </define>
+</grammar>
