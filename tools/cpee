@@ -29,6 +29,7 @@ end
 
 ARGV.options { |opt|
   opt.summary_indent = ' ' * 2
+  opt.summary_width = 15
   opt.banner = "Usage:\n#{opt.summary_indent}#{File.basename($0)} [options] ui | cpui DIR | new DIR | archive DIR URL | abandon URL\n"
   opt.on("Options:")
   opt.on("--help", "-h", "This text") { puts opt; exit }
