@@ -66,7 +66,11 @@ module CPEE
       @votes_results = {}
       @callbacks = {}
 
-      @attributes = opts[:attributes]
+      @attributes = {}
+      @redis.keys('instance:0/attributes/*').each do |key|
+        @attributes[File.basename(key)] = @redis.get(key)
+      end
+
       @attributes_helper = AttributesHelper.new
       @mutex = Mutex.new
       @opts = opts

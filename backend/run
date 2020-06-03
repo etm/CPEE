@@ -10,7 +10,6 @@ require_relative 'handlerwrappers/default'
 require_relative 'instance'
 
 opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
-opts[:attributes] = YAML::load_file(File.join(__dir__,'attributes.yaml'))
 controller = CPEE::Controller.new(File.basename(__dir__).to_i, __dir__, opts)
 controller.instance = Instance.new controller
 controller.start
