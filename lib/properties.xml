@@ -31,11 +31,11 @@
     </parameter>
   </message>
 
-  <message name="statemachine">
-    <parameter name="statemachine" type="string"/>
+  <message name="machine">
+    <parameter name="machine" type="string"/>
   </message>
-  <message name="statediagram">
-    <parameter name="statemachine" mimetype="text/plain"/>
+  <message name="diagram">
+    <parameter name="diagram" mimetype="text/plain"/>
   </message>
   <message name="state">
     <parameter name="state" type="string">
@@ -152,7 +152,7 @@
     <patch in="set-some-properties"/>
 
     <resource relative="state">
-      <get in="statemachine" out="statediagram"/>
+      <get in="machine" out="diagram"/>
       <get out="state"/>
       <put in="state"/>
       <resource relative="@changed">

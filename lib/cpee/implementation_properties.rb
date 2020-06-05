@@ -5,6 +5,7 @@ module CPEE
       Proc.new do
         run CPEE::Properties::Get, id, opts if get
         on resource 'state' do
+          run CPEE::Properties::GetStateMachine, id, opts if get 'machine'
           run CPEE::Properties::GetState, id, opts if get
           on resource '@changed' do
             run CPEE::Properties::GetStateChanged, id, opts if get
@@ -25,6 +26,29 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         Riddl::Parameter::Simple.new('state',CPEE::Properties::extract_state(id,opts))
+      end
+    end #}}}
+    class GetStateMachine < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        Riddl::Parameter::Complex.new('statemachine','text/plain',<<~EOT)
+          ready->ready
+          ready->running
+          ready->simulating
+          ready->replaying
+          ready->abandoned
+          running->stopping->stopped
+          running->finishing->finished
+          simulating->ready
+          simulating->stopped
+          replaying->finishing->finished
+          replaying->stopped
+          stopped->abandoned
+          stopped->running
+          stopped->replaying
+          stopped->simulating
+        EOT
       end
     end #}}}
     class GetStateChanged < Riddl::Implementation #{{{
