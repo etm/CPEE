@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'riddl', '~> 0.99'
   s.add_runtime_dependency 'weel', '~> 1.99', '>= 1.99.80'
   s.add_runtime_dependency 'savon', '~> 2'
+  s.add_runtime_dependency 'xml-smart', '>=0.4.3', '~>0'
   s.add_runtime_dependency 'highline', '~> 1.6'
   s.add_runtime_dependency 'json', '~>2.1'
   s.add_runtime_dependency 'rubyzip', '~>1.2'
