@@ -13,13 +13,20 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'json'
-require 'pp'
+require 'redis'
 require 'securerandom'
-require ::File.dirname(__FILE__) + '/handler_properties'
-require ::File.dirname(__FILE__) + '/handler_notifications'
-require ::File.dirname(__FILE__) + '/callback'
-require ::File.dirname(__FILE__) + '/empty_workflow'
-require ::File.dirname(__FILE__) + '/value_helper'
+require 'riddl/client'
+require_relative 'callback'
+require_relative 'value_helper'
+
+require 'ostruct'
+class ParaStruct < OpenStruct
+  def to_json(*a)
+    table.to_json
+  end
+end
+def →(a); ParaStruct.new(a); end
+def ⭐(a); ParaStruct.new(a); end
 
 module CPEE
 
@@ -49,91 +56,34 @@ module CPEE
   end #}}}
 
   class Controller
-
-    def initialize(id,opts)
-      @directory = opts[:instances] + "/#{id}/"
+    def initialize(id,dir,opts)
       @id = id
+
+      @redis = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+
       @events = {}
       @votes = {}
       @votes_results = {}
-      @communication = {}
       @callbacks = {}
-      @positions = []
+
       @attributes = {}
+      @redis.keys('instance:0/attributes/*').each do |key|
+        @attributes[File.basename(key)] = @redis.get(key)
+      end
+
       @attributes_helper = AttributesHelper.new
-      @thread = nil
       @mutex = Mutex.new
       @opts = opts
-
-      @properties = Riddl::Utils::Properties::Backend.new(
-        {
-          :inactive => opts[:properties_schema_inactive],
-          :active   => opts[:properties_schema_active],
-          :finished => opts[:properties_schema_finished]
-        },
-        @directory + '/properties.xml',
-        opts[:properties_init]
-      )
-      @notifications =  Riddl::Utils::Notifications::Producer::Backend.new(
-        opts[:topics],
-        @directory + '/notifications/',
-        opts[:notifications_init]
-      )
-      unless ['stopped','ready','finished','abandoned'].include?(@properties.data.find("string(/p:properties/p:state)"))
-        @properties.modify do |doc|
-          doc.find("/p:properties/p:state").first.text = 'stopped'
-        end
-      end
-      @uuid = sync_uuid!
-      if @properties.data.find("string(/p:properties/p:state)") == "finished"
-        @instance = nil
-      else
-        @instance = EmptyWorkflow.new(self)
-
-        @notifications.subscriptions.keys.each do |key|
-          self.unserialize_notifications!(:cre,key)
-        end
-
-        unserialize_handlerwrapper!
-        unserialize_dataelements!
-        unserialize_endpoints!
-        unserialize_dsl!
-        unserialize_positions!
-        unserialize_attributes!
-      end
-    end
-
-    def help
-      "\033[1m\033[31mpm or public_methods(false)\033[0m\033[0m\n  Methods.\n" +
-      "\033[1m\033[31miv or instance_variables\033[0m\033[0m\n  Attributes.\n" +
-      "\033[1m\033[31mgc or GC.stat\033[0m\033[0m\n  GC stats to look for memleaks. Google for 'GC.stat ruby'.\n"
-    end
-    def pm
-      public_methods(false)
-    end
-    def iv
-      instance_variables
-    end
-    def gc
-      x = GC.stat
-      y = {}
-      y[:heap_live_slots]         = x[:heap_live_slots]
-      y[:total_allocated_objects] = x[:total_allocated_objects]
-      y[:total_freed_objects]     = x[:total_freed_objects]
-      y
+      @instance = nil
     end
 
     attr_reader :id
-    attr_reader :notifications
-    attr_reader :properties
     attr_reader :callbacks
     attr_reader :mutex
     attr_reader :attributes
-    attr_reader :uuid
 
-    def console(cmd)
-      x = eval(cmd)
-      x.class == String ? x : x.pretty_inspect
+    def uuid
+      @attributes['uuid']
     end
 
     def attributes_translated
@@ -155,6 +105,9 @@ module CPEE
     def instance
       instance_url
     end
+    def instance=(inst)
+      @instance = inst
+    end
     def endpoints
       @instance.endpoints
     end
@@ -162,514 +115,34 @@ module CPEE
       @instance.data
     end
 
-    def sim # {{{
-      @thread.join if !@thread.nil? && @thread.alive?
-      @thread = @instance.sim
-    end # }}}
-
-    def replay # {{{
-      @thread.join if !@thread.nil? && @thread.alive?
-      @thread = @instance.replay
-    end # }}}
-
-    def start # {{{
-      @thread.join if !@thread.nil? && @thread.alive?
-      unless @positions.empty?
-        @instance.search(@positions)
-      end
-      @thread = @instance.start
-    end # }}}
-
-    def stop # {{{
-      t = @instance.stop
-      t.run
-      @callbacks.delete_if do |k,c|
-        # only remove vote_callbacks, the other stuff is removed by
-        # the instance stopping cleanup
-        if c.method == :vote_callback
-          c.callback
-          true
-        else
-          false
-        end
-      end
-      @thread.join if !@thread.nil? && @thread.alive?
-      @callback = [] # everything should be empty now
-    end # }}}
+    def start
+      execution = @instance.start
+      execution.join
+    end
 
     def info
-      @properties.data.find("string(/p:properties/p:attributes/p:info)")
-    end
-    def info=(text)
-      @properties.modify do |doc|
-        node = doc.find("/p:properties/p:attributes/p:info").first
-        node.text = text if node
-      end
-    end
-    def state
-      @properties.data.find("string(/p:properties/p:state)")
-    end
-    def state_changed
-      (str = @properties.data.find("string(/p:properties/p:state/@changed)")).empty? ? Time.at(0).xmlschema : str
-    end
-    def state_change!(state=nil)
-      @properties.modify do |doc|
-        doc.find("/p:properties/p:state").each do |ele|
-          ele.attributes['changed'] = Time.now.xmlschema
-          ele.text = state if state
-        end
-      end
+      @attributes['info']
     end
 
-    def finalize_if_finished
-      if @instance.state == :finished
-        # TODO unlink engine, be careful race condition
-        # @instance = nil
-      end
+    def notify(what,content={})
+      @redis.publish('event:' + what, JSON::generate({ 'instance' => @id, 'topic' => ::File::dirname(what), 'event' => ::File::basename(what), 'content' => content }))
     end
 
-    def serialize_dataelements! #{{{
-      @properties.modify do |doc|
-        node = doc.find("/p:properties/p:dataelements").first
-        node.children.delete_all!
-        @instance.data.each do |k,v|
-          node.add(k.to_s,ValueHelper::generate(v))
-        end
-      end
-    end #}}}
-    def serialize_endpoints! #{{{
-      @properties.modify do |doc|
-        node = doc.find("/p:properties/p:endpoints").first
-        node.children.delete_all!
-        @instance.endpoints.each do |k,v|
-          node.add(k.to_s,v)
-        end
-      end
-    end #}}}
-    def serialize_state! # {{{
-      @properties.activate_schema(:finished) if @instance.state == :finished || @instance.state == :abandoned
-      @properties.activate_schema(:inactive) if @instance.state == :stopped  || @instance.state == :ready
-      @properties.activate_schema(:active)   if @instance.state == :running  || @instance.state == :simulating || @instance.state == :replaying
-      if [:finished, :stopped, :ready, :abandoned].include?(@instance.state)
-        state_change! @instance.state
-      end
-    end # }}}
-    def serialize_positions! # {{{
-      @properties.modify do |doc|
-        pos = doc.find("/p:properties/p:positions").first
-        pos.children.delete_all!
-        @positions = @instance.positions
-        @instance.positions.each do |p|
-          pos.add("#{p.position}",p.detail,'passthrough' => p.passthrough.to_s.empty? ? nil : p.passthrough)
-        end
-      end
-    end # }}}
-    def serialize_status! #{{{
-      @properties.modify do |doc|
-        node = doc.find("/p:properties/p:status/p:id").first
-        node.text = @instance.status.id
-        node = doc.find("/p:properties/p:status/p:message").first
-        node.text = @instance.status.message
-      end
-    end #}}}
+    def call_vote(what,content={})
+      # voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
+      # content[:voteid] = voteid
+      # @redis.publish('vote:' + what, JSON::generate(content))
 
-    def unserialize_notifications!(op,key)# {{{
-      case op
-        when :del
-          @notifications.subscriptions[key].delete if @notifications.subscriptions.include?(key)
-
-          @communication[key].io.close_connection if @communication[key].class == Riddl::Utils::Notifications::Producer::WS
-          @communication.delete(key)
-
-          @events.each do |eve,keys|
-            keys.delete_if{|k,v| key == k}
-          end
-          @votes.each do |eve,keys|
-            keys.delete_if do |k,v|
-              if key == k
-                @callbacks.each{|voteid,cb|cb.delete_if!(eve,k)}
-                true
-              end
-            end
-          end
-        when :upd
-          if @notifications.subscriptions.include?(key)
-            url = @communication[key]
-            evs = []
-            vos = []
-            @events.each { |e,v| evs << e }
-            @votes.each { |e,v| vos << e }
-            @notifications.subscriptions[key].read do |doc|
-              turl = doc.find('string(/n:subscription/@url)')
-              url = turl == '' ? url : turl
-              @communication[key] = url
-              doc.find('/n:subscription/n:topic').each do |t|
-                t.find('n:event').each do |e|
-                  @events["#{t.attributes['id']}/#{e}"] ||= {}
-                  @events["#{t.attributes['id']}/#{e}"][key] = url
-                  evs.delete("#{t.attributes['id']}/#{e}")
-                end
-                t.find('n:vote').each do |e|
-                  @votes["#{t.attributes['id']}/#{e}"] ||= {}
-                  @votes["#{t.attributes['id']}/#{e}"][key] = url
-                  vos.delete("#{t.attributes['id']}/#{e}")
-                end
-              end
-            end
-            evs.each { |e| @events[e].delete(key) if @events[e] }
-            vos.each do |e|
-              @callbacks.each{|voteid,cb|cb.delete_if!(e,key)}
-              @votes[e].delete(key) if @votes[e]
-            end
-          end
-        when :cre
-          @notifications.subscriptions[key].read do |doc|
-            turl = doc.find('string(/n:subscription/@url)')
-            url = turl == '' ? nil : turl
-            @communication[key] = url
-            doc.find('/n:subscription/n:topic').each do |t|
-              t.find('n:event').each do |e|
-                @events["#{t.attributes['id']}/#{e}"] ||= {}
-                @events["#{t.attributes['id']}/#{e}"][key] = (url == "" ? nil : url)
-              end
-              t.find('n:vote').each do |e|
-                @votes["#{t.attributes['id']}/#{e}"] ||= {}
-                @votes["#{t.attributes['id']}/#{e}"][key] = url
-              end
-            end
-          end
-      end
-    end # }}}
-
-    def unserialize_attributes! #{{{
-      @attributes = {}
-      @properties.data.find("/p:properties/p:attributes/p:*").map do |ele|
-        @attributes[ele.qname.name.to_sym] = ele.text
-      end
-      uuid = @properties.data.find("/p:properties/p:attributes/p:uuid")
-      if uuid.empty? || uuid.length != 1 || uuid.first.text != @uuid
-        @properties.modify do |doc|
-          attr = doc.find("/p:properties/p:attributes").first
-          attr.find('p:uuid').delete_all!
-          attr.prepend('uuid',@uuid)
-        end
-      end
-    end #}}}
-    def unserialize_dataelements! #{{{
-      @instance.data.clear
-      @properties.data.find("/p:properties/p:dataelements/p:*").each do |e|
-        @instance.data[e.qname.to_sym] = ValueHelper::parse(e.text)
-      end
-    end #}}}
-    def unserialize_endpoints! #{{{
-      @instance.endpoints.clear
-      @properties.data.find("/p:properties/p:endpoints/p:*").each do |e|
-        @instance.endpoints[e.qname.to_sym] = e.text
-      end
-    end #}}}
-    def unserialize_state! #{{{
-      state = 'ready'
-      @properties.modify do |doc|
-        node = doc.find("/p:properties/p:state").first
-        state = node.text
-      end
-      if call_vote("state/change", :instance => @id, :info => info, :state => state)
-        case state
-          when 'stopping'
-            stop
-          when 'running'
-            start
-          when 'simulating'
-            sim
-          when 'replaying'
-            replay
-          when 'ready'
-            @instance.state_signal
-          when 'abandoned'
-            @instance.abandon
-        end
-      else
-        if node = @properties.data.find("/p:properties/p:state").first
-          node.text = @instance.state_signal
-        end
-      end
-    end #}}}
-    def unserialize_handlerwrapper! #{{{
-      hw = nil
-      begin
-        hw = @properties.data.find("string(/p:properties/p:handlerwrapper)")
-        @instance.handlerwrapper = eval(hw)
-      rescue => e
-        @instance.handlerwrapper = DefaultHandlerWrapper
-      end
-      if hw != @instance.handlerwrapper
-        @properties.modify do |doc|
-          node = doc.find("/p:properties/p:handlerwrapper").first
-          node.text = @instance.handlerwrapper.to_s
-        end
-      end
-    end #}}}
-    def unserialize_positions! #{{{
-      @positions = []
-      @properties.data.find("/p:properties/p:positions/p:*").each do |e|
-        val = e.text.split(';')
-        @positions << ::WEEL::Position.new(e.qname.to_s.to_sym,e.text.to_sym,e.attributes['passthrough'])
-      end
-    end #}}}
-    def unserialize_dsl! #{{{
-      @instance.description = @properties.data.find("string(/p:properties/p:dsl)")
-    end #}}}
-    def unserialize_description! #{{{
-      dsl = nil
-      nots = []
-      @properties.modify do |doc|
-        begin
-          dsl   = doc.find("/p:properties/p:dsl").first
-          dslx  = doc.find("/p:properties/p:dslx").first
-          desc  = doc.find("/p:properties/p:description").first
-          tdesc = doc.find("/p:properties/p:transformation/p:description").first
-          tdata = doc.find("/p:properties/p:transformation/p:dataelements").first
-          tendp = doc.find("/p:properties/p:transformation/p:endpoints").first
-
-          tdesctype = tdesc.attributes['type']
-          tdatatype = tdata.attributes['type']
-          tendptype = tendp.attributes['type']
-
-          if desc.children.empty?
-            tdesctype = tdatatype = tendptype = 'clean'
-          end
-
-          ### description transformation, including dslx to dsl
-          addit = if tdesctype == 'copy' || tdesc.empty?
-            desc.children.first.to_doc.root
-          elsif tdesctype == 'rest' && !tdesc.empty?
-            srv = Riddl::Client.interface(tdesc.text,@opts[:transformation_service])
-            status, res = srv.post [
-              Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
-              Riddl::Parameter::Simple.new("type","description")
-            ]
-            if status >= 200 && status < 300
-              XML::Smart::string(res[0].value.read).root
-            else
-              raise 'Could not extract dslx'
-            end
-          elsif tdesctype == 'xslt' && !tdesc.empty?
-            trans = XML::Smart::open_unprotected(tdesc.text)
-            desc.children.first.to_doc.transform_with(trans).root
-          elsif tdesctype == 'clean'
-            XML::Smart::open_unprotected(@opts[:empty_dslx]).root
-          else
-            nil
-          end
-          unless addit.nil?
-            dslx.children.delete_all!
-            dslx.add addit
-            trans = XML::Smart::open_unprotected(@opts[:transformation_dslx])
-            dsl.text = dslx.to_doc.transform_with(trans)
-            @instance.description = dsl.text
-          end
-
-          ### dataelements extraction
-          addit = if tdatatype == 'rest' && !tdata.empty?
-            srv = Riddl::Client.interface(tdata.text,@opts[:transformation_service])
-            status, res = srv.post [
-              Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
-              Riddl::Parameter::Simple.new("type","dataelements")
-            ]
-            if status >= 200 && status < 300
-              res
-            else
-              raise 'Could not extract dataelements'
-            end
-          elsif tdatatype == 'xslt' && !tdata.empty?
-            trans = XML::Smart::open_unprotected(tdata.text)
-            desc.children.first.to_doc.transform_with(trans)
-          elsif tdatatype == 'clean'
-            []
-          else
-            nil
-          end
-          unless addit.nil?
-            node = doc.find("/p:properties/p:dataelements").first
-            node.children.delete_all!
-            @instance.data.clear
-            addit.each_slice(2).each do |k,v|
-              @instance.data[k.value.to_sym] = ValueHelper::parse(v.value)
-              node.add(k.value,ValueHelper::generate(v.value))
-            end
-            nots << ["dataelements/change", {:instance => instance, :changed => JSON::generate(@instance.data)}]
-          end
-
-          ### endpoints extraction
-          addit = if tendptype == 'rest' && !tdata.empty?
-            srv = Riddl::Client.interface(tendp.text,@opts[:transformation_service])
-            status, res = srv.post [
-              Riddl::Parameter::Complex.new("description","text/xml",desc.children.first.dump),
-              Riddl::Parameter::Simple.new("type","endpoints")
-            ]
-            if status >= 200 && status < 300
-              res
-            else
-              raise 'Could not extract endpoints'
-            end
-          elsif tendptype == 'xslt' && !tdata.empty?
-            trans = XML::Smart::open_unprotected(tendp.text)
-            desc.children.first.to_doc.transform_with(trans)
-          elsif tendptype == 'clean'
-            []
-          else
-            nil
-          end
-          unless addit.nil?
-            node = doc.find("/p:properties/p:endpoints").first
-            node.children.delete_all!
-            @instance.endpoints.clear
-            addit.each_slice(2).each do |k,v|
-              @instance.endpoints[k.value.to_sym] = ValueHelper::parse(v.value)
-              node.add(k.value,ValueHelper::generate(v.value))
-            end
-            nots << ["endpoints/change", {:instance => instance, :changed => JSON::generate(@instance.endpoints)}]
-          end
-          nots << ["description/change", { :instance => instance }]
-        rescue => err
-          nots << ["description/error", { :instance => instance, :message => err.message }]
-        end
-      end
-      nots
-    end #}}}
-
-    def sync_uuid! #{{{
-      val = SecureRandom.uuid
-      uuid = @properties.data.find("/p:properties/p:attributes/p:uuid")
-      if uuid.empty?
-        @properties.modify { |doc| doc.find("/p:properties/p:attributes").first.prepend('p:uuid',val) }
-        val
-      else
-        uuid.first.text
-      end
-    end #}}}
-
-    def notify(what,content={})# {{{
-      item = @events[what]
-
-      if item
-        item.each do |ke,ur|
-          Thread.new(ke,ur) do |key,url|
-            notf = build_notification(key,what,content,'event')
-            if url.class == String
-              client = Riddl::Client.new(url,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml')
-              params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
-              params << Riddl::Header.new("CPEE-BASE",self.base)
-              params << Riddl::Header.new("CPEE-INSTANCE",self.instance)
-              params << Riddl::Header.new("CPEE-INSTANCE-URL",self.instance_url)
-              params << Riddl::Header.new("CPEE-INSTANCE-UUID",self.uuid)
-              client.post params
-            elsif url.class == Riddl::Utils::Notifications::Producer::WS
-              e = XML::Smart::string("<event/>")
-              notf.each do |k,v|
-                e.root.add(k,v)
-              end
-              url.send(e.to_s) rescue nil
-            end
-          end
-        end
-      end
-    end # }}}
-
-    def call_vote(what,content={})# {{{
-      voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      item = @votes[what]
-      if item && item.length > 0
-        continue = WEEL::Continue.new
-        @votes_results[voteid] = []
-        inum = 0
-        item.each do |key,url|
-          if url.class == String
-            inum += 1
-          elsif url.class == Riddl::Utils::Notifications::Producer::WS
-            inum += 1 unless url.closed?
-          end
-        end
-
-        item.each do |key,url|
-
-          Thread.new(key,url,content.dup) do |k,u,c|
-            callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
-            c['callback'] = callback
-            notf = build_notification(k,what,c,'vote',callback)
-            if u.class == String
-              client = Riddl::Client.new(u,'http://riddl.org/ns/common-patterns/notifications-consumer/1.0/consumer.xml')
-              params = notf.map{|ke,va|Riddl::Parameter::Simple.new(ke,va)}
-              params << Riddl::Header.new("CPEE-BASE",self.base_url)
-              params << Riddl::Header.new("CPEE-INSTANCE",self.instance)
-              params << Riddl::Header.new("CPEE-INSTANCE-URL",self.instance_url)
-              params << Riddl::Header.new("CPEE-INSTANCE-UUID",self.uuid)
-              params << Riddl::Header.new("CPEE-CALLBACK",self.instance_url + '/callbacks/' + callback)
-              @mutex.synchronize do
-                status, result, headers = client.post params
-                if headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true'
-                  @callbacks[callback] = Callback.new("vote #{notf.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :http, continue, voteid, callback, inum)
-                else
-                  vote_callback(result,nil,continue,voteid,callback,inum)
-                end
-              end
-            elsif u.class == Riddl::Utils::Notifications::Producer::WS
-              @callbacks[callback] = Callback.new("vote #{notf.find{|a,b| a == 'notification'}[1]}", self, :vote_callback, what, k, :ws, continue, voteid, callback, inum)
-              e = XML::Smart::string("<vote/>")
-              notf.each do |ke,va|
-                e.root.add(ke,va)
-              end
-              u.send(e.to_s)
-            end
-          end
-
-        end
-        continue.wait
-
-        !@votes_results.delete(voteid).include?(false)
-      else
-        true
-      end
-    end # }}}
-
-    def vote_callback(result,options,continue,voteid,callback,num)# {{{
-      @callbacks.delete(callback)
-      if result == :DELETE
-        @votes_results[voteid] << true
-      else
-        @votes_results[voteid] << (result && result[0] && result[0].value == 'true')
-      end
-      if (num == @votes_results[voteid].length)
-        continue.continue
-      end
-    end # }}}
-
-    def add_websocket(key,socket)# {{{
-      @communication[key] = socket
-      @events.each do |a|
-        if a[1].has_key?(key)
-          a[1][key] = socket
-        end
-      end
-      @votes.each do |a|
-        if a[1].has_key?(key)
-          a[1][key] = socket
-        end
-      end
-    end # }}}
-
-  private
-
-    def build_notification(key,what,content,type,callback=nil)# {{{
-      res = []
-      res << ['key'                             , key]
-      res << ['topic'                           , ::File::dirname(what)]
-      res << [type                              , ::File::basename(what)]
-      res << ['notification'                    , ValueHelper::generate(content)]
-      res << ['callback'                        , callback] unless callback.nil?
-      res << ['fingerprint-with-consumer-secret', Digest::MD5.hexdigest(res.join(''))]
-      # TODO add secret to fp
-    end # }}}
+      # psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
+      # continue = WEEL::Continue.new
+      # psredis.subscribe("vote:" + voteid) do |on|
+      #   on.message do |_, message|
+      #     p message
+      #     redis.quit
+      #   end
+      # end
+      true
+    end
 
   end
 

@@ -21,6 +21,32 @@ require_relative 'implementation_properties'
 module CPEE
 
   SERVER = File.expand_path(File.join(__dir__,'..','cpee.xml'))
+  PROPERTIES_FULL = %w{
+    /p:properties/p:handlerwrapper
+    /p:properties/p:positions/p:*
+    /p:properties/p:positions/p:*/@*
+    /p:properties/p:dataelements/p:*
+    /p:properties/p:endpoints/p:*
+    /p:properties/p:attributes/p:*
+    /p:properties/p:transformation/p:*
+    /p:properties/p:transformation/p:*/@*
+    /p:properties/p:description
+    /p:properties/p:status/id
+    /p:properties/p:status/message
+    /p:properties/p:state/@changed
+    /p:properties/p:state
+  }
+  PROPERTIES = %w{
+    /p:properties/p:handlerwrapper
+    /p:properties/p:positions
+    /p:properties/p:dataelements
+    /p:properties/p:endpoints
+    /p:properties/p:attributes
+    /p:properties/p:transformation
+    /p:properties/p:description
+    /p:properties/p:status
+    /p:properties/p:state
+  }
 
   def self::implementation(opts)
     opts[:instances]                  ||= File.expand_path(File.join(__dir__,'..','..','server','instances'))
@@ -53,7 +79,7 @@ module CPEE
       end
 
       interface 'main' do
-        run CPEE::Instances if get '*'
+        run CPEE::Instances, opts if get '*'
         run CPEE::NewInstance, opts if post 'instance-new'
         on resource do |r|
           run CPEE::Info, opts if get
@@ -112,11 +138,17 @@ module CPEE
 
   class Instances < Riddl::Implementation #{{{
     def response
-      controller = @a[0]
+      redis = @a[0][:redis]
       Riddl::Parameter::Complex.new("wis","text/xml") do
         ins = XML::Smart::string('<instances/>')
-        controller.sort{|a,b| b[0] <=> a[0] }.each do |k,v|
-          ins.root.add('instance', v.info,  'uuid' => v.uuid, 'id' => k, 'state' => v.state, 'state_changed' => v.state_changed ) unless v.nil?
+        redis.keys('instance:*/state').each do |key|
+          instance = key[9..-1].to_i
+          attributes = "instance:#{instance}/attributes/"
+          info = redis.get(attributes + 'info')
+          uuid = redis.get(attributes + 'uuid')
+          state = redis.get(key)
+          state_changed = redis.get(key + '/@changed')
+          ins.root.add('instance', info,  'uuid' => uuid, 'id' => instance, 'state' => state, 'state_changed' => state_changed )
         end
         ins.to_s
       end
@@ -124,29 +156,35 @@ module CPEE
   end #}}}
 
   class NewInstance < Riddl::Implementation #{{{
-    def response
-      controller = @a[0]
-      opts = @a[1]
-      name = @p[0].value
-      id = controller.keys.sort.last.to_i
+    def path(e)
+      ret = []
+      until e.qname.name == 'properties'
+        ret << (e.class == XML::Smart::Dom::Attribute ? '@' : '') + e.qname.name
+        e = e.parent
+      end
+      File.join(*ret.reverse)
+    end
 
-      while true
-        id += 1
-        unless Dir.exists? opts[:instances] + "/#{id}"
-          Dir.mkdir(opts[:instances] + "/#{id}") rescue nil
-          break
+    def response
+      opts = @a[0]
+      redis = opts[:redis]
+      doc = XML::Smart::open_unprotected(opts[:properties_init])
+      doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+      name     = @p[0].value
+      id       = redis.keys('instance:*/state').map { |e| e[9..-1].to_i}.max + 1
+      uuid     = SecureRandom.uuid
+      instance = 'instance:' + id.to_s
+      redis.multi do |multi|
+        doc.root.find(PROPERTIES_FULL.join(' | ')).each do |e|
+          multi.set(File.join(instance, path(e)), e.text)
         end
       end
 
-      controller[id] = Controller.new(id,opts)
-      controller[id].info = name
-      controller[id].state_change!
+      @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
+      @headers << Riddl::Header.new("CPEE-INSTANCE-URL", File.join(opts[:url].to_s,id.to_s))
+      @headers << Riddl::Header.new("CPEE-INSTANCE-UUID", uuid)
 
-      @headers << Riddl::Header.new("CPEE-INSTANCE", controller[id].instance)
-      @headers << Riddl::Header.new("CPEE-INSTANCE-URL", controller[id].instance_url)
-      @headers << Riddl::Header.new("CPEE-INSTANCE-UUID", controller[id].uuid)
-
-      Riddl::Parameter::Simple.new("id", id)
+      Riddl::Parameter::Simple.new("id", id.to_s)
     end
   end #}}}
 
@@ -173,15 +211,18 @@ module CPEE
 
   class DeleteInstance < Riddl::Implementation #{{{
     def response
-      controller = @a[0]
-      opts = @a[1]
+      opts = @a[0]
+      redis = opts[:redis]
       id = @r[0].to_i
-      unless controller[id]
+      unless redis.exists("instance:#{id}/state")
         @status = 400
         return
       end
-      controller.delete(id)
-      FileUtils.rm_r(opts[:instances] + "/#{@r[0]}")
+      redis.multi do |multi|
+        redis.keys('instance:#{id}/*').each do |key|
+          redis.del(key)
+        end
+      end
     end
   end #}}}
 

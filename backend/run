@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
 require 'weel'
 require 'yaml'
-if File.exists? '../lib/cpee/controller2.rb'
-  require '../lib/cpee/controller2'
+if File.exists? '../lib/cpee/controller.rb'
+  require '../lib/cpee/controller'
 else
-  require 'cpee/controller2'
+  require 'cpee/controller'
 end
 require_relative 'handlerwrappers/default'
 require_relative 'instance'

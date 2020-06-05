@@ -6,6 +6,9 @@ module CPEE
         run CPEE::Properties::Get, id, opts if get
         on resource 'state' do
           run CPEE::Properties::GetState, id, opts if get
+          on resource '@changed' do
+            run CPEE::Properties::GetStateChanged, id, opts if get
+          end
         end
       end
     end
@@ -22,6 +25,13 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         Riddl::Parameter::Simple.new('state',CPEE::Properties::extract_state(id,opts))
+      end
+    end #}}}
+    class GetStateChanged < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        Riddl::Parameter::Simple.new('state',CPEE::Properties::extract_state_changed(id,opts))
       end
     end #}}}
 
