@@ -60,7 +60,7 @@ module CPEE
     end #}}}
 
     def self::extract_all(id,opts)
-      doc = XML::Smart::open_unprotected(opts[:properties_init])
+      doc = XML::Smart::open_unprotected(opts[:properties_empty])
       doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
       if value = extract_state(id,opts)
         doc.find('/p:properties/p:state').first.text = value
@@ -78,7 +78,7 @@ module CPEE
         values = extract_list(item,id,opts)
         if values
           des = doc.find("/p:properties/p:#{item}").first
-          values.each{ |de| des.add(*de) }
+          values.each{ |de| p de; des.add(*de) }
         end
       end
       doc.to_s

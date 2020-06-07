@@ -21,7 +21,7 @@ require_relative 'implementation_properties'
 module CPEE
 
   SERVER = File.expand_path(File.join(__dir__,'..','cpee.xml'))
-  PROPERTIES_FULL = %w{
+  PROPERTIES_PATHS_FULL = %w{
     /p:properties/p:handlerwrapper
     /p:properties/p:positions/p:*
     /p:properties/p:positions/p:*/@*
@@ -36,7 +36,7 @@ module CPEE
     /p:properties/p:state/@changed
     /p:properties/p:state
   }
-  PROPERTIES = %w{
+  PROPERTIES_PATHS = %w{
     /p:properties/p:handlerwrapper
     /p:properties/p:positions
     /p:properties/p:dataelements
@@ -54,6 +54,7 @@ module CPEE
     opts[:handlerwrappers]            ||= ''
     opts[:topics]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','topics.xml'))
     opts[:properties_init]            ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.init'))
+    opts[:properties_empty]           ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.empty'))
     opts[:transformation_dslx]        ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation_dslx.xsl'))
     opts[:transformation_service]     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation.xml'))
     opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
@@ -175,7 +176,7 @@ module CPEE
       uuid     = SecureRandom.uuid
       instance = 'instance:' + id.to_s
       redis.multi do |multi|
-        doc.root.find(PROPERTIES_FULL.join(' | ')).each do |e|
+        doc.root.find(PROPERTIES_PATHS_FULL.join(' | ')).each do |e|
           multi.set(File.join(instance, path(e)), e.text)
         end
       end
