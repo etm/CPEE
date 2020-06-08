@@ -16,6 +16,7 @@ require 'fileutils'
 require 'redis'
 require 'riddl/server'
 require 'riddl/client'
+require_relative 'notification'
 require_relative 'implementation_properties'
 
 module CPEE
@@ -31,8 +32,8 @@ module CPEE
     /p:properties/p:transformation/p:*
     /p:properties/p:transformation/p:*/@*
     /p:properties/p:description
-    /p:properties/p:status/id
-    /p:properties/p:status/message
+    /p:properties/p:status/p:id
+    /p:properties/p:status/p:message
     /p:properties/p:state/@changed
     /p:properties/p:state
   }
@@ -76,13 +77,13 @@ module CPEE
     Proc.new do
       interface 'properties' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use CPEE::Properties::implementation(id, opts)
+        use CPEE::Properties::implementation(id.to_i, opts)
       end
 
       interface 'main' do
         run CPEE::Instances, opts if get '*'
         run CPEE::NewInstance, opts if post 'instance-new'
-        on resource do |r|
+        on resource '\d+' do |r|
           run CPEE::Info, opts if get
           run CPEE::DeleteInstance, opts if delete
           on resource 'callbacks' do
@@ -122,7 +123,7 @@ module CPEE
       opts = @a[1]
       id = @r[0].to_i
       unless controller[id]
-        @status = 400
+        @status = 404
         return
       end
       Riddl::Parameter::Complex.new("info","text/xml") do
@@ -148,7 +149,7 @@ module CPEE
           info = redis.get(attributes + 'info')
           uuid = redis.get(attributes + 'uuid')
           state = redis.get(key)
-          state_changed = redis.get(key + '/@changed')
+          state_changed = redis.get(File.join(key,'@changed'))
           ins.root.add('instance', info,  'uuid' => uuid, 'id' => instance, 'state' => state, 'state_changed' => state_changed )
         end
         ins.to_s
@@ -172,13 +173,15 @@ module CPEE
       doc = XML::Smart::open_unprotected(opts[:properties_init])
       doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
       name     = @p[0].value
-      id       = redis.keys('instance:*/state').map { |e| e[9..-1].to_i}.max + 1
+      id       = redis.keys('instance:*/state').map{ |e| e[9..-1].to_i}.max + 1 rescue 0
       uuid     = SecureRandom.uuid
       instance = 'instance:' + id.to_s
       redis.multi do |multi|
         doc.root.find(PROPERTIES_PATHS_FULL.join(' | ')).each do |e|
           multi.set(File.join(instance, path(e)), e.text)
         end
+        multi.set(File.join(instance, "attributes", "uuid"), SecureRandom.uuid)
+        multi.set(File.join(instance, "state", "@changed"), Time.now.xmlschema(3))
       end
 
       @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
@@ -194,7 +197,7 @@ module CPEE
       opts = @a[0]
       id = @r[0].to_i
       unless opts[:redis].exists("instance:#{id}/state")
-        @status = 400
+        @status = 404
         return
       end
       Riddl::Parameter::Complex.new("info","text/xml") do
@@ -216,14 +219,10 @@ module CPEE
       redis = opts[:redis]
       id = @r[0].to_i
       unless redis.exists("instance:#{id}/state")
-        @status = 400
+        @status = 404
         return
       end
-      redis.multi do |multi|
-        redis.keys('instance:#{id}/*').each do |key|
-          redis.del(key)
-        end
-      end
+      redis.del redis.keys("instance:#{id}/*").to_a
     end
   end #}}}
 

@@ -18,6 +18,7 @@ require 'securerandom'
 require 'riddl/client'
 require_relative 'callback'
 require_relative 'value_helper'
+require_relative 'attributes_helper'
 
 require 'ostruct'
 class ParaStruct < OpenStruct
@@ -29,31 +30,6 @@ def →(a); ParaStruct.new(a); end
 def ⭐(a); ParaStruct.new(a); end
 
 module CPEE
-
-  class AttributesHelper #{{{
-    def translate(__attributes__,__dataelements__,__endpoints__)
-      @data       = WEEL::ReadHash.new(__dataelements__)
-      @endpoints  = WEEL::ReadHash.new(__endpoints__)
-      @attributes = WEEL::ReadHash.new(__attributes__)
-      __attributes__.transform_values do |v|
-        v.gsub(/(!(attributes|data|endpoints)\.[\w_]+)/) do |m|
-          eval(m[1..-1])
-        end
-      end
-    end
-
-    def data
-      @data
-    end
-
-    def endpoints
-      @endpoints
-    end
-
-    def attributes
-      @attributes
-    end
-  end #}}}
 
   class Controller
     def initialize(id,dir,opts)
@@ -125,7 +101,7 @@ module CPEE
     end
 
     def notify(what,content={})
-      @redis.publish('event:' + what, JSON::generate({ 'instance' => @id, 'topic' => ::File::dirname(what), 'event' => ::File::basename(what), 'content' => content }))
+      CPEE::Notification::send_event(redis,what,@id,content)
     end
 
     def call_vote(what,content={})

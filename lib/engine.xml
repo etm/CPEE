@@ -70,7 +70,7 @@
       <doc:documentation>a</doc:documentation>
     </get>
     <post in="instance-new" out="instance-id"/>
-    <resource>
+    <resource relative="\d+">
       <get in="*" out="instance-info"/>
       <delete in="*"/>
       <resource relative="console">

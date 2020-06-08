@@ -15,29 +15,29 @@
 -->
 
 <description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:doc="http://cpee.org/ns/documentation">
-  <message name="properties">
+  <message name="properties"> <!--{{{-->
     <parameter name="properties" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
       <xi:include href="properties/properties.rng"/>
     </parameter>
-  </message>
-  <message name="set-properties">
+  </message> <!--}}}-->
+  <message name="set-properties"> <!--{{{-->
     <parameter name="properties" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
       <xi:include href="properties/set-properties.rng"/>
     </parameter>
-  </message>
-  <message name="set-some-properties">
+  </message> <!--}}}-->
+  <message name="set-some-properties"> <!--{{{-->
     <parameter name="properties" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
       <xi:include href="properties/set-some-properties.rng"/>
     </parameter>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="machine">
+  <message name="machine"> <!--{{{-->
     <parameter name="machine" type="string"/>
-  </message>
-  <message name="diagram">
+  </message> <!--}}}-->
+  <message name="diagram"> <!--{{{-->
     <parameter name="diagram" mimetype="text/plain"/>
-  </message>
-  <message name="state">
+  </message> <!--}}}-->
+  <message name="state"> <!--{{{-->
     <parameter name="state" type="string">
       <choice>
         <value>ready</value>
@@ -50,116 +50,116 @@
         <value>finished</value>
       </choice>
     </parameter>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="changed">
+  <message name="changed"> <!--{{{-->
     <parameter name="state" type="dateTime"/>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="status">
-    <parameter name="properties" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/status.rng"/>
+  <message name="status"> <!--{{{-->
+    <parameter name="status" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/t_status.rng"/>
     </parameter>
-  </message>
-  <message name="integer">
+  </message> <!--}}}-->
+  <message name="integer"> <!--{{{-->
     <parameter name="value" type="integer"/>
-  </message>
-  <message name="string">
+  </message> <!--}}}-->
+  <message name="string"> <!--{{{-->
     <parameter name="value" type="string"/>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="handlerwrapper">
+  <message name="handlerwrapper"> <!--{{{-->
     <parameter name="value" type="string">
       <param name="pattern">[A-Z][a-zA-Z]*</param>
     </parameter>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="id">
+  <message name="id"> <!--{{{-->
     <parameter name="value" type="string"/>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="position">
+  <message name="position"> <!--{{{-->
     <parameter name="position" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/position.rng"/>
+      <xi:include href="properties/t_position.rng"/>
     </parameter>
-  </message>
-  <message name="positions">
+  </message> <!--}}}-->
+  <message name="positions"> <!--{{{-->
     <parameter name="positions" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/positions.rng"/>
+      <xi:include href="properties/t_positions.rng"/>
     </parameter>
-  </message>
-  <message name="detail">
+  </message> <!--}}}-->
+  <message name="detail"> <!--{{{-->
     <parameter name="detail" type="string">
       <choice>
         <value>at</value>
         <value>after</value>
       </choice>
     </parameter>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="dataelement">
+  <message name="dataelement"> <!--{{{-->
     <parameter name="dataelement" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/simple.rng"/>
+      <xi:include href="properties/t_simple.rng"/>
     </parameter>
-  </message>
-  <message name="dataelements">
+  </message> <!--}}}-->
+  <message name="dataelements"> <!--{{{-->
     <parameter name="dataelements" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/dataelements.rng"/>
+      <xi:include href="properties/t_dataelements.rng"/>
     </parameter>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="endpoint">
+  <message name="endpoint"> <!--{{{-->
     <parameter name="endpoint" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/simple.rng"/>
+      <xi:include href="properties/t_simple.rng"/>
     </parameter>
-  </message>
-  <message name="endpoints">
+  </message> <!--}}}-->
+  <message name="endpoints"> <!--{{{-->
     <parameter name="endpoints" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/endpoints.rng"/>
+      <xi:include href="properties/t_endpoints.rng"/>
     </parameter>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="attribute">
+  <message name="attribute"> <!--{{{-->
     <parameter name="attribute" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/simple.rng"/>
+      <xi:include href="properties/t_simple.rng"/>
     </parameter>
-  </message>
-  <message name="attributes">
+  </message> <!--}}}-->
+  <message name="attributes"> <!--{{{-->
     <parameter name="attributes" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/attributes.rng"/>
+      <xi:include href="properties/t_attributes.rng"/>
     </parameter>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="dsl">
+  <message name="dsl"> <!--{{{-->
     <parameter name="dsl" mimetype="text/plain"/>
-  </message>
-  <message name="dslx">
+  </message> <!--}}}-->
+  <message name="dslx"> <!--{{{-->
     <parameter name="dslx" mimetype="*/xml"/>
-  </message>
-  <message name="description">
+  </message> <!--}}}-->
+  <message name="description"> <!--{{{-->
     <parameter name="description" mimetype="*/xml"/>
-  </message>
+  </message> <!--}}}-->
 
-  <message name="transformation">
+  <message name="transformation"> <!--{{{-->
     <parameter name="transformation" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/transformation.rng"/>
+      <xi:include href="properties/t_transformation.rng"/>
     </parameter>
-  </message>
+  </message> <!--}}}-->
 
   <resource>
     <get out="properties"/>
     <put in="set-properties"/>
     <patch in="set-some-properties"/>
 
-    <resource relative="state">
+    <resource relative="state"> <!--{{{-->
       <get in="machine" out="diagram"/>
       <get out="state"/>
       <put in="state"/>
       <resource relative="@changed">
         <get out="changed"/>
       </resource>
-    </resource>
-    <resource relative="status">
+    </resource> <!--}}}-->
+    <resource relative="status"> <!--{{{-->
       <get out="status"/>
       <put in="status"/>
       <resource relative="id">
@@ -168,12 +168,13 @@
       <resource relative="message">
         <get out="string"/>
       </resource>
-    </resource>
-    <resource relative="handlerwrapper">
+    </resource> <!--}}}-->
+    <resource relative="handlerwrapper"> <!--{{{-->
       <put in="handlerwrapper"/>
       <get out="handlerwrapper"/>
-    </resource>
-    <resource relative="positions">
+    </resource> <!--}}}-->
+    <resource relative="positions"> <!--{{{-->
+      <get out="positions"/>
       <post in="position" out="id"/>
       <patch in="positions"/>
       <put in="positions"/>
@@ -185,8 +186,9 @@
           <get out="string"/>
         </resource>
       </resource>
-    </resource>
-    <resource relative="dataelements">
+    </resource> <!--}}}-->
+    <resource relative="dataelements"> <!--{{{-->
+      <get out="dataelements"/>
       <post in="dataelement" out="id"/>
       <patch in="dataelements"/>
       <put in="dataelements"/>
@@ -195,8 +197,9 @@
         <put in="string"/>
         <delete/>
       </resource>
-    </resource>
-    <resource relative="endpoints">
+    </resource> <!--}}}-->
+    <resource relative="endpoints"> <!--{{{-->
+      <get out="endpoints"/>
       <post in="endpoint" out="id"/>
       <patch in="endpoints"/>
       <put in="endpoints"/>
@@ -205,8 +208,9 @@
         <put in="string"/>
         <delete/>
       </resource>
-    </resource>
-    <resource relative="attributes">
+    </resource> <!--}}}-->
+    <resource relative="attributes"> <!--{{{-->
+      <get out="attributes"/>
       <post in="attribute" out="id"/>
       <patch in="attributes"/>
       <put in="attributes"/>
@@ -215,22 +219,22 @@
         <put in="string"/>
         <delete/>
       </resource>
-    </resource>
+    </resource> <!--}}}-->
 
-    <resource relative="dsl">
+    <resource relative="dsl"> <!--{{{-->
       <get out="dsl"/>
-    </resource>
-    <resource relative="dslx">
+    </resource> <!--}}}-->
+    <resource relative="dslx"> <!--{{{-->
       <get out="dslx"/>
-    </resource>
-    <resource relative="description">
+    </resource> <!--}}}-->
+    <resource relative="description"> <!--{{{-->
       <get out="description"/>
       <put in="description"/>
-    </resource>
+    </resource> <!--}}}-->
 
-    <resource relative="transformation">
+    <resource relative="transformation"> <!--{{{-->
       <get out="transformation"/>
       <put in="transformation"/>
     </resource>
-  </resource>
+  </resource> <!--}}}-->
 </description>

@@ -29,10 +29,10 @@
     <tile>
       <layer name="main"/>
       <layer name="properties">
-        <apply-to>/{}/properties</apply-to>
+        <apply-to>/\d+/properties</apply-to>
       </layer>
       <layer name="notifications">
-        <apply-to>/{}</apply-to>
+        <apply-to>/\d+</apply-to>
       </layer>
     </tile>
   </facade>

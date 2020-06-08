@@ -50,6 +50,9 @@ Daemonite.new do |opts|
               mess.dig('content','changed').each do |c|
                 multi.set("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}",mess.dig('content','values',c))
               end
+              mess.dig('content','deleted').to_a.each do |c|
+                multi.del("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}")
+              end
             end
           when 'event:transformation/change'
             redis.multi do |multi|
@@ -79,6 +82,8 @@ Daemonite.new do |opts|
               end
             end
         end
+      rescue => e
+        puts e.message
       end
     end
   end

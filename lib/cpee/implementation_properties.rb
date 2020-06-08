@@ -1,3 +1,6 @@
+require_relative 'attributes_helper'
+require 'json'
+
 module CPEE
   module Properties
 
@@ -11,6 +14,30 @@ module CPEE
             run CPEE::Properties::GetStateChanged, id, opts if get
           end
         end
+        on resource 'status' do
+          run CPEE::Properties::GetStatus, id, opts if get
+          on resource 'id' do
+            run CPEE::Properties::GetStatusID, id, opts if get
+          end
+          on resource 'message' do
+            run CPEE::Properties::GetStatusMessage, id, opts if get
+          end
+        end
+        on resource 'handlerwrapper' do
+          run CPEE::Properties::GetHandlerWrapper, id, opts if get
+        end
+        %w{dataelements endpoints attributes}.each do |ele|
+          on resource ele do
+            run CPEE::Properties::GetItems, ele, id, opts if get
+            run CPEE::Properties::PatchItems, ele, id, opts if patch ele
+            run CPEE::Properties::PutItems, ele, id, opts if put ele
+            on resource do
+              run CPEE::Properties::GetItem, ele, id, opts if get
+              run CPEE::Properties::SetItem, ele, id, opts if put 'string'
+              run CPEE::Properties::DelItem, ele, id, opts if delete
+            end
+          end
+        end
       end
     end
 
@@ -18,14 +45,24 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Complex.new('properties','application/xml',CPEE::Properties::extract_all(id,opts))
+        doc = XML::Smart::open_unprotected(opts[:properties_empty])
+        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+        doc.find('/p:properties/p:state').first.text = CPEE::Properties::extract_item(id,opts,'state')
+        doc.find('/p:properties/p:state/@changed').first.value = CPEE::Properties::extract_item(id,opts,'state/@changed')
+        doc.find('/p:properties/p:status/p:id').first.text = CPEE::Properties::extract_item(id,opts,'status/id')
+        doc.find('/p:properties/p:status/p:message').first.text = CPEE::Properties::extract_item(id,opts,'status/message')
+        %w{dataelements endpoints attributes}.each do |item|
+          des = doc.find("/p:properties/p:#{item}").first
+          CPEE::Properties::extract_list(id,opts,item).each{ |de| des.add(*de) }
+        end
+        Riddl::Parameter::Complex.new('properties','application/xml',doc.to_s)
       end
     end #}}}
     class GetState < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Simple.new('state',CPEE::Properties::extract_state(id,opts))
+        Riddl::Parameter::Simple.new('state',CPEE::Properties::extract_item(id,opts,'state'))
       end
     end #}}}
     class GetStateMachine < Riddl::Implementation #{{{
@@ -55,48 +92,132 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Simple.new('state',CPEE::Properties::extract_state_changed(id,opts))
+        Riddl::Parameter::Simple.new('state',CPEE::Properties::extract_item(id,opts,'state/@changed'))
+      end
+    end #}}}
+    class GetStatus < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        doc = XML::Smart::open_unprotected(opts[:properties_empty])
+        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+        doc.find('/p:properties/p:status/p:id').first.text = CPEE::Properties::extract_item(id,opts,'status/id')
+        doc.find('/p:properties/p:status/p:message').first.text = CPEE::Properties::extract_item(id,opts,'status/message')
+        Riddl::Parameter::Complex.new('status','text/xml',des.to_doc.to_s)
+      end
+    end #}}}
+    class GetStatusID < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        Riddl::Parameter::Simple.new('value',CPEE::Properties::extract_item(id,opts,'status/id'))
+      end
+    end #}}}
+    class GetStatusMessage < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        Riddl::Parameter::Simple.new('value',CPEE::Properties::extract_item(id,opts,'status/message'))
+      end
+    end #}}}
+    class GetHandlerWrapper < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        Riddl::Parameter::Simple.new('value',CPEE::Properties::extract_item(id,opts,'handlerwrapper'))
+      end
+    end #}}}
+    class GetItems < Riddl::Implementation #{{{
+      def response
+        item = @a[0]
+        id = @a[1]
+        opts = @a[2]
+        doc = XML::Smart::open_unprotected(opts[:properties_empty])
+        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+        des = doc.find("/p:properties/p:#{item}").first
+        CPEE::Properties::extract_list(id,opts,item).each{ |de| des.add(*de) }
+        Riddl::Parameter::Complex.new(item,'text/xml',des.to_doc.to_s)
+      end
+    end #}}}
+    class GetItem < Riddl::Implementation #{{{
+      def response
+        item = @a[0]
+        id = @a[1]
+        opts = @a[2]
+        if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
+          Riddl::Parameter::Simple.new('value',val)
+        else
+          @status = 404
+        end
+      end
+    end #}}}
+    class DelItem < Riddl::Implementation #{{{
+      def response
+        item = @a[0]
+        id = @a[1]
+        opts = @a[2]
+        val = { @r.last => nil }
+        if CPEE::Properties::extract_item(id,opts,@r.join('/'))
+          CPEE::Properties::set_list(id,opts,item,val,[val.keys.first])
+        else
+          @status = 404
+        end
+        nil
+      end
+    end #}}}
+    class SetItem < Riddl::Implementation #{{{
+      def response
+        item = @a[0]
+        id = @a[1]
+        opts = @a[2]
+        val = { @r.last => @p[0].value }
+        if CPEE::Properties::extract_item(id,opts,@r.join('/'))
+          CPEE::Properties::set_list(id,opts,item,val)
+        else
+          @status = 404
+        end
+        nil
+      end
+    end #}}}
+    class PatchItems < Riddl::Implementation #{{{
+      def response
+        item = @a[0]
+        id = @a[1]
+        opts = @a[2]
+        doc = XML::Smart::string(@p[0].value.read)
+
+        val = { @r.last => @p[0].value }
+        CPEE::Properties::set_list(id,opts,item,val)
+        nil
       end
     end #}}}
 
-    def self::extract_all(id,opts)
-      doc = XML::Smart::open_unprotected(opts[:properties_empty])
-      doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-      if value = extract_state(id,opts)
-        doc.find('/p:properties/p:state').first.text = value
-      end
-      if value = extract_state_changed(id,opts)
-        doc.find('/p:properties/p:state/@changed').first.value = value
-      end
-      if value = extract_status_id(id,opts)
-        doc.find('/p:properties/p:status/p:id').first.value = value
-      end
-      if value = extract_status_message(id,opts)
-        doc.find('/p:properties/p:status/p:message').first.value = value
-      end
-      %w{dataelements endpoints attributes}.each do |item|
-        values = extract_list(item,id,opts)
-        if values
-          des = doc.find("/p:properties/p:#{item}").first
-          values.each{ |de| p de; des.add(*de) }
-        end
-      end
-      doc.to_s
+    def self::set_list(id,opts,item,values,deleted=[])
+      ah = AttributesHelper.new
+      attributes = CPEE::Properties::extract_list(id,opts,'attributes').to_h
+      dataelements = CPEE::Properties::extract_list(id,opts,'dataelements').to_h
+      endpoints = CPEE::Properties::extract_list(id,opts,'endpoints').to_h
+      CPEE::Notification::send_event(
+        opts[:redis],
+        File.join(item,'change'),
+        id,
+        {
+          :instance_name => CPEE::Properties::extract_item(id,opts,'attributes/info'),
+          :instance => id,
+          :instance_uuid => CPEE::Properties::extract_item(id,opts,'attributes/uuid'),
+          :changed => [values.keys.first],
+          :deleted => deleted,
+          :values => values,
+          :attributes => ah.translate(attributes,dataelements,endpoints),
+          :timestamp => Time.now.xmlschema(3)
+        }
+      )
     end
 
-    def self::extract_state(id,opts)
-      opts[:redis].get("instance:#{id}/state")
+    def self::extract_item(id,opts,item)
+      opts[:redis].get("instance:#{id}/#{item}")
     end
-    def self::extract_state_changed(id,opts)
-      opts[:redis].get("instance:#{id}/state/@changed")
-    end
-    def self::extract_status_id(id,opts)
-      opts[:redis].get("instance:#{id}/status/id")
-    end
-    def self::extract_status_message(id,opts)
-      opts[:redis].get("instance:#{id}/status/message")
-    end
-    def self::extract_list(item,id,opts)
+    def self::extract_list(id,opts,item)
       opts[:redis].keys("instance:#{id}/#{item}/*").map do |e|
         [File.basename(e),opts[:redis].get(e)]
       end
