@@ -17,6 +17,7 @@ require 'redis'
 require 'riddl/server'
 require 'riddl/client'
 require_relative 'notification'
+require_relative 'statemachine'
 require_relative 'implementation_properties'
 
 module CPEE
@@ -66,7 +67,9 @@ module CPEE
     opts[:redis_db]                   ||= 3
 
     opts[:redis]                      = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
-    opts[:statemachine]               = CPEE::Properties::StateMachine.new
+    opts[:statemachine]               = CPEE::StateMachine.new opts[:states], %w{running simulating replaying finishing stopping abandoned finished} do |id|
+      opts[:redis].get("instance:#{id}/state")
+    end
 
     opts[:runtime_cmds]               << [
       "startclean", "Delete instances before starting.", Proc.new { |status|

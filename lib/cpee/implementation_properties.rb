@@ -4,9 +4,6 @@ require 'json'
 module CPEE
   module Properties
 
-    class StateMachine
-    end
-
     def self::implementation(id,opts)
       Proc.new do
         run CPEE::Properties::Get, id, opts if get
@@ -76,8 +73,11 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        # TODO enforce correct state changes
-        CPEE::Properties::set_item(id,opts,'state',@p[0].value)
+        if opts[:statemachine].setable? id, @p[0].value
+          CPEE::Properties::set_item(id,opts,'state',@p[0].value)
+        else
+          @status = 422 # semantic error
+        end
         nil
       end
     end #}}}
@@ -131,7 +131,11 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        CPEE::Properties::set_item(id,opts,'handlerwrapper',@p[0].value)
+        if opts[:statemachine].readonly? id
+          @status = 423
+        else
+          CPEE::Properties::set_item(id,opts,'handlerwrapper',@p[0].value)
+        end
         nil
       end
     end #}}}
@@ -165,10 +169,14 @@ module CPEE
         id = @a[1]
         opts = @a[2]
         val = { @r.last => nil }
-        if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-          CPEE::Properties::set_list(id,opts,item,val,val.keys)
+        if opts[:statemachine].readonly? id
+          @status = 423
         else
-          @status = 404
+          if CPEE::Properties::extract_item(id,opts,@r.join('/'))
+            CPEE::Properties::set_list(id,opts,item,val,val.keys)
+          else
+            @status = 404
+          end
         end
         nil
       end
@@ -192,15 +200,19 @@ module CPEE
         item = @a[0]
         id = @a[1]
         opts = @a[2]
-        begin
-          doc = XML::Smart::string(@p[0].value.read)
-          val = doc.find("/*/*").map do |ele|
-            [ele.qname.name, ele.text]
-          end.to_h
-          CPEE::Properties::set_list(id,opts,item,val)
-          nil
-        rescue
-          @status = 400
+        if opts[:statemachine].readonly? id
+          @status = 423
+        else
+          begin
+            doc = XML::Smart::string(@p[0].value.read)
+            val = doc.find("/*/*").map do |ele|
+              [ele.qname.name, ele.text]
+            end.to_h
+            CPEE::Properties::set_list(id,opts,item,val)
+            nil
+          rescue
+            @status = 400
+          end
         end
       end
     end #}}}
@@ -209,18 +221,22 @@ module CPEE
         item = @a[0]
         id = @a[1]
         opts = @a[2]
-        begin
-          doc = XML::Smart::string(@p[0].value.read)
-          val = doc.find("/*/*").map do |ele|
-            [ele.qname.name, ele.text]
-          end.to_h
-          oldkeys = CPEE::Properties::extract_list(id,opts,item).to_h.keys
-          newkeys = val.keys
-          del = oldkeys - newkeys
-          CPEE::Properties::set_list(id,opts,item,val,del)
-          nil
-        rescue
-          @status = 400
+        if opts[:statemachine].readonly? id
+          @status = 423
+        else
+          begin
+            doc = XML::Smart::string(@p[0].value.read)
+            val = doc.find("/*/*").map do |ele|
+              [ele.qname.name, ele.text]
+            end.to_h
+            oldkeys = CPEE::Properties::extract_list(id,opts,item).to_h.keys
+            newkeys = val.keys
+            del = oldkeys - newkeys
+            CPEE::Properties::set_list(id,opts,item,val,del)
+            nil
+          rescue
+            @status = 400
+          end
         end
       end
     end #}}}
@@ -229,19 +245,23 @@ module CPEE
         item = @a[0]
         id = @a[1]
         opts = @a[2]
-        begin
-          doc = XML::Smart::string(@p[0].value.read)
-          val = doc.find("/*").map do |ele|
-            [ele.qname.name, ele.text]
-          end.to_h
-          if not CPEE::Properties::extract_item(id,opts,File.join(@r.first,val.keys.first))
-            CPEE::Properties::set_list(id,opts,item,val)
-            Riddl::Parameter::Simple.new('id',val.keys.first)
-          else
-            @status= 409
+        if opts[:statemachine].readonly? id
+          @status = 423
+        else
+          begin
+            doc = XML::Smart::string(@p[0].value.read)
+            val = doc.find("/*").map do |ele|
+              [ele.qname.name, ele.text]
+            end.to_h
+            if not CPEE::Properties::extract_item(id,opts,File.join(@r.first,val.keys.first))
+              CPEE::Properties::set_list(id,opts,item,val)
+              Riddl::Parameter::Simple.new('id',val.keys.first)
+            else
+              @status= 409
+            end
+          rescue => e
+            @status = 400
           end
-        rescue => e
-          @status = 400
         end
       end
     end #}}}
