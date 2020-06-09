@@ -1,0 +1,47 @@
+<states>
+  <!-- final states are "abandoned" and "finished" (no further observable or setable states) -->
+  <!-- children of setable and observable are source states, their respective children are possible target states  -->
+
+  <setable>
+    <!-- the following states change through external input -->
+    <ready><!-- in this state you can set the following four states -->
+      <running/>
+      <simulating/>
+      <replaying/>
+      <abandoned/>
+    </ready>
+    <running><!-- in this state you can set the following state -->
+      <stopping/>
+    </running>
+    <stopped><!-- in this state you can set the following four states -->
+      <running/>
+      <simulating/>
+      <replaying/>
+      <abandoned/>
+    </stopped>
+  </setable>
+
+  <observable>
+    <!-- the following states change through internal mechanisms -->
+    <running>
+      <stopping/>
+      <finishing/>
+    </running>
+    <simulating>
+      <ready/>
+      <stopped/>
+    </simulating>
+    <replaying>
+      <stopping/>
+      <finishing/>
+    </replaying>
+    <finishing>
+      <finished/>
+    </finishing>
+    <stopping>
+      <stopped/>
+    </stopping>
+    <abandoned/>
+    <finished/>
+  </observable>
+</states>

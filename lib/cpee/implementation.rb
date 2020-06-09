@@ -60,11 +60,13 @@ module CPEE
     opts[:transformation_service]     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation.xml'))
     opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
     opts[:notifications_init]         ||= File.expand_path(File.join(__dir__,'..','..','server','resources','notifications'))
+    opts[:states]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','states.xml'))
     opts[:infinite_loop_stop]         ||= 10000
     opts[:redis_path]                 ||= '/tmp/redis.sock'
     opts[:redis_db]                   ||= 3
 
     opts[:redis]                      = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+    opts[:statemachine]               = CPEE::Properties::StateMachine.new
 
     opts[:runtime_cmds]               << [
       "startclean", "Delete instances before starting.", Proc.new { |status|

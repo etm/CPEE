@@ -4,6 +4,9 @@ require 'json'
 module CPEE
   module Properties
 
+    class StateMachine
+    end
+
     def self::implementation(id,opts)
       Proc.new do
         run CPEE::Properties::Get, id, opts if get
@@ -82,23 +85,7 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Complex.new('statemachine','text/plain',<<~EOT)
-          ready->ready
-          ready->running
-          ready->simulating
-          ready->replaying
-          ready->abandoned
-          running->stopping->stopped
-          running->finishing->finished
-          simulating->ready
-          simulating->stopped
-          replaying->finishing->finished
-          replaying->stopped
-          stopped->abandoned
-          stopped->running
-          stopped->replaying
-          stopped->simulating
-        EOT
+        Riddl::Parameter::Complex.new('statemachine','text/xml',File.read(opts[:states]))
       end
     end #}}}
     class GetStateChanged < Riddl::Implementation #{{{
