@@ -7,10 +7,9 @@ module CPEE
       @readonly = readonly
     end
 
-    def setable?(id,r)
+    def setable?(id,nval)
       cval = @state.call(id)
-      nval = r[:p].first.value
-      @states.find("/states/setable/#{cval}[text()=\"#{nval}\"]").length > 0
+      @states.find("/states/setable/#{cval}[#{nval}]").length > 0
     end
 
     def readonly?(id)

@@ -17,7 +17,7 @@ module CPEE
         end
         on resource 'status' do
           run CPEE::Properties::GetStatus, id, opts if get
-          run CPEE::Properties::PutStatus, id, opts if put 'status' # !!! TODO
+          run CPEE::Properties::PutStatus, id, opts if put 'status'
           on resource 'id' do
             run CPEE::Properties::GetStatusID, id, opts if get
           end
@@ -74,7 +74,7 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         if opts[:statemachine].setable? id, @p[0].value
-          CPEE::Properties::set_item(id,opts,'state',@p[0].value)
+          CPEE::Properties::set_item(id,opts,'state',:state => @p[0].value)
         else
           @status = 422 # semantic error
         end
@@ -101,9 +101,24 @@ module CPEE
         opts = @a[1]
         doc = XML::Smart::open_unprotected(opts[:properties_empty])
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-        doc.find('/p:properties/p:status/p:id').first.text = CPEE::Properties::extract_item(id,opts,'status/id')
-        doc.find('/p:properties/p:status/p:message').first.text = CPEE::Properties::extract_item(id,opts,'status/message')
+        des = doc.find('/p:properties/p:status').first
+        des.find('p:id').first.text = CPEE::Properties::extract_item(id,opts,'status/id')
+        des.find('p:message').first.text = CPEE::Properties::extract_item(id,opts,'status/message')
         Riddl::Parameter::Complex.new('status','text/xml',des.to_doc.to_s)
+      end
+    end #}}}
+    class PutStatus < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        doc = XML::Smart::string(@p[0].value.read)
+        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+        if opts[:statemachine].readonly? id
+          @status = 422 # semantic error
+        else
+          CPEE::Properties::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
+        end
+        nil
       end
     end #}}}
     class GetStatusID < Riddl::Implementation #{{{
@@ -134,7 +149,7 @@ module CPEE
         if opts[:statemachine].readonly? id
           @status = 423
         else
-          CPEE::Properties::set_item(id,opts,'handlerwrapper',@p[0].value)
+          CPEE::Properties::set_item(id,opts,'handlerwrapper',:handlerwrapper => @p[0].value)
         end
         nil
       end
@@ -266,7 +281,7 @@ module CPEE
       end
     end #}}}
 
-    def self::set_list(id,opts,item,values,deleted=[])
+    def self::set_list(id,opts,item,values,deleted=[]) #{{{
       ah = AttributesHelper.new
       attributes = CPEE::Properties::extract_list(id,opts,'attributes').to_h
       dataelements = CPEE::Properties::extract_list(id,opts,'dataelements').to_h
@@ -286,30 +301,32 @@ module CPEE
           :timestamp => Time.now.xmlschema(3)
         }
       )
-    end
-    def self::set_item(id,opts,item,value)
+    end #}}}
+    def self::set_item(id,opts,item,value) #{{{
+      content = {
+        :instance_name => CPEE::Properties::extract_item(id,opts,'attributes/info'),
+        :instance => id,
+        :instance_uuid => CPEE::Properties::extract_item(id,opts,'attributes/uuid'),
+        :timestamp => Time.now.xmlschema(3)
+      }
+      value.each do |k,v|
+        content[k.to_sym] = v
+      end
       CPEE::Notification::send_event(
         opts[:redis],
         File.join(item,'change'),
         id,
-        {
-          :instance_name => CPEE::Properties::extract_item(id,opts,'attributes/info'),
-          :instance => id,
-          :instance_uuid => CPEE::Properties::extract_item(id,opts,'attributes/uuid'),
-          item.to_sym => value,
-          :timestamp => Time.now.xmlschema(3)
-        }
+        content
       )
-    end
+    end #}}}
 
-
-    def self::extract_item(id,opts,item)
+    def self::extract_item(id,opts,item) #{{{
       opts[:redis].get("instance:#{id}/#{item}")
-    end
-    def self::extract_list(id,opts,item)
+    end #}}}
+    def self::extract_list(id,opts,item) #{{{
       opts[:redis].keys("instance:#{id}/#{item}/*").map do |e|
         [File.basename(e),opts[:redis].get(e)]
       end
-    end
+    end #}}}
   end
 end
