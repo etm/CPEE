@@ -7,6 +7,7 @@ module CPEE
     def self::implementation(id,opts)
       Proc.new do
         run CPEE::Properties::Get, id, opts if get
+        # TODO PUT and PATCH
         on resource 'state' do
           run CPEE::Properties::GetStateMachine, id, opts if get 'machine'
           run CPEE::Properties::GetState, id, opts if get
@@ -29,6 +30,9 @@ module CPEE
           run CPEE::Properties::GetHandlerWrapper, id, opts if get
           run CPEE::Properties::PutHandlerWrapper, id, opts if put 'handlerwrapper'
         end
+        on resource 'positions'
+          # TODO
+        end
         %w{dataelements endpoints attributes}.each do |ele|
           on resource ele do
             run CPEE::Properties::GetItems, ele, id, opts if get
@@ -41,6 +45,20 @@ module CPEE
               run CPEE::Properties::DelItem, ele, id, opts if delete
             end
           end
+        end
+        on resource 'dsl' do
+          run CPEE::Properties::GetComplex, 'dsl', 'text/plain', id, opts if get
+        end
+        on resource 'dslx' do
+          run CPEE::Properties::GetComplex, 'dslx', 'text/xml', id, opts if get
+        end
+        on resource 'description' do
+          run CPEE::Properties::GetComplex, 'description', 'text/xml', id, opts if get
+          run CPEE::Properties::PutDescription, id, opts if put 'description'
+        end
+        on resource 'transformation' do
+          run CPEE::Properties::GetTransformation, id, opts if get
+          run CPEE::Properties::PutTransformation, id, opts if put 'transformation'
         end
       end
     end
@@ -59,6 +77,19 @@ module CPEE
           des = doc.find("/p:properties/p:#{item}").first
           CPEE::Properties::extract_list(id,opts,item).each{ |de| des.add(*de) }
         end
+        doc.find('/p:properties/p:dsl').first.text = CPEE::Properties::extract_item(id,opts,'dsl')
+        if val = CPEE::Properties::extract_item(id,opts,'dslx') #{{{
+          doc.find('/p:properties/p:dslx').first.add XML::Smart::string(val).root rescue nil
+        end #}}}
+        if val = CPEE::Properties::extract_item(id,opts,'description') #{{{
+          doc.find('/p:properties/p:description').first.add XML::Smart::string(val).root rescue nil
+        end #}}}
+        doc.find('/p:properties/p:transformation/p:description').first.text = CPEE::Properties::extract_item(id,opts,'transformation/description')
+        doc.find('/p:properties/p:transformation/p:dataelements').first.text = CPEE::Properties::extract_item(id,opts,'transformation/dataelements')
+        doc.find('/p:properties/p:transformation/p:endpoints').first.text = CPEE::Properties::extract_item(id,opts,'transformation/endpoints')
+        doc.find('/p:properties/p:transformation/p:description/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/description/@type')
+        doc.find('/p:properties/p:transformation/p:dataelements/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/dataelements/@type')
+        doc.find('/p:properties/p:transformation/p:endpoints/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/endpoints/@type')
         Riddl::Parameter::Complex.new('properties','application/xml',doc.to_s)
       end
     end #}}}
@@ -278,6 +309,67 @@ module CPEE
             @status = 400
           end
         end
+      end
+    end #}}}
+    class GetComplex < Riddl::Implementation #{{{
+      def response
+        item = @a[0]
+        mime = @a[1]
+        id = @a[2]
+        opts = @a[3]
+        if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
+          Riddl::Parameter::Complex.new(item,mime,val)
+        else
+          @status = 404
+        end
+      end
+    end #}}}
+
+    class PutDescription < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        if opts[:statemachine].readonly? id
+          @status = 422 # semantic error
+        else
+          begin
+            CPEE::Properties::set_item(id,opts,'description',:description => XML::Smart.string(@p[0].value.read).to_s)
+          rescue
+            @status = 400
+          end
+        end
+        nil
+      end
+    end #}}}
+
+    class GetTransformation < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        doc = XML::Smart::open_unprotected(opts[:properties_empty])
+        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+        des = doc.find('/p:properties/p:transformation').first
+        des.find('p:description').first.text = CPEE::Properties::extract_item(id,opts,'transformation/description')
+        des.find('p:dataelements').first.text = CPEE::Properties::extract_item(id,opts,'transformation/dataelements')
+        des.find('p:endpoints').first.text = CPEE::Properties::extract_item(id,opts,'transformation/endpoints')
+        des.find('p:description/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/description/@type')
+        des.find('p:dataelements/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/dataelements/@type')
+        des.find('p:endpoints/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/endpoints/@type')
+        Riddl::Parameter::Complex.new('status','text/xml',des.to_doc.to_s)
+      end
+    end #}}}
+    class PutTransformation < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        doc = XML::Smart::string(@p[0].value.read)
+        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+        if opts[:statemachine].readonly? id
+          @status = 422 # semantic error
+        else
+          CPEE::Properties::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
+        end
+        nil
       end
     end #}}}
 

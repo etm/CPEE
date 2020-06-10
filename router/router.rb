@@ -38,6 +38,7 @@ Daemonite.new do |opts|
             redis.set("instance:#{mess.dig('instance')}/handlerwrapper",mess.dig('content','handlerwrapper'))
           when 'event:description/change'
             redis.set("instance:#{mess.dig('instance')}/description",mess.dig('content','description'))
+            # TODO transformation
           when 'event:handler/add'
             redis.multi do |multi|
               multi.set("instance:#{mess.dig('instance')}/handlers/#{mess.dig('content','id')}/@url",mess.dig('content','url'))

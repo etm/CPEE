@@ -28,12 +28,8 @@
   <endpoints/>
   <attributes/>
   <dsl/>
-  <dslx>
-    <description xmlns="http://cpee.org/ns/description/1.0"/>
-  </dslx>
-  <description>
-    <description xmlns="http://cpee.org/ns/description/1.0"/>
-  </description>
+  <dslx/>
+  <description/>
   <transformation>
     <description type='copy'/>
     <dataelements type='none'/>

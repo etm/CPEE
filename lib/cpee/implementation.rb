@@ -32,6 +32,7 @@ module CPEE
     /p:properties/p:attributes/p:*
     /p:properties/p:transformation/p:*
     /p:properties/p:transformation/p:*/@*
+    /p:properties/p:dslx
     /p:properties/p:description
     /p:properties/p:status/p:id
     /p:properties/p:status/p:message
@@ -183,7 +184,12 @@ module CPEE
       instance = 'instance:' + id.to_s
       redis.multi do |multi|
         doc.root.find(PROPERTIES_PATHS_FULL.join(' | ')).each do |e|
-          multi.set(File.join(instance, path(e)), e.text)
+          if e.class == XML::Smart::Dom::Element && e.element_only?
+            val = e.find('*').map { |f| f.dump }.join
+            multi.set(File.join(instance, path(e)), val)
+          else
+            multi.set(File.join(instance, path(e)), e.text)
+          end
         end
         multi.set(File.join(instance, "attributes", "uuid"), SecureRandom.uuid)
         multi.set(File.join(instance, "state", "@changed"), Time.now.xmlschema(3))

@@ -235,6 +235,6 @@
     <resource relative="transformation"> <!--{{{-->
       <get out="transformation"/>
       <put in="transformation"/>
-    </resource>
-  </resource> <!--}}}-->
+    </resource> <!--}}}-->
+  </resource>
 </description>
