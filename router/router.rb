@@ -19,6 +19,7 @@ require 'redis'
 require 'riddl/client'
 require 'daemonite'
 require 'pp'
+require_relative 'transform'
 
 Daemonite.new do |opts|
   redis = Redis.new(path: "/tmp/redis.sock", db: 3)
