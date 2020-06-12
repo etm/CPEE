@@ -30,8 +30,19 @@ module CPEE
           run CPEE::Properties::GetHandlerWrapper, id, opts if get
           run CPEE::Properties::PutHandlerWrapper, id, opts if put 'handlerwrapper'
         end
-        on resource 'positions'
-          # TODO
+        on resource 'positions' do
+          run CPEE::Properties::GetPositions, id, opts if get
+          run CPEE::Properties::PatchPositions, id, opts if patch 'positions'
+          run CPEE::Properties::PutPositions, id, opts if put 'positions'
+          run CPEE::Properties::PostPositions, id, opts if post 'position'
+          on resource do
+            run CPEE::Properties::GetDetail, id, opts if get
+            run CPEE::Properties::SetDetail, id, opts if put 'detail'
+            run CPEE::Properties::DelDetail, id, opts if delete
+            on resource '@passthrough' do
+              run CPEE::Properties::GetPt, id, opts if get
+            end
+          end
         end
         %w{dataelements endpoints attributes}.each do |ele|
           on resource ele do
@@ -76,6 +87,13 @@ module CPEE
         %w{dataelements endpoints attributes}.each do |item|
           des = doc.find("/p:properties/p:#{item}").first
           CPEE::Properties::extract_list(id,opts,item).each{ |de| des.add(*de) }
+        end
+        des = doc.find("/p:properties/p:positions").first
+        CPEE::Properties::extract_list(id,opts,'positions').each do |de|
+          node = des.add(*de)
+          if pt = CPEE::Properties::extract_item(id,opts,File.join('positions',de[0],'@passthrough'))
+            node.attributes['passthrough'] = pt
+          end
         end
         doc.find('/p:properties/p:dsl').first.text = CPEE::Properties::extract_item(id,opts,'dsl')
         if val = CPEE::Properties::extract_item(id,opts,'dslx') #{{{
@@ -197,50 +215,6 @@ module CPEE
         Riddl::Parameter::Complex.new(item,'text/xml',des.to_doc.to_s)
       end
     end #}}}
-    class GetItem < Riddl::Implementation #{{{
-      def response
-        item = @a[0]
-        id = @a[1]
-        opts = @a[2]
-        if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
-          Riddl::Parameter::Simple.new('value',val)
-        else
-          @status = 404
-        end
-      end
-    end #}}}
-    class DelItem < Riddl::Implementation #{{{
-      def response
-        item = @a[0]
-        id = @a[1]
-        opts = @a[2]
-        val = { @r.last => nil }
-        if opts[:statemachine].readonly? id
-          @status = 423
-        else
-          if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-            CPEE::Properties::set_list(id,opts,item,val,val.keys)
-          else
-            @status = 404
-          end
-        end
-        nil
-      end
-    end #}}}
-    class SetItem < Riddl::Implementation #{{{
-      def response
-        item = @a[0]
-        id = @a[1]
-        opts = @a[2]
-        val = { @r.last => @p[0].value }
-        if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-          CPEE::Properties::set_list(id,opts,item,val)
-        else
-          @status = 404
-        end
-        nil
-      end
-    end #}}}
     class PatchItems < Riddl::Implementation #{{{
       def response
         item = @a[0]
@@ -311,6 +285,51 @@ module CPEE
         end
       end
     end #}}}
+    class GetItem < Riddl::Implementation #{{{
+      def response
+        item = @a[0]
+        id = @a[1]
+        opts = @a[2]
+        if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
+          Riddl::Parameter::Simple.new('value',val)
+        else
+          @status = 404
+        end
+      end
+    end #}}}
+    class SetItem < Riddl::Implementation #{{{
+      def response
+        item = @a[0]
+        id = @a[1]
+        opts = @a[2]
+        val = { @r.last => @p[0].value }
+        if CPEE::Properties::extract_item(id,opts,@r.join('/'))
+          CPEE::Properties::set_list(id,opts,item,val)
+        else
+          @status = 404
+        end
+        nil
+      end
+    end #}}}
+    class DelItem < Riddl::Implementation #{{{
+      def response
+        item = @a[0]
+        id = @a[1]
+        opts = @a[2]
+        val = { @r.last => nil }
+        if opts[:statemachine].readonly? id
+          @status = 423
+        else
+          if CPEE::Properties::extract_item(id,opts,@r.join('/'))
+            CPEE::Properties::set_list(id,opts,item,val,val.keys)
+          else
+            @status = 404
+          end
+        end
+        nil
+      end
+    end #}}}
+
     class GetComplex < Riddl::Implementation #{{{
       def response
         item = @a[0]
@@ -319,6 +338,142 @@ module CPEE
         opts = @a[3]
         if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
           Riddl::Parameter::Complex.new(item,mime,val)
+        else
+          @status = 404
+        end
+      end
+    end #}}}
+
+    class GetPositions < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        doc = XML::Smart::open_unprotected(opts[:properties_empty])
+        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+        des = doc.find("/p:properties/p:positions").first
+        CPEE::Properties::extract_list(id,opts,'positions').each do |de|
+          node = des.add(*de)
+          if pt = CPEE::Properties::extract_item(id,opts,File.join('positions',de[0],'@passthrough'))
+            node.attributes['passthrough'] = pt
+          end
+        end
+        Riddl::Parameter::Complex.new('positions','text/xml',des.to_doc.to_s)
+      end
+    end #}}}
+    class PatchPositions < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        if opts[:statemachine].readonly? id
+          @status = 423
+        else
+          begin
+            doc = XML::Smart::string(@p[0].value.read)
+            val = doc.find("/*/*").map do |ele|
+              [ele.qname.name, ele.text]
+            end.to_h
+            CPEE::Properties::set_list(id,opts,item,val)
+            nil
+          rescue
+            @status = 400
+          end
+        end
+      end
+    end #}}}
+    class PutPositions < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        if opts[:statemachine].readonly? id
+          @status = 423
+        else
+          begin
+            doc = XML::Smart::string(@p[0].value.read)
+            val = doc.find("/*/*").map do |ele|
+              [ele.qname.name, ele.text, ele.attributes['passthrough']]
+            end.to_h
+            oldkeys = CPEE::Properties::extract_list(id,opts,item).to_h.keys
+            newkeys = val.keys
+            del = oldkeys - newkeys
+            CPEE::Properties::set_list(id,opts,item,val,del)
+            nil
+          rescue
+            @status = 400
+          end
+        end
+      end
+    end #}}}
+    class PostPosition < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        if opts[:statemachine].readonly? id
+          @status = 423
+        else
+          begin
+            doc = XML::Smart::string(@p[0].value.read)
+            val = doc.find("/*").map do |ele|
+              [ele.qname.name, ele.text]
+            end.to_h
+            if not CPEE::Properties::extract_item(id,opts,File.join(@r.first,val.keys.first))
+              CPEE::Properties::set_list(id,opts,item,val)
+              Riddl::Parameter::Simple.new('id',val.keys.first)
+            else
+              @status= 409
+            end
+          rescue => e
+            @status = 400
+          end
+        end
+      end
+    end #}}}
+    class GetPosition < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
+          Riddl::Parameter::Simple.new('value',val)
+        else
+          @status = 404
+        end
+      end
+    end #}}}
+    class SetPosition < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        val = { @r.last => @p[0].value }
+        if CPEE::Properties::extract_item(id,opts,@r.join('/'))
+          CPEE::Properties::set_list(id,opts,item,val)
+        else
+          @status = 404
+        end
+        nil
+      end
+    end #}}}
+    class DelPosition < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        val = { @r.last => nil }
+        if opts[:statemachine].readonly? id
+          @status = 423
+        else
+          if CPEE::Properties::extract_item(id,opts,@r.join('/'))
+            CPEE::Properties::set_list(id,opts,item,val,val.keys)
+          else
+            @status = 404
+          end
+        end
+        nil
+      end
+    end #}}}
+    class GetPD < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
+          Riddl::Parameter::Simple.new('value',val)
         else
           @status = 404
         end
@@ -416,8 +571,8 @@ module CPEE
       opts[:redis].get("instance:#{id}/#{item}")
     end #}}}
     def self::extract_list(id,opts,item) #{{{
-      opts[:redis].keys("instance:#{id}/#{item}/*").map do |e|
-        [File.basename(e),opts[:redis].get(e)]
+      opts[:redis].smembers("instance:#{id}/#{item}").map do |e|
+        [e,opts[:redis].get("instance:#{id}/#{item}/#{e}")]
       end
     end #}}}
   end

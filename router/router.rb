@@ -50,11 +50,13 @@ Daemonite.new do |opts|
           when 'event:dataelements/change', 'event:endpoints/change', 'event:attributes/change'
             redis.multi do |multi|
               mess.dig('content','changed').each do |c|
+                multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",c)
                 unless what == 'event:attributes/change' && c == 'uuid'
                   multi.set("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}",mess.dig('content','values',c))
                 end
               end
               mess.dig('content','deleted').to_a.each do |c|
+                multi.srem("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",c)
                 unless what == 'event:attributes/change' && c == 'uuid'
                   multi.del("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}")
                 end
@@ -78,12 +80,15 @@ Daemonite.new do |opts|
             redis.multi do |multi|
               c = mess.dig('content')
               c.dig('at')&.each do |ele|
+                multi.sadd("instance:#{mess.dig('instance')}/positions",ele['position'])
                 multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}",'at')
               end
               c.dig('after')&.each do |ele|
+                multi.sadd("instance:#{mess.dig('instance')}/positions",ele['position'])
                 multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}",'after')
               end
               c.dig('unmark')&.each do |ele|
+                multi.srem("instance:#{mess.dig('instance')}/positions",ele['position'])
                 multi.del("instance:#{mess.dig('instance')}/positions/#{ele['position']}")
               end
             end

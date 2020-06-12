@@ -39,6 +39,12 @@ module CPEE
     /p:properties/p:state/@changed
     /p:properties/p:state
   }
+  PROPERTIES_PATHS_INDEX = %w{
+    /p:properties/p:dataelements/p:*
+    /p:properties/p:endpoints/p:*
+    /p:properties/p:attributes/p:*
+    /p:properties/p:positions/p:*
+  }
   PROPERTIES_PATHS = %w{
     /p:properties/p:handlerwrapper
     /p:properties/p:positions
@@ -191,8 +197,14 @@ module CPEE
             multi.set(File.join(instance, path(e)), e.text)
           end
         end
-        multi.set(File.join(instance, "attributes", "uuid"), SecureRandom.uuid)
-        multi.set(File.join(instance, "state", "@changed"), Time.now.xmlschema(3))
+        doc.root.find(PROPERTIES_PATHS_INDEX.join(' | ')).each do |e|
+          p = path(e)
+          multi.sadd(File.join(instance, File.dirname(p)), File.basename(p))
+        end
+        multi.set(File.join(instance, 'attributes', 'uuid'), SecureRandom.uuid)
+        multi.sadd(File.join(instance, 'attributes'), 'uuid')
+        multi.set(File.join(instance, 'state', '@changed'), Time.now.xmlschema(3))
+
       end
 
       @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
