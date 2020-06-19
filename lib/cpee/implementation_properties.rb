@@ -369,10 +369,14 @@ module CPEE
         else
           begin
             doc = XML::Smart::string(@p[0].value.read)
-            val = doc.find("/*/*").map do |ele|
-              [ele.qname.name, ele.text]
+            vals = {}
+            doc.find("/*/*").each do |ele|
+              vals[ele.text] ||= []
+              sval = { 'position'
+              vals[ele.text] << {
+              [ele.qname.name, ele.text, ]
             end.to_h
-            CPEE::Properties::set_list(id,opts,item,val)
+            CPEE::Properties::set_list(id,opts,vals)
             nil
           rescue
             @status = 400
@@ -564,6 +568,22 @@ module CPEE
         File.join(item,'change'),
         id,
         content
+      )
+    end #}}}
+    def self::set_positions(id,opts,item,mode,values) #{{{
+      ah = AttributesHelper.new
+      CPEE::Notification::send_event(
+        opts[:redis],
+        File.join('position','change'),
+        id,
+        {
+          :instance_name => CPEE::Properties::extract_item(id,opts,'attributes/info'),
+          :instance => id,
+          :instance_uuid => CPEE::Properties::extract_item(id,opts,'attributes/uuid'),
+          mode => values,
+          :values => values,
+          :timestamp => Time.now.xmlschema(3)
+        }
       )
     end #}}}
 
