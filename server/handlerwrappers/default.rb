@@ -65,6 +65,10 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     params
   end #}}}
 
+  def additional
+    { :attributes => @controller.attributes_translated } rescue {}
+  end
+
   def proto_curl(parameters) #{{{
     params = []
     callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
