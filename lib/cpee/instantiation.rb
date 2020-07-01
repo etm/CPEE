@@ -304,7 +304,7 @@ module CPEE
         key = @r.last
         cb, condition, instance, uuid, instance_url = cblist.lrange(key,0,-1)
 
-        cpee = cb.gsub(/\d+\/callbacks.*/,'')
+        cpee = File.dirname(instance_url)
 
         orisend = {
           'CPEE-INSTANCE' => instance,
