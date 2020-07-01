@@ -296,7 +296,6 @@ module CPEE
 
     class ContinueTask < Riddl::Implementation #{{{
       def response
-        cpee         = @h['X_CPEE'] || @a[0]
         cblist       = @a[1]
         topic        = @p[1].value
         event_name   = @p[2].value
@@ -304,6 +303,8 @@ module CPEE
 
         key = @r.last
         cb, condition, instance, uuid, instance_url = cblist.lrange(key,0,-1)
+
+        cpee = cb.gsub(/\d+\/callbacks.*/,'')
 
         orisend = {
           'CPEE-INSTANCE' => instance,

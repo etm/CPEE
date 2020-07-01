@@ -390,9 +390,7 @@
         <xsl:text>]</xsl:text>
       </xsl:when>
       <xsl:when test="count(*) &gt; 0 and name()='report'">
-        <xsl:text>[</xsl:text>
         <xsl:apply-templates select="d:*" mode="plainmulti"/>
-        <xsl:text>]</xsl:text>
       </xsl:when>
       <xsl:when test="count(*) &gt; 0 and not(name()='arguments')">
         <xsl:text>{</xsl:text>
