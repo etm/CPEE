@@ -82,6 +82,11 @@ Daemonite.new do |opts|
               c.dig('at')&.each do |ele|
                 multi.sadd("instance:#{mess.dig('instance')}/positions",ele['position'])
                 multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}",'at')
+                multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}/@passthrough",ele['passthrough']) if ele['passthrough']
+              end
+              c.dig('before')&.each do |ele|
+                multi.sadd("instance:#{mess.dig('instance')}/positions",ele['position'])
+                multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}",'before')
               end
               c.dig('after')&.each do |ele|
                 multi.sadd("instance:#{mess.dig('instance')}/positions",ele['position'])
@@ -95,6 +100,7 @@ Daemonite.new do |opts|
         end
       rescue => e
         puts e.message
+        puts e.backtrace
       end
     end
   end

@@ -369,16 +369,16 @@ module CPEE
         else
           begin
             doc = XML::Smart::string(@p[0].value.read)
-            vals = {}
-            doc.find("/*/*").each do |ele|
-              vals[ele.text] ||= []
-              sval = { 'position'
-              vals[ele.text] << {
-              [ele.qname.name, ele.text, ]
-            end.to_h
-            CPEE::Properties::set_list(id,opts,vals)
+            content = {}
+            doc.find("/*/*").map do |ele|
+              val = { 'position' => ele.qname.name }
+              val['passthrough'] = ele.attributes['passthrough'] if ele.attributes['passthrough']
+              content[ele.text] ||= []
+              content[ele.text] << val
+            end
+            CPEE::Properties::set_positions(id,opts,content)
             nil
-          rescue
+          rescue => e
             @status = 400
           end
         end
@@ -393,21 +393,31 @@ module CPEE
         else
           begin
             doc = XML::Smart::string(@p[0].value.read)
-            val = doc.find("/*/*").map do |ele|
-              [ele.qname.name, ele.text, ele.attributes['passthrough']]
-            end.to_h
-            oldkeys = CPEE::Properties::extract_list(id,opts,item).to_h.keys
-            newkeys = val.keys
+            content = {}
+            newkeys = []
+            doc.find("/*/*").map do |ele|
+              val = { 'position' => ele.qname.name }
+              val['passthrough'] = ele.attributes['passthrough'] if ele.attributes['passthrough']
+              content[ele.text] ||= []
+              content[ele.text] << val
+              newkeys << ele.qname.name
+            end
+            oldkeys = CPEE::Properties::extract_list(id,opts,'positions').to_h.keys
             del = oldkeys - newkeys
-            CPEE::Properties::set_list(id,opts,item,val,del)
+            del.each do |key|
+              val = { 'position' => key }
+              content['unmark'] ||= []
+              content['unmark'] << val
+            end
+            CPEE::Properties::set_positions(id,opts,content)
             nil
-          rescue
+          rescue => e
             @status = 400
           end
         end
       end
     end #}}}
-    class PostPosition < Riddl::Implementation #{{{
+    class PostPositions < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]
@@ -416,16 +426,17 @@ module CPEE
         else
           begin
             doc = XML::Smart::string(@p[0].value.read)
-            val = doc.find("/*").map do |ele|
-              [ele.qname.name, ele.text]
-            end.to_h
-            if not CPEE::Properties::extract_item(id,opts,File.join(@r.first,val.keys.first))
-              CPEE::Properties::set_list(id,opts,item,val)
-              Riddl::Parameter::Simple.new('id',val.keys.first)
+            if not CPEE::Properties::extract_item(id,opts,File.join('positions',doc.root.qname.name))
+              content = {}
+              content[doc.root.text] = [{ 'position' => doc.root.qname.name }]
+              content[doc.root.text][0]['passthrough'] = doc.root.attributes['passthrough'] if doc.root.attributes['passthrough']
+              CPEE::Properties::set_positions(id,opts,content)
             else
               @status= 409
             end
+            Riddl::Parameter::Simple.new('id',doc.root.qname.name)
           rescue => e
+            puts e.message
             @status = 400
           end
         end
@@ -448,7 +459,7 @@ module CPEE
         opts = @a[1]
         val = { @r.last => @p[0].value }
         if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-          CPEE::Properties::set_list(id,opts,item,val)
+          CPEE::Properties::set_list(id,opts,'positions',val)
         else
           @status = 404
         end
@@ -464,7 +475,7 @@ module CPEE
           @status = 423
         else
           if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-            CPEE::Properties::set_list(id,opts,item,val,val.keys)
+            CPEE::Properties::set_list(id,opts,'positions',val,val.keys)
           else
             @status = 404
           end
@@ -570,20 +581,18 @@ module CPEE
         content
       )
     end #}}}
-    def self::set_positions(id,opts,item,mode,values) #{{{
-      ah = AttributesHelper.new
+    def self::set_positions(id,opts,content) #{{{
+      payload = {
+        :instance_name => CPEE::Properties::extract_item(id,opts,'attributes/info'),
+        :instance => id,
+        :instance_uuid => CPEE::Properties::extract_item(id,opts,'attributes/uuid'),
+        :timestamp => Time.now.xmlschema(3)
+      }
       CPEE::Notification::send_event(
         opts[:redis],
-        File.join('position','change'),
+        'position/change',
         id,
-        {
-          :instance_name => CPEE::Properties::extract_item(id,opts,'attributes/info'),
-          :instance => id,
-          :instance_uuid => CPEE::Properties::extract_item(id,opts,'attributes/uuid'),
-          mode => values,
-          :values => values,
-          :timestamp => Time.now.xmlschema(3)
-        }
+        content
       )
     end #}}}
 
