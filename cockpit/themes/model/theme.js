@@ -170,36 +170,12 @@ function WFAdaptorManifestation(adaptor) {
         var icon =  self.elements.callmanipulate.illustrator.svg.clone();
         icon.children('.rfill:last').addClass('menu');
         menu['Delete'].push({
-          'label': 'Remove Scripts',
+          'label': 'Remove Output Transformation',
           'function_call': self.adaptor.description.remove,
           'menu_icon': icon,
           'type': undefined,
           'params': ['> code', xml_node]
         });
-      }
-      if (xml_node.get(0).tagName == "call" || xml_node.get(0).tagName == "manipulate" || xml_node.get(0).tagName == "stop") {
-        var icon =  self.elements.call.illustrator.svg.clone();
-        icon.children('g.replace').addClass('active');
-        var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
-        if (vtarget.length > 0) {
-          if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
-            menu['Position'] = [{
-              'label': 'No Execution from here',
-              'function_call': del_ui_pos,
-              'menu_icon': icon,
-              'type': undefined,
-              'params': xml_node
-            }];
-          } else {
-            menu['Position'] = [{
-              'label': 'Execute from here',
-              'function_call': add_ui_pos,
-              'menu_icon': icon,
-              'type': undefined,
-              'params': xml_node
-            }];
-          }
-        }
       }
       new CustomMenu(e).contextmenu(menu);
     }
@@ -262,7 +238,12 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'label': function(node){
-        var ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
+        var ret;
+        if ($('> url',$(node).children('parameters').children('arguments')).length > 0) {
+          ret = [ { column: 'Label', value: '<a target="blank_" href="' + $('> url',$(node).children('parameters').children('arguments')).text() + '">' + $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') + '</a>' } ];
+        } else {
+          ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
+        }
         return ret;
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
@@ -279,7 +260,7 @@ function WFAdaptorManifestation(adaptor) {
     'permissible_children': function(node,mode) { //{{{
       if(node.children('code').length < 1)
         return [
-         {'label': 'Scripts',
+         {'label': 'Output Transformation',
           'function_call': self.adaptor.description.insert_last_into,
           'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
           'type': undefined,
@@ -474,6 +455,7 @@ function WFAdaptorManifestation(adaptor) {
       'label': function(node){ return [ { column: 'Label', value: $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' } ]; },
       'endnodes': 'aggregate',
       'closeblock': false,
+      'closing_symbol': 'choose_finish',
       'expansion': function(node) {
         return 'horizontal';
       },
@@ -552,12 +534,12 @@ function WFAdaptorManifestation(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Task with Output Transformation',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
          'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
-        {'label': 'Service Call',
+        {'label': 'Task',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
          'type': 'call',
@@ -644,12 +626,12 @@ function WFAdaptorManifestation(adaptor) {
          'params': [self.adaptor.description.elements.parallel_branch, node]}];
       }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Task with Output Transformation',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
          'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
-        {'label': 'Service Call',
+        {'label': 'Task',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
          'type': 'call',
@@ -730,12 +712,12 @@ function WFAdaptorManifestation(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Task with Output Transformation',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
          'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
-        {'label': 'Service Call',
+        {'label': 'Task',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
          'type': 'call',
@@ -837,12 +819,12 @@ function WFAdaptorManifestation(adaptor) {
       if (mode.match(/into/)) { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs =  [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Task with Output Transformation',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
          'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
-        {'label': 'Service Call',
+        {'label': 'Task',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
          'type': 'call',
@@ -897,7 +879,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'resolve_symbol': function(node,shift) {
         if(shift == true) {
-          return 'parallel_branch_compact';
+          return 'parallel_branch_event';
         } else {
           return 'parallel_branch_normal';
         }
@@ -915,12 +897,12 @@ function WFAdaptorManifestation(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Task with Output Transformation',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
          'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
-        {'label': 'Service Call',
+        {'label': 'Task',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
          'type': 'call',
@@ -1000,12 +982,12 @@ function WFAdaptorManifestation(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Task with Output Transformation',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
          'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
-        {'label': 'Service Call',
+        {'label': 'Task',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
          'type': 'call',
@@ -1115,12 +1097,12 @@ function WFAdaptorManifestation(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Task with Output Transformation',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
          'type': 'callmanipulate',
          'params': [self.adaptor.description.elements.callmanipulate, node]},
-        {'label': 'Service Call',
+        {'label': 'Task',
          'function_call': func,
          'menu_icon': self.elements.call.illustrator.svg.clone(),
          'type': 'call',

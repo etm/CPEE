@@ -22,6 +22,7 @@ $(document).ready(function() {
         $("input[name=base-url]").val(res['base-url']);
         $("body").attr('current-resources',res['res-url']);
         $("body").attr('current-base',res['base-url']);
+        $("body").attr('current-save',res['save-url']);
         $("body").attr('current-testsets',res['testsets-url']);
         cockpit();
       },
@@ -30,9 +31,11 @@ $(document).ready(function() {
         if (location.protocol.match(/^file/)) {
           $("body").attr('current-resources',"http://localhost:" + $('body').data('res-port'));
           $("body").attr('current-base',"http://localhost:" + $('body').data('base-port'));
+          $("body").attr('current-save',"http://localhost:" + $('body').data('base-port') + '/design');
         } else {
           $("body").attr('current-resources',location.protocol + "//" + location.hostname + ":" + $('body').data('res-port'));
           $("body").attr('current-base',location.protocol + "//" + location.hostname + ":" + $('body').data('base-port'));
+          $("body").attr('current-save',location.protocol + "//" + location.hostname + ":" + $('body').data('base-port') + '/design');
         }
         $("input[name=res-url]").val($("body").attr('current-resources'));
         $("input[name=base-url]").val($("body").attr('current-base'));

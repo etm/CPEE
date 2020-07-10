@@ -214,6 +214,33 @@ module CPEE
       Riddl::Parameter::Simple.new("id", id.to_s)
     end
   end #}}}
+  class NewXMLInstance < Riddl::Implementation #{{{
+    def response
+      controller = @a[0]
+      opts = @a[1]
+      xml = @p[0].value.read
+      id = controller.keys.sort.last.to_i
+
+
+      while true
+        id += 1
+        unless Dir.exists? opts[:instances] + "/#{id}"
+          Dir.mkdir(opts[:instances] + "/#{id}") rescue nil
+          break
+        end
+      end
+      File.write(File.join(opts[:instances].to_s,id.to_s,'properties.xml'),xml)
+
+      controller[id] = Controller.new(id,opts)
+      controller[id].state_change!
+
+      @headers << Riddl::Header.new("CPEE-INSTANCE", controller[id].instance)
+      @headers << Riddl::Header.new("CPEE-INSTANCE-URL", controller[id].instance_url)
+      @headers << Riddl::Header.new("CPEE-INSTANCE-UUID", controller[id].uuid)
+
+      Riddl::Parameter::Simple.new("id", id)
+    end
+  end #}}}
 
   class Info < Riddl::Implementation #{{{
     def response

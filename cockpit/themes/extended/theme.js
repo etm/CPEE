@@ -132,12 +132,26 @@ function WFAdaptorManifestation(adaptor) {
           menu['Insert into'] = group;
           copyOrMove(menu['Insert into'],group,xml_node,self.adaptor.description.insert_first_into);
         }
+        if (self.elements[xml_node.get(0).tagName].permissible_children_expert) {
+          group = self.elements[xml_node.get(0).tagName].permissible_children_expert(xml_node,'into');
+          if(group.length > 0) {
+            menu['Insert into (Experts Only!)'] = group;
+            copyOrMove(menu['Insert into (Experts Only!)'],group,xml_node,self.adaptor.description.insert_first_into);
+          }
+        }
       }
       if (sibling) {
         group = self.elements[xml_node.parent().get(0).tagName].permissible_children(xml_node,'after');
         if(group.length > 0) {
           menu['Insert after'] = group;
           copyOrMove(menu['Insert after'],group,xml_node,self.adaptor.description.insert_after);
+        }
+        if (self.elements[xml_node.parent().get(0).tagName].permissible_children_expert) {
+          group = self.elements[xml_node.parent().get(0).tagName].permissible_children_expert(xml_node,'after');
+          if(group.length > 0) {
+            menu['Insert after (Experts Only!)'] = group;
+            copyOrMove(menu['Insert after (Experts Only!)'],group,xml_node,self.adaptor.description.insert_after);
+          }
         }
       }
 
@@ -146,10 +160,10 @@ function WFAdaptorManifestation(adaptor) {
         icon.children('.rfill').addClass('menu');
         menu['Delete'] = [{
           'label': 'Remove Element',
-          'function_call': self.adaptor.description.remove,
+          'function_call': function(selector,target,selected){ self.adaptor.description.remove(selector,target); self.adaptor.illustrator.get_label_by_svg_id(selected).addClass('selected'); },
           'menu_icon': icon,
           'type': undefined,
-          'params': [null, xml_node]
+          'params': [null, xml_node, self.selected()]
         }];
       }
       if($('> code', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
@@ -855,6 +869,19 @@ function WFAdaptorManifestation(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs =  [
+        {'label': 'Parallel Branch',
+         'function_call': func,
+         'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+         'type': 'parallel_branch',
+         'params': [self.adaptor.description.elements.parallel_branch, node]},
+      ];
+      return childs;
+    }, //}}}
+    'permissible_children_expert': function(node,mode) { //{{{
+      var func = null;
+      if (mode.match(/into/)) { func = self.adaptor.description.insert_first_into }
+      else { func = self.adaptor.description.insert_after }
+      var childs =  [
         {'label': 'Service Call with Scripts',
          'function_call': func,
          'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
@@ -880,11 +907,6 @@ function WFAdaptorManifestation(adaptor) {
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
-        {'label': 'Parallel Branch',
-         'function_call': func,
-         'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
-         'type': 'parallel_branch',
-         'params': [self.adaptor.description.elements.parallel_branch, node]},
         {'label': 'Stop',
          'function_call': func,
          'menu_icon': self.elements.stop.illustrator.svg.clone(),
@@ -995,12 +1017,7 @@ function WFAdaptorManifestation(adaptor) {
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) {
-        var xml_node = self.adaptor.description.get_node_by_svg_id(node);
-        if(xml_node.get(0).parentNode.tagName == 'parallel') {
-          self.events.mousedown(node,e,true,false);
-        } else {
-          self.events.mousedown(node,e,true,true);
-        }
+        self.events.mousedown(node,e,true,true);
       },
       'click': self.events.click,
       'dblclick': self.events.dblclick,
@@ -1174,11 +1191,6 @@ function WFAdaptorManifestation(adaptor) {
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
-        {'label': 'Terminate',
-         'function_call': func,
-         'menu_icon': self.elements.terminate.illustrator.svg.clone(),
-         'type': 'terminate',
-         'params': [self.adaptor.description.elements.terminate, node]},
         {'label': 'Stop',
          'function_call': func,
          'menu_icon': self.elements.stop.illustrator.svg.clone(),

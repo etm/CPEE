@@ -66,7 +66,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end #}}}
 
   def additional
-    { :attributes => @controller.attributes_translated }
+    { :attributes => @controller.attributes_translated } rescue {}
   end
 
   def proto_curl(parameters) #{{{

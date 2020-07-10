@@ -5,6 +5,7 @@ var paths = '#dat_details input, #dat_details textarea, #dat_details select, #da
 var loading = false;
 var subscription;
 var subscription_state = 'less';
+var graph_changed = new Event("graph:changed", {"bubbles":true, "cancelable":false});
 var save = {};
     save['state']= undefined;
     save['dsl'] = undefined;
@@ -74,8 +75,8 @@ function cockpit() { //{{{
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodelfile]").click(load_modelfile);
   $("button[name=loadmodeltype]").click(function(e){new CustomMenu(e).menu($('#modeltypes'),load_modeltype, $("button[name=loadmodeltype]")); });
-  $("button[name=savetestset]").click(function(){ save_testset(); });
-  $("button[name=savesvg]").click(function(){ save_svg(); });
+  $("button[name=savetestsetfile]").click(function(){ save_testsetfile(); });
+  $("button[name=savesvgfile]").click(function(){ save_svgfile(); });
   $("button[name=state_start]").click(function(){ $(this).attr("disabled","disabled");start_instance(); });
   $("button[name=state_stop]").click(function(){ $(this).attr("disabled","disabled");stop_instance(); });
   $("button[name=state_replay]").click(function(){ $(this).attr("disabled","disabled");replay_instance(); });
@@ -117,6 +118,13 @@ function cockpit() { //{{{
         }
         ui_activate_tab("#tabexecution");
         create_instance($("body").attr('current-base'),q.load,true,false);
+      } else if (q.instantiate) {
+        if (q.instantiate.match(/https?:\/\//)) {
+          ui_activate_tab("#tabexecution");
+          create_instance_from($("body").attr('current-base'),q.instantiate,false);
+        } else {
+          alert('Nope. Url!');
+        }
       } else if (q.new || q.new == "") {
         ui_activate_tab("#tabinstance");
         create_instance($("body").attr('current-base'),"Plain Instance",false,false);
@@ -187,6 +195,29 @@ function check_subscription() { // {{{
   }
 }// }}}
 
+function create_instance_from(base,url,exec) {// {{{
+  $.get({
+    url: url,
+    dataType: "text",
+    success: function(res) {
+      $.ajax({
+        type: "POST",
+        url: base,
+        contentType: 'application/xml',
+        dataType: "text",
+        headers: { 'CONTENT-ID': 'xml' },
+        data: res,
+        success: function(res){
+          var iu = (base + "//" + res + "/").replace(/\/+/g,"/").replace(/:\//,"://");
+          monitor_instance(iu,$("body").attr('current-resources'),false,exec);
+        },
+        error: function(a,b,c) {
+          alert("No CPEE running.");
+        }
+      });
+    }
+  });
+}// }}}
 function create_instance(base,name,load,exec) {// {{{
   var info = name ? name : prompt("Instance info?", "Enter info here");
   if (info != null) {
@@ -331,8 +362,9 @@ function monitor_instance(cin,rep,load,exec) {// {{{
           });
           append_to_log("monitoring", "id", subscription);
           websocket();
-          if (load || exec)
+          if (load || exec) {
             load_testset(exec);
+          }
         }
       });
     },
@@ -480,6 +512,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         var g = graphrealization.get_description();
         save['graph'] = $X(g);
         save['graph'].find('[xmlns]').removeAttr('xmlns');
+        document.dispatchEvent(graph_changed);
         $.ajax({
           type: "PUT",
           url: url + "/properties/values/description/",
@@ -488,6 +521,9 @@ function adaptor_init(url,theme,dslx) { //{{{
         adaptor_update();
         manifestation.events.click(svgid);
         format_instance_pos();
+        if (manifestation.selected() == "unknown") { // nothing selected
+          $('#dat_details').empty();
+        }
       };
       adaptor_update();
       monitor_instance_pos();
@@ -728,7 +764,18 @@ function stop_instance() {// {{{
   });
 }// }}}
 
-function save_testset() {// {{{
+function save_testsetfile() {// {{{
+  var def = new $.Deferred();
+  def.done(function(name,testset) {
+    var ct = new Date();
+    $('#savetestsetfile').attr('download',name + '_' + ct.strftime("%Y-%m-%dT%H%M%S%z") + '.xml');
+    $('#savetestsetfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(testset.serializePrettyXML()));
+    document.getElementById('savetestsetfile').click();
+  });
+  get_testset(def);
+}// }}}
+
+function get_testset(deferred) {// {{{
   var url = $('body').attr('current-instance');
   var testset = $X('<testset/>');
 
@@ -770,27 +817,24 @@ function save_testset() {// {{{
                       pars.append($(res.documentElement).children());
                       pars.find('uuid').remove();
                       testset.append(pars);
-                      var ct = new Date();
-                      $('#savetestset').attr('download',name + '_' + ct.strftime("%Y-%m-%dT%H%M%S%z") + '.xml');
-                      $('#savetestset').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(testset.serializePrettyXML()));
-                      document.getElementById('savetestset').click();
+                      deferred.resolve(name,testset);
                     },
-                    error: report_failure
+                    error: function() { deferred.reject(); report_failure(); }
                   });
                 },
-                error: report_failure
+                error: function() { deferred.reject(); report_failure(); }
               });
             },
-            error: report_failure
+            error: function() { deferred.reject(); report_failure(); }
           });
         },
-        error: report_failure
+        error: function() { deferred.reject(); report_failure(); }
       });
     },
-    error: report_failure
+    error: function() { deferred.reject(); report_failure(); }
   });
 }// }}}
-function save_svg() {// {{{
+function save_svgfile() {// {{{
   var url = $('body').attr('current-instance');
 
   var gc = $('#graphcanvas').clone();
@@ -830,9 +874,9 @@ function save_svg() {// {{{
         success: function(res){
           var name = $(res.documentElement).text();
 
-          $('#savesvg').attr('download',name + '.svg');
-          $('#savesvg').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializeXML()));
-          document.getElementById('savesvg').click();
+          $('#savesvgfile').attr('download',name + '.svg');
+          $('#savesvgfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializeXML()));
+          document.getElementById('savesvgfile').click();
         },
         error: report_failure
       });
