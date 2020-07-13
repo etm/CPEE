@@ -36,7 +36,7 @@ module CPEE
           run CPEE::Properties::PutPositions, id, opts if put 'positions'
           run CPEE::Properties::PostPositions, id, opts if post 'position'
           on resource do
-            run CPEE::Properties::GetDetail, id, opts if get
+            run CPEE::Properties::GetDetail, 'positions', id, opts if get
             run CPEE::Properties::SetDetail, id, opts if put 'detail'
             run CPEE::Properties::DelDetail, id, opts if delete
             on resource '@passthrough' do
@@ -442,10 +442,11 @@ module CPEE
         end
       end
     end #}}}
-    class GetPosition < Riddl::Implementation #{{{
+    class GetDetail < Riddl::Implementation #{{{
       def response
-        id = @a[0]
-        opts = @a[1]
+        item = @a[0]
+        id = @a[1]
+        opts = @a[2]
         if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
           Riddl::Parameter::Simple.new('value',val)
         else
@@ -453,37 +454,31 @@ module CPEE
         end
       end
     end #}}}
-    class SetPosition < Riddl::Implementation #{{{
+    class SetDetail < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]
-        val = { @r.last => @p[0].value }
         if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-          CPEE::Properties::set_list(id,opts,'positions',val)
+          CPEE::Properties::set_positions(id,opts,{ @p[0].value => [ { 'position' => @r.last } ] })
         else
           @status = 404
         end
         nil
       end
     end #}}}
-    class DelPosition < Riddl::Implementation #{{{
+    class DelDetail < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]
-        val = { @r.last => nil }
-        if opts[:statemachine].readonly? id
-          @status = 423
+        if CPEE::Properties::extract_item(id,opts,@r.join('/'))
+          CPEE::Properties::set_positions(id,opts,{ 'unmark' => [ { 'position' => @r.last } ] })
         else
-          if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-            CPEE::Properties::set_list(id,opts,'positions',val,val.keys)
-          else
-            @status = 404
-          end
+          @status = 404
         end
         nil
       end
     end #}}}
-    class GetPD < Riddl::Implementation #{{{
+    class GetPt < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]

@@ -93,6 +93,7 @@
       <choice>
         <value>at</value>
         <value>after</value>
+        <value>before</value>
       </choice>
     </parameter>
   </message> <!--}}}-->
