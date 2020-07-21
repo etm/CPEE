@@ -20,11 +20,6 @@
       <xi:include href="properties/properties.rng"/>
     </parameter>
   </message> <!--}}}-->
-  <message name="set-properties"> <!--{{{-->
-    <parameter name="properties" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="properties/set-properties.rng"/>
-    </parameter>
-  </message> <!--}}}-->
   <message name="set-some-properties"> <!--{{{-->
     <parameter name="properties" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
       <xi:include href="properties/set-some-properties.rng"/>
@@ -149,7 +144,7 @@
 
   <resource>
     <get out="properties"/>
-    <put in="set-properties"/>
+    <put in="set-some-properties"/>
     <patch in="set-some-properties"/>
 
     <resource relative="state"> <!--{{{-->

@@ -7,8 +7,8 @@ module CPEE
     def self::implementation(id,opts)
       Proc.new do
         run CPEE::Properties::Get, id, opts if get
-        run CPEE::Properties::Patch, id, opts if get 'set-some-properties'
-        run CPEE::Properties::Put, id, opts if get 'set-properties'
+        run CPEE::Properties::Patch, id, opts if patch 'set-some-properties'
+        run CPEE::Properties::Put, id, opts if put 'set-some-properties'
         on resource 'state' do
           run CPEE::Properties::GetStateMachine, id, opts if get 'machine'
           run CPEE::Properties::GetState, id, opts if get
@@ -117,6 +117,8 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         if opts[:statemachine].readonly? id
+          @status = 400
+        else
           doc = XML::Smart::string(@p[0].value.read)
           doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
           if (node = doc.find('/p:properties/p:state')).any?
@@ -138,15 +140,13 @@ module CPEE
           if (node = doc.find('/p:properties/p:transformation')).any?
             CPEE::Properties::PutTransformation::set id, opts, node.first.dump
           end
-          if (node = doc.find('/p:properties/p:description/*)).any?
+          if (node = doc.find('/p:properties/p:description/*')).any?
             CPEE::Properties::PutDescription::set id, opts, node.first.dump
           end
 
           if (node = doc.find('/p:properties/p:positions')).any?
-            CPEE::Properties::PatchPositions::set item, id, opts, node.first.dump
+            CPEE::Properties::PatchPositions::set id, opts, node.first.dump
           end
-        rescue
-          @status = 400
         end
       end
     end #}}}
@@ -155,6 +155,8 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         if opts[:statemachine].readonly? id
+          @status = 400
+        else
           doc = XML::Smart::string(@p[0].value.read)
           doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
           if (node = doc.find('/p:properties/p:state')).any?
@@ -176,15 +178,13 @@ module CPEE
           if (node = doc.find('/p:properties/p:transformation')).any?
             CPEE::Properties::PutTransformation::set id, opts, node.first.dump
           end
-          if (node = doc.find('/p:properties/p:description/*)).any?
+          if (node = doc.find('/p:properties/p:description/*')).any?
             CPEE::Properties::PutDescription::set id, opts, node.first.dump
           end
 
           if (node = doc.find('/p:properties/p:positions')).any?
-            CPEE::Properties::PutPositions::set item, id, opts, node.first.dump
+            CPEE::Properties::PutPositions::set id, opts, node.first.dump
           end
-        rescue
-          @status = 400
         end
       end
     end #}}}
@@ -207,6 +207,7 @@ module CPEE
           PutState::set id, opts, @p[0].value
         else
           @status = 422
+        end
         nil
       end
     end #}}}
@@ -320,11 +321,11 @@ module CPEE
         else
           begin
             PatchItems::set(itm,id,opts,@p[0].value.read)
-            nil
           rescue
             @status = 400
           end
         end
+        nil
       end
     end #}}}
     class PutItems < Riddl::Implementation #{{{
@@ -347,11 +348,12 @@ module CPEE
           @status = 423
         else
           begin
-            nil
+            PutItems::set(itm,id,opts,@p[0].value.read)
           rescue
             @status = 400
           end
         end
+        nil
       end
     end #}}}
     class PostItem < Riddl::Implementation #{{{
@@ -377,6 +379,7 @@ module CPEE
             @status = 400
           end
         end
+        nil
       end
     end #}}}
     class GetItem < Riddl::Implementation #{{{
@@ -475,11 +478,11 @@ module CPEE
         else
           begin
             PatchPositions::set(id,opts,@p[0].value.read)
-            nil
           rescue => e
             @status = 400
           end
         end
+        nil
       end
     end #}}}
     class PutPositions < Riddl::Implementation #{{{
@@ -512,11 +515,11 @@ module CPEE
         else
           begin
             PutPositions::set(id,opts,@p[0].value.read)
-            nil
           rescue => e
             @status = 400
           end
         end
+        nil
       end
     end #}}}
     class PostPositions < Riddl::Implementation #{{{
@@ -538,10 +541,10 @@ module CPEE
             end
             Riddl::Parameter::Simple.new('id',doc.root.qname.name)
           rescue => e
-            puts e.message
             @status = 400
           end
         end
+        nil
       end
     end #}}}
     class GetDetail < Riddl::Implementation #{{{

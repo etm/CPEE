@@ -13,7 +13,7 @@
     <element name="properties" ns="http://cpee.org/ns/properties/2.0">
       <interleave>
         <optional>
-          <ref name="state"/>
+          <ref name="set-state"/>
         </optional>
         <optional>
           <ref name="status"/>
