@@ -655,7 +655,7 @@ module CPEE
       attributes = CPEE::Properties::extract_list(id,opts,'attributes').to_h
       dataelements = CPEE::Properties::extract_list(id,opts,'dataelements').to_h
       endpoints = CPEE::Properties::extract_list(id,opts,'endpoints').to_h
-      CPEE::Notification::send_event(
+      CPEE::Events::send(
         opts[:redis],
         File.join(item,'change'),
         id,
@@ -681,7 +681,7 @@ module CPEE
       value.each do |k,v|
         content[k.to_sym] = v
       end
-      CPEE::Notification::send_event(
+      CPEE::Events::send(
         opts[:redis],
         File.join(item,'change'),
         id,
@@ -695,7 +695,7 @@ module CPEE
         :instance_uuid => CPEE::Properties::extract_item(id,opts,'attributes/uuid'),
         :timestamp => Time.now.xmlschema(3)
       }
-      CPEE::Notification::send_event(
+      CPEE::Events::send(
         opts[:redis],
         'position/change',
         id,

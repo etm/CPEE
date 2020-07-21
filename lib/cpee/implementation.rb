@@ -16,9 +16,10 @@ require 'fileutils'
 require 'redis'
 require 'riddl/server'
 require 'riddl/client'
-require_relative 'notification'
+require_relative 'events'
 require_relative 'statemachine'
 require_relative 'implementation_properties'
+require_relative 'implementation_notifications'
 
 module CPEE
 
@@ -87,11 +88,6 @@ module CPEE
     ]
 
     Proc.new do
-      interface 'properties' do |r|
-        id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        use CPEE::Properties::implementation(id.to_i, opts)
-      end
-
       interface 'main' do
         run CPEE::Instances, opts if get '*'
         run CPEE::NewInstance, opts if post 'instance-new'
@@ -107,9 +103,14 @@ module CPEE
         end
       end
 
+      interface 'properties' do |r|
+        id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
+        use CPEE::Properties::implementation(id.to_i, opts)
+      end
+
       interface 'notifications' do |r|
-        #id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
-        #use CPEE::Notifications::Producer::implementation(id, opts[:mode])
+        id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
+        use CPEE::Notifications::implementation(id.to_i, opts)
       end
     end
   end
@@ -204,7 +205,6 @@ module CPEE
         multi.set(File.join(instance, 'attributes', 'uuid'), SecureRandom.uuid)
         multi.sadd(File.join(instance, 'attributes'), 'uuid')
         multi.set(File.join(instance, 'state', '@changed'), Time.now.xmlschema(3))
-
       end
 
       @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
@@ -212,33 +212,6 @@ module CPEE
       @headers << Riddl::Header.new("CPEE-INSTANCE-UUID", uuid)
 
       Riddl::Parameter::Simple.new("id", id.to_s)
-    end
-  end #}}}
-  class NewXMLInstance < Riddl::Implementation #{{{
-    def response
-      controller = @a[0]
-      opts = @a[1]
-      xml = @p[0].value.read
-      id = controller.keys.sort.last.to_i
-
-
-      while true
-        id += 1
-        unless Dir.exists? opts[:instances] + "/#{id}"
-          Dir.mkdir(opts[:instances] + "/#{id}") rescue nil
-          break
-        end
-      end
-      File.write(File.join(opts[:instances].to_s,id.to_s,'properties.xml'),xml)
-
-      controller[id] = Controller.new(id,opts)
-      controller[id].state_change!
-
-      @headers << Riddl::Header.new("CPEE-INSTANCE", controller[id].instance)
-      @headers << Riddl::Header.new("CPEE-INSTANCE-URL", controller[id].instance_url)
-      @headers << Riddl::Header.new("CPEE-INSTANCE-UUID", controller[id].uuid)
-
-      Riddl::Parameter::Simple.new("id", id)
     end
   end #}}}
 

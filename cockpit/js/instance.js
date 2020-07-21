@@ -327,7 +327,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
 
   $.ajax({
     type: "GET",
-    url: url + "/properties/schema/",
+    url: url,
     success: function(res){
       $("ui-tabbed.hidden, ui-rest.hidden").removeClass("hidden");
       $("ui-resizehandle.hidden").removeClass("hidden");
@@ -382,7 +382,7 @@ function monitor_instance_values(val) {// {{{
 
   $.ajax({
     type: "GET",
-    url: url + "/properties/values/" + val + "/",
+    url: url + "/properties/" + val + "/",
     success: function(res){
       save[val].content(res);
       if (val == "endpoints") {
@@ -515,7 +515,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         document.dispatchEvent(graph_changed);
         $.ajax({
           type: "PUT",
-          url: url + "/properties/values/description/",
+          url: url + "/properties/description/",
           data: ({'content': '<content>' + g + '</content>'})
         });
         adaptor_update();
@@ -544,12 +544,12 @@ function monitor_graph_change(force) { //{{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
-    url: url + "/properties/values/dslx/",
+    url: url + "/properties/dslx/",
     success: function(dslx){
       if (force || !save['graph'] || (save['graph'] && save['graph'].serializePrettyXML() != $(dslx).serializePrettyXML())) {
         $.ajax({
           type: "GET",
-          url: url + "/properties/values/attributes/theme/",
+          url: url + "/properties/attributes/theme/",
           success: function(res){
             adaptor_init(url,$('value',res).text(),dslx);
           },
@@ -567,7 +567,7 @@ function monitor_instance_dsl() {// {{{
   $.ajax({
     type: "GET",
     dataType: "text",
-    url: url + "/properties/values/dsl/",
+    url: url + "/properties/dsl/",
     success: function(res){
       if (res != save['dsl']) {
         save['dsl'] = res;
@@ -589,7 +589,7 @@ function monitor_instance_state() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
-    url: url + "/properties/values/state/",
+    url: url + "/properties/state/",
     dataType: "text",
     success: function(res){
       monitor_instance_state_change(res);
@@ -600,7 +600,7 @@ function monitor_instance_transformation() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
-    url: url + "/properties/values/attributes/modeltype",
+    url: url + "/properties/attributes/modeltype",
     success: function(res){
       $("#currentmodel").text($(res.documentElement).text());
     },
@@ -614,7 +614,7 @@ function monitor_instance_pos() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
-    url: url + "/properties/values/positions/",
+    url: url + "/properties/positions/",
     success: function(res){
       save['instance_pos'] = $("value > *",res);
       format_visual_clear();
@@ -730,7 +730,7 @@ function start_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/values/state",
+    url: url + "/properties/state",
     data: ({value: "running"}),
     error: report_failure
   });
@@ -739,7 +739,7 @@ function replay_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/values/state",
+    url: url + "/properties/state",
     data: ({value: "replaying"}),
     error: report_failure
   });
@@ -749,7 +749,7 @@ function aba_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/values/state",
+    url: url + "/properties/state",
     data: ({value: "abandoned"}),
     error: report_failure
   });
@@ -758,7 +758,7 @@ function stop_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/values/state",
+    url: url + "/properties/state",
     data: ({value: "stopping"}),
     error: report_failure
   });
@@ -781,27 +781,27 @@ function get_testset(deferred) {// {{{
 
   $.ajax({
     type: "GET",
-    url: url + "/properties/values/dataelements/",
+    url: url + "/properties/dataelements/",
     success: function(res){
       var pars = $X('<dataelements/>');
       pars.append($(res.documentElement).children());
       testset.append(pars);
       $.ajax({
         type: "GET",
-        url: url + "/properties/values/handlerwrapper/",
+        url: url + "/properties/handlerwrapper/",
         success: function(res){
           var pars = $X('<handlerwrapper>' + res + '</handlerwrapper>');
           testset.append(pars);
           $.ajax({
             type: "GET",
-            url: url + "/properties/values/endpoints/",
+            url: url + "/properties/endpoints/",
             success: function(res){
               var pars = $X('<endpoints/>');
               pars.append($(res.documentElement).children());
               testset.append(pars);
               $.ajax({
                 type: "GET",
-                url: url + "/properties/values/dslx/",
+                url: url + "/properties/dslx/",
                 success: function(res){
                   var pars = $X('<description/>');
                   pars.append($(res.documentElement));
@@ -810,7 +810,7 @@ function get_testset(deferred) {// {{{
                   testset.append(pars);
                   $.ajax({
                     type: "GET",
-                    url: url + "/properties/values/attributes/",
+                    url: url + "/properties/attributes/",
                     success: function(res){
                       var name = $("value > info",res).text();
                       var pars = $X('<attributes/>');
@@ -870,7 +870,7 @@ function save_svgfile() {// {{{
       });
       $.ajax({
         type: "GET",
-        url: url + "/properties/values/attributes/info/",
+        url: url + "/properties/attributes/info/",
         success: function(res){
           var name = $(res.documentElement).text();
 
@@ -918,7 +918,7 @@ async function set_testset(testset,exec) {// {{{
     promises.push(
       $.ajax({
         type: "PUT",
-        url: url + "/properties/values/transformation",
+        url: url + "/properties/transformation",
         data: ({content: val}),
         error: report_failure
       }).then(async function(){
@@ -935,12 +935,12 @@ async function set_testset(testset,exec) {// {{{
 
   $.ajax({
     type: "GET",
-    url: url + "/properties/values/state/",
+    url: url + "/properties/state/",
     dataType: "text",
     success: function(res){
       $.ajax({
         type: "PUT",
-        url: url + "/properties/values/state",
+        url: url + "/properties/state",
         data: ({value: res}),
         error: report_failure,
         success: function(res){
@@ -1042,7 +1042,7 @@ function load_modeltype() {// {{{
     success: function(res){
       $.ajax({
         type: "PUT",
-        url: url + "/properties/values/attributes/modeltype",
+        url: url + "/properties/attributes/modeltype",
         data: ({value: name}),
         success: function(){
           set_testset(res,false);
@@ -1061,7 +1061,7 @@ async function load_des(url,model) { //{{{
   var val = "<content>" + model + "</content>";
   return $.ajax({
     type: "PUT",
-    url: url + "/properties/values/description",
+    url: url + "/properties/description",
     data: ({content: val}),
     error: report_failure
   });
@@ -1082,7 +1082,7 @@ async function load_testset_hw(url,testset) {// {{{
     promises.push(
       $.ajax({
         type: "PUT",
-        url: url + "/properties/values/handlerwrapper",
+        url: url + "/properties/handlerwrapper",
         data: ({value: val}),
         error: report_failure
       })
@@ -1099,7 +1099,7 @@ async function load_testset_dataelements(url,testset) {// {{{
   var val = "<content>" + ser + "</content>";
   return $.ajax({
     type: "PUT",
-    url: url + "/properties/values/dataelements",
+    url: url + "/properties/dataelements",
     data: ({content: val}),
     error: report_failure
   });
@@ -1110,7 +1110,7 @@ async function load_testset_attributes(url,testset) {// {{{
   var ser = '';
   $.ajax({
     type: "GET",
-    url: url + "/properties/values/attributes/uuid",
+    url: url + "/properties/attributes/uuid",
     success: function(res){
       var uuid = $X('<uuid xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/>');
           uuid.text($('value',res).text());
@@ -1122,7 +1122,7 @@ async function load_testset_attributes(url,testset) {// {{{
       promises.push(
         $.ajax({
           type: "PUT",
-          url: url + "/properties/values/attributes",
+          url: url + "/properties/attributes",
           data: ({content: val}),
           error: report_failure
         })
@@ -1140,7 +1140,7 @@ async function load_testset_endpoints(url,testset) {// {{{
   var val = "<content>" + ser + "</content>";
   return $.ajax({
     type: "PUT",
-    url: url + "/properties/values/endpoints/",
+    url: url + "/properties/endpoints/",
     data: ({content: val}),
     error: report_failure
   });
@@ -1154,7 +1154,7 @@ async function load_testset_pos(url,testset) {// {{{
   var val = "<content>" + ser + "</content>";
   return $.ajax({
     type: "PUT",
-    url: url + "/properties/values/positions/",
+    url: url + "/properties/positions/",
     data: ({content: val}),
     success: monitor_instance_pos,
     error: report_failure
@@ -1390,7 +1390,7 @@ function ui_pos(e,bl) {
   vals = "<content>" + vals + "</content>";
   $.ajax({
     type: "PUT",
-    url: url + "/properties/values/positions/",
+    url: url + "/properties/positions/",
     data: ({content: vals}),
     success: monitor_instance_pos,
     error: report_failure

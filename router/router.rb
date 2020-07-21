@@ -97,7 +97,13 @@ Daemonite.new do |opts|
                 multi.del("instance:#{mess.dig('instance')}/positions/#{ele['position']}")
               end
             end
+          when 'event:handler/change'
+            redis.multi do |multi|
+              multi.set("instance:#{mess.dig('instance')}/state",mess.dig('content','state'))
+              multi.set("instance:#{mess.dig('instance')}/state/@changed",mess.dig('content','timestamp'))
+            end
         end
+        # TODO einfach alle weiterleiten
       rescue => e
         puts e.message
         puts e.backtrace

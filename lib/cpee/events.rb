@@ -14,9 +14,9 @@
 
 module CPEE
 
-  module Notification
+  module Events
 
-    def self::send_event(redis, what, instance, content={})
+    def self::send(redis, what, instance, content={})
       redis.publish('event:' + what, JSON::generate({ 'instance' => instance, 'topic' => ::File::dirname(what), 'event' => ::File::basename(what), 'content' => content }))
     end
 
