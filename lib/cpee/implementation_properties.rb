@@ -7,7 +7,8 @@ module CPEE
     def self::implementation(id,opts)
       Proc.new do
         run CPEE::Properties::Get, id, opts if get
-        # TODO PUT and PATCH
+        run CPEE::Properties::Patch, id, opts if get 'set-some-properties'
+        run CPEE::Properties::Put, id, opts if get 'set-properties'
         on resource 'state' do
           run CPEE::Properties::GetStateMachine, id, opts if get 'machine'
           run CPEE::Properties::GetState, id, opts if get
@@ -111,6 +112,82 @@ module CPEE
         Riddl::Parameter::Complex.new('properties','application/xml',doc.to_s)
       end
     end #}}}
+    class Patch < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        if opts[:statemachine].readonly? id
+          doc = XML::Smart::string(@p[0].value.read)
+          doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+          if (node = doc.find('/p:properties/p:state')).any?
+            CPEE::Properties::PutState::set id, opts, node.first.text
+          end
+          if (node = doc.find('/p:properties/p:status')).any?
+            CPEE::Properties::PutState::set id, opts, node.first.dump
+          end
+          if (node = doc.find('/p:properties/p:handlerwrapper')).any?
+            CPEE::Properties::PutHandlerWrapper::set id, opts, node.first.text
+          end
+
+          %w{dataelements endpoints attributes}.each do |item|
+            if (node = doc.find('/p:properties/p:' + item)).any?
+              CPEE::Properties::PatchItems::set item, id, opts, node.first.dump
+            end
+          end
+
+          if (node = doc.find('/p:properties/p:transformation')).any?
+            CPEE::Properties::PutTransformation::set id, opts, node.first.dump
+          end
+          if (node = doc.find('/p:properties/p:description/*)).any?
+            CPEE::Properties::PutDescription::set id, opts, node.first.dump
+          end
+
+          if (node = doc.find('/p:properties/p:positions')).any?
+            CPEE::Properties::PatchPositions::set item, id, opts, node.first.dump
+          end
+        rescue
+          @status = 400
+        end
+      end
+    end #}}}
+    class Put < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        if opts[:statemachine].readonly? id
+          doc = XML::Smart::string(@p[0].value.read)
+          doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+          if (node = doc.find('/p:properties/p:state')).any?
+            CPEE::Properties::PutState::set id, opts, node.first.text
+          end
+          if (node = doc.find('/p:properties/p:status')).any?
+            CPEE::Properties::PutState::set id, opts, node.first.dump
+          end
+          if (node = doc.find('/p:properties/p:handlerwrapper')).any?
+            CPEE::Properties::PutHandlerWrapper::set id, opts, node.first.text
+          end
+
+          %w{dataelements endpoints attributes}.each do |item|
+            if (node = doc.find('/p:properties/p:' + item)).any?
+              CPEE::Properties::PutItems::set item, id, opts, node.first.dump
+            end
+          end
+
+          if (node = doc.find('/p:properties/p:transformation')).any?
+            CPEE::Properties::PutTransformation::set id, opts, node.first.dump
+          end
+          if (node = doc.find('/p:properties/p:description/*)).any?
+            CPEE::Properties::PutDescription::set id, opts, node.first.dump
+          end
+
+          if (node = doc.find('/p:properties/p:positions')).any?
+            CPEE::Properties::PutPositions::set item, id, opts, node.first.dump
+          end
+        rescue
+          @status = 400
+        end
+      end
+    end #}}}
     class GetState < Riddl::Implementation #{{{
       def response
         id = @a[0]
@@ -119,14 +196,17 @@ module CPEE
       end
     end #}}}
     class PutState < Riddl::Implementation #{{{
+      def self::set(id,opts,state)
+        CPEE::Properties::set_item(id,opts,'state',:state => state)
+      end
+
       def response
         id = @a[0]
         opts = @a[1]
         if opts[:statemachine].setable? id, @p[0].value
-          CPEE::Properties::set_item(id,opts,'state',:state => @p[0].value)
+          PutState::set id, opts, @p[0].value
         else
-          @status = 422 # semantic error
-        end
+          @status = 422
         nil
       end
     end #}}}
@@ -157,15 +237,19 @@ module CPEE
       end
     end #}}}
     class PutStatus < Riddl::Implementation #{{{
+      def self::set(id,opts,xml)
+        doc = XML::Smart::string(xml)
+        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+        CPEE::Properties::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
+      end
+
       def response
         id = @a[0]
         opts = @a[1]
-        doc = XML::Smart::string(@p[0].value.read)
-        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
         if opts[:statemachine].readonly? id
           @status = 422 # semantic error
         else
-          CPEE::Properties::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
+          PutStatus::set id, opts, @p[0].value.read
         end
         nil
       end
@@ -192,13 +276,16 @@ module CPEE
       end
     end #}}}
     class PutHandlerWrapper < Riddl::Implementation #{{{
+      def self::set(id,opts,hw)
+        CPEE::Properties::set_item(id,opts,'handlerwrapper',:handlerwrapper => hw)
+      end
       def response
         id = @a[0]
         opts = @a[1]
         if opts[:statemachine].readonly? id
           @status = 423
         else
-          CPEE::Properties::set_item(id,opts,'handlerwrapper',:handlerwrapper => @p[0].value)
+          PutHandlerWrapper::set(id,opts,@p[0].value)
         end
         nil
       end
@@ -216,6 +303,14 @@ module CPEE
       end
     end #}}}
     class PatchItems < Riddl::Implementation #{{{
+      def self::set(item, id, opts, xml)
+        doc = XML::Smart::string(xml)
+        val = doc.find("/*/*").map do |ele|
+          [ele.qname.name, ele.text]
+        end.to_h
+        CPEE::Properties::set_list(id,opts,item,val)
+      end
+
       def response
         item = @a[0]
         id = @a[1]
@@ -224,11 +319,7 @@ module CPEE
           @status = 423
         else
           begin
-            doc = XML::Smart::string(@p[0].value.read)
-            val = doc.find("/*/*").map do |ele|
-              [ele.qname.name, ele.text]
-            end.to_h
-            CPEE::Properties::set_list(id,opts,item,val)
+            PatchItems::set(itm,id,opts,@p[0].value.read)
             nil
           rescue
             @status = 400
@@ -237,6 +328,17 @@ module CPEE
       end
     end #}}}
     class PutItems < Riddl::Implementation #{{{
+      def self::set(item,id,opts,xml)
+        doc = XML::Smart::string(xml)
+        val = doc.find("/*/*").map do |ele|
+          [ele.qname.name, ele.text]
+        end.to_h
+        oldkeys = CPEE::Properties::extract_list(id,opts,item).to_h.keys
+        newkeys = val.keys
+        del = oldkeys - newkeys
+        CPEE::Properties::set_list(id,opts,item,val,del)
+      end
+
       def response
         item = @a[0]
         id = @a[1]
@@ -245,14 +347,6 @@ module CPEE
           @status = 423
         else
           begin
-            doc = XML::Smart::string(@p[0].value.read)
-            val = doc.find("/*/*").map do |ele|
-              [ele.qname.name, ele.text]
-            end.to_h
-            oldkeys = CPEE::Properties::extract_list(id,opts,item).to_h.keys
-            newkeys = val.keys
-            del = oldkeys - newkeys
-            CPEE::Properties::set_list(id,opts,item,val,del)
             nil
           rescue
             @status = 400
@@ -361,6 +455,18 @@ module CPEE
       end
     end #}}}
     class PatchPositions < Riddl::Implementation #{{{
+      def self::set(id,opts,xml)
+        doc = XML::Smart::string(xml)
+        content = {}
+        doc.find("/*/*").map do |ele|
+          val = { 'position' => ele.qname.name }
+          val['passthrough'] = ele.attributes['passthrough'] if ele.attributes['passthrough']
+          content[ele.text] ||= []
+          content[ele.text] << val
+        end
+        CPEE::Properties::set_positions(id,opts,content)
+      end
+
       def response
         id = @a[0]
         opts = @a[1]
@@ -368,15 +474,7 @@ module CPEE
           @status = 423
         else
           begin
-            doc = XML::Smart::string(@p[0].value.read)
-            content = {}
-            doc.find("/*/*").map do |ele|
-              val = { 'position' => ele.qname.name }
-              val['passthrough'] = ele.attributes['passthrough'] if ele.attributes['passthrough']
-              content[ele.text] ||= []
-              content[ele.text] << val
-            end
-            CPEE::Properties::set_positions(id,opts,content)
+            PatchPositions::set(id,opts,@p[0].value.read)
             nil
           rescue => e
             @status = 400
@@ -385,6 +483,27 @@ module CPEE
       end
     end #}}}
     class PutPositions < Riddl::Implementation #{{{
+      def PutPositions::set(id,opts,xml)
+        doc = XML::Smart::string(xml)
+        content = {}
+        newkeys = []
+        doc.find("/*/*").map do |ele|
+          val = { 'position' => ele.qname.name }
+          val['passthrough'] = ele.attributes['passthrough'] if ele.attributes['passthrough']
+          content[ele.text] ||= []
+          content[ele.text] << val
+          newkeys << ele.qname.name
+        end
+        oldkeys = CPEE::Properties::extract_list(id,opts,'positions').to_h.keys
+        del = oldkeys - newkeys
+        del.each do |key|
+          val = { 'position' => key }
+          content['unmark'] ||= []
+          content['unmark'] << val
+        end
+        CPEE::Properties::set_positions(id,opts,content)
+      end
+
       def response
         id = @a[0]
         opts = @a[1]
@@ -392,24 +511,7 @@ module CPEE
           @status = 423
         else
           begin
-            doc = XML::Smart::string(@p[0].value.read)
-            content = {}
-            newkeys = []
-            doc.find("/*/*").map do |ele|
-              val = { 'position' => ele.qname.name }
-              val['passthrough'] = ele.attributes['passthrough'] if ele.attributes['passthrough']
-              content[ele.text] ||= []
-              content[ele.text] << val
-              newkeys << ele.qname.name
-            end
-            oldkeys = CPEE::Properties::extract_list(id,opts,'positions').to_h.keys
-            del = oldkeys - newkeys
-            del.each do |key|
-              val = { 'position' => key }
-              content['unmark'] ||= []
-              content['unmark'] << val
-            end
-            CPEE::Properties::set_positions(id,opts,content)
+            PutPositions::set(id,opts,@p[0].value.read)
             nil
           rescue => e
             @status = 400
@@ -491,6 +593,10 @@ module CPEE
     end #}}}
 
     class PutDescription < Riddl::Implementation #{{{
+      def self::set(id,opts,xml)
+        CPEE::Properties::set_item(id,opts,'description',:description => XML::Smart.string(xml).to_s)
+      end
+
       def response
         id = @a[0]
         opts = @a[1]
@@ -498,7 +604,7 @@ module CPEE
           @status = 422 # semantic error
         else
           begin
-            CPEE::Properties::set_item(id,opts,'description',:description => XML::Smart.string(@p[0].value.read).to_s)
+            PutDescription::set(id,opts,@p[0].value.read)
           rescue
             @status = 400
           end
@@ -524,15 +630,18 @@ module CPEE
       end
     end #}}}
     class PutTransformation < Riddl::Implementation #{{{
+      def self::set(id,opts,xml)
+        doc = XML::Smart::string(xml)
+        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+        CPEE::Properties::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
+      end
       def response
         id = @a[0]
         opts = @a[1]
-        doc = XML::Smart::string(@p[0].value.read)
-        doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
         if opts[:statemachine].readonly? id
           @status = 422 # semantic error
         else
-          CPEE::Properties::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
+          PutTransformation::set(id,opts,@p[0].value.read)
         end
         nil
       end

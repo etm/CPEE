@@ -16,4 +16,18 @@
       </choice>
     </element>
   </define>
+  <define name="set-state">
+    <element name="state" ns="http://cpee.org/ns/properties/2.0">
+      <choice>
+        <value>ready</value>
+        <value>running</value>
+        <value>simulating</value>
+        <value>replaying</value>
+        <value>stopping</value>
+        <value>stopped</value>
+        <value>abandoned</value>
+        <value>finished</value>
+      </choice>
+    </element>
+  </define>
 </grammar>
