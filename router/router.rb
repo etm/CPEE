@@ -50,14 +50,14 @@ Daemonite.new do |opts|
           when 'event:dataelements/change', 'event:endpoints/change', 'event:attributes/change'
             redis.multi do |multi|
               mess.dig('content','changed').each do |c|
-                multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",c)
                 unless what == 'event:attributes/change' && c == 'uuid'
+                  multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",c)
                   multi.set("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}",mess.dig('content','values',c))
                 end
               end
               mess.dig('content','deleted').to_a.each do |c|
-                multi.srem("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",c)
                 unless what == 'event:attributes/change' && c == 'uuid'
+                  multi.srem("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",c)
                   multi.del("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}")
                 end
               end
