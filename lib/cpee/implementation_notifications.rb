@@ -14,9 +14,9 @@ module CPEE
             run CPEE::Notifications::Subscriptions, id, opts if get
             run Riddl::Utils::Notifications::Producer::CreateSubscription, id, opts if post 'subscribe'
             on resource do
-              run CPEE::Notifications::Subscription, id, opts if get 'request'
+              run CPEE::Notifications::Subscription, id, opts if get
               run CPEE::Notifications::UpdateSubscription, id, opts if put 'details'
-              run CPEE::Notifications::DeleteSubscription, id, opts if delete 'delete'
+              run CPEE::Notifications::DeleteSubscription, id, opts if delete
               on resource 'sse' do
                 run CPEE::Notifications::SSE, id, opts if sse
               end
@@ -30,7 +30,7 @@ module CPEE
       def response
         Riddl::Parameter::Complex.new("overview","text/xml") do
           <<-END
-            <overview xmlns='http://riddl.org/ns/common-patterns/notifications-producer/1.0'>
+            <overview xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'>
               <topics/>
               <subscriptions/>
             </overview>
@@ -51,20 +51,14 @@ module CPEE
 
     class Subscriptions < Riddl::Implementation #{{{
       def response
-        backend = @a[0]
-        details = @a[1]
+        id = @a[0]
+        opts = @a[1]
         Riddl::Parameter::Complex.new("subscriptions","text/xml") do
           ret = XML::Smart::string <<-END
-            <subscriptions details='#{details}' xmlns='http://riddl.org/ns/common-patterns/notifications-producer/1.0'/>
+            <subscriptions xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'/>
           END
-          backend.subscriptions.each do |sub,key|
-            sub.read do |doc|
-              if doc.root.attributes['url']
-                ret.root.add('subscription', :id => key, :url => doc.root.attributes['url'])
-              else
-                ret.root.add('subscription', :id => key)
-              end
-            end
+          CPEE::Properties::extract_list(id,opts,'handlers').each do |de|
+            p de
           end
           ret.to_s
         end
@@ -176,7 +170,7 @@ module CPEE
       end
     end #}}}
 
-    class WS < Riddl::WebSocketImplementation #{{{
+    class SSE < Riddl::WebSocketImplementation #{{{
       def onopen
         @backend = @a[0]
         @handler = @a[1]

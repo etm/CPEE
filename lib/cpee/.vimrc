@@ -1,1 +1,1 @@
-map <F10> :!../../server/server.rb -v start<CR>
+map <F10> :!../../server/server.rb -v restart<CR>

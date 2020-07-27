@@ -22,7 +22,7 @@
     <xi:include href="properties.xml"/>
   </interface>
   <interface name="notifications">
-    <xi:include href="http://www.riddl.org/ns/common-patterns/notifications-producer/1.0/producer.xml"/>
+    <xi:include href="http://www.riddl.org/ns/common-patterns/notifications-producer/2.0/producer.xml"/>
   </interface>
 
   <facade>
