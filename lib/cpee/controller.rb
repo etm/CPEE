@@ -101,7 +101,7 @@ module CPEE
     end
 
     def notify(what,content={})
-      CPEE::Events::send(redis,what,@id,content)
+      CPEE::Message::send(redis,what,@id,content)
     end
 
     def call_vote(what,content={})

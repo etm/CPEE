@@ -81,34 +81,34 @@ module CPEE
         opts = @a[1]
         doc = XML::Smart::open_unprotected(opts[:properties_empty])
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-        doc.find('/p:properties/p:state').first.text = CPEE::Properties::extract_item(id,opts,'state')
-        doc.find('/p:properties/p:state/@changed').first.value = CPEE::Properties::extract_item(id,opts,'state/@changed')
-        doc.find('/p:properties/p:status/p:id').first.text = CPEE::Properties::extract_item(id,opts,'status/id')
-        doc.find('/p:properties/p:status/p:message').first.text = CPEE::Properties::extract_item(id,opts,'status/message')
+        doc.find('/p:properties/p:state').first.text = CPEE::Persistence::extract_item(id,opts,'state')
+        doc.find('/p:properties/p:state/@changed').first.value = CPEE::Persistence::extract_item(id,opts,'state/@changed')
+        doc.find('/p:properties/p:status/p:id').first.text = CPEE::Persistence::extract_item(id,opts,'status/id')
+        doc.find('/p:properties/p:status/p:message').first.text = CPEE::Persistence::extract_item(id,opts,'status/message')
         %w{dataelements endpoints attributes}.each do |item|
           des = doc.find("/p:properties/p:#{item}").first
-          CPEE::Properties::extract_list(id,opts,item).each{ |de| des.add(*de) }
+          CPEE::Persistence::extract_list(id,opts,item).each{ |de| des.add(*de) }
         end
         des = doc.find("/p:properties/p:positions").first
-        CPEE::Properties::extract_list(id,opts,'positions').each do |de|
+        CPEE::Persistence::extract_list(id,opts,'positions').each do |de|
           node = des.add(*de)
-          if pt = CPEE::Properties::extract_item(id,opts,File.join('positions',de[0],'@passthrough'))
+          if pt = CPEE::Persistence::extract_item(id,opts,File.join('positions',de[0],'@passthrough'))
             node.attributes['passthrough'] = pt
           end
         end
-        doc.find('/p:properties/p:dsl').first.text = CPEE::Properties::extract_item(id,opts,'dsl')
-        if val = CPEE::Properties::extract_item(id,opts,'dslx') #{{{
+        doc.find('/p:properties/p:dsl').first.text = CPEE::Persistence::extract_item(id,opts,'dsl')
+        if val = CPEE::Persistence::extract_item(id,opts,'dslx') #{{{
           doc.find('/p:properties/p:dslx').first.add XML::Smart::string(val).root rescue nil
         end #}}}
-        if val = CPEE::Properties::extract_item(id,opts,'description') #{{{
+        if val = CPEE::Persistence::extract_item(id,opts,'description') #{{{
           doc.find('/p:properties/p:description').first.add XML::Smart::string(val).root rescue nil
         end #}}}
-        doc.find('/p:properties/p:transformation/p:description').first.text = CPEE::Properties::extract_item(id,opts,'transformation/description')
-        doc.find('/p:properties/p:transformation/p:dataelements').first.text = CPEE::Properties::extract_item(id,opts,'transformation/dataelements')
-        doc.find('/p:properties/p:transformation/p:endpoints').first.text = CPEE::Properties::extract_item(id,opts,'transformation/endpoints')
-        doc.find('/p:properties/p:transformation/p:description/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/description/@type')
-        doc.find('/p:properties/p:transformation/p:dataelements/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/dataelements/@type')
-        doc.find('/p:properties/p:transformation/p:endpoints/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/endpoints/@type')
+        doc.find('/p:properties/p:transformation/p:description').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/description')
+        doc.find('/p:properties/p:transformation/p:dataelements').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dataelements')
+        doc.find('/p:properties/p:transformation/p:endpoints').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/endpoints')
+        doc.find('/p:properties/p:transformation/p:description/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/description/@type')
+        doc.find('/p:properties/p:transformation/p:dataelements/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dataelements/@type')
+        doc.find('/p:properties/p:transformation/p:endpoints/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type')
         Riddl::Parameter::Complex.new('properties','application/xml',doc.to_s)
       end
     end #}}}
@@ -192,12 +192,12 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Simple.new('value',CPEE::Properties::extract_item(id,opts,'state'))
+        Riddl::Parameter::Simple.new('value',CPEE::Persistence::extract_item(id,opts,'state'))
       end
     end #}}}
     class PutState < Riddl::Implementation #{{{
       def self::set(id,opts,state)
-        CPEE::Properties::set_item(id,opts,'state',:state => state)
+        CPEE::Persistence::set_item(id,opts,'state',:state => state)
       end
 
       def response
@@ -222,7 +222,7 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Simple.new('state',CPEE::Properties::extract_item(id,opts,'state/@changed'))
+        Riddl::Parameter::Simple.new('state',CPEE::Persistence::extract_item(id,opts,'state/@changed'))
       end
     end #}}}
     class GetStatus < Riddl::Implementation #{{{
@@ -232,8 +232,8 @@ module CPEE
         doc = XML::Smart::open_unprotected(opts[:properties_empty])
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
         des = doc.find('/p:properties/p:status').first
-        des.find('p:id').first.text = CPEE::Properties::extract_item(id,opts,'status/id')
-        des.find('p:message').first.text = CPEE::Properties::extract_item(id,opts,'status/message')
+        des.find('p:id').first.text = CPEE::Persistence::extract_item(id,opts,'status/id')
+        des.find('p:message').first.text = CPEE::Persistence::extract_item(id,opts,'status/message')
         Riddl::Parameter::Complex.new('status','text/xml',des.to_doc.to_s)
       end
     end #}}}
@@ -241,7 +241,7 @@ module CPEE
       def self::set(id,opts,xml)
         doc = XML::Smart::string(xml)
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-        CPEE::Properties::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
+        CPEE::Persistence::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
       end
 
       def response
@@ -259,26 +259,26 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Simple.new('value',CPEE::Properties::extract_item(id,opts,'status/id'))
+        Riddl::Parameter::Simple.new('value',CPEE::Persistence::extract_item(id,opts,'status/id'))
       end
     end #}}}
     class GetStatusMessage < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Simple.new('value',CPEE::Properties::extract_item(id,opts,'status/message'))
+        Riddl::Parameter::Simple.new('value',CPEE::Persistence::extract_item(id,opts,'status/message'))
       end
     end #}}}
     class GetHandlerWrapper < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Simple.new('value',CPEE::Properties::extract_item(id,opts,'handlerwrapper'))
+        Riddl::Parameter::Simple.new('value',CPEE::Persistence::extract_item(id,opts,'handlerwrapper'))
       end
     end #}}}
     class PutHandlerWrapper < Riddl::Implementation #{{{
       def self::set(id,opts,hw)
-        CPEE::Properties::set_item(id,opts,'handlerwrapper',:handlerwrapper => hw)
+        CPEE::Persistence::set_item(id,opts,'handlerwrapper',:handlerwrapper => hw)
       end
       def response
         id = @a[0]
@@ -299,7 +299,7 @@ module CPEE
         doc = XML::Smart::open_unprotected(opts[:properties_empty])
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
         des = doc.find("/p:properties/p:#{item}").first
-        CPEE::Properties::extract_list(id,opts,item).each{ |de| des.add(*de) }
+        CPEE::Persistence::extract_list(id,opts,item).each{ |de| des.add(*de) }
         Riddl::Parameter::Complex.new(item,'text/xml',des.to_doc.to_s)
       end
     end #}}}
@@ -309,7 +309,7 @@ module CPEE
         val = doc.find("/*/*").map do |ele|
           [ele.qname.name, ele.text]
         end.to_h
-        CPEE::Properties::set_list(id,opts,item,val)
+        CPEE::Persistence::set_list(id,opts,item,val)
       end
 
       def response
@@ -334,10 +334,10 @@ module CPEE
         val = doc.find("/*/*").map do |ele|
           [ele.qname.name, ele.text]
         end.to_h
-        oldkeys = CPEE::Properties::extract_list(id,opts,item).to_h.keys
+        oldkeys = CPEE::Persistence::extract_list(id,opts,item).to_h.keys
         newkeys = val.keys
         del = oldkeys - newkeys
-        CPEE::Properties::set_list(id,opts,item,val,del)
+        CPEE::Persistence::set_list(id,opts,item,val,del)
       end
 
       def response
@@ -369,8 +369,8 @@ module CPEE
             val = doc.find("/*").map do |ele|
               [ele.qname.name, ele.text]
             end.to_h
-            if not CPEE::Properties::extract_item(id,opts,File.join(@r.first,val.keys.first))
-              CPEE::Properties::set_list(id,opts,item,val)
+            if not CPEE::Persistence::extract_item(id,opts,File.join(@r.first,val.keys.first))
+              CPEE::Persistence::set_list(id,opts,item,val)
               Riddl::Parameter::Simple.new('id',val.keys.first)
             else
               @status= 409
@@ -387,7 +387,7 @@ module CPEE
         item = @a[0]
         id = @a[1]
         opts = @a[2]
-        if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
+        if val = CPEE::Persistence::extract_item(id,opts,@r.join('/'))
           Riddl::Parameter::Simple.new('value',val)
         else
           @status = 404
@@ -400,8 +400,8 @@ module CPEE
         id = @a[1]
         opts = @a[2]
         val = { @r.last => @p[0].value }
-        if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-          CPEE::Properties::set_list(id,opts,item,val)
+        if CPEE::Persistence::extract_item(id,opts,@r.join('/'))
+          CPEE::Persistence::set_list(id,opts,item,val)
         else
           @status = 404
         end
@@ -417,8 +417,8 @@ module CPEE
         if opts[:statemachine].readonly? id
           @status = 423
         else
-          if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-            CPEE::Properties::set_list(id,opts,item,val,val.keys)
+          if CPEE::Persistence::extract_item(id,opts,@r.join('/'))
+            CPEE::Persistence::set_list(id,opts,item,val,val.keys)
           else
             @status = 404
           end
@@ -433,7 +433,7 @@ module CPEE
         mime = @a[1]
         id = @a[2]
         opts = @a[3]
-        if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
+        if val = CPEE::Persistence::extract_item(id,opts,@r.join('/'))
           Riddl::Parameter::Complex.new(item,mime,val)
         else
           @status = 404
@@ -448,9 +448,9 @@ module CPEE
         doc = XML::Smart::open_unprotected(opts[:properties_empty])
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
         des = doc.find("/p:properties/p:positions").first
-        CPEE::Properties::extract_list(id,opts,'positions').each do |de|
+        CPEE::Persistence::extract_list(id,opts,'positions').each do |de|
           node = des.add(*de)
-          if pt = CPEE::Properties::extract_item(id,opts,File.join('positions',de[0],'@passthrough'))
+          if pt = CPEE::Persistence::extract_item(id,opts,File.join('positions',de[0],'@passthrough'))
             node.attributes['passthrough'] = pt
           end
         end
@@ -467,7 +467,7 @@ module CPEE
           content[ele.text] ||= []
           content[ele.text] << val
         end
-        CPEE::Properties::set_positions(id,opts,content)
+        CPEE::Persistence::set_positions(id,opts,content)
       end
 
       def response
@@ -497,14 +497,14 @@ module CPEE
           content[ele.text] << val
           newkeys << ele.qname.name
         end
-        oldkeys = CPEE::Properties::extract_list(id,opts,'positions').to_h.keys
+        oldkeys = CPEE::Persistence::extract_list(id,opts,'positions').to_h.keys
         del = oldkeys - newkeys
         del.each do |key|
           val = { 'position' => key }
           content['unmark'] ||= []
           content['unmark'] << val
         end
-        CPEE::Properties::set_positions(id,opts,content)
+        CPEE::Persistence::set_positions(id,opts,content)
       end
 
       def response
@@ -531,11 +531,11 @@ module CPEE
         else
           begin
             doc = XML::Smart::string(@p[0].value.read)
-            if not CPEE::Properties::extract_item(id,opts,File.join('positions',doc.root.qname.name))
+            if not CPEE::Persistence::extract_item(id,opts,File.join('positions',doc.root.qname.name))
               content = {}
               content[doc.root.text] = [{ 'position' => doc.root.qname.name }]
               content[doc.root.text][0]['passthrough'] = doc.root.attributes['passthrough'] if doc.root.attributes['passthrough']
-              CPEE::Properties::set_positions(id,opts,content)
+              CPEE::Persistence::set_positions(id,opts,content)
             else
               @status= 409
             end
@@ -552,7 +552,7 @@ module CPEE
         item = @a[0]
         id = @a[1]
         opts = @a[2]
-        if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
+        if val = CPEE::Persistence::extract_item(id,opts,@r.join('/'))
           Riddl::Parameter::Simple.new('value',val)
         else
           @status = 404
@@ -563,8 +563,8 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-          CPEE::Properties::set_positions(id,opts,{ @p[0].value => [ { 'position' => @r.last } ] })
+        if CPEE::Persistence::extract_item(id,opts,@r.join('/'))
+          CPEE::Persistence::set_positions(id,opts,{ @p[0].value => [ { 'position' => @r.last } ] })
         else
           @status = 404
         end
@@ -575,8 +575,8 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        if CPEE::Properties::extract_item(id,opts,@r.join('/'))
-          CPEE::Properties::set_positions(id,opts,{ 'unmark' => [ { 'position' => @r.last } ] })
+        if CPEE::Persistence::extract_item(id,opts,@r.join('/'))
+          CPEE::Persistence::set_positions(id,opts,{ 'unmark' => [ { 'position' => @r.last } ] })
         else
           @status = 404
         end
@@ -587,7 +587,7 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        if val = CPEE::Properties::extract_item(id,opts,@r.join('/'))
+        if val = CPEE::Persistence::extract_item(id,opts,@r.join('/'))
           Riddl::Parameter::Simple.new('value',val)
         else
           @status = 404
@@ -597,7 +597,7 @@ module CPEE
 
     class PutDescription < Riddl::Implementation #{{{
       def self::set(id,opts,xml)
-        CPEE::Properties::set_item(id,opts,'description',:description => XML::Smart.string(xml).to_s)
+        CPEE::Persistence::set_item(id,opts,'description',:description => XML::Smart.string(xml).to_s)
       end
 
       def response
@@ -623,12 +623,12 @@ module CPEE
         doc = XML::Smart::open_unprotected(opts[:properties_empty])
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
         des = doc.find('/p:properties/p:transformation').first
-        des.find('p:description').first.text = CPEE::Properties::extract_item(id,opts,'transformation/description')
-        des.find('p:dataelements').first.text = CPEE::Properties::extract_item(id,opts,'transformation/dataelements')
-        des.find('p:endpoints').first.text = CPEE::Properties::extract_item(id,opts,'transformation/endpoints')
-        des.find('p:description/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/description/@type')
-        des.find('p:dataelements/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/dataelements/@type')
-        des.find('p:endpoints/@type').first.text = CPEE::Properties::extract_item(id,opts,'transformation/endpoints/@type')
+        des.find('p:description').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/description')
+        des.find('p:dataelements').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dataelements')
+        des.find('p:endpoints').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/endpoints')
+        des.find('p:description/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/description/@type')
+        des.find('p:dataelements/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dataelements/@type')
+        des.find('p:endpoints/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type')
         Riddl::Parameter::Complex.new('status','text/xml',des.to_doc.to_s)
       end
     end #}}}
@@ -636,7 +636,7 @@ module CPEE
       def self::set(id,opts,xml)
         doc = XML::Smart::string(xml)
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-        CPEE::Properties::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
+        CPEE::Persistence::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
       end
       def response
         id = @a[0]
@@ -650,66 +650,5 @@ module CPEE
       end
     end #}}}
 
-    def self::set_list(id,opts,item,values,deleted=[]) #{{{
-      ah = AttributesHelper.new
-      attributes = CPEE::Properties::extract_list(id,opts,'attributes').to_h
-      dataelements = CPEE::Properties::extract_list(id,opts,'dataelements').to_h
-      endpoints = CPEE::Properties::extract_list(id,opts,'endpoints').to_h
-      CPEE::Events::send(
-        opts[:redis],
-        File.join(item,'change'),
-        id,
-        {
-          :instance_name => CPEE::Properties::extract_item(id,opts,'attributes/info'),
-          :instance => id,
-          :instance_uuid => CPEE::Properties::extract_item(id,opts,'attributes/uuid'),
-          :changed => values.keys,
-          :deleted => deleted,
-          :values => values,
-          :attributes => ah.translate(attributes,dataelements,endpoints),
-          :timestamp => Time.now.xmlschema(3)
-        }
-      )
-    end #}}}
-    def self::set_item(id,opts,item,value) #{{{
-      content = {
-        :instance_name => CPEE::Properties::extract_item(id,opts,'attributes/info'),
-        :instance => id,
-        :instance_uuid => CPEE::Properties::extract_item(id,opts,'attributes/uuid'),
-        :timestamp => Time.now.xmlschema(3)
-      }
-      value.each do |k,v|
-        content[k.to_sym] = v
-      end
-      CPEE::Events::send(
-        opts[:redis],
-        File.join(item,'change'),
-        id,
-        content
-      )
-    end #}}}
-    def self::set_positions(id,opts,content) #{{{
-      payload = {
-        :instance_name => CPEE::Properties::extract_item(id,opts,'attributes/info'),
-        :instance => id,
-        :instance_uuid => CPEE::Properties::extract_item(id,opts,'attributes/uuid'),
-        :timestamp => Time.now.xmlschema(3)
-      }
-      CPEE::Events::send(
-        opts[:redis],
-        'position/change',
-        id,
-        content
-      )
-    end #}}}
-
-    def self::extract_item(id,opts,item) #{{{
-      opts[:redis].get("instance:#{id}/#{item}")
-    end #}}}
-    def self::extract_list(id,opts,item) #{{{
-      opts[:redis].smembers("instance:#{id}/#{item}").map do |e|
-        [e,opts[:redis].get("instance:#{id}/#{item}/#{e}")]
-      end
-    end #}}}
   end
 end

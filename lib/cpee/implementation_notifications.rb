@@ -12,7 +12,7 @@ module CPEE
           end
           on resource "subscriptions" do
             run CPEE::Notifications::Subscriptions, id, opts if get
-            run Riddl::Utils::Notifications::Producer::CreateSubscription, id, opts if post 'subscribe'
+            run CPEE::Notifications::CreateSubscription, id, opts if post 'subscribe'
             on resource do
               run CPEE::Notifications::Subscription, id, opts if get
               run CPEE::Notifications::UpdateSubscription, id, opts if put 'details'
@@ -57,8 +57,11 @@ module CPEE
           ret = XML::Smart::string <<-END
             <subscriptions xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'/>
           END
-          CPEE::Properties::extract_list(id,opts,'handlers').each do |de|
-            p de
+          CPEE::Persistence::extract_handlers(id,opts).each do |de|
+            ret.root.add('subscription').tap do |n|
+              n.attributes['id'] = de[0]
+              n.attributes['url'] = de[1] if de[1] && !de[1].empty?
+            end
           end
           ret.to_s
         end
@@ -67,50 +70,50 @@ module CPEE
 
     class Subscription < Riddl::Implementation #{{{
       def response
-        backend = @a[0]
-        if(backend.subscriptions.include?(@r.last))
-          Riddl::Parameter::Complex.new("subscription","text/xml") do
-            backend.subscriptions[@r.last].to_s
+        id = @a[0]
+        opts = @a[1]
+        key = @r[-1]
+        Riddl::Parameter::Complex.new("subscriptions","text/xml") do
+          ret = XML::Smart::string <<-END
+            <subscription xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'/>
+          END
+          url = CPEE::Persistence::extract_item(id,opts,File.join('handler',key,'url'))
+          ret.root.attributes['url'] = url if url && !url.empty?
+          items = {}
+          CPEE::Persistence::extract_handler(id,opts,key).each do |h|
+            t, i, v = h.split('/')
+            items[t] ||= []
+            items[t] << [i,v]
           end
-        else
-          @status = 404
+          items.each do |k,v|
+            ret.root.add('topic').tap do |n|
+              n.attributes['id'] = k
+              v.each do |e|
+                n.add *e
+              end
+            end
+          end
+          ret.to_s
         end
       end
     end #}}}
 
     class CreateSubscription < Riddl::Implementation #{{{
       def response
-        backend = @a[0]
-        handler = @a[1]
+        id = @a[0]
+        opts = @a[1]
+        key = Digest::MD5.hexdigest(Kernel::rand().to_s)
 
         url = @p[0].name == 'url' ? @p.shift.value : nil
-
-        topics = []
-        key, consumer_secret, producer_secret = backend.subscriptions.create do |doc,key|
-          doc.root.attributes['url'] = url if url
-          while @p.length > 0
-            topic = @p.shift.value
-            base = @p.shift
-            type = base.name
-            items = base.value.split(',')
-            t = if topics.include?(topic)
-              doc.find("/n:subscription/n:topic[@id='#{topic}']").first
-            else
-              topics << topic
-              doc.root.add('topic', :id => topic)
-            end
-            items.each do |i|
-              t.add(type[0..-2], i)
-            end
-          end
+        while @p.length > 0
+          topic = @p.shift.value
+          base = @p.shift
+          type = base.name
+          values = base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+          CPEE::Persistence::set_handler(id,opts,key,url,values)
         end
 
-        handler.key(key).topics(topics).create unless handler.nil?
-        [
-          Riddl::Parameter::Simple.new('key',key),
-          Riddl::Parameter::Simple.new('producer-secret',producer_secret),
-          Riddl::Parameter::Simple.new('consumer-secret',consumer_secret)
-        ]
+        Riddl::Parameter::Simple.new('key',key)
       end
     end #}}}
 

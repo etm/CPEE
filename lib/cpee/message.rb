@@ -14,7 +14,7 @@
 
 module CPEE
 
-  module Events
+  module Message
 
     def self::send(redis, what, instance, content={})
       redis.publish('event:' + what, JSON::generate({ 'instance' => instance, 'topic' => ::File::dirname(what), 'event' => ::File::basename(what), 'content' => content }))

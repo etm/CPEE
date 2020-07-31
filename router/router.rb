@@ -99,11 +99,16 @@ Daemonite.new do |opts|
             end
           when 'event:handler/change'
             redis.multi do |multi|
-              multi.set("instance:#{mess.dig('instance')}/state",mess.dig('content','state'))
-              multi.set("instance:#{mess.dig('instance')}/state/@changed",mess.dig('content','timestamp'))
+              mess.dig('content','changed').each do |c|
+                multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",mess.dig('content','key'))
+                multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{mess.dig('content','key')}",c)
+                multi.set("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{mess.dig('content','key')}/url",mess.dig('content','url'))
+                multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}",mess.dig('content','key'))
+              end
+              mess.dig('content','deleted').to_a.each do |c|
+              end
             end
         end
-        # TODO einfach alle weiterleiten
       rescue => e
         puts e.message
         puts e.backtrace
