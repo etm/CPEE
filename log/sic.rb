@@ -58,6 +58,7 @@ def help
   puts '  Copy: sic.rb https://centurio.work/log/865916c6-2b18-4e9d-81d4-0fab0df248f4.xes.yaml copy'
   puts '  Copy: sic.rb ~/Projects/cpee/log/logs/865916c6-2b18-4e9d-81d4-0fab0df248f4.xes.yaml copy'
   puts '  View: sic.rb 865916c6-2b18-4e9d-81d4-0fab0df248f4.xes.yaml'
+  true
 end
 
 react(ARGV[0]) || help

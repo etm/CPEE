@@ -92,6 +92,12 @@
   </element>
   <element name="annotations" rngui:header="Annotations">
     <element name="_timing" rngui:header="Timing" rngui:fold="closed">
+      <element name="_timing_wait" rngui:label='ω - Wait'>
+        <data type='float' rngui:label='[0,1]' rngui:default='0.5'/>
+      </element>
+      <element name="_timing_threshold" rngui:label='κ - Threshold'>
+        <data type='float' rngui:label='[0,3,n]' rngui:default='3'/>
+      </element>
       <element name="_timing_min" rngui:label='Min in min'>
         <data type='float' rngui:label='Minutes'/>
       </element>

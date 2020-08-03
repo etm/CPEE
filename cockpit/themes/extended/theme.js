@@ -264,33 +264,18 @@ function WFAdaptorManifestation(adaptor) {
       'label': function(node){
         var rep = $('body').attr('current-resources');
         var ep = self.endpoints[$(node).attr('endpoint')];
-        var avg = $('_timing_avg',$(node).children('annotations')).text();
+        var wait = $('_timing_wait',$(node).children('annotations')).text();
+        var threshold = $('_timing_threshold',$(node).children('annotations')).text();
         var lab = $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'');
         var ret = [ { column: 'ID', value: $(node).attr('id') } ];
         if (lab != '') {
           ret.unshift( { column: 'Label', value: lab } );
         }
-        if (ep != undefined) {
-          var lnd = $(node).attr('endpoint');
-          ret.push({ column: 'Resource', value: lnd });
-          if (save['endpoints_cache'][lnd] && save['endpoints_cache'][lnd].properties) {
-            var prop = save['endpoints_cache'][lnd].properties;
-            if (prop.resource) {
-              if (prop.resource == 'exclusive' && prop.lock) {
-                ret.push({ column: 'RP', value: prop.resource + ' (' + prop.lock + ')' });
-              } else {
-                ret.push({ column: 'RP', value: prop.resource });
-              }
-            }
-            if (prop.alternatives) {
-              ret.push({ column: 'R#', value: prop.alternatives.length + 1});
-            } else {
-              ret.push({ column: 'R#', value: '1' });
-            }
-          }
+        if (wait != '') {
+          ret.push({ column: 'Wait', value: 'ω = ' + wait });
         }
-        if (avg != '') {
-          ret.push({ column: 'Average', value: avg + 'min' });
+        if (threshold != '') {
+          ret.push({ column: 'Threshold', value: 'κ = ' + threshold });
         }
         return ret;
       },
