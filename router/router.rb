@@ -19,7 +19,6 @@ require 'redis'
 require 'riddl/client'
 require 'daemonite'
 require 'pp'
-require_relative 'transform'
 
 Daemonite.new do |opts|
   redis = Redis.new(path: "/tmp/redis.sock", db: 3)
@@ -38,8 +37,11 @@ Daemonite.new do |opts|
           when 'event:handlerwrapper/change'
             redis.set("instance:#{mess.dig('instance')}/handlerwrapper",mess.dig('content','handlerwrapper'))
           when 'event:description/change'
-            redis.set("instance:#{mess.dig('instance')}/description",mess.dig('content','description'))
-            # TODO transformation
+            redis.multi do |multi|
+              multi.set("instance:#{mess.dig('instance')}/description",mess.dig('content','description'))
+              multi.set("instance:#{mess.dig('instance')}/dslx",mess.dig('content','dslx'))
+              multi.set("instance:#{mess.dig('instance')}/dsl",mess.dig('content','dsl'))
+            end
           when 'event:handler/add'
             redis.multi do |multi|
               multi.set("instance:#{mess.dig('instance')}/handlers/#{mess.dig('content','id')}/@url",mess.dig('content','url'))
@@ -106,6 +108,14 @@ Daemonite.new do |opts|
                 multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}",mess.dig('content','key'))
               end
               mess.dig('content','deleted').to_a.each do |c|
+                multi.srem("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{mess.dig('content','key')}",c)
+                multi.srem("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}",mess.dig('content','key'))
+              end
+            end
+            if redis.scard("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{mess.dig('content','key')}") < 1
+              redis.multi do |multi|
+                multi.del("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{mess.dig('content','key')}/url")
+                multi.srem("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",mess.dig('content','key'))
               end
             end
         end

@@ -1,4 +1,5 @@
 var ws;
+var es;
 var suspended_monitoring = false;
 var myid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
 var paths = '#dat_details input, #dat_details textarea, #dat_details select, #dat_details button, #dat_details [contenteditable], #dat_dataelements input, #dat_dataelements textarea, #dat_dataelements select, #dat_dataelements button, #dat_dataelements [contenteditable], #dat_endpoints input, #dat_endpoints textarea, #dat_endpoints select, #dat_endpoints button, #dat_endpoints [contenteditable], #dat_attributes input, #dat_attributes textarea, #dat_attributes select, #dat_attributes button, #dat_attributes [contenteditable]';
@@ -246,15 +247,13 @@ function create_instance(base,name,load,exec) {// {{{
   }
 }// }}}
 
-function websocket() { //{{{
+function sse() { //{{{
   var url = $('body').attr('current-instance');
-  var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
-  if (ws) ws.close();
-  ws = new Socket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
-  ws.onopen = function() {
+  es = new EventSource(url + "/notifications/subscriptions/" + subscription + "/sse/");
+  es.onopen = function() {
     append_to_log("monitoring", "opened", "");
   };
-  ws.onmessage = function(e) {
+  es.onmessage = function(e) {
     data = $.parseXML(e.data);
     if ($('event > topic',data).length > 0) {
       switch($('event > topic',data).text()) {
@@ -301,8 +300,9 @@ function websocket() { //{{{
       monitor_instance_vote_add(notification);
     }
   };
-  ws.onclose = function() {
+  es.onerror = function() {
     append_to_log("monitoring", "closed", "server down i assume.");
+    // setTimeout(sse,10000);
   };
 
   monitor_instance_values("dataelements");
@@ -354,14 +354,9 @@ function monitor_instance(cin,rep,load,exec) {// {{{
         url: url + "/notifications/subscriptions/",
         data: sub_less,
         success: function(res){
-          res = res.unserialize();
-          $.each(res,function(a,b){
-            if (b[0] == 'key') {
-              subscription = b[1];
-            }
-          });
+          subscription = res;
           append_to_log("monitoring", "id", subscription);
-          websocket();
+          sse();
           if (load || exec) {
             load_testset(exec);
           }
@@ -391,12 +386,12 @@ function monitor_instance_values(val) {// {{{
         $(res).find(" > value > *").each(function(k,v) {
           save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
           $.ajax({
-            url: rep + encodeURIComponent($(v).text()),
+            url: rep + encodeURIComponent($(v).text()).replace(/~/,'%7E'),
             success: function() {
               tmp[v.tagName] = {};
               var deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()) + "/symbol.svg",
+                url: rep + encodeURIComponent($(v).text()).replace(/~/,'%7E') + "/symbol.svg",
                 success: function(res) {
                   tmp[v.tagName]['symbol'] = res;
                   deferreds[0].resolve(true);
@@ -404,7 +399,7 @@ function monitor_instance_values(val) {// {{{
                 error: deferreds[0].resolve
               })
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()) + "/schema.rng",
+                url: rep + encodeURIComponent($(v).text()).replace(/~/,'%7E') + "/schema.rng",
                 success: function(res) {
                   tmp[v.tagName]['schema'] = res;
                   deferreds[1].resolve(true);
@@ -412,7 +407,7 @@ function monitor_instance_values(val) {// {{{
                 error: deferreds[1].resolve
               })
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()) + "/properties.json",
+                url: rep + encodeURIComponent($(v).text()).replace(/~/,'%7E') + "/properties.json",
                 success: function(res) {
                   tmp[v.tagName]['properties'] = res;
                   deferreds[2].resolve(true);
@@ -1166,7 +1161,7 @@ async function load_testset_handlers(url,testset,vals) {// {{{
     var han = this;
     var suburl = $(han).attr('url');
     if ($.inArray(suburl,vals) == -1) {
-      var inp = "url="+encodeURIComponent(suburl);
+      var inp = "url="+encodeURIComponent(suburl).replace(/~/,'%7E');
       $("*",han).each(function(){
         inp += "&topic=" + $(this).attr('topic');
         inp += "&" + this.nodeName + "=" + $(this).text();

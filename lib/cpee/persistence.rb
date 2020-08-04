@@ -78,11 +78,20 @@ module CPEE
       )
     end #}}}
 
-    def self::set_handler(id,opts,key,url,values,deleted=[]) #{{{
+    def self::set_handler(id,opts,key,url,values,update=false) #{{{
+      exis = opts[:redis].smembers("instance:#{id}/handler/#{key}")
+
+      if update == false && exis.length > 0
+        return 405
+      end
+
       ah = AttributesHelper.new
       attributes = Persistence::extract_list(id,opts,'attributes').to_h
       dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
       endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
+
+      deleted = exis - values
+
       CPEE::Message::send(
         opts[:redis],
         'handler/change',
@@ -99,6 +108,8 @@ module CPEE
           :timestamp => Time.now.xmlschema(3)
         }
       )
+
+      200
     end #}}}
     def self::extract_handler(id,opts,key) #{{{
       opts[:redis].smembers("instance:#{id}/handler/#{key}")

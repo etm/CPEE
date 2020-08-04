@@ -1,4 +1,5 @@
 require_relative 'attributes_helper'
+require_relative 'transform'
 require 'json'
 
 module CPEE
@@ -304,6 +305,9 @@ module CPEE
       end
     end #}}}
     class PatchItems < Riddl::Implementation #{{{
+      def self::set_hash(item, id, opts, val)
+        CPEE::Persistence::set_list(id,opts,item,val)
+      end
       def self::set(item, id, opts, xml)
         doc = XML::Smart::string(xml)
         val = doc.find("/*/*").map do |ele|
@@ -320,7 +324,7 @@ module CPEE
           @status = 423
         else
           begin
-            PatchItems::set(itm,id,opts,@p[0].value.read)
+            PatchItems::set(item,id,opts,@p[0].value.read)
           rescue
             @status = 400
           end
@@ -348,7 +352,7 @@ module CPEE
           @status = 423
         else
           begin
-            PutItems::set(itm,id,opts,@p[0].value.read)
+            PutItems::set(item,id,opts,@p[0].value.read)
           rescue
             @status = 400
           end
@@ -597,7 +601,23 @@ module CPEE
 
     class PutDescription < Riddl::Implementation #{{{
       def self::set(id,opts,xml)
-        CPEE::Persistence::set_item(id,opts,'description',:description => XML::Smart.string(xml).to_s)
+        dslx, dsl, de, ep = transform(
+          xml,
+          CPEE::Persistence::extract_item(id,opts,'transformation/description'),
+          CPEE::Persistence::extract_item(id,opts,'transformation/description/@type'),
+          CPEE::Persistence::extract_item(id,opts,'transformation/dataelements'),
+          CPEE::Persistence::extract_item(id,opts,'transformation/dataelements/@type'),
+          CPEE::Persistence::extract_item(id,opts,'transformation/endpoints'),
+          CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type'),
+          opts
+        )
+        CPEE::Persistence::set_item(id,opts,'description',
+          :description => xml,
+          :dslx => dslx,
+          :dsl => dsl
+        )
+        PatchItems::set_hash('dataelements',id,opts,de) unless de.empty?
+        PatchItems::set_hash('dataelements',id,opts,ep) unless ep.empty?
       end
 
       def response
@@ -636,7 +656,14 @@ module CPEE
       def self::set(id,opts,xml)
         doc = XML::Smart::string(xml)
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-        CPEE::Persistence::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
+        CPEE::Persistence::set_item(id,opts,'transformation',
+          :description => doc.find('string(/p:transformation/p:description)'),
+          :description_type => doc.find('string(/p:transformation/p:description/@type)'),
+          :dataelements =>doc.find('string(/p:transformation/p:dataelements)'),
+          :dataelements_type => doc.find('string(/p:transformation/p:dataelements/@type)'),
+          :endpoints =>doc.find('string(/p:transformation/p:endpoints)'),
+          :endpoints_type => doc.find('string(/p:transformation/p:endpoints/@type)')
+        )
       end
       def response
         id = @a[0]

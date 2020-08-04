@@ -15,7 +15,7 @@ module CPEE
             run CPEE::Notifications::CreateSubscription, id, opts if post 'subscribe'
             on resource do
               run CPEE::Notifications::Subscription, id, opts if get
-              run CPEE::Notifications::UpdateSubscription, id, opts if put 'details'
+              run CPEE::Notifications::UpdateSubscription, id, opts if put 'subscribe'
               run CPEE::Notifications::DeleteSubscription, id, opts if delete
               on resource 'sse' do
                 run CPEE::Notifications::SSE, id, opts if sse
@@ -98,11 +98,31 @@ module CPEE
       end
     end #}}}
 
-    class CreateSubscription < Riddl::Implementation #{{{
+     class CreateSubscription < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]
         key = Digest::MD5.hexdigest(Kernel::rand().to_s)
+
+        url = @p[0].name == 'url' ? @p.shift.value : nil
+        values = []
+        while @p.length > 0
+          topic = @p.shift.value
+          base = @p.shift
+          type = base.name
+          values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+        end
+        @header = CPEE::Persistence::set_handler(id,opts,key,url,values)
+
+        Riddl::Parameter::Simple.new('key',key)
+      end
+    end #}}}
+
+    class UpdateSubscription < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        key = @r.last
 
         url = @p[0].name == 'url' ? @p.shift.value : nil
         while @p.length > 0
@@ -110,7 +130,7 @@ module CPEE
           base = @p.shift
           type = base.name
           values = base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
-          CPEE::Persistence::set_handler(id,opts,key,url,values)
+          CPEE::Persistence::set_handler(id,opts,key,url,values,true)
         end
 
         Riddl::Parameter::Simple.new('key',key)
@@ -119,74 +139,20 @@ module CPEE
 
     class DeleteSubscription < Riddl::Implementation #{{{
       def response
-        backend = @a[0]
-        handler = @a[1]
-        key     = @r.last
+        id = @a[0]
+        opts = @a[1]
+        key = @r.last
 
-        backend.subscriptions[key].delete
-        handler.key(key).delete unless handler.nil?
-        return
-      end
-    end #}}}
-
-    class UpdateSubscription < Riddl::Implementation #{{{
-      def response
-        backend = @a[0]
-        handler = @a[1]
-        key     = @r.last
-
-        url  = @p[0].name == 'url' ? @p.shift.value : nil
-
-        # TODO check if message is valid (with producer secret)
-        unless backend.subscriptions[key]
-          @status = 404
-          return # subscription not found
-        end
-
-        topics = []
-        backend.subscriptions[key].modify do |doc|
-          if url.nil?
-            doc.find('/n:subscription/@url').delete_all!
-          else
-            doc.root.attributes['url'] = url
-          end
-          doc.root.children.delete_all!
-          while @p.length > 1
-            topic = @p.shift.value
-            base = @p.shift
-            type = base.name
-            items = base.value.split(',')
-            t = if topics.include?(topic)
-              doc.find("/n:subscription/n:topic[@id='#{topic}']").first
-            else
-              topics << topic
-              doc.root.add('topic', :id => topic)
-            end
-            items.each do |i|
-              t.add(type[0..-2], i)
-            end
-          end
-        end
-
-        handler.key(key).topics(topics).update unless handler.nil?
+        CPEE::Persistence::set_handler(id,opts,key,"",[],true)
         nil
       end
     end #}}}
 
     class SSE < Riddl::WebSocketImplementation #{{{
       def onopen
-        @backend = @a[0]
-        @handler = @a[1]
-        @key     = @r[-2]
-        @handler.key(@key).ws_open(self) unless @handler.nil?
-      end
-
-      def onmessage(data)
-        @handler.key(@key).ws_message(data) unless @handler.nil?
       end
 
       def onclose
-        @handler.key(@key).ws_close() unless @handler.nil?
       end
     end #}}}
 
