@@ -21,26 +21,24 @@ require 'daemonite'
 require 'pp'
 
 EVENTS = %w{
-          when 'event:state/change'
-          when 'event:handlerwrapper/change'
-          when 'event:description/change'
-          when 'event:handler/add'
-          when 'event:handler/delete'
-          when 'event:dataelements/change', 'event:endpoints/change', 'event:attributes/change'
-          when 'event:transformation/change'
-          when 'event:status/change'
-          when 'event:position/change'
-          when 'event:handler/change'
+  event:state/change
+  event:handlerwrapper/change
+  event:description/change
+  event:dataelements/change
+  event:endpoints/change
+  event:attributes/change
+  event:transformation/change
+  event:status/change
+  event:position/change
+  event:handler/change
 }
-
-
 
 Daemonite.new do |opts|
   redis = Redis.new(path: "/tmp/redis.sock", db: 3)
   pubsubredis = Redis.new(path: "/tmp/redis.sock", db: 3)
 
   run do
-    pubsubredis.psubscribe('event:*') do |on|
+    pubsubredis.psubscribe(EVENTS) do |on|
       on.pmessage do |pat, what, message|
         mess = JSON.parse(message)
         case what
