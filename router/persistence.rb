@@ -16,7 +16,6 @@
 
 require 'json'
 require 'redis'
-require 'riddl/client'
 require 'daemonite'
 require 'pp'
 
@@ -38,8 +37,8 @@ Daemonite.new do |opts|
   pubsubredis = Redis.new(path: "/tmp/redis.sock", db: 3)
 
   run do
-    pubsubredis.psubscribe(EVENTS) do |on|
-      on.pmessage do |pat, what, message|
+    pubsubredis.subscribe(EVENTS) do |on|
+      on.message do |what, message|
         mess = JSON.parse(message)
         case what
           when 'event:state/change'

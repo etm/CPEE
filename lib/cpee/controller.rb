@@ -15,10 +15,10 @@
 require 'json'
 require 'redis'
 require 'securerandom'
-require 'riddl/client'
 require_relative 'callback'
 require_relative 'value_helper'
 require_relative 'attributes_helper'
+require_relative 'message'
 
 require 'ostruct'
 class ParaStruct < OpenStruct

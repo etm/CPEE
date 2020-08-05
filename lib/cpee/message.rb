@@ -17,7 +17,11 @@ module CPEE
   module Message
 
     def self::send(redis, what, instance, content={})
-      redis.publish('event:' + what, JSON::generate({ 'instance' => instance, 'topic' => ::File::dirname(what), 'event' => ::File::basename(what), 'content' => content }))
+      redis.publish('event:' + what, JSON::generate({ 'instance' => instance, 'topic' => ::File::dirname(what), 'type' => 'event', 'name' => ::File::basename(what), 'content' => content }))
+    end
+
+    def self::vote(redis, what, instance, content={})
+      redis.publish('vote:' + what, JSON::generate({ 'instance' => instance, 'topic' => ::File::dirname(what), 'type' => 'vote', 'name' => ::File::basename(what), 'content' => content }))
     end
 
   end

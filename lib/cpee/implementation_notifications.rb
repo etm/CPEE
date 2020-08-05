@@ -154,7 +154,7 @@ module CPEE
         opts = @a[1]
         @conn = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
         EM.defer do
-          @conn.psubscribe('event:#{id}/#{@r[-2]}') do |on|
+          @conn.psubscribe('forward:#{id}/#{@r[-2]}') do |on|
             on.pmessage do |pat, what, message|
               p message
             end

@@ -254,6 +254,7 @@ function sse() { //{{{
     append_to_log("monitoring", "opened", "");
   };
   es.onmessage = function(e) {
+    console.log(e.data);
     data = $.parseXML(e.data);
     if ($('event > topic',data).length > 0) {
       switch($('event > topic',data).text()) {
