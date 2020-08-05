@@ -20,6 +20,21 @@ require 'riddl/client'
 require 'daemonite'
 require 'pp'
 
+EVENTS = %w{
+          when 'event:state/change'
+          when 'event:handlerwrapper/change'
+          when 'event:description/change'
+          when 'event:handler/add'
+          when 'event:handler/delete'
+          when 'event:dataelements/change', 'event:endpoints/change', 'event:attributes/change'
+          when 'event:transformation/change'
+          when 'event:status/change'
+          when 'event:position/change'
+          when 'event:handler/change'
+}
+
+
+
 Daemonite.new do |opts|
   redis = Redis.new(path: "/tmp/redis.sock", db: 3)
   pubsubredis = Redis.new(path: "/tmp/redis.sock", db: 3)
@@ -42,13 +57,6 @@ Daemonite.new do |opts|
               multi.set("instance:#{mess.dig('instance')}/dslx",mess.dig('content','dslx'))
               multi.set("instance:#{mess.dig('instance')}/dsl",mess.dig('content','dsl'))
             end
-          when 'event:handler/add'
-            redis.multi do |multi|
-              multi.set("instance:#{mess.dig('instance')}/handlers/#{mess.dig('content','id')}/@url",mess.dig('content','url'))
-              multi.set("instance:#{mess.dig('instance')}/handlers/#{mess.dig('content','id')}",mess.dig('topics','topics'))
-            end
-          when 'event:handler/delete'
-            redis.del("instance:#{mess.dig('instance')}/handlers/#{mess.dig('content','id')}")
           when 'event:dataelements/change', 'event:endpoints/change', 'event:attributes/change'
             redis.multi do |multi|
               mess.dig('content','changed').each do |c|

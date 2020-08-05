@@ -383,15 +383,15 @@ function monitor_instance_values(val) {// {{{
       if (val == "endpoints") {
         save['endpoints_list'] = {};
         var tmp = {};
-        $(res).find(" > value > *").each(function(k,v) {
+        $(res).find(" > endpoints > *").each(function(k,v) {
           save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
           $.ajax({
-            url: rep + encodeURIComponent($(v).text()).replace(/~/,'%7E'),
+            url: rep + encodeURIComponent($(v).text()),
             success: function() {
               tmp[v.tagName] = {};
               var deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()).replace(/~/,'%7E') + "/symbol.svg",
+                url: rep + encodeURIComponent($(v).text()) + "/symbol.svg",
                 success: function(res) {
                   tmp[v.tagName]['symbol'] = res;
                   deferreds[0].resolve(true);
@@ -399,7 +399,7 @@ function monitor_instance_values(val) {// {{{
                 error: deferreds[0].resolve
               })
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()).replace(/~/,'%7E') + "/schema.rng",
+                url: rep + encodeURIComponent($(v).text()) + "/schema.rng",
                 success: function(res) {
                   tmp[v.tagName]['schema'] = res;
                   deferreds[1].resolve(true);
@@ -407,7 +407,7 @@ function monitor_instance_values(val) {// {{{
                 error: deferreds[1].resolve
               })
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()).replace(/~/,'%7E') + "/properties.json",
+                url: rep + encodeURIComponent($(v).text()) + "/properties.json",
                 success: function(res) {
                   tmp[v.tagName]['properties'] = res;
                   deferreds[2].resolve(true);
@@ -424,7 +424,7 @@ function monitor_instance_values(val) {// {{{
           });
         });
       } else if(val == "attributes") {
-        var text = $(" > value > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
+        var text = $(" > attributes > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
         $('#title').text(text);
         document.title = text;
       }
@@ -611,7 +611,7 @@ function monitor_instance_pos() {// {{{
     type: "GET",
     url: url + "/properties/positions/",
     success: function(res){
-      save['instance_pos'] = $("value > *",res);
+      save['instance_pos'] = $("positions > *",res);
       format_visual_clear();
       format_instance_pos();
     }
@@ -807,7 +807,7 @@ function get_testset(deferred) {// {{{
                     type: "GET",
                     url: url + "/properties/attributes/",
                     success: function(res){
-                      var name = $("value > info",res).text();
+                      var name = $("attributes > info",res).text();
                       var pars = $X('<attributes/>');
                       pars.append($(res.documentElement).children());
                       pars.find('uuid').remove();
