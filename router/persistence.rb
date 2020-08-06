@@ -39,88 +39,90 @@ Daemonite.new do |opts|
   run do
     pubsubredis.subscribe(EVENTS) do |on|
       on.message do |what, message|
-        mess = JSON.parse(message)
+        mess = JSON.parse(message[message.index(' ')+1..-1])
+        instance = mess.dig('instance')
         case what
           when 'event:state/change'
             redis.multi do |multi|
-              multi.set("instance:#{mess.dig('instance')}/state",mess.dig('content','state'))
-              multi.set("instance:#{mess.dig('instance')}/state/@changed",mess.dig('content','timestamp'))
+              multi.set("instance:#{instance}/state",mess.dig('content','state'))
+              multi.set("instance:#{instance}/state/@changed",mess.dig('content','timestamp'))
             end
           when 'event:handlerwrapper/change'
-            redis.set("instance:#{mess.dig('instance')}/handlerwrapper",mess.dig('content','handlerwrapper'))
+            redis.set("instance:#{instance}/handlerwrapper",mess.dig('content','handlerwrapper'))
           when 'event:description/change'
             redis.multi do |multi|
-              multi.set("instance:#{mess.dig('instance')}/description",mess.dig('content','description'))
-              multi.set("instance:#{mess.dig('instance')}/dslx",mess.dig('content','dslx'))
-              multi.set("instance:#{mess.dig('instance')}/dsl",mess.dig('content','dsl'))
+              multi.set("instance:#{instance}/description",mess.dig('content','description'))
+              multi.set("instance:#{instance}/dslx",mess.dig('content','dslx'))
+              multi.set("instance:#{instance}/dsl",mess.dig('content','dsl'))
             end
           when 'event:dataelements/change', 'event:endpoints/change', 'event:attributes/change'
+            topic = mess.dig('topic')
             redis.multi do |multi|
               mess.dig('content','changed').each do |c|
                 unless what == 'event:attributes/change' && c == 'uuid'
-                  multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",c)
-                  multi.set("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}",mess.dig('content','values',c))
+                  multi.sadd("instance:#{instance}/#{topic}",c)
+                  multi.set("instance:#{instance}/#{topic}/#{c}",mess.dig('content','values',c))
                 end
               end
               mess.dig('content','deleted').to_a.each do |c|
                 unless what == 'event:attributes/change' && c == 'uuid'
-                  multi.srem("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",c)
-                  multi.del("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}")
+                  multi.srem("instance:#{instance}/#{topic}",c)
+                  multi.del("instance:#{instance}/#{topic}/#{c}")
                 end
               end
             end
           when 'event:transformation/change'
             redis.multi do |multi|
-              multi.set("instance:#{mess.dig('instance')}/transformation/description/",mess.dig('content','description'))
-              multi.set("instance:#{mess.dig('instance')}/transformation/description/@type",mess.dig('content','description_type'))
-              multi.set("instance:#{mess.dig('instance')}/transformation/dataelements/",mess.dig('content','dataelements'))
-              multi.set("instance:#{mess.dig('instance')}/transformation/dataelements/@type",mess.dig('content','dataelements_type'))
-              multi.set("instance:#{mess.dig('instance')}/transformation/endpoints/",mess.dig('content','endpoints'))
-              multi.set("instance:#{mess.dig('instance')}/transformation/endpoints/@type",mess.dig('content','endpoints_type'))
+              multi.set("instance:#{instance}/transformation/description/",mess.dig('content','description'))
+              multi.set("instance:#{instance}/transformation/description/@type",mess.dig('content','description_type'))
+              multi.set("instance:#{instance}/transformation/dataelements/",mess.dig('content','dataelements'))
+              multi.set("instance:#{instance}/transformation/dataelements/@type",mess.dig('content','dataelements_type'))
+              multi.set("instance:#{instance}/transformation/endpoints/",mess.dig('content','endpoints'))
+              multi.set("instance:#{instance}/transformation/endpoints/@type",mess.dig('content','endpoints_type'))
             end
           when 'event:status/change'
             redis.multi do |multi|
-              multi.set("instance:#{mess.dig('instance')}/status/id",mess.dig('content','id'))
-              multi.set("instance:#{mess.dig('instance')}/status/message",mess.dig('content','message'))
+              multi.set("instance:#{instance}/status/id",mess.dig('content','id'))
+              multi.set("instance:#{instance}/status/message",mess.dig('content','message'))
             end
           when 'event:position/change'
             redis.multi do |multi|
               c = mess.dig('content')
               c.dig('at')&.each do |ele|
-                multi.sadd("instance:#{mess.dig('instance')}/positions",ele['position'])
-                multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}",'at')
-                multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}/@passthrough",ele['passthrough']) if ele['passthrough']
+                multi.sadd("instance:#{instance}/positions",ele['position'])
+                multi.set("instance:#{instance}/positions/#{ele['position']}",'at')
+                multi.set("instance:#{instance}/positions/#{ele['position']}/@passthrough",ele['passthrough']) if ele['passthrough']
               end
               c.dig('before')&.each do |ele|
-                multi.sadd("instance:#{mess.dig('instance')}/positions",ele['position'])
-                multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}",'before')
+                multi.sadd("instance:#{instance}/positions",ele['position'])
+                multi.set("instance:#{instance}/positions/#{ele['position']}",'before')
               end
               c.dig('after')&.each do |ele|
-                multi.sadd("instance:#{mess.dig('instance')}/positions",ele['position'])
-                multi.set("instance:#{mess.dig('instance')}/positions/#{ele['position']}",'after')
+                multi.sadd("instance:#{instance}/positions",ele['position'])
+                multi.set("instance:#{instance}/positions/#{ele['position']}",'after')
               end
               c.dig('unmark')&.each do |ele|
-                multi.srem("instance:#{mess.dig('instance')}/positions",ele['position'])
-                multi.del("instance:#{mess.dig('instance')}/positions/#{ele['position']}")
+                multi.srem("instance:#{instance}/positions",ele['position'])
+                multi.del("instance:#{instance}/positions/#{ele['position']}")
               end
             end
           when 'event:handler/change'
             redis.multi do |multi|
               mess.dig('content','changed').each do |c|
-                multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",mess.dig('content','key'))
-                multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{mess.dig('content','key')}",c)
-                multi.set("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{mess.dig('content','key')}/url",mess.dig('content','url'))
-                multi.sadd("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}",mess.dig('content','key'))
+                multi.sadd("instance:#{instance}/handlers",mess.dig('content','key'))
+                multi.sadd("instance:#{instance}/handlers/#{mess.dig('content','key')}",c)
+                multi.set("instance:#{instance}/handlers/#{mess.dig('content','key')}/url",mess.dig('content','url'))
+                multi.sadd("instance:#{instance}/handlers/#{c}",mess.dig('content','key'))
               end
               mess.dig('content','deleted').to_a.each do |c|
-                multi.srem("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{mess.dig('content','key')}",c)
-                multi.srem("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{c}",mess.dig('content','key'))
+                multi.srem("instance:#{instance}/handlers/#{mess.dig('content','key')}",c)
+                multi.srem("instance:#{instance}/handlers/#{c}",mess.dig('content','key'))
               end
             end
-            if redis.scard("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{mess.dig('content','key')}") < 1
+            if redis.scard("instance:#{instance}/handlers/#{mess.dig('content','key')}") < 1
               redis.multi do |multi|
-                multi.del("instance:#{mess.dig('instance')}/#{mess.dig('topic')}/#{mess.dig('content','key')}/url")
-                multi.srem("instance:#{mess.dig('instance')}/#{mess.dig('topic')}",mess.dig('content','key'))
+                multi.del("instance:#{instance}/handlers/#{mess.dig('content','key')}/url")
+                multi.srem("instance:#{instance}/handlers",mess.dig('content','key'))
               end
             end
         end

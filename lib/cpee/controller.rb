@@ -78,9 +78,6 @@ module CPEE
     def base
       base_url
     end
-    def instance
-      instance_url
-    end
     def instance=(inst)
       @instance = inst
     end
@@ -101,7 +98,7 @@ module CPEE
     end
 
     def notify(what,content={})
-      CPEE::Message::send(redis,what,@id,content)
+      CPEE::Message::send(:event,what,base,@id,uuid,info,content,redis)
     end
 
     def call_vote(what,content={})

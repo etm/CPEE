@@ -16,21 +16,21 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def self::inform_state_change(arguments,newstate) # {{{
     controller = arguments[0]
 		controller.serialize_state!
-		controller.notify("state/change", :instance => controller.instance, :instance_uuid => controller.uuid, :state => newstate, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+		controller.notify("state/change", :instance => controller.instance_url, :instance_uuid => controller.uuid, :state => newstate, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
 		controller.finalize_if_finished
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{
     controller = arguments[0]
-    controller.notify("description/error", :instance => controller.instance, :instance_uuid => controller.uuid, :message => err.message, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+    controller.notify("description/error", :instance => controller.instance_url, :instance_uuid => controller.uuid, :message => err.message, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end# }}}
   def self::inform_handlerwrapper_error(arguments,err) # {{{
     controller = arguments[0]
-    controller.notify("handlerwrapper/error", :instance => controller.instance, :instance_uuid => controller.uuid, :message => err.message, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+    controller.notify("handlerwrapper/error", :instance => controller.instance_url, :instance_uuid => controller.uuid, :message => err.message, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end # }}}
   def self::inform_position_change(arguments,ipc={}) # {{{
     controller = arguments[0]
     controller.serialize_positions!
-    ipc[:instance] = controller.instance
+    ipc[:instance] = controller.instance_url
     ipc[:instance_uuid] = controller.uuid
     ipc[:timestamp] = Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z")
     controller.notify("position/change", ipc)
@@ -91,7 +91,6 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     end
 
     params << Riddl::Header.new("CPEE-BASE",@controller.base_url)
-    params << Riddl::Header.new("CPEE-INSTANCE",@controller.instance)
     params << Riddl::Header.new("CPEE-INSTANCE-URL",@controller.instance_url)
     params << Riddl::Header.new("CPEE-INSTANCE-UUID",@controller.uuid)
     params << Riddl::Header.new("CPEE-CALLBACK",@controller.instance_url + '/callbacks/' + callback)
@@ -119,7 +118,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       callback([ Riddl::Parameter::Complex.new('error','application/json',StringIO.new(JSON::generate({ 'status' => status, 'error' => c }))) ], headers)
     else
       if headers['CPEE_INSTANTIATION']
-        @controller.notify("task/instantiation", :activity_uuid => @handler_activity_uuid, :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+        @controller.notify("task/instantiation", :activity_uuid => @handler_activity_uuid, :instance => @controller.instance_url, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
       end
       if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
         headers['CPEE_UPDATE'] = true
@@ -138,7 +137,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @sensors = parameters.dig(:stream,:sensors)
     @aggregators = parameters.dig(:stream,:aggregators)
     @costs = parameters.dig(:stream,:costs)
-    @controller.notify("activity/calling", :activity_uuid => @handler_activity_uuid, :instance => @controller.instance, :instance_uuid => @controller.uuid, :label => @label, :instance_name => @controller.info, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+    @controller.notify("activity/calling", :activity_uuid => @handler_activity_uuid, :instance => @controller.instance_url, :instance_uuid => @controller.uuid, :label => @label, :instance_name => @controller.info, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
     if passthrough.to_s.empty?
       proto_curl parameters
     else
@@ -171,36 +170,36 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def inform_activity_done # {{{
-    @controller.notify("activity/done", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+    @controller.notify("activity/done", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :instance => @controller.instance_url, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
   end # }}}
   def inform_activity_manipulate # {{{
-    @controller.notify("activity/manipulating", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+    @controller.notify("activity/manipulating", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :instance => @controller.instance_url, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
   end # }}}
   def inform_activity_failed(err) # {{{
     puts err.message
     puts err.backtrace
-    @controller.notify("activity/failed", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1], :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+    @controller.notify("activity/failed", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance_url, :instance_uuid => @controller.uuid, :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1], :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
   end # }}}
   def inform_manipulate_change(status,changed_dataelements,changed_endpoints,dataelements,endpoints) # {{{
     unless status.nil?
       @controller.serialize_status!
-      @controller.notify("status/change", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :id => status.id, :message => status.message, :attributes => @controller.attributes_translated, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+      @controller.notify("status/change", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance_url, :instance_uuid => @controller.uuid, :activity => @handler_position, :id => status.id, :message => status.message, :attributes => @controller.attributes_translated, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
     end
     unless changed_dataelements.nil?
       @controller.serialize_dataelements!
-      @controller.notify("dataelements/change", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_dataelements, :values => dataelements, :attributes => @controller.attributes_translated, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+      @controller.notify("dataelements/change", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance_url, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_dataelements, :values => dataelements, :attributes => @controller.attributes_translated, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
     end
     unless changed_endpoints.nil?
       @controller.serialize_endpoints!
-      @controller.notify("endpoints/change", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints, :attributes => @controller.attributes_translated, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+      @controller.notify("endpoints/change", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :instance_name => @controller.info, :instance => @controller.instance_url, :instance_uuid => @controller.uuid, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints, :attributes => @controller.attributes_translated, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
     end
   end # }}}
 
   def vote_sync_after # {{{
-    @controller.call_vote("activity/syncing_after", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+    @controller.call_vote("activity/syncing_after", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :instance => @controller.instance_url, :instance_uuid => @controller.uuid, :activity => @handler_position, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end # }}}
   def vote_sync_before(parameters=nil) # {{{
-    @controller.call_vote("activity/syncing_before", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :parameters => parameters, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+    @controller.call_vote("activity/syncing_before", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :instance => @controller.instance_url, :instance_uuid => @controller.uuid, :activity => @handler_position, :parameters => parameters, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
   end # }}}
 
   def simplify_result(result)
@@ -259,13 +258,13 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end
 
   def callback(result=nil,options={})
-    @controller.notify("activity/receiving", :activity_uuid => @handler_activity_uuid, :instance => @controller.instance, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated, :sensors => @sensors, :aggregators => @aggregators, :costs => @costs)
+    @controller.notify("activity/receiving", :activity_uuid => @handler_activity_uuid, :instance => @controller.instance_url, :label => @label, :instance_name => @controller.info, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated, :sensors => @sensors, :aggregators => @aggregators, :costs => @costs)
     result = simplify_result(result)
     @handler_returnValue = result
     @handler_returnOptions = options
     if options['CPEE_UPDATE']
       if options['CPEE_UPDATE_STATUS']
-        @controller.notify("activity/status", :activity_uuid => @handler_activity_uuid, :instance => @controller.instance, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'], :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+        @controller.notify("activity/status", :activity_uuid => @handler_activity_uuid, :instance => @controller.instance_url, :instance_uuid => @controller.uuid, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'], :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
       end
       @handler_continue.continue WEEL::Signal::Again
     else
@@ -281,7 +280,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
   def test_condition(mr,code)
     res = mr.instance_eval(code)
-    @controller.notify("condition/eval", :instance => @controller.instance, :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
+    @controller.notify("condition/eval", :instance => @controller.instance_url, :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"), :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => @controller.attributes_translated)
     res
   end
 
@@ -290,7 +289,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
     @controller.call_vote("simulating/step",
       :endpoint => @handler_endpoint,
-      :instance => @controller.instance,
+      :instance => @controller.instance_url,
       :instance_uuid => @controller.uuid,
       :activity => tid,
       :type => type,

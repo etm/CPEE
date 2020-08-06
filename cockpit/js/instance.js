@@ -254,10 +254,9 @@ function sse() { //{{{
     append_to_log("monitoring", "opened", "");
   };
   es.onmessage = function(e) {
-    console.log(e.data);
-    data = $.parseXML(e.data);
-    if ($('event > topic',data).length > 0) {
-      switch($('event > topic',data).text()) {
+    data = JSON.parse(e.data);
+    if (data['type'] == 'event') {
+      switch(data['topic']) {
         case 'dataelements':
           monitor_instance_values("dataelements");
           break;
@@ -276,30 +275,27 @@ function sse() { //{{{
           break;
         case 'task':
           if ($('#trackcolumn').length > 0) {
-            var details = JSON.parse($('event > notification',data).text());
-            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + details.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
+            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + data['instance-url'].replace(/\/*$/,'/') + '"></iframe>'));
           }
           break;
         case 'state':
-          monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
+          monitor_instance_state_change(data['content']['state']);
           break;
         case 'position':
-          monitor_instance_pos_change($('event > notification',data).text());
+          monitor_instance_pos_change(data['content']);
           break;
         case 'transformation':
           monitor_instance_transformation();
           break;
         case 'activity':
-          monitor_instance_running($('event > notification',data).text(),$('event > event',data).text());
+          monitor_instance_running(data['content'],data['name']);
           break;
       }
-      append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
     }
-    if ($('vote > topic',data).length > 0) {
-      var notification = $('vote > notification',data).text();
-      append_to_log("vote", $('vote > topic',data).text() + "/" + $('vote > vote',data).text(), notification);
-      monitor_instance_vote_add(notification);
+    if (data['type'] == 'vote') {
+      monitor_instance_vote_add(data['content']);
     }
+    append_to_log(data['type'], data['topic'] + '/' + data['name'], JSON.stringify(data['content']));
   };
   es.onerror = function() {
     append_to_log("monitoring", "closed", "server down i assume.");
@@ -619,13 +615,12 @@ function monitor_instance_pos() {// {{{
   });
 }// }}}
 
-function monitor_instance_running(notification,event) {// {{{
+function monitor_instance_running(content,event) {// {{{
   if (save['state'] == "stopping") return;
-  var parts = JSON.parse(notification);
   if (event == "calling")
-    format_visual_add(parts.activity,"active")
+    format_visual_add(content.activity,"active")
   if (event == "done")
-    format_visual_remove(parts.activity,"active")
+    format_visual_remove(content.activity,"active")
 } // }}}
 function monitor_instance_state_change(notification) { //{{{
   if ($('#trackcolumn').length > 0) {
@@ -683,19 +678,18 @@ function monitor_instance_state_change(notification) { //{{{
     $("#state_text").text(notification);
   }
 }   //}}}
-function monitor_instance_pos_change(notification) {// {{{
-  var parts = JSON.parse(notification);
-  if (parts['unmark']) {
-    $.each(parts['unmark'],function(a,b){
+function monitor_instance_pos_change(content) {// {{{
+  if (content['unmark']) {
+    $.each(content['unmark'],function(a,b){
       format_visual_remove(b.position,"passive")
     });
   }
-  if (parts['at']) {
-    $.each(parts['at'],function(a,b){
+  if (content['at']) {
+    $.each(content['at'],function(a,b){
       format_visual_add(b.position,"passive")
     });
   }
-  if (!parts['at'] && !parts['unmark'] && !parts['after'] && !parts['wait']) {
+  if (!content['at'] && !content['unmark'] && !content['after'] && !content['wait']) {
     monitor_instance_pos();
   }
 } // }}}

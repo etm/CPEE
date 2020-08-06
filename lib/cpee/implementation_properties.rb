@@ -471,7 +471,7 @@ module CPEE
           content[ele.text] ||= []
           content[ele.text] << val
         end
-        CPEE::Persistence::set_positions(id,opts,content)
+        CPEE::Persistence::set_item(id,opts,'position',content)
       end
 
       def response
@@ -508,7 +508,7 @@ module CPEE
           content['unmark'] ||= []
           content['unmark'] << val
         end
-        CPEE::Persistence::set_positions(id,opts,content)
+        CPEE::Persistence::set_item(id,opts,'position',content)
       end
 
       def response
@@ -539,7 +539,7 @@ module CPEE
               content = {}
               content[doc.root.text] = [{ 'position' => doc.root.qname.name }]
               content[doc.root.text][0]['passthrough'] = doc.root.attributes['passthrough'] if doc.root.attributes['passthrough']
-              CPEE::Persistence::set_positions(id,opts,content)
+              CPEE::Persistence::set_item(id,opts,'position',content)
             else
               @status= 409
             end
@@ -568,7 +568,7 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         if CPEE::Persistence::extract_item(id,opts,@r.join('/'))
-          CPEE::Persistence::set_positions(id,opts,{ @p[0].value => [ { 'position' => @r.last } ] })
+          CPEE::Persistence::set_item(id,opts,'position',@p[0].value => [ { 'position' => @r.last } ])
         else
           @status = 404
         end
@@ -580,7 +580,7 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         if CPEE::Persistence::extract_item(id,opts,@r.join('/'))
-          CPEE::Persistence::set_positions(id,opts,{ 'unmark' => [ { 'position' => @r.last } ] })
+          CPEE::Persistence::set_position(id,opts,'position','unmark' => [ { 'position' => @r.last } ])
         else
           @status = 404
         end

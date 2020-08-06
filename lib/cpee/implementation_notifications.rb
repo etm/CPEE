@@ -138,32 +138,44 @@ module CPEE
     end #}}}
 
     class DeleteSubscription < Riddl::Implementation #{{{
+      def self::set(id,opts,key)
+        CPEE::Persistence::set_handler(id,opts,key,"",[],true)
+      end
+
       def response
         id = @a[0]
         opts = @a[1]
         key = @r.last
 
-        CPEE::Persistence::set_handler(id,opts,key,"",[],true)
+        DeleteSubscription::set(id,opts,key)
         nil
       end
     end #}}}
 
     class SSE < Riddl::SSEImplementation #{{{
       def onopen
-        id = @a[0]
-        opts = @a[1]
-        @conn = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+        @id = @a[0]
+        @opts = @a[1]
+        @key = @r[-2]
+        @conn = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
         EM.defer do
-          @conn.psubscribe('forward:#{id}/#{@r[-2]}') do |on|
-            on.pmessage do |pat, what, message|
-              p message
+          @conn.subscribe("forward:#{@id}/#{@key}") do |on|
+            on.message do |what, message|
+              send message
             end
+          end
+        end
+        EM.defer do
+          until closed?
+            send_with_id 'keepalive', 'true'
+            sleep 10
           end
         end
       end
 
       def onclose
         @conn.close
+        DeleteSubscription::set(@id,@opts,@key)
       end
     end #}}}
 

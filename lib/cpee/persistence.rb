@@ -21,19 +21,19 @@ module CPEE
       dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
       endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
       CPEE::Message::send(
-        opts[:redis],
+        :event,
         File.join(item,'change'),
+        opts[:url],
         id,
+        Persistence::extract_item(id,opts,'attributes/uuid'),
+        Persistence::extract_item(id,opts,'attributes/info'),
         {
-          :instance_name => Persistence::extract_item(id,opts,'attributes/info'),
-          :instance => id,
-          :instance_uuid => Persistence::extract_item(id,opts,'attributes/uuid'),
           :changed => values.keys,
           :deleted => deleted,
           :values => values,
           :attributes => ah.translate(attributes,dataelements,endpoints),
-          :timestamp => Time.now.xmlschema(3)
-        }
+        },
+        opts[:redis]
       )
     end #}}}
     def self::extract_list(id,opts,item) #{{{
@@ -43,43 +43,23 @@ module CPEE
     end #}}}
 
     def self::set_item(id,opts,item,value) #{{{
-      content = {
-        :instance_name => Persistence::extract_item(id,opts,'attributes/info'),
-        :instance => id,
-        :instance_uuid => Persistence::extract_item(id,opts,'attributes/uuid'),
-        :timestamp => Time.now.xmlschema(3)
-      }
-      value.each do |k,v|
-        content[k.to_sym] = v
-      end
       CPEE::Message::send(
-        opts[:redis],
+        :event,
         File.join(item,'change'),
+        opts[:url],
         id,
-        content
+        Persistence::extract_item(id,opts,'attributes/uuid'),
+        Persistence::extract_item(id,opts,'attributes/info'),
+        value,
+        opts[:redis]
       )
     end #}}}
     def self::extract_item(id,opts,item) #{{{
       opts[:redis].get("instance:#{id}/#{item}")
     end #}}}
 
-    def self::set_positions(id,opts,content) #{{{
-      payload = {
-        :instance_name => Persistence::extract_item(id,opts,'attributes/info'),
-        :instance => id,
-        :instance_uuid => Persistence::extract_item(id,opts,'attributes/uuid'),
-        :timestamp => Time.now.xmlschema(3)
-      }
-      CPEE::Message::send(
-        opts[:redis],
-        'position/change',
-        id,
-        content
-      )
-    end #}}}
-
     def self::set_handler(id,opts,key,url,values,update=false) #{{{
-      exis = opts[:redis].smembers("instance:#{id}/handler/#{key}")
+      exis = opts[:redis].smembers("instance:#{id}/handlers/#{key}")
 
       if update == false && exis.length > 0
         return 405
@@ -93,30 +73,30 @@ module CPEE
       deleted = exis - values
 
       CPEE::Message::send(
-        opts[:redis],
+        :event,
         'handler/change',
+        opts[:url],
         id,
+        Persistence::extract_item(id,opts,'attributes/uuid'),
+        Persistence::extract_item(id,opts,'attributes/info'),
         {
-          :instance_name => Persistence::extract_item(id,opts,'attributes/info'),
-          :instance => id,
-          :instance_uuid => Persistence::extract_item(id,opts,'attributes/uuid'),
           :key => key,
           :url => url,
           :changed => values,
           :deleted => deleted,
           :attributes => ah.translate(attributes,dataelements,endpoints),
-          :timestamp => Time.now.xmlschema(3)
-        }
+        },
+        opts[:redis]
       )
 
       200
     end #}}}
     def self::extract_handler(id,opts,key) #{{{
-      opts[:redis].smembers("instance:#{id}/handler/#{key}")
+      opts[:redis].smembers("instance:#{id}/handlers/#{key}")
     end #}}}
     def self::extract_handlers(id,opts) #{{{
-      opts[:redis].smembers("instance:#{id}/handler").map do |e|
-        [e, opts[:redis].get("instance:#{id}/handler/#{e}/url")]
+      opts[:redis].smembers("instance:#{id}/handlers").map do |e|
+        [e, opts[:redis].get("instance:#{id}/handlers/#{e}/url")]
       end
     end #}}}
   end
