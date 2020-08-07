@@ -95,10 +95,12 @@ function do_main_work() { //{{{
       $.ajax({
         type: "PUT",
         url: url + "/properties/description/",
+        contentType: 'text/xml',
         headers: {
-          "Event-Source": myid
+          'Content-ID': 'description',
+          'CPEE-Event-Source': myid
         },
-        data: ({'content': '<content>' + desc.get_description() + '</content>'})
+        data: desc.get_description()
       });
       adaptor_update();
       format_instance_pos();

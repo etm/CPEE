@@ -65,11 +65,14 @@ function do_parameters_save(event) { //{{{
     save[visid].set_checkpoint();
     var send = save[visid].save_text(); // .replace(/<attributes>/,'<attributes xmlns="http://cpee.org/ns/properties/2.0">');
     $.ajax({
-       type: "PUT",
-       url: url + "/properties/" + visid + "/",
-       contentType: 'text/xml',
-       headers: { 'Content-ID': visid },
-       data: send
+      type: "PUT",
+      url: url + "/properties/" + visid + "/",
+      contentType: 'text/xml',
+      headers: {
+        'Content-ID': visid,
+        'CPEE-Event-Source': myid
+      },
+      data: send
     });
   }
 } //}}}
