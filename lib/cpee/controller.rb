@@ -12,9 +12,11 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
+require 'weel'
 require 'json'
 require 'redis'
 require 'securerandom'
+require 'riddl/client'
 require_relative 'callback'
 require_relative 'value_helper'
 require_relative 'attributes_helper'

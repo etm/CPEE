@@ -169,11 +169,10 @@ module CPEE
             end
           end
           @conn.close
-          p 'rrrrrrrr3'
         end
         EM.defer do
           until closed?
-            send_with_id 'keepalive', 'true'
+            send_with_id 'hearbeat', '42'
             sleep 10
           end
         end

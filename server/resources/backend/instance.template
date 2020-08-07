@@ -1,0 +1,16 @@
+class Instance < WEEL
+  handlerwrapper <%= handlerwrapper -%>
+
+  <% for key, value in endpoints %>
+  endpoint :<%= key %> => <%=  CPEE::ValueHelper::parse(value).inspect -%>
+  <% end  %>
+  <% for key, value in dataelements %>
+  data :<%= key %> => <%=  CPEE::ValueHelper::parse(value).inspect -%>
+  <% end  %>
+
+  # search Position.new(:a1,:after,nil)
+
+  control flow do
+    <%= dsl.strip.gsub(/\n/,"\n    ") %>
+  end
+end

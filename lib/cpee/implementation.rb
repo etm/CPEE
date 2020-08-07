@@ -60,7 +60,10 @@ module CPEE
     opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
     opts[:notifications_init]         ||= File.expand_path(File.join(__dir__,'..','..','server','resources','notifications'))
     opts[:states]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','states.xml'))
-    opts[:backend]                    ||= File.expand_path(File.join(__dir__,'..','..','server','resources','backend'))
+    opts[:backend_run]                ||= File.expand_path(File.join(__dir__,'..','..','server','resources','backend','run'))
+    opts[:backend_template]           ||= File.expand_path(File.join(__dir__,'..','..','server','resources','backend','instance.template'))
+    opts[:backend_opts]               ||= 'opts.yaml'
+    opts[:backend_instance]           ||= 'instance.rb'
     opts[:infinite_loop_stop]         ||= 10000
     opts[:redis_path]                 ||= '/tmp/redis.sock'
     opts[:redis_db]                   ||= 3

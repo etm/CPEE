@@ -1,10 +1,6 @@
 #!/usr/bin/ruby
-require 'weel'
 require 'yaml'
-require 'riddl/client'
-
 opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
-
 if File.exists? File.join(__dir__,'../../../lib/cpee/controller.rb')
   require_relative '../../../lib/cpee/controller'
 else
@@ -13,9 +9,6 @@ end
 Dir[File.join(opts[:global_handlerwrappers],'*.rb')].each do |h|
   require h
 end unless opts[:global_handlerwrappers].nil? || opts[:global_handlerwrappers].strip == ''
-
-p opts[:handlerwrappers]
-
 Dir[File.join(opts[:handlerwrappers],'*.rb')].each do |h|
   require h
 end unless opts[:handlerwrappers].nil? || opts[:handlerwrappers].strip == ''

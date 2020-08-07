@@ -1,6 +1,9 @@
 require_relative 'attributes_helper'
+require_relative 'value_helper'
 require_relative 'transform'
 require 'json'
+require 'erb'
+require 'yaml'
 
 module CPEE
   module Properties
@@ -206,6 +209,25 @@ module CPEE
         opts = @a[1]
         if opts[:statemachine].setable? id, @p[0].value
           PutState::set id, opts, @p[0].value
+          Dir.mkdir(File.join(opts[:instances],id.to_s)) rescue nil
+          FileUtils.copy(opts[:backend_run],File.join(opts[:instances],id.to_s))
+          dsl = CPEE::Persistence::extract_item(id,opts,'dsl')
+          hw = CPEE::Persistence::extract_item(id,opts,'handlerwrapper')
+          endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
+          dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
+          File.open(File.join(opts[:instances],id.to_s,opts[:backend_opts]),'w') do |f|
+            YAML::dump({
+              :host => opts[:host],
+              :url => opts[:url],
+              :redis_path => opts[:redis_path],
+              :redis_db => opts[:redis_db],
+              :global_handlerwrappers => opts[:global_handlerwrappers],
+              :handlerwrappers => opts[:handlerwrappers]
+            },f)
+          end
+          template = ERB.new(File.read(opts[:backend_template]), trim_mode: '-')
+          res = template.result_with_hash(dsl: dsl, handlerwrapper: hw, dataelements: dataelements, endpoints: endpoints)
+          File.write(File.join(opts[:instances],id.to_s,opts[:backend_instance]),res)
         else
           @status = 422
         end
