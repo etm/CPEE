@@ -507,7 +507,13 @@ function adaptor_init(url,theme,dslx) { //{{{
         $.ajax({
           type: "PUT",
           url: url + "/properties/description/",
-          data: ({'content': '<content>' + g + '</content>'})
+          contentType: 'text/xml',
+          headers: {
+            'Content-ID': 'description',
+            'CPEE-Event-Source': myid
+          },
+          data: g,
+          error: report_failure
         });
         adaptor_update();
         manifestation.events.click(svgid);
@@ -1050,8 +1056,13 @@ async function load_des(url,model) { //{{{
   var val = "<content>" + model + "</content>";
   return $.ajax({
     type: "PUT",
-    url: url + "/properties/description",
-    data: ({content: val}),
+    url: url + "/properties/description/",
+    contentType: 'text/xml',
+    headers: {
+      'Content-ID': 'description',
+      'CPEE-Event-Source': myid
+    },
+    data: val,
     error: report_failure
   });
 } //}}}
