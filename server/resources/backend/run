@@ -1,11 +1,8 @@
 #!/usr/bin/ruby
 require 'yaml'
 opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
-if File.exists? File.join(__dir__,'../../../lib/cpee/controller.rb')
-  require_relative '../../../lib/cpee/controller'
-else
-  require 'cpee/controller'
-end
+require_relative '../../../lib/cpee/controller'
+
 Dir[File.join(opts[:global_handlerwrappers],'*.rb')].each do |h|
   require h
 end unless opts[:global_handlerwrappers].nil? || opts[:global_handlerwrappers].strip == ''

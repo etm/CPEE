@@ -542,7 +542,7 @@ function monitor_graph_change(force) { //{{{
           type: "GET",
           url: url + "/properties/attributes/theme/",
           success: function(res){
-            adaptor_init(url,$('value',res).text(),dslx);
+            adaptor_init(url,res,dslx);
           },
           error: function() {
             adaptor_init(url,'preset',dslx);
@@ -593,7 +593,7 @@ function monitor_instance_transformation() {// {{{
     type: "GET",
     url: url + "/properties/attributes/modeltype",
     success: function(res){
-      $("#currentmodel").text($(res.documentElement).text());
+      $("#currentmodel").text(res);
     },
     error: function() {
       $("#currentmodel").text('???');

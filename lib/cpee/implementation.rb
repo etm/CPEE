@@ -34,8 +34,9 @@ module CPEE
     /p:properties/p:attributes/p:*
     /p:properties/p:transformation/p:*
     /p:properties/p:transformation/p:*/@*
-    /p:properties/p:dslx
     /p:properties/p:description
+    /p:properties/p:dslx
+    /p:properties/p:dsl
     /p:properties/p:status/p:id
     /p:properties/p:status/p:message
     /p:properties/p:state/@changed
