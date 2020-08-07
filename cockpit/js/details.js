@@ -94,7 +94,7 @@ function do_main_work() { //{{{
     } else {
       $.ajax({
         type: "PUT",
-        url: url + "/properties/values/description/",
+        url: url + "/properties/description/",
         headers: {
           "Event-Source": myid
         },
