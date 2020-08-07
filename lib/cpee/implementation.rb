@@ -47,17 +47,6 @@ module CPEE
     /p:properties/p:attributes/p:*
     /p:properties/p:positions/p:*
   }
-  PROPERTIES_PATHS = %w{
-    /p:properties/p:handlerwrapper
-    /p:properties/p:positions
-    /p:properties/p:dataelements
-    /p:properties/p:endpoints
-    /p:properties/p:attributes
-    /p:properties/p:transformation
-    /p:properties/p:description
-    /p:properties/p:status
-    /p:properties/p:state
-  }
 
   def self::implementation(opts)
     opts[:instances]                  ||= File.expand_path(File.join(__dir__,'..','..','server','instances'))
@@ -71,6 +60,7 @@ module CPEE
     opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
     opts[:notifications_init]         ||= File.expand_path(File.join(__dir__,'..','..','server','resources','notifications'))
     opts[:states]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','states.xml'))
+    opts[:backend]                    ||= File.expand_path(File.join(__dir__,'..','..','server','resources','backend'))
     opts[:infinite_loop_stop]         ||= 10000
     opts[:redis_path]                 ||= '/tmp/redis.sock'
     opts[:redis_db]                   ||= 3

@@ -30,6 +30,7 @@ module CPEE
             'topic' => topic,
             'type' => type,
             'name' => name,
+            'timestamp' =>  Time.now.xmlschema(3),
             'content' => content
           }
         )

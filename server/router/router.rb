@@ -14,10 +14,8 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
-require 'json'
 require 'redis'
 require 'daemonite'
-require 'pp'
 
 Daemonite.new do |opts|
   redis = Redis.new(path: "/tmp/redis.sock", db: 3)

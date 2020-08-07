@@ -37,13 +37,10 @@ module CPEE
 
       @redis = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
 
-      @events = {}
-      @votes = {}
-      @votes_results = {}
       @callbacks = {}
 
       @attributes = {}
-      @redis.keys('instance:0/attributes/*').each do |key|
+      @redis.keys("instance:#{id}/attributes/*").each do |key|
         @attributes[File.basename(key)] = @redis.get(key)
       end
 
@@ -75,6 +72,9 @@ module CPEE
     def instance_url
       File.join(@opts[:url].to_s,@id.to_s)
     end
+    def instance_id
+      @id
+    end
     def base
       base_url
     end
@@ -98,7 +98,8 @@ module CPEE
     end
 
     def notify(what,content={})
-      CPEE::Message::send(:event,what,base,@id,uuid,info,content,redis)
+      content[:attributes] = attributes_translated
+      CPEE::Message::send(:event,what,base,@id,uuid,info,content,@redis)
     end
 
     def call_vote(what,content={})

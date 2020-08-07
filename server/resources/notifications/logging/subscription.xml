@@ -1,0 +1,19 @@
+<subscription xmlns="http://riddl.org/ns/common-patterns/notifications-producer/2.0" url="http://localhost:9299/">
+  <topic id="activity">
+    <event>calling</event>
+    <event>receiving</event>
+    <event>done</event>
+  </topic>
+  <topic id="dataelements">
+    <event>change</event>
+  </topic>
+  <topic id="endpoints">
+    <event>change</event>
+  </topic>
+  <topic id="attributes">
+    <event>change</event>
+  </topic>
+  <topic id="task">
+    <event>instantiation</event>
+  </topic>
+</subscription>

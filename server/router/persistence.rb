@@ -17,7 +17,6 @@
 require 'json'
 require 'redis'
 require 'daemonite'
-require 'pp'
 
 EVENTS = %w{
   event:state/change

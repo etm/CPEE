@@ -159,11 +159,17 @@ module CPEE
         @key = @r[-2]
         @conn = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
         EM.defer do
-          @conn.subscribe("forward:#{@id}/#{@key}") do |on|
+          @conn.subscribe("forward:#{@id}/#{@key}", "forward-end:#{@id}/#{@key}") do |on|
             on.message do |what, message|
-              send message
+              if what == "forward-end:#{@id}/#{@key}"
+                @conn.unsubscribe
+              else
+                send message
+              end
             end
           end
+          @conn.close
+          p 'rrrrrrrr3'
         end
         EM.defer do
           until closed?
@@ -174,7 +180,9 @@ module CPEE
       end
 
       def onclose
-        @conn.close
+        tredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
+        tredis.publish("forward-end:#{@id}/#{@key}",true)
+        tredis.close
         DeleteSubscription::set(@id,@opts,@key)
       end
     end #}}}

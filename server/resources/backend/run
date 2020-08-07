@@ -1,15 +1,18 @@
 #!/usr/bin/ruby
 require 'weel'
 require 'yaml'
-if File.exists? '../lib/cpee/controller.rb'
-  require '../lib/cpee/controller'
+require 'riddl/client'
+if File.exists? File.join(__dir__,'../../../lib/cpee/controller.rb')
+  require_relative '../../../lib/cpee/controller'
 else
   require 'cpee/controller'
 end
-require_relative 'handlerwrappers/default'
 require_relative 'instance'
 
 opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
+
+require_relative 'handlerwrappers/default'
+
 controller = CPEE::Controller.new(File.basename(__dir__).to_i, __dir__, opts)
 controller.instance = Instance.new controller
 controller.start
