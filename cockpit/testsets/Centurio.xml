@@ -1,7 +1,7 @@
 <testset>
-  <positions/>
+  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <dataelements>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <losgroesse>3</losgroesse>
     <spec>12345</spec>
     <qualitaet>null</qualitaet>
@@ -9,7 +9,7 @@
     <typ>Typ A</typ>
     <score>0</score>
   </dataelements>
-  <endpoints>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <cut>http://gruppe.wst.univie.ac.at/~mangler/services/cut.php</cut>
     <drill>http://gruppe.wst.univie.ac.at/~mangler/services/drill.php</drill>
     <approve>http://gruppe.wst.univie.ac.at/~mangler/services/approval.php</approve>
@@ -67,7 +67,7 @@ data.score += result.value('score').to_f</finalize>
       </choose>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

@@ -5,6 +5,7 @@
   <setable>
     <!-- the following states change through external input -->
     <ready><!-- in this state you can set the following four states -->
+      <ready/>
       <running/>
       <simulating/>
       <replaying/>
@@ -18,6 +19,7 @@
       <simulating/>
       <replaying/>
       <abandoned/>
+      <stopped/>
     </stopped>
   </setable>
 

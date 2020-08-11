@@ -1,10 +1,10 @@
 <testset>
-  <dataelements/>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <endpoints>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <cb xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/callback.simple.php</cb>
   </endpoints>
-  <positions/>
+  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="cb">
@@ -20,12 +20,12 @@
       </call>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes>
+  <attributes xmlns="http://cpee.org/ns/properties/2.0">
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Enter info here</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
   </attributes>

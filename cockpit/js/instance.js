@@ -904,17 +904,19 @@ async function set_testset(testset,exec) {// {{{
   promises.push(load_testset_endpoints(url,testset));
   promises.push(load_testset_pos(url,testset));
 
+
   if ($("testset > transformation",testset).length > 0) {
-    var ser = '';
-    $("testset > transformation > *",testset).each(function(){
-      ser += $(this).serializeXML() + "\n";
-    });
-    var val = "<content>" + ser + "</content>";
+    var ser = $("testset > transformation",testset).serializeXML();
     promises.push(
       $.ajax({
         type: "PUT",
+        contentType: 'text/xml',
         url: url + "/properties/transformation",
-        data: ({content: val}),
+        data: ser,
+        headers: {
+         'Content-ID': 'transformation',
+         'CPEE-Event-Source': myid
+        },
         error: report_failure
       }).then(async function(){
         await load_testset_des(url,testset);
@@ -1052,8 +1054,6 @@ function load_modeltype() {// {{{
 }// }}}
 
 async function load_des(url,model) { //{{{
-  model = model.replace(/<\?[^\?]+\?>/,'');
-  var val = "<content>" + model + "</content>";
   return $.ajax({
     type: "PUT",
     url: url + "/properties/description/",
@@ -1062,17 +1062,14 @@ async function load_des(url,model) { //{{{
       'Content-ID': 'description',
       'CPEE-Event-Source': myid
     },
-    data: val,
+    data: model,
     error: report_failure
   });
 } //}}}
 
 async function load_testset_des(url,testset) {// {{{
   if ($("testset > description",testset).length == 0) { return; }
-  var ser = '';
-  $("testset > description > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
+  var ser = $("testset > description > description",testset).serializeXML();
   return load_des(url,ser);
 } // }}}
 async function load_testset_hw(url,testset) {// {{{
@@ -1092,71 +1089,59 @@ async function load_testset_hw(url,testset) {// {{{
 } // }}}
 async function load_testset_dataelements(url,testset) {// {{{
   if ($("testset > dataelements",testset).length == 0) { return; }
-  var ser = '';
-  $("testset > dataelements > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  var val = "<content>" + ser + "</content>";
+  var ser = $("testset > dataelements",testset).serializeXML();
   return $.ajax({
-    type: "PUT",
+    type: 'PUT',
     url: url + "/properties/dataelements",
-    data: ({content: val}),
+    contentType: 'application/xml',
+    headers: {
+     'Content-ID': 'dataelements',
+     'CPEE-Event-Source': myid
+    },
+    data: ser,
     error: report_failure
   });
 }// }}}
 async function load_testset_attributes(url,testset) {// {{{
-  var promises = [];
   if ($("testset > attributes",testset).length == 0) { return; }
-  var ser = '';
-  $.ajax({
-    type: "GET",
-    url: url + "/properties/attributes/uuid",
-    success: function(res){
-      var uuid = $X('<uuid xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/>');
-          uuid.text($('value',res).text());
-      $("testset > attributes",testset).prepend(uuid);
-      $("testset > attributes > *",testset).each(function(){
-        ser += $(this).serializeXML() + "\n";
-      });
-      var val = "<content>" + ser + "</content>";
-      promises.push(
-        $.ajax({
-          type: "PUT",
-          url: url + "/properties/attributes",
-          data: ({content: val}),
-          error: report_failure
-        })
-      );
-    }
+  var ser = $("testset > attributes",testset).serializeXML();
+  return $.ajax({
+    type: 'PUT',
+    url: url + "/properties/attributes",
+    contentType: 'application/xml',
+    headers: {
+     'Content-ID': 'attributes',
+     'CPEE-Event-Source': myid
+    },
+    data: ser,
+    error: report_failure
   });
-  return Promise.all(promises);
 }// }}}
 async function load_testset_endpoints(url,testset) {// {{{
-  if ($("testset > endpoints",testset).length == 0) { return; }
-  var ser = '';
-  $("testset > endpoints > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  var val = "<content>" + ser + "</content>";
+  var ser = $("testset > endpoints",testset).serializeXML();
   return $.ajax({
-    type: "PUT",
-    url: url + "/properties/endpoints/",
-    data: ({content: val}),
+    type: 'PUT',
+    url: url + "/properties/endpoints",
+    contentType: 'application/xml',
+    headers: {
+     'Content-ID': 'endpoints',
+     'CPEE-Event-Source': myid
+    },
+    data: ser,
     error: report_failure
   });
 }// }}}
 async function load_testset_pos(url,testset) {// {{{
-  if ($("testset > positions",testset).length == 0) { return; }
-  var ser = '';
-  $("testset > positions > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  var val = "<content>" + ser + "</content>";
+  var ser = $("testset > positions",testset).serializeXML();
   return $.ajax({
-    type: "PUT",
-    url: url + "/properties/positions/",
-    data: ({content: val}),
-    success: monitor_instance_pos,
+    type: 'PUT',
+    url: url + "/properties/positions",
+    contentType: 'application/xml',
+    headers: {
+     'Content-ID': 'positions',
+     'CPEE-Event-Source': myid
+    },
+    data: ser,
     error: report_failure
   });
 }// }}}
@@ -1387,11 +1372,16 @@ function ui_pos(e,bl) {
   $(coll).each(function(k,ele){
     vals += "<" + ele + ">at</"  + ele + ">";
   });
-  vals = "<content>" + vals + "</content>";
+  vals = "<positions xmlns='http://cpee.org/ns/properties/2.0'>" + vals + "</positions>";
   $.ajax({
     type: "PUT",
     url: url + "/properties/positions/",
-    data: ({content: vals}),
+    contentType: 'application/xml',
+    headers: {
+     'Content-ID': 'positions',
+     'CPEE-Event-Source': myid
+    },
+    data: vals,
     success: monitor_instance_pos,
     error: report_failure
   });

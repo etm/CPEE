@@ -1,10 +1,10 @@
 <testset>
-  <positions/>
+  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <dataelements>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <wait>3</wait>
   </dataelements>
-  <endpoints>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <services>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</services>
     <injection>http://localhost:9290/injection/handler</injection>
   </endpoints>
@@ -166,7 +166,7 @@
       </parallel>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

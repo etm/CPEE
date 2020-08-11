@@ -1,11 +1,11 @@
 <testset>
-  <positions/>
+  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <dataelements>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <x>_begin</x>
     <nasty>What a nasty bug</nasty>
   </dataelements>
-  <endpoints>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>
   <description>
@@ -79,7 +79,7 @@
       </choose>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

@@ -1,5 +1,5 @@
 <testset>
-  <endpoints>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <infinity xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/infinity.php</infinity>
   </endpoints>
   <description>
@@ -21,7 +21,7 @@
       </loop>
     </description>
   </description>
-  <attributes>
+  <attributes xmlns="http://cpee.org/ns/properties/2.0">
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Inifinity Example</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
   </attributes>

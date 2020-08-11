@@ -1,12 +1,12 @@
 <testset>
-  <positions/>
+  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <dataelements>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <persons>3</persons>
     <hotels>[]</hotels>
     <costs>0</costs>
   </dataelements>
-  <endpoints>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
   </endpoints>
   <description>
@@ -32,7 +32,7 @@ data.costs += result.value('costs').to_f</finalize>
       </parallel>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

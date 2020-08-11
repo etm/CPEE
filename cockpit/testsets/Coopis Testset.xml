@@ -1,7 +1,7 @@
 <testset>
-  <positions/>
+  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <dataelements>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <persons>3</persons>
     <card>Visa_12345</card>
     <airline>null</airline>
@@ -10,7 +10,7 @@
     <to>Prague</to>
     <costs>0</costs>
   </dataelements>
-  <endpoints>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <bookAir>http://gruppe.wst.univie.ac.at/~mangler/services/airline.php</bookAir>
     <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
     <approve>http://gruppe.wst.univie.ac.at/~mangler/services/approval.php</approve>
@@ -68,7 +68,7 @@ data.costs += result.value('costs').to_f</finalize>
       </choose>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

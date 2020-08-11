@@ -1,19 +1,17 @@
 <testset>
-  <attributes>
+  <attributes xmlns="http://cpee.org/ns/properties/2.0">
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Linear</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme>preset</theme>
     <bc>start</bc>
   </attributes>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <dataelements>
-    <!--{{{-->
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <x/>
   </dataelements>
   <!--}}}-->
   <handlers/>
-  <endpoints>
-    <!--{{{-->
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>
   <!--}}}-->
@@ -65,7 +63,7 @@
     </description>
     <!--}}}-->
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

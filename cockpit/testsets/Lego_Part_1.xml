@@ -1,7 +1,7 @@
 <testset>
-  <dataelements/>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <endpoints>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
     <deploy xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://coruscant.wst.univie.ac.at:9296/url</deploy>
   </endpoints>
@@ -72,12 +72,12 @@
       </call>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes>
+  <attributes xmlns="http://cpee.org/ns/properties/2.0">
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Lego_Part_1</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
