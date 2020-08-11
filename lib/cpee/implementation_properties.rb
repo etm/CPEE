@@ -219,7 +219,7 @@ module CPEE
               Process.detach(pid)
             when 'stopping'
               pid = File.read(exe + '.pid') rescue nil
-              Process.kill('HUP', pid) if pid
+              Process.kill('HUP', pid.to_i) if pid
           end
         else
           @status = 422
