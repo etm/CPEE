@@ -210,29 +210,16 @@ module CPEE
         state = @p[0].value
         if opts[:statemachine].setable? id, state
           PutState::set id, opts, state
-          if state == 'running'
-            Dir.mkdir(File.join(opts[:instances],id.to_s)) rescue nil
-            FileUtils.copy(opts[:backend_run],File.join(opts[:instances],id.to_s))
-            dsl = CPEE::Persistence::extract_item(id,opts,'dsl')
-            hw = CPEE::Persistence::extract_item(id,opts,'handlerwrapper')
-            endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
-            dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
-            File.open(File.join(opts[:instances],id.to_s,opts[:backend_opts]),'w') do |f|
-              YAML::dump({
-                :host => opts[:host],
-                :url => opts[:url],
-                :redis_path => opts[:redis_path],
-                :redis_db => opts[:redis_db],
-                :global_handlerwrappers => opts[:global_handlerwrappers],
-                :handlerwrappers => opts[:handlerwrappers]
-              },f)
-            end
-            template = ERB.new(File.read(opts[:backend_template]), trim_mode: '-')
-            res = template.result_with_hash(dsl: dsl, handlerwrapper: hw, dataelements: dataelements, endpoints: endpoints)
-            File.write(File.join(opts[:instances],id.to_s,opts[:backend_instance]),res)
-            exe = File.join(opts[:instances],id.to_s,File.basename(opts[:backend_run]))
-            pid = Kernel.spawn(exe , :out => exe + '.out', :err => exe + '.err')
-            Process.detach(pid)
+
+          exe = File.join(opts[:instances],id.to_s,File.basename(opts[:backend_run]))
+          case state
+            when 'running'
+              pid = Kernel.spawn(exe , :out => exe + '.out', :err => exe + '.err')
+              File.write(exe + '.pid',pid)
+              Process.detach(pid)
+            when 'stopping'
+              pid = File.read(exe + '.pid') rescue nil
+              Process.kill('HUP', pid) if pid
           end
         else
           @status = 422
@@ -646,6 +633,29 @@ module CPEE
         )
         PatchItems::set_hash('dataelements',id,opts,de) unless de.empty?
         PatchItems::set_hash('dataelements',id,opts,ep) unless ep.empty?
+
+        Dir.mkdir(File.join(opts[:instances],id.to_s)) rescue nil
+        FileUtils.copy(opts[:backend_run],File.join(opts[:instances],id.to_s))
+        hw = CPEE::Persistence::extract_item(id,opts,'handlerwrapper')
+        endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
+        dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
+        positions = CPEE::Persistence::extract_list(id,opts,'positions')
+        positions.map! do |k, v|
+          [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
+        end
+        File.open(File.join(opts[:instances],id.to_s,opts[:backend_opts]),'w') do |f|
+          YAML::dump({
+            :host => opts[:host],
+            :url => opts[:url],
+            :redis_path => opts[:redis_path],
+            :redis_db => opts[:redis_db],
+            :global_handlerwrappers => opts[:global_handlerwrappers],
+            :handlerwrappers => opts[:handlerwrappers]
+          },f)
+        end
+        template = ERB.new(File.read(opts[:backend_template]), trim_mode: '-')
+        res = template.result_with_hash(dsl: dsl, handlerwrapper: hw, dataelements: dataelements, endpoints: endpoints, positions: positions)
+        File.write(File.join(opts[:instances],id.to_s,opts[:backend_instance]),res)
       end
 
       def response

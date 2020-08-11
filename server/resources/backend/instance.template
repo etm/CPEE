@@ -7,8 +7,9 @@ class Instance < WEEL
   <% for key, value in dataelements %>
   data :<%= key %> => <%=  CPEE::ValueHelper::parse(value).inspect -%>
   <% end  %>
-
-  # search Position.new(:a1,:after,nil)
+  <% for de in positions %>
+  search Position.new :<%= de[0] %>, :<%=de[1] %>, <%= de[2].nil? || de[2].trim.empty? ? 'nil' : '"' + e[2] + '"' -%>
+  <% end  %>
 
   control flow do
     <%= dsl.strip.gsub(/\n/,"\n    ") %>
