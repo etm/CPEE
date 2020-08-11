@@ -21,6 +21,9 @@
   <interface name="properties">
     <xi:include href="properties.xml"/>
   </interface>
+  <interface name="callbacks">
+    <xi:include href="callbacks.xml"/>
+  </interface>
   <interface name="notifications">
     <xi:include href="http://www.riddl.org/ns/common-patterns/notifications-producer/2.0/producer.xml"/>
   </interface>
@@ -30,6 +33,9 @@
       <layer name="main"/>
       <layer name="properties">
         <apply-to>/\d+/properties</apply-to>
+      </layer>
+      <layer name="callbacks">
+        <apply-to>/\d+/callbacks</apply-to>
       </layer>
       <layer name="notifications">
         <apply-to>/\d+</apply-to>
