@@ -35,9 +35,9 @@ module CPEE
 
   class Controller
     def initialize(id,dir,opts)
-      @id = id
-
       @redis = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+
+      @id = id
 
       @callbacks = {}
 
@@ -47,14 +47,13 @@ module CPEE
       end
 
       @attributes_helper = AttributesHelper.new
-      @mutex = Mutex.new
+      @thread = nil
       @opts = opts
       @instance = nil
     end
 
     attr_reader :id
     attr_reader :callbacks
-    attr_reader :mutex
     attr_reader :attributes
 
     def uuid
@@ -91,8 +90,14 @@ module CPEE
     end
 
     def start
-      execution = @instance.start
-      execution.join
+      @thread = @instance.start
+      @thread.join
+    end
+
+    def stop
+      t = @instance.stop
+      t.run
+      @thread.join if !@thread.nil? && @thread.alive?
     end
 
     def info
