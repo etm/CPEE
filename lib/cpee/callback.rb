@@ -15,13 +15,12 @@
 module CPEE
 
   class Callback
-    def initialize(info,handler,method,event,key,protocol,*data)
+    def initialize(info,handler,method,event,key,*data)
       @info = info
       @event = event
       @key = key
       @data = data
       @handler = handler
-      @protocol = protocol
       @method = method.class == Symbol ? method : :callback
     end
 
