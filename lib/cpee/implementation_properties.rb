@@ -125,11 +125,8 @@ module CPEE
         else
           doc = XML::Smart::string(@p[0].value.read)
           doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-          if (node = doc.find('/p:properties/p:state')).any?
-            CPEE::Properties::PutState::set id, opts, node.first.text
-          end
           if (node = doc.find('/p:properties/p:status')).any?
-            CPEE::Properties::PutState::set id, opts, node.first.dump
+            CPEE::Properties::PutStatus::set id, opts, node.first.dump
           end
           if (node = doc.find('/p:properties/p:handlerwrapper')).any?
             CPEE::Properties::PutHandlerWrapper::set id, opts, node.first.text
@@ -151,6 +148,10 @@ module CPEE
           if (node = doc.find('/p:properties/p:positions')).any?
             CPEE::Properties::PatchPositions::set id, opts, node.first.dump
           end
+
+          if (node = doc.find('/p:properties/p:state')).any?
+            CPEE::Properties::PutState::run id, opts, node.first.text
+          end
         end
       end
     end #}}}
@@ -163,11 +164,8 @@ module CPEE
         else
           doc = XML::Smart::string(@p[0].value.read)
           doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-          if (node = doc.find('/p:properties/p:state')).any?
-            CPEE::Properties::PutState::set id, opts, node.first.text
-          end
           if (node = doc.find('/p:properties/p:status')).any?
-            CPEE::Properties::PutState::set id, opts, node.first.dump
+            CPEE::Properties::PutStatus::set id, opts, node.first.dump
           end
           if (node = doc.find('/p:properties/p:handlerwrapper')).any?
             CPEE::Properties::PutHandlerWrapper::set id, opts, node.first.text
@@ -189,6 +187,10 @@ module CPEE
           if (node = doc.find('/p:properties/p:positions')).any?
             CPEE::Properties::PutPositions::set id, opts, node.first.dump
           end
+
+          if (node = doc.find('/p:properties/p:state')).any?
+            CPEE::Properties::PutState::run id, opts, node.first.text
+          end
         end
       end
     end #}}}
@@ -204,23 +206,29 @@ module CPEE
         CPEE::Persistence::set_item(id,opts,'state',:state => state)
       end
 
+      def self::run(id,opts,state)
+        exe = File.join(opts[:instances],id.to_s,File.basename(opts[:backend_run]))
+        case state
+          when 'running'
+            CPEE::Persistence::write_instance id, opts
+            pid = Kernel.spawn(exe , :out => exe + '.out', :err => exe + '.err')
+            File.write(exe + '.pid',pid)
+            Process.detach(pid)
+          when 'stopping'
+            pid = File.read(exe + '.pid') rescue nil
+            Process.kill('HUP', pid.to_i) if pid
+          else
+            ### Most probably this is never needed. Lets see.
+            PutState::set id, opts, state
+        end
+      end
+
       def response
         id = @a[0]
         opts = @a[1]
         state = @p[0].value
         if opts[:statemachine].setable? id, state
-          PutState::set id, opts, state
-
-          exe = File.join(opts[:instances],id.to_s,File.basename(opts[:backend_run]))
-          case state
-            when 'running'
-              pid = Kernel.spawn(exe , :out => exe + '.out', :err => exe + '.err')
-              File.write(exe + '.pid',pid)
-              Process.detach(pid)
-            when 'stopping'
-              pid = File.read(exe + '.pid') rescue nil
-              Process.kill('HUP', pid.to_i) if pid
-          end
+          PutState::run id, opts, state
         else
           @status = 422
         end
@@ -633,29 +641,6 @@ module CPEE
         )
         PatchItems::set_hash('dataelements',id,opts,de) unless de.empty?
         PatchItems::set_hash('dataelements',id,opts,ep) unless ep.empty?
-
-        Dir.mkdir(File.join(opts[:instances],id.to_s)) rescue nil
-        FileUtils.copy(opts[:backend_run],File.join(opts[:instances],id.to_s))
-        hw = CPEE::Persistence::extract_item(id,opts,'handlerwrapper')
-        endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
-        dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
-        positions = CPEE::Persistence::extract_list(id,opts,'positions')
-        positions.map! do |k, v|
-          [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
-        end
-        File.open(File.join(opts[:instances],id.to_s,opts[:backend_opts]),'w') do |f|
-          YAML::dump({
-            :host => opts[:host],
-            :url => opts[:url],
-            :redis_path => opts[:redis_path],
-            :redis_db => opts[:redis_db],
-            :global_handlerwrappers => opts[:global_handlerwrappers],
-            :handlerwrappers => opts[:handlerwrappers]
-          },f)
-        end
-        template = ERB.new(File.read(opts[:backend_template]), trim_mode: '-')
-        res = template.result_with_hash(dsl: dsl, handlerwrapper: hw, dataelements: dataelements, endpoints: endpoints, positions: positions)
-        File.write(File.join(opts[:instances],id.to_s,opts[:backend_instance]),res)
       end
 
       def response
