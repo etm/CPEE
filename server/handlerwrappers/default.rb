@@ -100,7 +100,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
     client = Riddl::Client.new(tendpoint)
 
-    @controller.callbacks[callback] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+    @controller.callback(self,callback,:activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position)
     @handler_passthrough = callback
 
     status, result, headers = client.request type => params
@@ -134,7 +134,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     if passthrough.to_s.empty?
       proto_curl parameters
     else
-      @controller.callbacks[passthrough] = CPEE::Callback.new("callback activity: #{@handler_position}",self,:callback,nil,nil,:http)
+      @controller.callback(self,passthrough,:activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position)
       @handler_passthrough = passthrough
     end
   end # }}}
@@ -151,7 +151,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
   def activity_stop # {{{
     unless @handler_passthrough.nil?
-      @controller.callbacks.delete(@handler_passthrough)
+      @controller.cancel_callback(@handler_passthrough)
     end
   end # }}}
   def activity_passthrough_value # {{{
@@ -186,10 +186,10 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def vote_sync_after # {{{
-    @controller.call_vote("activity/syncing_after", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label)
+    @controller.vote("activity/syncing_after", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label)
   end # }}}
   def vote_sync_before(parameters=nil) # {{{
-    @controller.call_vote("activity/syncing_before", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters)
+    @controller.vote("activity/syncing_before", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters)
   end # }}}
 
   def simplify_result(result)
@@ -258,7 +258,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       end
       @handler_continue.continue WEEL::Signal::Again
     else
-      @controller.callbacks.delete(@handler_passthrough)
+      @controller.cancel_callback(@handler_passthrough)
       @handler_passthrough = nil
       if options['CPEE_SALVAGE']
         @handler_continue.continue WEEL::Signal::Salvage
@@ -277,7 +277,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def simulate(type,nesting,tid,parent,parameters={}) #{{{
     pp "#{type} - #{nesting} - #{tid} - #{parent} - #{parameters.inspect}"
 
-    @controller.call_vote("simulating/step",
+    @controller.vote("simulating/step",
       :activity_uuid => @handler_activity_uuid,
       :label => @label,
       :activity => tid,
