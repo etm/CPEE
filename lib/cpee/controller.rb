@@ -102,6 +102,7 @@ module CPEE
 
     def notify(what,content={})
       content[:attributes] = attributes_translated
+      p JSON::generate(content)
       CPEE::Message::send(:event,what,base,@id,uuid,info,content,@redis)
     end
 
@@ -146,7 +147,6 @@ module CPEE
             psredis.unsubscribe
           end
         end
-        p 'end callback'
       end
     end
 

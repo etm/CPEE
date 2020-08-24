@@ -8,7 +8,7 @@ class Instance < WEEL
   data :<%= key %> => <%=  CPEE::ValueHelper::parse(value).inspect -%>
   <% end  %>
   <% for de in positions %>
-  search Position.new :<%= de[0] %>, :<%=de[1] %>, <%= de[2].nil? || de[2].trim.empty? ? 'nil' : '"' + e[2] + '"' -%>
+  search Position.new :<%= de[0] %>, :<%=de[1] %>, <%= de[2].nil? || de[2].strip.empty? ? 'nil' : '"' + de[2] + '"' -%>
   <% end  %>
 
   control flow do
