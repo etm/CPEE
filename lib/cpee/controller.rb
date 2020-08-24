@@ -92,8 +92,7 @@ module CPEE
     end
 
     def stop
-      t = @instance.stop
-      t.run
+      @instance.stop
       @thread.join if !@thread.nil? && @thread.alive?
     end
 
@@ -107,47 +106,33 @@ module CPEE
     end
 
     def vote(what,content={})
-      voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      content[:voteid] = voteid
-      CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)
+      topic, name = what.split('/')
+      handler = File.join(topic,'vote',name)
+      if @redis.smembers("instance:#{id}/handlers/#{handler}").length > 0
+        voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
+        content[:voteid] = voteid
+        CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)
 
-      psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
-      collect = []
-      psredis.subscribe('vote-response:' + voteid, 'vote-end:' + voteid) do |on|
-        on.message do |what, message|
-          case what
-            when 'vote-response:' + voteid
-              collect << (message == 'true' || false)
-            when 'vote-end:' + voteid
-              psredis.unsubscribe
+        psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
+        collect = []
+        psredis.subscribe('vote-response:' + voteid, 'vote-end:' + voteid) do |on|
+          on.message do |what, message|
+            case what
+              when 'vote-response:' + voteid
+                collect << (message == 'true' || false)
+              when 'vote-end:' + voteid
+                psredis.unsubscribe
+            end
           end
         end
+        !collect.include?(false)
+      else
+        true
       end
-      !collect.include?(false)
-    end
-
-    def vote(what,content={})
-      voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      content[:voteid] = voteid
-      CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)
-
-      psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
-      collect = []
-      psredis.subscribe('vote-response:' + voteid, 'vote-end:' + voteid) do |on|
-        on.message do |what, message|
-          case what
-            when 'vote-response:' + voteid
-              collect << (message == 'true' || false)
-            when 'vote-end:' + voteid
-              psredis.unsubscribe
-          end
-        end
-      end
-      !collect.include?(false)
     end
 
     def callback(hw,key,content)
-      CPEE::Message::send(:callback,key,base,@id,uuid,info,content,@redis)
+      CPEE::Message::send(:callback,'activity/content',base,@id,uuid,info,content.merge(:key => key),@redis)
 
       psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
       response = nil
@@ -156,16 +141,17 @@ module CPEE
           on.message do |what, message|
             if what == 'callback-response:' + key
               mess = JSON.parse(message)
-              hw.send(:callback,mess['response'],mess['options')
+              hw.send(:callback,mess['response'],mess['options'])
             end
             psredis.unsubscribe
           end
         end
+        p 'end callback'
       end
     end
 
     def cancel_callback(key)
-      CPEE::Message::send(:callback-end,key,base,@id,uuid,info,{},@redis)
+      CPEE::Message::send(:'callback-end',key,base,@id,uuid,info,{},@redis)
     end
   end
 

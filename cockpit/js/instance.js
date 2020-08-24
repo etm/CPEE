@@ -171,24 +171,16 @@ function check_subscription() { // {{{
   if (num > 0 && subscription_state == 'less') {
     $.ajax({
       type: "PUT",
-      url: url + "/notifications/subscriptions/" + subscription,
-      data: (
-        sub_more + '&' +
-        'message-uid' + '=' + 'xxx' + '&' +
-        'fingerprint-with-producer-secret' + '=' + 'xxx'
-      )
+      url: url + "/notifications/subscriptions/" + subscription + '/',
+      data: sub_more
     });
     subscription_state = 'more';
   }
   if (num == 0 && subscription_state == 'more') {
     $.ajax({
       type: "PUT",
-      url: url + "/notifications/subscriptions/" + subscription,
-      data: (
-        sub_less + '&' +
-        'message-uid' + '=' + 'xxx' + '&' +
-        'fingerprint-with-producer-secret' + '=' + 'xxx'
-      )
+      url: url + "/notifications/subscriptions/" + subscription + '/',
+      data: sub_less
     });
     subscription_state = 'less';
     format_visual_vote_clear();

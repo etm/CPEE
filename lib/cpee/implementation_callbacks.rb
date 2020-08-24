@@ -5,9 +5,9 @@ module CPEE
 
     def self::implementation(id,opts)
       Proc.new do
-        run CPEE::Callbacks, id, opts if get
+        run CPEE::Callbacks::Callbacks, id, opts if get
         on resource do
-          run CPEE::ExCallback, id, opts if get || put || post || delete
+          run CPEE::Callbacks::ExCallback, id, opts if get || put || post || delete
         end
       end
     end
@@ -18,7 +18,7 @@ module CPEE
         opts = @a[1]
         Riddl::Parameter::Complex.new("callbacks","text/xml") do
           ret = XML::Smart::string <<-END
-            <subscriptions xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'/>
+            <callbacks/>
           END
           CPEE::Persistence::extract_list(id,opts,'callbacks').each do |de|
             ret.root.add('callback', de[1], :id => de[0])
@@ -34,23 +34,21 @@ module CPEE
         opts = @a[1]
         callback = @r[-1]
 
-        {
-          'options' => {},
-          'values' ={},
-
-        @p.map do 'e'
+        ret = {}
+        ret['values'] = @p.map do |e|
           # write complex in file
           [e.name, e.class == Riddl::Parameter::Simple ? [:simple,e.value] : [:complex,e.mimetype,'link to tmpfile'] ]
-
+        end
+        ret['headers'] =  @h
 
         CPEE::Message::send(
-          :callback,
-          File.join('activity','callback''),
+          :callback-response,
+          callback,
           opts[:url],
           id,
           {},
           {},
-          @p.map,
+          ret,
           opts[:redis]
         )
       end

@@ -17,15 +17,9 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <element name="callbacks">
-      <attribute name="details">
-        <choice>
-          <value>debug</value>
-          <value>production</value>
-        </choice>  
-      </attribute>
       <zeroOrMore>
         <ref name="callback"/>
-      </zeroOrMore>  
+      </zeroOrMore>
    	</element>
   </start>
 
@@ -36,6 +30,6 @@
       </attribute>
       <data type="string"/>
     </element>
-  </define>  
+  </define>
 
 </grammar>

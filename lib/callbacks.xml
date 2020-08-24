@@ -16,7 +16,7 @@
 
 <description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:doc="http://cpee.org/ns/documentation">
   <message name="callbacks">
-    <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+    <parameter name="callbacks" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
       <xi:include href="callbacks/callbacks.rng"/>
     </parameter>
   </message>

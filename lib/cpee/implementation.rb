@@ -105,6 +105,7 @@ module CPEE
 
       interface 'callbacks' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
+        p 'xxxxx'
         use CPEE::Callbacks::implementation(id.to_i, opts)
       end
     end

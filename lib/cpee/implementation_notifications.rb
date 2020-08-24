@@ -125,15 +125,14 @@ module CPEE
         key = @r.last
 
         url = @p[0].name == 'url' ? @p.shift.value : nil
+        values = []
         while @p.length > 0
           topic = @p.shift.value
           base = @p.shift
           type = base.name
-          values = base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
-          CPEE::Persistence::set_handler(id,opts,key,url,values,true)
+          values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
         end
-
-        Riddl::Parameter::Simple.new('key',key)
+        @header = CPEE::Persistence::set_handler(id,opts,key,url,values,true)
       end
     end #}}}
 
