@@ -213,7 +213,7 @@ module CPEE
             CPEE::Persistence::write_instance id, opts
             pid = Kernel.spawn(exe , :out => exe + '.out', :err => exe + '.err')
             File.write(exe + '.pid',pid)
-            Process.detach(pid)
+            Process.detach pid
           when 'stopping'
             pid = File.read(exe + '.pid') rescue nil
             Process.kill('HUP', pid.to_i) if pid

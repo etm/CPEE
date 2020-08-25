@@ -87,8 +87,10 @@ module CPEE
     end
 
     def start
+      notify("attributes/change", :changed => [ :pid ], :values => { :pid => @opts[:pid] })
       @thread = @instance.start
       @thread.join
+      notify("attributes/change", :deleted => [ :pid ])
     end
 
     def stop
@@ -102,7 +104,6 @@ module CPEE
 
     def notify(what,content={})
       content[:attributes] = attributes_translated
-      p JSON::generate(content)
       CPEE::Message::send(:event,what,base,@id,uuid,info,content,@redis)
     end
 

@@ -1,15 +1,15 @@
 class Instance < WEEL
-  handlerwrapper <%= handlerwrapper -%>
+  handlerwrapper <%= handlerwrapper %>
 
-  <% for key, value in endpoints %>
-  endpoint :<%= key %> => <%=  CPEE::ValueHelper::parse(value).inspect -%>
-  <% end  %>
-  <% for key, value in dataelements %>
-  data :<%= key %> => <%=  CPEE::ValueHelper::parse(value).inspect -%>
-  <% end  %>
-  <% for de in positions %>
-  search Position.new :<%= de[0] %>, :<%=de[1] %>, <%= de[2].nil? || de[2].strip.empty? ? 'nil' : '"' + de[2] + '"' -%>
-  <% end  %>
+<% for key, value in endpoints -%>
+  endpoint :<%= key %> => <%=  CPEE::ValueHelper::parse(value).inspect %>
+<% end  -%>
+
+<% for key, value in dataelements -%>
+  data :<%= key %> => <%=  CPEE::ValueHelper::parse(value).inspect %>
+<% end -%>
+
+  search <% positions.each_with_index { |de,i| %><%= (i > 0 ? ', ' : '') %>Position.new(:<%= de[0] %>, :<%=de[1] %>, <%= de[2].nil? || de[2].strip.empty? ? 'nil' : '"' + de[2] + '"' %>)<% } %>
 
   control flow do
     <%= dsl.strip.gsub(/\n/,"\n    ") %>
