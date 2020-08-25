@@ -87,10 +87,8 @@ module CPEE
     end
 
     def start
-      notify("attributes/change", :changed => [ :pid ], :values => { :pid => @opts[:pid] })
       @thread = @instance.start
       @thread.join
-      notify("attributes/change", :deleted => [ :pid ])
     end
 
     def stop
