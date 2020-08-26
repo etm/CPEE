@@ -17,7 +17,6 @@ require 'json'
 require 'redis'
 require 'securerandom'
 require 'riddl/client'
-require_relative 'callback'
 require_relative 'value_helper'
 require_relative 'attributes_helper'
 require_relative 'message'
@@ -36,6 +35,7 @@ module CPEE
   class Controller
     def initialize(id,dir,opts)
       @redis = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+      @votes = []
 
       @id = id
 
@@ -92,6 +92,9 @@ module CPEE
     end
 
     def stop
+      @votes.slice!(0,@votes.length).each do |key|
+        CPEE::Message::send(:'vote-end',key,base,@id,uuid,info,{},@redis)
+      end
       @instance.stop
       @thread.join if !@thread.nil? && @thread.alive?
     end
@@ -110,13 +113,15 @@ module CPEE
       handler = File.join(topic,'vote',name)
       if @redis.smembers("instance:#{id}/handlers/#{handler}").length > 0
         voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
-        content[:voteid] = voteid
+        content[:key] = voteid
+        @votes << voteid
         CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)
 
         psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
         collect = []
         psredis.subscribe('vote-response:' + voteid, 'vote-end:' + voteid) do |on|
           on.message do |what, message|
+            p message
             case what
               when 'vote-response:' + voteid
                 collect << (message == 'true' || false)
@@ -140,8 +145,19 @@ module CPEE
         psredis.subscribe('callback-response:' + key, 'callback-end:' + key) do |on|
           on.message do |what, message|
             if what == 'callback-response:' + key
-              mess = JSON.parse(message)
-              hw.send(:callback,mess['response'],mess['options'])
+              index = message.index(' ')
+              mess = message[index+1..-1]
+              instance = message[0...index]
+              m = JSON.parse(mess)
+              resp = []
+              m['content']['values'].each do |e|
+                if e[1][0] == 'simple'
+                  resp << Riddl::Parameter::Simple.new(e[0],e[1][1])
+                elsif e[1][0] == 'complex'
+                  resp << Riddl::Parameter::Complex.new(e[0],e[1][1],File.open(e[1][2]))
+                end
+              end
+              hw.send(:callback,resp,m['content']['headers'])
             end
             psredis.unsubscribe
           end

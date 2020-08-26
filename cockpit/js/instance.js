@@ -284,6 +284,7 @@ function sse() { //{{{
       }
     }
     if (data['type'] == 'vote') {
+      console.log(data['content']);
       monitor_instance_vote_add(data['content']);
     }
     append_to_log(data['type'], data['topic'] + '/' + data['name'], JSON.stringify(data['content']));

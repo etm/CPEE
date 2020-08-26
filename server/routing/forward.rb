@@ -22,12 +22,13 @@ Daemonite.new do |opts|
   pubsubredis = Redis.new(path: "/tmp/redis.sock", db: 3)
 
   run do
-    pubsubredis.psubscribe('event:*') do |on|
+    pubsubredis.psubscribe('event:*','vote:*') do |on|
       on.pmessage do |pat, what, message|
         index = message.index(' ')
         mess = message[index+1..-1]
         instance = message[0...index]
-        event = what[6..-1]
+        type = pat[0..-3]
+        event = what[(type.length+1)..-1]
         topic = ::File::dirname(event)
         name = ::File::basename(event)
         long = File.join(topic,'event',name)
@@ -35,11 +36,12 @@ Daemonite.new do |opts|
           if redis.smembers("instance:#{instance}/handlers/#{key}").include? long
             url = redis.get("instance:#{instance}/handlers/#{key}/url")
             if url.nil? || url == ""
+              p mess
               redis.publish("forward:#{instance}/#{key}",mess)
             else
               client = Riddl::Client.new(url,'http://riddl.org/ns/common-patterns/notifications-consumer/2.0/consumer.xml')
               client.post [
-                Riddl::Parameter::Simple::new('type','event'),
+                Riddl::Parameter::Simple::new('type',type),
                 Riddl::Parameter::Simple::new('topic',topic),
                 Riddl::Parameter::Simple::new('event',name),
                 Riddl::Parameter::Complex::new('notification','application/json',mess)
