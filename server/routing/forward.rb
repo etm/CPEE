@@ -22,7 +22,7 @@ Daemonite.new do |opts|
   pubsubredis = Redis.new(path: "/tmp/redis.sock", db: 3)
 
   run do
-    pubsubredis.psubscribe('event:*','vote:*') do |on|
+    pubsubredis.psubscribe('event:*') do |on|
       on.pmessage do |pat, what, message|
         index = message.index(' ')
         mess = message[index+1..-1]
@@ -36,7 +36,6 @@ Daemonite.new do |opts|
           if redis.smembers("instance:#{instance}/handlers/#{key}").include? long
             url = redis.get("instance:#{instance}/handlers/#{key}/url")
             if url.nil? || url == ""
-              p mess
               redis.publish("forward:#{instance}/#{key}",mess)
             else
               client = Riddl::Client.new(url,'http://riddl.org/ns/common-patterns/notifications-consumer/2.0/consumer.xml')

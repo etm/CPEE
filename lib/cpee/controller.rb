@@ -92,10 +92,12 @@ module CPEE
     end
 
     def stop
-      @votes.slice!(0,@votes.length).each do |key|
-        CPEE::Message::send(:'vote-end',key,base,@id,uuid,info,{},@redis)
-      end
+      ### tell the instance to stop
       @instance.stop
+      ### end all votes or it will not work
+      @votes.each do |key|
+        CPEE::Message::send(:'vote-response',key,base,@id,uuid,info,true,@redis)
+      end
       @thread.join if !@thread.nil? && @thread.alive?
     end
 
@@ -111,22 +113,28 @@ module CPEE
     def vote(what,content={})
       topic, name = what.split('/')
       handler = File.join(topic,'vote',name)
-      if @redis.smembers("instance:#{id}/handlers/#{handler}").length > 0
+      lvotes = []
+      @redis.smembers("instance:#{id}/handlers/#{handler}").each do |client|
         voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
         content[:key] = voteid
-        @votes << voteid
+        content[:who] = client
+        lvotes << "vote-response:" + voteid
         CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)
+      end
 
+      if lvotes.length > 0
+        @votes.merge!(lvotes)
         psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
         collect = []
-        psredis.subscribe('vote-response:' + voteid, 'vote-end:' + voteid) do |on|
+
+        psredis.subscribe(lvotes) do |on|
           on.message do |what, message|
-            p message
-            case what
-              when 'vote-response:' + voteid
-                collect << (message == 'true' || false)
-              when 'vote-end:' + voteid
-                psredis.unsubscribe
+            index = message.index(' ')
+            mess = message[index+1..-1]
+            collect << (mess == 'true' || false)
+            @votes.delete! what
+            if collect.length >= lvotes.length
+              psredis.unsubscribe
             end
           end
         end
