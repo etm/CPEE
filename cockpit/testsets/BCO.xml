@@ -5,7 +5,7 @@
     <theme>preset</theme>
     <bc>operate</bc>
   </attributes>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
   <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <x/>
   </dataelements>
@@ -15,7 +15,7 @@
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>
   <!--}}}-->
-  <description>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <!--{{{-->
       <call id="a1" endpoint="timeout">
@@ -61,7 +61,6 @@
         </code>
       </call>
     </description>
-    <!--}}}-->
   </description>
   <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>

@@ -765,59 +765,25 @@ function save_testsetfile() {// {{{
 
 function get_testset(deferred) {// {{{
   var url = $('body').attr('current-instance');
-  var testset = $X('<testset/>');
 
   $.ajax({
     type: "GET",
-    url: url + "/properties/dataelements/",
+    url: url + "/properties/",
     success: function(res){
-      var pars = $X('<dataelements/>');
-      pars.append($(res.documentElement).children());
-      testset.append(pars);
-      $.ajax({
-        type: "GET",
-        url: url + "/properties/handlerwrapper/",
-        success: function(res){
-          var pars = $X('<handlerwrapper>' + res + '</handlerwrapper>');
-          testset.append(pars);
-          $.ajax({
-            type: "GET",
-            url: url + "/properties/endpoints/",
-            success: function(res){
-              var pars = $X('<endpoints/>');
-              pars.append($(res.documentElement).children());
-              testset.append(pars);
-              $.ajax({
-                type: "GET",
-                url: url + "/properties/dslx/",
-                success: function(res){
-                  var pars = $X('<description/>');
-                  pars.append($(res.documentElement));
-                  testset.append(pars);
-                  pars = $X("<transformation><description type='copy'/><dataelements type='none'/><endpoints type='none'/></transformation>");
-                  testset.append(pars);
-                  $.ajax({
-                    type: "GET",
-                    url: url + "/properties/attributes/",
-                    success: function(res){
-                      var name = $("attributes > info",res).text();
-                      var pars = $X('<attributes/>');
-                      pars.append($(res.documentElement).children());
-                      pars.find('uuid').remove();
-                      testset.append(pars);
-                      deferred.resolve(name,testset);
-                    },
-                    error: function() { deferred.reject(); report_failure(); }
-                  });
-                },
-                error: function() { deferred.reject(); report_failure(); }
-              });
-            },
-            error: function() { deferred.reject(); report_failure(); }
-          });
-        },
-        error: function() { deferred.reject(); report_failure(); }
-      });
+      var testset = $X('<testset xmlns="http://cpee.org/ns/properties/2.0"/>');
+      testset.append($(res.documentElement).children());
+      $('testset > state',testset).remove();
+      $('testset > status',testset).remove();
+      $('testset > positions',testset).remove();
+      $('testset > dsl',testset).remove();
+      $('testset > description > *',testset).remove();
+      $('testset > description',testset).append($('testset > dslx',testset).children());
+      $('testset > transformation',testset).remove();
+      $('testset > dsl',testset).remove();
+      $('testset > dslx',testset).remove();
+      testset.append($X('<transformation xmlns="http://cpee.org/ns/properties/2.0"><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation>'));
+      var name =  $(' > testset > attributes > info',testset).text();
+      deferred.resolve(name,testset);
     },
     error: function() { deferred.reject(); report_failure(); }
   });
@@ -875,7 +841,20 @@ async function set_testset(testset,exec) {// {{{
   var url = $('body').attr('current-instance');
   suspended_monitoring = true;
 
+  console.log($(testset).serializeXML());
+
   var promises = [];
+
+  var tset = $X('<properties xmlns="http://cpee.org/ns/properties/2.0"/>');
+  tset.append($("testset > handlerwrapper",testset));
+  tset.append($("testset > positions",testset));
+  tset.append($("testset > dataelements",testset));
+  tset.append($("testset > endpoints",testset));
+  tset.append($("testset > attributes",testset));
+  tset.append($("testset > description",testset));
+  tset.append($("testset > transformation",testset));
+
+  console.log(tset.serializeXML());
 
   promises.push(
     $.ajax({
@@ -891,35 +870,21 @@ async function set_testset(testset,exec) {// {{{
       });
       await load_testset_handlers(url,testset,vals);
     })
-  )
-  promises.push(load_testset_dataelements(url,testset));
-  promises.push(load_testset_attributes(url,testset));
-  promises.push(load_testset_endpoints(url,testset));
-  promises.push(load_testset_pos(url,testset));
+  );
+  promises.push(
+    $.ajax({
+      type: 'PATCH',
+      url: url + "/properties/",
+      contentType: 'text/xml',
+      headers: {
+       'Content-ID': 'properties',
+       'CPEE-Event-Source': myid
+      },
+      data: tset.serializeXML(),
+      error: report_failure
+    })
+  );
 
-
-  if ($("testset > transformation",testset).length > 0) {
-    var ser = $("testset > transformation",testset).serializeXML();
-    promises.push(
-      $.ajax({
-        type: "PUT",
-        contentType: 'text/xml',
-        url: url + "/properties/transformation",
-        data: ser,
-        headers: {
-         'Content-ID': 'transformation',
-         'CPEE-Event-Source': myid
-        },
-        error: report_failure
-      }).then(async function(){
-        await load_testset_des(url,testset);
-      })
-    );
-  } else {
-    promises.push(load_testset_des(url,testset));
-  }
-
-  promises.push(load_testset_hw(url,testset));
   await Promise.all(promises);
   suspended_monitoring = false;
 

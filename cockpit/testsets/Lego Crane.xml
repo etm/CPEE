@@ -1,6 +1,6 @@
 <testset>
   <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
   <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
     <cranepos xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cranex.wst.univie.ac.at:9200/pos</cranepos>
@@ -9,7 +9,7 @@
     <lower xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://craney.wst.univie.ac.at:9200/lower</lower>
   </endpoints>
   <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <description>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="onoff">
         <parameters>

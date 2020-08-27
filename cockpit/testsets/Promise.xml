@@ -1,6 +1,6 @@
 <testset>
   <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
   <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout</timeout>
     <timeout1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout/1</timeout1>
@@ -23,7 +23,7 @@
     <credit_activate xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/activate</credit_activate>
   </endpoints>
   <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <description>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a20" endpoint="customer" svg-label="Generate Customer">
         <parameters>

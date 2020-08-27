@@ -1,6 +1,6 @@
 <testset>
   <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">RescueHandlerWrapper</handlerwrapper>
   <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <input>4</input>
     <data_stores_endpoint/>
@@ -9,7 +9,7 @@
   <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <ep1>Somewhere over the rainbow</ep1>
   </endpoints>
-  <description>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <manipulate id="endpoints">
         endpoints.a_new_one = "new Endpoint"

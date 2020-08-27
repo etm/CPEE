@@ -22,7 +22,7 @@ Daemonite.new do |opts|
   pubsubredis = Redis.new(path: "/tmp/redis.sock", db: 3)
 
   run do
-    pubsubredis.psubscribe('event:*') do |on|
+    pubsubredis.psubscribe('event:*','vote:*') do |on|
       on.pmessage do |pat, what, message|
         index = message.index(' ')
         mess = message[index+1..-1]

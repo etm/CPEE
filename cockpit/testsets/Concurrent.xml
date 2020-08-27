@@ -1,6 +1,6 @@
 <testset>
   <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
   <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <persons>3</persons>
     <hotels>[]</hotels>
@@ -9,7 +9,7 @@
   <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
   </endpoints>
-  <description>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <parallel>
         <loop mode="pre_test" condition="data.persons &gt; 0">
