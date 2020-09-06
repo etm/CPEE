@@ -71,7 +71,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
 function cockpit() { //{{{
   $("button[name=base]").click(function(){ create_instance($("input[name=base-url]").val(),null,false,false); });
   $("button[name=instance]").click(function(){ ui_activate_tab("#tabinstance"); monitor_instance($("input[name=instance-url]").val(),$("input[name=res-url]").val(),false,false); });
-  $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#predefinedtestsets'),function(){ load_testset(false) } ); });
+  $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#templates'),function(){ load_testset(false) } ); });
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodelfile]").click(load_modelfile);
   $("button[name=loadmodeltype]").click(function(e){new CustomMenu(e).menu($('#modeltypes'),load_modeltype, $("button[name=loadmodeltype]")); });
@@ -91,7 +91,7 @@ function cockpit() { //{{{
     success: function(res){
       $('testset',res).each(function(){
         var ts = $(this).text();
-        $('#predefinedtestsets').append($("<div class='menuitem'></div>").text(ts));
+        $('#templates').append($("<div class='menuitem'></div>").text(ts));
       });
       var q = $.parseQuerySimple();
       if (q.min || q.min == "") {
@@ -102,7 +102,7 @@ function cockpit() { //{{{
         if (q.load.match(/https?:\/\//)) {
           $('body').attr('load-testset',q.load);
         } else {
-          $("#predefinedtestsets div.menuitem").each(function(k,v){
+          $("#templates div.menuitem").each(function(k,v){
             if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
           });
         }
@@ -112,7 +112,7 @@ function cockpit() { //{{{
         if (q.load.match(/https?:\/\//)) {
           $('body').attr('load-testset',q.load);
         } else {
-          $("#predefinedtestsets div.menuitem").each(function(k,v){
+          $("#templates div.menuitem").each(function(k,v){
             if ($(v).text() == q.load) { $(v).attr('data-selected','selected'); }
           });
         }
@@ -135,7 +135,7 @@ function cockpit() { //{{{
         if (q.exec.match(/https?:\/\//)) {
           $('body').attr('load-testset',q.load);
         } else {
-          $("#predefinedtestsets div.menuitem").each(function(k,v){
+          $("#templates div.menuitem").each(function(k,v){
             if ($(v).text() == q.exec) { $(v).attr('data-selected','selected'); }
           });
         }
@@ -1001,7 +1001,7 @@ function load_testset(exec) {// {{{
   if (loading) return;
   loading = true;
 
-  var name = $("#predefinedtestsets div.menuitem[data-selected=selected]").text();
+  var name = $("#templates div.menuitem[data-selected=selected]").text();
   var url;
   if (name) {
     url = $('body').attr('current-testsets') + name + ".xml";

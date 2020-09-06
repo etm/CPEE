@@ -1,0 +1,10 @@
+<testset>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <overview>http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
+    <move_tool>http-put://tango.wst.univie.ac.at:9329/move/position/point</move_tool>
+    <move_camera>http-put://tango.wst.univie.ac.at:9329/move/position/view</move_camera>
+    <calculate_position>http-get://tango.wst.univie.ac.at:9329/view/items</calculate_position>
+    <calculate_offset>http-get://tango.wst.univie.ac.at:9329/view/details</calculate_offset>
+  </endpoints>
+</testset>

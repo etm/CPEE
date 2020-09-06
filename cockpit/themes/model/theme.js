@@ -65,7 +65,7 @@ function WFAdaptorManifestation(adaptor) {
         var schema = save['endpoints_cache'][$(node).attr('endpoint')].schema.documentElement;
         $(rng).find(' > element[name="parameters"] > element[name="arguments"]').replaceWith($(schema).clone());
       }
-      if (save['endpoints_list'][$(node).attr('endpoint')] && !save['endpoints_list'][$(node).attr('endpoint')].startsWith('http')) {
+      if (save['endpoints_list'][$(node).attr('endpoint')] && (!save['endpoints_list'][$(node).attr('endpoint')].startsWith('http') || save['endpoints_list'][$(node).attr('endpoint')].match(/^https?-/))) {
         $(rng).find(' > element[name="parameters"] > element[name="method"]').remove();
       }
       save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
