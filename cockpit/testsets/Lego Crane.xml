@@ -1,15 +1,15 @@
 <testset>
-  <dataelements/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <endpoints>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
     <cranepos xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cranex.wst.univie.ac.at:9200/pos</cranepos>
     <onoff xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://craney.wst.univie.ac.at:9200/onoff</onoff>
     <raise xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://craney.wst.univie.ac.at:9200/raise</raise>
     <lower xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://craney.wst.univie.ac.at:9200/lower</lower>
   </endpoints>
-  <positions/>
-  <description>
+  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="onoff">
         <parameters>
@@ -73,12 +73,12 @@
       </call>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes>
+  <attributes xmlns="http://cpee.org/ns/properties/2.0">
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">s</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>

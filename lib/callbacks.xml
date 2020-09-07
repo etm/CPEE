@@ -14,28 +14,19 @@
   <http://www.gnu.org/licenses/>.
 -->
 
-<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <start>
-    <element name="callbacks">
-      <attribute name="details">
-        <choice>
-          <value>debug</value>
-          <value>production</value>
-        </choice>  
-      </attribute>
-      <zeroOrMore>
-        <ref name="callback"/>
-      </zeroOrMore>  
-   	</element>
-  </start>
+<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:doc="http://cpee.org/ns/documentation">
+  <message name="callbacks">
+    <parameter name="callbacks" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="callbacks/callbacks.rng"/>
+    </parameter>
+  </message>
 
-  <define name="callback">
-    <element name='callback'>
-      <attribute name='id'>
-        <data type="string"/>
-      </attribute>
-      <data type="string"/>
-    </element>
-  </define>  
+  <resource>
+    <doc:documentation>xb</doc:documentation>
+    <get in="*" out="callbacks"/>
+    <resource>
+      <put in="*"/>
+    </resource>
+  </resource>
 
-</grammar>
+</description>

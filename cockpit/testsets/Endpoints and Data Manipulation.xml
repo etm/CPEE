@@ -1,15 +1,15 @@
 <testset>
-  <positions/>
-  <handlerwrapper>RescueHandlerWrapper</handlerwrapper>
-  <dataelements>
+  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">RescueHandlerWrapper</handlerwrapper>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <input>4</input>
     <data_stores_endpoint/>
     <output/>
   </dataelements>
-  <endpoints>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <ep1>Somewhere over the rainbow</ep1>
   </endpoints>
-  <description>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <manipulate id="endpoints">
         endpoints.a_new_one = "new Endpoint"
@@ -22,7 +22,7 @@ data[:input] = "dataelement changed"
 data.output = data[:input]</manipulate>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="external"/>
     <dataelements type="external"/>
     <endpoints type="external"/>

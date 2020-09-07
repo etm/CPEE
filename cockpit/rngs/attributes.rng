@@ -1,4 +1,4 @@
-<element rngui:version="1.2" name="value" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+<element rngui:version="1.2" name="attributes" ns="http://cpee.org/ns/properties/2.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
   <zeroOrMore rngui:label="Create Attributes">
     <element rngui:label='Name'>
       <anyName/>

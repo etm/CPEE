@@ -1,4 +1,4 @@
-var ws;
+var es;
 var suspended_monitoring = false;
 var myid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
 var paths = '#dat_details input, #dat_details textarea, #dat_details select, #dat_details button, #dat_details [contenteditable], #dat_dataelements input, #dat_dataelements textarea, #dat_dataelements select, #dat_dataelements button, #dat_dataelements [contenteditable], #dat_endpoints input, #dat_endpoints textarea, #dat_endpoints select, #dat_endpoints button, #dat_endpoints [contenteditable], #dat_attributes input, #dat_attributes textarea, #dat_attributes select, #dat_attributes button, #dat_attributes [contenteditable]';
@@ -171,24 +171,16 @@ function check_subscription() { // {{{
   if (num > 0 && subscription_state == 'less') {
     $.ajax({
       type: "PUT",
-      url: url + "/notifications/subscriptions/" + subscription,
-      data: (
-        sub_more + '&' +
-        'message-uid' + '=' + 'xxx' + '&' +
-        'fingerprint-with-producer-secret' + '=' + 'xxx'
-      )
+      url: url + "/notifications/subscriptions/" + subscription + '/',
+      data: sub_more
     });
     subscription_state = 'more';
   }
   if (num == 0 && subscription_state == 'more') {
     $.ajax({
       type: "PUT",
-      url: url + "/notifications/subscriptions/" + subscription,
-      data: (
-        sub_less + '&' +
-        'message-uid' + '=' + 'xxx' + '&' +
-        'fingerprint-with-producer-secret' + '=' + 'xxx'
-      )
+      url: url + "/notifications/subscriptions/" + subscription + '/',
+      data: sub_less
     });
     subscription_state = 'less';
     format_visual_vote_clear();
@@ -246,18 +238,16 @@ function create_instance(base,name,load,exec) {// {{{
   }
 }// }}}
 
-function websocket() { //{{{
+function sse() { //{{{
   var url = $('body').attr('current-instance');
-  var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
-  if (ws) ws.close();
-  ws = new Socket(url.replace(/http/,'ws') + "/notifications/subscriptions/" + subscription + "/ws/");
-  ws.onopen = function() {
+  es = new EventSource(url + "/notifications/subscriptions/" + subscription + "/sse/");
+  es.onopen = function() {
     append_to_log("monitoring", "opened", "");
   };
-  ws.onmessage = function(e) {
-    data = $.parseXML(e.data);
-    if ($('event > topic',data).length > 0) {
-      switch($('event > topic',data).text()) {
+  es.onmessage = function(e) {
+    data = JSON.parse(e.data);
+    if (data['type'] == 'event') {
+      switch(data['topic']) {
         case 'dataelements':
           monitor_instance_values("dataelements");
           break;
@@ -270,39 +260,35 @@ function websocket() { //{{{
         case 'attributes':
           monitor_instance_values("attributes");
           monitor_instance_transformation();
-          if (!suspended_monitoring) { // or else it would load twice, because dsl changes also
+          if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
             monitor_graph_change(true);
           }
           break;
         case 'task':
           if ($('#trackcolumn').length > 0) {
-            var details = JSON.parse($('event > notification',data).text());
-            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + details.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
+            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + data['instance-url'].replace(/\/*$/,'/') + '"></iframe>'));
           }
           break;
         case 'state':
-          monitor_instance_state_change(JSON.parse($('event > notification',data).text()).state);
+          monitor_instance_state_change(data['content']['state']);
           break;
         case 'position':
-          monitor_instance_pos_change($('event > notification',data).text());
-          break;
-        case 'transformation':
-          monitor_instance_transformation();
+          monitor_instance_pos_change(data['content']);
           break;
         case 'activity':
-          monitor_instance_running($('event > notification',data).text(),$('event > event',data).text());
+          monitor_instance_running(data['content'],data['name']);
           break;
       }
-      append_to_log("event", $('event > topic',data).text() + "/" + $('event > event',data).text(), $('event > notification',data).text());
     }
-    if ($('vote > topic',data).length > 0) {
-      var notification = $('vote > notification',data).text();
-      append_to_log("vote", $('vote > topic',data).text() + "/" + $('vote > vote',data).text(), notification);
-      monitor_instance_vote_add(notification);
+    if (data['type'] == 'vote') {
+      console.log(data['content']);
+      monitor_instance_vote_add(data['content']);
     }
+    append_to_log(data['type'], data['topic'] + '/' + data['name'], JSON.stringify(data['content']));
   };
-  ws.onclose = function() {
+  es.onerror = function() {
     append_to_log("monitoring", "closed", "server down i assume.");
+    // setTimeout(sse,10000);
   };
 
   monitor_instance_values("dataelements");
@@ -354,14 +340,9 @@ function monitor_instance(cin,rep,load,exec) {// {{{
         url: url + "/notifications/subscriptions/",
         data: sub_less,
         success: function(res){
-          res = res.unserialize();
-          $.each(res,function(a,b){
-            if (b[0] == 'key') {
-              subscription = b[1];
-            }
-          });
+          subscription = res;
           append_to_log("monitoring", "id", subscription);
-          websocket();
+          sse();
           if (load || exec) {
             load_testset(exec);
           }
@@ -388,7 +369,7 @@ function monitor_instance_values(val) {// {{{
       if (val == "endpoints") {
         save['endpoints_list'] = {};
         var tmp = {};
-        $(res).find(" > value > *").each(function(k,v) {
+        $(res).find(" > endpoints > *").each(function(k,v) {
           save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
           $.ajax({
             url: rep + encodeURIComponent($(v).text()),
@@ -429,7 +410,7 @@ function monitor_instance_values(val) {// {{{
           });
         });
       } else if(val == "attributes") {
-        var text = $(" > value > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
+        var text = $(" > attributes > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
         $('#title').text(text);
         document.title = text;
       }
@@ -516,7 +497,13 @@ function adaptor_init(url,theme,dslx) { //{{{
         $.ajax({
           type: "PUT",
           url: url + "/properties/description/",
-          data: ({'content': '<content>' + g + '</content>'})
+          contentType: 'text/xml',
+          headers: {
+            'Content-ID': 'description',
+            'CPEE-Event-Source': myid
+          },
+          data: g,
+          error: report_failure
         });
         adaptor_update();
         manifestation.events.click(svgid);
@@ -551,7 +538,7 @@ function monitor_graph_change(force) { //{{{
           type: "GET",
           url: url + "/properties/attributes/theme/",
           success: function(res){
-            adaptor_init(url,$('value',res).text(),dslx);
+            adaptor_init(url,res,dslx);
           },
           error: function() {
             adaptor_init(url,'preset',dslx);
@@ -602,7 +589,7 @@ function monitor_instance_transformation() {// {{{
     type: "GET",
     url: url + "/properties/attributes/modeltype",
     success: function(res){
-      $("#currentmodel").text($(res.documentElement).text());
+      $("#currentmodel").text(res);
     },
     error: function() {
       $("#currentmodel").text('???');
@@ -616,20 +603,19 @@ function monitor_instance_pos() {// {{{
     type: "GET",
     url: url + "/properties/positions/",
     success: function(res){
-      save['instance_pos'] = $("value > *",res);
+      save['instance_pos'] = $("positions > *",res);
       format_visual_clear();
       format_instance_pos();
     }
   });
 }// }}}
 
-function monitor_instance_running(notification,event) {// {{{
+function monitor_instance_running(content,event) {// {{{
   if (save['state'] == "stopping") return;
-  var parts = JSON.parse(notification);
   if (event == "calling")
-    format_visual_add(parts.activity,"active")
+    format_visual_add(content.activity,"active")
   if (event == "done")
-    format_visual_remove(parts.activity,"active")
+    format_visual_remove(content.activity,"active")
 } // }}}
 function monitor_instance_state_change(notification) { //{{{
   if ($('#trackcolumn').length > 0) {
@@ -687,19 +673,18 @@ function monitor_instance_state_change(notification) { //{{{
     $("#state_text").text(notification);
   }
 }   //}}}
-function monitor_instance_pos_change(notification) {// {{{
-  var parts = JSON.parse(notification);
-  if (parts['unmark']) {
-    $.each(parts['unmark'],function(a,b){
+function monitor_instance_pos_change(content) {// {{{
+  if (content['unmark']) {
+    $.each(content['unmark'],function(a,b){
       format_visual_remove(b.position,"passive")
     });
   }
-  if (parts['at']) {
-    $.each(parts['at'],function(a,b){
+  if (content['at']) {
+    $.each(content['at'],function(a,b){
       format_visual_add(b.position,"passive")
     });
   }
-  if (!parts['at'] && !parts['unmark'] && !parts['after'] && !parts['wait']) {
+  if (!content['at'] && !content['unmark'] && !content['after'] && !content['wait']) {
     monitor_instance_pos();
   }
 } // }}}
@@ -777,59 +762,25 @@ function save_testsetfile() {// {{{
 
 function get_testset(deferred) {// {{{
   var url = $('body').attr('current-instance');
-  var testset = $X('<testset/>');
 
   $.ajax({
     type: "GET",
-    url: url + "/properties/dataelements/",
+    url: url + "/properties/",
     success: function(res){
-      var pars = $X('<dataelements/>');
-      pars.append($(res.documentElement).children());
-      testset.append(pars);
-      $.ajax({
-        type: "GET",
-        url: url + "/properties/handlerwrapper/",
-        success: function(res){
-          var pars = $X('<handlerwrapper>' + res + '</handlerwrapper>');
-          testset.append(pars);
-          $.ajax({
-            type: "GET",
-            url: url + "/properties/endpoints/",
-            success: function(res){
-              var pars = $X('<endpoints/>');
-              pars.append($(res.documentElement).children());
-              testset.append(pars);
-              $.ajax({
-                type: "GET",
-                url: url + "/properties/dslx/",
-                success: function(res){
-                  var pars = $X('<description/>');
-                  pars.append($(res.documentElement));
-                  testset.append(pars);
-                  pars = $X("<transformation><description type='copy'/><dataelements type='none'/><endpoints type='none'/></transformation>");
-                  testset.append(pars);
-                  $.ajax({
-                    type: "GET",
-                    url: url + "/properties/attributes/",
-                    success: function(res){
-                      var name = $("value > info",res).text();
-                      var pars = $X('<attributes/>');
-                      pars.append($(res.documentElement).children());
-                      pars.find('uuid').remove();
-                      testset.append(pars);
-                      deferred.resolve(name,testset);
-                    },
-                    error: function() { deferred.reject(); report_failure(); }
-                  });
-                },
-                error: function() { deferred.reject(); report_failure(); }
-              });
-            },
-            error: function() { deferred.reject(); report_failure(); }
-          });
-        },
-        error: function() { deferred.reject(); report_failure(); }
-      });
+      var testset = $X('<testset xmlns="http://cpee.org/ns/properties/2.0"/>');
+      testset.append($(res.documentElement).children());
+      $('testset > state',testset).remove();
+      $('testset > status',testset).remove();
+      $('testset > positions',testset).remove();
+      $('testset > dsl',testset).remove();
+      $('testset > description > *',testset).remove();
+      $('testset > description',testset).append($('testset > dslx',testset).children());
+      $('testset > transformation',testset).remove();
+      $('testset > dsl',testset).remove();
+      $('testset > dslx',testset).remove();
+      testset.append($X('<transformation xmlns="http://cpee.org/ns/properties/2.0"><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation>'));
+      var name =  $(' > testset > attributes > info',testset).text();
+      deferred.resolve(name,testset);
     },
     error: function() { deferred.reject(); report_failure(); }
   });
@@ -889,6 +840,15 @@ async function set_testset(testset,exec) {// {{{
 
   var promises = [];
 
+  var tset = $X('<properties xmlns="http://cpee.org/ns/properties/2.0"/>');
+  tset.append($("testset > handlerwrapper",testset));
+  tset.append($("testset > positions",testset));
+  tset.append($("testset > dataelements",testset));
+  tset.append($("testset > endpoints",testset));
+  tset.append($("testset > attributes",testset));
+  tset.append($("testset > description",testset));
+  tset.append($("testset > transformation",testset));
+
   promises.push(
     $.ajax({
       type: "GET",
@@ -903,33 +863,21 @@ async function set_testset(testset,exec) {// {{{
       });
       await load_testset_handlers(url,testset,vals);
     })
-  )
-  promises.push(load_testset_dataelements(url,testset));
-  promises.push(load_testset_attributes(url,testset));
-  promises.push(load_testset_endpoints(url,testset));
-  promises.push(load_testset_pos(url,testset));
+  );
+  promises.push(
+    $.ajax({
+      type: 'PATCH',
+      url: url + "/properties/",
+      contentType: 'text/xml',
+      headers: {
+       'Content-ID': 'properties',
+       'CPEE-Event-Source': myid
+      },
+      data: tset.serializeXML(),
+      error: report_failure
+    })
+  );
 
-  if ($("testset > transformation",testset).length > 0) {
-    var ser = '';
-    $("testset > transformation > *",testset).each(function(){
-      ser += $(this).serializeXML() + "\n";
-    });
-    var val = "<content>" + ser + "</content>";
-    promises.push(
-      $.ajax({
-        type: "PUT",
-        url: url + "/properties/transformation",
-        data: ({content: val}),
-        error: report_failure
-      }).then(async function(){
-        await load_testset_des(url,testset);
-      })
-    );
-  } else {
-    promises.push(load_testset_des(url,testset));
-  }
-
-  promises.push(load_testset_hw(url,testset));
   await Promise.all(promises);
   suspended_monitoring = false;
 
@@ -1057,116 +1005,25 @@ function load_modeltype() {// {{{
 }// }}}
 
 async function load_des(url,model) { //{{{
-  model = model.replace(/<\?[^\?]+\?>/,'');
-  var val = "<content>" + model + "</content>";
   return $.ajax({
     type: "PUT",
-    url: url + "/properties/description",
-    data: ({content: val}),
+    url: url + "/properties/description/",
+    contentType: 'text/xml',
+    headers: {
+      'Content-ID': 'description',
+      'CPEE-Event-Source': myid
+    },
+    data: model,
     error: report_failure
   });
 } //}}}
-
-async function load_testset_des(url,testset) {// {{{
-  if ($("testset > description",testset).length == 0) { return; }
-  var ser = '';
-  $("testset > description > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  return load_des(url,ser);
-} // }}}
-async function load_testset_hw(url,testset) {// {{{
-  var promises = [];
-  $("testset > handlerwrapper",testset).each(function(){
-    var val = $(this).text();
-    promises.push(
-      $.ajax({
-        type: "PUT",
-        url: url + "/properties/handlerwrapper",
-        data: ({value: val}),
-        error: report_failure
-      })
-    );
-  });
-  return Promise.all(promises);
-} // }}}
-async function load_testset_dataelements(url,testset) {// {{{
-  if ($("testset > dataelements",testset).length == 0) { return; }
-  var ser = '';
-  $("testset > dataelements > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  var val = "<content>" + ser + "</content>";
-  return $.ajax({
-    type: "PUT",
-    url: url + "/properties/dataelements",
-    data: ({content: val}),
-    error: report_failure
-  });
-}// }}}
-async function load_testset_attributes(url,testset) {// {{{
-  var promises = [];
-  if ($("testset > attributes",testset).length == 0) { return; }
-  var ser = '';
-  $.ajax({
-    type: "GET",
-    url: url + "/properties/attributes/uuid",
-    success: function(res){
-      var uuid = $X('<uuid xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/>');
-          uuid.text($('value',res).text());
-      $("testset > attributes",testset).prepend(uuid);
-      $("testset > attributes > *",testset).each(function(){
-        ser += $(this).serializeXML() + "\n";
-      });
-      var val = "<content>" + ser + "</content>";
-      promises.push(
-        $.ajax({
-          type: "PUT",
-          url: url + "/properties/attributes",
-          data: ({content: val}),
-          error: report_failure
-        })
-      );
-    }
-  });
-  return Promise.all(promises);
-}// }}}
-async function load_testset_endpoints(url,testset) {// {{{
-  if ($("testset > endpoints",testset).length == 0) { return; }
-  var ser = '';
-  $("testset > endpoints > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  var val = "<content>" + ser + "</content>";
-  return $.ajax({
-    type: "PUT",
-    url: url + "/properties/endpoints/",
-    data: ({content: val}),
-    error: report_failure
-  });
-}// }}}
-async function load_testset_pos(url,testset) {// {{{
-  if ($("testset > positions",testset).length == 0) { return; }
-  var ser = '';
-  $("testset > positions > *",testset).each(function(){
-    ser += $(this).serializeXML() + "\n";
-  });
-  var val = "<content>" + ser + "</content>";
-  return $.ajax({
-    type: "PUT",
-    url: url + "/properties/positions/",
-    data: ({content: val}),
-    success: monitor_instance_pos,
-    error: report_failure
-  });
-}// }}}
 async function load_testset_handlers(url,testset,vals) {// {{{
   var promises = [];
   $("testset > handlers > *",testset).each(async function(){
     var han = this;
     var suburl = $(han).attr('url');
     if ($.inArray(suburl,vals) == -1) {
-      var inp = "url="+encodeURIComponent(suburl);
+      var inp = "url="+encodeURIComponent(suburl).replace(/~/,'%7E');
       $("*",han).each(function(){
         inp += "&topic=" + $(this).attr('topic');
         inp += "&" + this.nodeName + "=" + $(this).text();
@@ -1387,11 +1244,16 @@ function ui_pos(e,bl) {
   $(coll).each(function(k,ele){
     vals += "<" + ele + ">at</"  + ele + ">";
   });
-  vals = "<content>" + vals + "</content>";
+  vals = "<positions xmlns='http://cpee.org/ns/properties/2.0'>" + vals + "</positions>";
   $.ajax({
     type: "PUT",
     url: url + "/properties/positions/",
-    data: ({content: vals}),
+    contentType: 'application/xml',
+    headers: {
+     'Content-ID': 'positions',
+     'CPEE-Event-Source': myid
+    },
+    data: vals,
     success: monitor_instance_pos,
     error: report_failure
   });

@@ -1,0 +1,29 @@
+#!/usr/bin/ruby
+require 'yaml'
+opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
+opts[:pidf] = __FILE__ + '.pid'
+opts[:pid] = Process.pid
+require_relative '../../../lib/cpee/controller'
+
+Dir[File.join(opts[:global_handlerwrappers],'*.rb')].each do |h|
+  require h
+end unless opts[:global_handlerwrappers].nil? || opts[:global_handlerwrappers].strip == ''
+Dir[File.join(opts[:handlerwrappers],'*.rb')].each do |h|
+  require h
+end unless opts[:handlerwrappers].nil? || opts[:handlerwrappers].strip == ''
+
+require_relative 'instance'
+controller = CPEE::Controller.new(File.basename(__dir__).to_i, __dir__, opts)
+controller.instance = Instance.new controller
+
+File.write(opts[:pidf],opts[:pid])
+
+%w{TERM HUP INT}.each do |sig|
+  Signal.trap(sig) do
+    puts "Caught #{sig}!"
+    controller.stop
+    File.unlink(opts[:pidf])
+  end
+end
+
+controller.start

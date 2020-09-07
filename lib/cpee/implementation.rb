@@ -16,10 +16,12 @@ require 'fileutils'
 require 'redis'
 require 'riddl/server'
 require 'riddl/client'
-require_relative 'events'
+require_relative 'message'
+require_relative 'persistence'
 require_relative 'statemachine'
 require_relative 'implementation_properties'
 require_relative 'implementation_notifications'
+require_relative 'implementation_callbacks'
 
 module CPEE
 
@@ -33,8 +35,9 @@ module CPEE
     /p:properties/p:attributes/p:*
     /p:properties/p:transformation/p:*
     /p:properties/p:transformation/p:*/@*
-    /p:properties/p:dslx
     /p:properties/p:description
+    /p:properties/p:dslx
+    /p:properties/p:dsl
     /p:properties/p:status/p:id
     /p:properties/p:status/p:message
     /p:properties/p:state/@changed
@@ -45,17 +48,6 @@ module CPEE
     /p:properties/p:endpoints/p:*
     /p:properties/p:attributes/p:*
     /p:properties/p:positions/p:*
-  }
-  PROPERTIES_PATHS = %w{
-    /p:properties/p:handlerwrapper
-    /p:properties/p:positions
-    /p:properties/p:dataelements
-    /p:properties/p:endpoints
-    /p:properties/p:attributes
-    /p:properties/p:transformation
-    /p:properties/p:description
-    /p:properties/p:status
-    /p:properties/p:state
   }
 
   def self::implementation(opts)
@@ -70,6 +62,10 @@ module CPEE
     opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
     opts[:notifications_init]         ||= File.expand_path(File.join(__dir__,'..','..','server','resources','notifications'))
     opts[:states]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','states.xml'))
+    opts[:backend_run]                ||= File.expand_path(File.join(__dir__,'..','..','server','resources','backend','run'))
+    opts[:backend_template]           ||= File.expand_path(File.join(__dir__,'..','..','server','resources','backend','instance.template'))
+    opts[:backend_opts]               ||= 'opts.yaml'
+    opts[:backend_instance]           ||= 'instance.rb'
     opts[:infinite_loop_stop]         ||= 10000
     opts[:redis_path]                 ||= '/tmp/redis.sock'
     opts[:redis_db]                   ||= 3
@@ -94,12 +90,6 @@ module CPEE
         on resource '\d+' do |r|
           run CPEE::Info, opts if get
           run CPEE::DeleteInstance, opts if delete
-          on resource 'callbacks' do
-            run CPEE::Callbacks, opts if get
-            on resource do
-              run CPEE::ExCallback, opts if get || put || post || delete
-            end
-          end
         end
       end
 
@@ -112,44 +102,13 @@ module CPEE
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
         use CPEE::Notifications::implementation(id.to_i, opts)
       end
+
+      interface 'callbacks' do |r|
+        id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
+        use CPEE::Callbacks::implementation(id.to_i, opts)
+      end
     end
   end
-
-  class ExCallback < Riddl::Implementation #{{{
-    def response
-      controller = @a[0]
-      id = @r[0].to_i
-      callback = @r[2]
-      controller[id].mutex.synchronize do
-        if controller[id].callbacks.has_key?(callback)
-          controller[id].callbacks[callback].callback(@p,@h)
-        else
-          @status = 503
-        end
-      end
-    end
-  end #}}}
-
-  class Callbacks < Riddl::Implementation #{{{
-    def response
-      controller = @a[0]
-      opts = @a[1]
-      id = @r[0].to_i
-      unless controller[id]
-        @status = 404
-        return
-      end
-      Riddl::Parameter::Complex.new("info","text/xml") do
-        cb = XML::Smart::string("<callbacks details='#{opts[:mode]}'/>")
-        if opts[:mode] == :debug
-          controller[id].callbacks.each do |k,v|
-            cb.root.add("callback",{"id" => k},"[#{v.protocol.to_s}] #{v.info}")
-          end
-        end
-        cb.to_s
-      end
-    end
-  end #}}}
 
   class Instances < Riddl::Implementation #{{{
     def response

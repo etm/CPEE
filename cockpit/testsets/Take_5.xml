@@ -1,29 +1,35 @@
 <testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
-    <bla xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/>
-  </dataelements>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
   <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
   <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <worklist xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org:9302</worklist>
   </endpoints>
   <positions xmlns="http://cpee.org/ns/properties/2.0"/>
   <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <call id="a1" endpoint="worklist">
+      <call id="a1" endpoint="timeout">
         <parameters>
-          <label>"OK OR NOT OK"</label>
+          <label/>
           <method>:post</method>
           <arguments>
-            <orgmodel>"organisation1"</orgmodel>
-            <domain>"Virtual Business 1"</domain>
-            <form>"http://cpee.org/~demo/form/form-f.html"</form>
-            <role>"regular"</role>
-            <schaden>"55546"</schaden>
-            <text>"fetzen hin"</text>
+            <timeout>5</timeout>
           </arguments>
         </parameters>
-        <manipulate>data.bla = result</manipulate>
+        <code>
+          <finalize output="result">data.a = 17</finalize>
+          <update output="result"/>
+        </code>
+        <annotations>
+          <_timing>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+            <_attachments/>
+          </_notes>
+        </annotations>
       </call>
     </description>
   </description>
@@ -33,8 +39,10 @@
     <endpoints type="none"/>
   </transformation>
   <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">asda</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <organisation1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
+    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
+    <customer xmlns="http://riddl.org/ns/common-patterns/properties/1.0">pilotfabrik</customer>
+    <status xmlns="http://riddl.org/ns/common-patterns/properties/1.0">development</status>
   </attributes>
 </testset>

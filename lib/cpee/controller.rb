@@ -12,13 +12,14 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
+require 'weel'
 require 'json'
 require 'redis'
 require 'securerandom'
 require 'riddl/client'
-require_relative 'callback'
 require_relative 'value_helper'
 require_relative 'attributes_helper'
+require_relative 'message'
 
 require 'ostruct'
 class ParaStruct < OpenStruct
@@ -33,29 +34,23 @@ module CPEE
 
   class Controller
     def initialize(id,dir,opts)
+      @redis = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+      @votes = []
+
       @id = id
 
-      @redis = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
-
-      @events = {}
-      @votes = {}
-      @votes_results = {}
-      @callbacks = {}
-
       @attributes = {}
-      @redis.keys('instance:0/attributes/*').each do |key|
+      @redis.keys("instance:#{id}/attributes/*").each do |key|
         @attributes[File.basename(key)] = @redis.get(key)
       end
 
       @attributes_helper = AttributesHelper.new
-      @mutex = Mutex.new
+      @thread = nil
       @opts = opts
       @instance = nil
     end
 
     attr_reader :id
-    attr_reader :callbacks
-    attr_reader :mutex
     attr_reader :attributes
 
     def uuid
@@ -75,11 +70,11 @@ module CPEE
     def instance_url
       File.join(@opts[:url].to_s,@id.to_s)
     end
+    def instance_id
+      @id
+    end
     def base
       base_url
-    end
-    def instance
-      instance_url
     end
     def instance=(inst)
       @instance = inst
@@ -92,8 +87,18 @@ module CPEE
     end
 
     def start
-      execution = @instance.start
-      execution.join
+      @thread = @instance.start
+      @thread.join
+    end
+
+    def stop
+      ### tell the instance to stop
+      @instance.stop
+      ### end all votes or it will not work
+      @votes.each do |key|
+        CPEE::Message::send(:'vote-response',key,base,@id,uuid,info,true,@redis)
+      end
+      @thread.join if !@thread.nil? && @thread.alive?
     end
 
     def info
@@ -101,25 +106,76 @@ module CPEE
     end
 
     def notify(what,content={})
-      CPEE::Events::send(redis,what,@id,content)
+      content[:attributes] = attributes_translated
+      CPEE::Message::send(:event,what,base,@id,uuid,info,content,@redis)
     end
 
-    def call_vote(what,content={})
-      # voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      # content[:voteid] = voteid
-      # @redis.publish('vote:' + what, JSON::generate(content))
+    def vote(what,content={})
+      topic, name = what.split('/')
+      handler = File.join(topic,'vote',name)
+      lvotes = []
+      @redis.smembers("instance:#{id}/handlers/#{handler}").each do |client|
+        voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
+        content[:key] = voteid
+        content[:who] = client
+        lvotes << "vote-response:" + voteid
+        CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)
+      end
 
-      # psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
-      # continue = WEEL::Continue.new
-      # psredis.subscribe("vote:" + voteid) do |on|
-      #   on.message do |_, message|
-      #     p message
-      #     redis.quit
-      #   end
-      # end
-      true
+      if lvotes.length > 0
+        @votes.merge!(lvotes)
+        psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
+        collect = []
+
+        psredis.subscribe(lvotes) do |on|
+          on.message do |what, message|
+            index = message.index(' ')
+            mess = message[index+1..-1]
+            collect << (mess == 'true' || false)
+            @votes.delete! what
+            if collect.length >= lvotes.length
+              psredis.unsubscribe
+            end
+          end
+        end
+        !collect.include?(false)
+      else
+        true
+      end
     end
 
+    def callback(hw,key,content)
+      CPEE::Message::send(:callback,'activity/content',base,@id,uuid,info,content.merge(:key => key),@redis)
+
+      psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
+      response = nil
+      Thread.new do
+        psredis.subscribe('callback-response:' + key, 'callback-end:' + key) do |on|
+          on.message do |what, message|
+            if what == 'callback-response:' + key
+              index = message.index(' ')
+              mess = message[index+1..-1]
+              instance = message[0...index]
+              m = JSON.parse(mess)
+              resp = []
+              m['content']['values'].each do |e|
+                if e[1][0] == 'simple'
+                  resp << Riddl::Parameter::Simple.new(e[0],e[1][1])
+                elsif e[1][0] == 'complex'
+                  resp << Riddl::Parameter::Complex.new(e[0],e[1][1],File.open(e[1][2]))
+                end
+              end
+              hw.send(:callback,resp,m['content']['headers'])
+            end
+            psredis.unsubscribe
+          end
+        end
+      end
+    end
+
+    def cancel_callback(key)
+      CPEE::Message::send(:'callback-end',key,base,@id,uuid,info,{},@redis)
+    end
   end
 
 end

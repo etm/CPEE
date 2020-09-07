@@ -14,10 +14,27 @@
 
 module CPEE
 
-  module Events
+  module Message
 
-    def self::send(redis, what, instance, content={})
-      redis.publish('event:' + what, JSON::generate({ 'instance' => instance, 'topic' => ::File::dirname(what), 'event' => ::File::basename(what), 'content' => content }))
+    def self::send(type, event, cpee, instance, instance_uuid, instance_name, content={}, backend)
+      topic = ::File::dirname(event)
+      name = ::File::basename(event)
+      backend.publish(type.to_s + ':' + event,
+        instance.to_s + ' ' +
+        JSON::generate(
+          { 'cpee' => cpee,
+            'instance-url' => File.join(cpee,instance.to_s),
+            'instance-uuid' => instance_uuid,
+            'instance-name' => instance_name,
+            'instance' => instance,
+            'topic' => topic,
+            'type' => type,
+            'name' => name,
+            'timestamp' =>  Time.now.xmlschema(3),
+            'content' => content
+          }
+        )
+      )
     end
 
   end

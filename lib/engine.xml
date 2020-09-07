@@ -36,33 +36,6 @@
       <xi:include href="engine/instance-info.rng"/>
     </parameter>
   </message>
-  <message name="callbacks">
-    <parameter name="info" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
-      <xi:include href="engine/callbacks.rng"/>
-    </parameter>
-  </message>
-  <message name="xsl">
-    <parameter name="xsl" mimetype="application/xml"/>
-  </message>
-
-  <message name="cmdin">
-    <parameter name="cmd" type="string"/>
-  </message>
-  <message name="cmdout">
-    <parameter name="res" mimetype="text/plain"/>
-  </message>
-  <message name="cmdui">
-    <parameter name="res" mimetype="text/html"/>
-  </message>
-
-  <message name="message">
-    <parameter name="type" type="integer"/>
-    <parameter name="message" type="string"/>
-    <optional>
-      <parameter name="details" mimetype="text/xml"/>
-      <parameter name="details" mimetype="text/yaml"/>
-    </optional>
-  </message>
 
   <resource>
     <doc:documentation>b</doc:documentation>
@@ -73,33 +46,6 @@
     <resource relative="\d+">
       <get in="*" out="instance-info"/>
       <delete in="*"/>
-      <resource relative="console">
-        <get out="cmdui"/>
-        <get in="cmdin" out="cmdout"/>
-      </resource>
-      <resource relative="callbacks">
-        <doc:documentation>xb</doc:documentation>
-        <get in="*" out="callbacks"/>
-        <resource>
-          <put in="*"/>
-        </resource>
-      </resource>
-      <resource relative="notifications">
-        <doc:documentation>xr</doc:documentation>
-        <resource relative="subscriptions">
-          <resource>
-            <resource relative="debug">
-              <put in="message"/>
-            </resource>
-            <resource relative="error">
-              <put in="message"/>
-            </resource>
-            <resource relative="info">
-              <put in="message"/>
-            </resource>
-          </resource>
-        </resource>
-      </resource>
     </resource>
   </resource>
 </description>

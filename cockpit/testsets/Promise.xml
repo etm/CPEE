@@ -1,7 +1,7 @@
 <testset>
-  <dataelements/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <endpoints>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout</timeout>
     <timeout1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout/1</timeout1>
     <timeout2 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout/16</timeout2>
@@ -22,8 +22,8 @@
     <credit_consume xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/consume</credit_consume>
     <credit_activate xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/activate</credit_activate>
   </endpoints>
-  <positions/>
-  <description>
+  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a20" endpoint="customer" svg-label="Generate Customer">
         <parameters>
@@ -262,12 +262,12 @@
       </parallel>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes>
+  <attributes xmlns="http://cpee.org/ns/properties/2.0">
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ss</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>

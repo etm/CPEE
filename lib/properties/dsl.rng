@@ -1,6 +1,6 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <define name="dsl" ns="http://cpee.org/ns/properties/2.0">
-    <element name="dsl">
+  <define name="dsl">
+    <element name="dsl" ns="http://cpee.org/ns/properties/2.0">
       <text/>
     </element>
   </define>
