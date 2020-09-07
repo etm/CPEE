@@ -1,7 +1,5 @@
 <testset>
-  <dataelements>
-    <items xmlns="http://riddl.org/ns/common-patterns/properties/1.0">[{"x":218,"y":280,"size":248}]</items>
-  </dataelements>
+  <dataelements/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <overview xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
@@ -134,7 +132,7 @@
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution Baseline</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
     <resource xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ur51</resource>
