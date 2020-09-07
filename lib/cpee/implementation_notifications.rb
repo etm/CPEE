@@ -51,21 +51,13 @@ module CPEE
 
     class Subscriptions < Riddl::Implementation #{{{
       def response
-        backend = @a[0]
-        details = @a[1]
+        id = @a[0]
+        opts = @a[1]
         Riddl::Parameter::Complex.new("subscriptions","text/xml") do
           ret = XML::Smart::string <<-END
-            <subscriptions details='#{details}' xmlns='http://riddl.org/ns/common-patterns/notifications-producer/1.0'/>
+            <subscriptions xmlns='http://riddl.org/ns/common-patterns/notifications-producer/1.0'/>
           END
-          backend.subscriptions.each do |sub,key|
-            sub.read do |doc|
-              if doc.root.attributes['url']
-                ret.root.add('subscription', :id => key, :url => doc.root.attributes['url'])
-              else
-                ret.root.add('subscription', :id => key)
-              end
-            end
-          end
+          CPEE::Properties::extract_list(id,opts,item).each{ |de| ret.root.add(*de) }
           ret.to_s
         end
       end
