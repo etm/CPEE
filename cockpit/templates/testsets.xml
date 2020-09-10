@@ -1,5 +1,6 @@
 <testsets>
   <testset>BPM 2020</testset>
+  <testset>BPM 2020 Solution View</testset>
   <testset>BPM 2020 Solution Baseline</testset>
   <testset>BPM 2020 Solution NN</testset>
   <testset>Coopis 2010</testset>
