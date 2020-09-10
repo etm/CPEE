@@ -235,7 +235,7 @@ data.item = result[0]</finalize>
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution Baseline</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution NN</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
     <resource xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ur51</resource>
