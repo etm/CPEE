@@ -10,5 +10,6 @@
     <get_offset_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
     <wait xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</wait>
     <grip_and_place xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
+    <subprocess xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org:9296/url/</subprocess>
   </endpoints>
 </testset>

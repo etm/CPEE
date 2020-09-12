@@ -13,6 +13,7 @@
     <get_offset_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
     <wait xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</wait>
     <grip_and_place xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
+    <subprocess xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org:9296/url/</subprocess>
   </endpoints>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
@@ -22,7 +23,6 @@
           <_probability_max/>
           <_probability_avg/>
         </_probability>
-        <manipulate id="a2" label="Next Place">data.place = data.places.shift</manipulate>
         <call id="a1" endpoint="overview">
           <parameters>
             <label>Move to overview position</label>
@@ -84,8 +84,7 @@
           </parameters>
           <code>
             <prepare/>
-            <finalize output="result">data.items = result
-data.item = result[0]</finalize>
+            <finalize output="result">data.items = result</finalize>
             <update output="result"/>
             <rescue output="result"/>
           </code>
@@ -108,8 +107,8 @@ data.item = result[0]</finalize>
               <parameters>
                 <label>Inspect first item</label>
                 <arguments>
-                  <x>!data.item['x']</x>
-                  <y>!data.item['y']</y>
+                  <x>!data.items.first['x']</x>
+                  <y>!data.items.first['y']</y>
                 </arguments>
                 <stream>
                   <sensors/>
@@ -130,7 +129,7 @@ data.item = result[0]</finalize>
                 </_notes>
               </annotations>
             </call>
-            <call id="a4" endpoint="wait">
+            <call id="a15" endpoint="wait">
               <parameters>
                 <label>Wait for camera stream delay</label>
                 <method>:post</method>
@@ -156,10 +155,17 @@ data.item = result[0]</finalize>
                 </_notes>
               </annotations>
             </call>
-            <call id="a6" endpoint="get_offset_base">
+            <call id="a2" endpoint="subprocess">
               <parameters>
-                <label>Get item offset</label>
-                <arguments/>
+                <label>Adjust</label>
+                <method>:post</method>
+                <arguments>
+                  <behavior>wait_running</behavior>
+                  <url>http://cpee.org/~demo/cpee-cockpit/templates/BPM%202020%20Manual%20Adjust.xml</url>
+                  <init/>
+                  <endpoints/>
+                  <stream/>
+                </arguments>
                 <stream>
                   <sensors/>
                   <aggregators/>
@@ -168,10 +174,10 @@ data.item = result[0]</finalize>
               </parameters>
               <code>
                 <prepare/>
-                <finalize output="result">data.adjusted = {
-  'x' =&gt; data.item['x'] + result['adjust_x'],
-  'y' =&gt; data.item['y'] + result['adjust_y']
-}</finalize>
+                <finalize output="result"># data.place = data.places.shift
+data.item = result['item']
+data.item['x'] = data.items.first['x'] + data.item['adjust_x']
+data.item['y'] = data.items.first['y'] + data.item['adjust_y']</finalize>
                 <update output="result"/>
                 <rescue output="result"/>
               </code>
@@ -188,12 +194,13 @@ data.item = result[0]</finalize>
                 </_notes>
               </annotations>
             </call>
+            <stop id="a4"/>
             <call id="a8" endpoint="grip_and_place">
               <parameters>
                 <label>Grip and Place</label>
                 <arguments>
-                  <x>!data.adjusted['x']</x>
-                  <y>!data.adjusted['y']</y>
+                  <x>!data.item['x']</x>
+                  <y>!data.item['y']</y>
                   <place_x>!data.place[0]</place_x>
                   <place_y>!data.place[1]</place_y>
                 </arguments>
@@ -235,7 +242,7 @@ data.item = result[0]</finalize>
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution Baseline</info>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution Baseline Manual Adjust</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
     <resource xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ur51</resource>
