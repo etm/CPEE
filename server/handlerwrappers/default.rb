@@ -16,7 +16,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   def self::inform_state_change(arguments,newstate) # {{{
     controller = arguments[0]
 		controller.serialize_state!
-		controller.notify("state/change", :instance => controller.instance, :instance_uuid => controller.uuid, :state => newstate, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"))
+		controller.notify("state/change", :instance => controller.instance, :instance_uuid => controller.uuid, :state => newstate, :timestamp => Time.now.strftime("%Y-%m-%dT%H:%M:%S.%L%:z"), :attributes => controller.attributes_translated)
 		controller.finalize_if_finished
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{

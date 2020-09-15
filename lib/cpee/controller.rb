@@ -373,7 +373,7 @@ module CPEE
         node = doc.find("/p:properties/p:state").first
         state = node.text
       end
-      if call_vote("state/change", :instance => @id, :info => info, :state => state)
+      if call_vote("state/change", :instance => @id, :info => info, :state => state, :attributes => attributes_translated)
         case state
           when 'stopping'
             stop
