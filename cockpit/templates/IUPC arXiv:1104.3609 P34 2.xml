@@ -1,0 +1,80 @@
+<testset>
+  <attributes>
+    <info>Syncing Instance 2</info>
+    <modeltype>CPEE</modeltype>
+    <theme>preset</theme>
+  </attributes>
+  <positions/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <dataelements>
+    <!--{{{-->
+    <x/>
+  </dataelements>
+  <!--}}}-->
+  <handlers>
+    <!--{{{-->
+    <handler url="http://localhost:9399/1/events">
+      <votes topic="activity">syncing_before,syncing_after</votes>
+    </handler>
+  </handlers>
+  <!--}}}-->
+  <endpoints>
+    <!--{{{-->
+    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <timeouts>http://gruppe.wst.univie.ac.at/~mangler/services/timeout-sync.php</timeouts>
+  </endpoints>
+  <!--}}}-->
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <!--{{{-->
+      <call id="a1" endpoint="timeout">
+        <parameters>
+          <!--{{{-->
+          <label>Task 1</label>
+          <method>:post</method>
+          <arguments>
+            <timeout>2</timeout>
+          </arguments>
+        </parameters>
+        <!--}}}-->
+        <code>
+          <finalize output="result">data.x += "a1,"</finalize>
+        </code>
+      </call>
+      <call id="a2" endpoint="timeouts">
+        <parameters>
+          <!--{{{-->
+          <label>Resource Synchronisation</label>
+          <method>:post</method>
+          <arguments>
+            <timeout>10</timeout>
+          </arguments>
+        </parameters>
+        <!--}}}-->
+        <code>
+          <finalize output="result">data.x += "a2,"</finalize>
+        </code>
+      </call>
+      <call id="a3" endpoint="timeout">
+        <parameters>
+          <!--{{{-->
+          <label>Task 3</label>
+          <method>:post</method>
+          <arguments>
+            <timeout>4</timeout>
+          </arguments>
+        </parameters>
+        <!--}}}-->
+        <code>
+          <finalize output="result">data.x += "a3,"</finalize>
+        </code>
+      </call>
+    </description>
+    <!--}}}-->
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="rest"/>
+    <endpoints type="rest"/>
+  </transformation>
+</testset>

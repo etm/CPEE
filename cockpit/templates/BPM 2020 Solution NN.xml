@@ -1,0 +1,243 @@
+<testset>
+  <dataelements>
+    <places xmlns="http://riddl.org/ns/common-patterns/properties/1.0">[[0,0],[1,0],[0,1],[1,1],[0,2],[1,2]]</places>
+  </dataelements>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <overview xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
+    <move_tool xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/point</move_tool>
+    <move_camera xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/view</move_camera>
+    <get_items_base xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://tango.wst.univie.ac.at:9329/view/items</get_items_base>
+    <get_items_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/items</get_items_neural>
+    <get_offset_base xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://tango.wst.univie.ac.at:9329/view/details</get_offset_base>
+    <get_offset_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
+    <wait xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</wait>
+    <grip_and_place xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
+  </endpoints>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <loop mode="pre_test" condition="data.places.length &gt; 0">
+        <_probability>
+          <_probability_min/>
+          <_probability_max/>
+          <_probability_avg/>
+        </_probability>
+        <manipulate id="a2" label="Next Place">data.place = data.places.shift</manipulate>
+        <call id="a1" endpoint="overview">
+          <parameters>
+            <label>Move to overview position</label>
+            <arguments/>
+            <stream>
+              <sensors/>
+              <aggregators/>
+              <costs/>
+            </stream>
+          </parameters>
+          <annotations>
+            <_timing>
+              <_timing_wait/>
+              <_timing_threshold/>
+              <_timing_min/>
+              <_timing_max/>
+              <_timing_avg/>
+            </_timing>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+        </call>
+        <call id="a7" endpoint="wait">
+          <parameters>
+            <label>Wait for camera stream delay</label>
+            <method>:post</method>
+            <arguments>
+              <timeout>5</timeout>
+            </arguments>
+            <stream>
+              <sensors/>
+              <aggregators/>
+              <costs/>
+            </stream>
+          </parameters>
+          <annotations>
+            <_timing>
+              <_timing_wait/>
+              <_timing_threshold/>
+              <_timing_min/>
+              <_timing_max/>
+              <_timing_avg/>
+            </_timing>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+        </call>
+        <call id="a3" endpoint="get_items_neural">
+          <parameters>
+            <label>Get item positions</label>
+            <arguments/>
+            <stream>
+              <sensors/>
+              <aggregators/>
+              <costs/>
+            </stream>
+          </parameters>
+          <code>
+            <prepare/>
+            <finalize output="result">data.items = result
+data.item = result[0]</finalize>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_timing>
+              <_timing_wait/>
+              <_timing_threshold/>
+              <_timing_min/>
+              <_timing_max/>
+              <_timing_avg/>
+            </_timing>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+        </call>
+        <choose mode="exclusive">
+          <alternative condition="data.items.length &gt; 0">
+            <call id="a5" endpoint="move_camera">
+              <parameters>
+                <label>Inspect first item</label>
+                <arguments>
+                  <x>!data.item['x']</x>
+                  <y>!data.item['y']</y>
+                </arguments>
+                <stream>
+                  <sensors/>
+                  <aggregators/>
+                  <costs/>
+                </stream>
+              </parameters>
+              <annotations>
+                <_timing>
+                  <_timing_wait/>
+                  <_timing_threshold/>
+                  <_timing_min/>
+                  <_timing_max/>
+                  <_timing_avg/>
+                </_timing>
+                <_notes>
+                  <_notes_general/>
+                </_notes>
+              </annotations>
+            </call>
+            <call id="a4" endpoint="wait">
+              <parameters>
+                <label>Wait for camera stream delay</label>
+                <method>:post</method>
+                <arguments>
+                  <timeout>5</timeout>
+                </arguments>
+                <stream>
+                  <sensors/>
+                  <aggregators/>
+                  <costs/>
+                </stream>
+              </parameters>
+              <annotations>
+                <_timing>
+                  <_timing_wait/>
+                  <_timing_threshold/>
+                  <_timing_min/>
+                  <_timing_max/>
+                  <_timing_avg/>
+                </_timing>
+                <_notes>
+                  <_notes_general/>
+                </_notes>
+              </annotations>
+            </call>
+            <call id="a6" endpoint="get_offset_neural">
+              <parameters>
+                <label>Get item offset</label>
+                <arguments/>
+                <stream>
+                  <sensors/>
+                  <aggregators/>
+                  <costs/>
+                </stream>
+              </parameters>
+              <code>
+                <prepare/>
+                <finalize output="result">data.adjusted = {
+  'x' =&gt; data.item['x'] + result['adjust_x'],
+  'y' =&gt; data.item['y'] + result['adjust_y']
+}</finalize>
+                <update output="result"/>
+                <rescue output="result"/>
+              </code>
+              <annotations>
+                <_timing>
+                  <_timing_wait/>
+                  <_timing_threshold/>
+                  <_timing_min/>
+                  <_timing_max/>
+                  <_timing_avg/>
+                </_timing>
+                <_notes>
+                  <_notes_general/>
+                </_notes>
+              </annotations>
+            </call>
+            <call id="a8" endpoint="grip_and_place">
+              <parameters>
+                <label>Grip and Place</label>
+                <arguments>
+                  <x>!data.adjusted['x']</x>
+                  <y>!data.adjusted['y']</y>
+                  <place_x>!data.place[0]</place_x>
+                  <place_y>!data.place[1]</place_y>
+                </arguments>
+                <stream>
+                  <sensors/>
+                  <aggregators/>
+                  <costs/>
+                </stream>
+              </parameters>
+              <annotations>
+                <_timing>
+                  <_timing_wait/>
+                  <_timing_threshold/>
+                  <_timing_min/>
+                  <_timing_max/>
+                  <_timing_avg/>
+                </_timing>
+                <_notes>
+                  <_notes_general/>
+                </_notes>
+              </annotations>
+            </call>
+            <_probability>
+              <_probability_min/>
+              <_probability_max/>
+              <_probability_avg/>
+            </_probability>
+          </alternative>
+          <otherwise>
+            <terminate/>
+          </otherwise>
+        </choose>
+      </loop>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution NN</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
+    <resource xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ur51</resource>
+  </attributes>
+</testset>

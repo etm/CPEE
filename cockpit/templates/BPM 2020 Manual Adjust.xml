@@ -1,0 +1,235 @@
+<testset>
+  <dataelements/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <overview xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
+    <move_tool xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/point</move_tool>
+    <move_camera xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/view</move_camera>
+    <get_items_base xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://tango.wst.univie.ac.at:9329/view/items</get_items_base>
+    <get_items_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/items</get_items_neural>
+    <get_offset_base xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://tango.wst.univie.ac.at:9329/view/details</get_offset_base>
+    <get_offset_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
+    <wait xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</wait>
+    <grip_and_place xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
+    <move_rel xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/relative</move_rel>
+  </endpoints>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a6" endpoint="get_offset_base">
+        <parameters>
+          <label>Get first offset</label>
+          <arguments/>
+          <stream>
+            <sensors/>
+            <aggregators/>
+            <costs/>
+          </stream>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result">data.direction_first = result
+data.direction_first['x'] = data.direction_first['dir_x'] * 10
+data.direction_first['y'] = data.direction_first['dir_y'] * 10</finalize>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_timing>
+            <_timing_wait/>
+            <_timing_threshold/>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+      </call>
+      <call id="a10" endpoint="move_rel">
+        <parameters>
+          <label>Move closer</label>
+          <arguments>
+            <x>!data.direction_first['x']</x>
+            <y>!data.direction_first['y']</y>
+          </arguments>
+          <stream>
+            <sensors/>
+            <aggregators/>
+            <costs/>
+          </stream>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_wait/>
+            <_timing_threshold/>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+      </call>
+      <call id="a15" endpoint="wait">
+        <parameters>
+          <label>Wait for camera stream delay</label>
+          <method>:post</method>
+          <arguments>
+            <timeout>5</timeout>
+          </arguments>
+          <stream>
+            <sensors/>
+            <aggregators/>
+            <costs/>
+          </stream>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_wait/>
+            <_timing_threshold/>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+      </call>
+      <call id="a17" endpoint="get_offset_base">
+        <parameters>
+          <label>Get second offset and calc distance</label>
+          <arguments/>
+          <stream>
+            <sensors/>
+            <aggregators/>
+            <costs/>
+          </stream>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result">data.direction_second = result
+if (data.direction_first['dir_x'] * data.direction_second['dir_x'] &gt;= 0)
+  data.traveled = data.direction_first['len'] - data.direction_second['len']
+else
+  data.traveled = data.direction_first['len'] + data.direction_second['len']
+end
+data.len = data.direction_second['len'] / (data.traveled / 10)
+data.direction_second['x'] = data.direction_second['dir_x'] * data.len
+data.direction_second['y'] = data.direction_second['dir_y'] * data.len</finalize>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_timing>
+            <_timing_wait/>
+            <_timing_threshold/>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+      </call>
+      <call id="a12" endpoint="move_rel">
+        <parameters>
+          <label>Move closer</label>
+          <arguments>
+            <x>!data.direction_second['x']</x>
+            <y>!data.direction_second['y']</y>
+          </arguments>
+          <stream>
+            <sensors/>
+            <aggregators/>
+            <costs/>
+          </stream>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_wait/>
+            <_timing_threshold/>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+      </call>
+      <call id="a16" endpoint="wait">
+        <parameters>
+          <label>Wait for camera stream delay</label>
+          <method>:post</method>
+          <arguments>
+            <timeout>5</timeout>
+          </arguments>
+          <stream>
+            <sensors/>
+            <aggregators/>
+            <costs/>
+          </stream>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_wait/>
+            <_timing_threshold/>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+      </call>
+      <call id="a2" endpoint="get_offset_base">
+        <parameters>
+          <label>Investigate Precision</label>
+          <arguments/>
+          <stream>
+            <sensors/>
+            <aggregators/>
+            <costs/>
+          </stream>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result">data.direction_third = result</finalize>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_timing>
+            <_timing_wait/>
+            <_timing_threshold/>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+      </call>
+      <manipulate id="a11" label="Calculate new position">data.item = {}
+data.item['adjust_x'] = (data.direction_first['x'] + data.direction_second['x']).round(0)
+data.item['adjust_y'] = (data.direction_first['y'] + data.direction_second['y']).round(0)</manipulate>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Manual Adjust</info>
+    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
+    <resource xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ur51</resource>
+  </attributes>
+</testset>
