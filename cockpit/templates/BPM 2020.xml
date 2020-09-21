@@ -1,6 +1,6 @@
 <testset>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <endpoints>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <overview xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
     <move_tool xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/point</move_tool>
     <move_camera xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/view</move_camera>

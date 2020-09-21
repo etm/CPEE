@@ -1,9 +1,9 @@
 <testset>
-  <dataelements>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <places xmlns="http://riddl.org/ns/common-patterns/properties/1.0">[[0,0],[1,0],[0,1],[1,1],[0,2],[1,2]]</places>
   </dataelements>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <endpoints>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <overview xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
     <move_tool xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/point</move_tool>
     <move_camera xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/view</move_camera>
@@ -15,7 +15,7 @@
     <grip_and_place xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
     <subprocess xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org:9296/url/</subprocess>
   </endpoints>
-  <description>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <loop mode="pre_test" condition="data.places.length &gt; 0">
         <_probability>
@@ -236,12 +236,12 @@ data.item['y'] = data.items.first['y'] + data.item['adjust_y']</finalize>
       </loop>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes>
+  <attributes xmlns="http://cpee.org/ns/properties/2.0">
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution Baseline Manual Adjust</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>

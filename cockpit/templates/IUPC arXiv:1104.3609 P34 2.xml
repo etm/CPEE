@@ -1,13 +1,12 @@
 <testset>
-  <attributes>
+  <attributes xmlns="http://cpee.org/ns/properties/2.0">
     <info>Syncing Instance 2</info>
     <modeltype>CPEE</modeltype>
     <theme>preset</theme>
   </attributes>
-  <positions/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <dataelements>
-    <!--{{{-->
+  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <x/>
   </dataelements>
   <!--}}}-->
@@ -18,13 +17,12 @@
     </handler>
   </handlers>
   <!--}}}-->
-  <endpoints>
-    <!--{{{-->
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
     <timeouts>http://gruppe.wst.univie.ac.at/~mangler/services/timeout-sync.php</timeouts>
   </endpoints>
   <!--}}}-->
-  <description>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <!--{{{-->
       <call id="a1" endpoint="timeout">
@@ -70,9 +68,8 @@
         </code>
       </call>
     </description>
-    <!--}}}-->
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

@@ -1,7 +1,7 @@
 <testset>
-  <dataelements/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <endpoints>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <overview xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
     <move_tool xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/point</move_tool>
     <move_camera xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/view</move_camera>
@@ -13,7 +13,7 @@
     <grip_and_place xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
     <move_rel xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/relative</move_rel>
   </endpoints>
-  <description>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a6" endpoint="get_offset_base">
         <parameters>
@@ -221,12 +221,12 @@ data.item['adjust_x'] = (data.direction_first['x'] + data.direction_second['x'])
 data.item['adjust_y'] = (data.direction_first['y'] + data.direction_second['y']).round(0)</manipulate>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes>
+  <attributes xmlns="http://cpee.org/ns/properties/2.0">
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Manual Adjust</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>

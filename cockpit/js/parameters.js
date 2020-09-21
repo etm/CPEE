@@ -56,6 +56,10 @@ $(document).ready(function() {
     clearTimeout(timer);
     do_parameters_save(event);
   });
+  $(document).on('relaxngui_move', '#dat_dataelements, #dat_endpoints, #dat_attributes', function(event){
+    clearTimeout(timer);
+    do_parameters_save(event);
+  });
 });
 
 function do_parameters_save(event) { //{{{
@@ -63,7 +67,7 @@ function do_parameters_save(event) { //{{{
   if (save[visid].has_changed()) {
     var url = $('body').attr('current-instance');
     save[visid].set_checkpoint();
-    var send = save[visid].save_text(); // .replace(/<attributes>/,'<attributes xmlns="http://cpee.org/ns/properties/2.0">');
+    var send = save[visid].save_text();
     $.ajax({
       type: "PUT",
       url: url + "/properties/" + visid + "/",

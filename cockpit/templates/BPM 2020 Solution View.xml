@@ -1,7 +1,7 @@
 <testset>
-  <dataelements/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <endpoints>
+  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
+  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
+  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
     <overview xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
     <move_tool xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/point</move_tool>
     <move_camera xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/view</move_camera>
@@ -11,7 +11,7 @@
     <get_offset_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
     <wait xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</wait>
   </endpoints>
-  <description>
+  <description xmlns="http://cpee.org/ns/properties/2.0">
     <description xmlns="http://cpee.org/ns/description/1.0">
       <loop mode="pre_test" condition="true">
         <_probability>
@@ -186,12 +186,12 @@ data.item = result[0]</finalize>
       </loop>
     </description>
   </description>
-  <transformation>
+  <transformation xmlns="http://cpee.org/ns/properties/2.0">
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes>
+  <attributes xmlns="http://cpee.org/ns/properties/2.0">
     <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution View</info>
     <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
     <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
