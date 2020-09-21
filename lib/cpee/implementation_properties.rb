@@ -94,7 +94,7 @@ module CPEE
           CPEE::Persistence::extract_list(id,opts,item).each{ |de| des.add(*de) }
         end
         des = doc.find("/p:properties/p:positions").first
-        CPEE::Persistence::extract_list(id,opts,'positions').each do |de|
+        CPEE::Persistence::extract_set(id,opts,'positions').each do |de|
           node = des.add(*de)
           if pt = CPEE::Persistence::extract_item(id,opts,File.join('positions',de[0],'@passthrough'))
             node.attributes['passthrough'] = pt
@@ -475,7 +475,7 @@ module CPEE
         doc = XML::Smart::open_unprotected(opts[:properties_empty])
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
         des = doc.find("/p:properties/p:positions").first
-        CPEE::Persistence::extract_list(id,opts,'positions').each do |de|
+        CPEE::Persistence::extract_set(id,opts,'positions').each do |de|
           node = des.add(*de)
           if pt = CPEE::Persistence::extract_item(id,opts,File.join('positions',de[0],'@passthrough'))
             node.attributes['passthrough'] = pt
@@ -524,7 +524,7 @@ module CPEE
           content[ele.text] << val
           newkeys << ele.qname.name
         end
-        oldkeys = CPEE::Persistence::extract_list(id,opts,'positions').to_h.keys
+        oldkeys = CPEE::Persistence::extract_set(id,opts,'positions').to_h.keys
         del = oldkeys - newkeys
         del.each do |key|
           val = { 'position' => key }

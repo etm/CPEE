@@ -22,7 +22,7 @@ module CPEE
       hw = CPEE::Persistence::extract_item(id,opts,'handlerwrapper')
       endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
       dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
-      positions = CPEE::Persistence::extract_list(id,opts,'positions')
+      positions = CPEE::Persistence::extract_set(id,opts,'positions')
       positions.map! do |k, v|
         [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
       end
@@ -62,8 +62,13 @@ module CPEE
         opts[:redis]
       )
     end #}}}
-    def self::extract_list(id,opts,item) #{{{
+    def self::extract_set(id,opts,item) #{{{
       opts[:redis].smembers("instance:#{id}/#{item}").map do |e|
+        [e,opts[:redis].get("instance:#{id}/#{item}/#{e}")]
+      end
+    end #}}}
+    def self::extract_list(id,opts,item) #{{{
+      opts[:redis].zrange("instance:#{id}/#{item}",0,-1).map do |e|
         [e,opts[:redis].get("instance:#{id}/#{item}/#{e}")]
       end
     end #}}}
