@@ -86,7 +86,7 @@ function cockpit() { //{{{
   $("input[name=modelfile]").change(load_modelfile_after);
 
   $.ajax({
-    url: $('body').attr('current-testsets') + "testsets.xml",
+    url: $('body').attr('current-templates') + ".templates.xml",
     dataType: 'xml',
     success: function(res){
       $('testset',res).each(function(){
@@ -145,7 +145,7 @@ function cockpit() { //{{{
     }
   });
   $.ajax({
-    url: $('body').attr('current-testsets') + "transformations.xml",
+    url: $('body').attr('current-templates') + ".transformations.xml",
     dataType: 'xml',
     success: function(res){
       $('transformation',res).each(function(){
@@ -952,7 +952,7 @@ function load_testset(exec) {// {{{
   var name = $("#templates div.menuitem[data-selected=selected]").text();
   var url;
   if (name) {
-    url = $('body').attr('current-testsets') + name + ".xml";
+    url = $('body').attr('current-templates') + name + ".xml";
   } else {
     if ($('body').attr('load-testset').length > 0) {
       url = $('body').attr('load-testset');
@@ -986,7 +986,7 @@ function load_modeltype() {// {{{
   $.ajax({
     cache: false,
     dataType: 'xml',
-    url: $('body').attr('current-testsets') + "." + name + ".xml",
+    url: $('body').attr('current-templates') + "." + name + ".xml",
     success: function(res){
       $.ajax({
         type: "PUT",

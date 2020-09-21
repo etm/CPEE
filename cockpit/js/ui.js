@@ -23,11 +23,11 @@ $(document).ready(function() {
         $("body").attr('current-resources',res['res-url']);
         $("body").attr('current-base',res['base-url']);
         $("body").attr('current-save',res['save-url']);
-        $("body").attr('current-testsets',res['testsets-url']);
+        $("body").attr('current-templates',res['testsets-url']);
         cockpit();
       },
       error: function(){
-        $("body").attr('current-testsets','testsets/');
+        $("body").attr('current-templates','templates/');
         if (location.protocol.match(/^file/)) {
           $("body").attr('current-resources',"http://localhost:" + $('body').data('res-port'));
           $("body").attr('current-base',"http://localhost:" + $('body').data('base-port'));
