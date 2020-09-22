@@ -15,11 +15,7 @@ function WFAdaptorManifestation(adaptor) {
       $('#relaxngworker').empty();
       var rngw = new RelaxNGui(base,$('#relaxngworker'),self.adaptor.description.context_eval);
       var nnew = $(rngw.save().documentElement);
-          nnew.attr('trans-xmlns','http://cpee.org/ns/description/1.0');
-      var ntxt = nnew.serializeXML();
-      ntxt = ntxt.replace(/trans-xmlns/,'xmlns');
-
-      return($X(ntxt));
+      return(nnew);
     } else {
       if (opts && opts == 'clone') {
         base = base.clone();
@@ -69,7 +65,12 @@ function WFAdaptorManifestation(adaptor) {
         $(rng).find(' > element[name="parameters"] > element[name="method"]').remove();
       }
       save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
-      save['details'].content(node);
+      var nn = $X($(node).serializeXML());
+          nn.removeAttr('svg-id');
+          nn.removeAttr('svg-type');
+          nn.removeAttr('svg-subtype');
+          nn.removeAttr('svg-label');
+      save['details'].content(nn);
       format_visual_forms();
     }
   }; //}}}

@@ -1,8 +1,0 @@
-<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="parallel_branch" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
-  <attribute name="pass" rngui:label="Pass to branch">
-    <data type="string" rngui:label="Data element passed to the local scope, thus not affected by global changes ..."/>
-  </attribute>
-  <attribute name="local" rngui:label="Local scope">
-    <data type="string" rngui:label="Name of the passed data element in the local scope ..."/>
-  </attribute>
-</element>
