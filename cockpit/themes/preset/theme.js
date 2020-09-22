@@ -69,6 +69,7 @@ function WFAdaptorManifestation(adaptor) {
           nn.removeAttr('svg-id');
           nn.removeAttr('svg-type');
           nn.removeAttr('svg-subtype');
+          nn.removeAttr('svg-label');
       save['details'].content(nn);
       format_visual_forms();
     }

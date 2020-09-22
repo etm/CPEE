@@ -52,10 +52,6 @@ function do_main_work() { //{{{
   $('#main ui-tabbar ui-behind button').removeClass('highlight');
   save['details'].set_checkpoint();
 
-  // pull out xml and add XMLNS
-  // sadly we have to serialze, add in string and then parse again
-  // as adding namespaces to nodes is not supported
-  // serialization and reparsing is faster and more robust than xslt option
   var nnew = $(save['details'].save().documentElement);
       nnew.attr('svg-id',svgid);
 
@@ -63,8 +59,9 @@ function do_main_work() { //{{{
     nnew.append(node.children().filter(function(){ return this.attributes['svg-id'] != undefined; }));
   }
 
-  //var ntxt = nnew.serializeXML();
-  //node.replaceWith($X(ntxt));
+  if (node[0].namespaceURI == nnew.attr('xmlns')) { // remove xmlns when it is the same as in the parent node
+    nnew[0].removeAttribute('xmlns');
+  }
   node.replaceWith(nnew);
 
   var ttarget = manifestation.adaptor.illustrator.get_node_by_svg_id(svgid);
@@ -86,6 +83,7 @@ function do_main_work() { //{{{
     save['graph'].removeAttr('svg-id');
     save['graph'].removeAttr('svg-type');
     save['graph'].removeAttr('svg-subtype');
+    save['graph'].removeAttr('svg-label');
 
     if (newtype != origtype) {
       manifestation.update_details(svgid);

@@ -495,6 +495,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         save['graph'].removeAttr('svg-id');
         save['graph'].removeAttr('svg-type');
         save['graph'].removeAttr('svg-subtype');
+        save['graph'].removeAttr('svg-label');
         document.dispatchEvent(graph_changed);
         $.ajax({
           type: "PUT",

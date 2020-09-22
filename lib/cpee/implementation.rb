@@ -43,10 +43,10 @@ module CPEE
     /p:properties/p:state/@changed
     /p:properties/p:state
   }
-  PROPERTIES_PATHS_INDEX_SET = %w{
+  PROPERTIES_PATHS_INDEX_UNORDERED = %w{
     /p:properties/p:positions/p:*
   }
-  PROPERTIES_PATHS_INDEX_LIST = %w{
+  PROPERTIES_PATHS_INDEX_ORDERED = %w{
     /p:properties/p:dataelements/p:*
     /p:properties/p:endpoints/p:*
     /p:properties/p:attributes/p:*
@@ -158,16 +158,18 @@ module CPEE
             multi.set(File.join(instance, path(e)), e.text)
           end
         end
-        doc.root.find(PROPERTIES_PATHS_INDEX_SET.join(' | ')).each do |e|
+        doc.root.find(PROPERTIES_PATHS_INDEX_UNORDERED.join(' | ')).each do |e|
           p = path(e)
           multi.sadd(File.join(instance, File.dirname(p)), File.basename(p))
         end
-        doc.root.find(PROPERTIES_PATHS_INDEX_LIST.join(' | ')).each_with_index do |e,i|
+        doc.root.find(PROPERTIES_PATHS_INDEX_ORDERED.join(' | ')).each_with_index do |e,i|
           p = path(e)
           multi.zadd(File.join(instance, File.dirname(p)), i, File.basename(p))
         end
         multi.set(File.join(instance, 'attributes', 'uuid'), SecureRandom.uuid)
-        multi.zadd(File.join(instance, 'attributes'), -1, 'uuid')
+        multi.zadd(File.join(instance, 'attributes'), -2, 'uuid')
+        multi.set(File.join(instance, 'attributes', 'info'), name)
+        multi.zadd(File.join(instance, 'attributes'), -1, 'info')
         multi.set(File.join(instance, 'state', '@changed'), Time.now.xmlschema(3))
       end
 
