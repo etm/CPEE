@@ -492,7 +492,9 @@ function adaptor_init(url,theme,dslx) { //{{{
       graphrealization.notify = function(svgid) {
         var g = graphrealization.get_description();
         save['graph'] = $X(g);
-        save['graph'].find('[xmlns]').removeAttr('xmlns');
+        save['graph'].removeAttr('svg-id');
+        save['graph'].removeAttr('svg-type');
+        save['graph'].removeAttr('svg-subtype');
         document.dispatchEvent(graph_changed);
         $.ajax({
           type: "PUT",
@@ -533,7 +535,7 @@ function monitor_graph_change(force) { //{{{
     type: "GET",
     url: url + "/properties/dslx/",
     success: function(dslx){
-      if (force || !save['graph'] || (save['graph'] && save['graph'].serializePrettyXML() != $(dslx).serializePrettyXML())) {
+      if (force || !save['graph'] || (save['graph'] && save['graph'].serializePrettyXML() != $(dslx.documentElement).serializePrettyXML())) {
         $.ajax({
           type: "GET",
           url: url + "/properties/attributes/theme/",

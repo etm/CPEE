@@ -1,6 +1,6 @@
-<element name="update" rngui:version="1.2" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" name="update" rngui:version="1.2" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
   <attribute name="output" rngui:label="Access Variable" rngui:default="result">
     <data type="string" rngui:readonly="true"/>
   </attribute>
-  <text rngui:label='Script that is executed, when a service sends intermediate data'/>
+  <text rngui:label="Script that is executed, when a service sends intermediate data"/>
 </element>

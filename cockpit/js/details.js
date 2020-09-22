@@ -48,7 +48,6 @@ function do_main_work() { //{{{
   var orignode = save['graph_adaptor'].illustrator.get_node_by_svg_id(svgid).parents('g.element[element-id]');
   var origtype = orignode.attr('element-type') + '_' + orignode.attr('element-endpoint');
 
-
   var url = $('body').attr('current-instance');
   $('#main ui-tabbar ui-behind button').removeClass('highlight');
   save['details'].set_checkpoint();
@@ -59,16 +58,14 @@ function do_main_work() { //{{{
   // serialization and reparsing is faster and more robust than xslt option
   var nnew = $(save['details'].save().documentElement);
       nnew.attr('svg-id',svgid);
-      nnew.attr('trans-xmlns','http://cpee.org/ns/description/1.0');
 
   if ($('*[svg-id]',node).length > 0) {
     nnew.append(node.children().filter(function(){ return this.attributes['svg-id'] != undefined; }));
   }
 
-  var ntxt = nnew.serializeXML();
-      ntxt = ntxt.replace(/trans-xmlns/,'xmlns');
-
-  node.replaceWith($X(ntxt));
+  //var ntxt = nnew.serializeXML();
+  //node.replaceWith($X(ntxt));
+  node.replaceWith(nnew);
 
   var ttarget = manifestation.adaptor.illustrator.get_node_by_svg_id(svgid);
   var tnewnode = ttarget.parents('g.element[element-id]');
@@ -86,7 +83,9 @@ function do_main_work() { //{{{
     var newtype = newnode.attr('element-type') + '_' + newnode.attr('element-endpoint');
     var g = graphrealization.get_description();
     save['graph'] = $X(g);
-    save['graph'].find('[xmlns]').removeAttr('xmlns');
+    save['graph'].removeAttr('svg-id');
+    save['graph'].removeAttr('svg-type');
+    save['graph'].removeAttr('svg-subtype');
 
     if (newtype != origtype) {
       manifestation.update_details(svgid);

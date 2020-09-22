@@ -358,9 +358,10 @@ module CPEE
     class PutItems < Riddl::Implementation #{{{
       def self::set(item,id,opts,xml)
         doc = XML::Smart::string(xml)
-        val = doc.find("/*/*").map do |ele|
-          [ele.qname.name, ele.text]
-        end.to_h
+        val = {}
+        doc.find("/*/*").each do |ele|
+          val[ele.qname.name] = ele.text unless val.has_key?(ele.qname.name)
+        end
         oldkeys = CPEE::Persistence::extract_list(id,opts,item).to_h.keys
         newkeys = val.keys
         del = oldkeys - newkeys

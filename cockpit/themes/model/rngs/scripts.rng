@@ -1,8 +1,7 @@
-<element rngui:version="1.2" name="code" rngui:header="Output Transformation" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="code" rngui:header="Output Transformation" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
   <element name="code" rngui:header="Output Transformation">
     <element name="description" rngui:label="Description">
-      <text rngui:wrap='true' rngui:label='Which output elements are important? How to transform them?'/>
+      <text rngui:wrap="true" rngui:label="Which output elements are important? How to transform them?"/>
     </element>
   </element>
 </element>
-

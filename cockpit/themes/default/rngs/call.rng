@@ -1,11 +1,11 @@
-<element rngui:version="1.2" name="call" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="call" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
   <attribute name="id" rngui:label="ID" rngui:default="javascript:get_free_id()">
     <data type="string" rngui:readonly="true"/>
   </attribute>
   <attribute name="endpoint" rngui:label="Endpoint">
     <data type="string"/>
   </attribute>
-  <element name='parameters' rngui:header="Parameters">
+  <element name="parameters" rngui:header="Parameters">
     <element name="label" rngui:label="Label">
       <data type="string" rngui:label="Short description of the task"/>
     </element>
@@ -19,7 +19,7 @@
     </element>
     <element name="arguments" rngui:header="Arguments">
       <zeroOrMore rngui:label="Create Argument Pair">
-        <element rngui:label='Name' rngui:labeltype='xml'>
+        <element rngui:label="Name" rngui:labeltype="xml">
           <anyName/>
           <data type="string" rngui:label="Value"/>
         </element>
@@ -42,7 +42,7 @@
           </element>
           <element name="visualizer_params" rngui:header="Visualizer Arguments">
             <zeroOrMore rngui:label="Create Argument Pair">
-              <element rngui:label='Name'>
+              <element rngui:label="Name">
                 <anyName/>
                 <data type="string" rngui:label="Value"/>
               </element>
@@ -53,23 +53,23 @@
     </element>
   </element>
   <element name="_timing" rngui:header="Timing">
-    <element name="_timing_min" rngui:label='Min in min'>
-      <data type='float' rngui:label='Minutes'/>
+    <element name="_timing_min" rngui:label="Min in min">
+      <data type="float" rngui:label="Minutes"/>
     </element>
-    <element name="_timing_max" rngui:label='Max in min'>
-      <data type='float' rngui:label='Minutes'/>
+    <element name="_timing_max" rngui:label="Max in min">
+      <data type="float" rngui:label="Minutes"/>
     </element>
-    <element name="_timing_avg" rngui:label='Avg in min'>
-      <data type='float' rngui:label='Minutes'/>
+    <element name="_timing_avg" rngui:label="Avg in min">
+      <data type="float" rngui:label="Minutes"/>
     </element>
   </element>
   <element name="_notes" rngui:header="Notes">
-    <element name="_notes_general" rngui:label='General'>
-      <text rngui:wrap='true' rngui:label='Notes'/>
+    <element name="_notes_general" rngui:label="General">
+      <text rngui:wrap="true" rngui:label="Notes"/>
     </element>
     <element name="_attachments">
       <zeroOrMore rngui:label="Create Attachment">
-        <element name='_attachment' rngui:label='Attachment'>
+        <element name="_attachment" rngui:label="Attachment">
           <attribute name="label" rngui:label="Note">
             <data type="string"/>
           </attribute>
