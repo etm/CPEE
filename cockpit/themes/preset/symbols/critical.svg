@@ -1,0 +1,4 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <path class="cline hfill rfill stand" d="m 3 27 l 12 -24 l 12 24 z"/>
+  <text transform="translate(15,23)" class="small">!</text>
+</svg>

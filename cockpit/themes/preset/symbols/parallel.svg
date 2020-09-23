@@ -1,0 +1,5 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="cline hfill stand"/>
+  <text transform="translate(15,25)" class="normallarge">+</text>
+</svg>
+

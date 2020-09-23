@@ -77,9 +77,9 @@ function cockpit() { //{{{
   $("button[name=loadmodeltype]").click(function(e){new CustomMenu(e).menu($('#modeltypes'),load_modeltype, $("button[name=loadmodeltype]")); });
   $("button[name=savetestsetfile]").click(function(){ save_testsetfile(); });
   $("button[name=savesvgfile]").click(function(){ save_svgfile(); });
-  $("button[name=state_start]").click(function(){ $(this).attr("disabled","disabled");start_instance(); });
-  $("button[name=state_stop]").click(function(){ $(this).attr("disabled","disabled");stop_instance(); });
-  $("button[name=state_replay]").click(function(){ $(this).attr("disabled","disabled");replay_instance(); });
+  $("button[name=state_start]").click(function(){ $(this).parent().find('button').attr("disabled","disabled");start_instance(); });
+  $("button[name=state_stop]").click(function(){ $(this).parent().find('button').attr("disabled","disabled");stop_instance(); });
+  $("button[name=state_replay]").click(function(){ $(this).parent().find('button').attr("disabled","disabled");replay_instance(); });
   $("button[name=state_abandon]").click(function(){ aba_instance(); });
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=testsetfile]").change(load_testsetfile_after);
@@ -657,6 +657,12 @@ function monitor_instance_state_change(notification) { //{{{
       $("button[name=state_stop]").show();
       $("button[name=state_replay]").hide();
       $("button[name=state_abandon]").hide();
+    } else {
+      $('#state_extended').hide();
+      $("button[name=state_start]").hide();
+      $("button[name=state_stop]").hide();
+      $("button[name=state_replay]").hide();
+      $("button[name=state_abandon]").hide();
     }
 
     // disable all input, also check themes
@@ -666,11 +672,12 @@ function monitor_instance_state_change(notification) { //{{{
       save['graph_adaptor'].illustrator.get_elements().removeClass('marked');
     }
 
-    if (notification == "finished" || notification == "abandoned") {
+    if (notification != "ready" && notification != "stopped" && notification != "running") {
       $('.tabbehind button').hide();
       $('#state_any').hide();
     } else {
       $('#parameters .tabbehind button').show();
+      $('#state_any').show();
     }
 
     $("#state_text").text(notification);

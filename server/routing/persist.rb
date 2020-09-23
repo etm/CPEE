@@ -108,22 +108,26 @@ Daemonite.new do |opts|
           when 'event:position/change'
             redis.multi do |multi|
               c = mess.dig('content')
-              c.dig('at')&.each do |ele|
-                multi.sadd("instance:#{instance}/positions",ele['position'])
-                multi.set("instance:#{instance}/positions/#{ele['position']}",'at')
-                multi.set("instance:#{instance}/positions/#{ele['position']}/@passthrough",ele['passthrough']) if ele['passthrough']
+              c.dig('unmark')&.each do |ele|
+                p 'del'
+                p ele['position']
+                multi.srem("instance:#{instance}/positions",ele['position'])
+                multi.del("instance:#{instance}/positions/#{ele['position']}")
               end
               c.dig('before')&.each do |ele|
                 multi.sadd("instance:#{instance}/positions",ele['position'])
                 multi.set("instance:#{instance}/positions/#{ele['position']}",'before')
               end
+              c.dig('at')&.each do |ele|
+                multi.sadd("instance:#{instance}/positions",ele['position'])
+                multi.set("instance:#{instance}/positions/#{ele['position']}",'at')
+                multi.set("instance:#{instance}/positions/#{ele['position']}/@passthrough",ele['passthrough']) if ele['passthrough']
+              end
               c.dig('after')&.each do |ele|
+                p 'after'
+                p ele['position']
                 multi.sadd("instance:#{instance}/positions",ele['position'])
                 multi.set("instance:#{instance}/positions/#{ele['position']}",'after')
-              end
-              c.dig('unmark')&.each do |ele|
-                multi.srem("instance:#{instance}/positions",ele['position'])
-                multi.del("instance:#{instance}/positions/#{ele['position']}")
               end
             end
           when 'event:handler/change'

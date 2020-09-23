@@ -1,0 +1,5 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="15" cy="15" r="14" class="stand cline"/>
+  <circle cx="15" cy="15" r="11" class="stand cline hfill"/>
+  <polygon points="10.5,20.5 15,8.5 20.5,20.5 15,15.5 10.5,20.5" class="black"/>
+</svg>
