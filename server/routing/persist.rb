@@ -109,8 +109,6 @@ Daemonite.new do |opts|
             redis.multi do |multi|
               c = mess.dig('content')
               c.dig('unmark')&.each do |ele|
-                p 'del'
-                p ele['position']
                 multi.srem("instance:#{instance}/positions",ele['position'])
                 multi.del("instance:#{instance}/positions/#{ele['position']}")
               end
@@ -124,8 +122,6 @@ Daemonite.new do |opts|
                 multi.set("instance:#{instance}/positions/#{ele['position']}/@passthrough",ele['passthrough']) if ele['passthrough']
               end
               c.dig('after')&.each do |ele|
-                p 'after'
-                p ele['position']
                 multi.sadd("instance:#{instance}/positions",ele['position'])
                 multi.set("instance:#{instance}/positions/#{ele['position']}",'after')
               end
