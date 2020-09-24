@@ -9,6 +9,7 @@ var graph_changed = new Event("graph:changed", {"bubbles":true, "cancelable":fal
 var save = {};
     save['state']= undefined;
     save['dsl'] = undefined;
+    save['activity_states'] = {}
     save['graph'] = undefined;
     save['graph_theme'] = undefined;
     save['graph_adaptor'] = undefined;
@@ -615,10 +616,19 @@ function monitor_instance_pos() {// {{{
 
 function monitor_instance_running(content,event) {// {{{
   if (save['state'] == "stopping") return;
-  if (event == "calling")
+  if (event == "calling") {
+    save['activity_states'][content.activity_uuid] = true
     format_visual_add(content.activity,"active")
-  if (event == "done")
+  }
+  if (event == "manipulating") {
+    if (!save['activity_states'][content.activity_uuid]) {
+      format_visual_add(content.activity,"active")
+    }
+  }
+  if (event == "done") {
+    delete save['activity_states'][content.activity_uuid];
     format_visual_remove(content.activity,"active")
+  }
 } // }}}
 function monitor_instance_state_change(notification) { //{{{
   if ($('#trackcolumn').length > 0) {
@@ -1240,7 +1250,13 @@ function append_to_log(what,type,message) {//{{{
   message = message.replace(/:\"/g,': "');
   message = message.replace(/:\{/g,': {');
   message = message.replace(/:\[/g,': [');
-  $("#dat_log").append("<tr><td class='fixed top'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
+  $("#dat_log").prepend("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
+  var dle = $("#dat_log").children();
+  if (dle.length > 100) {
+    dle.slice(100).each((k,ele) => {
+      $(ele).remove();
+    });
+  }
 }//}}}
 
 function report_failure(){}
