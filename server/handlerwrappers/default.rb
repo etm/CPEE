@@ -13,6 +13,19 @@
 # <http://www.gnu.org/licenses/>.
 
 class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
+  def self::loop_guard(arguments,id,count) # {{{
+    controller = arguments[0]
+    tsn = Time.now
+    tso = controller.loop_guard[id][:timestamp] rescue Time.now
+    controller.loop_guard[id] = { :count => count, :timestamp => tsn }
+    # if we have more than 100 loop iterations and the last one took less than 2 seconds, we slow the hell down
+    tso + 2 > tsn && count > 100
+  end # }}}
+
+  def self::inform_state_change(arguments,newstate) # {{{
+    controller = arguments[0]
+		controller.notify("state/change", :state => newstate, :timestamp => Time.now.xmlschema(3))
+  end # }}}
   def self::inform_state_change(arguments,newstate) # {{{
     controller = arguments[0]
 		controller.notify("state/change", :state => newstate, :timestamp => Time.now.xmlschema(3))

@@ -691,7 +691,7 @@ function monitor_instance_pos_change(content) {// {{{
   }
   if (content['at']) {
     $.each(content['at'],function(a,b){
-      format_visual_add(b.position,"passive")
+      format_visual_add(b.position,"passive");
     });
   }
   if (!content['at'] && !content['unmark'] && !content['after'] && !content['wait']) {
@@ -1064,6 +1064,8 @@ function format_visual_remove(what,cls) {//{{{
   if (node_state[what][cls] == undefined)
     node_state[what][cls] = 0;
   node_state[what][cls] -= 1;
+  if (node_state[what][cls] < 0)
+    node_state[what][cls] = 0;
   format_visual_set(what);
 }//}}}
 

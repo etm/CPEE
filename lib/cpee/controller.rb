@@ -48,10 +48,12 @@ module CPEE
       @thread = nil
       @opts = opts
       @instance = nil
+      @loop_guard = {}
     end
 
     attr_reader :id
     attr_reader :attributes
+    attr_reader :loop_guard
 
     def uuid
       @attributes['uuid']
