@@ -32,12 +32,12 @@ module CPEE
         uuid = nil
         XML::Smart.string(tdoc) do |doc|
           doc.register_namespace 'desc', 'http://cpee.org/ns/description/1.0'
-          doc.register_namespace 'prop', 'http://riddl.org/ns/common-patterns/properties/1.0'
+          doc.register_namespace 'prop', 'http://cpee.org/ns/properties/2.0'
 
-          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
-          res = srv.resource("/")
+          srv = Riddl::Client.new(cpee, cpee + '?riddl-description')
+          res = srv.resource('/')
           if name
-            doc.find("/testset/attributes/prop:info").each do |e|
+            doc.find('/*/prop:attributes/prop:info').each do |e|
               e.text = name
             end
           end
@@ -59,42 +59,31 @@ module CPEE
             end
           end
 
-          status, response, headers = res.post Riddl::Parameter::Simple.new("info",doc.find("string(/testset/attributes/prop:info)"))
+          status, response, headers = res.post Riddl::Parameter::Simple.new('info',doc.find('string(/*/prop:attributes/prop:info)'))
 
           if status == 200
             ins = response.first.value
             uuid = headers['CPEE_INSTANCE_UUID']
-            params = []
 
-            res = srv.resource("/#{ins}/properties/values")
-            ["handlerwrapper","positions","dataelements","endpoints","attributes","transformation"].each do |item|
-              if doc.find("/testset/#{item}").any?
-                params << Riddl::Parameter::Simple.new("name",item)
-                params << Riddl::Parameter::Simple.new("content",doc.find("/testset/#{item}").first.dump)
-              end
+            inp = XML::Smart::string('<properties xmlns="http://cpee.org/ns/properties/2.0"/>')
+            inp.register_namespace 'prop', 'http://cpee.org/ns/properties/2.0'
+            %w{handlerwrapper positions dataelements endpoints attributes description transformation}.each do |item|
+              ele = doc.find("/*/prop:#{item}")
+              inp.root.add(ele.first) if ele.any?
             end
-            ["description"].each do |item|
-              if doc.find("/testset/#{item}").any?
-                params << Riddl::Parameter::Simple.new("name",item)
-                params << Riddl::Parameter::Simple.new("content","<content>" + doc.find("/testset/#{item}/desc:*").first.dump + "</content>")
-              end
-            end
-            status, response = res.put params
-            ["handlers"].each do |item|
-              doc.find("/testset/#{item}/handler").each do |han|
-                #pp han.children.first
-                url =  han.attributes['url']
-                inp = "url=" + URI.encode_www_form_component(url)
-                inp = inp + "&topic=" + han.children.first.attributes['topic']
-                inp = inp + "&" + han.children.first.qname.to_s + "=" + han.children.first.to_s
-                status,body = Riddl::Client::new(cpee+ins+"/notifications/subscriptions/").post(
-                  [
-                    Riddl::Parameter::Simple.new("url",han.attributes['url']),
-                    Riddl::Parameter::Simple.new("topic",han.children.first.attributes['topic']),
-                    Riddl::Parameter::Simple.new(han.children.first.qname.to_s,han.children.first.to_s)
-                  ]
-                )
-              end
+            res = srv.resource("/#{ins}/properties").put Riddl::Parameter::Complex.new('properties','application/xml',inp.to_s)
+            doc.find('/*/prop:handlers/prop:handler').each do |han|
+              url =  han.attributes['url']
+              inp = 'url=' + URI.encode_www_form_component(url)
+              inp = inp + '&topic=' + han.children.first.attributes['topic']
+              inp = inp + '&' + han.children.first.qname.to_s + '=' + han.children.first.to_s
+              status,body = Riddl::Client::new(cpee+ins+'/notifications/subscriptions/').post(
+                [
+                  Riddl::Parameter::Simple.new('url',han.attributes['url']),
+                  Riddl::Parameter::Simple.new('topic',han.children.first.attributes['topic']),
+                  Riddl::Parameter::Simple.new(han.children.first.qname.to_s,han.children.first.to_s)
+                ]
+              )
             end
           end
         end
@@ -109,11 +98,11 @@ module CPEE
 
           if cb
             cbk = SecureRandom.uuid
-            srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+            srv = Riddl::Client.new(cpee, cpee + '?riddl-description')
             status, response = srv.resource("/#{instance}/notifications/subscriptions/").post [
-              Riddl::Parameter::Simple.new("url",File.join(selfurl,'callback',cbk)),
-              Riddl::Parameter::Simple.new("topic","state"),
-              Riddl::Parameter::Simple.new("events","change")
+              Riddl::Parameter::Simple.new('url',File.join(selfurl,'callback',cbk)),
+              Riddl::Parameter::Simple.new('topic','state'),
+              Riddl::Parameter::Simple.new('events','change')
             ]
             cblist.rpush(cbk, cb)
             cblist.rpush(cbk, condition)
@@ -126,10 +115,9 @@ module CPEE
       private :handle_waiting
       def handle_starting(cpee,instance,behavior) #{{{
         if behavior =~ /_running$/
-          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
-          res = srv.resource("/#{instance}/properties/values")
+          srv = Riddl::Client.new(cpee, cpee + '?riddl-description')
+          res = srv.resource("/#{instance}/properties/state")
           status, response = res.put [
-            Riddl::Parameter::Simple.new('name', 'state'),
             Riddl::Parameter::Simple.new('value','running')
           ]
         end
@@ -137,27 +125,27 @@ module CPEE
       private :handle_starting
       def handle_data(cpee,instance,data) #{{{
         if data && !data.empty?
-          content = XML::Smart.string('<content/>')
+          content = XML::Smart.string('<dataelements xmlns="http://cpee.org/ns/properties/2.0">')
           JSON::parse(data).each do |k,v|
             content.root.add(k,v)
           end
           srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
-          res = srv.resource("/#{instance}/properties/values/dataelements/")
+          res = srv.resource("/#{instance}/properties/dataelements/")
           status, response = res.patch [
-            Riddl::Parameter::Complex.new('content','text/xml',content.to_s)
+            Riddl::Parameter::Complex.new('dataelements','text/xml',content.to_s)
           ]
         end rescue nil
       end #}}}
       def handle_endpoints(cpee,instance,data) #{{{
         if data && !data.empty?
-          content = XML::Smart.string('<content/>')
+          content = XML::Smart.string('<endpoints xmlns="http://cpee.org/ns/properties/2.0">')
           JSON::parse(data).each do |k,v|
             content.root.add(k,v)
           end
           srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
-          res = srv.resource("/#{instance}/properties/values/endpoints/")
+          res = srv.resource("/#{instance}/properties/endpoints/")
           status, response = res.patch [
-            Riddl::Parameter::Complex.new('content','text/xml',content.to_s)
+            Riddl::Parameter::Complex.new('endpoints','text/xml',content.to_s)
           ]
         end rescue nil
       end #}}}
@@ -281,7 +269,7 @@ module CPEE
         instance = @p[1].value
 
         srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
-        res = srv.resource("/#{instance}/properties/values/attributes/uuid")
+        res = srv.resource("/#{instance}/properties/attributes/uuid")
         status, response = res.get
 
         if status >= 200 && status < 300
@@ -317,12 +305,12 @@ module CPEE
         if notification['state'] == condition
           cblist.del(key)
           srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
-          res = srv.resource("/#{instance}/properties/values/dataelements")
+          res = srv.resource("/#{instance}/properties/dataelements")
           status, response = res.get
           if status >= 200 && status < 300
             doc = XML::Smart.string(response[0].value.read)
-            doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
-            doc.find('/p:value/*').each do |e|
+            doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+            doc.find('/p:dataelements/*').each do |e|
               send[e.qname.name] = CPEE::ValueHelper::parse(e.text)
             end
           end
