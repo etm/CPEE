@@ -27,8 +27,8 @@
         <code>
           <prepare/>
           <finalize output="result">data.direction_first = result
-data.direction_first['x'] = data.direction_first['dir_x'] * 10
-data.direction_first['y'] = data.direction_first['dir_y'] * 10</finalize>
+data.direction_first['x'] = data.direction_first['dir_x'] * 6
+data.direction_first['y'] = data.direction_first['dir_y'] * 6</finalize>
           <update output="result"/>
           <rescue output="result"/>
         </code>
@@ -89,7 +89,7 @@ if (data.direction_first['dir_x'] * data.direction_second['dir_x'] &gt;= 0)
 else
   data.traveled = data.direction_first['len'] + data.direction_second['len']
 end
-data.len = data.direction_second['len'] / (data.traveled / 10)
+data.len = data.direction_second['len'] / (data.traveled / 6)
 data.direction_second['x'] = data.direction_second['dir_x'] * data.len
 data.direction_second['y'] = data.direction_second['dir_y'] * data.len</finalize>
           <update output="result"/>
@@ -148,7 +148,7 @@ data.direction_second['y'] = data.direction_second['dir_y'] * data.len</finalize
           <prepare/>
           <finalize output="result">data.direction_third = result</finalize>
           <update output="result"/>
-          <rescue output="result"/>
+          <rescue output="result">'Oh no!'</rescue>
         </code>
         <annotations>
           <_timing>

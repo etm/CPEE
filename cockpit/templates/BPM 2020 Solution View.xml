@@ -1,6 +1,13 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <dataelements/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <handlers>
+    <handler url="http://tango.wst.univie.ac.at:9332">
+      <votes topic='state'>change</votes>
+      <events topic='state'>change</events>
+      <events topic='task'>instantiation</events>
+    </handler>
+  </handlers>
   <endpoints>
     <overview>http-put://ryloth.wst.univie.ac.at:9329/move/overview</overview>
     <move_tool>http-put://ryloth.wst.univie.ac.at:9329/move/position/point</move_tool>
@@ -41,7 +48,7 @@
             </_notes>
           </annotations>
         </call>
-        <call id="a3" endpoint="get_items_neural">
+        <call id="a3" endpoint="get_items_base">
           <parameters>
             <label>Get item positions</label>
             <arguments/>
@@ -97,7 +104,7 @@ data.item = result[0]</finalize>
             </_notes>
           </annotations>
         </call>
-        <call id="a6" endpoint="get_offset_neural">
+        <call id="a6" endpoint="get_offset_base">
           <parameters>
             <label>Get item offset</label>
             <arguments/>
@@ -109,10 +116,7 @@ data.item = result[0]</finalize>
           </parameters>
           <code>
             <prepare/>
-            <finalize output="result">data.adjusted = {
-  'x' =&gt; data.item['x'] + result['adjust_x'],
-  'y' =&gt; data.item['y'] + result['adjust_y']
-}</finalize>
+            <finalize output="result">data.adjusted = result</finalize>
             <update output="result"/>
             <rescue output="result"/>
           </code>

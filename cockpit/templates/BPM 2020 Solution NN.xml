@@ -1,20 +1,26 @@
-<testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
-    <places xmlns="http://riddl.org/ns/common-patterns/properties/1.0">[[0,0],[1,0],[0,1],[1,1],[0,2],[1,2]]</places>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <dataelements>
+    <places>[[0,0],[1,0],[0,1],[1,1],[0,2],[1,2],[0,3],[1,3],[0,4],[1,4],[0,5],[1,5]]</places>
   </dataelements>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <overview xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
-    <move_tool xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/point</move_tool>
-    <move_camera xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/view</move_camera>
-    <get_items_base xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://tango.wst.univie.ac.at:9329/view/items</get_items_base>
-    <get_items_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/items</get_items_neural>
-    <get_offset_base xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://tango.wst.univie.ac.at:9329/view/details</get_offset_base>
-    <get_offset_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
-    <wait xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</wait>
-    <grip_and_place xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <handlers>
+    <handler url="http://tango.wst.univie.ac.at:9332">
+      <votes topic='state'>change</votes>
+      <events topic='state'>change</events>
+      <events topic='task'>instantiation</events>
+    </handler>
+  </handlers>
+  <endpoints>
+    <overview>http-put://ryloth.wst.univie.ac.at:9329/move/overview</overview>
+    <move_tool>http-put://ryloth.wst.univie.ac.at:9329/move/position/point</move_tool>
+    <move_camera>http-put://ryloth.wst.univie.ac.at:9329/move/position/view</move_camera>
+    <get_items_base>http-get://ryloth.wst.univie.ac.at:9329/view/items</get_items_base>
+    <get_items_neural>http-get://ryloth.wst.univie.ac.at:9330/view/items</get_items_neural>
+    <get_offset_base>http-get://ryloth.wst.univie.ac.at:9329/view/details</get_offset_base>
+    <get_offset_neural>http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
+    <grip_and_place>http-put://ryloth.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
   </endpoints>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <loop mode="pre_test" condition="data.places.length &gt; 0">
         <_probability>
@@ -27,32 +33,6 @@
           <parameters>
             <label>Move to overview position</label>
             <arguments/>
-            <stream>
-              <sensors/>
-              <aggregators/>
-              <costs/>
-            </stream>
-          </parameters>
-          <annotations>
-            <_timing>
-              <_timing_wait/>
-              <_timing_threshold/>
-              <_timing_min/>
-              <_timing_max/>
-              <_timing_avg/>
-            </_timing>
-            <_notes>
-              <_notes_general/>
-            </_notes>
-          </annotations>
-        </call>
-        <call id="a7" endpoint="wait">
-          <parameters>
-            <label>Wait for camera stream delay</label>
-            <method>:post</method>
-            <arguments>
-              <timeout>5</timeout>
-            </arguments>
             <stream>
               <sensors/>
               <aggregators/>
@@ -130,32 +110,6 @@ data.item = result[0]</finalize>
                 </_notes>
               </annotations>
             </call>
-            <call id="a4" endpoint="wait">
-              <parameters>
-                <label>Wait for camera stream delay</label>
-                <method>:post</method>
-                <arguments>
-                  <timeout>5</timeout>
-                </arguments>
-                <stream>
-                  <sensors/>
-                  <aggregators/>
-                  <costs/>
-                </stream>
-              </parameters>
-              <annotations>
-                <_timing>
-                  <_timing_wait/>
-                  <_timing_threshold/>
-                  <_timing_min/>
-                  <_timing_max/>
-                  <_timing_avg/>
-                </_timing>
-                <_notes>
-                  <_notes_general/>
-                </_notes>
-              </annotations>
-            </call>
             <call id="a6" endpoint="get_offset_neural">
               <parameters>
                 <label>Get item offset</label>
@@ -169,8 +123,8 @@ data.item = result[0]</finalize>
               <code>
                 <prepare/>
                 <finalize output="result">data.adjusted = {
-  'x' =&gt; data.item['x'] + result['adjust_x'],
-  'y' =&gt; data.item['y'] + result['adjust_y']
+  'x' =&gt; data.item['x'] + result['dir_x'],
+  'y' =&gt; data.item['y'] + result['dir_y']
 }</finalize>
                 <update output="result"/>
                 <rescue output="result"/>
@@ -192,8 +146,8 @@ data.item = result[0]</finalize>
               <parameters>
                 <label>Grip and Place</label>
                 <arguments>
-                  <x>!data.adjusted['x']</x>
-                  <y>!data.adjusted['y']</y>
+                  <x>!data.adjusted['x'].round(0)</x>
+                  <y>!data.adjusted['y'].round(0)</y>
                   <place_x>!data.place[0]</place_x>
                   <place_y>!data.place[1]</place_y>
                 </arguments>
@@ -229,15 +183,15 @@ data.item = result[0]</finalize>
       </loop>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution NN</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
-    <resource xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ur51</resource>
+  <attributes>
+    <info>BPM 2020 Solution NN</info>
+    <modeltype>CPEE</modeltype>
+    <theme>preset</theme>
+    <resource>ur51</resource>
   </attributes>
 </testset>
