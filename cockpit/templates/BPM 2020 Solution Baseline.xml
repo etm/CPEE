@@ -1,21 +1,20 @@
-<testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
-    <places xmlns="http://riddl.org/ns/common-patterns/properties/1.0">[[0,0],[1,0],[0,1],[1,1],[0,2],[1,2]]</places>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <dataelements>
+    <places>[[0,0],[1,0],[0,1],[1,1],[0,2],[1,2]]</places>
   </dataelements>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <overview xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
-    <move_tool xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/point</move_tool>
-    <move_camera xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/view</move_camera>
-    <get_items_base xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://tango.wst.univie.ac.at:9329/view/items</get_items_base>
-    <get_items_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/items</get_items_neural>
-    <get_offset_base xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://tango.wst.univie.ac.at:9329/view/details</get_offset_base>
-    <get_offset_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
-    <wait xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</wait>
-    <grip_and_place xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
-    <subprocess xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org:9296/url/</subprocess>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <overview>http-put://ryloth.wst.univie.ac.at:9329/move/overview</overview>
+    <move_tool>http-put://ryloth.wst.univie.ac.at:9329/move/position/point</move_tool>
+    <move_camera>http-put://ryloth.wst.univie.ac.at:9329/move/position/view</move_camera>
+    <get_items_base>http-get://ryloth.wst.univie.ac.at:9329/view/items</get_items_base>
+    <get_items_neural>http-get://ryloth.wst.univie.ac.at:9330/view/items</get_items_neural>
+    <get_offset_base>http-get://ryloth.wst.univie.ac.at:9329/view/details</get_offset_base>
+    <get_offset_neural>http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
+    <grip_and_place>http-put://ryloth.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
+    <subprocess>http://localhost:9296/url/</subprocess>
   </endpoints>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <loop mode="pre_test" condition="data.places.length &gt; 0">
         <_probability>
@@ -27,32 +26,6 @@
           <parameters>
             <label>Move to overview position</label>
             <arguments/>
-            <stream>
-              <sensors/>
-              <aggregators/>
-              <costs/>
-            </stream>
-          </parameters>
-          <annotations>
-            <_timing>
-              <_timing_wait/>
-              <_timing_threshold/>
-              <_timing_min/>
-              <_timing_max/>
-              <_timing_avg/>
-            </_timing>
-            <_notes>
-              <_notes_general/>
-            </_notes>
-          </annotations>
-        </call>
-        <call id="a7" endpoint="wait">
-          <parameters>
-            <label>Wait for camera stream delay</label>
-            <method>:post</method>
-            <arguments>
-              <timeout>5</timeout>
-            </arguments>
             <stream>
               <sensors/>
               <aggregators/>
@@ -129,39 +102,13 @@
                 </_notes>
               </annotations>
             </call>
-            <call id="a15" endpoint="wait">
-              <parameters>
-                <label>Wait for camera stream delay</label>
-                <method>:post</method>
-                <arguments>
-                  <timeout>5</timeout>
-                </arguments>
-                <stream>
-                  <sensors/>
-                  <aggregators/>
-                  <costs/>
-                </stream>
-              </parameters>
-              <annotations>
-                <_timing>
-                  <_timing_wait/>
-                  <_timing_threshold/>
-                  <_timing_min/>
-                  <_timing_max/>
-                  <_timing_avg/>
-                </_timing>
-                <_notes>
-                  <_notes_general/>
-                </_notes>
-              </annotations>
-            </call>
             <call id="a2" endpoint="subprocess">
               <parameters>
                 <label>Adjust</label>
                 <method>:post</method>
                 <arguments>
                   <behavior>wait_running</behavior>
-                  <url>http://cpee.org/~demo/cpee-cockpit/templates/BPM%202020%20Manual%20Adjust.xml</url>
+                  <url>http://localhost/flow/templates/BPM%202020%20Manual%20Adjust.xml</url>
                   <init/>
                   <endpoints/>
                   <stream/>
@@ -236,15 +183,15 @@ data.item['y'] = data.items.first['y'] + data.item['adjust_y']</finalize>
       </loop>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution Baseline Manual Adjust</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
-    <resource xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ur51</resource>
+  <attributes>
+    <info>BPM 2020 Solution Baseline Manual Adjust</info>
+    <modeltype>CPEE</modeltype>
+    <theme>preset</theme>
+    <resource>ur51</resource>
   </attributes>
 </testset>

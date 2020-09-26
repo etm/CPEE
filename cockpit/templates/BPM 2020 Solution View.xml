@@ -1,17 +1,16 @@
-<testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <overview xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/overview</overview>
-    <move_tool xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/point</move_tool>
-    <move_camera xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-put://tango.wst.univie.ac.at:9329/move/position/view</move_camera>
-    <get_items_base xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://tango.wst.univie.ac.at:9329/view/items</get_items_base>
-    <get_items_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/items</get_items_neural>
-    <get_offset_base xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://tango.wst.univie.ac.at:9329/view/details</get_offset_base>
-    <get_offset_neural xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
-    <wait xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</wait>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <dataelements/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <overview>http-put://ryloth.wst.univie.ac.at:9329/move/overview</overview>
+    <move_tool>http-put://ryloth.wst.univie.ac.at:9329/move/position/point</move_tool>
+    <move_camera>http-put://ryloth.wst.univie.ac.at:9329/move/position/view</move_camera>
+    <get_items_base>http-get://ryloth.wst.univie.ac.at:9329/view/items</get_items_base>
+    <get_items_neural>http-get://ryloth.wst.univie.ac.at:9330/view/items</get_items_neural>
+    <get_offset_base>http-get://ryloth.wst.univie.ac.at:9329/view/details</get_offset_base>
+    <get_offset_neural>http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
   </endpoints>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <loop mode="pre_test" condition="true">
         <_probability>
@@ -23,32 +22,6 @@
           <parameters>
             <label>Move to overview position</label>
             <arguments/>
-            <stream>
-              <sensors/>
-              <aggregators/>
-              <costs/>
-            </stream>
-          </parameters>
-          <annotations>
-            <_timing>
-              <_timing_wait/>
-              <_timing_threshold/>
-              <_timing_min/>
-              <_timing_max/>
-              <_timing_avg/>
-            </_timing>
-            <_notes>
-              <_notes_general/>
-            </_notes>
-          </annotations>
-        </call>
-        <call id="a7" endpoint="wait">
-          <parameters>
-            <label>Wait for camera stream delay</label>
-            <method>:post</method>
-            <arguments>
-              <timeout>5</timeout>
-            </arguments>
             <stream>
               <sensors/>
               <aggregators/>
@@ -124,32 +97,6 @@ data.item = result[0]</finalize>
             </_notes>
           </annotations>
         </call>
-        <call id="a4" endpoint="wait">
-          <parameters>
-            <label>Wait for camera stream delay</label>
-            <method>:post</method>
-            <arguments>
-              <timeout>5</timeout>
-            </arguments>
-            <stream>
-              <sensors/>
-              <aggregators/>
-              <costs/>
-            </stream>
-          </parameters>
-          <annotations>
-            <_timing>
-              <_timing_wait/>
-              <_timing_threshold/>
-              <_timing_min/>
-              <_timing_max/>
-              <_timing_avg/>
-            </_timing>
-            <_notes>
-              <_notes_general/>
-            </_notes>
-          </annotations>
-        </call>
         <call id="a6" endpoint="get_offset_neural">
           <parameters>
             <label>Get item offset</label>
@@ -186,15 +133,15 @@ data.item = result[0]</finalize>
       </loop>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">BPM 2020 Solution View</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
-    <resource xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ur51</resource>
+  <attributes>
+    <info>BPM 2020 Solution View</info>
+    <modeltype>CPEE</modeltype>
+    <theme>preset</theme>
+    <resource>ur51</resource>
   </attributes>
 </testset>
