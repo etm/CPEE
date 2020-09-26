@@ -121,6 +121,11 @@ Daemonite.new do |opts|
                 multi.set("instance:#{instance}/positions/#{ele['position']}",'at')
                 multi.set("instance:#{instance}/positions/#{ele['position']}/@passthrough",ele['passthrough']) if ele['passthrough']
               end
+              c.dig('wait')&.each do |ele|
+                multi.sadd("instance:#{instance}/positions",ele['position'])
+                multi.set("instance:#{instance}/positions/#{ele['position']}",'at')
+                multi.set("instance:#{instance}/positions/#{ele['position']}/@passthrough",ele['passthrough']) if ele['passthrough']
+              end
               c.dig('after')&.each do |ele|
                 multi.sadd("instance:#{instance}/positions",ele['position'])
                 multi.set("instance:#{instance}/positions/#{ele['position']}",'after')

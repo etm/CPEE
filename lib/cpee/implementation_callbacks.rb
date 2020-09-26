@@ -20,7 +20,7 @@ module CPEE
           ret = XML::Smart::string <<-END
             <callbacks/>
           END
-          CPEE::Persistence::extract_list(id,opts,'callbacks').each do |de|
+          CPEE::Persistence::extract_set(id,opts,'callbacks').each do |de|
             ret.root.add('callback', de[1], :id => de[0])
           end
           ret.to_s
@@ -34,7 +34,7 @@ module CPEE
         opts = @a[1]
         callback = @r[-1]
 
-        if opts[:redis].get("instance:#{id}/callbacks/#{callback}/type") == 'callback'
+        if opts[:redis].get("instance:#{id}/callback/#{callback}/type") == 'callback'
           ret = {}
           ret['values'] = @p.map{ |e|
             [e.name, e.class == Riddl::Parameter::Simple ? [:simple,e.value] : [:complex,e.mimetype,e.value.path] ]
@@ -51,7 +51,7 @@ module CPEE
             ret,
             opts[:redis]
           )
-        elsif opts[:redis].get("instance:#{id}/callbacks/#{callback}/type") == 'vote'
+        elsif opts[:redis].get("instance:#{id}/callback/#{callback}/type") == 'vote'
           if @p.length == 1 && @p[0].name == 'continue' && @p[0].class == Riddl::Parameter::Simple
             CPEE::Message::send(
               :'vote-response',
@@ -63,7 +63,11 @@ module CPEE
               @p[0].value,
               opts[:redis]
             )
+          else
+            @status = 400
           end
+        else
+          @status = 503
         end
         nil
       end
