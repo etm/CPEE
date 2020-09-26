@@ -111,6 +111,7 @@ Daemonite.new do |opts|
               c.dig('unmark')&.each do |ele|
                 multi.srem("instance:#{instance}/positions",ele['position'])
                 multi.del("instance:#{instance}/positions/#{ele['position']}")
+                multi.del("instance:#{instance}/positions/#{ele['position']}/@passthrough")
               end
               c.dig('before')&.each do |ele|
                 multi.sadd("instance:#{instance}/positions",ele['position'])
