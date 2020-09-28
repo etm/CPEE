@@ -267,7 +267,8 @@ function sse() { //{{{
           break;
         case 'task':
           if ($('#trackcolumn').length > 0) {
-            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + data['instance-url'].replace(/\/*$/,'/') + '"></iframe>'));
+            console.log(data);
+            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + data.content.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
           }
           break;
         case 'state':
