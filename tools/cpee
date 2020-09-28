@@ -44,8 +44,6 @@ ARGV.options { |opt|
 	opt.on("")
   opt.on(wrap("[new DIR]         scaffolds a sample execution engine. Everything except instances can be removed for default behaviour."))
 	opt.on("")
-  opt.on(wrap("[inst DIR]        scaffolds a sample instantiation service. Post a testset to a model to keep going in one operation."))
-	opt.on("")
   opt.on(wrap("[cpui DIR]        scaffolds a sample html client. New versions might require manual merging if you changed something."))
 	opt.on("")
   opt.on(wrap("[ui]              starts a simple static web server with the ui on http://localhost:8080. Use [cpui DIR] if you want stuff in apache or nginx."))
@@ -53,7 +51,7 @@ ARGV.options { |opt|
 }
 if (ARGV.length == 0) ||
    (ARGV.length == 1  && ARGV[0] != 'ui') ||
-   (ARGV.length == 2  && !(%w(abandon inst start delete! cpui new).include?(ARGV[0]))) ||
+   (ARGV.length == 2  && !(%w(abandon start delete! cpui new).include?(ARGV[0]))) ||
    (ARGV.length == 3  && ARGV[0] != 'archive') ||
    (ARGV.length >  3)
   puts ARGV.options
@@ -100,12 +98,6 @@ elsif command == 'cpui'
     else
       puts "Directory already exists."
     end
-  end
-elsif command == 'inst'
-  if !File.exists?(p1)
-    FileUtils.cp_r("#{curpath}/instantiation/",p1)
-  else
-    puts 'Directory already exists.'
   end
 elsif command == 'archive'
   p2 = File.join(p2,'*') if p2 =~ /([a-zA-Z]|\/)$/
