@@ -266,13 +266,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @handler_returnValue = result
     @handler_returnOptions = options
     if options['CPEE_UPDATE']
-      p 'update'
       if options['CPEE_UPDATE_STATUS']
         @controller.notify("activity/status", :activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'])
       end
       @handler_continue.continue WEEL::Signal::Again
     else
-      p 'cancel'
       @controller.cancel_callback(@handler_passthrough)
       @handler_passthrough = nil
       if options['CPEE_SALVAGE']

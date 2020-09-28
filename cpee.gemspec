@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.version          = "1.5.24"
   s.platform         = Gem::Platform::RUBY
   s.license          = "LGPL-3.0"
-  s.summary          = "Preliminary release of cloud process execution engine (cpee). If you just need workflow execution, without a rest/xmpp service exposing it, then use WEEL"
+  s.summary          = "Preliminary release of cloud process execution engine (cpee). If you just need workflow execution, without a rest service exposing it, then use WEEL"
 
   s.description      = "see http://cpee.org"
 
@@ -25,5 +25,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'weel', '~> 1.99', '>= 1.99.90'
   s.add_runtime_dependency 'highline', '~> 1.6'
   s.add_runtime_dependency 'json', '~>2.1'
+  s.add_runtime_dependency 'redis', '~> 4.1'
   s.add_runtime_dependency 'rubyzip', '~>1.2'
 end
