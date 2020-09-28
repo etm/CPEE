@@ -169,7 +169,9 @@ module CPEE
               end
               hw.send(:callback,resp,m['content']['headers'])
             end
-            psredis.unsubscribe
+            if what == 'callback-end:' + key
+              psredis.unsubscribe
+            end
           end
         end
       end

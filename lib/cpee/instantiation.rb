@@ -221,6 +221,7 @@ module CPEE
             'CPEE-BEHAVIOR' => @p[0].value
           }
           @headers << Riddl::Header.new('CPEE-INSTANTIATION',JSON::generate(send))
+          p @headers
           Riddl::Parameter::Complex.new('instance','application/json',JSON::generate(send))
         end
       end
@@ -287,22 +288,25 @@ module CPEE
         cblist       = @a[1]
         topic        = @p[1].value
         event_name   = @p[2].value
-        notification = JSON.parse(@p[3].value)
+        notification = if @p[3].class === Riddl::Parameter::Simple
+          JSON.parse(@p[3].value)
+        else
+          JSON.parse(@p[3].value.read)
+        end
 
         key = @r.last
         cb, condition, instance, uuid, instance_url = cblist.lrange(key,0,-1)
 
         cpee = File.dirname(instance_url)
 
-        orisend = {
+        send = {
           'CPEE-INSTANCE' => instance,
           'CPEE-INSTANCE-URL' => instance_url,
           'CPEE-INSTANCE-UUID' => uuid,
-          'CPEE-STATE' => notification['state']
+          'CPEE-STATE' => notification['content']['state']
         }
-        send = orisend.dup
 
-        if notification['state'] == condition
+        if notification['content']['state'] == condition
           cblist.del(key)
           srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
           res = srv.resource("/#{instance}/properties/dataelements")
@@ -314,6 +318,8 @@ module CPEE
               send[e.qname.name] = CPEE::ValueHelper::parse(e.text)
             end
           end
+          p send
+          p cb
           Riddl::Client.new(cb).put Riddl::Parameter::Complex.new('dataelements','application/json',JSON::generate(send))
         else
           Riddl::Client.new(cb).put [

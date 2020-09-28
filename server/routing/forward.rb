@@ -16,6 +16,7 @@
 
 require 'redis'
 require 'daemonite'
+require 'riddl/client'
 
 Daemonite.new do |opts|
   redis = Redis.new(path: "/tmp/redis.sock", db: 3)
@@ -51,6 +52,7 @@ Daemonite.new do |opts|
       rescue => e
         puts e.message
         puts e.backtrace
+        p '-----------------'
       end
     end
   end

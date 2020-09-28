@@ -116,13 +116,13 @@ module CPEE
       redis = @a[0][:redis]
       Riddl::Parameter::Complex.new("wis","text/xml") do
         ins = XML::Smart::string('<instances/>')
-        redis.keys('instance:*/state').each do |key|
-          instance = key[9..-1].to_i
+        redis.zrevrange('instances',0,-1).each do |instance|
+          statekey = "instance:#{instance}/state"
           attributes = "instance:#{instance}/attributes/"
           info = redis.get(attributes + 'info')
           uuid = redis.get(attributes + 'uuid')
-          state = redis.get(key)
-          state_changed = redis.get(File.join(key,'@changed'))
+          state = redis.get(statekey)
+          state_changed = redis.get(File.join(statekey,'@changed'))
           ins.root.add('instance', info,  'uuid' => uuid, 'id' => instance, 'state' => state, 'state_changed' => state_changed )
         end
         ins.to_s
@@ -146,10 +146,11 @@ module CPEE
       doc = XML::Smart::open_unprotected(opts[:properties_init])
       doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
       name     = @p[0].value
-      id       = redis.keys('instance:*/state').map{ |e| e[9..-1].to_i}.max + 1 rescue 0
+      id       = redis.zcount('instances','-inf','+inf').to_i + 1
       uuid     = SecureRandom.uuid
       instance = 'instance:' + id.to_s
       redis.multi do |multi|
+        multi.zadd('instances',id,id)
         doc.root.find(PROPERTIES_PATHS_FULL.join(' | ')).each do |e|
           if e.class == XML::Smart::Dom::Element && e.element_only?
             val = e.find('*').map { |f| f.dump }.join
@@ -211,7 +212,10 @@ module CPEE
         @status = 404
         return
       end
-      redis.del redis.keys("instance:#{id}/*").to_a
+      redis.multi do |multi|
+        multi.del redis.keys("instance:#{id}/*").to_a
+        multi.zrem 'instances', id
+      end
     end
   end #}}}
 
