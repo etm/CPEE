@@ -115,27 +115,30 @@ module CPEE
     def vote(what,content={})
       topic, name = what.split('/')
       handler = File.join(topic,'vote',name)
-      lvotes = []
+      votes = []
       @redis.smembers("instance:#{id}/handlers/#{handler}").each do |client|
         voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
         content[:key] = voteid
         content[:who] = client
-        lvotes << "vote-response:" + voteid
+        votes << "vote-response:" + voteid
         CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)
       end
 
-      if lvotes.length > 0
-        @votes.merge!(lvotes)
+      if votes.length > 0
+        @votes += votes
         psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
         collect = []
-
-        psredis.subscribe(lvotes) do |on|
+        psredis.subscribe(votes) do |on|
           on.message do |what, message|
+            p what
+            p message
             index = message.index(' ')
             mess = message[index+1..-1]
-            collect << (mess == 'true' || false)
-            @votes.delete! what
-            if collect.length >= lvotes.length
+            m = JSON.parse(mess)
+            collect << (m['content'] == 'true' || false)
+            @votes.delete what
+            cancel_callback m['name']
+            if collect.length >= votes.length
               psredis.unsubscribe
             end
           end

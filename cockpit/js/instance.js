@@ -267,7 +267,6 @@ function sse() { //{{{
           break;
         case 'task':
           if ($('#trackcolumn').length > 0) {
-            console.log(data);
             $('#trackcolumn').append($('<iframe src="track.html?monitor=' + data.content.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
           }
           break;
@@ -283,7 +282,6 @@ function sse() { //{{{
       }
     }
     if (data['type'] == 'vote') {
-      console.log(data['content']);
       monitor_instance_vote_add(data['content']);
     }
     append_to_log(data['type'], data['topic'] + '/' + data['name'], JSON.stringify(data['content']));
@@ -710,13 +708,12 @@ function monitor_instance_pos_change(content) {// {{{
   }
 } // }}}
 
-function monitor_instance_vote_add(notification) {// {{{
-  var parts = JSON.parse(notification);
+function monitor_instance_vote_add(parts) {// {{{
   var ctv = $("#votes");
 
   astr = '';
   if ($("input[name=votecontinue]").is(':checked'))
-    astr += "<button id='vote_to_continue-" + parts.activity + "-" + parts.callback + "' onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.callback + "\",\"true\");'>" + parts.activity + "</button>";
+    astr += "<button id='vote_to_continue-" + parts.activity + "-" + parts.key + "' onclick='$(this).attr(\"disabled\",\"disabled\");monitor_instance_vote_remove(\"" + parts.activity + "\",\"" + parts.key + "\",\"true\");'>" + parts.activity + "</button>";
   ctv.append(astr);
   format_visual_add(parts.activity,"vote")
 }// }}}

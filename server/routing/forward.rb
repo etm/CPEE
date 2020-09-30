@@ -32,7 +32,7 @@ Daemonite.new do |opts|
         event = what[(type.length+1)..-1]
         topic = ::File::dirname(event)
         name = ::File::basename(event)
-        long = File.join(topic,'event',name)
+        long = File.join(topic,type,name)
         redis.smembers("instance:#{instance}/handlers").each do |key|
           if redis.smembers("instance:#{instance}/handlers/#{key}").include? long
             url = redis.get("instance:#{instance}/handlers/#{key}/url")
