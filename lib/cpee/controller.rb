@@ -97,8 +97,10 @@ module CPEE
       ### tell the instance to stop
       @instance.stop
       ### end all votes or it will not work
-      @votes.each do |key|
-        CPEE::Message::send(:'vote-response',key,base,@id,uuid,info,true,@redis)
+      Thread.new do # doing stuff in trap context is a nono. but in a thread its fine :-)
+        @votes.each do |key|
+          CPEE::Message::send(:'vote-response',key,base,@id,uuid,info,true,@redis)
+        end
       end
       @thread.join if !@thread.nil? && @thread.alive?
     end
@@ -119,8 +121,8 @@ module CPEE
       @redis.smembers("instance:#{id}/handlers/#{handler}").each do |client|
         voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
         content[:key] = voteid
-        content[:who] = client
-        votes << "vote-response:" + voteid
+        content[:subscription] = client
+        votes << voteid
         CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)
       end
 
@@ -128,15 +130,13 @@ module CPEE
         @votes += votes
         psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
         collect = []
-        psredis.subscribe(votes) do |on|
+        psredis.subscribe(votes.map{|e| ['vote-response:' + e.to_s, 'vote-end:' + e.to_s] }.flatten) do |on|
           on.message do |what, message|
-            p what
-            p message
             index = message.index(' ')
             mess = message[index+1..-1]
             m = JSON.parse(mess)
             collect << (m['content'] == 'true' || false)
-            @votes.delete what
+            @votes.delete m['name']
             cancel_callback m['name']
             if collect.length >= votes.length
               psredis.unsubscribe
