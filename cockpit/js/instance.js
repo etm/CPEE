@@ -7,21 +7,32 @@ var subscription;
 var subscription_state = 'less';
 var graph_changed = new Event("graph:changed", {"bubbles":true, "cancelable":false});
 var save = {};
-    save['state']= undefined;
-    save['dsl'] = undefined;
-    save['activity_states'] = {}
-    save['graph'] = undefined;
-    save['graph_theme'] = undefined;
-    save['graph_adaptor'] = undefined;
     save['endpoints'] = undefined;
-    save['endpoints_cache'] = {};
-    save['endpoints_list'] = {};
     save['dataelements'] = undefined;
     save['attributes'] = undefined;
-    save['details'] = undefined;
-    save['details_target'] = undefined;
-    save['instance_pos'] = [];
 var node_state = {};
+
+function global_init() {
+  suspended_monitoring = false;
+  loading = false;
+  subscription = undefined;
+  subscription_state = 'less';
+  save['state']= undefined;
+  save['dsl'] = undefined;
+  save['activity_states'] = {}
+  save['graph'] = undefined;
+  save['graph_theme'] = undefined;
+  save['graph_adaptor'] = undefined;
+  save['endpoints_cache'] = {};
+  save['endpoints_list'] = {};
+  save['details'] = undefined;
+  save['details_target'] = undefined;
+  save['instance_pos'] = [];
+  node_state = {};
+}
+
+global_init();
+
 var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'calling,status,manipulating,failed,done' + '&' +
                'topic'  + '=' + 'activity' + '&' +
@@ -184,7 +195,6 @@ function check_subscription() { // {{{
       data: sub_less
     });
     subscription_state = 'less';
-    format_visual_vote_clear();
   }
 }// }}}
 
@@ -300,6 +310,10 @@ function sse() { //{{{
 } //}}}
 
 function monitor_instance(cin,rep,load,exec) {// {{{
+  global_init();
+  format_visual_clear();
+  format_visual_vote_clear();
+
   $("body").attr('current-instance',sanitize_url(cin));
   $("body").attr('current-resources',sanitize_url(rep));
 
@@ -333,7 +347,6 @@ function monitor_instance(cin,rep,load,exec) {// {{{
 
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").prop( "checked", false );
-      subscription_state = 'less';
 
       $.ajax({
         type: "POST",
@@ -1157,6 +1170,7 @@ function format_visual_clear() {//{{{
     }
   });
   $('#votes').empty();
+
 }//}}}
 function format_visual_vote_clear() {//{{{
   node_state = {};
