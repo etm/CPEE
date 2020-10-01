@@ -2,8 +2,12 @@
   <positions xmlns="http://cpee.org/ns/properties/2.0"/>
   <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
   <handlers>
-    <handler url="http://localhost/voter.php">
-      <votes topic='state'>change</votes>
+    <handler url="http://localhost:9299/">
+      <events topic="activity">calling,receiving,done</events>
+      <events topic="dataelements">change</events>
+      <events topic="endpoints">change</events>
+      <events topic="attributes">change</events>
+      <events topic="task">instantiation</events>
     </handler>
   </handlers>
   <dataelements xmlns="http://cpee.org/ns/properties/2.0">
