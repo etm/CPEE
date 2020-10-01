@@ -186,7 +186,7 @@ module CPEE
     def response
       opts = @a[0]
       id = @r[0].to_i
-      unless opts[:redis].exists("instance:#{id}/state")
+      unless opts[:redis].exists?("instance:#{id}/state")
         @status = 404
         return
       end
