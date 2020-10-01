@@ -89,8 +89,13 @@ module CPEE
     end
 
     def start
-      @thread = @instance.start
-      @thread.join
+      if vote("state/change")
+        @thread = @instance.start
+        @thread.join
+      else
+        @thread = @instance.stop
+        @thread.join
+      end
     end
 
     def stop

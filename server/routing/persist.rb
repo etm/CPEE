@@ -31,8 +31,6 @@ EVENTS = %w{
   event:position/change
   event:handler/change
   callback:activity/content
-  vote:activity/syncing_before
-  vote:activity/syncing_after
 }
 
 Daemonite.new do |opts|
@@ -53,15 +51,6 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/callback/#{key}/label",mess.dig('content','label'))
               multi.set("instance:#{instance}/callback/#{key}/position",mess.dig('content','activity'))
               multi.set("instance:#{instance}/callback/#{key}/type",'callback')
-            end
-          when 'vote:activity/syncing_before', 'vote:activity/syncing_after'
-            key = mess.dig('content','key')
-            redis.multi do |multi|
-              multi.sadd("instance:#{instance}/callbacks",key)
-              multi.set("instance:#{instance}/callback/#{key}/uuid",mess.dig('content','activity_uuid'))
-              multi.set("instance:#{instance}/callback/#{key}/label",mess.dig('content','label'))
-              multi.set("instance:#{instance}/callback/#{key}/position",mess.dig('content','activity'))
-              multi.set("instance:#{instance}/callback/#{key}/type",'vote')
             end
           when 'event:state/change'
             redis.multi do |multi|

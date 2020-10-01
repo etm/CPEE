@@ -1,6 +1,11 @@
 <testset>
   <positions xmlns="http://cpee.org/ns/properties/2.0"/>
   <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
+  <handlers>
+    <handler url="http://localhost/voter.php">
+      <votes topic='state'>change</votes>
+    </handler>
+  </handlers>
   <dataelements xmlns="http://cpee.org/ns/properties/2.0">
     <persons>3</persons>
     <card>Visa_12345</card>
