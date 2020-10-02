@@ -1,22 +1,22 @@
 Gem::Specification.new do |s|
   s.name             = "cpee"
-  s.version          = "1.5.24"
+  s.version          = "2.0"
   s.platform         = Gem::Platform::RUBY
   s.license          = "LGPL-3.0"
-  s.summary          = "Preliminary release of cloud process execution engine (cpee). If you just need workflow execution, without a rest service exposing it, then use WEEL"
+  s.summary          = "Preliminary release of cloud process execution engine (cpee.org). If you just need workflow execution, without a rest service exposing it, then use WEEL."
 
   s.description      = "see http://cpee.org"
 
-  s.files            = Dir['{example/**/*,server/**/*,tools/**/*,lib/**/*,cockpit/**/*,cockpit/themes/*/*/*,contrib/logo*,contrib/Screen*,log/**/*}'] - Dir['{server/instances/**/*,cockpit/js_libs/**/*,log/logs/**/*}'] + %w(COPYING FEATURES INSTALL Rakefile cpee.gemspec README AUTHORS)
+  s.files            = Dir['{example/**/*,server/**/*,tools/**/*,lib/**/*,cockpit/**/*,cockpit/themes/*/*/*,contrib/logo*,contrib/Screen*}'] - Dir['{server/instances/**/*,cockpit/js_libs/**/*}'] + %w(COPYING FEATURES.md INSTALL.md Rakefile cpee.gemspec README.md AUTHORS)
   s.require_path     = 'lib'
-  s.extra_rdoc_files = ['README']
+  s.extra_rdoc_files = ['README.md']
   s.bindir           = 'tools'
   s.executables      = ['cpee']
   s.test_files       = Dir['{test/*,test/*/tc_*.rb}']
 
   s.required_ruby_version = '>=2.4.0'
 
-  s.authors          = ['Juergen eTM Mangler','Ralph Vigne','Gerhard Stuermer','Florian Stertz']
+  s.authors          = ['Juergen eTM Mangler','Ralph Vigne','Gerhard Stuermer']
 
   s.email            = 'juergen.mangler@gmail.com'
   s.homepage         = 'http://cpee.org/'

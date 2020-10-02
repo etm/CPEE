@@ -30,7 +30,7 @@ end
 ARGV.options { |opt|
   opt.summary_indent = ' ' * 2
   opt.summary_width = 15
-  opt.banner = "Usage:\n#{opt.summary_indent}#{File.basename($0)} [options] ui | cpui DIR | new DIR | archive DIR URL | abandon URL\n"
+  opt.banner = "Usage:\n#{opt.summary_indent}#{File.basename($0)} [options] ui | cpui DIR | new DIR | archive DIR URL | start URL | delete! URL | abandon URL\n"
   opt.on("Options:")
   opt.on("--help", "-h", "This text") { puts opt; exit }
 	opt.on("")
@@ -174,11 +174,11 @@ elsif command == 'abandon'
     names << File.basename(p1)
   end
   names.each do |name|
-    res = Typhoeus.get(File.join(base,name.to_s,'properties','values','state','/'))
+    res = Typhoeus.get(File.join(base,name.to_s,'properties','state','/'))
     if res.success?
       case res.response_body
         when "ready", "stopped" then
-          Typhoeus.put(File.join(base,name.to_s,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
+          Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
       end
     end
   end
@@ -204,13 +204,13 @@ elsif command == 'start'
     names << File.basename(p1)
   end
   names.each do |name|
-    res = Typhoeus.get(File.join(base,name.to_s,'properties','values','state','/'))
+    res = Typhoeus.get(File.join(base,name.to_s,'properties','state','/'))
     if res.success?
       case res.response_body
         when "stopped" then
-          keep_alive = Typhoeus.get(File.join(base,name.to_s,'properties','values','attributes','keep_alive','/'))
+          keep_alive = Typhoeus.get(File.join(base,name.to_s,'properties','attributes','keep_alive','/'))
           if keep_alive.success?
-            Typhoeus.put(File.join(base,name.to_s,'properties','values','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=running")
+            Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=running")
           end
       end
     end

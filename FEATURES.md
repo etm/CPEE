@@ -1,4 +1,4 @@
-CPEE Features
+# CPEE Features
 * The engine itself is a RESTful web service for simple integration into
   websites and existing information systems.
 * Instances can be created, started, stopped, and modified through simple HTTP
@@ -12,18 +12,19 @@ CPEE Features
 * It provides better coverage of workflow patterns compared to Oracle BPELPM,
   jBOSS jBPM, and Apache Ode.
 
-CPEE Technical Details
+# CPEE Technical Details
 * Reuses an existing virtual machine for executing control flow
 * Supports BPEL and other languages through transformation to a directly
   executable DSL.
 * The engine (named WEEL and available as a separate package) has a core size
-  of ~ 700 LOC.
-* Uses ~ 2 MiB of RAM per instance (depending on storage backend and data
+  of ~ 1110 LOC.
+* Each instance runs in its own OS process, can be seperately monitored and killed.
+* Uses ~ 50 MiB of RAM per instance (depending on storage backend and data
   available in instance)
 * Can utilize multiple threads per instance.
-* Cold starts an instance in less than 50ms.
+* Can be restarted in while instances are running.
 
-CPEE Applied Benefits
+# CPEE Applied Benefits
 * Interprocess Synchronization as a Service
 * Service Replacement (Repair) Service
 * Plain HTML & JavaScript instance editor that allows to modify all aspects of

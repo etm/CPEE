@@ -1,6 +1,0 @@
-TREE:
-  └ Loop
-    ├ Alternative
-    │ └ 3
-    └ Alternative
-      └ Break

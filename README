@@ -1,7 +1,0 @@
-All code in this package is provided under the LGPL-3 license.
-Please read the file COPYING.
-
-Tested for MRI >= 1.9.3
-
-Searching for mem-leaks:
-  valgrind --num-callers=50 --error-limit=no --partial-loads-ok=yes --undef-value-errors=no ./server.rb -v start
