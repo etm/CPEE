@@ -93,7 +93,6 @@ Daemonite.new do |opts|
                   send_response instance, callback_key, m['cpee'], val, redis
                 end
               else
-                p 'rrrr1'
                 send_response instance, callback_key, m['cpee'], true, redis
               end
             end
