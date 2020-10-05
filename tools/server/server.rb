@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 require 'rubygems'
+gem 'cpee', '~>1.5'
 require 'cpee/implementation'
 
 Riddl::Server.new(CPEE::SERVER, :host => 'localhost', :port => 8298) do |opts|
