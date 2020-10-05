@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.executables      = ['cpee']
   s.test_files       = Dir['{test/*,test/*/tc_*.rb}']
 
-  s.required_ruby_version = '>=2.4.0'
+  s.required_ruby_version = '>=2.7.0'
 
   s.authors          = ['Juergen eTM Mangler','Ralph Vigne','Gerhard Stuermer']
 

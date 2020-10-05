@@ -3,7 +3,11 @@ require 'yaml'
 opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
 opts[:pidf] = __FILE__ + '.pid'
 opts[:pid] = Process.pid
-require_relative '../../../lib/cpee/controller'
+if File.exist? '../../../lib/cpee/controller'
+  require_relative '../../../lib/cpee/controller'
+else
+  require 'cpee/controller'
+end
 
 Dir[File.join(opts[:global_handlerwrappers],'*.rb')].each do |h|
   require h
