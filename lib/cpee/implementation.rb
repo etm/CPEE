@@ -66,6 +66,8 @@ module CPEE
     opts[:backend_run]                ||= File.expand_path(File.join(__dir__,'..','..','server','resources','backend','run'))
     opts[:backend_template]           ||= File.expand_path(File.join(__dir__,'..','..','server','resources','backend','instance.template'))
     opts[:backend_opts]               ||= 'opts.yaml'
+    opts[:watchdog_frequency]         ||= 7
+    opts[:watchdog_start_off]         ||= false
     opts[:backend_instance]           ||= 'instance.rb'
     opts[:infinite_loop_stop]         ||= 10000
     opts[:redis_path]                 ||= '/tmp/redis.sock'
@@ -85,6 +87,16 @@ module CPEE
     ]
 
     Proc.new do
+      parallel do
+        CPEE::watch_services(@riddl_opts[:watchdog_start_off])
+        EM.add_periodic_timer(@riddl_opts[:watchdog_frequency]) do
+          CPEE::watch_services
+        end
+      end
+      cleanup do
+        CPEE::cleanup_services(@riddl_opts[:watchdog_start_off])
+      end
+
       interface 'main' do
         run CPEE::Instances, opts if get '*'
         run CPEE::NewInstance, opts if post 'instance-new'
@@ -107,6 +119,31 @@ module CPEE
       interface 'callbacks' do |r|
         id = r[:h]['RIDDL_DECLARATION_PATH'].split('/')[1].to_i
         use CPEE::Callbacks::implementation(id.to_i, opts)
+      end
+    end
+  end
+
+  def self::watch_services(watchdog_start_off)
+    return if watchdog_start_off
+    EM.defer do
+      Dir[File.join(__dir__,'..','..','server','routing','*.rb')].each do |s|
+        s = s.sub(/\.rb$/,'')
+        pid = (File.read(s + '.pid').to_i rescue nil)
+        if (pid.nil? || !(Process.kill(0, pid) rescue false)) && !File.exist?(s + '.lock')
+          system "#{s}.rb restart 1>/dev/null 2>&1"
+          puts "➡ Service #{File.basename(s,'.rb')} started ..."
+        end
+      end
+    end
+  end
+  def self::cleanup_services(watchdog_start_off)
+    return if watchdog_start_off
+    Dir[File.join(__dir__,'..','..','server','routing','*.rb')].each do |s|
+      s = s.sub(/\.rb$/,'')
+      pid = (File.read(s + '.pid').to_i rescue nil)
+      if !pid.nil? || (Process.kill(0, pid) rescue false)
+        system "#{s}.rb stop 1>/dev/null 2>&1"
+        puts "➡ Service #{File.basename(s,'.rb')} stopped ..."
       end
     end
   end

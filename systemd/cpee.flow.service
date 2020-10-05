@@ -1,0 +1,20 @@
+[Unit]
+Description=Flow
+PartOf=cpee.service
+After=cpee.service
+
+[Service]
+Type=forking
+User={CPEEUSER}
+WorkingDirectory={CPEEWORKINGDIR}
+PIDFile={CPEESERVER}.pid
+ExecStart={CPEESERVER}.rb start
+ExecReload={CPEESERVER}.rb restart
+ExecStop={CPEESERVER}.rb stop
+TimeoutStopSec=30
+Restart=always
+RestartSec=3
+KillMode=mixed
+
+[Install]
+WantedBy=cpee.service

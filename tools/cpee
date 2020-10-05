@@ -223,6 +223,14 @@ elsif command == 'new'
     FileUtils.mkdir("#{p1}/instances") rescue nil
     FileUtils.mkdir("#{p1}/resources") rescue nil
     FileUtils.mkdir("#{p1}/handlerwrappers") rescue nil
+    Dir["#{curpath}/server/*.service"].each |f|
+      nam =  File.basename f
+      cont = File.read(f)
+      cont.gusb!(/{CPEEUSER}/,`whoami`.strip)
+      cont.gusb!(/{CPEEWORKINGDIR}/,"#{p1}")
+      cont.gusb!(/{CPEESERVER}/,"#{p1}/server")
+      File.write("#{p1}/#{nam}",cont)
+    end
   else
     puts 'Directory already exists.'
   end

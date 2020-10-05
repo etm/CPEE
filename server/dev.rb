@@ -28,6 +28,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../lib/cpee/implementation')
 Riddl::Server.new(CPEE::SERVER, :port => 8298) do |opts|
   accessible_description true
   cross_site_xhr true
+  opts[:watchdog_start_off] true
 
   use CPEE::implementation(opts)
 end.loop!
