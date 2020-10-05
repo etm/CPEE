@@ -223,13 +223,16 @@ elsif command == 'new'
     FileUtils.mkdir("#{p1}/instances") rescue nil
     FileUtils.mkdir("#{p1}/resources") rescue nil
     FileUtils.mkdir("#{p1}/handlerwrappers") rescue nil
-    Dir["#{curpath}/server/*.service"].each |f|
+    Dir["#{curpath}/../systemd/*.service"].each do |f|
       nam =  File.basename f
       cont = File.read(f)
-      cont.gusb!(/{CPEEUSER}/,`whoami`.strip)
-      cont.gusb!(/{CPEEWORKINGDIR}/,"#{p1}")
-      cont.gusb!(/{CPEESERVER}/,"#{p1}/server")
+      cont.gsub!(/{CPEEUSER}/,`whoami`.strip)
+      cont.gsub!(/{CPEEWORKINGDIR}/,"#{File.realpath(p1)}")
+      cont.gsub!(/{CPEESERVER}/,"#{File.realpath(p1)}/server")
       File.write("#{p1}/#{nam}",cont)
+      p f
+      p nam
+      p "#{p1}/#{nam}"
     end
   else
     puts 'Directory already exists.'
