@@ -146,7 +146,9 @@ module CPEE
           end
 
           if (node = doc.find('/p:properties/p:positions')).any?
-            CPEE::Properties::PatchPositions::set id, opts, node.first.dump
+            if node.find('p:*').any?
+              CPEE::Properties::PatchPositions::set id, opts, node.first.dump
+            end
           end
 
           if (node = doc.find('/p:properties/p:state')).any?
