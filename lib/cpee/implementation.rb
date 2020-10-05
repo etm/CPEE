@@ -216,7 +216,7 @@ module CPEE
               multi.sadd("instance:#{id}/handlers/#{key}",c)
               multi.sadd("instance:#{id}/handlers/#{c}",key)
             end
-          end
+          end rescue nil # all the ones that are not ok, are ignored
         end
         multi.set(File.join(instance, 'attributes', 'uuid'), SecureRandom.uuid)
         multi.zadd(File.join(instance, 'attributes'), -2, 'uuid')
