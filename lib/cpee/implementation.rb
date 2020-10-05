@@ -204,6 +204,20 @@ module CPEE
           p = path(e)
           multi.zadd(File.join(instance, File.dirname(p)), i, File.basename(p))
         end
+        Dir[File.join(opts[:notifications_init],'*','subscription.xml')].each do |f|
+          XML::Smart::open_unprotected(f) do |doc|
+            doc.register_namespace 'np', 'http://riddl.org/ns/common-patterns/notifications-producer/2.0'
+            key = File.basename(File.dirname(f))
+            url = doc.find('string(/np:subscription/@url)')
+            multi.sadd("instance:#{id}/handlers",key)
+            multi.set("instance:#{id}/handlers/#{key}/url",url)
+            doc.find('/np:subscription/np:topic/*').each do |e|
+              c = File.join(e.parent.attributes['id'],e.qname.name,e.text)
+              multi.sadd("instance:#{id}/handlers/#{key}",c)
+              multi.sadd("instance:#{id}/handlers/#{c}",key)
+            end
+          end
+        end
         multi.set(File.join(instance, 'attributes', 'uuid'), SecureRandom.uuid)
         multi.zadd(File.join(instance, 'attributes'), -2, 'uuid')
         multi.set(File.join(instance, 'attributes', 'info'), name)
