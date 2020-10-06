@@ -507,11 +507,11 @@
         <xsl:text>nil</xsl:text>
       </xsl:when>
       <xsl:when test="child::node()[not(self::text())]">
-        <!-- FUUUU, there is probably much more TODO -->
+        <!-- FUUUU, there is probably much more TODO. Updated Matthias und Juergen, we tested for ing-opcua/execute -->
         <xsl:choose>
-          <xsl:when test="child::*/child::* and count(child::*[not(name()=name(../child::*[1]))])=0">
+          <xsl:when test="child::* and name(child::*)=concat(name(.),'_item')  and count(child::*[not(name()=name(../child::*[1]))])=0">
             <xsl:text>"[ </xsl:text>
-            <xsl:apply-templates select="*" mode="JSON"/>
+            <xsl:apply-templates select="*" mode="JSONArrayItem"/>
             <xsl:text>]"</xsl:text>
           </xsl:when>
           <xsl:otherwise>
@@ -650,6 +650,15 @@
   <!-- JSON Array Element -->
   <xsl:template match="*" mode="JSONArrayElement">
     <xsl:call-template name="JSONProperties"/>
+    <xsl:choose>
+      <xsl:when test="following-sibling::*">, </xsl:when>
+      <xsl:otherwise><xsl:text> </xsl:text></xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  <xsl:template match="*" mode="JSONArrayItem">
+    <xsl:call-template name="JSONProperties">
+      <xsl:with-param name="parent" select="'Yes'"></xsl:with-param>
+    </xsl:call-template>
     <xsl:choose>
       <xsl:when test="following-sibling::*">, </xsl:when>
       <xsl:otherwise><xsl:text> </xsl:text></xsl:otherwise>
