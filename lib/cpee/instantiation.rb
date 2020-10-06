@@ -34,7 +34,7 @@ module CPEE
           doc.register_namespace 'desc', 'http://cpee.org/ns/description/1.0'
           doc.register_namespace 'prop', 'http://riddl.org/ns/common-patterns/properties/1.0'
 
-          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+          srv = Riddl::Client.new(cpee, File.join(cpee,'?riddl-description'))
           res = srv.resource("/")
           if name
             doc.find("/testset/attributes/prop:info").each do |e|
@@ -109,7 +109,7 @@ module CPEE
 
           if cb
             cbk = SecureRandom.uuid
-            srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+            srv = Riddl::Client.new(cpee, File.join(cpee,'?riddl-description'))
             status, response = srv.resource("/#{instance}/notifications/subscriptions/").post [
               Riddl::Parameter::Simple.new("url",File.join(selfurl,'callback',cbk)),
               Riddl::Parameter::Simple.new("topic","state"),
@@ -126,7 +126,7 @@ module CPEE
       private :handle_waiting
       def handle_starting(cpee,instance,behavior) #{{{
         if behavior =~ /_running$/
-          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+          srv = Riddl::Client.new(cpee, File.join(cpee,'?riddl-description'))
           res = srv.resource("/#{instance}/properties/values")
           status, response = res.put [
             Riddl::Parameter::Simple.new('name', 'state'),
@@ -141,7 +141,7 @@ module CPEE
           JSON::parse(data).each do |k,v|
             content.root.add(k,v)
           end
-          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+          srv = Riddl::Client.new(cpee, File.join(cpee,'?riddl-description'))
           res = srv.resource("/#{instance}/properties/values/dataelements/")
           status, response = res.patch [
             Riddl::Parameter::Complex.new('content','text/xml',content.to_s)
@@ -154,7 +154,7 @@ module CPEE
           JSON::parse(data).each do |k,v|
             content.root.add(k,v)
           end
-          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+          srv = Riddl::Client.new(cpee, File.join(cpee,'?riddl-description'))
           res = srv.resource("/#{instance}/properties/values/endpoints/")
           status, response = res.patch [
             Riddl::Parameter::Complex.new('content','text/xml',content.to_s)
@@ -280,7 +280,7 @@ module CPEE
         cblist   = @a[2]
         instance = @p[1].value
 
-        srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+        srv = Riddl::Client.new(cpee, File.join(cpee,'?riddl-description'))
         res = srv.resource("/#{instance}/properties/values/attributes/uuid")
         status, response = res.get
 
@@ -316,7 +316,7 @@ module CPEE
 
         if notification['state'] == condition
           cblist.del(key)
-          srv = Riddl::Client.new(cpee, cpee + "?riddl-description")
+          srv = Riddl::Client.new(cpee, File.join(cpee,'?riddl-description'))
           res = srv.resource("/#{instance}/properties/values/dataelements")
           status, response = res.get
           if status >= 200 && status < 300
