@@ -139,11 +139,12 @@ elsif command == 'archive'
             prop = Typhoeus.get(File.join(base,name.to_s,'properties','/'))
             if prop.success?
               xprop = XML::Smart::string(prop.response_body)
-              xprop.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
+              xprop.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
               if ["finished","abandoned"].include?(xprop.find("string(/p:properties/p:state)"))
                 uuid = xprop.find("string(/p:properties/p:attributes/p:uuid)")
                 id = name.to_s
                 File.write(File.join(p1,uuid + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
+                p File.join(base,name.to_s,'/')
                 Typhoeus.delete(File.join(base,name.to_s,'/'))
               end
             end

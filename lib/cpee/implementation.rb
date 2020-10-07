@@ -259,12 +259,13 @@ module CPEE
       opts = @a[0]
       redis = opts[:redis]
       id = @r[0].to_i
-      unless redis.exists("instance:#{id}/state")
+      unless redis.exists?("instance:#{id}/state")
         @status = 404
         return
       end
+      empt = redis.keys("instance:#{id}/*").to_a
       redis.multi do |multi|
-        multi.del redis.keys("instance:#{id}/*").to_a
+        multi.del empt
         multi.zrem 'instances', id
       end
     end

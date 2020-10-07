@@ -220,8 +220,10 @@ module CPEE
             Process.detach pid
           when 'stopping'
             pid = File.read(exe + '.pid') rescue nil
-            if pid
+            if pid && (Process.kill(0, pid) rescue false)
               Process.kill('HUP', pid.to_i) rescue nil
+            else
+              PutState::set id, opts, 'stopped'
             end
           else
             ### Most probably this is never needed. Lets see.
