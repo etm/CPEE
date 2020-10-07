@@ -223,6 +223,7 @@ module CPEE
             if pid && (Process.kill(0, pid) rescue false)
               Process.kill('HUP', pid.to_i) rescue nil
             else
+              File.unlink(exe + '.pid') rescue nil
               PutState::set id, opts, 'stopped'
             end
           else
