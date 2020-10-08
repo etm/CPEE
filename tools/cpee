@@ -30,7 +30,7 @@ end
 ARGV.options { |opt|
   opt.summary_indent = ' ' * 2
   opt.summary_width = 15
-  opt.banner = "Usage:\n#{opt.summary_indent}#{File.basename($0)} [options] ui | cpui DIR | new DIR | archive DIR URL | start URL | delete! URL | abandon URL\n"
+  opt.banner = "Usage:\n#{opt.summary_indent}#{File.basename($0)} [options] convert | ui | cpui DIR | new DIR | archive DIR URL | start URL | delete! URL | abandon URL\n"
   opt.on("Options:")
   opt.on("--help", "-h", "This text") { puts opt; exit }
 	opt.on("")
@@ -47,10 +47,13 @@ ARGV.options { |opt|
   opt.on(wrap("[cpui DIR]        scaffolds a sample html client. New versions might require manual merging if you changed something."))
 	opt.on("")
   opt.on(wrap("[ui]              starts a simple static web server with the ui on http://localhost:8080. Use [cpui DIR] if you want stuff in apache or nginx."))
+	opt.on("")
+  opt.on(wrap("[convert]         converts all testsets in the current directory to cpee2."))
   opt.parse!
 }
 if (ARGV.length == 0) ||
    (ARGV.length == 1  && ARGV[0] != 'ui') ||
+   (ARGV.length == 1  && ARGV[0] != 'convert') ||
    (ARGV.length == 2  && !(%w(abandon start delete! cpui new).include?(ARGV[0]))) ||
    (ARGV.length == 3  && ARGV[0] != 'archive') ||
    (ARGV.length >  3)
@@ -97,6 +100,29 @@ elsif command == 'cpui'
       FileUtils.cp_r("#{curpath}/../cockpit/",p1)
     else
       puts "Directory already exists."
+    end
+  end
+elsif command == 'convert'
+  Dir['*.xml'].each do |f|
+    XML::Smart.modify(f) do |doc|
+      doc.register_namespace 'd', 'http://cpee.org/ns/description/1.0'
+      doc.register_namespace 'p', 'http://riddl.org/ns/common-patterns/properties/1.0'
+      doc.register_namespace 'x', 'http://cpee.org/ns/properties/2.0'
+      if doc.root.qname.name == 'testset'
+        doc.root.namespaces[nil] = 'http://cpee.org/ns/properties/2.0'
+        doc.root.namespace = nil
+
+        doc.find('//x:start_url').each do |e|
+          e.text = 'https://centurio.work/flow-test/start/url/'
+        end rescue nil
+        doc.find('//x:start_git').each do |e|
+          e.text = 'https://centurio.work/flow-test/start/git/'
+        end rescue nil
+
+        doc.find('//p:*').each do |e|
+          e.namespaces.delete_all!
+        end rescue nil
+      end
     end
   end
 elsif command == 'archive'

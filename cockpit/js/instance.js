@@ -784,7 +784,7 @@ function save_testsetfile() {// {{{
   var def = new $.Deferred();
   def.done(function(name,testset) {
     var ct = new Date();
-    $('#savetestsetfile').attr('download',name + '_' + ct.strftime("%Y-%m-%dT%H%M%S%z") + '.xml');
+    $('#savetestsetfile').attr('download',name + '.xml');
     $('#savetestsetfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(testset.serializePrettyXML()));
     document.getElementById('savetestsetfile').click();
   });
@@ -811,6 +811,11 @@ function get_testset(deferred) {// {{{
       $('testset > dslx',testset).remove();
       testset.append($X('<transformation xmlns="http://cpee.org/ns/properties/2.0"><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation>'));
       var name =  $('testset > attributes > info',testset).text();
+      $('[xmlns]',testset).each((idx,ele) => {
+        if (ele.parentNode.namespaceURI == ele.getAttribute('xmlns')) {
+          ele.removeAttribute('xmlns');
+        }
+      });
       deferred.resolve(name,testset);
     },
     error: function() { deferred.reject(); report_failure(); }
