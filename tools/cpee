@@ -52,8 +52,7 @@ ARGV.options { |opt|
   opt.parse!
 }
 if (ARGV.length == 0) ||
-   (ARGV.length == 1  && ARGV[0] != 'ui') ||
-   (ARGV.length == 1  && ARGV[0] != 'convert') ||
+   (ARGV.length == 1  && !(%w(ui convert).include?(ARGV[0]))) ||
    (ARGV.length == 2  && !(%w(abandon start delete! cpui new).include?(ARGV[0]))) ||
    (ARGV.length == 3  && ARGV[0] != 'archive') ||
    (ARGV.length >  3)
