@@ -26,8 +26,8 @@ File.write(opts[:pidf],opts[:pid])
   Signal.trap(sig) do
     puts "Caught #{sig}!"
     controller.stop
-    File.unlink(opts[:pidf])
   end
 end
 
 controller.start
+File.unlink(opts[:pidf])
