@@ -215,7 +215,7 @@ module CPEE
         case state
           when 'running'
             CPEE::Persistence::write_instance id, opts
-            pid = Kernel.spawn(exe , :pgroup => true, :in=>"/dev/null", :out => exe + '.out', :err => exe + '.err')
+            pid = Kernel.spawn(exe , :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
             Process.detach pid
             File.write(exe + '.pid',pid)
           when 'stopping'
