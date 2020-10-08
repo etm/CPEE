@@ -48,7 +48,7 @@ ARGV.options { |opt|
 	opt.on("")
   opt.on(wrap("[ui]              starts a simple static web server with the ui on http://localhost:8080. Use [cpui DIR] if you want stuff in apache or nginx."))
 	opt.on("")
-  opt.on(wrap("[convert]         converts all testsets in the current directory to cpee2."))
+  opt.on(wrap("[convert]         converts all testsets in the current directory to cpee2"))
   opt.parse!
 }
 if (ARGV.length == 0) ||
