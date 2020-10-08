@@ -21,7 +21,7 @@ unless ins.empty?
   ]
   key = response.first.value
 
-  res = srv.resource("/#{ins}/notifications/subscriptions/#{key}/ws/").ws do |conn|
+  res = srv.resource("/#{ins}/notifications/subscriptions/#{key}/sse/").sse do |conn|
     conn.on :close do
       EM::stop_event_loop
     end
