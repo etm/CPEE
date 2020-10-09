@@ -246,7 +246,7 @@ elsif command == 'delete!'
 elsif command == 'new'
   if !File.exists?(p1)
     FileUtils.cp_r("#{curpath}/server/",p1)
-    FileUtils.cp_r("#{curpath}/archive/",p1)
+    FileUtils.mkdir("#{p1}/archive") rescue nil
     FileUtils.mkdir("#{p1}/instances") rescue nil
     FileUtils.mkdir("#{p1}/resources") rescue nil
     FileUtils.mkdir("#{p1}/handlerwrappers") rescue nil
