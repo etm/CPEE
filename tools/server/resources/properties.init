@@ -2,40 +2,41 @@
 <!--
   This file is part of CPEE.
 
-  CPEE is free software: you can redistribute it and/or modify it under the terms
-  of the GNU General Public License as published by the Free Software Foundation,
-  either version 3 of the License, or (at your option) any later version.
+  CPEE is free software: you can redistribute it and/or modify it under the
+  terms of the GNU General Public License as published by the Free Software
+  Foundation, either version 3 of the License, or (at your option) any later
+  version.
 
   CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
   PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License along with
-  CPEE (file COPYING in the main directory).  If not, see
+  CPEE (file COPYING in the main directory). If not, see
   <http://www.gnu.org/licenses/>.
 -->
 
-<properties xmlns="http://riddl.org/ns/common-patterns/properties/1.0">
-  <attributes>
-    <info/>
-    <modeltype>CPEE</modeltype>
-    <theme>default</theme>
-  </attributes>
-  <state>ready</state>
+<properties xmlns="http://cpee.org/ns/properties/2.0">
+  <state changed="1970-01-01T00:00:00+00:00">ready</state>
+  <status>
+    <id>0</id>
+    <message>undefined</message>
+  </status>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <positions/>
   <dataelements/>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>
+  <attributes>
+    <info/>
+    <modeltype>CPEE</modeltype>
+    <theme>preset</theme>
+  </attributes>
   <dsl/>
   <dslx>
     <description xmlns="http://cpee.org/ns/description/1.0"/>
   </dslx>
-  <status>
-    <id>0</id>
-    <message>undefined</message>
-  </status>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0"/>
   </description>

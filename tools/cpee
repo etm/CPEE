@@ -52,8 +52,7 @@ ARGV.options { |opt|
   opt.parse!
 }
 if (ARGV.length == 0) ||
-   (ARGV.length == 1  && ARGV[0] != 'ui') ||
-   (ARGV.length == 1  && ARGV[0] != 'convert') ||
+   (ARGV.length == 1  && !(%w(ui convert).include?(ARGV[0]))) ||
    (ARGV.length == 2  && !(%w(abandon start delete! cpui new).include?(ARGV[0]))) ||
    (ARGV.length == 3  && ARGV[0] != 'archive') ||
    (ARGV.length >  3)
@@ -247,6 +246,7 @@ elsif command == 'delete!'
 elsif command == 'new'
   if !File.exists?(p1)
     FileUtils.cp_r("#{curpath}/server/",p1)
+    FileUtils.mkdir("#{p1}/archive") rescue nil
     FileUtils.mkdir("#{p1}/instances") rescue nil
     FileUtils.mkdir("#{p1}/resources") rescue nil
     FileUtils.mkdir("#{p1}/handlerwrappers") rescue nil
@@ -257,9 +257,6 @@ elsif command == 'new'
       cont.gsub!(/{CPEEWORKINGDIR}/,"#{File.realpath(p1)}")
       cont.gsub!(/{CPEESERVER}/,"#{File.realpath(p1)}/server")
       File.write("#{p1}/#{nam}",cont)
-      p f
-      p nam
-      p "#{p1}/#{nam}"
     end
   else
     puts 'Directory already exists.'
