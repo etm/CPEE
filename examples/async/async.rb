@@ -23,7 +23,7 @@ $cb = nil
 class Async < Riddl::Implementation
   def response
     $cb = @h['CPEE_CALLBACK']
-    @headers << Riddl::Header.new('CPEE_CALLBACK','true')
+    @headers << Riddl::Header.new('CPEE-CALLBACK','true')
   end
 end
 class Ret < Riddl::Implementation
