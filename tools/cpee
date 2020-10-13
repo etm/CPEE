@@ -179,7 +179,6 @@ elsif command == 'archive'
                 uuid = xprop.find("string(/p:properties/p:attributes/p:uuid)")
                 id = name.to_s
                 File.write(File.join(p1,uuid + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
-                p File.join(base,name.to_s,'/')
                 Typhoeus.delete(File.join(base,name.to_s,'/'))
               end
             end
