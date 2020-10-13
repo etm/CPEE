@@ -117,6 +117,16 @@ elsif command == 'convert'
         doc.find('//x:start_git').each do |e|
           e.text = 'https://centurio.work/flow-test/start/git/'
         end rescue nil
+        doc.find('//d:finalize | //d:update | //d:prepare | //d:rescue').each do |e|
+          if e.parent.qname.name != 'code'
+            n = e.parent
+            if (x = n.find('d:code')).any?
+              x.first.add(e)
+            else
+              n.add('d:code').add(e)
+            end
+          end
+        end rescue nil
 
         doc.find('//p:*').each do |e|
           e.namespaces.delete_all!
