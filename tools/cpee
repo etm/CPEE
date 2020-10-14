@@ -162,7 +162,7 @@ elsif command == 'archive'
         XML::Smart.string(res.response_body) do |doc|
           if doc.root.qname.to_s == "instances"
             doc.root.children.each do |i|
-              if ["finished","abandoned"].include?(i.attributes['state'])
+              if ["finished","abandoned"].include?(i.attributes['state']) || (["ready"].include?(i.attributes['state']) && Time.parse(i.attributes['changed']).to_i < Time.now-(60*60*24))
                 prop = Typhoeus.get(File.join(base,name.to_s,i.attributes['id'],'properties','/'))
                 if prop.success?
                   File.write(File.join(p1,i.attributes['uuid'] + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
@@ -175,7 +175,7 @@ elsif command == 'archive'
             if prop.success?
               xprop = XML::Smart::string(prop.response_body)
               xprop.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-              if ["finished","abandoned"].include?(xprop.find("string(/p:properties/p:state)"))
+              if ["finished","abandoned"].include?(xprop.find("string(/p:properties/p:state)")) || (["ready"].include?(xprop.find("string(/p:properties/p:state)")) && Time.parse(xprop.find("string(/p:properties/p:state/@changed)")) < Time.now-(60*60*12))
                 uuid = xprop.find("string(/p:properties/p:attributes/p:uuid)")
                 id = name.to_s
                 File.write(File.join(p1,uuid + '.xml'),prop.response_body) if prop.headers['Content-Type'] =~ /^(text|application)\/xml/
@@ -209,11 +209,10 @@ elsif command == 'abandon'
     names << File.basename(p1)
   end
   names.each do |name|
-    res = Typhoeus.get(File.join(base,name.to_s,'properties','state','/'))
-    if res.success?
-      case res.response_body
-        when "ready", "stopped" then
-          Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
+    res1 = Typhoeus.get(File.join(base,name.to_s,'properties','state','/'))
+    if res1.success?
+      if res1.response_body == 'ready' || res1.response_body == 'stopped'
+        Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
       end
     end
   end
