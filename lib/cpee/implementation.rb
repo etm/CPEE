@@ -183,7 +183,7 @@ module CPEE
       doc = XML::Smart::open_unprotected(opts[:properties_init])
       doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
       name     = @p[0].value
-      id       = redis.zcount('instances','-inf','+inf').to_i + 1
+      id       = redis.zrevrange('instances', 0, 0).first.to_i + 1
       uuid     = SecureRandom.uuid
       instance = 'instance:' + id.to_s
       redis.multi do |multi|
