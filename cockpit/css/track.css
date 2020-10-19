@@ -26,17 +26,21 @@
   border-bottom: 0.1em solid var(--x-ui-border-color);
 }
 
-#usage {
+#trackusage {
   line-height: 2em;
   margin-top: 0.5em;
   margin-left: 2em;
   margin-right: 1em;
 }
-#usage button{
+#trackusage button {
   width: 2em;
   height: 2em;
   vertical-align: center;
 }
 #current-instance[href]:after {
   content: "";
+}
+
+#tracktitle {
+  margin-bottom: 0.1em;
 }

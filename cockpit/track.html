@@ -62,53 +62,41 @@
     <div class='hidden' id='relaxngworker'></div>
     <div id="trackfull">
       <div id='graphcolumn'>
-        <div id="usage">
-          <span id="title"></span>
-          <button name="glob_reload" title='reload'>
-            <svg viewBox="0 -1.5 7 12" width="10" height="16">
-              <path
-                 style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                 d="M 0.16312848,8.0395383 0.01544237,10.5 2.0724235,9.1418703 Z"/>
-              <path
-                 style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                 d="M 2.3304485,8.6949581 5.930588,2.4593336 4.0212929,1.3570015 0.4211534,7.592626 Z"/>
-              <path
-                 style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                 d="M 6.1886129,2.0124213 6.7140532,1.102332 4.8047582,0 4.2793178,0.91008927 Z"/>
-            </svg>
-          </button>
-          <button name="glob_edit" title='edit'>
-            <svg viewBox="0 -1.5 7 12" width="10" height="16">
-              <path
-                 style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                 d="M 0.16312848,8.0395383 0.01544237,10.5 2.0724235,9.1418703 Z"/>
-              <path
-                 style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                 d="M 2.3304485,8.6949581 5.930588,2.4593336 4.0212929,1.3570015 0.4211534,7.592626 Z"/>
-              <path
-                 style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                 d="M 6.1886129,2.0124213 6.7140532,1.102332 4.8047582,0 4.2793178,0.91008927 Z"/>
-            </svg>
-          </button>
-          <button name="glob_unshow" title='unshow'>
-            <svg viewBox="0 -1.5 7 12" width="10" height="16">
-              <path
-                 style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                 d="M 0.16312848,8.0395383 0.01544237,10.5 2.0724235,9.1418703 Z"/>
-              <path
-                 style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                 d="M 2.3304485,8.6949581 5.930588,2.4593336 4.0212929,1.3570015 0.4211534,7.592626 Z"/>
-              <path
-                 style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-                 d="M 6.1886129,2.0124213 6.7140532,1.102332 4.8047582,0 4.2793178,0.91008927 Z"/>
-            </svg>
-          </button>
-          <span> | </span>
-          <span id='state'>
-            <span id="state_text"></span>
+        <div id="trackusage">
+          <div id='tracktitle'>
+            <span>
+              <a class="x-ui-button" name="glob_reload" title='reload' href=''>
+                <svg viewBox="0 -1.5 7 12" width="10" height="16">
+                  <path
+										style="fill:#000000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
+     								d="M 3.5,1.5 C 1.431441,1.5001975 -0.24540803,3.1770466 -0.24560554,5.2456055 -0.2454082,7.3141647 1.4314408,8.991014 3.5,8.9912113 5.5685591,8.991014 7.2454081,7.3141647 7.2456054,5.2456055 7.2454079,3.1770466 5.5685589,1.5001975 3.5,1.5 Z M 3.437195,4.0616198 c 0.020931,-5.551e-4 0.041873,-5.551e-4 0.062805,0 0.6537674,3.133e-4 1.1836723,0.5302183 1.1839856,1.1839857 C 4.6836723,5.8993729 4.1537674,6.4292778 3.5,6.4295912 2.8462325,6.4292778 2.3163276,5.8993729 2.3160142,5.2456055 2.315414,4.6155841 2.8080758,4.0953252 3.437195,4.0616198 Z"/>
+                </svg>
+              </a>
+              <a class="x-ui-button" name="glob_edit" title='edit' target='_blank' href='' id='current-monitor'><svg viewBox="0 -1.5 7 12" width="10" height="16">
+                  <path
+                     style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                     d="M -0.25,7.8194404 0.57057194,10.599984 3.1882886,9.3540573 Z"/>
+                  <path
+                     style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                     d="M 3.5215262,8.6074434 6.0527848,2.9361926 2.6144961,1.4015756 0.08323736,7.0728263 Z"/>
+                  <path
+                     style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                     d="M 6.4439758,2.0597335 6.9719316,0.87685566 3.533643,-0.6577613 3.005687,0.52511656 Z"/>
+                </svg></a>
+              <a class="x-ui-button" name="glob_unshow" title='unshow'>
+                <svg viewBox="0 -1.5 7 12" width="10" height="16">
+                    <path
+                      style="fill:#000000;stroke-width:0;stop-color:#000000"
+                      d="M 5.75,1.4999999 3.5,3.75 1.25,1.4999999 -0.25000013,3 2,5.25 -0.25000013,7.5 1.25,9.0000002 3.5,6.75 5.75,9.0000002 7.2500001,7.5 5,5.25 7.2500001,3 Z"/>
+                </svg>
+              </a>
+            </span>
+            <span> - </span>
+            <span id="title">Loading ...</span>
+          </div>
+          <div id='state'>
             <span id="state_any">
-              <span> ⇒ </span>
-              <button name="state_start" title='start'>
+              <button name="state_start" title='start' style='display:none'>
                 <svg viewBox="0 -1.5 7 12" width="10" height="16">
                   <path
                     style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -123,7 +111,6 @@
                 </svg>
               </button>
               <span id="state_extended">
-                <span> / </span>
                 <button name="state_replay" title='replay'>
                   <svg viewBox="0 -1.5 7 12" width="10" height="16">
                     <path
@@ -131,7 +118,6 @@
                       d="m -0.24999978,8.9999993 c 0,-2.7488167 0,-5.4976332 0,-8.24644997 C 1.1183278,0.76955385 2.4884861,0.71666052 3.8555376,0.79065567 4.5083287,0.83810218 5.2238942,1.0790874 5.5755039,1.7307256 6.1661398,2.7080902 6.0299484,4.2180754 5.1108772,4.9019222 4.7622397,5.1617467 4.3480204,5.2956156 3.9336064,5.3605366 4.9287868,5.9394132 5.4254071,7.0996814 6.0167729,8.0858876 6.1549588,8.3769029 6.4657247,8.7723933 6.5,8.9999999 c -0.5944185,0 -1.1888371,0 -1.7832559,0 C 4.0758679,7.9893475 3.4946311,6.9294648 2.7923497,5.9678488 2.4230355,5.5319748 1.8508715,5.5458842 1.3513114,5.5576027 c -0.1507526,-0.00412 -0.044576,0.272902 -0.076255,0.3990664 0,1.0144436 0,2.028887 0,3.0433307 -0.50835205,-3e-7 -1.01670555,8e-7 -1.52505618,-5e-7 z M 1.2750578,4.2411336 C 2.111059,4.2189781 2.9581852,4.3060525 3.7849326,4.1387394 4.4863715,3.8915585 4.5732952,2.6432813 3.9026802,2.2941453 3.5098807,2.068434 3.050719,2.1857044 2.6267379,2.1489138 c -0.4505578,-0.00242 -0.90112,0.00147 -1.3516801,-3.456e-4 0,0.6975176 0,1.3950347 0,2.0925522 z"
                   </svg>
                 </button>
-                <span> / </span>
                 <button name="state_abandon" title='abandon'>
                   <svg viewBox="0 -1.5 7 12" width="10" height="16">
                     <path
@@ -140,8 +126,10 @@
                   </svg>
                 </button>
               </span>
+              <span> - Status: </span>
             </span>
-          </span>
+            <span id="state_text">Loading ...</span>
+          </div>
         </div>
         <div id='graphgrid'>
           <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>

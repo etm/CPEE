@@ -6,3 +6,8 @@ function closeIFrame(srch) {
   });
 }
 
+$(document).ready(function() {
+  $("a[name=glob_unshow]").click(e => {
+    parent.closeIFrame(window.location.search);
+  });
+});

@@ -334,14 +334,18 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       $("ui-tabbed ui-tab.hidden, ui-rest ui-tab.hidden").removeClass("hidden");
 
       // Change url to return to current instance when reloading
-      $("#current-instance").text(url);
+      $("#current-instance").show();
+      $("#current-instance").text(url.match(/(\d+)\/?$/)[1]);
       $("#current-instance").attr('href',url);
+      $("#current-instance-properties").show();
       $("#current-instance-properties").attr('href',url + 'properties/');
-      $("#current-instance-properties").text('P');
+      $("#current-instance-subscriptions").show();
       $("#current-instance-subscriptions").attr('href',url + 'notifications/subscriptions/');
-      $("#current-instance-subscriptions").text('S');
+      $("#current-instance-callbacks").show();
       $("#current-instance-callbacks").attr('href',url + 'callbacks/');
-      $("#current-instance-callbacks").text('C');
+      $("#current-monitor").show();
+      $("#current-instance-callbacks").attr('href',url + 'callbacks/');
+      $("#current-monitor").attr('href','edit.html?monitor=' + url);
       var q = $.parseQuerySimple();
       history.replaceState({}, '', '?' + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
@@ -644,7 +648,7 @@ function monitor_instance_running(content,event) {// {{{
 } // }}}
 function monitor_instance_state_change(notification) { //{{{
   if ($('#trackcolumn').length > 0) {
-    if (notification == "finished") {
+    if (notification == "finished" || notification == "abandoned") {
       parent.closeIFrame(window.location.search);
     }
   }
