@@ -66,8 +66,6 @@ body {
   font: normal normal normal 14px/1 FontAwesome;
   font-size: 0.8em;
   text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 	content: ' ';
 }
 #graphgrid .graphlabel.selected a::after, graphgrid .graphlabel.hover a::after {
