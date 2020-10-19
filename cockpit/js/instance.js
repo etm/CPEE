@@ -278,6 +278,7 @@ function sse() { //{{{
         case 'task':
           if ($('#trackcolumn').length > 0) {
             $('#trackcolumn').append($('<iframe src="track.html?monitor=' + data.content.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
+            $('#trackcolumn').addClass('resize');
           }
           break;
         case 'state':

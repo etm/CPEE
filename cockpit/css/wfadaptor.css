@@ -338,7 +338,7 @@ svg text.label {
   text-align:center;
   line-height:125%;
   writing-mode:horizontal-tb;
-  text-anchor:left;
+  text-anchor:start;
   color: var(--wfadaptor-base);
   fill: var(--wfadaptor-base);
   fill-opacity:1;
