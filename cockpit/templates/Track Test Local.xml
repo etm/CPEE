@@ -8,46 +8,59 @@
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <loop mode="pre_test" condition="true">
+        <parallel wait="-1">
+          <loop mode="pre_test" condition="data.i &lt; 4">
+            <_probability>
+              <_probability_min/>
+              <_probability_max/>
+              <_probability_avg/>
+            </_probability>
+            <parallel_branch pass="" local="">
+              <call id="a1" endpoint="start_url">
+                <parameters>
+                  <label>Start</label>
+                  <method>:post</method>
+                  <arguments>
+                    <behavior>wait_running</behavior>
+                    <url>https://cpee.org/flow/templates/instantiate/Take_Sub.xml</url>
+                    <init>
+                      <time>4</time>
+                    </init>
+                    <endpoints/>
+                    <stream/>
+                  </arguments>
+                  <stream>
+                    <sensors/>
+                    <aggregators/>
+                    <costs/>
+                  </stream>
+                  <report>
+                    <url/>
+                  </report>
+                </parameters>
+                <annotations>
+                  <_timing>
+                    <_timing_wait/>
+                    <_timing_threshold/>
+                    <_timing_min/>
+                    <_timing_max/>
+                    <_timing_avg/>
+                  </_timing>
+                  <_notes>
+                    <_notes_general/>
+                  </_notes>
+                </annotations>
+              </call>
+            </parallel_branch>
+            <manipulate id="a4" label="">data.i += 1</manipulate>
+          </loop>
+        </parallel>
+        <manipulate id="a3" label="">data.i = 0</manipulate>
         <_probability>
           <_probability_min/>
           <_probability_max/>
           <_probability_avg/>
         </_probability>
-        <call id="a1" endpoint="start_url">
-          <parameters>
-            <label>Start</label>
-            <method>:post</method>
-            <arguments>
-              <behavior>wait_running</behavior>
-              <url>http://localhost/flow/templates/instantiate.local/Take_Sub.xml</url>
-              <init>
-                <time>4</time>
-              </init>
-              <endpoints/>
-              <stream/>
-            </arguments>
-            <stream>
-              <sensors/>
-              <aggregators/>
-              <costs/>
-            </stream>
-            <report>
-              <url/>
-            </report>
-          </parameters>
-          <annotations>
-            <_timing>
-              <_timing_wait/>
-              <_timing_threshold/>
-              <_timing_min/>
-              <_timing_max/>
-              <_timing_avg/>
-            </_timing>
-            <_notes>
-              <_notes_general/>
-            </_notes>
-          </annotations>
-        </call>
         <stop id="a2"/>
       </loop>
     </description>
