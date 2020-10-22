@@ -251,57 +251,58 @@ function create_instance(base,name,load,exec) {// {{{
 
 function sse() { //{{{
   var url = $('body').attr('current-instance');
-  es = new EventSource(url + "/notifications/subscriptions/" + subscription + "/sse/");
-  es.onopen = function() {
-    append_to_log("monitoring", "opened", "");
-  };
-  es.onmessage = function(e) {
-    data = JSON.parse(e.data);
-    if (data['type'] == 'event') {
-      switch(data['topic']) {
-        case 'dataelements':
-          monitor_instance_values("dataelements");
-          break;
-        case 'description':
-          monitor_instance_dsl();
-          break;
-        case 'endpoints':
-          monitor_instance_values("endpoints");
-          break;
-        case 'attributes':
-          monitor_instance_values("attributes");
-          monitor_instance_transformation();
-          if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
-            monitor_graph_change(true);
-          }
-          break;
-        case 'task':
-          if ($('#trackcolumn').length > 0) {
-            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + data.content.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
-            $('#graphcolumn').addClass('resize');
-          }
-          break;
-        case 'state':
-          monitor_instance_state_change(data['content']['state']);
-          break;
-        case 'position':
-          monitor_instance_pos_change(data['content']);
-          break;
-        case 'activity':
-          monitor_instance_running(data['content'],data['name']);
-          break;
+  if (subscription) {
+    es = new EventSource(url + "/notifications/subscriptions/" + subscription + "/sse/");
+    es.onopen = function() {
+      append_to_log("monitoring", "opened", "");
+    };
+    es.onmessage = function(e) {
+      data = JSON.parse(e.data);
+      if (data['type'] == 'event') {
+        switch(data['topic']) {
+          case 'dataelements':
+            monitor_instance_values("dataelements");
+            break;
+          case 'description':
+            monitor_instance_dsl();
+            break;
+          case 'endpoints':
+            monitor_instance_values("endpoints");
+            break;
+          case 'attributes':
+            monitor_instance_values("attributes");
+            monitor_instance_transformation();
+            if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
+              monitor_graph_change(true);
+            }
+            break;
+          case 'task':
+            if ($('#trackcolumn').length > 0) {
+              $('#trackcolumn').append($('<iframe src="track.html?monitor=' + data.content.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
+              $('#graphcolumn').addClass('resize');
+            }
+            break;
+          case 'state':
+            monitor_instance_state_change(data['content']['state']);
+            break;
+          case 'position':
+            monitor_instance_pos_change(data['content']);
+            break;
+          case 'activity':
+            monitor_instance_running(data['content'],data['name']);
+            break;
+        }
       }
-    }
-    if (data['type'] == 'vote') {
-      monitor_instance_vote_add(data['content']);
-    }
-    append_to_log(data['type'], data['topic'] + '/' + data['name'], JSON.stringify(data['content']));
-  };
-  es.onerror = function() {
-    append_to_log("monitoring", "closed", "server down i assume.");
-    // setTimeout(sse,10000);
-  };
-
+      if (data['type'] == 'vote') {
+        monitor_instance_vote_add(data['content']);
+      }
+      append_to_log(data['type'], data['topic'] + '/' + data['name'], JSON.stringify(data['content']));
+    };
+    es.onerror = function() {
+      append_to_log("monitoring", "closed", "server down i assume.");
+      // setTimeout(sse,10000);
+    };
+  }
   monitor_instance_values("dataelements");
   monitor_instance_values("endpoints");
   monitor_instance_values("attributes");
@@ -371,6 +372,11 @@ function monitor_instance(cin,rep,load,exec) {// {{{
           if (load || exec) {
             load_testset(exec);
           }
+        },
+        error: function() {
+          subscription = undefined;
+          append_to_log("monitoring", "closed", "For Good.");
+          sse();
         }
       });
     },
