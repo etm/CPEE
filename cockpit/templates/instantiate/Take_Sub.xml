@@ -1,7 +1,5 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
-  <dataelements>
-    <time>5</time>
-  </dataelements>
+  <dataelements/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <start_url>https://cpee.org/flow/start/url/</start_url>
@@ -16,9 +14,7 @@
           <arguments>
             <behavior>wait_running</behavior>
             <url>https://cpee.org/flow/templates/instantiate/Take_Perf.xml</url>
-            <init>
-              <time>!data.time</time>
-            </init>
+            <init/>
             <endpoints/>
             <stream/>
           </arguments>
