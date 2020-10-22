@@ -102,6 +102,12 @@ ui-tabbed ui-tabbar ui-behind button {
 #current-instance-subscriptions[href]:after {
   content: "|";
 }
+#current-track[href]:before {
+  content: "|";
+}
+#current-log[href]:before {
+  content: "|";
+}
 
 #parameters ui-content { height: 8.5em; min-height: 1.7em; }
 

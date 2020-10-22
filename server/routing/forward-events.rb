@@ -39,6 +39,7 @@ Daemonite.new do |opts|
             if url.nil? || url == ""
               redis.publish("forward:#{instance}/#{key}",mess)
             else
+              p "#{type}/#{topic}/#{event}-#{url}"
               client = Riddl::Client.new(url)
               client.post [
                 Riddl::Parameter::Simple::new('type',type),

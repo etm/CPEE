@@ -121,7 +121,7 @@
         <ui-tab class=""                data-tab="new"       id="tabnew"      >New</ui-tab>
         <ui-tab class="inactive hidden" data-tab="instance"  id="tabinstance" >Instance</ui-tab>
         <ui-tab class="inactive hidden" data-tab="execution" id="tabexecution">Execution</ui-tab>
-        <ui-behind                                                            ><a style='display:none' id='current-instance'></a><a style='display:none' id='current-instance-properties'>P</a><a style='display:none' id='current-instance-subscriptions'>S</a><a style='display:none' id='current-instance-callbacks'>C</a></ui-behind>
+        <ui-behind                                                            ><a style='display:none' target='_blank' id='current-instance'></a><a style='display:none' target='_blank' id='current-instance-properties'>P</a><a style='display:none' target='_blank' id='current-instance-subscriptions'>S</a><a style='display:none' target='_blank' id='current-instance-callbacks'>C</a></ui-behind>
       </ui-tabbar>
       <ui-content>
         <ui-area data-belongs-to-tab="new" id="areanew"> <!--{{{-->
@@ -234,7 +234,7 @@
         <ui-tab class=""         data-tab="details" id="tabdetails">Graph</ui-tab>
         <ui-tab class="inactive" data-tab="dsl"     id="tabdsl"    >Description</ui-tab>
         <ui-tab class="inactive" data-tab="log"     id="tablog"    >Log</ui-tab>
-        <ui-behind                                                 ></ui-behind>
+        <ui-behind                                                 ><a style='display:none' target='_blank' id='current-graph'>G</a><a style='display:none' target='_blank' id='current-track'>T</a><a style='display:none' target='_blank' id='current-log'>L</a></ui-behind>
       </ui-tabbar>
       <ui-content>
         <ui-area data-belongs-to-tab="details" id='graphcolumn'>

@@ -20,6 +20,7 @@ $(document).ready(function() {
       success: function(res){
         $("input[name=res-url]").val(res['res-url']);
         $("input[name=base-url]").val(res['base-url']);
+        $("body").attr('current-logs',res['log-url']);
         $("body").attr('current-resources',res['res-url']);
         $("body").attr('current-base',res['base-url']);
         $("body").attr('current-save',res['save-url']);

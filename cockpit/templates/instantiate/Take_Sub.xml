@@ -4,7 +4,6 @@
   </dataelements>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
-    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
     <start_url>https://cpee.org/flow/start/url/</start_url>
   </endpoints>
   <positions/>
@@ -15,8 +14,8 @@
           <label>Start</label>
           <method>:post</method>
           <arguments>
-            <behavior>wait_ready</behavior>
-            <url>https://cpee.org/flow/templates/instantiate/Take_X.xml</url>
+            <behavior>wait_running</behavior>
+            <url>https://cpee.org/flow/templates/instantiate/Take_Perf.xml</url>
             <init>
               <time>!data.time</time>
             </init>

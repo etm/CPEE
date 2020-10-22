@@ -72,7 +72,9 @@ module CPEE
     opts[:infinite_loop_stop]         ||= 10000
     opts[:redis_path]                 ||= '/tmp/redis.sock'
     opts[:redis_db]                   ||= 3
+    opts[:sse_keepalive_frequency]    ||= 10
 
+    opts[:sse_connections]            = {}
     opts[:redis]                      = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
     opts[:statemachine]               = CPEE::StateMachine.new opts[:states], %w{running simulating replaying finishing stopping abandoned finished} do |id|
       opts[:redis].get("instance:#{id}/state")
@@ -89,10 +91,30 @@ module CPEE
     Proc.new do
       parallel do
         CPEE::watch_services(@riddl_opts[:watchdog_start_off])
-        EM.add_periodic_timer(@riddl_opts[:watchdog_frequency]) do
+        EM.add_periodic_timer(@riddl_opts[:watchdog_frequency]) do ### start services
           CPEE::watch_services(@riddl_opts[:watchdog_start_off])
         end
+        EM.defer do ### catch all sse connections
+          conn = Redis.new(path: @riddl_opts[:redis_path], db: @riddl_opts[:redis_db])
+          conn.psubscribe('forward:*','forward-end:*') do |on|
+            on.pmessage do |pat, what, message|
+              _, id, key = what.match(/forward(-end)?:([^\/]+)\/(.+)/).captures
+              if pat == 'forward:*'
+                @riddl_opts.dig(:sse_connections,id.to_i,key)&.send message
+              end
+            end
+          end
+          conn.close
+        end
+        EM.add_periodic_timer(@riddl_opts[:sse_keepalive_frequency]) do
+          @riddl_opts.dig(:sse_connections).each do |id,keys|
+            keys.each do |key,sse|
+              sse.send_with_id('hearbeat', '42') unless sse&.closed?
+            end
+          end
+        end
       end
+
       cleanup do
         CPEE::cleanup_services(@riddl_opts[:watchdog_start_off])
       end

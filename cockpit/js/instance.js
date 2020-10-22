@@ -345,8 +345,15 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       $("#current-instance-callbacks").show();
       $("#current-instance-callbacks").attr('href',url + 'callbacks/');
       $("#current-monitor").show();
-      $("#current-instance-callbacks").attr('href',url + 'callbacks/');
       $("#current-monitor").attr('href','edit.html?monitor=' + url);
+      $("#current-graph").show();
+      $("#current-graph").attr('href','graph.html?monitor=' + url);
+      $("#current-track").show();
+      $("#current-track").attr('href','track.html?monitor=' + url);
+      if ($('body').attr('current-logs')) {
+        $("#current-log").show();
+        $("#current-log").attr('href','edit.html?monitor=' + url);
+      }
       var q = $.parseQuerySimple();
       history.replaceState({}, '', '?' + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 

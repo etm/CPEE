@@ -156,31 +156,16 @@ module CPEE
         @id = @a[0]
         @opts = @a[1]
         @key = @r[-2]
-        @conn = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
-        EM.defer do
-          @conn.subscribe("forward:#{@id}/#{@key}", "forward-end:#{@id}/#{@key}") do |on|
-            on.message do |what, message|
-              if what == "forward-end:#{@id}/#{@key}"
-                @conn.unsubscribe
-              else
-                send message
-              end
-            end
-          end
-          @conn.close
-        end
-        EM.defer do
-          until closed?
-            send_with_id 'hearbeat', '42'
-            sleep 10
-          end
-        end
+        @opts[:sse_connections][@id] ||= {}
+        @opts[:sse_connections][@id][@key] = self
       end
 
       def onclose
         tredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
         tredis.publish("forward-end:#{@id}/#{@key}",true)
         tredis.close
+        @opts.dig(:sse_connections,@id)&.delete(@key)
+        @opts.dig(:sse_connections)&.delete(@id) if @opts.dig(:sse_connections,@id)&.length == 0
         DeleteSubscription::set(@id,@opts,@key)
       end
     end #}}}
