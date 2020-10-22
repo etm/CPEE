@@ -90,33 +90,20 @@ module CPEE
 
     Proc.new do
       parallel do
-        CPEE::watch_services(@riddl_opts[:watchdog_start_off])
-        EM.add_periodic_timer(@riddl_opts[:watchdog_frequency]) do ### start services
-          CPEE::watch_services(@riddl_opts[:watchdog_start_off])
+        CPEE::watch_services(opts[:watchdog_start_off])
+        EM.add_periodic_timer(opts[:watchdog_frequency]) do ### start services
+          CPEE::watch_services(opts[:watchdog_start_off])
         end
         EM.defer do ### catch all sse connections
-          conn = Redis.new(path: @riddl_opts[:redis_path], db: @riddl_opts[:redis_db])
-          conn.psubscribe('forward:*','forward-end:*') do |on|
-            on.pmessage do |pat, what, message|
-              _, id, key = what.match(/forward(-end)?:([^\/]+)\/(.+)/).captures
-              if pat == 'forward:*'
-                @riddl_opts.dig(:sse_connections,id.to_i,key)&.send message
-              end
-            end
-          end
-          conn.close
+          CPEE::Notifications::sse_distributor(opts)
         end
-        EM.add_periodic_timer(@riddl_opts[:sse_keepalive_frequency]) do
-          @riddl_opts.dig(:sse_connections).each do |id,keys|
-            keys.each do |key,sse|
-              sse.send_with_id('hearbeat', '42') unless sse&.closed?
-            end
-          end
+        EM.add_periodic_timer(opts[:sse_keepalive_frequency]) do
+          CPEE::Notifications::sse_heartbeat(opts)
         end
       end
 
       cleanup do
-        CPEE::cleanup_services(@riddl_opts[:watchdog_start_off])
+        CPEE::cleanup_services(opts[:watchdog_start_off])
       end
 
       interface 'main' do

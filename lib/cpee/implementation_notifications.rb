@@ -102,19 +102,24 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
-        key = Digest::MD5.hexdigest(Kernel::rand().to_s)
 
-        url = @p[0].name == 'url' ? @p.shift.value : nil
-        values = []
-        while @p.length > 0
-          topic = @p.shift.value
-          base = @p.shift
-          type = base.name
-          values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+        if opts[:statemachine].readonly? id
+          @status = 423
+        else
+          key = Digest::MD5.hexdigest(Kernel::rand().to_s)
+
+          url = @p[0].name == 'url' ? @p.shift.value : nil
+          values = []
+          while @p.length > 0
+            topic = @p.shift.value
+            base = @p.shift
+            type = base.name
+            values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+          end
+          @header = CPEE::Persistence::set_handler(id,opts,key,url,values)
+
+          Riddl::Parameter::Simple.new('key',key)
         end
-        @header = CPEE::Persistence::set_handler(id,opts,key,url,values)
-
-        Riddl::Parameter::Simple.new('key',key)
       end
     end #}}}
 
@@ -151,6 +156,35 @@ module CPEE
       end
     end #}}}
 
+    def self::sse_distributor(opts) #{{{
+      conn = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+      conn.psubscribe('forward:*','event:state/change') do |on|
+        on.pmessage do |pat, what, message|
+          if pat == 'forward:*'
+            _, id, key = what.match(/forward(-end)?:([^\/]+)\/(.+)/).captures
+            opts.dig(:sse_connections,id.to_i,key)&.send message
+          elsif pat == 'event:state/change'
+            mess = JSON.parse(message[message.index(' ')+1..-1])
+            state = mess.dig('content','state')
+            if state == 'finished' || state == 'abandoned'
+              opts.dig(:sse_connections,mess.dig('instance').to_i)&.each do |key,sse|
+                EM.add_timer(2) do # just to be sure that all messages arrived
+                  sse.close
+                end
+              end
+            end
+          end
+        end
+      end
+      conn.close
+    end #}}}
+    def self::sse_heartbeat(opts) #{{{
+      opts.dig(:sse_connections).each do |id,keys|
+        keys.each do |key,sse|
+          sse.send_with_id('heartbeat', '42') unless sse&.closed?
+        end
+      end
+    end #}}}
     class SSE < Riddl::SSEImplementation #{{{
       def onopen
         @id = @a[0]
@@ -161,9 +195,6 @@ module CPEE
       end
 
       def onclose
-        tredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
-        tredis.publish("forward-end:#{@id}/#{@key}",true)
-        tredis.close
         @opts.dig(:sse_connections,@id)&.delete(@key)
         @opts.dig(:sse_connections)&.delete(@id) if @opts.dig(:sse_connections,@id)&.length == 0
         DeleteSubscription::set(@id,@opts,@key)
