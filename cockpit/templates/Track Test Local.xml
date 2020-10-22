@@ -1,5 +1,7 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
-  <dataelements/>
+  <dataelements>
+    <i>0</i>
+  </dataelements>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <start_url>http://localhost:9296/url/</start_url>
@@ -22,7 +24,7 @@
                   <method>:post</method>
                   <arguments>
                     <behavior>wait_running</behavior>
-                    <url>https://cpee.org/flow/templates/instantiate/Take_Sub.xml</url>
+                    <url>http://localhost/flow/templates/instantiate.local/Take_Sub.xml</url>
                     <init>
                       <time>4</time>
                     </init>
