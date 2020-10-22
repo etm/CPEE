@@ -1,0 +1,67 @@
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <dataelements/>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <endpoints>
+    <start_url>http://localhost:9296/url/</start_url>
+  </endpoints>
+  <positions/>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <loop mode="pre_test" condition="true">
+        <_probability>
+          <_probability_min/>
+          <_probability_max/>
+          <_probability_avg/>
+        </_probability>
+        <call id="a1" endpoint="start_url">
+          <parameters>
+            <label>Start</label>
+            <method>:post</method>
+            <arguments>
+              <behavior>wait_running</behavior>
+              <url>http://localhost/flow/templates/instantiate.local/Take_Sub.xml</url>
+              <init>
+                <time>4</time>
+              </init>
+              <endpoints/>
+              <stream/>
+            </arguments>
+            <stream>
+              <sensors/>
+              <aggregators/>
+              <costs/>
+            </stream>
+            <report>
+              <url/>
+            </report>
+          </parameters>
+          <annotations>
+            <_timing>
+              <_timing_wait/>
+              <_timing_threshold/>
+              <_timing_min/>
+              <_timing_max/>
+              <_timing_avg/>
+            </_timing>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+        </call>
+        <stop id="a2"/>
+      </loop>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+  <attributes>
+    <info>Track Test</info>
+    <modeltype>CPEE</modeltype>
+    <theme>default</theme>
+    <customer>pilotfabrik</customer>
+    <status>development</status>
+  </attributes>
+</testset>
