@@ -107,23 +107,19 @@ module CPEE
         id = @a[0]
         opts = @a[1]
 
-        if opts[:statemachine].readonly? id
-          @status = 423
-        else
-          key = Digest::MD5.hexdigest(Kernel::rand().to_s)
+        key = Digest::MD5.hexdigest(Kernel::rand().to_s)
 
-          url = @p[0].name == 'url' ? @p.shift.value : nil
-          values = []
-          while @p.length > 0
-            topic = @p.shift.value
-            base = @p.shift
-            type = base.name
-            values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
-          end
-          @header = CPEE::Persistence::set_handler(id,opts,key,url,values)
-
-          Riddl::Parameter::Simple.new('key',key)
+        url = @p[0].name == 'url' ? @p.shift.value : nil
+        values = []
+        while @p.length > 0
+          topic = @p.shift.value
+          base = @p.shift
+          type = base.name
+          values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
         end
+        @header = CPEE::Persistence::set_handler(id,opts,key,url,values)
+
+        Riddl::Parameter::Simple.new('key',key)
       end
     end #}}}
 
@@ -180,7 +176,7 @@ module CPEE
             state = mess.dig('content','state')
             if state == 'finished' || state == 'abandoned'
               opts.dig(:sse_connections,mess.dig('instance').to_i)&.each do |key,sse|
-                EM.add_timer(2) do # just to be sure that all messages arrived
+                EM.add_timer(10) do # just to be sure that all messages arrived. 10 seconds just to be sure. Because we think, therefore we are (not sure).
                   sse.close
                 end
               end
@@ -202,7 +198,7 @@ module CPEE
         @opts = @a[1]
         @id = @a[0]
         @key = @r[-2]
-        if !@opts[:statemachine].readonly?(@id) && CPEE::Persistence::exists_handler?(@id,@opts,@key)
+        if CPEE::Persistence::exists_handler?(@id,@opts,@key)
           @opts[:sse_connections][@id] ||= {}
           @opts[:sse_connections][@id][@key] = self
           true
