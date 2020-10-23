@@ -273,7 +273,9 @@ function sse() { //{{{
             monitor_instance_values("attributes");
             monitor_instance_transformation();
             if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
-              monitor_graph_change(true);
+              if (save['graph_theme'] != data.content.values.theme) {
+                monitor_graph_change(true);
+              }
             }
             break;
           case 'task':
@@ -559,6 +561,7 @@ function adaptor_init(url,theme,dslx) { //{{{
       format_instance_pos();
     });
   }
+  suspended_monitoring = false;
 } //}}}
 
 function monitor_graph_change(force) { //{{{
@@ -933,7 +936,6 @@ async function set_testset(testset,exec) {// {{{
   );
 
   await Promise.all(promises);
-  suspended_monitoring = false;
 
   $.ajax({
     type: "GET",
