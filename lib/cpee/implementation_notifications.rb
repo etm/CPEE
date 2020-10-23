@@ -73,28 +73,32 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         key = @r[-1]
-        Riddl::Parameter::Complex.new("subscriptions","text/xml") do
-          ret = XML::Smart::string <<-END
-            <subscription xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'/>
-          END
-          url = CPEE::Persistence::extract_item(id,opts,File.join('handler',key,'url'))
-          ret.root.attributes['url'] = url if url && !url.empty?
-          items = {}
-          CPEE::Persistence::extract_handler(id,opts,key).each do |h|
-            t, i, v = h.split('/')
-            items[t] ||= []
-            items[t] << [i,v]
-          end
-          items.each do |k,v|
-            ret.root.add('topic').tap do |n|
-              n.attributes['id'] = k
-              v.each do |e|
-                n.add *e
+        if CPEE::Persistence::exists_handler?(id,opts,key)
+          Riddl::Parameter::Complex.new("subscriptions","text/xml") do
+            ret = XML::Smart::string <<-END
+              <subscription xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'/>
+            END
+            url = CPEE::Persistence::extract_item(id,opts,File.join('handler',key,'url'))
+            ret.root.attributes['url'] = url if url && !url.empty?
+            items = {}
+            CPEE::Persistence::extract_handler(id,opts,key).each do |h|
+              t, i, v = h.split('/')
+              items[t] ||= []
+              items[t] << [i,v]
+            end
+            items.each do |k,v|
+              ret.root.add('topic').tap do |n|
+                n.attributes['id'] = k
+                v.each do |e|
+                  n.add *e
+                end
               end
             end
+            ret.to_s
           end
-          ret.to_s
-        end
+        else
+          @status = 404
+       end
       end
     end #}}}
 
@@ -129,15 +133,19 @@ module CPEE
         opts = @a[1]
         key = @r.last
 
-        url = @p[0].name == 'url' ? @p.shift.value : nil
-        values = []
-        while @p.length > 0
-          topic = @p.shift.value
-          base = @p.shift
-          type = base.name
-          values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+        if CPEE::Persistence::exists_handler?(id,opts,key)
+          url = @p[0].name == 'url' ? @p.shift.value : nil
+          values = []
+          while @p.length > 0
+            topic = @p.shift.value
+            base = @p.shift
+            type = base.name
+            values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+          end
+          @header = CPEE::Persistence::set_handler(id,opts,key,url,values,true)
+        else
+          @status = 404
         end
-        @header = CPEE::Persistence::set_handler(id,opts,key,url,values,true)
       end
     end #}}}
 
@@ -151,7 +159,11 @@ module CPEE
         opts = @a[1]
         key = @r.last
 
-        DeleteSubscription::set(id,opts,key)
+        if CPEE::Persistence::exists_handler?(id,opts,key)
+          DeleteSubscription::set(id,opts,key)
+        else
+          @status = 404
+        end
         nil
       end
     end #}}}
@@ -187,11 +199,16 @@ module CPEE
     end #}}}
     class SSE < Riddl::SSEImplementation #{{{
       def onopen
-        @id = @a[0]
         @opts = @a[1]
+        @id = @a[0]
         @key = @r[-2]
-        @opts[:sse_connections][@id] ||= {}
-        @opts[:sse_connections][@id][@key] = self
+        if !@opts[:statemachine].readonly?(@id) && CPEE::Persistence::exists_handler?(@id,@opts,@key)
+          @opts[:sse_connections][@id] ||= {}
+          @opts[:sse_connections][@id][@key] = self
+          true
+        else
+          false
+        end
       end
 
       def onclose

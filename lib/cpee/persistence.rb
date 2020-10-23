@@ -125,6 +125,9 @@ module CPEE
     def self::extract_handler(id,opts,key) #{{{
       opts[:redis].smembers("instance:#{id}/handlers/#{key}")
     end #}}}
+    def self::exists_handler?(id,opts,key) #{{{
+      opts[:redis].exists?("instance:#{id}/handlers/#{key}")
+    end #}}}
     def self::extract_handlers(id,opts) #{{{
       opts[:redis].smembers("instance:#{id}/handlers").map do |e|
         [e, opts[:redis].get("instance:#{id}/handlers/#{e}/url")]

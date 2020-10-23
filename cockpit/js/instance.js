@@ -254,7 +254,7 @@ function sse() { //{{{
   if (subscription) {
     es = new EventSource(url + "/notifications/subscriptions/" + subscription + "/sse/");
     es.onopen = function() {
-      append_to_log("monitoring", "opened", "");
+      append_to_log("monitoring", "opened", "nice.");
     };
     es.onmessage = function(e) {
       data = JSON.parse(e.data);
@@ -299,7 +299,7 @@ function sse() { //{{{
       append_to_log(data['type'], data['topic'] + '/' + data['name'], JSON.stringify(data['content']));
     };
     es.onerror = function() {
-      append_to_log("monitoring", "closed", "server down i assume.");
+      append_to_log("monitoring", "closed", "finished or abandoned or not existing or server down. one of these, i assume.");
       // setTimeout(sse,10000);
     };
   }
