@@ -176,7 +176,7 @@ module CPEE
             state = mess.dig('content','state')
             if state == 'finished' || state == 'abandoned'
               opts.dig(:sse_connections,mess.dig('instance').to_i)&.each do |key,sse|
-                EM.add_timer(10) do # just to be sure that all messages arrived. 10 seconds just to be sure. Because we think, therefore we are (not sure).
+                EM.add_timer(10) do # just to be sure that all messages arrived. 10 seconds should be enough ... we think ... therefore we are (not sure)
                   sse.close
                 end
               end
