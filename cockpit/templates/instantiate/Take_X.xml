@@ -1,6 +1,6 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <dataelements>
-    <time>5</time>
+    <time>15</time>
   </dataelements>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>

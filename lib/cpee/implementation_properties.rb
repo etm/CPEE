@@ -660,8 +660,11 @@ module CPEE
           @status = 422 # semantic error
         else
           begin
-            PutDescription::set(id,opts,@p[0].value.read)
-          rescue
+            // force-encoding because johannes managed to sneak in ascii special characters. why the browser is not sanitizing it is beyond me.
+            PutDescription::set(id,opts,@p[0].value.read.force_encoding('UTF-8'))
+          rescue => e
+            puts e.message
+            puts e.backtrace
             @status = 400
           end
         end
