@@ -1,4 +1,6 @@
 <testsets>
+  <testset>Track Test</testset>
+  <testset>Track Test Local</testset>
   <testset>BPM 2020</testset>
   <testset>BPM 2020 Solution View</testset>
   <testset>BPM 2020 Solution Baseline</testset>

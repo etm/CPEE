@@ -4,8 +4,7 @@
   </dataelements>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
-    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <start_url>https://cpee.org/flow/start/url/</start_url>
+    <start_url>http://localhost:9296/url/</start_url>
   </endpoints>
   <positions/>
   <description>

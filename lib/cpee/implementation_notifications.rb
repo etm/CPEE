@@ -73,28 +73,32 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         key = @r[-1]
-        Riddl::Parameter::Complex.new("subscriptions","text/xml") do
-          ret = XML::Smart::string <<-END
-            <subscription xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'/>
-          END
-          url = CPEE::Persistence::extract_item(id,opts,File.join('handler',key,'url'))
-          ret.root.attributes['url'] = url if url && !url.empty?
-          items = {}
-          CPEE::Persistence::extract_handler(id,opts,key).each do |h|
-            t, i, v = h.split('/')
-            items[t] ||= []
-            items[t] << [i,v]
-          end
-          items.each do |k,v|
-            ret.root.add('topic').tap do |n|
-              n.attributes['id'] = k
-              v.each do |e|
-                n.add *e
+        if CPEE::Persistence::exists_handler?(id,opts,key)
+          Riddl::Parameter::Complex.new("subscriptions","text/xml") do
+            ret = XML::Smart::string <<-END
+              <subscription xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'/>
+            END
+            url = CPEE::Persistence::extract_item(id,opts,File.join('handler',key,'url'))
+            ret.root.attributes['url'] = url if url && !url.empty?
+            items = {}
+            CPEE::Persistence::extract_handler(id,opts,key).each do |h|
+              t, i, v = h.split('/')
+              items[t] ||= []
+              items[t] << [i,v]
+            end
+            items.each do |k,v|
+              ret.root.add('topic').tap do |n|
+                n.attributes['id'] = k
+                v.each do |e|
+                  n.add *e
+                end
               end
             end
+            ret.to_s
           end
-          ret.to_s
-        end
+        else
+          @status = 404
+       end
       end
     end #}}}
 
@@ -102,6 +106,7 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
+
         key = Digest::MD5.hexdigest(Kernel::rand().to_s)
 
         url = @p[0].name == 'url' ? @p.shift.value : nil
@@ -124,15 +129,19 @@ module CPEE
         opts = @a[1]
         key = @r.last
 
-        url = @p[0].name == 'url' ? @p.shift.value : nil
-        values = []
-        while @p.length > 0
-          topic = @p.shift.value
-          base = @p.shift
-          type = base.name
-          values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+        if CPEE::Persistence::exists_handler?(id,opts,key)
+          url = @p[0].name == 'url' ? @p.shift.value : nil
+          values = []
+          while @p.length > 0
+            topic = @p.shift.value
+            base = @p.shift
+            type = base.name
+            values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+          end
+          @header = CPEE::Persistence::set_handler(id,opts,key,url,values,true)
+        else
+          @status = 404
         end
-        @header = CPEE::Persistence::set_handler(id,opts,key,url,values,true)
       end
     end #}}}
 
@@ -146,41 +155,61 @@ module CPEE
         opts = @a[1]
         key = @r.last
 
-        DeleteSubscription::set(id,opts,key)
+        if CPEE::Persistence::exists_handler?(id,opts,key)
+          DeleteSubscription::set(id,opts,key)
+        else
+          @status = 404
+        end
         nil
       end
     end #}}}
 
-    class SSE < Riddl::SSEImplementation #{{{
-      def onopen
-        @id = @a[0]
-        @opts = @a[1]
-        @key = @r[-2]
-        @conn = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
-        EM.defer do
-          @conn.subscribe("forward:#{@id}/#{@key}", "forward-end:#{@id}/#{@key}") do |on|
-            on.message do |what, message|
-              if what == "forward-end:#{@id}/#{@key}"
-                @conn.unsubscribe
-              else
-                send message
+    def self::sse_distributor(opts) #{{{
+      conn = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+      conn.psubscribe('forward:*','event:state/change') do |on|
+        on.pmessage do |pat, what, message|
+          if pat == 'forward:*'
+            _, id, key = what.match(/forward(-end)?:([^\/]+)\/(.+)/).captures
+            opts.dig(:sse_connections,id.to_i,key)&.send message
+          elsif pat == 'event:state/change'
+            mess = JSON.parse(message[message.index(' ')+1..-1])
+            state = mess.dig('content','state')
+            if state == 'finished' || state == 'abandoned'
+              opts.dig(:sse_connections,mess.dig('instance').to_i)&.each do |key,sse|
+                EM.add_timer(10) do # just to be sure that all messages arrived. 10 seconds should be enough ... we think ... therefore we are (not sure)
+                  sse.close
+                end
               end
             end
           end
-          @conn.close
         end
-        EM.defer do
-          until closed?
-            send_with_id 'hearbeat', '42'
-            sleep 10
-          end
+      end
+      conn.close
+    end #}}}
+    def self::sse_heartbeat(opts) #{{{
+      opts.dig(:sse_connections).each do |id,keys|
+        keys.each do |key,sse|
+          sse.send_with_id('heartbeat', '42') unless sse&.closed?
+        end
+      end
+    end #}}}
+    class SSE < Riddl::SSEImplementation #{{{
+      def onopen
+        @opts = @a[1]
+        @id = @a[0]
+        @key = @r[-2]
+        if CPEE::Persistence::exists_handler?(@id,@opts,@key)
+          @opts[:sse_connections][@id] ||= {}
+          @opts[:sse_connections][@id][@key] = self
+          true
+        else
+          false
         end
       end
 
       def onclose
-        tredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
-        tredis.publish("forward-end:#{@id}/#{@key}",true)
-        tredis.close
+        @opts.dig(:sse_connections,@id)&.delete(@key)
+        @opts.dig(:sse_connections)&.delete(@id) if @opts.dig(:sse_connections,@id)&.length == 0
         DeleteSubscription::set(@id,@opts,@key)
       end
     end #}}}

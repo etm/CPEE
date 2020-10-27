@@ -1,3 +1,19 @@
+function config_defaults(){
+  var default_values = {};
+  // logs is missing, so that the button is not shown, when there is no info
+  if (location.protocol.match(/^file/)) {
+    default_values['res-url']  = 'http://localhost:' + $('body').data('res-port');
+    default_values['base-url'] = 'http://localhost:' + $('body').data('base-port');
+    default_values['save-url'] = 'http://localhost:' + $('body').data('base-port') + '/design';
+  } else {
+    default_values['res-url']  = location.protocol + "//" + location.hostname + ":" + $('body').data('res-port');
+    default_values['base-url'] = location.protocol + "//" + location.hostname + ":" + $('body').data('base-port');
+    default_values['save-url'] = location.protocol + "//" + location.hostname + ":" + $('body').data('base-port') + '/design';
+  }
+  default_values['templates-url'] = 'templates/';
+  return default_values;
+}
+
 $(document).ready(function() {
   if (!($.cookie('cpee_iagree')) && $("body > div[id='disclaimer']").length > 0) {
     $("body > :not([id='disclaimer'])").remove();
@@ -18,25 +34,40 @@ $(document).ready(function() {
     $.ajax({
       url: "config.json",
       success: function(res){
-        $("input[name=res-url]").val(res['res-url']);
-        $("input[name=base-url]").val(res['base-url']);
-        $("body").attr('current-resources',res['res-url']);
-        $("body").attr('current-base',res['base-url']);
-        $("body").attr('current-save',res['save-url']);
-        $("body").attr('current-templates',res['testsets-url']);
+        var res_def = config_defaults();
+        if (res['log-url']) { // just leave it out when it is not configured
+          $("body").attr('current-logs',res['log-url']);
+        }
+        if (res['res-url']) {
+          $("body").attr('current-resources',res['res-url']);
+        } else {
+          $("body").attr('current-resources',res_def['res-url']);
+        }
+        if (res['base-url']) {
+          $("body").attr('current-base',res['base-url']);
+        } else {
+          $("body").attr('current-base',res_def['base-url']);
+        }
+        if (res['save-url']) {
+          $("body").attr('current-save',res['save-url']);
+        } else {
+          $("body").attr('current-save',res_def['save-url']);
+        }
+        if (res['testsets-url']) {
+          $("body").attr('current-templates',res['templates-url']);
+        } else {
+          $("body").attr('current-templates',res_def['templates-url']);
+        }
+        $("input[name=res-url]").val($("body").attr('current-resources'));
+        $("input[name=base-url]").val($("body").attr('current-base'));
         cockpit();
       },
       error: function(){
-        $("body").attr('current-templates','templates/');
-        if (location.protocol.match(/^file/)) {
-          $("body").attr('current-resources',"http://localhost:" + $('body').data('res-port'));
-          $("body").attr('current-base',"http://localhost:" + $('body').data('base-port'));
-          $("body").attr('current-save',"http://localhost:" + $('body').data('base-port') + '/design');
-        } else {
-          $("body").attr('current-resources',location.protocol + "//" + location.hostname + ":" + $('body').data('res-port'));
-          $("body").attr('current-base',location.protocol + "//" + location.hostname + ":" + $('body').data('base-port'));
-          $("body").attr('current-save',location.protocol + "//" + location.hostname + ":" + $('body').data('base-port') + '/design');
-        }
+        var res = config_defaults();
+        $("body").attr('current-resources',res['res-url']);
+        $("body").attr('current-base',res['base-url']);
+        $("body").attr('current-save',res['save-url']);
+        $("body").attr('current-templates',res['templates-url']);
         $("input[name=res-url]").val($("body").attr('current-resources'));
         $("input[name=base-url]").val($("body").attr('current-base'));
         cockpit();

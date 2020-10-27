@@ -70,7 +70,7 @@ Daemonite.new do |opts|
               persist_handler instance, callback_key, m, redis
               redis.publish("forward:#{instance}/#{subscription_key}",mess)
             else
-              client = Riddl::Client.new(url,'http://riddl.org/ns/common-patterns/notifications-consumer/2.0/consumer.xml')
+              client = Riddl::Client.new(url)
               callback = m['instance-url'] + '/callbacks/' + subscription_key
               status, result, headers = (client.post [
                 Riddl::Header.new("CPEE-BASE",m['cpee']),

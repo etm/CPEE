@@ -251,57 +251,60 @@ function create_instance(base,name,load,exec) {// {{{
 
 function sse() { //{{{
   var url = $('body').attr('current-instance');
-  es = new EventSource(url + "/notifications/subscriptions/" + subscription + "/sse/");
-  es.onopen = function() {
-    append_to_log("monitoring", "opened", "");
-  };
-  es.onmessage = function(e) {
-    data = JSON.parse(e.data);
-    if (data['type'] == 'event') {
-      switch(data['topic']) {
-        case 'dataelements':
-          monitor_instance_values("dataelements");
-          break;
-        case 'description':
-          monitor_instance_dsl();
-          break;
-        case 'endpoints':
-          monitor_instance_values("endpoints");
-          break;
-        case 'attributes':
-          monitor_instance_values("attributes");
-          monitor_instance_transformation();
-          if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
-            monitor_graph_change(true);
-          }
-          break;
-        case 'task':
-          if ($('#trackcolumn').length > 0) {
-            $('#trackcolumn').append($('<iframe src="track.html?monitor=' + data.content.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
-            $('#graphcolumn').addClass('resize');
-          }
-          break;
-        case 'state':
-          monitor_instance_state_change(data['content']['state']);
-          break;
-        case 'position':
-          monitor_instance_pos_change(data['content']);
-          break;
-        case 'activity':
-          monitor_instance_running(data['content'],data['name']);
-          break;
+  if (subscription) {
+    es = new EventSource(url + "/notifications/subscriptions/" + subscription + "/sse/");
+    es.onopen = function() {
+      append_to_log("monitoring", "opened", "nice.");
+    };
+    es.onmessage = function(e) {
+      data = JSON.parse(e.data);
+      if (data['type'] == 'event') {
+        switch(data['topic']) {
+          case 'dataelements':
+            monitor_instance_values("dataelements");
+            break;
+          case 'description':
+            monitor_instance_dsl();
+            break;
+          case 'endpoints':
+            monitor_instance_values("endpoints");
+            break;
+          case 'attributes':
+            monitor_instance_values("attributes");
+            monitor_instance_transformation();
+            if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
+              if (save['graph_theme'] != data.content.values.theme) {
+                monitor_graph_change(true);
+              }
+            }
+            break;
+          case 'task':
+            if ($('#trackcolumn').length > 0) {
+              $('#trackcolumn').append($('<iframe src="track.html?monitor=' + data.content.received['CPEE-INSTANCE-URL'].replace(/\/*$/,'/') + '"></iframe>'));
+              $('#graphcolumn').addClass('resize');
+            }
+            break;
+          case 'state':
+            monitor_instance_state_change(data['content']['state']);
+            break;
+          case 'position':
+            monitor_instance_pos_change(data['content']);
+            break;
+          case 'activity':
+            monitor_instance_running(data['content'],data['name']);
+            break;
+        }
       }
-    }
-    if (data['type'] == 'vote') {
-      monitor_instance_vote_add(data['content']);
-    }
-    append_to_log(data['type'], data['topic'] + '/' + data['name'], JSON.stringify(data['content']));
-  };
-  es.onerror = function() {
-    append_to_log("monitoring", "closed", "server down i assume.");
-    // setTimeout(sse,10000);
-  };
-
+      if (data['type'] == 'vote') {
+        monitor_instance_vote_add(data['content']);
+      }
+      append_to_log(data['type'], data['topic'] + '/' + data['name'], JSON.stringify(data['content']));
+    };
+    es.onerror = function() {
+      append_to_log("monitoring", "closed", "finished or abandoned or not existing or server down. one of these, i assume.");
+      // setTimeout(sse,10000);
+    };
+  }
   monitor_instance_values("dataelements");
   monitor_instance_values("endpoints");
   monitor_instance_values("attributes");
@@ -345,8 +348,15 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       $("#current-instance-callbacks").show();
       $("#current-instance-callbacks").attr('href',url + 'callbacks/');
       $("#current-monitor").show();
-      $("#current-instance-callbacks").attr('href',url + 'callbacks/');
       $("#current-monitor").attr('href','edit.html?monitor=' + url);
+      $("#current-graph").show();
+      $("#current-graph").attr('href','graph.html?monitor=' + url);
+      $("#current-track").show();
+      $("#current-track").attr('href','track.html?monitor=' + url);
+      if ($('body').attr('current-logs')) {
+        $("#current-log").show();
+        $("#current-log").attr('href','edit.html?monitor=' + url);
+      }
       var q = $.parseQuerySimple();
       history.replaceState({}, '', '?' + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
@@ -364,6 +374,11 @@ function monitor_instance(cin,rep,load,exec) {// {{{
           if (load || exec) {
             load_testset(exec);
           }
+        },
+        error: function() {
+          subscription = undefined;
+          append_to_log("monitoring", "closed", "For Good.");
+          sse();
         }
       });
     },
@@ -546,6 +561,7 @@ function adaptor_init(url,theme,dslx) { //{{{
       format_instance_pos();
     });
   }
+  suspended_monitoring = false;
 } //}}}
 
 function monitor_graph_change(force) { //{{{
@@ -920,7 +936,6 @@ async function set_testset(testset,exec) {// {{{
   );
 
   await Promise.all(promises);
-  suspended_monitoring = false;
 
   $.ajax({
     type: "GET",

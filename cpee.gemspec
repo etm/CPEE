@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name             = "cpee"
-  s.version          = "2.0.9"
+  s.version          = "2.0.12"
   s.platform         = Gem::Platform::RUBY
   s.license          = "LGPL-3.0"
   s.summary          = "Preliminary release of cloud process execution engine (cpee.org). If you just need workflow execution, without a rest service exposing it, then use WEEL."
@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.email            = 'juergen.mangler@gmail.com'
   s.homepage         = 'http://cpee.org/'
 
-  s.add_runtime_dependency 'riddl', '~> 0.105'
+  s.add_runtime_dependency 'riddl', '~> 0.108'
   s.add_runtime_dependency 'weel', '~> 1.99', '>= 1.99.90'
   s.add_runtime_dependency 'highline', '~> 2.0'
   s.add_runtime_dependency 'json', '~>2.1'
