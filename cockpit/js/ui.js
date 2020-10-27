@@ -53,7 +53,7 @@ $(document).ready(function() {
         } else {
           $("body").attr('current-save',res_def['save-url']);
         }
-        if (res['testsets-url']) {
+        if (res['templates-url']) {
           $("body").attr('current-templates',res['templates-url']);
         } else {
           $("body").attr('current-templates',res_def['templates-url']);
