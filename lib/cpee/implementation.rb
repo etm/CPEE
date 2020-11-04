@@ -227,7 +227,7 @@ module CPEE
             end
           end rescue nil # all the ones that are not ok, are ignored
         end
-        multi.set(File.join(instance, 'attributes', 'uuid'), SecureRandom.uuid)
+        multi.set(File.join(instance, 'attributes', 'uuid'), uuid)
         multi.zadd(File.join(instance, 'attributes'), -2, 'uuid')
         multi.set(File.join(instance, 'attributes', 'info'), name)
         multi.zadd(File.join(instance, 'attributes'), -1, 'info')

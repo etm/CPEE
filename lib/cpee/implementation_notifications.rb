@@ -102,7 +102,7 @@ module CPEE
       end
     end #}}}
 
-     class CreateSubscription < Riddl::Implementation #{{{
+    class CreateSubscription < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]
