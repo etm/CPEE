@@ -267,6 +267,7 @@ function WFAdaptorManifestation(adaptor) {
         var ep = self.endpoints[$(node).attr('endpoint')];
         var wait = $('_timing_wait',$(node).children('annotations')).text();
         var threshold = $('_timing_threshold',$(node).children('annotations')).text();
+        var adur = $('_timing_avg',$(node).children('annotations')).text();
         var lab = $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'');
         var ret = [ { column: 'ID', value: $(node).attr('id') } ];
         if (lab != '') {
@@ -277,6 +278,9 @@ function WFAdaptorManifestation(adaptor) {
         }
         if (threshold != '') {
           ret.push({ column: 'Threshold', value: 'κ = ' + threshold });
+        }
+        if (adur != '') {
+          ret.push({ column: 'Duration', value: '~T = ' + adur + 'm' });
         }
         return ret;
       },
