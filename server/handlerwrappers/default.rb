@@ -126,6 +126,9 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       if headers['CPEE_INSTANTIATION']
         @controller.notify("task/instantiation", :activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']))
       end
+      if headers['CPEE_EVENT']
+        @controller.notify("task/#{headers['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint)
+      end
       if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
         headers['CPEE_UPDATE'] = true
         callback result, headers
