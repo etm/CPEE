@@ -1,0 +1,5 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="cline hfill stand"/>
+  <path d="m 17.620194,6.2873424 c 7.577463,7.5774646 -7.577463,10.5124376 0,18.0898996" class="stand" style="fill-opacity: 0"/>
+  <path d="m 14.036033,6.2873424 c 7.577463,7.5774646 -7.5774629,10.5124376 0,18.0898996" class="stand" style="fill-opacity: 0"/>
+</svg>
