@@ -1,0 +1,6 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="15" cy="15" r="14" class="cline stand"/>
+  <circle cx="15" cy="15" r="11" class="rfill hfill cline stand"/>
+  <path d="M 14.904335,6.0646408 A 9.0152948,9.0152948 0 0 0 5.9550908,15.079625 H 23.985106 a 9.0152948,9.0152948 0 0 0 -9.015008,-9.0149842 9.0152948,9.0152948 0 0 0 -0.06567,0 z" class="standfat"/>
+  <path d="M 14.970098,15.079625 11.963937,10.870986" class="black stand"/>
+</svg>
