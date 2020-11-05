@@ -234,7 +234,7 @@
         <ui-tab class=""         data-tab="details" id="tabdetails">Graph</ui-tab>
         <ui-tab class="inactive" data-tab="dsl"     id="tabdsl"    >Description</ui-tab>
         <ui-tab class="inactive" data-tab="log"     id="tablog"    >Log</ui-tab>
-        <ui-behind                                                 ><a style='display:none' target='_blank' id='current-track'>T</a><a style='display:none' target='_blank' id='current-graph'>G</a><a style='display:none' target='_blank' id='current-log'>L</a></ui-behind>
+        <ui-behind                                                 ><a style='display:none' target='_blank' id='current-track'>T</a><a style='display:none' target='_blank' id='current-graph'>G</a></ui-behind>
       </ui-tabbar>
       <ui-content>
         <ui-area data-belongs-to-tab="details" id='graphcolumn'>
@@ -248,6 +248,7 @@
         </ui-area>
         <ui-area data-belongs-to-tab="dsl" id="areadsl" class="inactive"></ui-area>
         <ui-area data-belongs-to-tab="log" id="arealog" class="inactive"> <!--{{{-->
+          <div>Persistent Log: <a style='display:none' target='_blank' id='current-log'></a></div>
           <table id="dat_log" class="x-ui-layout"></table>
         </ui-area> <!--}}}-->
       </ui-content>

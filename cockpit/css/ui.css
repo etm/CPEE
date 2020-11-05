@@ -105,9 +105,6 @@ ui-tabbed ui-tabbar ui-behind button {
 #current-graph[href]:before {
   content: "|";
 }
-#current-log[href]:before {
-  content: "|";
-}
 
 #parameters ui-content { height: 8.5em; min-height: 1.7em; }
 
@@ -145,6 +142,8 @@ ui-tabbed ui-tabbar ui-behind button {
 #areaexecution table.x-ui-compact tbody.exe { border-top: 1px solid var(--x-ui-border-color); }
 
 #areaexecution table.x-ui-compact tbody.exe td { height: 2.2em; }
+
+#arealog > div {  padding-left: 1em; padding-top: 1em; }
 
 #dat_endpoints {
   border-collapse:collapse;

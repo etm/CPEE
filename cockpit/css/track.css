@@ -51,3 +51,10 @@
   white-space: nowrap;
   margin-bottom: 0.1em;
 }
+
+#current-log[href]:before {
+  content: "[";
+}
+#current-log[href]:after {
+  content: "]";
+}

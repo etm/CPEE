@@ -353,10 +353,6 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       $("#current-graph").attr('href','graph.html?monitor=' + url);
       $("#current-track").show();
       $("#current-track").attr('href','track.html?monitor=' + url);
-      if ($('body').attr('current-logs')) {
-        $("#current-log").show();
-        $("#current-log").attr('href','edit.html?monitor=' + url);
-      }
       var q = $.parseQuerySimple();
       history.replaceState({}, '', '?' + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
@@ -446,6 +442,14 @@ function monitor_instance_values(val) {// {{{
         var text = $(" > attributes > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
         $('#title').text(text);
         document.title = text;
+        if ($('body').attr('current-logs')) {
+          var uuid = $(" > attributes > uuid",res).text();
+          $("#current-log").show();
+          $("#current-log").attr('href',$('body').attr('current-logs') + uuid + '.xes.yaml');
+          if ($("#current-log").text() == '') {
+            $("#current-log").text(uuid + '.xes.yaml');
+          }
+        }
       }
     }
   });
