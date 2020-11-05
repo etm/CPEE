@@ -10,6 +10,7 @@ Riddl::Server.new(CPEE::SERVER, :host => 'localhost', :port => 8298) do |opts|
 
   accessible_description true
   cross_site_xhr true
+  process_out false
 
   use CPEE::implementation(opts)
 end.loop!
