@@ -866,7 +866,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'label': function(node){
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        var ret = [ { column: 'Label', value: 'f = ' + $(node).attr('frequency') + ' Hz (' + $(node).attr('behaviour') + ')' } ];
+        var ret = [ { column: 'Label', value: 'f = ' + $(node).attr('frequency') + ' Hz (' + $(node).attr('overrun') + ')' } ];
         if (avg != '') {
           ret.push({ column: 'Average', value: avg + '%' });
         }

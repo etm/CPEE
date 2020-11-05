@@ -2,10 +2,16 @@
   <attribute name="frequency" rngui:label="Interval frequency in Hz" rngui:default="0.1">
     <data type="float" rngui:label="Hz"/>
   </attribute>
-  <attribute name="behaviour" rngui:label="Interval duration overrun">
+  <attribute name="overrun" rngui:label="Interval duration overrun">
     <choice>
       <value>wait</value>
       <value>cancel</value>
+    </choice>
+  </attribute>
+  <attribute name="execution" rngui:label="Measure-control cycle execution">
+    <choice>
+      <value>sequential</value>
+      <value>parallel</value>
     </choice>
   </attribute>
   <element name="_probability" rngui:mark="true" rngui:header="Execution Probability">
