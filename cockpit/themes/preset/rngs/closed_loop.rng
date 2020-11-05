@@ -4,8 +4,8 @@
   </attribute>
   <attribute name="behaviour" rngui:label="Interval duration overrun">
     <choice>
-      <value>cancel</value>
       <value>wait</value>
+      <value>cancel</value>
     </choice>
   </attribute>
   <element name="_probability" rngui:mark="true" rngui:header="Execution Probability">

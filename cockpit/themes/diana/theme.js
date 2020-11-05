@@ -864,6 +864,14 @@ function WFAdaptorManifestation(adaptor) {
       'expansion': function(node) {
         return 'horizontal';
       },
+      'label': function(node){
+        var avg = $('> _probability_avg',$(node).children('_probability')).text();
+        var ret = [ { column: 'Label', value: 'f = ' + $(node).attr('frequency') + ' Hz (' + $(node).attr('behaviour') + ')' } ];
+        if (avg != '') {
+          ret.push({ column: 'Average', value: avg + '%' });
+        }
+        return ret;
+      },
       'svg': self.adaptor.theme_dir + 'symbols/closed_loop.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/closed_loop.rng',
@@ -911,6 +919,11 @@ function WFAdaptorManifestation(adaptor) {
       },
       'col_shift': function(node) {
         return false;
+      },
+      'label': function(node){
+        var vals = $('> value',$(node).children('_expected')).text();
+        var ret = [ { column: 'Label', value: 'measure ' + vals } ];
+        return ret;
       },
       'svg': self.adaptor.theme_dir + 'symbols/closed_loop_measuring.svg'
     },//}}}
@@ -980,6 +993,14 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift': function(node) {
         return false;
       },
+      'label': function(node){
+        var vals = [];
+        $('> change > value',$(node).children('_expected')).each((k,v) => {
+          vals.push($(v).text());
+        });
+        var ret = [ { column: 'Label', value: 'control ' + vals.join(', ') } ];
+        return ret;
+      },
       'svg': self.adaptor.theme_dir + 'symbols/closed_loop_control.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/closed_loop_control.rng',
@@ -1018,6 +1039,11 @@ function WFAdaptorManifestation(adaptor) {
          'menu_icon': self.elements.loop.illustrator.svg.clone(),
          'type': 'loop',
          'params': [self.adaptor.description.elements.loop, node]},
+        {'label': 'Closed Loop',
+         'function_call': func,
+         'menu_icon': self.elements.closed_loop.illustrator.svg.clone(),
+         'type': 'closed_loop',
+         'params': [self.adaptor.description.elements.closed_loop, node]},
         {'label': 'Stop',
          'function_call': func,
          'menu_icon': self.elements.stop.illustrator.svg.clone(),
@@ -1047,6 +1073,10 @@ function WFAdaptorManifestation(adaptor) {
       },
       'col_shift': function(node) {
         return false;
+      },
+      'label': function(node){
+        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        return ret;
       },
       'svg': self.adaptor.theme_dir + 'symbols/closed_loop_cancel.svg'
     },//}}}
