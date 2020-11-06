@@ -1,6 +1,13 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <dataelements/>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <handlers>
+    <handler url="http://tango.wst.univie.ac.at:9332">
+      <votes topic='state'>change</votes>
+      <events topic='state'>change</events>
+      <events topic='task'>instantiation</events>
+    </handler>
+  </handlers>
   <endpoints>
     <overview>http-put://ryloth.wst.univie.ac.at:9329/move/overview</overview>
     <move_tool>http-put://ryloth.wst.univie.ac.at:9329/move/position/point</move_tool>
@@ -136,7 +143,7 @@ data.item = result[0]</finalize>
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info>BPM 2020 Solution View</info>
+    <info>UR-VUE 2020 Solution View</info>
     <modeltype>CPEE</modeltype>
     <theme>preset</theme>
     <resource>ur51</resource>

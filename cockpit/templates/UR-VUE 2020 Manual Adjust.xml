@@ -174,7 +174,7 @@ data.item['adjust_y'] = (data.direction_first['y'] + data.direction_second['y'])
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info>BPM 2020 Manual Adjust</info>
+    <info>UR-VUE 2020 Manual Adjust</info>
     <modeltype>CPEE</modeltype>
     <theme>preset</theme>
     <resource>ur51</resource>

@@ -189,7 +189,7 @@ data.item = result[0]</finalize>
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info>BPM 2020 Solution NN</info>
+    <info>UR-VUE 2020 Solution NN</info>
     <modeltype>CPEE</modeltype>
     <theme>preset</theme>
     <resource>ur51</resource>

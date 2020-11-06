@@ -1,0 +1,26 @@
+<testset>
+  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <handlers>
+    <handler url="http://tango.wst.univie.ac.at:9332">
+      <votes topic='state'>change</votes>
+      <events topic='state'>change</events>
+      <events topic='task'>instantiation</events>
+    </handler>
+  </handlers>
+  <endpoints>
+    <overview>http-put://ryloth.wst.univie.ac.at:9329/move/overview</overview>
+    <move_tool>http-put://ryloth.wst.univie.ac.at:9329/move/position/point</move_tool>
+    <move_camera>http-put://ryloth.wst.univie.ac.at:9329/move/position/view</move_camera>
+    <get_items_base>http-get://ryloth.wst.univie.ac.at:9329/view/items</get_items_base>
+    <get_items_neural>http-get://ryloth.wst.univie.ac.at:9330/view/items</get_items_neural>
+    <get_offset_base>http-get://ryloth.wst.univie.ac.at:9329/view/details</get_offset_base>
+    <get_offset_neural>http-get://ryloth.wst.univie.ac.at:9330/view/details</get_offset_neural>
+    <grip_and_place>http-put://ryloth.wst.univie.ac.at:9329/move/grip_and_place</grip_and_place>
+    <subprocess>https://cpee.org/flow/start/url/</subprocess>
+    <wait>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</wait>
+    <adjust>http://cpee.org/~demo/cpee-cockpit/templates/UR-VUE%202020%20Manual%20Adjust.xml</adjust>
+  </endpoints>
+  <attributes>
+    <resource>ur51</resource>
+  </attributes>
+</testset>
