@@ -1,4 +1,4 @@
-<testset>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <handlers>
     <handler url="http://tango.wst.univie.ac.at:9332">
