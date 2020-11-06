@@ -89,7 +89,7 @@ module CPEE
     end
 
     def start
-      if vote("state/change")
+      if vote("state/change", :state => 'running')
         @thread = @instance.start
         @thread.join
       else
@@ -126,6 +126,7 @@ module CPEE
       @redis.smembers("instance:#{id}/handlers/#{handler}").each do |client|
         voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
         content[:key] = voteid
+        content[:attributes] = attributes_translated
         content[:subscription] = client
         votes << voteid
         CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)
@@ -140,7 +141,7 @@ module CPEE
             index = message.index(' ')
             mess = message[index+1..-1]
             m = JSON.parse(mess)
-            collect << (m['content'] == 'true' || false)
+            collect << ((m['content'] == true || m['content'] == 'true') || false)
             @votes.delete m['name']
             cancel_callback m['name']
             if collect.length >= votes.length

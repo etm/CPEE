@@ -86,7 +86,11 @@ Daemonite.new do |opts|
                 Riddl::Parameter::Complex::new('notification','application/json',mess)
               ] rescue [ 0, [], []])
               if status >= 200 && status < 300
-                val = result[0].value.read
+                val = if result[0].class == Riddl::Parameter::Simple
+                  result[0].value
+                else
+                  result[0].value.read
+                end
                 if (headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true') || val == 'callback'
                   persist_handler instance, callback_key, m, redis
                 else # they may send true or false

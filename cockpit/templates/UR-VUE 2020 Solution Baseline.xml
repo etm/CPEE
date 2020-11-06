@@ -3,13 +3,13 @@
     <places>[[0,0],[1,0],[0,1],[1,1],[0,2],[1,2],[0,3],[1,3],[0,4],[1,4],[0,5],[1,5]]</places>
   </dataelements>
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
-  <handlers>
+  <!--handlers>
     <handler url="http://tango.wst.univie.ac.at:9332">
       <votes topic='state'>change</votes>
       <events topic='state'>change</events>
       <events topic='task'>instantiation</events>
     </handler>
-  </handlers>
+  </handlers-->
   <endpoints>
     <overview>http-put://ryloth.wst.univie.ac.at:9329/move/overview</overview>
     <move_tool>http-put://ryloth.wst.univie.ac.at:9329/move/position/point</move_tool>

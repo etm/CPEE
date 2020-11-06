@@ -24,11 +24,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
   def self::inform_state_change(arguments,newstate) # {{{
     controller = arguments[0]
-		controller.notify("state/change", :state => newstate, :timestamp => Time.now.xmlschema(3))
-  end # }}}
-  def self::inform_state_change(arguments,newstate) # {{{
-    controller = arguments[0]
-		controller.notify("state/change", :state => newstate, :timestamp => Time.now.xmlschema(3))
+		controller.notify("state/change", :state => newstate)
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{
     controller = arguments[0]
