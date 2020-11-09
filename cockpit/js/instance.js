@@ -442,6 +442,9 @@ function monitor_instance_values(val) {// {{{
         var text = $(" > attributes > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
         $('#title').text(text);
         document.title = text;
+        if ($('body').attr('current-save')) {
+          $('body').attr('current-save-dir',$(" > attributes > design_dir",res).text());
+        }
         if ($('body').attr('current-logs')) {
           var uuid = $(" > attributes > uuid",res).text();
           $("#current-log").show();
