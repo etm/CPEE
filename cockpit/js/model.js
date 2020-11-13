@@ -22,7 +22,7 @@ $(document).ready(function() {
     var def = new $.Deferred();
     def.done(function(name,testset) {
       $.ajax({
-        url: $('body').attr('current-save') + name + '.xml',
+        url: $('body').attr('current-save') + ($('body').attr('current-save-dir') ? ($('body').attr('current-save-dir') + '/').replace(/\/+/,'/') : '') + name + '.xml',
         type: 'PUT',
         contentType: 'application/xml',
         data: testset.serializePrettyXML(),
