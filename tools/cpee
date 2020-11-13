@@ -65,7 +65,7 @@ p2      = ARGV[2]
 cockpit = "#{curpath}/../cockpit/"
 
 def js_libs(cockpit)
-  res = Typhoeus.get('http://cpee.org/js_libs/js_libs.zip')
+  res = Typhoeus.get('https://cpee.org/js_libs/js_libs.zip')
   if res.success?
     File.write(File.join(cockpit,'js_libs.zip'),res.response_body)
     Zip::File.open(File.join(cockpit,'js_libs.zip')) do |zip_file|
