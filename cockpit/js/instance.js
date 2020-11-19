@@ -889,9 +889,7 @@ function save_svgfile() {// {{{
         type: "GET",
         url: url + "/properties/attributes/info/",
         success: function(res){
-          var name = $(res.documentElement).text();
-
-          $('#savesvgfile').attr('download',name + '.svg');
+          $('#savesvgfile').attr('download',res + '.svg');
           $('#savesvgfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializeXML()));
           document.getElementById('savesvgfile').click();
         },
