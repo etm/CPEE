@@ -8,6 +8,10 @@
       <value id="sensor">Read From Sensor</value>
       <value id="human">Human Task</value>
       <value id="subprocess">Subprocess</value>
+      <value id="robot">Robot</value>
+      <value id="plc">PLC</value>
+      <value id="send">Send Message</value>
+      <value id="receive">Receive Message</value>
     </choice>
   </attribute>
   <element name="parameters" rngui:header="Properties">
