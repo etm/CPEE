@@ -109,7 +109,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
     client = Riddl::Client.new(tendpoint)
 
-    @controller.callback(self,callback,:activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position)
+    @controller.callback(self,callback,:'activity_uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
     @handler_passthrough = callback
 
     status, result, headers = client.request type => params
@@ -120,10 +120,10 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       callback([ Riddl::Parameter::Complex.new('error','application/json',StringIO.new(JSON::generate({ 'status' => status, 'error' => c }))) ], headers)
     else
       if headers['CPEE_INSTANTIATION']
-        @controller.notify("task/instantiation", :activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']))
+        @controller.notify("task/instantiation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']))
       end
       if headers['CPEE_EVENT']
-        @controller.notify("task/#{headers['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint)
+        @controller.notify("task/#{headers['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :'activity_uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint)
       end
       if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
         headers['CPEE_UPDATE'] = true
@@ -142,11 +142,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @sensors = parameters.dig(:stream,:sensors)
     @aggregators = parameters.dig(:stream,:aggregators)
     @costs = parameters.dig(:stream,:costs)
-    @controller.notify("activity/calling", :activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
+    @controller.notify("activity/calling", :'activity_uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
     if passthrough.to_s.empty?
       proto_curl parameters
     else
-      @controller.callback(self,passthrough,:activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position)
+      @controller.callback(self,passthrough,:'activity_uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
       @handler_passthrough = passthrough
     end
   end # }}}
@@ -175,33 +175,33 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def inform_activity_done # {{{
-    @controller.notify("activity/done", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
+    @controller.notify("activity/done", :'activity_uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
   end # }}}
   def inform_activity_manipulate # {{{
-    @controller.notify("activity/manipulating", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
+    @controller.notify("activity/manipulating", :'activity_uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
   end # }}}
   def inform_activity_failed(err) # {{{
     puts err.message
     puts err.backtrace
-    @controller.notify("activity/failed", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    @controller.notify("activity/failed", :'activity_uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end # }}}
   def inform_manipulate_change(status,changed_dataelements,changed_endpoints,dataelements,endpoints) # {{{
     unless status.nil?
-      @controller.notify("status/change", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :id => status.id, :message => status.message)
+      @controller.notify("status/change", :'activity_uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :id => status.id, :message => status.message)
     end
     unless changed_dataelements.nil?
-      @controller.notify("dataelements/change", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => dataelements)
+      @controller.notify("dataelements/change", :'activity_uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => dataelements)
     end
     unless changed_endpoints.nil?
-      @controller.notify("endpoints/change", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints)
+      @controller.notify("endpoints/change", :'activity_uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints)
     end
   end # }}}
 
   def vote_sync_after # {{{
-    @controller.vote("activity/syncing_after", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label)
+    @controller.vote("activity/syncing_after", :'activity_uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label)
   end # }}}
   def vote_sync_before(parameters=nil) # {{{
-    @controller.vote("activity/syncing_before", :activity_uuid => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters)
+    @controller.vote("activity/syncing_before", :'activity_uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters)
   end # }}}
 
   def simplify_result(result)
@@ -260,13 +260,13 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end
 
   def callback(result=nil,options={})
-    @controller.notify("activity/receiving", :activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :sensors => @sensors, :aggregators => @aggregators, :costs => @costs)
+    @controller.notify("activity/receiving", :'activity_uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :sensors => @sensors, :aggregators => @aggregators, :costs => @costs)
     result = simplify_result(result)
     @handler_returnValue = result
     @handler_returnOptions = options
     if options['CPEE_UPDATE']
       if options['CPEE_UPDATE_STATUS']
-        @controller.notify("activity/status", :activity_uuid => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'])
+        @controller.notify("activity/status", :'activity_uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'])
       end
       @handler_continue.continue WEEL::Signal::Again
     else
@@ -290,7 +290,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     pp "#{type} - #{nesting} - #{tid} - #{parent} - #{parameters.inspect}"
 
     @controller.vote("simulating/step",
-      :activity_uuid => @handler_activity_uuid,
+      :'activity_uuid' => @handler_activity_uuid,
       :label => @label,
       :activity => tid,
       :endpoint => @handler_endpoint,
