@@ -1,7 +1,4 @@
 <element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="closed_loop" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
-  <attribute name="frequency" rngui:label="Interval frequency in Hz" rngui:default="0.1">
-    <data type="float" rngui:label="Hz"/>
-  </attribute>
   <attribute name="overrun" rngui:label="Interval duration overrun">
     <choice>
       <value>wait</value>
@@ -26,6 +23,9 @@
     </element>
   </element>
   <element rngui:ignore="true" name="closed_loop_measuring">
+    <attribute name="frequency" rngui:label="Interval frequency in Hz" rngui:default="0.1">
+      <data type="float" rngui:label="Hz"/>
+    </attribute>
     <element name="_expected" rngui:header="Values Expected to Change">
       <zeroOrMore rngui:label="Add Value">
         <element name="value" rngui:label="Value">
@@ -35,6 +35,9 @@
     </element>
   </element>
   <element rngui:ignore="true" name="closed_loop_control">
+    <attribute name="frequency" rngui:label="Interval frequency in Hz" rngui:default="0.1">
+      <data type="float" rngui:label="Hz"/>
+    </attribute>
     <element name="_expected" rngui:header="Values Expected to Change">
       <zeroOrMore rngui:label="Add Value">
         <element name="change">

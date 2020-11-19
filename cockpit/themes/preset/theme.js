@@ -217,8 +217,7 @@ function WFAdaptorManifestation(adaptor) {
     self.adaptor.illustrator.get_elements().removeClass('selected');
     self.adaptor.illustrator.get_labels().removeClass('selected');
 
-    console.log(e);
-    if (e && e.ctrlKey) {
+    if (e && (e.ctrlKey || e.metaKey)) {
       if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
       var tab = $('#dat_details');
           tab.empty();
