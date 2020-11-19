@@ -55,7 +55,7 @@ Daemonite.new do |opts|
           when 'event:state/change'
             redis.multi do |multi|
               multi.set("instance:#{instance}/state",mess.dig('content','state'))
-              multi.set("instance:#{instance}/state/@changed",mess.dig('content','timestamp'))
+              multi.set("instance:#{instance}/state/@changed",mess.dig('timestamp'))
             end
           when 'event:handlerwrapper/change'
             redis.set("instance:#{instance}/handlerwrapper",mess.dig('content','handlerwrapper'))
