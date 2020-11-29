@@ -70,10 +70,17 @@ module CPEE
     opts[:watchdog_start_off]         ||= false
     opts[:backend_instance]           ||= 'instance.rb'
     opts[:infinite_loop_stop]         ||= 10000
-    opts[:redis_path]                 ||= '/tmp/redis.sock'
-    opts[:redis_db]                   ||= 3
-    opts[:sse_keepalive_frequency]    ||= 10
 
+    ### set redis_cmd to nil if you want to do global
+    ### at least redis_path and redis_db have to be set if you do global
+    opts[:redis_path]                 ||= 'redis.sock' # use e.g. /tmp/redis.sock for global stuff. Look it up in your redis config
+    opts[:redis_db]                   ||= 3
+    ### optional redis stuff
+    opts[:redis_cmd]                  ||= 'redis-server --port 0 --unixsocket #redis_path# --unixsocketperm 600 --pidfile #redis_pid# --dir --dbfilename #redis_db_name# --save 900 1 --save 300 10 --save 60 10000 --rdbcompression yes'
+    opts[:redis_pid]                  ||= 'redis.pid' # use e.g. /var/run/redis.pid if you do global. Look it up in your redis config
+    opts[:redis_db_name]              ||= 'redis.rdb' # use e.g. /var/lib/redis.rdb for global stuff. Look it up in your redis config
+
+    opts[:sse_keepalive_frequency]    ||= 10
     opts[:sse_connections]            = {}
     opts[:redis]                      = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
     opts[:statemachine]               = CPEE::StateMachine.new opts[:states], %w{running simulating replaying finishing stopping abandoned finished} do |id|
@@ -90,6 +97,7 @@ module CPEE
 
     Proc.new do
       parallel do
+        CPEE::watch_services(opts[:watchdog_start_off])
         CPEE::watch_services(opts[:watchdog_start_off])
         EM.add_periodic_timer(opts[:watchdog_frequency]) do ### start services
           CPEE::watch_services(opts[:watchdog_start_off])
