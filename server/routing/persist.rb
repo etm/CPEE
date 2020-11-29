@@ -18,6 +18,15 @@ require 'json'
 require 'redis'
 require 'daemonite'
 require_relative '../../lib/cpee/value_helper'
+require_relative '../../lib/cpee/redis'
+
+OPTS = {
+  :runtime_opts => [
+    ["--url [REDIS]", "-u [REDIS]", "Specify redis url", ->(p){ @riddl_opts[:redis_url] = p }],
+    ["--path [REDIS]", "-p [REDIS]", "Specify redis path, e.g. /tmp/redis.sock", ->(p){ @riddl_opts[:redis_path] = p }],
+    ["--db [REDIS]", "-d [REDIS]", "Specify redis db, e.g. 1", -> { @riddl_opts[:redis_db] = p.to_i }]
+  ]
+}
 
 EVENTS = %w{
   event:state/change
@@ -33,9 +42,13 @@ EVENTS = %w{
   callback:activity/content
 }
 
-Daemonite.new do |opts|
-  redis = Redis.new(path: "/tmp/redis.sock", db: 3)
-  pubsubredis = Redis.new(path: "/tmp/redis.sock", db: 3)
+Daemonite.new(OPTS) do |opts|
+  opts[:redis_path] ||= '/tmp/redis.sock'
+  opts[:redis_db] ||= 1
+
+  CPEE::redis_connect opts
+  redis = opts[:redis]
+  pubsubredis = opts[:redis_dyn].call
 
   run do
     pubsubredis.subscribe(EVENTS) do |on|

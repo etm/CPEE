@@ -165,7 +165,7 @@ module CPEE
     end #}}}
 
     def self::sse_distributor(opts) #{{{
-      conn = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+      conn = opts[:redis_dyn].call
       conn.psubscribe('forward:*','event:state/change') do |on|
         on.pmessage do |pat, what, message|
           if pat == 'forward:*'
