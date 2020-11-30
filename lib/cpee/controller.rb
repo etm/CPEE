@@ -20,6 +20,7 @@ require 'riddl/client'
 require_relative 'value_helper'
 require_relative 'attributes_helper'
 require_relative 'message'
+require_relative 'redis'
 
 require 'ostruct'
 class ParaStruct < OpenStruct
@@ -34,7 +35,9 @@ module CPEE
 
   class Controller
     def initialize(id,dir,opts)
-      @redis = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+      CPEE::redis_connect(opts)
+
+      @redis = opts[:redis]
       @votes = []
 
       @id = id
@@ -134,7 +137,7 @@ module CPEE
 
       if votes.length > 0
         @votes += votes
-        psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
+        psredis = @opts[:redis_dyn].call
         collect = []
         psredis.subscribe(votes.map{|e| ['vote-response:' + e.to_s, 'vote-end:' + e.to_s] }.flatten) do |on|
           on.message do |what, message|
@@ -158,7 +161,7 @@ module CPEE
     def callback(hw,key,content)
       CPEE::Message::send(:callback,'activity/content',base,@id,uuid,info,content.merge(:key => key),@redis)
 
-      psredis = Redis.new(path: @opts[:redis_path], db: @opts[:redis_db])
+      psredis = @opts[:redis_dyn].call
       response = nil
       Thread.new do
         psredis.subscribe('callback-response:' + key, 'callback-end:' + key) do |on|
