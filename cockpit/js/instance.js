@@ -838,7 +838,6 @@ function get_testset(deferred) {// {{{
       $('testset > dsl',testset).remove();
       $('testset > dslx',testset).remove();
       $('testset > attributes > uuid',testset).remove();
-      $('testset > attributes > theme',testset).remove();
       testset.append($X('<transformation xmlns="http://cpee.org/ns/properties/2.0"><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation>'));
       var name =  $('testset > attributes > info',testset).text();
       $('[xmlns]',testset).each((idx,ele) => {
