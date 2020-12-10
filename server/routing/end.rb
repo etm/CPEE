@@ -19,29 +19,28 @@ require 'redis'
 require 'daemonite'
 require_relative '../../lib/cpee/redis'
 
-OPTS = {
-  :runtime_opts => [
-    ["--url [REDIS]", "-u [REDIS]", "Specify redis url", ->(p){ @riddl_opts[:redis_url] = p }],
-    ["--path [REDIS]", "-p [REDIS]", "Specify redis path, e.g. /tmp/redis.sock", ->(p){ @riddl_opts[:redis_path] = p }],
-    ["--db [REDIS]", "-d [REDIS]", "Specify redis db, e.g. 1", -> { @riddl_opts[:redis_db] = p.to_i }]
+Daemonite.new do |opts|
+  opts[:runtime_opts] += [
+    ["--url=URL", "-uURL", "Specify redis url", ->(p){ opts[:redis_url] = p }],
+    ["--path=PATH", "-pPATH", "Specify redis path, e.g. /tmp/redis.sock", ->(p){ opts[:redis_path] = p }],
+    ["--db=DB", "-dDB", "Specify redis db, e.g. 1", ->(p) { opts[:redis_db] = p.to_i }]
   ]
-}
 
-Daemonite.new(OPTS) do |opts|
-  opts[:redis_path] ||= '/tmp/redis.sock'
-  opts[:redis_db] ||= 1
+  on startup do
+    opts[:redis_path] ||= '/tmp/redis.sock'
+    opts[:redis_db] ||= 1
 
-  CPEE::redis_connect opts
-  redis = opts[:redis]
-  pubsubredis = opts[:redis_dyn].call
+    CPEE::redis_connect opts
+    opts[:pubsubredis] = opts[:redis_dyn].call
+  end
 
   run do
-    pubsubredis.psubscribe('callback-end:*') do |on|
+    opts[:pubsubredis].psubscribe('callback-end:*') do |on|
       on.pmessage do |pat, what, message|
         _, key = what.split(':')
         index = message.index(' ')
         instance = message[0...index]
-        redis.multi do |multi|
+        opts[:redis].multi do |multi|
           multi.srem("instance:#{instance}/callbacks",key)
           multi.del("instance:#{instance}/callback/#{key}/uuid")
           multi.del("instance:#{instance}/callback/#{key}/label")

@@ -26,16 +26,16 @@ module CPEE
           raise
         end
         opts[:redis] = opts[:redis_dyn].call
-        raise if !opts[:redis].connected?
+        opts[:redis].dbsize
       rescue
         puts 'can not connect to redis. check if it is running and cpee is configured correctly ...'
         exit
       end
     else # we always assume file socket if redis is startet locally
-      opts[:redis_dyn] = Redis.new(path: opts[:redis_path], db: opts[:redis_db])
+      opts[:redis_dyn] = Proc.new { Redis.new(path: File.join(opts[:basepath],opts[:redis_path]), db: opts[:redis_db].to_i) }
       begin
         opts[:redis] = opts[:redis_dyn].call
-        raise if !opts[:redis].connected?
+        opts[:redis].dbsize
       rescue
         rcmd = opts[:redis_cmd]
         rcmd.gsub! /#redis_path#/, File.join(opts[:basepath],opts[:redis_path])
@@ -44,6 +44,8 @@ module CPEE
         rcmd.gsub! /#redis_pid#/, File.join(opts[:basepath],opts[:redis_pid])
         res = system rcmd
         if res
+          puts 'starting redis ... it will keep running, just to let you know ...'
+          sleep 1
           retry
         else
           puts 'can not start redis. check if cpee is configured correctly ...'

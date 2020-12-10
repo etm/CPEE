@@ -75,7 +75,7 @@ module CPEE
     ### set redis_cmd to nil if you want to do global
     ### at least redis_path or redis_url and redis_db have to be set if you do global
     opts[:redis_path]                 ||= 'redis.sock' # use e.g. /tmp/redis.sock for global stuff. Look it up in your redis config
-    opts[:redis_db]                   ||= 1
+    opts[:redis_db]                   ||= 0
     ### optional redis stuff
     opts[:redis_url]                  ||= nil
     opts[:redis_cmd]                  ||= 'redis-server --port 0 --unixsocket #redis_path# --unixsocketperm 600 --pidfile #redis_pid# --dir #redis_db_dir# --dbfilename #redis_db_name# --databases 1 --save 900 1 --save 300 10 --save 60 10000 --rdbcompression yes --daemonize yes'
@@ -101,10 +101,9 @@ module CPEE
 
     Proc.new do
       parallel do
-        CPEE::watch_services(opts[:watchdog_start_off])
-        CPEE::watch_services(opts[:watchdog_start_off])
+        CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],File.join(opts[:basepath],opts[:redis_path]),opts[:redis_db])
         EM.add_periodic_timer(opts[:watchdog_frequency]) do ### start services
-          CPEE::watch_services(opts[:watchdog_start_off])
+          CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],File.join(opts[:basepath],opts[:redis_path]),opts[:redis_db])
         end
         EM.defer do ### catch all sse connections
           CPEE::Notifications::sse_distributor(opts)
@@ -144,14 +143,18 @@ module CPEE
     end
   end
 
-  def self::watch_services(watchdog_start_off)
+  def self::watch_services(watchdog_start_off,url,path,db)
     return if watchdog_start_off
      EM.defer do
        Dir[File.join(__dir__,'..','..','server','routing','*.rb')].each do |s|
          s = s.sub(/\.rb$/,'')
          pid = (File.read(s + '.pid').to_i rescue nil)
          if (pid.nil? || !(Process.kill(0, pid) rescue false)) && !File.exist?(s + '.lock')
-           system "#{s}.rb restart 1>/dev/null 2>&1"
+           if url.nil?
+             system "#{s}.rb -p \"#{path}\" -d #{db} restart 1>/dev/null 2>&1"
+           else
+             system "#{s}.rb -u \"#{url}\" -d #{db} restart 1>/dev/null 2>&1"
+           end
            puts "➡ Service #{File.basename(s,'.rb')} started ..."
          end
        end
