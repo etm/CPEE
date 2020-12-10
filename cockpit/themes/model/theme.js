@@ -241,7 +241,7 @@ function WFAdaptorManifestation(adaptor) {
       'label': function(node){
         var ret;
         if ($('> url',$(node).children('parameters').children('arguments')).length > 0) {
-          ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') + ' <a target="blank_" href="' + $('> url',$(node).children('parameters').children('arguments')).text() + '"></a>' } ];
+          ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') + ' <a target="_blank" href="' + $('> url',$(node).children('parameters').children('arguments')).text() + '"></a>' } ];
         } else {
           ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
         }
