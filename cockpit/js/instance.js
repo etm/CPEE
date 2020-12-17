@@ -629,9 +629,11 @@ function monitor_instance_state() {// {{{
 }// }}}
 function monitor_instance_transformation() {// {{{
   var url = $('body').attr('current-instance');
+  console.log('hallo');
+  console.log(url);
   $.ajax({
     type: "GET",
-    url: url + "/properties/attributes/modeltype",
+    url: url + "/properties/attributes/modeltype/",
     success: function(res){
       $("#currentmodel").text(res);
     },
@@ -774,7 +776,7 @@ function start_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/state",
+    url: url + "/properties/state/",
     data: ({value: "running"}),
     error: report_failure
   });
@@ -783,7 +785,7 @@ function replay_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/state",
+    url: url + "/properties/state/",
     data: ({value: "replaying"}),
     error: report_failure
   });
@@ -793,7 +795,7 @@ function aba_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/state",
+    url: url + "/properties/state/",
     data: ({value: "abandoned"}),
     error: report_failure
   });
@@ -802,7 +804,7 @@ function stop_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/state",
+    url: url + "/properties/state/",
     data: ({value: "stopping"}),
     error: report_failure
   });
@@ -951,7 +953,7 @@ async function set_testset(testset,exec) {// {{{
     success: function(res){
       $.ajax({
         type: "PUT",
-        url: url + "/properties/state",
+        url: url + "/properties/state/",
         data: ({value: res}),
         error: report_failure,
         success: function(res){
@@ -1053,7 +1055,7 @@ function load_modeltype() {// {{{
     success: function(res){
       $.ajax({
         type: "PUT",
-        url: url + "/properties/attributes/modeltype",
+        url: url + "/properties/attributes/modeltype/",
         data: ({value: name}),
         success: function(){
           set_testset(res,false);
