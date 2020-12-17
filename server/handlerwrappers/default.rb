@@ -53,7 +53,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
   end # }}}
 
   def prepare(readonly, endpoints, parameters, replay=false) #{{{
-    if replay
+    if replay && @controller.attributes[:replayer]
       @handler_endpoint = @controller.attributes[:replayer]
     else
       @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
@@ -99,7 +99,7 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     params << Riddl::Header.new("CPEE-CALLBACK-ID",callback)
     params << Riddl::Header.new("CPEE-ACTIVITY",@handler_position)
     params << Riddl::Header.new("CPEE-LABEL",@label||'')
-    params << Riddl::Header.new("CPEE-REPLAY",@controller.attributes['replayer_args'])
+    params << Riddl::Header.new("CPEE-REPLAY",@controller.attributes['replayer_target']) if @controller.attributes[:replayer] && @controller.attributes['replayer_target']
     @controller.attributes.each do |key,value|
       params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
     end
