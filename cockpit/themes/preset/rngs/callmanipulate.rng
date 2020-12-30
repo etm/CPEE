@@ -120,20 +120,39 @@
   </element>
   <element name="annotations" rngui:header="Annotations">
     <element name="_timing" rngui:header="Timing" rngui:fold="closed">
-      <element name="_timing_wait" rngui:label="&#x3C9; - Wait">
+      <element name="_timing_weight" rngui:label="&#x3C9; - Weight">
         <data type="float" rngui:label="[0,1]"/>
-      </element>
-      <element name="_timing_threshold" rngui:label="&#x3BA; - Threshold">
-        <data type="float" rngui:label="[0,3,n]"/>
-      </element>
-      <element name="_timing_min" rngui:label="Min in min">
-        <data type="float" rngui:label="Minutes"/>
-      </element>
-      <element name="_timing_max" rngui:label="Max in min">
-        <data type="float" rngui:label="Minutes"/>
       </element>
       <element name="_timing_avg" rngui:label="Avg in min">
         <data type="float" rngui:label="Minutes"/>
+      </element>
+      <element name="explanations" rngui:header="Explanations">
+        <zeroOrMore rngui:label="Add Explanation">
+          <element name="explanation">
+            <element name="type" rngui:label="Type">
+              <choice>
+                <value>&gt;</value>
+                <value>&lt;</value>
+              </choice>
+            </element>
+            <element name="deviation" rngui:label="Deviation">
+              <data type="float" rngui:label="Minutes"/>
+            </element>
+            <element name="behaviour" rngui:label="Behaviour">
+              <choice>
+                <value>Immediately</value>
+                <value>Wait until next</value>
+                <value>Use grace period value</value>
+              </choice>
+            </element>
+            <element name="grace" rngui:label="Grace Period" rngui:default="0.0">
+              <data type="float" rngui:label="Minutes"/>
+            </element>
+            <element name="text" rngui:label="Explanation">
+              <data type="string" rngui:label="Patterns"/>
+            </element>
+          </element>
+        </zeroOrMore>
       </element>
     </element>
     <element name="_notes" rngui:header="Notes" rngui:fold="closed">
