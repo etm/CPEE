@@ -17,13 +17,25 @@
 require 'redis'
 require 'daemonite'
 require 'riddl/client'
+require_relative '../../lib/cpee/redis'
 
 Daemonite.new do |opts|
-  redis = Redis.new(path: "/tmp/redis.sock", db: 3)
-  pubsubredis = Redis.new(path: "/tmp/redis.sock", db: 3)
+  opts[:runtime_opts] += [
+    ["--url=URL", "-uURL", "Specify redis url", ->(p){ opts[:redis_url] = p }],
+    ["--path=PATH", "-pPATH", "Specify redis path, e.g. /tmp/redis.sock", ->(p){ opts[:redis_path] = p }],
+    ["--db=DB", "-dDB", "Specify redis db, e.g. 1", ->(p) { opts[:redis_db] = p.to_i }]
+  ]
+
+  on startup do
+    opts[:redis_path] ||= '/tmp/redis.sock'
+    opts[:redis_db] ||= 1
+
+    CPEE::redis_connect opts
+    opts[:pubsubredis] = opts[:redis_dyn].call
+  end
 
   run do
-    pubsubredis.psubscribe('event:*') do |on|
+    opts[:pubsubredis].psubscribe('event:*') do |on|
       on.pmessage do |pat, what, message|
         index = message.index(' ')
         mess = message[index+1..-1]
@@ -33,11 +45,11 @@ Daemonite.new do |opts|
         topic = ::File::dirname(event)
         name = ::File::basename(event)
         long = File.join(topic,type,name)
-        redis.smembers("instance:#{instance}/handlers").each do |key|
-          if redis.smembers("instance:#{instance}/handlers/#{key}").include? long
-            url = redis.get("instance:#{instance}/handlers/#{key}/url")
+        opts[:redis].smembers("instance:#{instance}/handlers").each do |key|
+          if opts[:redis].smembers("instance:#{instance}/handlers/#{key}").include? long
+            url = opts[:redis].get("instance:#{instance}/handlers/#{key}/url")
             if url.nil? || url == ""
-              redis.publish("forward:#{instance}/#{key}",mess)
+              opts[:redis].publish("forward:#{instance}/#{key}",mess)
             else
               p "#{type}/#{topic}/#{event}-#{url}"
               client = Riddl::Client.new(url)

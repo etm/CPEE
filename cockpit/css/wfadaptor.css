@@ -346,6 +346,23 @@ svg text.label {
   font-family:Arial;
 }
 
+svg text.smaller {
+  font-size:12px;
+  font-style:normal;
+  font-variant:normal;
+  font-weight:bold;
+  font-stretch:normal;
+  text-align:center;
+  line-height:125%;
+  writing-mode:horizontal-tb;
+  text-anchor:middle;
+  color: var(--wfadaptor-base);
+  fill: var(--wfadaptor-base);
+  fill-opacity:1;
+  stroke:none;
+  font-family:Arial;
+}
+
 #arrow {
   stroke: var(--wfadaptor-base);
   stroke-width: 2;

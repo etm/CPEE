@@ -91,7 +91,6 @@ function cockpit() { //{{{
   $("button[name=savesvgfile]").click(function(){ save_svgfile(); });
   $("button[name=state_start]").click(function(){ $(this).parent().find('button').attr("disabled","disabled");start_instance(); });
   $("button[name=state_stop]").click(function(){ $(this).parent().find('button').attr("disabled","disabled");stop_instance(); });
-  $("button[name=state_replay]").click(function(){ $(this).parent().find('button').attr("disabled","disabled");replay_instance(); });
   $("button[name=state_abandon]").click(function(){ aba_instance(); });
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=testsetfile]").change(load_testsetfile_after);
@@ -629,9 +628,11 @@ function monitor_instance_state() {// {{{
 }// }}}
 function monitor_instance_transformation() {// {{{
   var url = $('body').attr('current-instance');
+  console.log('hallo');
+  console.log(url);
   $.ajax({
     type: "GET",
-    url: url + "/properties/attributes/modeltype",
+    url: url + "/properties/attributes/modeltype/",
     success: function(res){
       $("#currentmodel").text(res);
     },
@@ -699,19 +700,16 @@ function monitor_instance_state_change(notification) { //{{{
       $('#state_extended').show();
       $("button[name=state_start]").show();
       $("button[name=state_stop]").hide();
-      $("button[name=state_replay]").show();
       $("button[name=state_abandon]").show();
     } else if (notification == "running") {
       $('#state_extended').hide();
       $("button[name=state_start]").hide();
       $("button[name=state_stop]").show();
-      $("button[name=state_replay]").hide();
       $("button[name=state_abandon]").hide();
     } else {
       $('#state_extended').hide();
       $("button[name=state_start]").hide();
       $("button[name=state_stop]").hide();
-      $("button[name=state_replay]").hide();
       $("button[name=state_abandon]").hide();
     }
 
@@ -774,17 +772,8 @@ function start_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/state",
+    url: url + "/properties/state/",
     data: ({value: "running"}),
-    error: report_failure
-  });
-}// }}}
-function replay_instance() {// {{{
-  var url = $('body').attr('current-instance');
-  $.ajax({
-    type: "PUT",
-    url: url + "/properties/state",
-    data: ({value: "replaying"}),
     error: report_failure
   });
 }// }}}
@@ -793,7 +782,7 @@ function aba_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/state",
+    url: url + "/properties/state/",
     data: ({value: "abandoned"}),
     error: report_failure
   });
@@ -802,7 +791,7 @@ function stop_instance() {// {{{
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "PUT",
-    url: url + "/properties/state",
+    url: url + "/properties/state/",
     data: ({value: "stopping"}),
     error: report_failure
   });
@@ -838,7 +827,6 @@ function get_testset(deferred) {// {{{
       $('testset > dsl',testset).remove();
       $('testset > dslx',testset).remove();
       $('testset > attributes > uuid',testset).remove();
-      $('testset > attributes > theme',testset).remove();
       testset.append($X('<transformation xmlns="http://cpee.org/ns/properties/2.0"><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation>'));
       var name =  $('testset > attributes > info',testset).text();
       $('[xmlns]',testset).each((idx,ele) => {
@@ -952,7 +940,7 @@ async function set_testset(testset,exec) {// {{{
     success: function(res){
       $.ajax({
         type: "PUT",
-        url: url + "/properties/state",
+        url: url + "/properties/state/",
         data: ({value: res}),
         error: report_failure,
         success: function(res){
@@ -1054,7 +1042,7 @@ function load_modeltype() {// {{{
     success: function(res){
       $.ajax({
         type: "PUT",
-        url: url + "/properties/attributes/modeltype",
+        url: url + "/properties/attributes/modeltype/",
         data: ({value: name}),
         success: function(){
           set_testset(res,false);

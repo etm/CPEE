@@ -18,6 +18,7 @@ require 'json'
 require 'redis'
 require 'daemonite'
 require_relative '../../lib/cpee/value_helper'
+require_relative '../../lib/cpee/redis'
 
 EVENTS = %w{
   event:state/change
@@ -34,18 +35,29 @@ EVENTS = %w{
 }
 
 Daemonite.new do |opts|
-  redis = Redis.new(path: "/tmp/redis.sock", db: 3)
-  pubsubredis = Redis.new(path: "/tmp/redis.sock", db: 3)
+  opts[:runtime_opts] += [
+    ["--url=URL", "-uURL", "Specify redis url", ->(p){ opts[:redis_url] = p }],
+    ["--path=PATH", "-pPATH", "Specify redis path, e.g. /tmp/redis.sock", ->(p){ opts[:redis_path] = p }],
+    ["--db=DB", "-dDB", "Specify redis db, e.g. 1", ->(p) { opts[:redis_db] = p.to_i }]
+  ]
+
+  on startup do
+    opts[:redis_path] ||= '/tmp/redis.sock'
+    opts[:redis_db] ||= 1
+
+    CPEE::redis_connect opts
+    opts[:pubsubredis] = opts[:redis_dyn].call
+  end
 
   run do
-    pubsubredis.subscribe(EVENTS) do |on|
+    opts[:pubsubredis].subscribe(EVENTS) do |on|
       on.message do |what, message|
         mess = JSON.parse(message[message.index(' ')+1..-1])
         instance = mess.dig('instance')
         case what
           when 'callback:activity/content'
             key = mess.dig('content','key')
-            redis.multi do |multi|
+            opts[:redis].multi do |multi|
               multi.sadd("instance:#{instance}/callbacks",key)
               multi.set("instance:#{instance}/callback/#{key}/uuid",mess.dig('content','activity_uuid'))
               multi.set("instance:#{instance}/callback/#{key}/label",mess.dig('content','label'))
@@ -53,21 +65,21 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/callback/#{key}/type",'callback')
             end
           when 'event:state/change'
-            redis.multi do |multi|
+            opts[:redis].multi do |multi|
               multi.set("instance:#{instance}/state",mess.dig('content','state'))
               multi.set("instance:#{instance}/state/@changed",mess.dig('timestamp'))
             end
           when 'event:handlerwrapper/change'
-            redis.set("instance:#{instance}/handlerwrapper",mess.dig('content','handlerwrapper'))
+            opts[:redis].set("instance:#{instance}/handlerwrapper",mess.dig('content','handlerwrapper'))
           when 'event:description/change'
-            redis.multi do |multi|
+            opts[:redis].multi do |multi|
               multi.set("instance:#{instance}/description",mess.dig('content','description'))
               multi.set("instance:#{instance}/dslx",mess.dig('content','dslx'))
               multi.set("instance:#{instance}/dsl",mess.dig('content','dsl'))
             end
           when 'event:dataelements/change', 'event:endpoints/change', 'event:attributes/change'
             topic = mess.dig('topic')
-            redis.multi do |multi|
+            opts[:redis].multi do |multi|
               mess.dig('content','changed')&.each_with_index do |c,i|
                 unless what == 'event:attributes/change' && c == 'uuid'
                   multi.zadd("instance:#{instance}/#{topic}",i,c)
@@ -86,7 +98,7 @@ Daemonite.new do |opts|
               end
             end
           when 'event:transformation/change'
-            redis.multi do |multi|
+            opts[:redis].multi do |multi|
               multi.set("instance:#{instance}/transformation/description/",mess.dig('content','description'))
               multi.set("instance:#{instance}/transformation/description/@type",mess.dig('content','description_type'))
               multi.set("instance:#{instance}/transformation/dataelements/",mess.dig('content','dataelements'))
@@ -95,12 +107,12 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/transformation/endpoints/@type",mess.dig('content','endpoints_type'))
             end
           when 'event:status/change'
-            redis.multi do |multi|
+            opts[:redis].multi do |multi|
               multi.set("instance:#{instance}/status/id",mess.dig('content','id'))
               multi.set("instance:#{instance}/status/message",mess.dig('content','message'))
             end
           when 'event:position/change'
-            redis.multi do |multi|
+            opts[:redis].multi do |multi|
               c = mess.dig('content')
               c.dig('unmark')&.each do |ele|
                 multi.srem("instance:#{instance}/positions",ele['position'])
@@ -127,7 +139,7 @@ Daemonite.new do |opts|
               end
             end
           when 'event:handler/change'
-            redis.multi do |multi|
+            opts[:redis].multi do |multi|
               mess.dig('content','changed').each do |c|
                 multi.sadd("instance:#{instance}/handlers",mess.dig('content','key'))
                 multi.sadd("instance:#{instance}/handlers/#{mess.dig('content','key')}",c)
@@ -139,8 +151,8 @@ Daemonite.new do |opts|
                 multi.srem("instance:#{instance}/handlers/#{c}",mess.dig('content','key'))
               end
             end
-            if redis.scard("instance:#{instance}/handlers/#{mess.dig('content','key')}") < 1
-              redis.multi do |multi|
+            if opts[:redis].scard("instance:#{instance}/handlers/#{mess.dig('content','key')}") < 1
+              opts[:redis].multi do |multi|
                 multi.del("instance:#{instance}/handlers/#{mess.dig('content','key')}/url")
                 multi.srem("instance:#{instance}/handlers",mess.dig('content','key'))
               end

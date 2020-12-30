@@ -30,7 +30,8 @@ module CPEE
         YAML::dump({
           :host => opts[:host],
           :url => opts[:url],
-          :redis_path => opts[:redis_path],
+          :redis_url => opts[:redis_url],
+          :redis_path => File.join(opts[:basepath],opts[:redis_path]),
           :redis_db => opts[:redis_db],
           :global_handlerwrappers => opts[:global_handlerwrappers],
           :handlerwrappers => opts[:handlerwrappers]
