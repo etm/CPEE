@@ -26,7 +26,8 @@
       </zeroOrMore>
     </element>
     <element name="stream" rngui:header="Data Stream Handling" rngui:fold="closed">
-      <element name="sensors" rngui:header="Sensors" rngui:fold="closed">
+
+      <element name="sensors" rngui:header="Sensor Data Streams" rngui:fold="closed">
         <zeroOrMore rngui:label="Add Sensor">
           <element name="sensor">
             <element name="name" rngui:label="Label">
@@ -35,13 +36,18 @@
             <element name="extractor_url" rngui:label="Extractor Url">
               <data type="string" rngui:label="Service Url"/>
             </element>
-            <element name="extractor_arg" rngui:label="Extractor Argument">
-              <data type="string" rngui:label="Value / Json"/>
+            <element name="extractor_params" rngui:label="Extractor Arguments:">
+              <zeroOrMore rngui:label="Create Extractor Argument Pairs">
+                <element rngui:label="Name">
+                  <anyName/>
+                  <data type="string" rngui:label="Value / Json"/>
+                </element>
+              </zeroOrMore>
             </element>
             <element name="visualizer_url" rngui:label="Visualizer Url">
               <data type="string" rngui:label="Service Url"/>
             </element>
-            <element name="visualizer_params" rngui:header="Visualizer Arguments">
+            <element name="visualizer_params" rngui:label="Visualizer Arguments">
               <zeroOrMore rngui:label="Create Visualizer Argument Pairs">
                 <element rngui:label="Name">
                   <anyName/>
@@ -52,42 +58,44 @@
           </element>
         </zeroOrMore>
       </element>
-      <element name="aggregators" rngui:header="Aggregators" rngui:fold="closed">
-        <zeroOrMore rngui:label="Add Aggregator">
-          <element name="aggregator">
-            <element name="name" rngui:label="Label">
-              <data type="string" rngui:label="Label"/>
-            </element>
-            <element name="aggregator_url" rngui:label="Aggregator Url">
-              <data type="string" rngui:label="Service Url"/>
-            </element>
-            <element name="aggregator_arg" rngui:label="Aggregator Argument">
-              <data type="string" rngui:label="Value / Json"/>
-            </element>
-          </element>
-        </zeroOrMore>
-      </element>
-      <element name="costs" rngui:header="Costs" rngui:fold="closed">
-        <zeroOrMore rngui:label="Create Cost Factor">
-          <element name="cost_factor">
+
+      <element name="ips" rngui:header="Impact Profiles" rngui:fold="closed">
+        <zeroOrMore rngui:label="Add Impact Profile">
+          <element name="ip">
             <element name="name" rngui:label="Label">
               <data type="string" rngui:label="Label"/>
             </element>
             <element name="target" rngui:label="Target Value">
               <data type="string" rngui:label="Value"/>
             </element>
+            <element name="ifs" rngui:header="Impact Factors">
+              <zeroOrMore rngui:label="Add Impact Factor">
+                <element name="if">
+                  <element name="ivs" rngui:header="Impact Values">
+                    <zeroOrMore rngui:label="Add Impact Value ">
+                      <element name="iv">
+                        <element name="extractor_url" rngui:label="Extractor Url">
+                          <data type="string" rngui:label="Service Url + Parameters"/>
+                        </element>
+                        <element name="aggregator_url" rngui:label="Aggregator Url">
+                          <data type="string" rngui:label="Service Url + Parameters"/>
+                        </element>
+                      </element>
+                    </zeroOrMore>
+                  </element>
+                  <element name="aggregator_url" rngui:label="Impact Function Url">
+                    <data type="string" rngui:label="Service Url + Parameters"/>
+                  </element>
+                </element>
+              </zeroOrMore>
+            </element>
             <element name="vfunc_url" rngui:label="Violation Function Url">
-              <data type="string" rngui:label="Service Url"/>
-            </element>
-            <element name="vfunc_arg" rngui:label="Violation Function Argument">
-              <data type="string" rngui:label="Service Url"/>
-            </element>
-            <element name="vcost" rngui:label="Violation Cost">
-              <data type="string" rngui:label="Value"/>
+              <data type="string" rngui:label="Service Url + Parameters"/>
             </element>
           </element>
         </zeroOrMore>
       </element>
+
     </element>
     <element name="report" rngui:header="Reporting Annotation" rngui:fold="closed">
       <element name="url" rngui:label='HTML Snippet'>
