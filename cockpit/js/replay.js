@@ -4,10 +4,29 @@ $(document).ready(function() {
       url: $('#replay input').val(),
       type: 'GET',
       success: function(re) {
-        ma = re.match(/--\nevent:\n(.|\n)*?\n-/g);
-        ma.forEach(m => {
-          console.log(m.replace(/^--\nevent:\n/g,'').replace(/\n-$/g,''));
-        });
+        var de;
+        var ep;
+        var at;
+        var desc;
+        try {
+          jsyaml.loadAll(re,e => {
+            if (e.event && e.event['cpee:lifecycle:transition'] == 'dataelements/change') {
+              de = e.event.data.data_values;
+            }
+            if (e.event && e.event['cpee:lifecycle:transition'] == 'endpoints/change') {
+              ep = e.event.data.data_values;
+            }
+            if (e.event && e.event['cpee:lifecycle:transition'] == 'attributes/change') {
+              at = e.event.data.data_values;
+            }
+            if (e.event && e.event['cpee:description']) {
+              desc = e.event['cpee:description'];
+            }
+            if (e.event && e.event['cpee:state'] == 'running') {
+              throw BreakException;
+            }
+          });
+        } catch(e) { /* just to break out of the iterator. what a shitty language */ }
       }
     });
 
