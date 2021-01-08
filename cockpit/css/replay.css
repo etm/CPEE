@@ -1,0 +1,55 @@
+body {
+  -webkit-user-select: none;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  user-select: none;
+  font-family: sans-serif;
+  font-size: 1em;
+  padding: 0;
+  margin: 0;
+}
+
+#replayer {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  height: 100vh;
+}
+
+#replay {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  padding: 1em 0;
+  flex: 0 0 auto;
+}
+
+#replay span {
+  flex: 0 0 auto;
+  margin-left: 1em;
+  align-self: center;
+}
+#replay input {
+  margin: 0em 1em;
+  flex: 1 1 auto;
+}
+#replay button {
+  margin-right: 1em;
+  flex: 0 0 auto;
+}
+
+#content {
+  width: 100%;
+  align-self: center;
+  flex: 1 1 auto;
+}
+
+iframe {
+  border: 0 none;
+  padding: 0;
+  margin: 0;
+  overflow: scroll;
+}
