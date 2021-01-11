@@ -15,7 +15,7 @@
           <method>:post</method>
           <arguments>
             <behavior>wait_running</behavior>
-            <url>https://cpee.org/flow/templates/instantiate/Take_Perf.xml</url
+            <url>https://cpee.org/flow/templates/instantiate/Take_Perf.xml</url>
             <init/>
             <endpoints/>
             <stream/>
