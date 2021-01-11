@@ -54,6 +54,7 @@
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
+    <link rel="stylesheet" href="/global_ui/uicpee.css" type="text/css"/>
     <style>
       /* has to be fucking inline, because firefox and chrome disagree how to handle filter urls */
       /* shit balls, no elegance is left in this world */
@@ -122,6 +123,7 @@
         <ui-tab class="inactive hidden" data-tab="instance"  id="tabinstance" >Instance</ui-tab>
         <ui-tab class="inactive hidden" data-tab="execution" id="tabexecution">Execution</ui-tab>
         <ui-behind                                                            ><a style='display:none' target='_blank' id='current-instance'></a><a style='display:none' target='_blank' id='current-instance-properties'>P</a><a style='display:none' target='_blank' id='current-instance-subscriptions'>S</a><a style='display:none' target='_blank' id='current-instance-callbacks'>C</a></ui-behind>
+        <ui-last                                                              ><a class="logo" href=".."></a></ui-last>
       </ui-tabbar>
       <ui-content>
         <ui-area data-belongs-to-tab="new" id="areanew"> <!--{{{-->
@@ -187,6 +189,8 @@
                     <button name="state_start" title='start' style='display:none'>Start</button>
                     <button name="state_stop" title='stop' style='display:none'>Stop</button>
                     <span id="state_extended" style='display:none'>
+                      <span> / </span>
+                      <button name="state_replay" title='replay' style='display:none'>Replay</button>
                       <span> / </span>
                       <button name="state_abandon" title='abandon' style='display:none'>Abandon</button>
                     </span>
