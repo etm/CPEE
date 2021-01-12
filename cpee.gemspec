@@ -1,13 +1,13 @@
 Gem::Specification.new do |s|
   s.name             = "cpee"
-  s.version          = "2.0.23"
+  s.version          = "2.0.24"
   s.platform         = Gem::Platform::RUBY
   s.license          = "LGPL-3.0"
   s.summary          = "Preliminary release of cloud process execution engine (cpee.org). If you just need workflow execution, without a rest service exposing it, then use WEEL."
 
   s.description      = "see http://cpee.org"
 
-  s.files            = Dir['{example/**/*,server/**/*,tools/**/*,tools/archive,lib/**/*,cockpit/**/*,cockpit/templates/.templates.xml,cockpit/templates/.transformations.xml,cockpit/templates/.Signavio.xml,cockpit/templates/.CPEE.xml,cockpit/themes/*/*/*,contrib/logo*,contrib/Screen*}'] - Dir['{server/instances/**/*,cockpit/js_libs/**/*,server/redis*}'] + %w(COPYING FEATURES.md INSTALL.md Rakefile cpee.gemspec README.md AUTHORS)
+  s.files            = Dir['{example/**/*,server/**/*,tools/**/*,tools/archive,lib/**/*,cockpit/**/*,cockpit/templates/.templates.xml,cockpit/templates/.transformations.xml,cockpit/templates/.Signavio.xml,cockpit/templates/.CPEE.xml,cockpit/themes/*/*,cockpit/themes/*/*/*,contrib/logo*,contrib/Screen*}'] - Dir['{server/instances/**/*,cockpit/js_libs/**/*,server/redis*}'] + %w(COPYING FEATURES.md INSTALL.md Rakefile cpee.gemspec README.md AUTHORS)
   s.require_path     = 'lib'
   s.extra_rdoc_files = ['README.md']
   s.bindir           = 'tools'
