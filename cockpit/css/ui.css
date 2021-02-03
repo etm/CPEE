@@ -121,10 +121,12 @@ ui-tabbed ui-tabbar ui-behind button {
 #areainstance div.section:nth-child(2) { border-left: 1px solid var(--x-ui-border-color); padding: 0 0.5em;     white-space: nowrap; }
 #areainstance div.section:nth-child(3) { border-left: 1px solid var(--x-ui-border-color); padding: 0 0 0 0.5em; white-space: nowrap; }
 
+#areainstance div.section:nth-child(1) > div:nth-child(2)             { white-space: normal; text-align: right; }
+
 #areainstance div.section:nth-child(1) div                          { white-space: normal; vertical-align: middle; margin: 0; padding: 0; }
 #areainstance div.section:nth-child(1) button                       { white-space: normal; vertical-align: middle; margin: 0; padding: 0; }
-#areainstance div.section:nth-child(1) div:nth-child(2)             { white-space: normal; text-align: right; }
 #areainstance div.section:nth-child(1) button[name=loadtestset]     { white-space: normal; width: 10em; height: 3.5em; }
+#areainstance div.section:nth-child(1) button[name=save]            { white-space: normal; width: 10em; height: 3.5em; margin-left: 0.2em; }
 #areainstance div.section:nth-child(1) button[name=loadtestsetfile] { white-space: normal; width: 10em; height: 3.5em; margin-left: 0.2em; }
 #areainstance div.section:nth-child(1) button[name=loadmodelfile]   { white-space: normal; width: 10em; height: 2em;   margin-top: 0.2em; }
 

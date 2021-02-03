@@ -54,8 +54,10 @@
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
     <script type="text/javascript" src="js/model.js"></script>
+    <script type="text/javascript" src="js/edit.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="css/model.css" type="text/css"/>
+    <link rel="stylesheet" href="/global_ui/uicpee.css" type="text/css"/>
     <style>
       /* has to be fucking inline, because firefox and chrome disagree how to handle filter urls */
       /* shit balls, no elegance is left in this world */
@@ -119,7 +121,8 @@
         <ui-tab class="switch"                                               ></ui-tab>
         <ui-tab class=""         data-tab="model"        id="tabmodel"       >Model</ui-tab>
         <ui-tab class="inactive" data-tab="dataelements" id="tabdataelements">Data Elements</ui-tab>
-        <ui-behind                                                           ><button title='add entry' class="hidden">New</button></ui-behind>
+        <ui-behind                                                           ></ui-behind>
+        <ui-last                                                             ><a class="logo" href=".."></a></ui-last>
       </ui-tabbar>
       <ui-content>
         <ui-area data-belongs-to-tab="model" id="areamodel"> <!--{{{-->
