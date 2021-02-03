@@ -53,6 +53,7 @@
     <script type="text/javascript" src="js/instance.js"></script>
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
+    <script type="text/javascript" src="js/edit.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="/global_ui/uicpee.css" type="text/css"/>
     <style>
@@ -151,7 +152,8 @@
               <form id='fuckchrome'>
                 <input type='file' name='testsetfile' id='testsetfile'/>
               </form>
-              <button title='a template includes various settings, subscriptions or a (partial) model' name="loadtestset">load template</button><button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load testset</button>
+              <button title='save a testset includes various settings, subscriptions and a model' name="save" disabled=""><div>save</div><div class="hidden" id='lastsavedline'>(last: <span id="lastsaved"></span>)</div></button>
+              <button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load testset</button>
             </div>
             <div>
               <input type='file' name='modelfile' id='modelfile'/>
