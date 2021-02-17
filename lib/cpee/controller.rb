@@ -57,7 +57,7 @@ module CPEE
       @psredis = @opts[:redis_dyn].call
 
       Thread.new do
-        psredis.psubscribe('callback-response:*','callback-end:*') do |on|
+        @psredis.psubscribe('callback-response:*','callback-end:*') do |on|
           on.pmessage do |pat, what, message|
             if pat == 'callback-response:*' && @callback_keys.include?(what[18..-1])
               index = message.index(' ')
