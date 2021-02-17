@@ -50,6 +50,8 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     @handler_returnOptions = nil
     @handler_activity_uuid = Digest::MD5.hexdigest(Kernel::rand().to_s)
     @label = ''
+    @guard_files = []
+    @guard_items = []
   end # }}}
 
   def prepare(readonly, endpoints, parameters, replay=false) #{{{
@@ -109,8 +111,8 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
     client = Riddl::Client.new(tendpoint)
 
-    @controller.callback(self,callback,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
     @handler_passthrough = callback
+    @controller.callback(self,callback,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
 
     status, result, headers = client.request type => params
     if status < 200 || status >= 300
@@ -261,8 +263,8 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
 
   def callback(result=nil,options={})
     @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :sensors => @sensors, :aggregators => @aggregators, :costs => @costs)
-    result = simplify_result(result)
-    @handler_returnValue = result
+    @guard_files += result
+    @handler_returnValue = simplify_result(result)
     @handler_returnOptions = options
     if options['CPEE_UPDATE']
       if options['CPEE_UPDATE_STATUS']
@@ -279,6 +281,16 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
       end
     end
   end
+
+  def mem_guard() #{{{
+    @guard_files.each do |p|
+      if p&.respond_to?(:close)
+        p.close
+      elsif  p&.value&.respond_to?(:close)
+        p.value.close
+      end
+    end
+  end #}}}
 
   def test_condition(mr,code)
     res = mr.instance_eval(code)

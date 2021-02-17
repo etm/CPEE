@@ -7,6 +7,8 @@ module CPEE
       Proc.new do
         run CPEE::Callbacks::Callbacks, id, opts if get
         on resource do
+          run CPEE::Callbacks::GetCallback, id, opts if get
+          run CPEE::Callbacks::DelCallback, id, opts if delete
           run CPEE::Callbacks::ExCallback, id, opts if put
         end
       end
@@ -25,6 +27,57 @@ module CPEE
           end
           ret.to_s
         end
+      end
+    end # }}}
+
+    class GetCallback < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        callback = @r[-1]
+
+        res = {}
+        res[:uuid] = opts[:redis].get("instance:#{id}/callback/#{callback}/uuid")
+        res[:type] = opts[:redis].get("instance:#{id}/callback/#{callback}/type")
+        res[:position] = opts[:redis].get("instance:#{id}/callback/#{callback}/position")
+        res[:label] = opts[:redis].get("instance:#{id}/callback/#{callback}/label")
+
+        Riddl::Parameter::Complex.new("callback","application/json",JSON.generate(res))
+      end
+    end #}}}
+
+    class DelCallback < Riddl::Implementation #{{{
+      def response
+        id = @a[0]
+        opts = @a[1]
+        callback = @r[-1]
+
+        if opts[:redis].get("instance:#{id}/callback/#{callback}/type") == 'callback'
+          CPEE::Message::send(
+            :'callback-end',
+            callback,
+            opts[:url],
+            id,
+            {},
+            {},
+            {},
+            opts[:redis]
+          )
+        elsif opts[:redis].get("instance:#{id}/callback/#{callback}/type") == 'vote'
+          CPEE::Message::send(
+            :'vote-response',
+            callback,
+            opts[:url],
+            id,
+            {},
+            {},
+            'true',
+            opts[:redis]
+          )
+        else
+          @status = 503
+        end
+        nil
       end
     end #}}}
 
