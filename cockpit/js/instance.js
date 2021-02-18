@@ -658,17 +658,21 @@ function monitor_instance_pos() {// {{{
 function monitor_instance_running(content,event) {// {{{
   if (save['state'] == "stopping") return;
   if (event == "calling") {
-    save['activity_states'][content.activity_uuid] = true
-    format_visual_add(content.activity,"active")
-  }
-  if (event == "manipulating") {
-    if (!save['activity_states'][content.activity_uuid]) {
+    if (!save['activity_states'][content['activity-uuid']]) {
+      save['activity_states'][content['activity-uuid']] = true
       format_visual_add(content.activity,"active")
     }
-  }
-  if (event == "done") {
-    delete save['activity_states'][content.activity_uuid];
-    format_visual_remove(content.activity,"active")
+  } else if (event == "manipulating") {
+    if (!save['activity_states'][content['activity-uuid']]) {
+      save['activity_states'][content['activity-uuid']] = true
+      format_visual_add(content.activity,"active")
+    }
+  } else if (event == "done") {
+    if (save['activity_states'][content['activity-uuid']]) {
+      save['activity_states'][content['activity-uuid']] = true
+      format_visual_remove(content.activity,"active")
+      setTimeout(() => {delete save['activity_states'][content['activity-uuid']]},5000);
+    }
   }
 } // }}}
 function monitor_instance_state_change(notification) { //{{{

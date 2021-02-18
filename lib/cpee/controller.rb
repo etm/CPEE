@@ -52,6 +52,34 @@ module CPEE
       @opts = opts
       @instance = nil
       @loop_guard = {}
+
+      @callback_keys = {}
+      @psredis = @opts[:redis_dyn].call
+
+      Thread.new do
+        @psredis.psubscribe('callback-response:*','callback-end:*') do |on|
+          on.pmessage do |pat, what, message|
+            if pat == 'callback-response:*' && @callback_keys.has_key?(what[18..-1])
+              index = message.index(' ')
+              mess = message[index+1..-1]
+              instance = message[0...index]
+              m = JSON.parse(mess)
+              resp = []
+              m['content']['values'].each do |e|
+                if e[1][0] == 'simple'
+                  resp << Riddl::Parameter::Simple.new(e[0],e[1][1])
+                elsif e[1][0] == 'complex'
+                  resp << Riddl::Parameter::Complex.new(e[0],e[1][1],File.open(e[1][2]))
+                end
+              end
+              @callback_keys[what[18..-1]].send(:callback,resp,m['content']['headers'])
+            end
+            if pat == 'callback-end:*'
+              @callback_keys.delete(what[13..-1])
+            end
+          end
+        end
+      end
     end
 
     attr_reader :id
@@ -160,33 +188,7 @@ module CPEE
 
     def callback(hw,key,content)
       CPEE::Message::send(:callback,'activity/content',base,@id,uuid,info,content.merge(:key => key),@redis)
-
-      psredis = @opts[:redis_dyn].call
-      response = nil
-      Thread.new do
-        psredis.subscribe('callback-response:' + key, 'callback-end:' + key) do |on|
-          on.message do |what, message|
-            if what == 'callback-response:' + key
-              index = message.index(' ')
-              mess = message[index+1..-1]
-              instance = message[0...index]
-              m = JSON.parse(mess)
-              resp = []
-              m['content']['values'].each do |e|
-                if e[1][0] == 'simple'
-                  resp << Riddl::Parameter::Simple.new(e[0],e[1][1])
-                elsif e[1][0] == 'complex'
-                  resp << Riddl::Parameter::Complex.new(e[0],e[1][1],File.open(e[1][2]))
-                end
-              end
-              hw.send(:callback,resp,m['content']['headers'])
-            end
-            if what == 'callback-end:' + key
-              psredis.unsubscribe
-            end
-          end
-        end
-      end
+      @callback_keys[key] = hw
     end
 
     def cancel_callback(key)

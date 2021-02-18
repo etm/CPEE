@@ -20,11 +20,16 @@
       <xi:include href="callbacks/callbacks.rng"/>
     </parameter>
   </message>
+  <message name="callback">
+    <parameter name="callback" mimetype="application/json"/>
+  </message>
 
   <resource>
     <doc:documentation>xb</doc:documentation>
     <get in="*" out="callbacks"/>
     <resource>
+      <get out="callback"/>
+      <delete/>
       <put in="*"/>
     </resource>
   </resource>

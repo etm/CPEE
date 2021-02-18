@@ -13,6 +13,7 @@
       <value id="plc">PLC</value>
       <value id="send">Send Message</value>
       <value id="receive">Receive Message</value>
+      <value id="wait">Wait</value>
     </choice>
   </attribute>
   <element name="parameters" rngui:header="Properties">
