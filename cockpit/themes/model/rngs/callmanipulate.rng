@@ -21,35 +21,35 @@
       <data type="string" rngui:label="Short description of the task"/>
     </element>
     <element name="arguments"/>
-    <element name="input" rngui:header="Input Arguments">
-      <zeroOrMore rngui:label="Create Argument">
-        <element name="item" rngui:label="Description">
-          <attribute name="label" rngui:label="Name">
-            <data type="string"/>
-          </attribute>
-          <text rngui:wrap="true" rngui:label="What does it do?"/>
-        </element>
-      </zeroOrMore>
-    </element>
-    <element name="output" rngui:header="Output Elements">
-      <zeroOrMore rngui:label="Create Element">
-        <element name="item" rngui:label="Description">
-          <attribute name="label" rngui:label="Name">
-            <data type="string"/>
-          </attribute>
-          <text rngui:wrap="true" rngui:label="What does it do?"/>
-        </element>
-      </zeroOrMore>
-    </element>
+  </element>
+  <element name="input" rngui:header="Input Arguments">
+    <zeroOrMore rngui:label="Create Argument">
+      <element name="item" rngui:label="Description">
+        <attribute name="label" rngui:label="Name">
+          <data type="string"/>
+        </attribute>
+        <text rngui:wrap="true" rngui:label="What does it do?"/>
+      </element>
+    </zeroOrMore>
+  </element>
+  <element name="output" rngui:header="Output Elements">
+    <zeroOrMore rngui:label="Create Element">
+      <element name="item" rngui:label="Description">
+        <attribute name="label" rngui:label="Name">
+          <data type="string"/>
+        </attribute>
+        <text rngui:wrap="true" rngui:label="What does it do?"/>
+      </element>
+    </zeroOrMore>
   </element>
   <element name="implementation" rngui:header="Implementation">
     <element name="description" rngui:label="Description">
       <text rngui:wrap="true" rngui:label="What is supposed to happen?"/>
     </element>
   </element>
-  <element name="code" rngui:header="Output Transformation">
+  <element name="code" rngui:header="Output Handling">
     <element name="description" rngui:label="Description">
-      <text rngui:wrap="true" rngui:label="Which output elements are important? How to transform them?"/>
+      <text rngui:wrap="true" rngui:label="Which output elements are important? How to transform and save them?"/>
     </element>
   </element>
   <element name="annotations" rngui:header="Annotations">
