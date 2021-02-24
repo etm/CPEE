@@ -103,31 +103,6 @@
       </element>
     </element>
   </element>
-  <element name="input" rngui:header="Input Arguments Documentation" rngui:fold="closed">
-    <zeroOrMore rngui:label="Create Argument">
-      <element name="item" rngui:label="Description">
-        <attribute name="label" rngui:label="Name">
-          <data type="string"/>
-        </attribute>
-        <text rngui:wrap="true" rngui:label="What does it do?"/>
-      </element>
-    </zeroOrMore>
-  </element>
-  <element name="output" rngui:header="Output Elements Documentation" rngui:fold="closed">
-    <zeroOrMore rngui:label="Create Element">
-      <element name="item" rngui:label="Description">
-        <attribute name="label" rngui:label="Name">
-          <data type="string"/>
-        </attribute>
-        <text rngui:wrap="true" rngui:label="What does it do?"/>
-      </element>
-    </zeroOrMore>
-  </element>
-  <element name="implementation" rngui:header="Implementation Documentation" rngui:fold="closed">
-    <element name="description" rngui:label="Description">
-      <text rngui:wrap="true" rngui:label="What is supposed to happen?"/>
-    </element>
-  </element>
   <element name="annotations" rngui:header="Annotations">
     <element name="_timing" rngui:header="Timing" rngui:fold="closed">
       <element name="_timing_weight" rngui:label="&#x3C9; - Weight">
@@ -169,6 +144,31 @@
       <element name="_notes_general" rngui:label="General">
         <text rngui:wrap="true" rngui:label="Notes"/>
       </element>
+    </element>
+  </element>
+  <element name="input" rngui:header="Input Arguments Documentation" rngui:fold="closed">
+    <zeroOrMore rngui:label="Create Argument">
+      <element name="item" rngui:label="Description">
+        <attribute name="label" rngui:label="Name">
+          <data type="string"/>
+        </attribute>
+        <text rngui:wrap="true" rngui:label="What does it do?"/>
+      </element>
+    </zeroOrMore>
+  </element>
+  <element name="output" rngui:header="Output Elements Documentation" rngui:fold="closed">
+    <zeroOrMore rngui:label="Create Element">
+      <element name="item" rngui:label="Description">
+        <attribute name="label" rngui:label="Name">
+          <data type="string"/>
+        </attribute>
+        <text rngui:wrap="true" rngui:label="What does it do?"/>
+      </element>
+    </zeroOrMore>
+  </element>
+  <element name="implementation" rngui:header="Implementation Documentation" rngui:fold="closed">
+    <element name="description" rngui:label="Description">
+      <text rngui:wrap="true" rngui:label="What is supposed to happen?"/>
     </element>
   </element>
 </element>
