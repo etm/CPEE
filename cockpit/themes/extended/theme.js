@@ -49,6 +49,16 @@ function WFAdaptorManifestation(adaptor) {
     });
     return svgid;
   }; //}}}
+  //{{{ Return the json for all marked tasks
+  this.marked_text = function(){
+    var nodes = [];
+    var markymark = _.uniq(self.marked());
+    $(markymark).each(function(key,svgid){
+      var node = self.adaptor.description.get_node_by_svg_id(svgid);
+      nodes.push($(node).serializePrettyXML());
+    });
+    return JSON.stringify(nodes);
+  }; //}}}
   //{{{ Render the details from rng (right hand side of graph tab)
   this.update_details = function(svgid){
     var tab  = $('#dat_details');
