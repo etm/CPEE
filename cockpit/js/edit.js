@@ -1,6 +1,9 @@
 document.addEventListener('graph:changed', function (e) {
   $("button[name=save]").prop("disabled",false);
 }, false);
+document.addEventListener('parameters:changed', function (e) {
+  $("button[name=save]").prop("disabled",false);
+}, false);
 
 $(document).ready(function() {
   $("button[name=save]").click(function(){
@@ -18,6 +21,9 @@ $(document).ready(function() {
           var dt = new Date();
           var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
           $("#lastsaved").text(time);
+        },
+        error: function() {
+          alert('File was moved or deleted. Save testset to disk.');
         }
       });
     });

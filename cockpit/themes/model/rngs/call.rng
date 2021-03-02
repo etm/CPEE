@@ -21,26 +21,26 @@
       <data type="string" rngui:label="Short description of the task"/>
     </element>
     <element name="arguments"/>
-    <element name="input" rngui:header="Input Arguments">
-      <zeroOrMore rngui:label="Create Argument">
-        <element name="item" rngui:label="Description">
-          <attribute name="label" rngui:label="Name">
-            <data type="string"/>
-          </attribute>
-          <text rngui:wrap="true" rngui:label="What does it do?"/>
-        </element>
-      </zeroOrMore>
-    </element>
-    <element name="output" rngui:header="Output Elements">
-      <zeroOrMore rngui:label="Create Element">
-        <element name="item" rngui:label="Description">
-          <attribute name="label" rngui:label="Name">
-            <data type="string"/>
-          </attribute>
-          <text rngui:wrap="true" rngui:label="What does it do?"/>
-        </element>
-      </zeroOrMore>
-    </element>
+  </element>
+  <element name="input" rngui:header="Input Arguments">
+    <zeroOrMore rngui:label="Create Argument">
+      <element name="item" rngui:label="Description">
+        <attribute name="label" rngui:label="Name">
+          <data type="string"/>
+        </attribute>
+        <text rngui:wrap="true" rngui:label="What does it do?"/>
+      </element>
+    </zeroOrMore>
+  </element>
+  <element name="output" rngui:header="Output Elements">
+    <zeroOrMore rngui:label="Create Element">
+      <element name="item" rngui:label="Description">
+        <attribute name="label" rngui:label="Name">
+          <data type="string"/>
+        </attribute>
+        <text rngui:wrap="true" rngui:label="What does it do?"/>
+      </element>
+    </zeroOrMore>
   </element>
   <element name="implementation" rngui:header="Implementation">
     <element name="description" rngui:label="Description">

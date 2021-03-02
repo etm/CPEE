@@ -1,3 +1,5 @@
+var parameters_changed = new Event("parameters:changed", {"bubbles":true, "cancelable":false});
+
 $(document).ready(function() {
   // hook up dataelements with relaxngui //{{{
   $.ajax({
@@ -68,6 +70,7 @@ function do_parameters_save(event) { //{{{
     var url = $('body').attr('current-instance');
     save[visid].set_checkpoint();
     var send = save[visid].save_text();
+    document.dispatchEvent(parameters_changed);
     $.ajax({
       type: "PUT",
       url: url + "/properties/" + visid + "/",
