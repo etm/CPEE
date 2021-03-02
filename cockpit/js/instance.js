@@ -97,12 +97,14 @@ function cockpit() { //{{{
   $("input[name=modelfile]").change(load_modelfile_after);
 
   $.ajax({
-    url: $('body').attr('current-templates') + ".templates.xml",
-    dataType: 'xml',
+    url: $('body').attr('current-templates'),
+    dataType: 'json',
     success: function(res){
-      $('testset',res).each(function(){
-        var ts = $(this).text();
-        $('#templates').append($("<div class='menuitem'></div>").text(ts));
+      $(res).each(function(){
+        console.log(this);
+        if (this.type == 'file') {
+          $('#templates').append($("<div class='menuitem'></div>").text(this.name.replace(/\.xml/,'')));
+        }
       });
       var q = $.parseQuerySimple();
       if (q.min || q.min == "") {
@@ -156,7 +158,7 @@ function cockpit() { //{{{
     }
   });
   $.ajax({
-    url: $('body').attr('current-templates') + ".transformations.xml",
+    url: "transformations.xml",
     dataType: 'xml',
     success: function(res){
       $('transformation',res).each(function(){
@@ -1006,7 +1008,11 @@ function load_testset(exec) {// {{{
   var name = $("#templates div.menuitem[data-selected=selected]").text();
   var url;
   if (name) {
-    url = $('body').attr('current-templates') + name + ".xml";
+    if ($('body').attr('current-templates').match(/\?/)) {
+      url = $('body').attr('current-templates').replace(/\?/,name + '.xml?');
+    } else {
+      url = $('body').attr('current-templates') + name + ".xml";
+    }
   } else {
     if ($('body').attr('load-testset').length > 0) {
       url = $('body').attr('load-testset');
@@ -1040,7 +1046,7 @@ function load_modeltype() {// {{{
   $.ajax({
     cache: false,
     dataType: 'xml',
-    url: $('body').attr('current-templates') + "." + name + ".xml",
+    url: name + ".xml",
     success: function(res){
       $.ajax({
         type: "PUT",
