@@ -101,7 +101,6 @@ function cockpit() { //{{{
     dataType: 'json',
     success: function(res){
       $(res).each(function(){
-        console.log(this);
         if (this.type == 'file') {
           $('#templates').append($("<div class='menuitem'></div>").text(this.name.replace(/\.xml/,'')));
         }

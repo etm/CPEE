@@ -99,11 +99,11 @@ Daemonite.new do |opts|
             end
           when 'event:transformation/change'
             opts[:redis].multi do |multi|
-              multi.set("instance:#{instance}/transformation/description/",mess.dig('content','description'))
+              multi.set("instance:#{instance}/transformation/description",mess.dig('content','description'))
               multi.set("instance:#{instance}/transformation/description/@type",mess.dig('content','description_type'))
-              multi.set("instance:#{instance}/transformation/dataelements/",mess.dig('content','dataelements'))
+              multi.set("instance:#{instance}/transformation/dataelements",mess.dig('content','dataelements'))
               multi.set("instance:#{instance}/transformation/dataelements/@type",mess.dig('content','dataelements_type'))
-              multi.set("instance:#{instance}/transformation/endpoints/",mess.dig('content','endpoints'))
+              multi.set("instance:#{instance}/transformation/endpoints",mess.dig('content','endpoints'))
               multi.set("instance:#{instance}/transformation/endpoints/@type",mess.dig('content','endpoints_type'))
             end
           when 'event:status/change'

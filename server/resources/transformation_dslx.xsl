@@ -509,7 +509,7 @@
       <xsl:when test="child::node()[not(self::text())]">
         <!-- FUUUU, there is probably much more TODO. Updated Matthias und Juergen, we tested for ing-opcua/execute -->
         <xsl:choose>
-          <xsl:when test="child::* and name(child::*)=concat(name(.),'_item')  and count(child::*[not(name()=name(../child::*[1]))])=0">
+          <xsl:when test="child::* and name(child::*)=concat(name(.),'_item') and count(child::*[not(name()=name(../child::*[1]))])=0">
             <xsl:text>"[ </xsl:text>
             <xsl:apply-templates select="*" mode="JSONArrayItem"/>
             <xsl:text>]"</xsl:text>

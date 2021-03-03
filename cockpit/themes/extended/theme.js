@@ -234,6 +234,7 @@ function WFAdaptorManifestation(adaptor) {
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
         vtarget.parents('g.element[element-id]').toggleClass('marked');
+        sessionStorage.setItem('marked',self.marked_text());
       }
     } else {
       self.adaptor.illustrator.get_elements().removeClass('marked');
