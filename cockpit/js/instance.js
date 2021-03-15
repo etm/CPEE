@@ -721,6 +721,7 @@ function monitor_instance_state_change(notification) { //{{{
     // remove all markings with state change
     if (save['graph_adaptor'] && save['graph_adaptor'].illustrator) {
       save['graph_adaptor'].illustrator.get_elements().removeClass('marked');
+      localStorage.setItem('marked');
     }
 
     if (notification != "ready" && notification != "stopped" && notification != "running") {

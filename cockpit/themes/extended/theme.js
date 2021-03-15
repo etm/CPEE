@@ -87,8 +87,14 @@ function WFAdaptorManifestation(adaptor) {
 
   function copyOrMove(menu,group,xml_node,mode) { //{{{
     var markymark = _.uniq(self.marked());
+    var sto;
     var check1 = [];
     var check2 = [];
+    if (sto = localStorage.getItem('marked')) {
+      sto = JSON.parse(sto);
+      var sto1 = JSON.parse(sto);
+      console.log(sto);
+    }
     $(markymark).each(function(key,svgid){
       var node = self.adaptor.description.get_node_by_svg_id(svgid);
       check1.push($(node).attr('svg-type'));
@@ -97,12 +103,14 @@ function WFAdaptorManifestation(adaptor) {
       check2.push(value.type);
     });
 
+
     if (markymark.length > 0 && _.uniq(check1).length == _.intersection(check1,check2).length) {
       var nodes = [];
       $(markymark).each(function(key,svgid){
         var node = self.adaptor.description.get_node_by_svg_id(svgid);
         nodes.unshift(node);
       });
+      console.log(nodes);
 
       var iconm =  self.resources['arrow'].clone();
       var iconc =  self.resources['arrow'].clone();
@@ -234,7 +242,8 @@ function WFAdaptorManifestation(adaptor) {
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
         vtarget.parents('g.element[element-id]').toggleClass('marked');
-        sessionStorage.setItem('marked',self.marked_text());
+        localStorage.setItem('marked',self.marked_text());
+        console.log('aaaa');
       }
     } else {
       self.adaptor.illustrator.get_elements().removeClass('marked');
