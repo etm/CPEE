@@ -324,7 +324,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
   $("input[name=instance-url]").val($("body").attr('current-instance'));
   $("input[name=res-url]").val($("body").attr('current-resources'));
 
-  $('.tabbehind button').hide();
+  $('#parameters ui-content ui-area > button').attr('disabled','disabled');
   $('#dat_details').empty();
 
   url = $("body").attr('current-instance');
@@ -726,10 +726,11 @@ function monitor_instance_state_change(notification) { //{{{
     }
 
     if (notification != "ready" && notification != "stopped" && notification != "running") {
-      $('.tabbehind button').hide();
+      console.log('rrr');
+      $('#parameters ui-content ui-area > button').attr('disabled','disabled');
       $('#state_any').hide();
     } else {
-      $('#parameters .tabbehind button').show();
+      $('#parameters ui-content ui-area > button').removeAttr('disabled');
       $('#state_any').show();
     }
 
@@ -1026,7 +1027,6 @@ function load_testset(exec) {// {{{
       url: url,
       success: function(res){
         save['dsl'] = null; // reload dsl and position under all circumstances
-        $('#main .tabbehind button').hide();
         $('#dat_details').empty();
 
         document.title = "Untitled";

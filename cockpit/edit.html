@@ -213,17 +213,20 @@
         <ui-tab class=""         data-tab="dataelements" id="tabdataelements">Data Elements</ui-tab>
         <ui-tab class="inactive" data-tab="endpoints"    id="tabendpoints"   >Endpoints</ui-tab>
         <ui-tab class="inactive" data-tab="attributes"   id="tabattributes"  >Attributes</ui-tab>
-        <ui-behind                                                           ><button title='add entry'>New</button></ui-behind>
+        <ui-behind                                                           ></ui-behind>
       </ui-tabbar>
       <ui-content>
         <ui-area data-belongs-to-tab="dataelements" id="areadataelements"> <!--{{{-->
+          <button title='add entry'><span>New</span></button>
           <div id="dat_dataelements"></div>
         </ui-area> <!--}}}-->
         <ui-area data-belongs-to-tab="endpoints" id="areaendpoints" class="inactive"> <!--{{{-->
-          <table id="dat_endpoints"></table>
+          <button title='add entry'><span>New</span></button>
+          <div id="dat_endpoints"></div>
         </ui-area> <!--}}}-->
         <ui-area data-belongs-to-tab="attributes" id="areaattributes" class="inactive"> <!--{{{-->
-          <table id="dat_attributes"></table>
+          <button title='add entry'><span>New</span></button>
+          <div id="dat_attributes"></div>
         </ui-area> <!--}}}-->
       </ui-content>
     </ui-tabbed>

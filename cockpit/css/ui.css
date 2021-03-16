@@ -108,11 +108,24 @@ ui-tabbed ui-tabbar ui-behind button {
 
 #parameters ui-content { height: 8.5em; min-height: 1.7em; }
 
-#areadataelements { height: 100%; overflow-x: hidden; overflow-y: scroll; }
+#areadataelements, #areaendpoints, #areaattributes {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  height: 100%;
+}
+#areadataelements > button, #areaendpoints > button, #areaattributes > button {
+  height: 100%;
+  padding: 0;
+  margin-right: 0.5em;
+}
+#areadataelements > button span, #areaendpoints > button span, #areaattributes > button span {
+  display: inline-block;
+  transform: rotate(-90deg);
+}
+#areadataelements.inactive, #areaendpoints.inactive, #areaattributes.inactive { display: none; }
 #areadataelements button.relaxngui_control { display: none; }
-#areaendpoints { height: 100%; overflow-x: hidden; overflow-y: scroll; }
 #areaendpoints button.relaxngui_control { display: none; }
-#areaattributes { height: 100%; overflow-x: hidden; overflow-y: scroll; }
 #areaattributes button.relaxngui_control { display: none; }
 
 #areainstance input[type=file]         { display: none; }
@@ -154,6 +167,9 @@ ui-tabbed ui-tabbar ui-behind button {
   margin:0;
   padding:0;
   width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 #dat_dataelements {
@@ -163,6 +179,9 @@ ui-tabbed ui-tabbar ui-behind button {
   margin:0;
   padding:0;
   width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 #dat_attributes {
   border-collapse:collapse;
@@ -171,6 +190,9 @@ ui-tabbed ui-tabbar ui-behind button {
   margin:0;
   padding:0;
   width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 #areadsl div { padding: 0 1em; }

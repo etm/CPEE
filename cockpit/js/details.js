@@ -49,7 +49,6 @@ function do_main_work() { //{{{
   var origtype = orignode.attr('element-type') + '_' + orignode.attr('element-endpoint');
 
   var url = $('body').attr('current-instance');
-  $('#main ui-tabbar ui-behind button').removeClass('highlight');
   save['details'].set_checkpoint();
 
   var nnew = $(save['details'].save().documentElement);

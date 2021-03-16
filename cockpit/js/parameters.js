@@ -30,11 +30,13 @@ $(document).ready(function() {
   }); //}}}
 
   // new entry //{{{
-  $('#parameters ui-behind button:nth-child(1)').click(function(event){
-    var but = $(document).find('#parameters ui-content ui-area:not(.inactive) button');
+  $('#parameters ui-content ui-area > button').click(function(event){
+    var but = $(document).find('#parameters ui-content ui-area:not(.inactive) > div button');
         but.click();
-    var are = $(document).find('#parameters ui-content ui-area:not(.inactive)');
-    var tab = $(document).find('#parameters ui-content ui-area:not(.inactive) .relaxngui_table');
+    var inp = $(document).find('#parameters ui-content ui-area:not(.inactive) > div input');
+        $(inp[inp.length-2]).focus();
+    var are = $(document).find('#parameters ui-content ui-area:not(.inactive) > div');
+    var tab = $(document).find('#parameters ui-content ui-area:not(.inactive) > div > div');
         are.animate({ scrollTop: tab.height() }, "slow");
   }); //}}}
 
