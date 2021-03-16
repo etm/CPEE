@@ -238,18 +238,26 @@ function WFAdaptorManifestation(adaptor) {
     self.adaptor.illustrator.get_elements().removeClass('selected');
     self.adaptor.illustrator.get_labels().removeClass('selected');
 
-    if (e && e.ctrlKey) {
+    if (e && (e.ctrlKey || e.metaKey)) {
       if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
       var tab = $('#dat_details');
           tab.empty();
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
-        vtarget.parents('g.element[element-id]').toggleClass('marked');
-        localStorage.setItem('marked',self.marked_text());
-        localStorage.setItem('marked_from',myid);
+        var vt = vtarget.parents('g.element[element-id]');
+            vt.toggleClass('marked');
+        if (vt.hasClass('marked')) {
+          localStorage.setItem('marked',self.marked_text());
+          localStorage.setItem('marked_from',myid);
+        } else {
+          localStorage.removeItem('marked');
+          localStorage.removeItem('marked_from');
+        }
       }
     } else {
       self.adaptor.illustrator.get_elements().removeClass('marked');
+      localStorage.removeItem('marked');
+      localStorage.removeItem('marked_from');
 
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {

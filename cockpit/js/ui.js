@@ -102,3 +102,10 @@ $(document).on('paste', '[contenteditable]', function (e) {
         document.execCommand('insertText', false, content);
     }
 });
+
+// unmark if storage changes. shit has potentially been copied or marked in other tabs.
+$(window).bind('storage', function (e) {
+  if (localStorage.getItem('marked_from') != myid) {
+    save['graph_adaptor'].illustrator.get_elements().removeClass('marked');
+  }
+});
