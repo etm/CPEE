@@ -106,7 +106,7 @@ ui-tabbed ui-tabbar ui-behind button {
   content: "|";
 }
 
-#parameters ui-content { height: 8.5em; min-height: 1.7em; }
+#parameters ui-content { height: 8.5em; min-height: 2.7em; }
 
 #areadataelements, #areaendpoints, #areaattributes {
   display: flex;
