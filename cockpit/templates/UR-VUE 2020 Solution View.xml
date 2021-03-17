@@ -3,9 +3,9 @@
   <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <handlers>
     <handler url="http://tango.wst.univie.ac.at:9332">
-      <votes topic='state'>change</votes>
-      <events topic='state'>change</events>
-      <events topic='task'>instantiation</events>
+      <votes topic="state">change</votes>
+      <events topic="state">change</events>
+      <events topic="task">instantiation</events>
     </handler>
   </handlers>
   <endpoints>
@@ -147,5 +147,9 @@ data.item = result[0]</finalize>
     <modeltype>CPEE</modeltype>
     <theme>preset</theme>
     <resource>ur51</resource>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <design_stage>development</design_stage>
+    <design_dir>/home/demo/Projects/cpee/cockpit/templates</design_dir>
   </attributes>
 </testset>

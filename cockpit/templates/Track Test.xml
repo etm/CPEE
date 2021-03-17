@@ -78,5 +78,9 @@
     <theme>default</theme>
     <customer>pilotfabrik</customer>
     <status>development</status>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <design_stage>development</design_stage>
+    <design_dir>/home/demo/Projects/cpee/cockpit/templates</design_dir>
   </attributes>
 </testset>

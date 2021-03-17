@@ -178,5 +178,9 @@ data.item['adjust_y'] = (data.direction_first['y'] + data.direction_second['y'])
     <modeltype>CPEE</modeltype>
     <theme>preset</theme>
     <resource>ur51</resource>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <design_stage>development</design_stage>
+    <design_dir>/home/demo/Projects/cpee/cockpit/templates</design_dir>
   </attributes>
 </testset>
