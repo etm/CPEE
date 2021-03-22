@@ -36,14 +36,15 @@
     <script type="text/javascript" src="/js_libs/jquery.cookie.js"></script>
     <script type="text/javascript" src="/js_libs/js-yaml.min.js"></script>
 
-    <script type="text/javascript" src="/js_libs/ui.js"></script>
+    <script type="text/javascript" src="/js_libs/uidash.js"></script>
+    <link rel="stylesheet" href="/js_libs/uidash.css" type="text/css"/>
 
     <!-- custom stuff, play arround  -->
     <script type="text/javascript" src="js/replay.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="css/replay.css" type="text/css"/>
   </head>
-  <body is="x-ui">
+  <body is="x-ui-">
     <div id="replayer">
       <div id="replay"><span>Replay:</span><input type="text" value="http://localhost/logs/4b92138d-1f68-4d18-b676-92fb1cbe2c78.xes.yaml"/><button>Prepare!</button></div>
       <iframe id="content" src=""></iframe>
