@@ -1210,8 +1210,10 @@ function format_visual_vote_clear() {//{{{
 
 function format_instance_pos() { //{{{
   $(save['instance_pos']).each(function(){
-    var what = this.nodeName;
-    format_visual_add(what,save['state'] == 'running' ? 'active' : 'passive');
+    console.log(this);
+    var taskname = this.nodeName;
+    var taskstate = this.textContent;
+    format_visual_add(taskname,save['state'] == 'running' ? (taskstate == 'at' ? 'active' : 'passive') : 'passive');
   });
 } //}}}
 
