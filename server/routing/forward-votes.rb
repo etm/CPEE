@@ -24,7 +24,8 @@ require_relative '../../lib/cpee/redis'
 def persist_handler(instance,key,mess,redis) #{{{
   redis.multi do |multi|
     multi.sadd("instance:#{instance}/callbacks",key)
-    multi.set("instance:#{instance}/callback/#{key}/uuid",mess.dig('content','activity_uuid'))
+    multi.set("instance:#{instance}/callback/#{key}/subscription",mess.dig('content','subscription'))
+    multi.set("instance:#{instance}/callback/#{key}/uuid",mess.dig('content','activity-uuid'))
     multi.set("instance:#{instance}/callback/#{key}/label",mess.dig('content','label'))
     multi.set("instance:#{instance}/callback/#{key}/position",mess.dig('content','activity'))
     multi.set("instance:#{instance}/callback/#{key}/type",'vote')
@@ -79,7 +80,7 @@ Daemonite.new do |opts|
             url = opts[:redis].get("instance:#{instance}/handlers/#{subscription_key}/url")
 
             if url.nil? || url == ""
-              persist_handler instance, callback_key, m, redis
+              persist_handler instance, callback_key, m, opts[:redis]
               opts[:redis].publish("forward:#{instance}/#{subscription_key}",mess)
             else
               client = Riddl::Client.new(url)
@@ -104,12 +105,12 @@ Daemonite.new do |opts|
                   result[0].value.read
                 end
                 if (headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true') || val == 'callback'
-                  persist_handler instance, callback_key, m, redis
+                  persist_handler instance, callback_key, m, opts[:redis]
                 else # they may send true or false
-                  send_response instance, callback_key, m['cpee'], val, redis
+                  send_response instance, callback_key, m['cpee'], val, opts[:redis]
                 end
               else
-                send_response instance, callback_key, m['cpee'], true, redis
+                send_response instance, callback_key, m['cpee'], true, opts[:redis]
               end
             end
           end

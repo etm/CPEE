@@ -46,6 +46,7 @@ Daemonite.new do |opts|
           multi.del("instance:#{instance}/callback/#{key}/label")
           multi.del("instance:#{instance}/callback/#{key}/position")
           multi.del("instance:#{instance}/callback/#{key}/type")
+          multi.del("instance:#{instance}/callback/#{key}/subscription")
         end
       rescue => e
         puts e.message

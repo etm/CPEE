@@ -36,13 +36,20 @@ module CPEE
         opts = @a[1]
         callback = @r[-1]
 
-        res = {}
-        res[:uuid] = opts[:redis].get("instance:#{id}/callback/#{callback}/uuid")
-        res[:type] = opts[:redis].get("instance:#{id}/callback/#{callback}/type")
-        res[:position] = opts[:redis].get("instance:#{id}/callback/#{callback}/position")
-        res[:label] = opts[:redis].get("instance:#{id}/callback/#{callback}/label")
+        if opts[:redis].sismember("instance:#{id}/callbacks",callback)
+          res = {}
+          res[:uuid] = opts[:redis].get("instance:#{id}/callback/#{callback}/uuid")
+          res[:type] = opts[:redis].get("instance:#{id}/callback/#{callback}/type")
+          res[:position] = opts[:redis].get("instance:#{id}/callback/#{callback}/position")
+          res[:label] = opts[:redis].get("instance:#{id}/callback/#{callback}/label")
+          if sub = opts[:redis].get("instance:#{id}/callback/#{callback}/subscription")
+            res[:subscription] = sub
+          end
 
-        Riddl::Parameter::Complex.new("callback","application/json",JSON.generate(res))
+          Riddl::Parameter::Complex.new("callback","application/json",JSON.generate(res))
+        else
+          @status = 404
+        end
       end
     end #}}}
 
@@ -75,7 +82,7 @@ module CPEE
             opts[:redis]
           )
         else
-          @status = 503
+          @status = 404
         end
         nil
       end

@@ -169,8 +169,12 @@ module CPEE
       conn.psubscribe('forward:*','event:state/change') do |on|
         on.pmessage do |pat, what, message|
           if pat == 'forward:*'
-            _, id, key = what.match(/forward(-end)?:([^\/]+)\/(.+)/).captures
-            opts.dig(:sse_connections,id.to_i,key)&.send message
+            id, key = what.match(/forward:([^\/]+)\/(.+)/).captures
+            if sse = opts.dig(:sse_connections,id.to_i,key)
+              sse.send message
+            else
+              DeleteSubscription::set(id,opts,key)
+            end
           elsif pat == 'event:state/change'
             mess = JSON.parse(message[message.index(' ')+1..-1])
             state = mess.dig('content','state')

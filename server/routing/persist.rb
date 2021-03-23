@@ -59,7 +59,7 @@ Daemonite.new do |opts|
             key = mess.dig('content','key')
             opts[:redis].multi do |multi|
               multi.sadd("instance:#{instance}/callbacks",key)
-              multi.set("instance:#{instance}/callback/#{key}/uuid",mess.dig('content','activity_uuid'))
+              multi.set("instance:#{instance}/callback/#{key}/uuid",mess.dig('content','activity-uuid'))
               multi.set("instance:#{instance}/callback/#{key}/label",mess.dig('content','label'))
               multi.set("instance:#{instance}/callback/#{key}/position",mess.dig('content','activity'))
               multi.set("instance:#{instance}/callback/#{key}/type",'callback')
