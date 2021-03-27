@@ -120,7 +120,7 @@
     <ui-tabbed id="instance">
       <ui-tabbar>
         <ui-tab class="switch"                                                ></ui-tab>
-        <ui-tab class=""                data-tab="new"       id="tabnew"      >New</ui-tab>
+        <ui-tab class=""                data-tab="new"       id="tabnew"      >Config</ui-tab>
         <ui-tab class="inactive hidden" data-tab="instance"  id="tabinstance" >Instance</ui-tab>
         <ui-tab class="inactive hidden" data-tab="execution" id="tabexecution">Execution</ui-tab>
         <ui-behind                                                            ><a style='display:none' target='_blank' id='current-instance'></a><a style='display:none' target='_blank' id='current-instance-properties'>P</a><a style='display:none' target='_blank' id='current-instance-subscriptions'>S</a><a style='display:none' target='_blank' id='current-instance-callbacks'>C</a></ui-behind>
@@ -132,17 +132,14 @@
           <tr>
             <td>Resources:</td>
             <td><input name="res-url" type="text" value=""/></td>
-            <td></td>
           </tr>
           <tr>
             <td>Engine:</td>
             <td><input name="base-url" type="text" value=""/></td>
-            <td><button name="base">create new instance</button></td>
           </tr>
           <tr>
             <td>Instance:</td>
             <td><input name="instance-url" type="text" value=""/></td>
-            <td><button name="instance">monitor instance</button></td>
           </tr>
           </table>
         </ui-area> <!--}}}-->
