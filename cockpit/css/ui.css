@@ -74,6 +74,7 @@ body {
 
 #instance ui-content { height: 7em; }
 
+#areanew td                    { padding-bottom: 1em; }
 #areanew td:nth-child(1)       { width: 7em; padding-right: 1em; }
 #areanew td:nth-child(3)       { width: 16em; padding-left: 1em; }
 #areanew input                 {
