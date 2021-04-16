@@ -141,7 +141,7 @@ function cockpit() { //{{{
         uidash_activate_tab("#tabinstance");
         create_instance($("body").attr('current-base'),"Plain Instance",false,false);
       } else if (q.monitor) {
-        uidash_activate_tab("#tabexecution");
+        uidash_activate_tab("#tabinstance");
         monitor_instance(q.monitor,$("body").attr('current-resources'),false,false);
       } else if (q.exec) {
         if (q.exec.match(/https?:\/\//)) {
