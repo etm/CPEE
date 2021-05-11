@@ -114,6 +114,10 @@
       <xsl:if test="@wait">
         <xsl:text> :wait =&gt; </xsl:text>
         <xsl:value-of select="@wait"/>
+        <xsl:if test="@cancel">
+          <xsl:text>, :cancel =&gt; :</xsl:text>
+          <xsl:value-of select="@cancel"/>
+        </xsl:if>
       </xsl:if>
       <xsl:text> do</xsl:text>
       <xsl:call-template name="print-newline"/>
