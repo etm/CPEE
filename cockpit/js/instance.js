@@ -105,6 +105,11 @@ function cockpit() { //{{{
           $('#templates').append($("<div class='menuitem'></div>").text(this.name.replace(/\.xml/,'')));
         }
       });
+    },
+    error: function() {
+      $("button[name=loadtestset]").attr('disabled','disabled');
+    },
+    complete: function() {
       var q = $.parseQuerySimple();
       if (q.min || q.min == "") {
         uidash_toggle_vis_tab($('#instance'));
