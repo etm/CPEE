@@ -2,10 +2,10 @@
   <attribute name="wait" rngui:label="Wait" rngui:default="-1" rngui:hint="-1 to wait for all branches.">
     <data type="integer"/>
   </attribute>
-  <attribute name="cancel" rngui:label="Cancel" rngui:default="last" rngui:hint="set 'Wait' to 1 for standard Event-based Gateway.">
+  <attribute name="cancel" rngui:label="Cancel" rngui:default="last" rngui:hint="Set 'Wait' to 1 for standard Event-based Gateway.">
     <choice>
       <value id='last'>After Last Task in Branch</value>
-      <value id='first'>After First Task in Branch (Evented Gateway)</value>
+      <value id='first'>After First Task in Branch (Event-Based Gateway)</value>
     </choice>
   </attribute>
   <element rngui:ignore="true" name="parallel_branch">
