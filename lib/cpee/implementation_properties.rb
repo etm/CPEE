@@ -211,19 +211,12 @@ module CPEE
       end
 
       def self::run(id,opts,state)
-        exe = File.join(opts[:instances],id.to_s,File.basename(opts[:backend_run]))
         case state
           when 'running'
-            CPEE::Persistence::write_instance id, opts
-            pid = Kernel.spawn(exe , :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
-            Process.detach pid
-            File.write(exe + '.pid',pid)
+            HandlerWrapper::Ruby::prepare(id,opts)
+            HandlerWrapper::Ruby::run(id,opts)
           when 'stopping'
-            pid = File.read(exe + '.pid') rescue nil
-            if pid && (Process.kill(0, pid.to_i) rescue false)
-              Process.kill('HUP', pid.to_i) rescue nil
-            else
-              File.unlink(exe + '.pid') rescue nil
+            if HandlerWrapper::Ruby::stop(id,opts) # process is not running anyway, so change redis
               PutState::set id, opts, 'stopped'
             end
           else

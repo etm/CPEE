@@ -3,4 +3,4 @@
 :redis_path: /tmp/redis.sock
 :redis_db: 3
 :handlerwrappers: ../../handlerwrappers/
-
+:handlerwrapper: Default

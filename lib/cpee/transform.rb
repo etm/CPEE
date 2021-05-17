@@ -34,9 +34,8 @@ def transform(descxml,tdesc,tdesctype,tdata,tdatatype,tendp,tendptype,opts)
     nil
   end
   unless addit.nil?
-    trans = XML::Smart::open_unprotected(opts[:transformation_dslx])
     dslx = addit.to_s
-    dsl = addit.transform_with(trans).to_s
+    dsl = HandlerWrapper::Ruby::dslx_to_dsl(addit)
   end
 
   ### dataelements extraction

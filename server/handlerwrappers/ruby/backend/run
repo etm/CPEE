@@ -9,11 +9,11 @@ else
   require 'cpee/controller'
 end
 
-Dir[File.join(opts[:global_handlerwrappers],'*.rb')].each do |h|
-  require h
+Dir[File.join(opts[:global_handlerwrappers],'*','connection.rb')].each do |h|
+  require h if opts['handlerwrapper'] == File.basename(File.dirname(h))
 end unless opts[:global_handlerwrappers].nil? || opts[:global_handlerwrappers].strip == ''
-Dir[File.join(opts[:handlerwrappers],'*.rb')].each do |h|
-  require h
+Dir[File.join(opts[:handlerwrappers],'*','connection.rb')].each do |h|
+  require h if opts['handlerwrapper'] == File.basename(File.dirname(h))
 end unless opts[:handlerwrappers].nil? || opts[:handlerwrappers].strip == ''
 
 require_relative 'instance'

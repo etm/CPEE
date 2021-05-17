@@ -12,7 +12,7 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
-class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
+class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::loop_guard(arguments,id,count) # {{{
     controller = arguments[0]
     tsn = Time.now
@@ -30,11 +30,11 @@ class DefaultHandlerWrapper < WEEL::HandlerWrapperBase
     controller = arguments[0]
     controller.notify("description/error", :message => err.message)
   end# }}}
-  def self::inform_handlerwrapper_error(arguments,err) # {{{
+  def self::inform_connectionwrapper_error(arguments,err) # {{{
     controller = arguments[0]
     p err.message
     p err.backtrace
-    controller.notify("handlerwrapper/error", :message => err.message)
+    controller.notify("connectionwrapper/error", :message => err.message)
   end # }}}
   def self::inform_position_change(arguments,ipc={}) # {{{
     controller = arguments[0]
