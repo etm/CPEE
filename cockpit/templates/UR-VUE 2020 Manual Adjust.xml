@@ -1,6 +1,6 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
   <dataelements/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <overview>http-put://ryloth.wst.univie.ac.at:9329/move/overview</overview>
     <move_tool>http-put://ryloth.wst.univie.ac.at:9329/move/position/point</move_tool>

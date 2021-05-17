@@ -1,5 +1,5 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
+  <executionhandler>ruby</executionhandler>
   <handlers>
     <handler url="http://tango.wst.univie.ac.at:9332">
       <votes topic="state">change</votes>

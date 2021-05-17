@@ -1,15 +1,15 @@
-<testset>
-  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <positions/>
+  <dataelements>
     <persons>3</persons>
     <hotels>[]</hotels>
     <costs>0</costs>
   </dataelements>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
+  <endpoints>
     <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
   </endpoints>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <parallel>
         <loop mode="pre_test" condition="data.persons &gt; 0">
@@ -32,7 +32,7 @@ data.costs += result.value('costs').to_f</finalize>
       </parallel>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

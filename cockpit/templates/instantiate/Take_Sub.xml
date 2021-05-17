@@ -1,6 +1,6 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
   <dataelements/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <start_url>https://cpee.org/flow/start/url/</start_url>
     <timeout>https://cpee.org/services/timeout.php</timeout>

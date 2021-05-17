@@ -1,19 +1,16 @@
-<testset>
-  <positions xmlns="http://cpee.org/ns/properties/2.0">
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <positions>
     <a1>after</a1>
   </positions>
-  <!--}}}-->
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
+  <dataelements>
     <x/>
   </dataelements>
-  <!--}}}-->
   <handlers/>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
+  <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>
-  <!--}}}-->
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <!--{{{-->
       <call id="a1" endpoint="timeout">
@@ -57,7 +54,7 @@
       </call>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

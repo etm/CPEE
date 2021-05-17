@@ -1,28 +1,25 @@
-<testset>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <attributes>
     <info>Syncing Instance 2</info>
     <modeltype>CPEE</modeltype>
     <theme>preset</theme>
   </attributes>
-  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
+  <positions/>
+  <dataelements>
     <x/>
   </dataelements>
-  <!--}}}-->
   <handlers>
     <!--{{{-->
     <handler url="http://localhost:9399/1/events">
       <votes topic="activity">syncing_before,syncing_after</votes>
     </handler>
   </handlers>
-  <!--}}}-->
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
+  <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
     <timeouts>http://gruppe.wst.univie.ac.at/~mangler/services/timeout-sync.php</timeouts>
   </endpoints>
-  <!--}}}-->
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <!--{{{-->
       <call id="a1" endpoint="timeout">
@@ -69,7 +66,7 @@
       </call>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

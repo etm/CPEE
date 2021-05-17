@@ -1,17 +1,16 @@
-<testset>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
   <handlers>
     <handler url="http://solo.wst.univie.ac.at:9299/log">
       <events topic="activity">calling,done</events>
     </handler>
   </handlers>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">LogHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <start xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://solo.wst.univie.ac.at/log.php</start>
+  <dataelements/>
+  <endpoints>
+    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <start>http://solo.wst.univie.ac.at/log.php</start>
   </endpoints>
-  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <positions/>
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a0" endpoint="start">
         <parameters>
@@ -105,13 +104,13 @@
       </call>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">s</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Signavio</modeltype>
+  <attributes>
+    <info>s</info>
+    <modeltype>Signavio</modeltype>
   </attributes>
 </testset>

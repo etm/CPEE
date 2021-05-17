@@ -113,7 +113,7 @@ elsif command == 'convert'
 
         doc.find('//x:handlerwrapper').each do |e|
           if e.text == 'DefaultHandlerWrapper'
-            doc.root.add('x:executionhandler','ruby')
+            doc.root.prepend('x:executionhandler','ruby')
           end
         end rescue nil
         doc.find('//x:handlerwrapper').delete_all!

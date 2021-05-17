@@ -1,10 +1,10 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
   <dataelements>
     <time>5</time>
   </dataelements>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
-    <start_url>http://localhost:9296/url/</start_url>
+    <start_url>https://localhost/flow/start/url/</start_url>
   </endpoints>
   <positions/>
   <description>

@@ -1,29 +1,29 @@
-<testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout</timeout>
-    <timeout1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout/1</timeout1>
-    <timeout2 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout/16</timeout2>
-    <timeout3 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/timeout/41</timeout3>
-    <preminder1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/preminder/1</preminder1>
-    <preminder2 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/preminder/2</preminder2>
-    <sreminder1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/sreminder/1</sreminder1>
-    <sreminder2 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/sreminder/2</sreminder2>
-    <inkasso xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/inkasso</inkasso>
-    <customer xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/customer</customer>
-    <credit xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit</credit>
-    <credit_worthy xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/worthy</credit_worthy>
-    <activation xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/activation</activation>
-    <zaehler xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/zaehler</zaehler>
-    <update xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/update</update>
-    <consume xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/consume</consume>
-    <decide xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/decide</decide>
-    <credit_consume xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/consume</credit_consume>
-    <credit_activate xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://promise.wst.univie.ac.at:9301/credit/activate</credit_activate>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements/>
+  <endpoints>
+    <timeout>http://promise.wst.univie.ac.at:9301/timeout</timeout>
+    <timeout1>http://promise.wst.univie.ac.at:9301/timeout/1</timeout1>
+    <timeout2>http://promise.wst.univie.ac.at:9301/timeout/16</timeout2>
+    <timeout3>http://promise.wst.univie.ac.at:9301/timeout/41</timeout3>
+    <preminder1>http://promise.wst.univie.ac.at:9301/preminder/1</preminder1>
+    <preminder2>http://promise.wst.univie.ac.at:9301/preminder/2</preminder2>
+    <sreminder1>http://promise.wst.univie.ac.at:9301/sreminder/1</sreminder1>
+    <sreminder2>http://promise.wst.univie.ac.at:9301/sreminder/2</sreminder2>
+    <inkasso>http://promise.wst.univie.ac.at:9301/inkasso</inkasso>
+    <customer>http://promise.wst.univie.ac.at:9301/customer</customer>
+    <credit>http://promise.wst.univie.ac.at:9301/credit</credit>
+    <credit_worthy>http://promise.wst.univie.ac.at:9301/credit/worthy</credit_worthy>
+    <activation>http://promise.wst.univie.ac.at:9301/activation</activation>
+    <zaehler>http://promise.wst.univie.ac.at:9301/zaehler</zaehler>
+    <update>http://promise.wst.univie.ac.at:9301/update</update>
+    <consume>http://promise.wst.univie.ac.at:9301/consume</consume>
+    <decide>http://promise.wst.univie.ac.at:9301/decide</decide>
+    <credit_consume>http://promise.wst.univie.ac.at:9301/credit/consume</credit_consume>
+    <credit_activate>http://promise.wst.univie.ac.at:9301/credit/activate</credit_activate>
   </endpoints>
-  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <positions/>
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a20" endpoint="customer" svg-label="Generate Customer">
         <parameters>
@@ -262,14 +262,14 @@
       </parallel>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">ss</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+  <attributes>
+    <theme>preset</theme>
+    <info>ss</info>
+    <modeltype>CPEE</modeltype>
   </attributes>
 </testset>
