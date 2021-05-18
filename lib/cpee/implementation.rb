@@ -28,7 +28,7 @@ module CPEE
 
   SERVER = File.expand_path(File.join(__dir__,'..','cpee.xml'))
   PROPERTIES_PATHS_FULL = %w{
-    /p:properties/p:handlerwrapper
+    /p:properties/p:executionhandler
     /p:properties/p:positions/p:*
     /p:properties/p:positions/p:*/@*
     /p:properties/p:dataelements/p:*
@@ -54,8 +54,8 @@ module CPEE
   }
   def self::implementation(opts)
     opts[:instances]                  ||= File.expand_path(File.join(__dir__,'..','..','server','instances'))
-    opts[:global_handlerwrappers]     ||= File.expand_path(File.join(__dir__,'..','..','server','handlerwrappers'))
-    opts[:handlerwrappers]            ||= ''
+    opts[:global_executionhandlers]   ||= File.expand_path(File.join(__dir__,'..','..','server','executionhandlers'))
+    opts[:executionhandlers]          ||= ''
     opts[:topics]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','topics.xml'))
     opts[:properties_init]            ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.init'))
     opts[:properties_empty]           ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.empty'))
@@ -95,6 +95,15 @@ module CPEE
     ]
 
     Proc.new do
+      Dir[File.join(opts[:global_executionhandlers],'*','execution.rb')].each do |h|
+        require h
+        p h
+      end unless opts[:global_executionhandlers].nil? || opts[:global_executionhandlers].strip == ''
+      Dir[File.join(opts[:executionhandlers],'*','execution.rb')].each do |h|
+        require h
+        p h
+      end unless opts[:executionhandlers].nil? || opts[:executionhandlers].strip == ''
+
       parallel do
         CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],File.join(opts[:basepath],opts[:redis_path]),opts[:redis_db])
         EM.add_periodic_timer(opts[:watchdog_frequency]) do ### start services

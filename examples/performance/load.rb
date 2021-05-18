@@ -22,19 +22,19 @@ def create_instance(srv,name)
     XML::Smart.open("testset.xml") do |doc|
       res = srv.resource("/#{ins}/properties/values")
       ["transformation"].each do |item|
-        status, response = res.post [ 
+        status, response = res.post [
           Riddl::Parameter::Simple.new("property",item)
         ]
       end
-      ["handlerwrapper","positions","dataelements","endpoints","transformation","description"].each do |item|
+      ["executionwrapper","positions","dataelements","endpoints","transformation","description"].each do |item|
         params << Riddl::Parameter::Simple.new("name",item)
         params << Riddl::Parameter::Simple.new("content",doc.find("/testset/#{item}").first.dump)
-      end  
+      end
       status, response = res.put params
-    end   
+    end
   end
   ins
-end  
+end
 
 t = []
 1.upto(numinstances) do |i|

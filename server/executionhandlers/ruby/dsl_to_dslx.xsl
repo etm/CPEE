@@ -4,16 +4,20 @@
   <xsl:strip-space elements="*"/>
   <xsl:variable name="myspacemultiplier">2</xsl:variable>
   <xsl:template match="/">
+    <xsl:text>control flow do</xsl:text>
+    <xsl:call-template name="print-newline"/>
     <xsl:apply-templates select="//d:description"/>
+    <xsl:call-template name="print-newline"/>
+    <xsl:text>end</xsl:text>
   </xsl:template>
   <xsl:template match="//d:description">
     <xsl:apply-templates>
       <xsl:with-param name="myspace">
-        <xsl:value-of select="-1*$myspacemultiplier"/>
+        <xsl:value-of select="0*$myspacemultiplier"/>
       </xsl:with-param>
     </xsl:apply-templates>
   </xsl:template>
-  <xsl:template match="*|">
+  <xsl:template match="*">
     <xsl:param name="myspace"/>
     <xsl:if test="name()='call' or name()='manipulate'">
       <xsl:call-template name="print-space">

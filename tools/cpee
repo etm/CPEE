@@ -263,7 +263,7 @@ elsif command == 'new'
     FileUtils.mkdir("#{p1}/archive") rescue nil
     FileUtils.mkdir("#{p1}/instances") rescue nil
     FileUtils.mkdir("#{p1}/resources") rescue nil
-    FileUtils.mkdir("#{p1}/handlerwrappers") rescue nil
+    FileUtils.mkdir("#{p1}/executionhandler") rescue nil
     Dir["#{curpath}/../systemd/*.service"].each do |f|
       nam =  File.basename f
       cont = File.read(f)

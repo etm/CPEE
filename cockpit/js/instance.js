@@ -53,7 +53,7 @@ var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'instantiation' + '&' +
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'handlerwrapper' + '&' +
+               'topic'  + '=' + 'connectionwrapper' + '&' +
                'events' + '=' + 'error,change' + '&' +
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
@@ -75,7 +75,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'instantiation' + '&' +
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'handlerwrapper' + '&' +
+               'topic'  + '=' + 'connectionwrapper' + '&' +
                'events' + '=' + 'error,change' + '&' +
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
@@ -904,7 +904,7 @@ async function set_testset(testset,exec) {// {{{
   var promises = [];
 
   var tset = $X('<properties xmlns="http://cpee.org/ns/properties/2.0"/>');
-  tset.append($("testset > handlerwrapper",testset));
+  tset.append($("testset > executionwrapper",testset));
   tset.append($("testset > positions",testset));
   tset.append($("testset > dataelements",testset));
   tset.append($("testset > endpoints",testset));

@@ -22,7 +22,7 @@ require_relative '../../lib/cpee/redis'
 
 EVENTS = %w{
   event:state/change
-  event:handlerwrapper/change
+  event:executionhandler/change
   event:description/change
   event:dataelements/change
   event:endpoints/change
@@ -69,8 +69,8 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/state",mess.dig('content','state'))
               multi.set("instance:#{instance}/state/@changed",mess.dig('timestamp'))
             end
-          when 'event:handlerwrapper/change'
-            opts[:redis].set("instance:#{instance}/handlerwrapper",mess.dig('content','handlerwrapper'))
+          when 'event:executionhandler/change'
+            opts[:redis].set("instance:#{instance}/executionhandler",mess.dig('content','executionhandler'))
           when 'event:description/change'
             opts[:redis].multi do |multi|
               multi.set("instance:#{instance}/description",mess.dig('content','description'))

@@ -1,0 +1,37 @@
+#!/usr/bin/ruby
+require 'yaml'
+opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
+opts[:pidf] = __FILE__ + '.pid'
+opts[:pid] = Process.pid
+
+connectionhandler        = File.join(opts[:executionhandlers],       opts[:executionhandler],'connection.rb')
+global_connectionhandler = File.join(opts[:global_executionhandlers],opts[:executionhandler],'connection.rb')
+if File.exists? connectionhandler
+  require connectionhandler
+elsif File.exists? global_connectionhandler
+  require global_connectionhandler
+end
+
+controller        = File.join(opts[:executionhandlers],       opts[:executionhandler],'controller.rb')
+global_controller = File.join(opts[:global_executionhandlers],opts[:executionhandler],'controller.rb')
+if File.exists? controller
+  require controller
+elsif File.exists? global_controller
+  require global_controller
+end
+
+require_relative 'instance'
+controller = Controller.new(File.basename(__dir__).to_i, __dir__, opts)
+controller.instance = Instance.new controller
+
+File.write(opts[:pidf],opts[:pid])
+
+%w{TERM HUP INT}.each do |sig|
+  Signal.trap(sig) do
+    puts "Caught #{sig}!"
+    controller.stop
+  end
+end
+
+controller.start
+File.unlink(opts[:pidf])

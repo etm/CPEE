@@ -1,7 +1,7 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <include href="state.rng"/>
   <include href="status.rng"/>
-  <include href="handlerwrapper.rng"/>
+  <include href="executionhandler.rng"/>
   <include href="positions.rng"/>
   <include href="dataelements.rng"/>
   <include href="endpoints.rng"/>
@@ -13,7 +13,7 @@
     <element name="properties" ns="http://cpee.org/ns/properties/2.0">
       <ref name="set-state"/>
       <ref name="status"/>
-      <ref name="handlerwrapper"/>
+      <ref name="executionhandler"/>
       <ref name="positions"/>
       <ref name="dataelements"/>
       <ref name="endpoints"/>

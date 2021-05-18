@@ -52,7 +52,8 @@
   <topic id='attributes'>
     <event>change</event>
   </topic>
-  <topic id='connectionwrapper'>
+  <topic id='executionhandler'>
+    <event>change</event>
     <event>error</event>
   </topic>
   <topic id='transformation'>

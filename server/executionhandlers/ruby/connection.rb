@@ -34,7 +34,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     controller = arguments[0]
     p err.message
     p err.backtrace
-    controller.notify("connectionwrapper/error", :message => err.message)
+    controller.notify("executionhandler/error", :message => err.message)
   end # }}}
   def self::inform_position_change(arguments,ipc={}) # {{{
     controller = arguments[0]

@@ -31,9 +31,9 @@ module CPEE
             run CPEE::Properties::GetStatusMessage, id, opts if get
           end
         end
-        on resource 'handlerwrapper' do
-          run CPEE::Properties::GetHandlerWrapper, id, opts if get
-          run CPEE::Properties::PutHandlerWrapper, id, opts if put 'handlerwrapper'
+        on resource 'executionhandler' do
+          run CPEE::Properties::GetExecutionHandler, id, opts if get
+          run CPEE::Properties::PutExecutionHandler, id, opts if put 'executionhandler'
         end
         on resource 'positions' do
           run CPEE::Properties::GetPositions, id, opts if get
@@ -128,8 +128,8 @@ module CPEE
           if (node = doc.find('/p:properties/p:status')).any?
             CPEE::Properties::PutStatus::set id, opts, node.first.dump
           end
-          if (node = doc.find('/p:properties/p:handlerwrapper')).any?
-            CPEE::Properties::PutHandlerWrapper::set id, opts, node.first.text
+          if (node = doc.find('/p:properties/p:executionhandler')).any?
+            CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text
           end
 
           %w{dataelements endpoints attributes}.each do |item|
@@ -169,8 +169,8 @@ module CPEE
           if (node = doc.find('/p:properties/p:status')).any?
             CPEE::Properties::PutStatus::set id, opts, node.first.dump
           end
-          if (node = doc.find('/p:properties/p:handlerwrapper')).any?
-            CPEE::Properties::PutHandlerWrapper::set id, opts, node.first.text
+          if (node = doc.find('/p:properties/p:executionhandler')).any?
+            CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text
           end
 
           %w{dataelements endpoints attributes}.each do |item|
@@ -213,10 +213,10 @@ module CPEE
       def self::run(id,opts,state)
         case state
           when 'running'
-            HandlerWrapper::Ruby::prepare(id,opts)
-            HandlerWrapper::Ruby::run(id,opts)
+            ExecutionHandler::Ruby::prepare(id,opts)
+            ExecutionHandler::Ruby::run(id,opts)
           when 'stopping'
-            if HandlerWrapper::Ruby::stop(id,opts) # process is not running anyway, so change redis
+            if ExecutionHandler::Ruby::stop(id,opts) # process is not running anyway, so change redis
               PutState::set id, opts, 'stopped'
             end
           else
@@ -295,16 +295,16 @@ module CPEE
         Riddl::Parameter::Simple.new('value',CPEE::Persistence::extract_item(id,opts,'status/message'))
       end
     end #}}}
-    class GetHandlerWrapper < Riddl::Implementation #{{{
+    class GetExecutionHandler < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Simple.new('value',CPEE::Persistence::extract_item(id,opts,'handlerwrapper'))
+        Riddl::Parameter::Simple.new('value',CPEE::Persistence::extract_item(id,opts,'executionhandler'))
       end
     end #}}}
-    class PutHandlerWrapper < Riddl::Implementation #{{{
+    class PutExecutionHandler < Riddl::Implementation #{{{
       def self::set(id,opts,hw)
-        CPEE::Persistence::set_item(id,opts,'handlerwrapper',:handlerwrapper => hw)
+        CPEE::Persistence::set_item(id,opts,'executionhandler',:executionhandler => hw)
       end
       def response
         id = @a[0]
@@ -312,7 +312,7 @@ module CPEE
         if opts[:statemachine].readonly? id
           @status = 423
         else
-          PutHandlerWrapper::set(id,opts,@p[0].value)
+          PutExecutionHandler::set(id,opts,@p[0].value)
         end
         nil
       end

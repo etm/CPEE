@@ -35,7 +35,7 @@ def transform(descxml,tdesc,tdesctype,tdata,tdatatype,tendp,tendptype,opts)
   end
   unless addit.nil?
     dslx = addit.to_s
-    dsl = HandlerWrapper::Ruby::dslx_to_dsl(addit)
+    dsl = CPEE::ExecutionHandler::Ruby::dslx_to_dsl(addit)
   end
 
   ### dataelements extraction
