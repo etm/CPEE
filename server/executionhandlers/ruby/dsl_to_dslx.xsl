@@ -7,7 +7,6 @@
     <xsl:text>control flow do</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates select="//d:description"/>
-    <xsl:call-template name="print-newline"/>
     <xsl:text>end</xsl:text>
   </xsl:template>
   <xsl:template match="//d:description">

@@ -97,11 +97,9 @@ module CPEE
     Proc.new do
       Dir[File.join(opts[:global_executionhandlers],'*','execution.rb')].each do |h|
         require h
-        p h
       end unless opts[:global_executionhandlers].nil? || opts[:global_executionhandlers].strip == ''
       Dir[File.join(opts[:executionhandlers],'*','execution.rb')].each do |h|
         require h
-        p h
       end unless opts[:executionhandlers].nil? || opts[:executionhandlers].strip == ''
 
       parallel do

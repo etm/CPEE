@@ -4,20 +4,20 @@ opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
 opts[:pidf] = __FILE__ + '.pid'
 opts[:pid] = Process.pid
 
-connectionhandler        = File.join(opts[:executionhandlers],       opts[:executionhandler],'connection.rb')
-global_connectionhandler = File.join(opts[:global_executionhandlers],opts[:executionhandler],'connection.rb')
-if File.exists? connectionhandler
-  require connectionhandler
-elsif File.exists? global_connectionhandler
-  require global_connectionhandler
+global_controller = File.join(opts[:global_executionhandlers],opts[:executionhandler],'controller.rb')
+controller        = File.join(opts[:executionhandlers],       opts[:executionhandler],'controller.rb')
+if File.exists? global_controller
+  require global_controller
+elsif File.exists? controller
+  require controller
 end
 
-controller        = File.join(opts[:executionhandlers],       opts[:executionhandler],'controller.rb')
-global_controller = File.join(opts[:global_executionhandlers],opts[:executionhandler],'controller.rb')
-if File.exists? controller
-  require controller
-elsif File.exists? global_controller
-  require global_controller
+global_connectionhandler = File.join(opts[:global_executionhandlers],opts[:executionhandler],'connection.rb')
+connectionhandler        = File.join(opts[:executionhandlers],       opts[:executionhandler],'connection.rb')
+if File.exists? global_connectionhandler
+  require global_connectionhandler
+elsif File.exists? connectionhandler
+  require connectionhandler
 end
 
 require_relative 'instance'

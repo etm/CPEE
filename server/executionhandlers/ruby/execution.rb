@@ -32,7 +32,7 @@ module CPEE
         Dir.mkdir(File.join(opts[:instances],id.to_s)) rescue nil
         FileUtils.copy(ExecutionHandler::Ruby::BACKEND_RUN,File.join(opts[:instances],id.to_s))
         dsl = CPEE::Persistence::extract_item(id,opts,'dsl')
-        hw = CPEE::Persistence::extract_item(id,opts,'ruby')
+        hw = CPEE::Persistence::extract_item(id,opts,'executionhandler')
         endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
         dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
         positions = CPEE::Persistence::extract_set(id,opts,'positions')
