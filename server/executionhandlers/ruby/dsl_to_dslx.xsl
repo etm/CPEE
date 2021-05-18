@@ -101,19 +101,43 @@
       <xsl:call-template name="print-newline"></xsl:call-template>
     </xsl:if>
     <xsl:if test="name()='terminate'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>terminate</xsl:text>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='stop'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>stop :</xsl:text>
       <xsl:value-of select="@id"/>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='escape'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>escape</xsl:text>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='parallel'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>parallel</xsl:text>
       <xsl:if test="@wait">
         <xsl:text> :wait =&gt; </xsl:text>
