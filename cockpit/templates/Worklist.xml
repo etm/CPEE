@@ -35,8 +35,13 @@
     <endpoints type="none"/>
   </transformation>
   <attributes>
-    <info>asda</info>
+    <info>Worklist</info>
     <modeltype>CPEE</modeltype>
     <organisation1>http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
+    <theme>extended</theme>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <design_stage>development</design_stage>
+    <design_dir>Templates.dir</design_dir>
   </attributes>
 </testset>

@@ -196,6 +196,6 @@ data.item = result[0]</finalize>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <design_stage>development</design_stage>
-    <design_dir>/home/demo/Projects/cpee/cockpit/templates</design_dir>
+    <design_dir>Templates.dir</design_dir>
   </attributes>
 </testset>

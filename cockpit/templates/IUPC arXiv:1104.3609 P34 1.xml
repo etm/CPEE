@@ -1,9 +1,13 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <attributes>
-    <info>Syncing Instance 1</info>
+    <info>IUPC arXiv:1104.3609 P34 1</info>
     <modeltype>CPEE</modeltype>
     <theme>preset</theme>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <design_stage>development</design_stage>
+    <design_dir>Templates.dir</design_dir>
   </attributes>
   <positions/>
   <dataelements>
