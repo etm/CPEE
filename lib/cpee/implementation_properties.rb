@@ -14,7 +14,6 @@
 
 require_relative 'attributes_helper'
 require_relative 'value_helper'
-require_relative 'transform'
 require 'json'
 require 'erb'
 require 'yaml'
