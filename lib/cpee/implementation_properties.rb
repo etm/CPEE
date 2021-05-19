@@ -227,10 +227,12 @@ module CPEE
       def self::run(id,opts,state)
         case state
           when 'running'
-            ExecutionHandler::Ruby::prepare(id,opts)
-            ExecutionHandler::Ruby::run(id,opts)
+            seh = Object.const_get('CPEE::ExecutionHandler::' + CPEE::Persistence::extract_item(id,opts,'executionhandler').capitalize)
+            seh::prepare(id,opts)
+            seh::run(id,opts)
           when 'stopping'
-            if ExecutionHandler::Ruby::stop(id,opts) # process is not running anyway, so change redis
+            seh = Object.const_get('CPEE::ExecutionHandler::' + CPEE::Persistence::extract_item(id,opts,'executionhandler').capitalize)
+            if seh::stop(id,opts) # process is not running anyway, so change redis
               PutState::set id, opts, 'stopped'
             end
           else
@@ -640,7 +642,7 @@ module CPEE
     end #}}}
 
     class PutDescription < Riddl::Implementation #{{{
-      def self::transform(descxml,tdesc,tdesctype,tdata,tdatatype,tendp,tendptype,opts) #{{{
+      def self::transform(descxml,tdesc,tdesctype,tdata,tdatatype,tendp,tendptype,hw,opts) #{{{
         desc = XML::Smart::string(descxml)
         desc.register_namespace  'p', 'http://cpee.org/ns/description/1.0'
 
@@ -677,7 +679,7 @@ module CPEE
         end
         unless addit.nil?
           dslx = addit.to_s
-          dsl = CPEE::ExecutionHandler::Ruby::dslx_to_dsl(addit)
+          dsl = Object.const_get('CPEE::ExecutionHandler::' + hw.capitalize)::dslx_to_dsl(addit)
         end
 
         ### dataelements extraction
@@ -744,6 +746,7 @@ module CPEE
           CPEE::Persistence::extract_item(id,opts,'transformation/dataelements/@type'),
           CPEE::Persistence::extract_item(id,opts,'transformation/endpoints'),
           CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type'),
+          CPEE::Persistence::extract_item(id,opts,'executionhandler'),
           opts
         )
         CPEE::Persistence::set_item(id,opts,'description',
