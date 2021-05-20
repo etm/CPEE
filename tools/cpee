@@ -97,7 +97,7 @@ elsif command == 'cpui'
     if !File.exists?(p1)
       FileUtils.cp_r(cockpit,p1)
     else
-      FileUtils.cp_r(Dir.glob(File.join(cockpit,'*')),p1,remove_destination: true)
+      FileUtils.cp_r(Dir.glob(File.join(cockpit,'*')).delete_if{|e| e =~ /\.json/ || e=~ /legacy/ })
       puts "Directory already exists, updating ..."
     end
     js_libs(p1)
