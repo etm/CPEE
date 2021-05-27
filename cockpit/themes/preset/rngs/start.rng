@@ -1,7 +1,7 @@
 <element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="description" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
-  <element name="_context_data_analysis" rngui:header="Context Data Analysis" rngui:hint="All data elements (internal context) in the process can be used as input for context data probes. All probes can be the basis for impact factors. Please go to individual tasks to define deal with data that is  ">
+  <element name="_context_data_analysis" rngui:header="Context Data Analysis" rngui:hint="All changes to data elements in the process as well as arbitray external data streams can be consumed and transformed in data probes. All probes can be the basis for impact factors. Please go to individual tasks to define more restricted data probes.">
 
-    <element name="probes" rngui:header="Context Data Extraction" rngui:fold="closed">
+    <element name="probes" rngui:header="Data Probes - Context Data Extraction" rngui:fold="closed">
       <zeroOrMore rngui:label="Add Probe">
         <element name="probe">
           <element name="name" rngui:label="Label">
@@ -9,18 +9,18 @@
           </element>
           <element name="extractor_type" rngui:label="Extractor Type">
             <choice>
-              <value id='code'>Extractor Code</value>
-              <value id='service'>Extractor Service</value>
+              <value id='code'>Code</value>
+              <value id='service'>Service</value>
             </choice>
           </element>
-          <element name="extractor_code" rngui:label="Extractor Code">
-            <text rngui:label="Service Url"/>
+          <element name="extractor_code" rngui:label="Extractor Code" rngui:hint='For intrinsic data'>
+            <text rngui:label="Code"/>
           </element>
-          <element name="extractor_url" rngui:label="Extractor Service">
+          <element name="extractor_url" rngui:label="Extractor Service" rngui:hint='For intrinsic &amp; discrete data'>
             <data type="string" rngui:label="Service Url"/>
           </element>
           <element name="extractor_params" rngui:label="Extractor Service Arguments:">
-            <zeroOrMore rngui:label="Create Extractor Argument Pairs">
+            <zeroOrMore rngui:label="Create Argument Pairs">
               <element rngui:label="Name">
                 <anyName/>
                 <data type="string" rngui:label="Value / Json"/>
@@ -31,7 +31,7 @@
             <data type="string" rngui:label="Service Url"/>
           </element>
           <element name="visualizer_params" rngui:label="Visualizer Arguments">
-            <zeroOrMore rngui:label="Create Visualizer Argument Pairs">
+            <zeroOrMore rngui:label="Create Argument Pairs">
               <element rngui:label="Name">
                 <anyName/>
                 <data type="string" rngui:label="Value / Json"/>

@@ -1189,7 +1189,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': self.adaptor.theme_dir + 'symbols/start.svg'
     },//}}}
-    'description': null,
+    'description': self.adaptor.theme_dir + 'rngs/start.rng',
     'permissible_children': function(node,mode) { //{{{
       var func = null;
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
