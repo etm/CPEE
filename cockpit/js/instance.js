@@ -1163,7 +1163,6 @@ async function load_testset_handlers(url,testset,vals) {// {{{
         })
       } else {
         let inp = load_testset_extract_handlers([],han,suburl);
-        console.log(inp);
         promises.push(
           $.ajax({
             type: "PUT",
