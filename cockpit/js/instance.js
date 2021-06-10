@@ -844,7 +844,36 @@ function get_testset(deferred) {// {{{
           ele.removeAttribute('xmlns');
         }
       });
-      deferred.resolve(name,testset);
+      $.ajax({
+        type: "GET",
+        url: url + "/notifications/subscriptions/",
+        success: async function(res){
+          let values = $("subscriptions > subscription[url]",res);
+          let subs = $X('<subscriptions xmlns="http://riddl.org/ns/common-patterns/notifications-producer/2.0"/>');
+          let promises = [];
+          let scount = 0;
+          values.each(function(){
+            let sid = $(this).attr('id');
+            if (sid.match(/^_/)) {
+              scount += 1;
+              promises.push(
+                $.ajax({
+                  type: "GET",
+                  url: url + "/notifications/subscriptions/" + sid,
+                  error: report_failure
+                }).then(function(a) {
+                  subs.append($(a.documentElement));
+                })
+              );
+            };
+          });
+          await Promise.all(promises);
+          if (scount > 0) { testset.append(subs); }
+          deferred.resolve(name,testset);
+        },
+        error: function() { deferred.reject(); report_failure(); }
+      });
+
     },
     error: function() { deferred.reject(); report_failure(); }
   });
@@ -918,7 +947,6 @@ async function set_testset(testset,exec) {// {{{
       url: url + "/notifications/subscriptions/",
       error: report_failure
     }).then(async function(res) {
-      var rcount = 0;
       var values = $("subscriptions > subscription[url]",res);
       var vals = {};
       values.each(function(){
@@ -1089,20 +1117,22 @@ async function load_testset_handlers(url,testset,vals) {// {{{
     var sid = $(han).attr('id');
     var suburl = $(han).attr('url');
     if (typeof(vals[suburl]) == 'undefined') {
-      var inp = [];
-      if (sid) { inp.push("id="+encodeURIComponent(sid)); }
-      inp.push("url="+encodeURIComponent(suburl).replace(/~/,'%7E'));
-      $("*",han).each(function(){
-        inp.push("topic=" + $(this).attr('topic'));
-        inp.push(this.nodeName + "=" + $(this).text());
-      });
-      promises.push(
-        $.ajax({
-          type: "POST",
-          url: url + "/notifications/subscriptions/",
-          data: inp.join('&')
-        })
-      )
+      if ($("*",han).length > 0) {
+        var inp = [];
+        if (sid) { inp.push("id="+encodeURIComponent(sid)); }
+        inp.push("url="+encodeURIComponent(suburl).replace(/~/,'%7E'));
+        $("*",han).each(function(){
+          inp.push("topic=" + $(this).attr('topic'));
+          inp.push(this.nodeName + "=" + $(this).text());
+        });
+        promises.push(
+          $.ajax({
+            type: "POST",
+            url: url + "/notifications/subscriptions/",
+            data: inp.join('&')
+          })
+        )
+      }
     } else {
       if ($("*",han).length == 0) {
         $.ajax({

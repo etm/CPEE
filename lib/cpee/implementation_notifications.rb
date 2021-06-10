@@ -92,7 +92,8 @@ module CPEE
             ret = XML::Smart::string <<-END
               <subscription xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'/>
             END
-            url = CPEE::Persistence::extract_item(id,opts,File.join('handler',key,'url'))
+            url = CPEE::Persistence::extract_item(id,opts,File.join('handlers',key,'url'))
+            ret.root.attributes['id'] = key
             ret.root.attributes['url'] = url if url && !url.empty?
             items = {}
             CPEE::Persistence::extract_handler(id,opts,key).each do |h|
