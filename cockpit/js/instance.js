@@ -406,12 +406,12 @@ function monitor_instance_values(val) {// {{{
         $(res).find(" > endpoints > *").each(function(k,v) {
           save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
           $.ajax({
-            url: rep + encodeURIComponent($(v).text()),
+            url: rep + 'endpoints/' + encodeURIComponent($(v).text()),
             success: function() {
               tmp[v.tagName] = {};
               var deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()) + "/symbol.svg",
+                url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/symbol.svg",
                 success: function(res) {
                   tmp[v.tagName]['symbol'] = res;
                   deferreds[0].resolve(true);
@@ -419,7 +419,7 @@ function monitor_instance_values(val) {// {{{
                 error: deferreds[0].resolve
               })
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()) + "/schema.rng",
+                url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/schema.rng",
                 success: function(res) {
                   tmp[v.tagName]['schema'] = res;
                   deferreds[1].resolve(true);
@@ -427,7 +427,7 @@ function monitor_instance_values(val) {// {{{
                 error: deferreds[1].resolve
               })
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()) + "/properties.json",
+                url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/properties.json",
                 success: function(res) {
                   tmp[v.tagName]['properties'] = res;
                   deferreds[2].resolve(true);
@@ -731,7 +731,6 @@ function monitor_instance_state_change(notification) { //{{{
     }
 
     if (notification != "ready" && notification != "stopped" && notification != "running") {
-      console.log('rrr');
       $('#parameters ui-content ui-area > button').attr('disabled','disabled');
       $('#state_any').hide();
     } else {
@@ -921,9 +920,9 @@ async function set_testset(testset,exec) {// {{{
     }).then(async function(res) {
       var rcount = 0;
       var values = $("subscriptions > subscription[url]",res);
-      var vals = [];
+      var vals = {};
       values.each(function(){
-        vals.push($(this).attr('url'));
+        vals[$(this).attr('url')] = $(this).attr('id');
       });
       await load_testset_handlers(url,testset,vals);
     })
@@ -1085,22 +1084,46 @@ async function load_des(url,model) { //{{{
 } //}}}
 async function load_testset_handlers(url,testset,vals) {// {{{
   var promises = [];
-  $("testset > handlers > *",testset).each(async function(){
+  $("testset > subscriptions > *",testset).each(async function(){
     var han = this;
+    var sid = $(han).attr('id');
     var suburl = $(han).attr('url');
-    if ($.inArray(suburl,vals) == -1) {
-      var inp = "url="+encodeURIComponent(suburl).replace(/~/,'%7E');
+    if (typeof(vals[suburl]) == 'undefined') {
+      var inp = [];
+      if (sid) { inp.push("id="+encodeURIComponent(sid)); }
+      inp.push("url="+encodeURIComponent(suburl).replace(/~/,'%7E'));
       $("*",han).each(function(){
-        inp += "&topic=" + $(this).attr('topic');
-        inp += "&" + this.nodeName + "=" + $(this).text();
+        inp.push("topic=" + $(this).attr('topic'));
+        inp.push(this.nodeName + "=" + $(this).text());
       });
       promises.push(
         $.ajax({
           type: "POST",
           url: url + "/notifications/subscriptions/",
-          data: inp
+          data: inp.join('&')
         })
       )
+    } else {
+      if ($("*",han).length == 0) {
+        $.ajax({
+          type: "DELETE",
+          url: url + "/notifications/subscriptions/" + vals[suburl],
+        })
+      } else {
+        var inp = [];
+        inp.push("url="+encodeURIComponent(suburl).replace(/~/,'%7E'));
+        $("*",han).each(function(){
+          inp.push("topic=" + $(this).attr('topic'));
+          inp.push(this.nodeName + "=" + $(this).text());
+        });
+        promises.push(
+          $.ajax({
+            type: "PUT",
+            url: url + "/notifications/subscriptions/" + vals[suburl],
+            data: inp.join('&')
+          })
+        )
+      }
     }
   });
   return Promise.all(promises);

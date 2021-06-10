@@ -94,13 +94,13 @@ if command == 'ui'
     s.start
   end
 elsif command == 'cpui'
-    if !File.exists?(p1)
-      FileUtils.cp_r(cockpit,p1)
-    else
-      FileUtils.cp_r(Dir.glob(File.join(cockpit,'*')).delete_if{|e| e =~ /\.json/ || e=~ /legacy/ })
-      puts "Directory already exists, updating ..."
-    end
-    js_libs(p1)
+  if !File.exists?(p1)
+    FileUtils.cp_r(cockpit,p1)
+  else
+    FileUtils.cp_r(Dir.glob(File.join(cockpit,'*')).delete_if{|e| e =~ /\.json/ || e=~ /legacy/ })
+    puts "Directory already exists, updating ..."
+  end
+  js_libs(p1)
 elsif command == 'convert'
   Dir['*.xml'].each do |f|
     XML::Smart.modify(f) do |doc|

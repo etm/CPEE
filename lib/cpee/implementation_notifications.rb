@@ -26,10 +26,10 @@ module CPEE
           end
           on resource "subscriptions" do
             run CPEE::Notifications::Subscriptions, id, opts if get
-            run CPEE::Notifications::CreateSubscription, id, opts if post 'subscribe'
+            run CPEE::Notifications::CreateSubscription, id, opts if post 'create_subscription'
             on resource do
               run CPEE::Notifications::Subscription, id, opts if get
-              run CPEE::Notifications::UpdateSubscription, id, opts if put 'subscribe'
+              run CPEE::Notifications::UpdateSubscription, id, opts if put 'change_subscription'
               run CPEE::Notifications::DeleteSubscription, id, opts if delete
               on resource 'sse' do
                 run CPEE::Notifications::SSE, id, opts if sse
@@ -121,8 +121,7 @@ module CPEE
         id = @a[0]
         opts = @a[1]
 
-        key = Digest::MD5.hexdigest(Kernel::rand().to_s)
-
+        key = @p[0].name == 'id' ? @p.shift.value : Digest::MD5.hexdigest(Kernel::rand().to_s)
         url = @p[0].name == 'url' ? @p.shift.value : nil
         values = []
         while @p.length > 0
