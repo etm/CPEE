@@ -1110,21 +1110,43 @@ async function load_des(url,model) { //{{{
     error: report_failure
   });
 } //}}}
+
+function load_testset_extract_handlers(inp,han,suburl) { //{{{
+  inp.push("url="+encodeURIComponent(suburl).replace(/~/,'%7E'));
+  $(">*",han).each(function(_,top){
+    let events = [];
+    let votes = [];
+    $(">*",top).each(function(_,it){
+      if (it.nodeName == 'event') {
+        events.push($(it).text());
+      }
+      if (it.nodeName == 'vote') {
+        votes.push($(it).text());
+      }
+    });
+    if (events.length > 0) {
+      inp.push("topic=" + $(top).attr('id'));
+      inp.push("events=" + events.join(','));
+    }
+    if (votes.length > 0) {
+      inp.push("topic=" + $(top).attr('id'));
+      inp.push("votes=" + votes.join(','));
+    }
+  });
+  return inp;
+} //}}}
+
 async function load_testset_handlers(url,testset,vals) {// {{{
   var promises = [];
   $("testset > subscriptions > *",testset).each(async function(){
-    var han = this;
-    var sid = $(han).attr('id');
-    var suburl = $(han).attr('url');
+    let han = this;
+    let sid = $(han).attr('id');
+    let suburl = $(han).attr('url');
     if (typeof(vals[suburl]) == 'undefined') {
       if ($("*",han).length > 0) {
-        var inp = [];
+        let inp = [];
         if (sid) { inp.push("id="+encodeURIComponent(sid)); }
-        inp.push("url="+encodeURIComponent(suburl).replace(/~/,'%7E'));
-        $("*",han).each(function(){
-          inp.push("topic=" + $(this).attr('topic'));
-          inp.push(this.nodeName + "=" + $(this).text());
-        });
+        inp = load_testset_extract_handlers(inp,han,suburl);
         promises.push(
           $.ajax({
             type: "POST",
@@ -1140,12 +1162,8 @@ async function load_testset_handlers(url,testset,vals) {// {{{
           url: url + "/notifications/subscriptions/" + vals[suburl],
         })
       } else {
-        var inp = [];
-        inp.push("url="+encodeURIComponent(suburl).replace(/~/,'%7E'));
-        $("*",han).each(function(){
-          inp.push("topic=" + $(this).attr('topic'));
-          inp.push(this.nodeName + "=" + $(this).text());
-        });
+        let inp = load_testset_extract_handlers([],han,suburl);
+        console.log(inp);
         promises.push(
           $.ajax({
             type: "PUT",
