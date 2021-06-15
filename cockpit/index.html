@@ -162,13 +162,19 @@
             <a id="savesvgfile" href="" download=""></a>
             <button title='a testset includes various settings, subscriptions and a model' name="savetestsetfile">save testset</button>
             <button title='a testset includes various settings, subscriptions and a model' name="savesvgfile">save svg graph</button>
-          </div><div class='section'>
-            <div>
-              Current model: <span id='currentmodel'></span>
-            </div>
-            <div>
-              <button title='a testset includes various settings, subscriptions and a model' name="loadmodeltype">set model type</button>
-            </div>
+          </div><div class='section' id='modifiers'>
+            <template id="item">
+            </template>
+              <div>
+                <h1>aaa<h1>
+                <select name="cars" id="cars">
+                  <option value="volvo">Volvo</option>
+                  <option value="saab">Saab</option>
+                  <option value="mercedes">Mercedes</option>
+                  <option value="audi">Audi</option>
+                </select>
+                <div class='additional'></div>
+              </div>
           </div>
         </ui-area> <!--}}}-->
         <ui-area data-belongs-to-tab="execution" id="areaexecution" class='inactive'> <!--{{{-->
