@@ -1,11 +1,11 @@
-<testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements/>
+  <endpoints>
+    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>
-  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <positions/>
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="timeout">
         <parameters>
@@ -33,16 +33,16 @@
       </call>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
-    <customer xmlns="http://riddl.org/ns/common-patterns/properties/1.0">pilotfabrik</customer>
-    <status xmlns="http://riddl.org/ns/common-patterns/properties/1.0">development</status>
+  <attributes>
+    <info/>
+    <modeltype>CPEE</modeltype>
+    <theme>preset</theme>
+    <customer>pilotfabrik</customer>
+    <status>development</status>
   </attributes>
 </testset>

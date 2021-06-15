@@ -1,14 +1,14 @@
-<testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
-    <bla xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements>
+    <bla/>
   </dataelements>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <worklist xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org:9398</worklist>
+  <endpoints>
+    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <worklist>http://cpee.org:9398</worklist>
   </endpoints>
-  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <positions/>
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="worklist">
         <parameters>
@@ -29,14 +29,19 @@
       </call>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">asda</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <organisation1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
+  <attributes>
+    <info>Worklist</info>
+    <modeltype>CPEE</modeltype>
+    <organisation1>http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
+    <theme>extended</theme>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <design_stage>development</design_stage>
+    <design_dir>Templates.dir</design_dir>
   </attributes>
 </testset>

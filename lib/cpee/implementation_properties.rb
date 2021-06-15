@@ -1,6 +1,19 @@
+# This file is part of CPEE.
+#
+# CPEE is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# CPEE (file COPYING in the main directory).  If not, see
+# <http://www.gnu.org/licenses/>.
+
 require_relative 'attributes_helper'
 require_relative 'value_helper'
-require_relative 'transform'
 require 'json'
 require 'erb'
 require 'yaml'
@@ -31,9 +44,9 @@ module CPEE
             run CPEE::Properties::GetStatusMessage, id, opts if get
           end
         end
-        on resource 'handlerwrapper' do
-          run CPEE::Properties::GetHandlerWrapper, id, opts if get
-          run CPEE::Properties::PutHandlerWrapper, id, opts if put 'handlerwrapper'
+        on resource 'executionhandler' do
+          run CPEE::Properties::GetExecutionHandler, id, opts if get
+          run CPEE::Properties::PutExecutionHandler, id, opts if put 'executionhandler'
         end
         on resource 'positions' do
           run CPEE::Properties::GetPositions, id, opts if get
@@ -128,8 +141,8 @@ module CPEE
           if (node = doc.find('/p:properties/p:status')).any?
             CPEE::Properties::PutStatus::set id, opts, node.first.dump
           end
-          if (node = doc.find('/p:properties/p:handlerwrapper')).any?
-            CPEE::Properties::PutHandlerWrapper::set id, opts, node.first.text
+          if (node = doc.find('/p:properties/p:executionhandler')).any?
+            CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text
           end
 
           %w{dataelements endpoints attributes}.each do |item|
@@ -169,8 +182,8 @@ module CPEE
           if (node = doc.find('/p:properties/p:status')).any?
             CPEE::Properties::PutStatus::set id, opts, node.first.dump
           end
-          if (node = doc.find('/p:properties/p:handlerwrapper')).any?
-            CPEE::Properties::PutHandlerWrapper::set id, opts, node.first.text
+          if (node = doc.find('/p:properties/p:executionhandler')).any?
+            CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text
           end
 
           %w{dataelements endpoints attributes}.each do |item|
@@ -211,19 +224,14 @@ module CPEE
       end
 
       def self::run(id,opts,state)
-        exe = File.join(opts[:instances],id.to_s,File.basename(opts[:backend_run]))
         case state
           when 'running'
-            CPEE::Persistence::write_instance id, opts
-            pid = Kernel.spawn(exe , :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
-            Process.detach pid
-            File.write(exe + '.pid',pid)
+            seh = Object.const_get('CPEE::ExecutionHandler::' + CPEE::Persistence::extract_item(id,opts,'executionhandler').capitalize)
+            seh::prepare(id,opts)
+            seh::run(id,opts)
           when 'stopping'
-            pid = File.read(exe + '.pid') rescue nil
-            if pid && (Process.kill(0, pid.to_i) rescue false)
-              Process.kill('HUP', pid.to_i) rescue nil
-            else
-              File.unlink(exe + '.pid') rescue nil
+            seh = Object.const_get('CPEE::ExecutionHandler::' + CPEE::Persistence::extract_item(id,opts,'executionhandler').capitalize)
+            if seh::stop(id,opts) # process is not running anyway, so change redis
               PutState::set id, opts, 'stopped'
             end
           else
@@ -302,16 +310,16 @@ module CPEE
         Riddl::Parameter::Simple.new('value',CPEE::Persistence::extract_item(id,opts,'status/message'))
       end
     end #}}}
-    class GetHandlerWrapper < Riddl::Implementation #{{{
+    class GetExecutionHandler < Riddl::Implementation #{{{
       def response
         id = @a[0]
         opts = @a[1]
-        Riddl::Parameter::Simple.new('value',CPEE::Persistence::extract_item(id,opts,'handlerwrapper'))
+        Riddl::Parameter::Simple.new('value',CPEE::Persistence::extract_item(id,opts,'executionhandler'))
       end
     end #}}}
-    class PutHandlerWrapper < Riddl::Implementation #{{{
+    class PutExecutionHandler < Riddl::Implementation #{{{
       def self::set(id,opts,hw)
-        CPEE::Persistence::set_item(id,opts,'handlerwrapper',:handlerwrapper => hw)
+        CPEE::Persistence::set_item(id,opts,'executionhandler',:executionhandler => hw)
       end
       def response
         id = @a[0]
@@ -319,7 +327,7 @@ module CPEE
         if opts[:statemachine].readonly? id
           @status = 423
         else
-          PutHandlerWrapper::set(id,opts,@p[0].value)
+          PutExecutionHandler::set(id,opts,@p[0].value)
         end
         nil
       end
@@ -633,8 +641,103 @@ module CPEE
     end #}}}
 
     class PutDescription < Riddl::Implementation #{{{
+      def self::transform(descxml,tdesc,tdesctype,tdata,tdatatype,tendp,tendptype,hw,opts) #{{{
+        desc = XML::Smart::string(descxml)
+        desc.register_namespace  'p', 'http://cpee.org/ns/description/1.0'
+
+        dslx = nil
+        dsl = nil
+        de = {}
+        ep = {}
+
+        if desc.root.children.empty?
+          tdesctype = tdatatype = tendptype = 'clean'
+        end
+
+        ### description transformation, including dslx to dsl
+        addit = if tdesctype == 'copy' || tdesc.empty?
+          desc
+        elsif tdesctype == 'rest' && !tdesc.empty?
+          srv = Riddl::Client.interface(tdesc,opts[:transformation_service])
+          status, res = srv.post [
+            Riddl::Parameter::Complex.new("description","text/xml",descxml),
+            Riddl::Parameter::Simple.new("type","description")
+          ]
+          if status >= 200 && status < 300
+            XML::Smart::string(res[0].value.read).root
+          else
+            raise 'Could not extract dslx'
+          end
+        elsif tdesctype == 'xslt' && !tdesc.empty?
+          trans = XML::Smart::open_unprotected(tdesc)
+          desc.transform_with(trans).root
+        elsif tdesctype == 'clean'
+          XML::Smart::open_unprotected(opts[:empty_dslx]).root
+        else
+          nil
+        end
+        unless addit.nil?
+          dslx = addit.to_s
+          dsl = Object.const_get('CPEE::ExecutionHandler::' + hw.capitalize)::dslx_to_dsl(addit)
+        end
+
+        ### dataelements extraction
+        addit = if tdatatype == 'rest' && !tdata.empty?
+          srv = Riddl::Client.interface(tdata,@opts[:transformation_service])
+          status, res = srv.post [
+            Riddl::Parameter::Complex.new("description","text/xml",descxml),
+            Riddl::Parameter::Simple.new("type","dataelements")
+          ]
+          if status >= 200 && status < 300
+            res
+          else
+            raise 'Could not extract dataelements'
+          end
+        elsif tdatatype == 'xslt' && !tdata.empty?
+          trans = XML::Smart::open_unprotected(tdata)
+          desc.transform_with(trans)
+        elsif tdatatype == 'clean'
+          []
+        else
+          nil
+        end
+        unless addit.nil?
+          addit.each_slice(2).each do |k,v|
+            de[k.value.to_sym] = v.value
+          end
+        end
+
+        ### endpoints extraction
+        addit = if tendptype == 'rest' && !tdata.empty?
+          srv = Riddl::Client.interface(tendp,@opts[:transformation_service])
+          status, res = srv.post [
+            Riddl::Parameter::Complex.new("description","text/xml",descxml),
+            Riddl::Parameter::Simple.new("type","endpoints")
+          ]
+          if status >= 200 && status < 300
+            res
+          else
+            raise 'Could not extract endpoints'
+          end
+        elsif tendptype == 'xslt' && !tdata.empty?
+          trans = XML::Smart::open_unprotected(tendp.text)
+          desc.transform_with(trans)
+        elsif tendptype == 'clean'
+          []
+        else
+          nil
+        end
+        unless addit.nil?
+          addit.each_slice(2).each do |k,v|
+            ep[k.value.to_sym] = v.value
+          end
+        end
+
+        [dslx, dsl, de, ep]
+      end #}}}
+
       def self::set(id,opts,xml)
-        dslx, dsl, de, ep = transform(
+        dslx, dsl, de, ep = PutDescription::transform(
           xml,
           CPEE::Persistence::extract_item(id,opts,'transformation/description'),
           CPEE::Persistence::extract_item(id,opts,'transformation/description/@type'),
@@ -642,6 +745,7 @@ module CPEE
           CPEE::Persistence::extract_item(id,opts,'transformation/dataelements/@type'),
           CPEE::Persistence::extract_item(id,opts,'transformation/endpoints'),
           CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type'),
+          CPEE::Persistence::extract_item(id,opts,'executionhandler'),
           opts
         )
         CPEE::Persistence::set_item(id,opts,'description',

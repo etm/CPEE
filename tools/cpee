@@ -94,13 +94,13 @@ if command == 'ui'
     s.start
   end
 elsif command == 'cpui'
-    if !File.exists?(p1)
-      FileUtils.cp_r(cockpit,p1)
-    else
-      FileUtils.cp_r(Dir.glob(File.join(cockpit,'*')),p1,remove_destination: true)
-      puts "Directory already exists, updating ..."
-    end
-    js_libs(p1)
+  if !File.exists?(p1)
+    FileUtils.cp_r(cockpit,p1)
+  else
+    FileUtils.cp_r(Dir.glob(File.join(cockpit,'*')).delete_if{|e| e =~ /\.json/ || e=~ /legacy/ },p1,remove_destination: true)
+    puts "Directory already exists, updating ..."
+  end
+  js_libs(p1)
 elsif command == 'convert'
   Dir['*.xml'].each do |f|
     XML::Smart.modify(f) do |doc|
@@ -111,11 +111,17 @@ elsif command == 'convert'
         doc.root.namespaces[nil] = 'http://cpee.org/ns/properties/2.0'
         doc.root.namespace = nil
 
+        doc.find('//x:handlerwrapper').each do |e|
+          if e.text == 'DefaultHandlerWrapper'
+            doc.root.prepend('x:executionhandler','ruby')
+          end
+        end rescue nil
+        doc.find('//x:handlerwrapper').delete_all!
         doc.find('//x:start_url').each do |e|
-          e.text = 'https://centurio.work/flow-test/start/url/'
+          e.text = 'https://cpee.org/flow/start/url/'
         end rescue nil
         doc.find('//x:start_git').each do |e|
-          e.text = 'https://centurio.work/flow-test/start/git/'
+          e.text = 'https://cpee.org/flow/start/git/'
         end rescue nil
         doc.find('//d:finalize | //d:update | //d:prepare | //d:rescue').each do |e|
           if e.parent.qname.name != 'code'
@@ -257,7 +263,7 @@ elsif command == 'new'
     FileUtils.mkdir("#{p1}/archive") rescue nil
     FileUtils.mkdir("#{p1}/instances") rescue nil
     FileUtils.mkdir("#{p1}/resources") rescue nil
-    FileUtils.mkdir("#{p1}/handlerwrappers") rescue nil
+    FileUtils.mkdir("#{p1}/executionhandler") rescue nil
     Dir["#{curpath}/../systemd/*.service"].each do |f|
       nam =  File.basename f
       cont = File.read(f)

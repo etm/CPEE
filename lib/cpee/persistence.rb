@@ -15,33 +15,6 @@
 module CPEE
 
   module Persistence
-    def self::write_instance(id,opts) #{{{
-      Dir.mkdir(File.join(opts[:instances],id.to_s)) rescue nil
-      FileUtils.copy(opts[:backend_run],File.join(opts[:instances],id.to_s))
-      dsl = CPEE::Persistence::extract_item(id,opts,'dsl')
-      hw = CPEE::Persistence::extract_item(id,opts,'handlerwrapper')
-      endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
-      dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
-      positions = CPEE::Persistence::extract_set(id,opts,'positions')
-      positions.map! do |k, v|
-        [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
-      end
-      File.open(File.join(opts[:instances],id.to_s,opts[:backend_opts]),'w') do |f|
-        YAML::dump({
-          :host => opts[:host],
-          :url => opts[:url],
-          :redis_url => opts[:redis_url],
-          :redis_path => File.join(opts[:basepath],opts[:redis_path]),
-          :redis_db => opts[:redis_db],
-          :global_handlerwrappers => opts[:global_handlerwrappers],
-          :handlerwrappers => opts[:handlerwrappers]
-        },f)
-      end
-      template = ERB.new(File.read(opts[:backend_template]), trim_mode: '-')
-      res = template.result_with_hash(dsl: dsl, handlerwrapper: hw, dataelements: dataelements, endpoints: endpoints, positions: positions)
-      File.write(File.join(opts[:instances],id.to_s,opts[:backend_instance]),res)
-    end #}}}
-
     def self::set_list(id,opts,item,values,deleted=[]) #{{{
       ah = AttributesHelper.new
       attributes = Persistence::extract_list(id,opts,'attributes').to_h

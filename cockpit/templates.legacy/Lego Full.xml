@@ -1,12 +1,12 @@
-<testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements>
   </dataelements>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <deploy xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://coruscant.wst.univie.ac.at:9296/url</deploy>
+  <endpoints>
+    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <deploy>http://coruscant.wst.univie.ac.at:9296/url</deploy>
   </endpoints>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <loop mode="pre_test" condition="true">
         <parallel wait="-1">
@@ -129,14 +129,14 @@
       </loop>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Super_Lego</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
+  <attributes>
+    <info>Super_Lego</info>
+    <modeltype>CPEE</modeltype>
+    <theme>preset</theme>
   </attributes>
 </testset>

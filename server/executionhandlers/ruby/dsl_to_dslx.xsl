@@ -4,24 +4,27 @@
   <xsl:strip-space elements="*"/>
   <xsl:variable name="myspacemultiplier">2</xsl:variable>
   <xsl:template match="/">
+    <xsl:text>control flow do</xsl:text>
+    <xsl:call-template name="print-newline"/>
     <xsl:apply-templates select="//d:description"/>
+    <xsl:text>end</xsl:text>
   </xsl:template>
   <xsl:template match="//d:description">
     <xsl:apply-templates>
       <xsl:with-param name="myspace">
-        <xsl:value-of select="-1*$myspacemultiplier"/>
+        <xsl:value-of select="0*$myspacemultiplier"/>
       </xsl:with-param>
     </xsl:apply-templates>
   </xsl:template>
   <xsl:template match="*">
     <xsl:param name="myspace"/>
-    <xsl:call-template name="print-space">
-      <xsl:with-param name="i">1</xsl:with-param>
-      <xsl:with-param name="count">
-        <xsl:value-of select="$myspace+$myspacemultiplier"/>
-      </xsl:with-param>
-    </xsl:call-template>
     <xsl:if test="name()='call' or name()='manipulate'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:value-of select="name()"/>
       <xsl:text> :</xsl:text>
       <xsl:value-of select="@id"/>
@@ -94,22 +97,46 @@
           <xsl:value-of select="$myspace"/>
         </xsl:with-param>
       </xsl:call-template>
-      <xsl:call-template name="print-newline"/>
+      <xsl:call-template name="print-newline"></xsl:call-template>
     </xsl:if>
     <xsl:if test="name()='terminate'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>terminate</xsl:text>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='stop'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>stop :</xsl:text>
       <xsl:value-of select="@id"/>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='escape'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>escape</xsl:text>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='parallel'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>parallel</xsl:text>
       <xsl:if test="@wait">
         <xsl:text> :wait =&gt; </xsl:text>
@@ -136,6 +163,12 @@
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='loop'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>loop </xsl:text>
       <xsl:if test="@mode='pre_test'">
         <xsl:choose>
@@ -189,6 +222,12 @@
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='choose'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>choose </xsl:text>
       <xsl:choose>
         <xsl:when test="@mode='exclusive'">
@@ -223,6 +262,12 @@
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='critical'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
       <xsl:text>critical :</xsl:text>
       <xsl:value-of select="@sid"/>
       <xsl:text> do</xsl:text>

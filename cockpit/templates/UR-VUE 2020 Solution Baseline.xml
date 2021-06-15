@@ -1,8 +1,8 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
   <dataelements>
     <places>[[0,0],[1,0],[0,1],[1,1],[0,2],[1,2],[0,3],[1,3],[0,4],[1,4],[0,5],[1,5]]</places>
   </dataelements>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <handlers>
     <handler url="http://tango.wst.univie.ac.at:9332">
       <votes topic="state">change</votes>
@@ -202,6 +202,6 @@ data.item['y'] = data.items.first['y'] + data.item['adjust_y']</finalize>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <design_stage>development</design_stage>
-    <design_dir>/home/demo/Projects/cpee/cockpit/templates</design_dir>
+    <design_dir>Templates.dir</design_dir>
   </attributes>
 </testset>

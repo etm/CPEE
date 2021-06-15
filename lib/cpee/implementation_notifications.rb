@@ -1,3 +1,17 @@
+# This file is part of CPEE.
+#
+# CPEE is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# CPEE (file COPYING in the main directory).  If not, see
+# <http://www.gnu.org/licenses/>.
+
 require 'json'
 
 module CPEE
@@ -12,10 +26,10 @@ module CPEE
           end
           on resource "subscriptions" do
             run CPEE::Notifications::Subscriptions, id, opts if get
-            run CPEE::Notifications::CreateSubscription, id, opts if post 'subscribe'
+            run CPEE::Notifications::CreateSubscription, id, opts if post 'create_subscription'
             on resource do
               run CPEE::Notifications::Subscription, id, opts if get
-              run CPEE::Notifications::UpdateSubscription, id, opts if put 'subscribe'
+              run CPEE::Notifications::UpdateSubscription, id, opts if put 'change_subscription'
               run CPEE::Notifications::DeleteSubscription, id, opts if delete
               on resource 'sse' do
                 run CPEE::Notifications::SSE, id, opts if sse
@@ -78,7 +92,8 @@ module CPEE
             ret = XML::Smart::string <<-END
               <subscription xmlns='http://riddl.org/ns/common-patterns/notifications-producer/2.0'/>
             END
-            url = CPEE::Persistence::extract_item(id,opts,File.join('handler',key,'url'))
+            url = CPEE::Persistence::extract_item(id,opts,File.join('handlers',key,'url'))
+            ret.root.attributes['id'] = key
             ret.root.attributes['url'] = url if url && !url.empty?
             items = {}
             CPEE::Persistence::extract_handler(id,opts,key).each do |h|
@@ -107,8 +122,7 @@ module CPEE
         id = @a[0]
         opts = @a[1]
 
-        key = Digest::MD5.hexdigest(Kernel::rand().to_s)
-
+        key = @p[0].name == 'id' ? @p.shift.value : Digest::MD5.hexdigest(Kernel::rand().to_s)
         url = @p[0].name == 'url' ? @p.shift.value : nil
         values = []
         while @p.length > 0

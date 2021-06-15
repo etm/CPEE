@@ -63,7 +63,7 @@
     <parameter name="value" type="string"/>
   </message> <!--}}}-->
 
-  <message name="handlerwrapper"> <!--{{{-->
+  <message name="executionhandler"> <!--{{{-->
     <parameter name="value" type="string">
       <param name="pattern">[A-Z][a-zA-Z]*</param>
     </parameter>
@@ -165,9 +165,9 @@
         <get out="string"/>
       </resource>
     </resource> <!--}}}-->
-    <resource relative="handlerwrapper"> <!--{{{-->
-      <put in="handlerwrapper"/>
-      <get out="handlerwrapper"/>
+    <resource relative="executionhandler"> <!--{{{-->
+      <put in="executionhandler"/>
+      <get out="executionhandler"/>
     </resource> <!--}}}-->
     <resource relative="positions"> <!--{{{-->
       <get out="positions"/>

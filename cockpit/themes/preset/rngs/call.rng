@@ -25,19 +25,28 @@
         </element>
       </zeroOrMore>
     </element>
-    <element name="stream" rngui:header="Data Stream Handling" rngui:fold="closed">
+    <element name="_context_data_analysis" rngui:header="Context Data Analysis" rngui:hint="All data returned from the endpoint implementing this task as well as arbitray external data streams can be consumed and transformed in data probes. All probes can be the basis for impact factors. Please go to start to define instance data probes.">
 
-      <element name="sensors" rngui:header="Sensor Data Streams" rngui:fold="closed">
-        <zeroOrMore rngui:label="Add Sensor">
-          <element name="sensor">
+      <element name="probes" rngui:header="Data Probes - Context Data Extraction" rngui:fold="closed">
+        <zeroOrMore rngui:label="Add Probe">
+          <element name="probe">
             <element name="name" rngui:label="Label">
               <data type="string" rngui:label="Label"/>
             </element>
-            <element name="extractor_url" rngui:label="Extractor Url">
+            <element name="extractor_type" rngui:label="Extractor Type">
+              <choice>
+                <value id='code'>Code</value>
+                <value id='service'>Service</value>
+              </choice>
+            </element>
+            <element name="extractor_code" rngui:label="Extractor Code" rngui:hint='For extrinsic data'>
+              <text rngui:label="Code"/>
+            </element>
+            <element name="extractor_url" rngui:label="Extractor Service" rngui:hint='For extrinsic &amp; discrete data'>
               <data type="string" rngui:label="Service Url"/>
             </element>
-            <element name="extractor_params" rngui:label="Extractor Arguments:">
-              <zeroOrMore rngui:label="Create Extractor Argument Pairs">
+            <element name="extractor_params" rngui:label="Extractor Service Arguments:">
+              <zeroOrMore rngui:label="Create Argument Pairs">
                 <element rngui:label="Name">
                   <anyName/>
                   <data type="string" rngui:label="Value / Json"/>
@@ -48,7 +57,7 @@
               <data type="string" rngui:label="Service Url"/>
             </element>
             <element name="visualizer_params" rngui:label="Visualizer Arguments">
-              <zeroOrMore rngui:label="Create Visualizer Argument Pairs">
+              <zeroOrMore rngui:label="Create Argument Pairs">
                 <element rngui:label="Name">
                   <anyName/>
                   <data type="string" rngui:label="Value / Json"/>

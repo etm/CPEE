@@ -1,7 +1,8 @@
 <svg class="clickable" xmlns="http://www.w3.org/2000/svg">
   <rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="cline hfill stand"/>
-  <circle cx="15.5" cy="15.5" r="7" class="stand"/>
-  <circle cx="15.5" cy="15.5" r="7" class="stand"/>
-  <text transform="translate(15,25)" class="normallarge">+</text>
+  <circle cx="15.5" cy="15.5" r="8" class="standthin"/>
+  <circle cx="15.5" cy="15.5" r="6" class="standthin"/>
+  <line x1="12.5" y1="15.5" x2="18.5" y2="15.5" class="stand"/>
+  <line x1="15.5" y1="12.5" x2="15.5" y2="18.5" class="stand"/>
 </svg>
 

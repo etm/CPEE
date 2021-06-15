@@ -1,15 +1,15 @@
-<testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <klaueauf xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/klaue/auf</klaueauf>
-    <klauezu xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/klaue/zu</klauezu>
-    <plate xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/goto/plate</plate>
-    <goexit xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://ejector.wst.univie.ac.at:9200/goto/exit</goexit>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements/>
+  <endpoints>
+    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <klaueauf>http://ejector.wst.univie.ac.at:9200/klaue/auf</klaueauf>
+    <klauezu>http://ejector.wst.univie.ac.at:9200/klaue/zu</klauezu>
+    <plate>http://ejector.wst.univie.ac.at:9200/goto/plate</plate>
+    <goexit>http://ejector.wst.univie.ac.at:9200/goto/exit</goexit>
   </endpoints>
-  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <positions/>
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="plate">
         <parameters>
@@ -41,15 +41,15 @@
       </call>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">asda</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
+  <attributes>
+    <info>asda</info>
+    <modeltype>CPEE</modeltype>
+    <theme>preset</theme>
     <bc>operate</bc>
   </attributes>
 </testset>

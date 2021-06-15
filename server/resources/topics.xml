@@ -52,9 +52,9 @@
   <topic id='attributes'>
     <event>change</event>
   </topic>
-  <topic id='handlerwrapper'>
-    <event>error</event>
+  <topic id='executionhandler'>
     <event>change</event>
+    <event>error</event>
   </topic>
   <topic id='transformation'>
     <event>change</event>

@@ -1,13 +1,13 @@
-<testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0"/>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <dispense xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://transporter.wst.univie.ac.at:9200/dispense</dispense>
-    <stein xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://transporter.wst.univie.ac.at:9200/stein</stein>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements/>
+  <endpoints>
+    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <dispense>http://transporter.wst.univie.ac.at:9200/dispense</dispense>
+    <stein>http://transporter.wst.univie.ac.at:9200/stein</stein>
   </endpoints>
-  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <positions/>
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="stein">
         <parameters>
@@ -29,15 +29,15 @@
       </call>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">s</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <theme xmlns="http://riddl.org/ns/common-patterns/properties/1.0">preset</theme>
+  <attributes>
+    <info>s</info>
+    <modeltype>CPEE</modeltype>
+    <theme>preset</theme>
     <bc>start</bc>
   </attributes>
 </testset>

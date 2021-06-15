@@ -28,7 +28,7 @@ module CPEE
 
   SERVER = File.expand_path(File.join(__dir__,'..','cpee.xml'))
   PROPERTIES_PATHS_FULL = %w{
-    /p:properties/p:handlerwrapper
+    /p:properties/p:executionhandler
     /p:properties/p:positions/p:*
     /p:properties/p:positions/p:*/@*
     /p:properties/p:dataelements/p:*
@@ -54,22 +54,17 @@ module CPEE
   }
   def self::implementation(opts)
     opts[:instances]                  ||= File.expand_path(File.join(__dir__,'..','..','server','instances'))
-    opts[:global_handlerwrappers]     ||= File.expand_path(File.join(__dir__,'..','..','server','handlerwrappers'))
-    opts[:handlerwrappers]            ||= ''
+    opts[:global_executionhandlers]   ||= File.expand_path(File.join(__dir__,'..','..','server','executionhandlers'))
+    opts[:executionhandlers]          ||= ''
     opts[:topics]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','topics.xml'))
     opts[:properties_init]            ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.init'))
     opts[:properties_empty]           ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.empty'))
-    opts[:transformation_dslx]        ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation_dslx.xsl'))
     opts[:transformation_service]     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation.xml'))
     opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
     opts[:notifications_init]         ||= File.expand_path(File.join(__dir__,'..','..','server','resources','notifications'))
     opts[:states]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','states.xml'))
-    opts[:backend_run]                ||= File.expand_path(File.join(__dir__,'..','..','server','resources','backend','run'))
-    opts[:backend_template]           ||= File.expand_path(File.join(__dir__,'..','..','server','resources','backend','instance.template'))
-    opts[:backend_opts]               ||= 'opts.yaml'
     opts[:watchdog_frequency]         ||= 7
     opts[:watchdog_start_off]         ||= false
-    opts[:backend_instance]           ||= 'instance.rb'
     opts[:infinite_loop_stop]         ||= 10000
 
     ### set redis_cmd to nil if you want to do global
@@ -100,6 +95,13 @@ module CPEE
     ]
 
     Proc.new do
+      Dir[File.join(opts[:global_executionhandlers],'*','execution.rb')].each do |h|
+        require h
+      end unless opts[:global_executionhandlers].nil? || opts[:global_executionhandlers].strip == ''
+      Dir[File.join(opts[:executionhandlers],'*','execution.rb')].each do |h|
+        require h
+      end unless opts[:executionhandlers].nil? || opts[:executionhandlers].strip == ''
+
       parallel do
         CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],File.join(opts[:basepath],opts[:redis_path]),opts[:redis_db])
         EM.add_periodic_timer(opts[:watchdog_frequency]) do ### start services

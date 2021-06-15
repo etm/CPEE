@@ -1,17 +1,17 @@
-<testset>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
-    <bla xmlns="http://riddl.org/ns/common-patterns/properties/1.0"/>
-    <a xmlns="http://riddl.org/ns/common-patterns/properties/1.0">1</a>
-    <b xmlns="http://riddl.org/ns/common-patterns/properties/1.0">1</b>
-    <c xmlns="http://riddl.org/ns/common-patterns/properties/1.0">1</c>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements>
+    <bla/>
+    <a>1</a>
+    <b>1</b>
+    <c>1</c>
   </dataelements>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
-    <timeout xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <worklist xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://solo.wst.univie.ac.at:9302</worklist>
+  <endpoints>
+    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <worklist>http://solo.wst.univie.ac.at:9302</worklist>
   </endpoints>
-  <positions xmlns="http://cpee.org/ns/properties/2.0"/>
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <positions/>
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <parallel>
         <parallel_branch>
@@ -91,14 +91,14 @@
       </call>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">asda</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
-    <organisation1 xmlns="http://riddl.org/ns/common-patterns/properties/1.0">http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
+  <attributes>
+    <info>asda</info>
+    <modeltype>CPEE</modeltype>
+    <organisation1>http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
   </attributes>
 </testset>

@@ -1,8 +1,8 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
   <dataelements>
     <time>15</time>
   </dataelements>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
   </endpoints>

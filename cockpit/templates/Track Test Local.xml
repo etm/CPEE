@@ -1,10 +1,10 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
   <dataelements>
     <i>0</i>
   </dataelements>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
-    <start_url>http://localhost:9296/url/</start_url>
+    <start_url>https://cpee.org/flow/start/url/</start_url>
   </endpoints>
   <positions/>
   <description>
@@ -81,6 +81,6 @@
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <design_stage>development</design_stage>
-    <design_dir>/home/demo/Projects/cpee/cockpit/templates</design_dir>
+    <design_dir>Templates.dir</design_dir>
   </attributes>
 </testset>

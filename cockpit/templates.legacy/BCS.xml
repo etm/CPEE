@@ -1,21 +1,19 @@
-<testset>
-  <attributes xmlns="http://cpee.org/ns/properties/2.0">
-    <info xmlns="http://riddl.org/ns/common-patterns/properties/1.0">Linear</info>
-    <modeltype xmlns="http://riddl.org/ns/common-patterns/properties/1.0">CPEE</modeltype>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <attributes>
+    <info>Linear</info>
+    <modeltype>CPEE</modeltype>
     <theme>preset</theme>
     <bc>start</bc>
   </attributes>
-  <handlerwrapper xmlns="http://cpee.org/ns/properties/2.0">DefaultHandlerWrapper</handlerwrapper>
-  <dataelements xmlns="http://cpee.org/ns/properties/2.0">
+  <dataelements>
     <x/>
   </dataelements>
-  <!--}}}-->
   <handlers/>
-  <endpoints xmlns="http://cpee.org/ns/properties/2.0">
+  <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
   </endpoints>
-  <!--}}}-->
-  <description xmlns="http://cpee.org/ns/properties/2.0">
+  <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <!--{{{-->
       <call id="a1" endpoint="timeout">
@@ -62,7 +60,7 @@
       </call>
     </description>
   </description>
-  <transformation xmlns="http://cpee.org/ns/properties/2.0">
+  <transformation>
     <description type="copy"/>
     <dataelements type="rest"/>
     <endpoints type="rest"/>

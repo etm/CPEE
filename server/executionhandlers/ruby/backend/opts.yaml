@@ -2,5 +2,5 @@
 :url: http://localhost:8298/
 :redis_path: /tmp/redis.sock
 :redis_db: 3
-:handlerwrappers: ../../handlerwrappers/
-
+:executionhandlers: ../../executionhandlers/
+:executionhandler: ruby

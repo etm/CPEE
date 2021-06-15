@@ -559,6 +559,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(root.tagName == 'description') { // First parsing {{{
       pos.row++;
       $(root).attr('svg-id','description');
+      $(root).attr('svg-type','description');
+      $(root).attr('svg-subtype','description');
       group.attr('element-id','group-description');
       if (illustrator.elements[sname].label) {
         labels.push({row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)});

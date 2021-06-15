@@ -1,0 +1,7 @@
+{
+  "log-url": "https://cpee.org/logs/",
+  "templates-url": "https://cpee.org/design/server/Templates.dir/?stage=developm
+  "res-url": "https://cpee.org/flow/resources/",
+  "base-url": "https://cpee.org/flow/engine/",
+  "save-url": "https://cpee.org/design/server/"
+}

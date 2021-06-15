@@ -481,8 +481,12 @@ function WFAdaptorManifestation(adaptor) {
       'endnodes': 'this',
       'svg': self.adaptor.theme_dir + 'symbols/parallel.svg',
       'resolve_symbol': function(node) {
-        if($(node).attr('wait') == '-1') {
+        if($(node).attr('cancel') == 'last' && $(node).attr('wait') == '-1') {
           return 'parallel_simple';
+        } else if($(node).attr('cancel') == 'first' && $(node).attr('wait') == '-1') {
+          return 'parallel_event_all';
+        } else if($(node).attr('cancel') == 'first' && $(node).attr('wait') == '1') {
+          return 'parallel_event_one';
         } else {
           return 'parallel_complex';
         }
@@ -849,7 +853,16 @@ function WFAdaptorManifestation(adaptor) {
       'col_shift': function(node) {
         return true;
       },
-      'svg': self.adaptor.theme_dir + 'symbols/parallel.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/parallel.svg',
+      'resolve_symbol': function(node) {
+        if($(node).attr('cancel') == 'last') {
+          return 'parallel_start';
+        } else if($(node).attr('cancel') == 'first' && $(node).attr('wait') == 1) {
+          return 'parallel_eventbased_exclusive';
+        } else {
+          return 'parallel_eventbased_parallel';
+        }
+      },
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/parallel.rng',
     'permissible_children': function(node,mode) { //{{{
@@ -1142,7 +1155,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'svg': self.adaptor.theme_dir + 'symbols/start.svg'
     },//}}}
-    'description': null,
+    'description': self.adaptor.theme_dir + 'rngs/start.rng',
     'permissible_children': function(node,mode) { //{{{
       var func = null;
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
@@ -1276,6 +1289,24 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
     },//}}}
   };  /*}}}*/
+  this.elements.parallel_start = { /*{{{*/
+    'parent': 'parallel',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/parallel.svg'
+    }//}}}
+  };  /*}}}*/
+  this.elements.parallel_eventbased_exclusive = { /*{{{*/
+    'parent': 'parallel',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_eventbased_exclusive.svg'
+    }//}}}
+  }; /*}}}*/
+  this.elements.parallel_eventbased_parallel = { /*{{{*/
+    'parent': 'parallel',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_eventbased_parallel.svg'
+    }//}}}
+  }; /*}}}*/
   this.elements.parallel_simple = { /*{{{*/
     'parent': 'parallel_finish',
     'illustrator': {//{{{
@@ -1288,6 +1319,18 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/complex.svg'
     },//}}}
   };  /*}}}*/
+  this.elements.parallel_event_all = { /*{{{*/
+    'parent': 'parallel_finish',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_eventbased_parallel.svg'
+    }//}}}
+  }; /*}}}*/
+  this.elements.parallel_event_one = { /*{{{*/
+    'parent': 'parallel_finish',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/parallel_eventbased_exclusive.svg'
+    }//}}}
+  }; /*}}}*/
   this.elements.parallel_branch_normal = { /*{{{*/
     'parent': 'parallel_branch',
     'illustrator': {//{{{

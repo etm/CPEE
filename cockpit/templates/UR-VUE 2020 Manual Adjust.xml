@@ -1,6 +1,6 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
   <dataelements/>
-  <handlerwrapper>DefaultHandlerWrapper</handlerwrapper>
   <endpoints>
     <overview>http-put://ryloth.wst.univie.ac.at:9329/move/overview</overview>
     <move_tool>http-put://ryloth.wst.univie.ac.at:9329/move/position/point</move_tool>
@@ -181,6 +181,6 @@ data.item['adjust_y'] = (data.direction_first['y'] + data.direction_second['y'])
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <design_stage>development</design_stage>
-    <design_dir>/home/demo/Projects/cpee/cockpit/templates</design_dir>
+    <design_dir>Templates.dir</design_dir>
   </attributes>
 </testset>

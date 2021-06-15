@@ -108,6 +108,17 @@ svg .stand {
   stroke-opacity:1;
   stroke-dasharray:none;
 }
+svg .standthin {
+  fill: var(--wfadaptor-background);
+  fill-opacity:1;
+  stroke: var(--wfadaptor-base);
+  stroke-width:1.0;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
 svg .standfat {
   fill: var(--wfadaptor-background);
   fill-opacity:1;
