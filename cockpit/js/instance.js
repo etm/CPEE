@@ -95,6 +95,7 @@ function cockpit() { //{{{
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=testsetfile]").change(load_testsetfile_after);
   $("input[name=modelfile]").change(load_modelfile_after);
+  $("#modifiers").on('change','div.select select',modifiers_update);
 
   $.ajax({
     url: $('body').attr('current-templates'),
@@ -276,7 +277,8 @@ function sse() { //{{{
             break;
           case 'attributes':
             monitor_instance_values("attributes");
-            display_modifiers();
+            modifiers_display();
+            modifiers_select();
             if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
               if (save['graph_theme'] != data.content.values.theme) {
                 monitor_graph_change(true);
@@ -315,7 +317,8 @@ function sse() { //{{{
   monitor_instance_values("attributes");
   monitor_instance_dsl();
   monitor_instance_state();
-  display_modifiers();
+  modifiers_display();
+  modifiers_select();
 } //}}}
 
 function monitor_instance(cin,rep,load,exec) {// {{{
@@ -1365,7 +1368,7 @@ function append_to_log(what,type,message) {//{{{
   }
 }//}}}
 
-function display_modifiers() {
+function modifiers_display() {
   var rep = $('body').attr('current-resources');
   $('#modifiers > div').remove();
 
@@ -1377,11 +1380,11 @@ function display_modifiers() {
           url: rep + 'modifiers/' + $(r).text(),
           success: function(ses) {
             var clone = document.importNode(document.querySelector('#modifiers template').content,true);
-            $('strong',clone).text(decodeURIComponent($(r).text()));
+            $('div.title *',clone).text(decodeURIComponent($(r).text()));
             $('resource',ses).each(function(_,s) {
               let opt = $('<option/>');
               opt.text(decodeURIComponent($(s).text()));
-              $('select',clone).append(opt);
+              $('div.select select',clone).append(opt);
             });
             $(clone).insertBefore($('#modifiers template'));
           }
@@ -1389,6 +1392,17 @@ function display_modifiers() {
       });
     }
   });
+}
+
+function modifiers_select() {
+  // check condition and against attributes
+  console.log('bbb');
+}
+
+function modifiers_update() {
+  // when change path
+  // unpach from what changed
+  // show ui
 }
 
 function report_failure(){}
