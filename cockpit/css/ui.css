@@ -129,11 +129,13 @@ ui-tabbed ui-tabbar ui-behind button {
 #areaendpoints button.relaxngui_control { display: none; }
 #areaattributes button.relaxngui_control { display: none; }
 
+#areainstance                          { height: 100%; }
+#areainstance > div                    { display: flex; height: 100%; }
 #areainstance input[type=file]         { display: none; }
-#areainstance div.section              { display: table-cell; vertical-align: middle; }
-#areainstance div.section:nth-child(1) {                                                  padding: 0 0.5em 0 0; white-space: nowrap; }
-#areainstance div.section:nth-child(2) { border-left: 1px solid var(--x-ui-border-color); padding: 0 0.5em;     white-space: nowrap; }
-#areainstance div.section:nth-child(3) { border-left: 1px solid var(--x-ui-border-color); padding: 0 0 0 0.5em; white-space: nowrap; }
+#areainstance div.section              { vertical-align: middle; height: 100%; }
+#areainstance div.section:nth-child(1) { flex: 0 0 auto;                                                  padding: 0 0.5em 0 0; white-space: nowrap; }
+#areainstance div.section:nth-child(2) { flex: 0 0 auto; border-left: 1px solid var(--x-ui-border-color); padding: 0 0.5em;     white-space: nowrap; }
+#areainstance div.section:nth-child(3) { flex: 1 1 auto; border-left: 1px solid var(--x-ui-border-color); padding: 0 0 0 0.5em; white-space: nowrap; }
 
 #areainstance div.section:nth-child(1) > div:nth-child(2)             { white-space: normal; text-align: right; }
 
@@ -144,9 +146,14 @@ ui-tabbed ui-tabbar ui-behind button {
 #areainstance div.section:nth-child(1) button[name=loadtestsetfile] { white-space: normal; width: 10em; height: 3.5em; margin-left: 0.2em; }
 #areainstance div.section:nth-child(1) button[name=loadmodelfile]   { white-space: normal; width: 10em; height: 2em;   margin-top: 0.2em; }
 
-#areainstance div.section:nth-child(2) button                       { white-space: normal; width: 6em; height: 4.5em; vertical-align: middle; margin: 0; padding: 0; }
-#areainstance div.section:nth-child(3) div                          { white-space: normal; vertical-align: middle; margin: 0; padding: 0; }
-#areainstance div.section:nth-child(3) button[name=loadmodeltype]   { white-space: normal; width: 10em; height: 2em; }
+#areainstance div.section:nth-child(2) button                       { white-space: normal; width: 6em; height: 5.7em; vertical-align: middle; margin: 0; padding: 0; }
+
+#areainstance div.section:nth-child(3)                                { overflow-y: scroll; }
+#areainstance div.section:nth-child(3) strong                         { margin:0; padding:0; white-space: normal; font-size: 1em; }
+#areainstance div.section:nth-child(3) > div:not(:first-child)        { padding-top: 0.5em; }
+#areainstance div.section:nth-child(3) > div                          { padding-bottom: 0.2em; }
+#areainstance div.section:nth-child(3) select                         { margin-left: 1em;  }
+#areainstance div.section:nth-child(3) div.additional                 { margin-left: 1em;  }
 
 #areaexecution input { padding: 0; margin:0; }
 #areaexecution table.x-ui-compact { width: 100%; }

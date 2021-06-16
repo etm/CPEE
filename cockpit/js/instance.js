@@ -276,7 +276,7 @@ function sse() { //{{{
             break;
           case 'attributes':
             monitor_instance_values("attributes");
-            monitor_instance_transformation();
+            display_modifiers();
             if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
               if (save['graph_theme'] != data.content.values.theme) {
                 monitor_graph_change(true);
@@ -313,9 +313,9 @@ function sse() { //{{{
   monitor_instance_values("dataelements");
   monitor_instance_values("endpoints");
   monitor_instance_values("attributes");
-  monitor_instance_transformation();
   monitor_instance_dsl();
   monitor_instance_state();
+  display_modifiers();
 } //}}}
 
 function monitor_instance(cin,rep,load,exec) {// {{{
@@ -629,19 +629,6 @@ function monitor_instance_state() {// {{{
     dataType: "text",
     success: function(res){
       monitor_instance_state_change(res);
-    }
-  });
-}// }}}
-function monitor_instance_transformation() {// {{{
-  var url = $('body').attr('current-instance');
-  $.ajax({
-    type: "GET",
-    url: url + "/properties/attributes/modeltype/",
-    success: function(res){
-      $("#currentmodel").text(res);
-    },
-    error: function() {
-      $("#currentmodel").text('???');
     }
   });
 }// }}}
@@ -1377,6 +1364,32 @@ function append_to_log(what,type,message) {//{{{
     });
   }
 }//}}}
+
+function display_modifiers() {
+  var rep = $('body').attr('current-resources');
+  $('#modifiers > div').remove();
+
+  $.ajax({
+    url: rep + 'modifiers/',
+    success: function(res) {
+      $('resource',res).each(function(_,r) {
+        $.ajax({
+          url: rep + 'modifiers/' + $(r).text(),
+          success: function(ses) {
+            var clone = document.importNode(document.querySelector('#modifiers template').content,true);
+            $('strong',clone).text(decodeURIComponent($(r).text()));
+            $('resource',ses).each(function(_,s) {
+              let opt = $('<option/>');
+              opt.text(decodeURIComponent($(s).text()));
+              $('select',clone).append(opt);
+            });
+            $(clone).insertBefore($('#modifiers template'));
+          }
+        });
+      });
+    }
+  });
+}
 
 function report_failure(){}
 
