@@ -30,6 +30,7 @@ function global_init() {
   save['instance_pos'] = [];
   save['modifiers'] = {};
   save['modifiers_active'] = {};
+  save['modifiers_additional'] = {};
   node_state = {};
 }
 
@@ -1370,129 +1371,6 @@ function append_to_log(what,type,message) {//{{{
     });
   }
 }//}}}
-
-async function modifiers_display() {
-  let promises = [];
-  let rep = $('body').attr('current-resources');
-  $('#modifiers > div').remove();
-
-  promises.push(
-    $.ajax({
-      url: rep + 'modifiers/'
-    }).then(async function(res) {
-      let ipromises = [];
-      $('resource',res).each(function(_,r) {
-        ipromises.push(
-          $.ajax({
-            url: rep + 'modifiers/' + $(r).text()
-          }).then(async function(ses){
-            let clone = document.importNode(document.querySelector('#modifiers template').content,true);
-            let t = $(r).text();
-            $('> div',clone).attr('data-resource',t);
-            $('div.title *',clone).text(decodeURIComponent(t));
-
-            let cpromises = [];
-            $('resource',ses).each(function(_,s) {
-              let opt = $('<option/>');
-              opt.text(decodeURIComponent($(s).text()));
-              $('div.select select',clone).append(opt);
-
-              cpromises.push(
-                $.ajax({
-                  url: rep + 'modifiers/' + $(r).text() + '/' + $(s).text() + '/condition.json'
-                }).then(function(tes){
-                  save['modifiers'][$(r).text() + '/' + $(s).text()] = tes;
-                })
-              );
-
-            });
-            $(clone).insertBefore($('#modifiers template'));
-
-            await Promise.all(cpromises);
-          })
-        );
-      });
-      await Promise.all(ipromises);
-    })
-  );
-  await Promise.all(promises);
-}
-
-function modifiers_display_ui(url,top,it) {
-  $('#modifiers div[data-resource]').each(function(_,r){
-    if ($(r).attr('data-resource') == top) {
-      $('div.additional',r).empty();
-    }
-  });
-  $.ajax({
-    url: url + top + '/' + it + '/ui.rng',
-    success: function(rng) {
-      $('#modifiers div[data-resource]').each(function(_,r){
-        if ($(r).attr('data-resource') == top) {
-          new RelaxNGui(rng, $('div.additional',r));
-        }
-      });
-    }
-  });
-}
-
-function modifiers_select(e) {
-  let atts = {}
-  let attr = save['attributes'].save();
-  $('> attributes > *',attr).each(function(_,s){
-    atts[s.nodeName] = $(s).text();
-  });
-  $('#modifiers div[data-resource]').each(function(_,r){
-    $('select option',r).each(function(_,s){
-      let where = $(r).attr('data-resource') + '/' + encodeURIComponent($(s).text());
-      let cond = save['modifiers'][where];
-      let success = true;
-      for (x in cond) {
-        if (cond[x] != atts[x]) { success = false; }
-      }
-      if (success) {
-        save['modifiers_active'][$(r).attr('data-resource')] = $(s).text();
-        $('select',r).val($(s).text());
-      }
-    });
-  });
-}
-
-function modifiers_update_patch(url,top,now) {
-  modifiers_display_ui(url,top,now);
-  $.ajax({
-    url: url + top + '/' + now + '/patch.xml',
-    success: function(res) {
-      set_testset(res,false);
-    }
-  });
-}
-function modifiers_update_unpatch(url,top,last,now) {
-  $.ajax({
-    url: url + top + '/' + last + '/unpatch.xml',
-    success: function(res) {
-      set_testset(res,false).then(function() {
-        modifiers_update_patch(url,top,now);
-      });
-    },
-    error: function() {
-      modifiers_update_patch(url,top,now);
-    }
-  });
-}
-
-function modifiers_update(e) {
-  let rep = $('body').attr('current-resources');
-  let top = $(e.target).parents('div[data-resource]').attr('data-resource');
-  let last = save['modifiers_active'][top];
-  let now = $(e.target).val();
-
-  if (last) {
-    modifiers_update_unpatch(rep + 'modifiers/',top,last,now);
-  } else {
-    modifiers_update_patch(rep + 'modifiers/',top,now);
-  }
-}
 
 function report_failure(){}
 
