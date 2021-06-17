@@ -1152,14 +1152,15 @@ async function load_testset_handlers(url,testset,vals) {// {{{
       if ($("*",han).length == 0) {
         $.ajax({
           type: "DELETE",
-          url: url + "/notifications/subscriptions/" + vals[suburl],
+          url: url + "/notifications/subscriptions/" + vals[suburl] + '/'
         })
+        delete vals[suburl];
       } else {
         let inp = load_testset_extract_handlers([],han,suburl);
         promises.push(
           $.ajax({
             type: "PUT",
-            url: url + "/notifications/subscriptions/" + vals[suburl],
+            url: url + "/notifications/subscriptions/" + vals[suburl] + '/',
             data: inp.join('&')
           })
         )
@@ -1278,7 +1279,6 @@ function format_visual_vote_clear() {//{{{
 
 function format_instance_pos() { //{{{
   $(save['instance_pos']).each(function(){
-    console.log(this);
     var taskname = this.nodeName;
     var taskstate = this.textContent;
     format_visual_add(taskname,save['state'] == 'running' ? (taskstate == 'at' ? 'active' : 'passive') : 'passive');
@@ -1452,8 +1452,9 @@ function modifiers_update_unpatch(url,last,now) {
   $.ajax({
     url: url + '/' + last + '/unpatch.xml',
     success: function(res) {
-      set_testset(res,false);
-      modifiers_update_patch(url,now);
+      set_testset(res,false).then(function() {
+        modifiers_update_patch(url,now);
+      });
     },
     error: function() {
       modifiers_update_patch(url,now);
