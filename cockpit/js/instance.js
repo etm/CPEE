@@ -28,6 +28,8 @@ function global_init() {
   save['details'] = undefined;
   save['details_target'] = undefined;
   save['instance_pos'] = [];
+  save['modifiers'] = {};
+  save['modifiers_active'] = {};
   node_state = {};
 }
 
@@ -95,7 +97,7 @@ function cockpit() { //{{{
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=testsetfile]").change(load_testsetfile_after);
   $("input[name=modelfile]").change(load_modelfile_after);
-  $("#modifiers").on('change','div.select select',modifiers_update);
+  $("#modifiers").on('change','div.select select',function(e){ modifiers_update(e); });
 
   $.ajax({
     url: $('body').attr('current-templates'),
@@ -277,8 +279,6 @@ function sse() { //{{{
             break;
           case 'attributes':
             monitor_instance_values("attributes");
-            modifiers_display();
-            modifiers_select();
             if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
               if (save['graph_theme'] != data.content.values.theme) {
                 monitor_graph_change(true);
@@ -317,8 +317,6 @@ function sse() { //{{{
   monitor_instance_values("attributes");
   monitor_instance_dsl();
   monitor_instance_state();
-  modifiers_display();
-  modifiers_select();
 } //}}}
 
 function monitor_instance(cin,rep,load,exec) {// {{{
@@ -447,6 +445,11 @@ function monitor_instance_values(val) {// {{{
           });
         });
       } else if(val == "attributes") {
+        if ($('#modifiers > div').length == 0) {
+          modifiers_display().then(modifiers_select);
+        } else {
+          modifiers_select();
+        }
         var text = $(" > attributes > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
         $('#title').text(text);
         document.title = text;
@@ -1368,41 +1371,110 @@ function append_to_log(what,type,message) {//{{{
   }
 }//}}}
 
-function modifiers_display() {
-  var rep = $('body').attr('current-resources');
+async function modifiers_display() {
+  let promises = [];
+  let rep = $('body').attr('current-resources');
   $('#modifiers > div').remove();
 
-  $.ajax({
-    url: rep + 'modifiers/',
-    success: function(res) {
+  promises.push(
+    $.ajax({
+      url: rep + 'modifiers/'
+    }).then(async function(res) {
+      let ipromises = [];
       $('resource',res).each(function(_,r) {
-        $.ajax({
-          url: rep + 'modifiers/' + $(r).text(),
-          success: function(ses) {
-            var clone = document.importNode(document.querySelector('#modifiers template').content,true);
-            $('div.title *',clone).text(decodeURIComponent($(r).text()));
+        ipromises.push(
+          $.ajax({
+            url: rep + 'modifiers/' + $(r).text()
+          }).then(async function(ses){
+            let clone = document.importNode(document.querySelector('#modifiers template').content,true);
+            let t = $(r).text();
+            $('> div',clone).attr('data-resource',t);
+            $('div.title *',clone).text(decodeURIComponent(t));
+
+            let cpromises = [];
             $('resource',ses).each(function(_,s) {
               let opt = $('<option/>');
               opt.text(decodeURIComponent($(s).text()));
               $('div.select select',clone).append(opt);
+
+              cpromises.push(
+                $.ajax({
+                  url: rep + 'modifiers/' + $(r).text() + '/' + $(s).text() + '/condition.json'
+                }).then(function(tes){
+                  save['modifiers'][$(r).text() + '/' + $(s).text()] = tes;
+                })
+              );
+
             });
             $(clone).insertBefore($('#modifiers template'));
-          }
-        });
+
+            await Promise.all(cpromises);
+          })
+        );
       });
+      await Promise.all(ipromises);
+    })
+  );
+  await Promise.all(promises);
+}
+
+function modifiers_select(e) {
+  let atts = {}
+  let attr = save['attributes'].save();
+  $('> attributes > *',attr).each(function(_,s){
+    atts[s.nodeName] = $(s).text();
+  });
+  $('#modifiers div[data-resource]').each(function(_,r){
+    $('select option',r).each(function(_,s){
+      let where = $(r).attr('data-resource') + '/' + encodeURIComponent($(s).text());
+      let cond = save['modifiers'][where];
+      let success = true;
+      for (x in cond) {
+        if (cond[x] != atts[x]) { success = false; }
+      }
+      if (success) {
+        save['modifiers_active'][$(r).attr('data-resource')] = $(s).text();
+        $('select',r).val($(s).text());
+      }
+    });
+  });
+}
+
+function modifiers_update_patch(url,now) {
+  $.ajax({
+    url: url + '/' + now + '/patch.xml',
+    success: function(res) {
+      set_testset(res,false);
+    }
+  });
+}
+function modifiers_update_unpatch(url,last,now) {
+  $.ajax({
+    url: url + '/' + last + '/unpatch.xml',
+    success: function(res) {
+      set_testset(res,false);
+      modifiers_update_patch(url,now);
+    },
+    error: function() {
+      modifiers_update_patch(url,now);
     }
   });
 }
 
-function modifiers_select() {
-  // check condition and against attributes
-  console.log('bbb');
-}
-
-function modifiers_update() {
+function modifiers_update(e) {
   // when change path
   // unpach from what changed
   // show ui
+  let rep = $('body').attr('current-resources');
+  let top = $(e.target).parents('div[data-resource]').attr('data-resource');
+  let last = save['modifiers_active'][top];
+  let now = $(e.target).val();
+
+  if (last) {
+    modifiers_update_unpatch(rep + 'modifiers/' + top,last,now);
+  } else {
+    modifiers_update_patch(rep + 'modifiers/' + top,now);
+  }
 }
 
 function report_failure(){}
