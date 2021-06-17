@@ -149,11 +149,11 @@ ui-tabbed ui-tabbar ui-behind button {
 #areainstance div.section:nth-child(2) button                       { white-space: normal; width: 6em; height: 5.7em; vertical-align: middle; margin: 0; padding: 0; }
 
 #areainstance div.section:nth-child(3)                                { overflow-y: scroll; }
-#areainstance div.section:nth-child(3) strong                         { margin:0; padding:0; white-space: normal; font-size: 1em; }
-#areainstance div.section:nth-child(3) > div:not(:first-child)        { padding-top: 0.5em; }
-#areainstance div.section:nth-child(3) > div                          { padding-bottom: 0.2em; }
+#areainstance div.section:nth-child(3) strong                         { margin:0; padding:0; white-space: normal; font-size: 0.7em; }
+#areainstance div.section:nth-child(3) > div:not(:first-child)        { padding-top: 0.2em; }
+#areainstance div.section:nth-child(3) > div                          { padding-bottom: 0em; }
 #areainstance div.section:nth-child(3) select                         { margin-left: 1em;  }
-#areainstance div.section:nth-child(3) div.additional                 { margin-left: 1em;  }
+#areainstance div.section:nth-child(3) div.additional                 { margin-left: 1em; font-size: 0.9em; }
 
 #areaexecution input { padding: 0; margin:0; }
 #areaexecution table.x-ui-compact { width: 100%; }

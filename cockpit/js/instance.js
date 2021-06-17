@@ -1418,6 +1418,24 @@ async function modifiers_display() {
   await Promise.all(promises);
 }
 
+function modifiers_display_ui(url,top,it) {
+  $('#modifiers div[data-resource]').each(function(_,r){
+    if ($(r).attr('data-resource') == top) {
+      $('div.additional',r).empty();
+    }
+  });
+  $.ajax({
+    url: url + top + '/' + it + '/ui.rng',
+    success: function(rng) {
+      $('#modifiers div[data-resource]').each(function(_,r){
+        if ($(r).attr('data-resource') == top) {
+          new RelaxNGui(rng, $('div.additional',r));
+        }
+      });
+    }
+  });
+}
+
 function modifiers_select(e) {
   let atts = {}
   let attr = save['attributes'].save();
@@ -1440,41 +1458,39 @@ function modifiers_select(e) {
   });
 }
 
-function modifiers_update_patch(url,now) {
+function modifiers_update_patch(url,top,now) {
+  modifiers_display_ui(url,top,now);
   $.ajax({
-    url: url + '/' + now + '/patch.xml',
+    url: url + top + '/' + now + '/patch.xml',
     success: function(res) {
       set_testset(res,false);
     }
   });
 }
-function modifiers_update_unpatch(url,last,now) {
+function modifiers_update_unpatch(url,top,last,now) {
   $.ajax({
-    url: url + '/' + last + '/unpatch.xml',
+    url: url + top + '/' + last + '/unpatch.xml',
     success: function(res) {
       set_testset(res,false).then(function() {
-        modifiers_update_patch(url,now);
+        modifiers_update_patch(url,top,now);
       });
     },
     error: function() {
-      modifiers_update_patch(url,now);
+      modifiers_update_patch(url,top,now);
     }
   });
 }
 
 function modifiers_update(e) {
-  // when change path
-  // unpach from what changed
-  // show ui
   let rep = $('body').attr('current-resources');
   let top = $(e.target).parents('div[data-resource]').attr('data-resource');
   let last = save['modifiers_active'][top];
   let now = $(e.target).val();
 
   if (last) {
-    modifiers_update_unpatch(rep + 'modifiers/' + top,last,now);
+    modifiers_update_unpatch(rep + 'modifiers/',top,last,now);
   } else {
-    modifiers_update_patch(rep + 'modifiers/' + top,now);
+    modifiers_update_patch(rep + 'modifiers/',top,now);
   }
 }
 
