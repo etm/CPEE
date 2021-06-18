@@ -447,7 +447,7 @@ function monitor_instance_values(val) {// {{{
         });
       } else if(val == "attributes") {
         if ($('#modifiers > div').length == 0) {
-          modifiers_display().then(modifiers_select);
+          modifiers_display().then(function(){ modifiers_select(); });
         } else {
           modifiers_select();
         }
