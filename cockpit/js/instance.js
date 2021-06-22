@@ -28,6 +28,9 @@ function global_init() {
   save['details'] = undefined;
   save['details_target'] = undefined;
   save['instance_pos'] = [];
+  save['modifiers'] = {};
+  save['modifiers_active'] = {};
+  save['modifiers_additional'] = {};
   node_state = {};
 }
 
@@ -95,6 +98,7 @@ function cockpit() { //{{{
   $("input[name=votecontinue]").click(check_subscription);
   $("input[name=testsetfile]").change(load_testsetfile_after);
   $("input[name=modelfile]").change(load_modelfile_after);
+  $("#modifiers").on('change','div.select select',function(e){ modifiers_update(e); });
 
   $.ajax({
     url: $('body').attr('current-templates'),
@@ -276,7 +280,6 @@ function sse() { //{{{
             break;
           case 'attributes':
             monitor_instance_values("attributes");
-            monitor_instance_transformation();
             if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
               if (save['graph_theme'] != data.content.values.theme) {
                 monitor_graph_change(true);
@@ -313,7 +316,6 @@ function sse() { //{{{
   monitor_instance_values("dataelements");
   monitor_instance_values("endpoints");
   monitor_instance_values("attributes");
-  monitor_instance_transformation();
   monitor_instance_dsl();
   monitor_instance_state();
 } //}}}
@@ -406,12 +408,12 @@ function monitor_instance_values(val) {// {{{
         $(res).find(" > endpoints > *").each(function(k,v) {
           save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
           $.ajax({
-            url: rep + encodeURIComponent($(v).text()),
+            url: rep + 'endpoints/' + encodeURIComponent($(v).text()),
             success: function() {
               tmp[v.tagName] = {};
               var deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()) + "/symbol.svg",
+                url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/symbol.svg",
                 success: function(res) {
                   tmp[v.tagName]['symbol'] = res;
                   deferreds[0].resolve(true);
@@ -419,7 +421,7 @@ function monitor_instance_values(val) {// {{{
                 error: deferreds[0].resolve
               })
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()) + "/schema.rng",
+                url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/schema.rng",
                 success: function(res) {
                   tmp[v.tagName]['schema'] = res;
                   deferreds[1].resolve(true);
@@ -427,7 +429,7 @@ function monitor_instance_values(val) {// {{{
                 error: deferreds[1].resolve
               })
               $.ajax({
-                url: rep + encodeURIComponent($(v).text()) + "/properties.json",
+                url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/properties.json",
                 success: function(res) {
                   tmp[v.tagName]['properties'] = res;
                   deferreds[2].resolve(true);
@@ -444,6 +446,11 @@ function monitor_instance_values(val) {// {{{
           });
         });
       } else if(val == "attributes") {
+        if ($('#modifiers > div').length == 0) {
+          modifiers_display().then(function(){ modifiers_select(); });
+        } else {
+          modifiers_select();
+        }
         var text = $(" > attributes > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
         $('#title').text(text);
         document.title = text;
@@ -632,19 +639,6 @@ function monitor_instance_state() {// {{{
     }
   });
 }// }}}
-function monitor_instance_transformation() {// {{{
-  var url = $('body').attr('current-instance');
-  $.ajax({
-    type: "GET",
-    url: url + "/properties/attributes/modeltype/",
-    success: function(res){
-      $("#currentmodel").text(res);
-    },
-    error: function() {
-      $("#currentmodel").text('???');
-    }
-  });
-}// }}}
 
 function monitor_instance_pos() {// {{{
   var url = $('body').attr('current-instance');
@@ -731,7 +725,6 @@ function monitor_instance_state_change(notification) { //{{{
     }
 
     if (notification != "ready" && notification != "stopped" && notification != "running") {
-      console.log('rrr');
       $('#parameters ui-content ui-area > button').attr('disabled','disabled');
       $('#state_any').hide();
     } else {
@@ -845,7 +838,36 @@ function get_testset(deferred) {// {{{
           ele.removeAttribute('xmlns');
         }
       });
-      deferred.resolve(name,testset);
+      $.ajax({
+        type: "GET",
+        url: url + "/notifications/subscriptions/",
+        success: async function(res){
+          let values = $("subscriptions > subscription[url]",res);
+          let subs = $X('<subscriptions xmlns="http://riddl.org/ns/common-patterns/notifications-producer/2.0"/>');
+          let promises = [];
+          let scount = 0;
+          values.each(function(){
+            let sid = $(this).attr('id');
+            if (sid.match(/^_/)) {
+              scount += 1;
+              promises.push(
+                $.ajax({
+                  type: "GET",
+                  url: url + "/notifications/subscriptions/" + sid,
+                  error: report_failure
+                }).then(function(a) {
+                  subs.append($(a.documentElement));
+                })
+              );
+            };
+          });
+          await Promise.all(promises);
+          if (scount > 0) { testset.append(subs); }
+          deferred.resolve(name,testset);
+        },
+        error: function() { deferred.reject(); report_failure(); }
+      });
+
     },
     error: function() { deferred.reject(); report_failure(); }
   });
@@ -919,11 +941,10 @@ async function set_testset(testset,exec) {// {{{
       url: url + "/notifications/subscriptions/",
       error: report_failure
     }).then(async function(res) {
-      var rcount = 0;
       var values = $("subscriptions > subscription[url]",res);
-      var vals = [];
+      var vals = {};
       values.each(function(){
-        vals.push($(this).attr('url'));
+        vals[$(this).attr('url')] = $(this).attr('id');
       });
       await load_testset_handlers(url,testset,vals);
     })
@@ -1083,24 +1104,68 @@ async function load_des(url,model) { //{{{
     error: report_failure
   });
 } //}}}
+
+function load_testset_extract_handlers(inp,han,suburl) { //{{{
+  inp.push("url="+encodeURIComponent(suburl).replace(/~/,'%7E'));
+  $(">*",han).each(function(_,top){
+    let events = [];
+    let votes = [];
+    $(">*",top).each(function(_,it){
+      if (it.nodeName == 'event') {
+        events.push($(it).text());
+      }
+      if (it.nodeName == 'vote') {
+        votes.push($(it).text());
+      }
+    });
+    if (events.length > 0) {
+      inp.push("topic=" + $(top).attr('id'));
+      inp.push("events=" + events.join(','));
+    }
+    if (votes.length > 0) {
+      inp.push("topic=" + $(top).attr('id'));
+      inp.push("votes=" + votes.join(','));
+    }
+  });
+  return inp;
+} //}}}
+
 async function load_testset_handlers(url,testset,vals) {// {{{
   var promises = [];
-  $("testset > handlers > *",testset).each(async function(){
-    var han = this;
-    var suburl = $(han).attr('url');
-    if ($.inArray(suburl,vals) == -1) {
-      var inp = "url="+encodeURIComponent(suburl).replace(/~/,'%7E');
-      $("*",han).each(function(){
-        inp += "&topic=" + $(this).attr('topic');
-        inp += "&" + this.nodeName + "=" + $(this).text();
-      });
-      promises.push(
+  $("testset > subscriptions > *",testset).each(async function(){
+    let han = this;
+    let sid = $(han).attr('id');
+    let suburl = $(han).attr('url');
+    if (typeof(vals[suburl]) == 'undefined') {
+      if ($("*",han).length > 0) {
+        let inp = [];
+        if (sid) { inp.push("id="+encodeURIComponent(sid)); }
+        inp = load_testset_extract_handlers(inp,han,suburl);
+        promises.push(
+          $.ajax({
+            type: "POST",
+            url: url + "/notifications/subscriptions/",
+            data: inp.join('&')
+          })
+        )
+      }
+    } else {
+      if ($("*",han).length == 0) {
         $.ajax({
-          type: "POST",
-          url: url + "/notifications/subscriptions/",
-          data: inp
+          type: "DELETE",
+          url: url + "/notifications/subscriptions/" + vals[suburl] + '/'
         })
-      )
+        delete vals[suburl];
+      } else {
+        let inp = load_testset_extract_handlers([],han,suburl);
+        promises.push(
+          $.ajax({
+            type: "PUT",
+            url: url + "/notifications/subscriptions/" + vals[suburl] + '/',
+            data: inp.join('&')
+          })
+        )
+      }
     }
   });
   return Promise.all(promises);
@@ -1215,7 +1280,6 @@ function format_visual_vote_clear() {//{{{
 
 function format_instance_pos() { //{{{
   $(save['instance_pos']).each(function(){
-    console.log(this);
     var taskname = this.nodeName;
     var taskstate = this.textContent;
     format_visual_add(taskname,save['state'] == 'running' ? (taskstate == 'at' ? 'active' : 'passive') : 'passive');

@@ -54,6 +54,7 @@
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
     <script type="text/javascript" src="js/edit.js"></script>
+    <script type="text/javascript" src="js/modifiers.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="/global_ui/uicpee.css" type="text/css"/>
     <style>
@@ -143,29 +144,32 @@
           </table>
         </ui-area> <!--}}}-->
         <ui-area data-belongs-to-tab="instance" id="areainstance" class="inactive"> <!--{{{-->
-          <div class='section'>
-            <div>
-              <form id='fuckchrome'>
-                <input type='file' name='testsetfile' id='testsetfile'/>
-              </form>
-              <button title='save a testset includes various settings, subscriptions and a model' name="save" disabled=""><div>save</div><div class="hidden" id='lastsavedline'>(last: <span id="lastsaved"></span>)</div></button>
-              <button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load testset</button>
-            </div>
-            <div>
-              <input type='file' name='modelfile' id='modelfile'/>
-              <button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">load model</button>
-            </div>
-          </div><div class='section'>
-            <a id="savetestsetfile" href="" download=""></a>
-            <a id="savesvgfile" href="" download=""></a>
-            <button title='a testset includes various settings, subscriptions and a model' name="savetestsetfile">save testset</button>
-            <button title='a testset includes various settings, subscriptions and a model' name="savesvgfile">save svg graph</button>
-          </div><div class='section'>
-            <div>
-              Current model: <span id='currentmodel'></span>
-            </div>
-            <div>
-              <button title='a testset includes various settings, subscriptions and a model' name="loadmodeltype">set model type</button>
+          <div>
+            <div class='section'>
+              <div>
+                <form id='fuckchrome'>
+                  <input type='file' name='testsetfile' id='testsetfile'/>
+                </form>
+                <button title='save a testset includes various settings, subscriptions and a model' name="save" disabled=""><div>save</div><div class="hidden" id='lastsavedline'>(last: <span id="lastsaved"></span>)</div></button>
+                <button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load testset</button>
+              </div>
+              <div>
+                <input type='file' name='modelfile' id='modelfile'/>
+                <button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">load model</button>
+              </div>
+            </div><div class='section'>
+              <a id="savetestsetfile" href="" download=""></a>
+              <a id="savesvgfile" href="" download=""></a>
+              <button title='a testset includes various settings, subscriptions and a model' name="savetestsetfile">save testset</button>
+              <button title='a testset includes various settings, subscriptions and a model' name="savesvgfile">save svg graph</button>
+            </div><div class='section' id='modifiers'>
+              <template id="item">
+                <div>
+                  <div class='title'><strong></strong></div>
+                  <div class='select'><select></select></div>
+                  <div class='additional'></div>
+                </div>
+              </template>
             </div>
           </div>
         </ui-area> <!--}}}-->
