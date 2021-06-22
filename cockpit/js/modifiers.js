@@ -1,3 +1,5 @@
+var modifiers_changed = new Event("modifiers:changed", {"bubbles":true, "cancelable":false});
+
 $(document).ready(function() {
   var timer;
 
@@ -46,6 +48,7 @@ function do_main_save(target) {
       tset.append(doc.documentElement);
 
   set_testset(tset,false);
+  document.dispatchEvent(modifiers_changed);
 }
 
 async function modifiers_display() {
@@ -153,6 +156,7 @@ function modifiers_update_patch(url,top,now) {
     url: url + top + '/' + now + '/patch.xml',
     success: function(res) {
       set_testset(res,false);
+      document.dispatchEvent(modifiers_changed);
     }
   });
 }

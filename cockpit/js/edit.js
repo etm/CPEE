@@ -4,6 +4,13 @@ document.addEventListener('graph:changed', function (e) {
 document.addEventListener('parameters:changed', function (e) {
   $("button[name=save]").prop("disabled",false);
 }, false);
+document.addEventListener('modifiers:changed', function (e) {
+  $("button[name=save]").prop("disabled",false);
+}, false);
+
+function leading_zeros(dt) {
+  return (dt < 10 ? '0' : '') + dt;
+}
 
 $(document).ready(function() {
   $("button[name=save]").click(function(){
@@ -19,7 +26,7 @@ $(document).ready(function() {
           $("button[name=save]").prop("disabled",true);
           $("#lastsavedline").removeClass('hidden');
           var dt = new Date();
-          var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+          var time = leading_zeros(dt.getHours()) + ":" + leading_zeros(dt.getMinutes()) + ":" + leading_zeros(dt.getSeconds());
           $("#lastsaved").text(time);
         },
         error: function() {
