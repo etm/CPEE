@@ -33,18 +33,25 @@ module CPEE
       end
     else # we always assume file socket if redis is startet locally
       opts[:redis_dyn] = Proc.new { Redis.new(path: File.join(opts[:basepath],opts[:redis_path]), db: opts[:redis_db].to_i) }
+      tried = false
       begin
         opts[:redis] = opts[:redis_dyn].call
         opts[:redis].dbsize
       rescue
-        rcmd = opts[:redis_cmd]
-        rcmd.gsub! /#redis_path#/, File.join(opts[:basepath],opts[:redis_path])
-        rcmd.gsub! /#redis_db_dir#/, opts[:basepath]
-        rcmd.gsub! /#redis_db_name#/, opts[:redis_db_name]
-        rcmd.gsub! /#redis_pid#/, File.join(opts[:basepath],opts[:redis_pid])
-        res = system rcmd
+        res = if tried
+          rcmd = opts[:redis_cmd]
+          rcmd.gsub! /#redis_path#/, File.join(opts[:basepath],opts[:redis_path])
+          rcmd.gsub! /#redis_db_dir#/, opts[:basepath]
+          rcmd.gsub! /#redis_db_name#/, opts[:redis_db_name]
+          rcmd.gsub! /#redis_pid#/, File.join(opts[:basepath],opts[:redis_pid])
+          system rcmd
+        else
+          true
+        end
         if res
+          tried = true
           puts 'starting redis ... it will keep running, just to let you know ...'
+          puts 'waiting for successful start ...'
           sleep 1
           retry
         else
