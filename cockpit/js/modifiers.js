@@ -42,7 +42,7 @@ function do_mod_save(target) {
   let top = div.attr('data-resource');
   let doc = save['modifiers_additional'][top].save();
   let rep = $('body').attr('current-resources');
-  let now = encodeURIComponent($('div.select select',div).val());
+  let now = $('div.select select',div).val();
 
   var tset = $X('<testset xmlns="http://cpee.org/ns/properties/2.0"/>');
       tset.append(doc.documentElement);
@@ -69,12 +69,13 @@ async function modifiers_display() {
             let clone = document.importNode(document.querySelector('#modifiers template').content,true);
             let t = $(r).text();
             $('> div',clone).attr('data-resource',t);
-            $('div.title *',clone).text(decodeURIComponent(t));
+            $('div.title *',clone).text(decodeURIComponent(t).replace(/^\d*_?/,''));
 
             let cpromises = [];
             $('resource',ses).each(function(_,s) {
-              let opt = $('<option/>');
-              opt.text(decodeURIComponent($(s).text()));
+              let opt = $('<option value=""/>');
+              opt.text(decodeURIComponent($(s).text()).replace(/^\d*_?/,''));
+              opt.attr('value',$(s).text());
               $('div.select select',clone).append(opt);
 
               cpromises.push(
@@ -135,7 +136,7 @@ function modifiers_select() {
   });
   $('#modifiers div[data-resource]').each(function(_,r){
     $('select option',r).each(function(_,s){
-      let where = $(r).attr('data-resource') + '/' + encodeURIComponent($(s).text());
+      let where = $(r).attr('data-resource') + '/' + $(s).attr('value');
       let cond = save['modifiers'][where];
       let success = true;
       for (x in cond) {
@@ -143,8 +144,8 @@ function modifiers_select() {
       }
       if (success) {
         let top = $(r).attr('data-resource');
-        let it = encodeURIComponent($(s).text());
-        $('select',r).val($(s).text());
+        let it = $(s).attr('value');
+        $('select',r).val(it);
         modifiers_display_ui(rep + 'modifiers/',top,it,save['modifiers_active'][top] == it);
         save['modifiers_active'][top] = it;
       }

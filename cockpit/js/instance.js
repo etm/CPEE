@@ -1,5 +1,5 @@
 var es;
-var suspended_monitoring = false;
+var suspended_redrawing = false;
 var myid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
 var paths = '#dat_details input, #dat_details textarea, #dat_details select, #dat_details button, #dat_details [contenteditable], #dat_dataelements input, #dat_dataelements textarea, #dat_dataelements select, #dat_dataelements button, #dat_dataelements [contenteditable], #dat_endpoints input, #dat_endpoints textarea, #dat_endpoints select, #dat_endpoints button, #dat_endpoints [contenteditable], #dat_attributes input, #dat_attributes textarea, #dat_attributes select, #dat_attributes button, #dat_attributes [contenteditable]';
 var loading = false;
@@ -13,7 +13,7 @@ var save = {};
 var node_state = {};
 
 function global_init() {
-  suspended_monitoring = false;
+  suspended_redrawing = false;
   loading = false;
   subscription = undefined;
   subscription_state = 'less';
@@ -280,10 +280,8 @@ function sse() { //{{{
             break;
           case 'attributes':
             monitor_instance_values("attributes");
-            if (!suspended_monitoring) { // or else it would load twice, because dsl changes also trigger
-              if (save['graph_theme'] != data.content.values.theme) {
-                monitor_graph_change(true);
-              }
+            if (save['graph_theme'] != data.content.values.theme) {
+              monitor_graph_change(true);
             }
             break;
           case 'task':
@@ -482,7 +480,11 @@ function adaptor_update() { //{{{
   });
 } //}}}
 function adaptor_init(url,theme,dslx) { //{{{
+  // while inside and svgs are reloaded, do nothing here
+  if (suspended_redrawing) { return; }
   if (save['graph_theme'] != theme) {
+    // while inside and svgs are reloaded, do nothing here
+    suspended_redrawing = true;
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       manifestation.endpoints = save.endpoints_list;
@@ -570,6 +572,9 @@ function adaptor_init(url,theme,dslx) { //{{{
       adaptor_update();
       monitor_instance_pos();
       $('#dat_details').empty();
+
+      // while inside and svgs are reloaded, do nothing here
+      suspended_redrawing = false;
     });
   } else {
     save['graph_adaptor'].update(function(graphrealization){
@@ -580,7 +585,6 @@ function adaptor_init(url,theme,dslx) { //{{{
       format_instance_pos();
     });
   }
-  suspended_monitoring = false;
 } //}}}
 
 function monitor_graph_change(force) { //{{{
@@ -921,7 +925,6 @@ function save_svgfile() {// {{{
 }// }}}
 async function set_testset(testset,exec) {// {{{
   var url = $('body').attr('current-instance');
-  suspended_monitoring = true;
 
   var promises = [];
 
