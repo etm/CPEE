@@ -120,7 +120,8 @@ function modifiers_display_ui(url,top,it,notchanged) {
             save['modifiers_additional'][top].content(attr);
           }
         });
-      }
+      },
+      error: function() {}
     });
   }
 }

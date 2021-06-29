@@ -148,10 +148,9 @@ ui-tabbed ui-tabbar ui-behind button {
 
 #areainstance div.section:nth-child(2) button                       { white-space: normal; width: 6em; height: 5.7em; vertical-align: middle; margin: 0; padding: 0; }
 
-#areainstance div.section:nth-child(3)                                { overflow-y: scroll; }
+#areainstance div.section:nth-child(3)                                { overflow-y: scroll;  display: flex; flex-direction:column; flex-wrap: wrap; justify-content: flex-start; align-content: flex-start; }
 #areainstance div.section:nth-child(3) strong                         { margin:0; padding:0; white-space: normal; font-size: 0.7em; }
-#areainstance div.section:nth-child(3) > div:not(:first-child)        { padding-top: 0.2em; }
-#areainstance div.section:nth-child(3) > div                          { padding-bottom: 0em; }
+#areainstance div.section:nth-child(3) > div                          { padding-bottom: 0em; flex: 0 0 auto; padding-right: 1em; }
 #areainstance div.section:nth-child(3) select                         { margin-left: 1em;  }
 #areainstance div.section:nth-child(3) div.additional                 { margin: 0 1em; font-size: 0.9em; }
 
@@ -243,4 +242,4 @@ span.vote {
   overflow: auto;
 }
 #disclaimer p { max-width: 80ex; text-align: justify; }
-#disclaimer input { margin:0; padding:0; vertical-align:baseline; margin-right: 0.5em; }
+#disclaimer input { margin:0; padding:0; vertical-align:bottom; margin-right: 0.5em; }
