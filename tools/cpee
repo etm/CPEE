@@ -162,6 +162,7 @@ elsif command == 'archive'
     names << File.basename(p2)
   end
   names.each do |name|
+    print "Working on: " + name.to_s + "\r"
     res = Typhoeus.get(File.join(base,name.to_s,'/'))
     if res.success?
       if res.headers['Content-Type'] =~ /^(text|application)\/xml/
@@ -193,6 +194,7 @@ elsif command == 'archive'
       end
     end
   end
+  puts
 elsif command == 'abandon'
   p1 = File.join(p1,'*') if p1 =~ /([a-zA-Z]|\/)$/
   base = File.dirname(p1)
@@ -215,6 +217,7 @@ elsif command == 'abandon'
     names << File.basename(p1)
   end
   names.each do |name|
+    print "Working on: " + name.to_s + "\r"
     res1 = Typhoeus.get(File.join(base,name.to_s,'properties','state','/'))
     if res1.success?
       if res1.response_body == 'ready' || res1.response_body == 'stopped'
@@ -222,6 +225,7 @@ elsif command == 'abandon'
       end
     end
   end
+  puts
 elsif command == 'start'
   p1 = File.join(p1,'*') if p1 =~ /([a-zA-Z]|\/)$/
   base = File.dirname(p1)
@@ -256,7 +260,31 @@ elsif command == 'start'
     end
   end
 elsif command == 'delete!'
-  Typhoeus.delete(File.join(p1,'/'))
+  p1 = File.join(p1,'*') if p1 =~ /([a-zA-Z]|\/)$/
+  base = File.dirname(p1)
+  names = []
+  if File.basename(p1) =~ /(\d+)-(\d+)/
+    names = ($1.to_i..$2.to_i).to_a
+  elsif File.basename(p1) == '*'
+    res = Typhoeus.get(File.join(base,'/'))
+    if res.success?
+      XML::Smart.string(res.response_body) do |doc|
+        doc.find('//instance/@id').each do |ele|
+          names << ele.value
+        end
+      end
+      names.reverse!
+    else
+      exit
+    end
+  else
+    names << File.basename(p1)
+  end
+  names.each do |name|
+    print "Working on: " + name.to_s + "\r"
+    Typhoeus.delete(File.join(base,name.to_s,'/'))
+  end
+  puts
 elsif command == 'new'
   if !File.exists?(p1)
     FileUtils.cp_r("#{curpath}/server/",p1)
