@@ -5,20 +5,20 @@ $(document).ready(function() {
 
   $(document).on('input','#modifiers div.additional input, #modifiers div.additional textarea, #modifiers div.additional [contenteditable]',function(e){
     clearTimeout(timer);
-    timer = setTimeout(function(){ do_main_save(e.target) }, 5000);
+    timer = setTimeout(function(){ do_mod_save(e.target) }, 5000);
   });
   $(document).on('change','#modifiers div.additional select',function(e){
     clearTimeout(timer);
-    do_main_save(e.target);
+    do_mod_save(e.target);
   });
   $(document).on('blur','#modifiers div.additional input, #modifiers div.additional textarea, #modifiers div.additional [contenteditable]',function(e){
     clearTimeout(timer);
-    do_main_save(e.target);
+    do_mod_save(e.target);
   });
   $(document).on('keypress','#modifiers div.additional input',function(e){
     if (e.keyCode == 13) {
       clearTimeout(timer);
-      do_main_save(e.target);
+      do_mod_save(e.target);
     }
   });
   $(document).on('keypress','#modifiers div.additional [contenteditable]',function(e){
@@ -29,15 +29,15 @@ $(document).ready(function() {
   });
   $(document).on('relaxngui_remove', '#modifiers div.additional', function(e){
     clearTimeout(timer);
-    do_main_save(e.target);
+    do_mod_save(e.target);
   });
   $(document).on('relaxngui_move', '#modifiers div.additional', function(e){
     clearTimeout(timer);
-    do_main_save(e.target);
+    do_mod_save(e.target);
   });
 });
 
-function do_main_save(target) {
+function do_mod_save(target) {
   let div = $(target).parents('div[data-resource]');
   let top = div.attr('data-resource');
   let doc = save['modifiers_additional'][top].save();
