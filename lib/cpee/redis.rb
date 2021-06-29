@@ -38,19 +38,19 @@ module CPEE
         opts[:redis] = opts[:redis_dyn].call
         opts[:redis].dbsize
       rescue
-        res = if tried
+        res = unless tried
           rcmd = opts[:redis_cmd]
           rcmd.gsub! /#redis_path#/, File.join(opts[:basepath],opts[:redis_path])
           rcmd.gsub! /#redis_db_dir#/, opts[:basepath]
           rcmd.gsub! /#redis_db_name#/, opts[:redis_db_name]
           rcmd.gsub! /#redis_pid#/, File.join(opts[:basepath],opts[:redis_pid])
+          puts 'starting redis ... it will keep running, just to let you know ...'
           system rcmd
         else
           true
         end
         if res
           tried = true
-          puts 'starting redis ... it will keep running, just to let you know ...'
           puts 'waiting for successful start ...'
           sleep 1
           retry
