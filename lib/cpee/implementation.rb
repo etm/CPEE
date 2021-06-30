@@ -77,7 +77,7 @@ module CPEE
     opts[:redis_pid]                  ||= 'redis.pid' # use e.g. /var/run/redis.pid if you do global. Look it up in your redis config
     opts[:redis_db_name]              ||= 'redis.rdb' # use e.g. /var/lib/redis.rdb for global stuff. Look it up in your redis config
 
-    CPEE::redis_connect opts
+    CPEE::redis_connect opts, 'Server Main'
 
     opts[:sse_keepalive_frequency]    ||= 10
     opts[:sse_connections]            = {}

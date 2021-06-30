@@ -30,8 +30,8 @@ Daemonite.new do |opts|
     opts[:redis_path] ||= '/tmp/redis.sock'
     opts[:redis_db] ||= 1
 
-    CPEE::redis_connect opts
-    opts[:pubsubredis] = opts[:redis_dyn].call
+    CPEE::redis_connect opts, 'Server Routing Forward Events'
+    opts[:pubsubredis] = opts[:redis_dyn].call 'Server Routing Forward Events Sub'
   end
 
   run do

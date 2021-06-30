@@ -33,7 +33,7 @@ def ⭐(a); ParaStruct.new(a); end
 
 class Controller
   def initialize(id,dir,opts)
-    CPEE::redis_connect(opts)
+    CPEE::redis_connect(opts,"Instance #{id}")
 
     @redis = opts[:redis]
     @votes = []
@@ -52,7 +52,7 @@ class Controller
     @loop_guard = {}
 
     @callback_keys = {}
-    @psredis = @opts[:redis_dyn].call
+    @psredis = @opts[:redis_dyn].call "Instance #{@id} Callback Response"
 
     Thread.new do
       @psredis.psubscribe('callback-response:*','callback-end:*') do |on|
@@ -163,7 +163,7 @@ class Controller
 
     if votes.length > 0
       @votes += votes
-      psredis = @opts[:redis_dyn].call
+      psredis = @opts[:redis_dyn].call "Instance #{@id} Vote"
       collect = []
       psredis.subscribe(votes.map{|e| ['vote-response:' + e.to_s] }.flatten) do |on|
         on.message do |what, message|

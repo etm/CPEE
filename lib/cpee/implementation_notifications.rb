@@ -179,7 +179,7 @@ module CPEE
     end #}}}
 
     def self::sse_distributor(opts) #{{{
-      conn = opts[:redis_dyn].call
+      conn = opts[:redis_dyn].call "Server SSE"
       conn.psubscribe('forward:*','event:state/change') do |on|
         on.pmessage do |pat, what, message|
           if pat == 'forward:*'
