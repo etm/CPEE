@@ -84,11 +84,11 @@ Daemonite.new do |opts|
               opts[:redis].publish("forward:#{instance}/#{subscription_key}",mess)
             else
               client = Riddl::Client.new(url)
-              callback = m['instance-url'] + '/callbacks/' + subscription_key
+              callback = File.join(m['instance-url'],'/callbacks/',subscription_key,'/')
               status, result, headers = (client.post [
-                Riddl::Header.new("CPEE-BASE",m['cpee']),
+                Riddl::Header.new("CPEE-BASE",File.join(m['cpee'],'/')),
                 Riddl::Header.new("CPEE-INSTANCE",m['instance']),
-                Riddl::Header.new("CPEE-INSTANCE-URL",m['instance-url']),
+                Riddl::Header.new("CPEE-INSTANCE-URL",File.join(m['instance-url'],'/')),
                 Riddl::Header.new("CPEE-INSTANCE-UUID",m['instance-uuid']),
                 Riddl::Header.new("CPEE-CALLBACK",callback),
                 Riddl::Header.new("CPEE-CALLBACK-ID",subscription_key),

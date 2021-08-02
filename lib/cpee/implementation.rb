@@ -252,7 +252,7 @@ module CPEE
       end
 
       @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
-      @headers << Riddl::Header.new("CPEE-INSTANCE-URL", File.join(opts[:url].to_s,id.to_s))
+      @headers << Riddl::Header.new("CPEE-INSTANCE-URL", File.join(opts[:url].to_s,id.to_s,'/'))
       @headers << Riddl::Header.new("CPEE-INSTANCE-UUID", uuid)
 
       Riddl::Parameter::Simple.new("id", id.to_s)
