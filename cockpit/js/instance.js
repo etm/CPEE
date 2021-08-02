@@ -56,7 +56,7 @@ var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'instantiation' + '&' +
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'connectionwrapper' + '&' +
+               'topic'  + '=' + 'executionhandler' + '&' +
                'events' + '=' + 'error,change' + '&' +
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
@@ -78,7 +78,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'instantiation' + '&' +
                'topic'  + '=' + 'transformation' + '&' +
                'events' + '=' + 'change' + '&' +
-               'topic'  + '=' + 'connectionwrapper' + '&' +
+               'topic'  + '=' + 'executionhandler' + '&' +
                'events' + '=' + 'error,change' + '&' +
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
