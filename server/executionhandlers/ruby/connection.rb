@@ -12,6 +12,8 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
+require 'charlock_holmes'
+
 class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::loop_guard(arguments,id,count) # {{{
     controller = arguments[0]
@@ -101,7 +103,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     params << Riddl::Header.new("CPEE-INSTANCE",@controller.instance_id)
     params << Riddl::Header.new("CPEE-INSTANCE-URL",@controller.instance_url)
     params << Riddl::Header.new("CPEE-INSTANCE-UUID",@controller.uuid)
-    params << Riddl::Header.new("CPEE-CALLBACK",@controller.instance_url + '/callbacks/' + callback)
+    params << Riddl::Header.new("CPEE-CALLBACK",File.join(@controller.instance_url,'callbacks',callback,'/'))
     params << Riddl::Header.new("CPEE-CALLBACK-ID",callback)
     params << Riddl::Header.new("CPEE-ACTIVITY",@handler_position)
     params << Riddl::Header.new("CPEE-LABEL",@label||'')
@@ -237,6 +239,14 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       end
     end
     result
+  end
+
+  def detected_encoding(text)
+    CharlockHolmes::EncodingDetector.detect(text)[:encoding] || 'ISO-8859-1'
+  end
+
+  def convert_to_utf8(text)
+    CharlockHolmes::Converter.convert(text, detected_encoding(text), "UTF-8")
   end
 
   def structurize_result(result)

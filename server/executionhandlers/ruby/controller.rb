@@ -96,10 +96,10 @@ class Controller
     @opts[:host]
   end
   def base_url
-    @opts[:url]
+    File.join(@opts[:url],'/')
   end
   def instance_url
-    File.join(@opts[:url].to_s,@id.to_s)
+    File.join(@opts[:url].to_s,@id.to_s,'/')
   end
   def instance_id
     @id

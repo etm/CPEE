@@ -12,15 +12,15 @@
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="worklist">
         <parameters>
-          <label>"OK OR NOT OK"</label>
+          <label>OK OR NOT OK</label>
           <method>:post</method>
           <arguments>
-            <orgmodel>"organisation1"</orgmodel>
-            <domain>"Virtual Business 1"</domain>
-            <form>"http://cpee.org/~demo/form/form-f.html"</form>
-            <role>"Regular"</role>
-            <schaden>"55546"</schaden>
-            <text>"fetzen hin"</text>
+            <orgmodel>organisation1</orgmodel>
+            <domain>Virtual Business 1</domain>
+            <form>http://cpee.org/~demo/form/form-f.html</form>
+            <role>Regular</role>
+            <schaden>55546</schaden>
+            <text>fetzen hin</text>
           </arguments>
         </parameters>
         <code>

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name             = "cpee"
-  s.version          = "2.1.11"
+  s.version          = "2.1.12"
   s.platform         = Gem::Platform::RUBY
   s.license          = "LGPL-3.0"
   s.summary          = "Preliminary release of cloud process execution engine (cpee.org). If you just need workflow execution, without a rest service exposing it, then use WEEL."
@@ -27,4 +27,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'json', '~>2.1'
   s.add_runtime_dependency 'redis', '~> 4.1'
   s.add_runtime_dependency 'rubyzip', '~>2'
+  s.add_runtime_dependency 'charlock_holmes', '~>0'
 end
