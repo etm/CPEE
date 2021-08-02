@@ -13,6 +13,7 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'charlock_holmes'
+require 'base64'
 
 class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::loop_guard(arguments,id,count) # {{{
@@ -197,11 +198,12 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     unless status.nil?
       @controller.notify("status/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :id => status.id, :message => status.message)
     end
-    unless changed_dataelements.nil?
-      @controller.notify("dataelements/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => dataelements)
+    unless changed_dataelements.nil? || changed_dataelements.empty?
+      de = dataelements.slice(*changed_dataelements).transform_values { |v| detect_encoding(v) == 'UTF-8' ? v : convert_to_base64(v) }
+      @controller.notify("dataelements/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => de)
     end
-    unless changed_endpoints.nil?
-      @controller.notify("endpoints/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints)
+    unless changed_endpoints.nil? || changed_endpoints.empty?
+      @controller.notify("endpoints/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints.slice(*changed_endpoints))
     end
   end # }}}
 
@@ -241,12 +243,12 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     result
   end
 
-  def detected_encoding(text)
+  def detect_encoding(text)
     CharlockHolmes::EncodingDetector.detect(text)[:encoding] || 'ISO-8859-1'
   end
 
-  def convert_to_utf8(text)
-    CharlockHolmes::Converter.convert(text, detected_encoding(text), "UTF-8")
+  def convert_to_base64(text)
+    'data:application/octet-stream;base64,' + Base64::urlsafe_encode64(text)
   end
 
   def structurize_result(result)
@@ -267,7 +269,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         tmp = {
           'name' => r.name == '' ? 'result' : r.name,
           'mimetype' => r.mimetype,
-          'data' => res
+          'data' => (detect_encoding(res) == 'UTF-8' ? res : convert_to_base64(res))
         }
         r.value.rewind
         tmp
