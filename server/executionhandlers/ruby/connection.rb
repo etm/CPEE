@@ -244,7 +244,11 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end
 
   def detect_encoding(text)
-    CharlockHolmes::EncodingDetector.detect(text)[:encoding] || 'ISO-8859-1'
+    if text.is_a? String
+      CharlockHolmes::EncodingDetector.detect(text)[:encoding] || 'ISO-8859-1'
+    else
+      'UTF-8'
+    end
   end
 
   def convert_to_base64(text)
