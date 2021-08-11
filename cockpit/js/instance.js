@@ -1366,7 +1366,16 @@ function append_to_log(what,type,message) {//{{{
   message = message.replace(/:\"/g,': "');
   message = message.replace(/:\{/g,': {');
   message = message.replace(/:\[/g,': [');
-  $("#dat_log").prepend("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
+  message = message.replace(/&/g, '&amp;');
+  message = message.replace(/</g, '&lt;');
+  message = message.replace(/>/g, '&gt;');
+  message = message.replace(/"/g, '&quot;');
+  message = message.replace(/'/g, '&apos;');
+  if (type == 'description/change') {
+    $("#dat_log").prepend("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>... check in persistent log ...</td></tr>");
+  } else {
+    $("#dat_log").prepend("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
+  }
   var dle = $("#dat_log").children();
   if (dle.length > 100) {
     dle.slice(100).each((k,ele) => {
