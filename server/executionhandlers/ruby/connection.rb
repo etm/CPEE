@@ -199,7 +199,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @controller.notify("status/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :id => status.id, :message => status.message)
     end
     unless changed_dataelements.nil? || changed_dataelements.empty?
-      de = dataelements.slice(*changed_dataelements).transform_values { |v| detect_encoding(v) == 'UTF-8' ? v : convert_to_base64(v) }
+      de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = detect_encoding(v); (enc == 'BINARY' ? convert_to_base64(v) : (enc == 'UTF-8' ? v : v.encode('UTF-8',enc))) }
       @controller.notify("dataelements/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => de)
     end
     unless changed_endpoints.nil? || changed_endpoints.empty?
@@ -245,7 +245,12 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def detect_encoding(text)
     if text.is_a? String
-      CharlockHolmes::EncodingDetector.detect(text)[:encoding] || 'ISO-8859-1'
+      res = CharlockHolmes::EncodingDetector.detect(text)
+      if res.is_a?(Hash) && res[:type] == :text && res[:encoding].match(/ISO/)
+        res[:encoding]
+      else
+        'BINARY'
+      end
     else
       'UTF-8'
     end
@@ -270,10 +275,11 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         else
           r.value.read
         end
+        enc = detect_encoding(res)
         tmp = {
           'name' => r.name == '' ? 'result' : r.name,
           'mimetype' => r.mimetype,
-          'data' => (detect_encoding(res) == 'UTF-8' ? res : convert_to_base64(res))
+          'data' => (enc == 'BINARY' ? convert_to_base64(res) : (enc == 'UTF-8' ? res : res.encode('UTF-8',enc)))
         }
         r.value.rewind
         tmp
