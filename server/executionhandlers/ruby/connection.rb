@@ -246,7 +246,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def detect_encoding(text)
     if text.is_a? String
       res = CharlockHolmes::EncodingDetector.detect(text)
-      if res.is_a?(Hash) && res[:type] == :text && res[:encoding].match(/ISO/)
+      if res.is_a?(Hash) && res[:type] == :text && res[:encoding].match(/(ISO|UTF-8)/)
         res[:encoding]
       else
         'BINARY'
