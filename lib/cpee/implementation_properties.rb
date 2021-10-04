@@ -18,6 +18,8 @@ require 'json'
 require 'erb'
 require 'yaml'
 
+Encoding.default_external = 'UTF-8'
+
 module CPEE
   module Properties
 
