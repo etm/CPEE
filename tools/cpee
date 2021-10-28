@@ -117,12 +117,6 @@ elsif command == 'convert'
           end
         end rescue nil
         doc.find('//x:handlerwrapper').delete_all!
-        doc.find('//x:start_url').each do |e|
-          e.text = 'https://cpee.org/flow/start/url/'
-        end rescue nil
-        doc.find('//x:start_git').each do |e|
-          e.text = 'https://cpee.org/flow/start/git/'
-        end rescue nil
         doc.find('//d:finalize | //d:update | //d:prepare | //d:rescue').each do |e|
           if e.parent.qname.name != 'code'
             n = e.parent
