@@ -116,6 +116,19 @@ elsif command == 'convert'
             doc.root.prepend('x:executionhandler','ruby')
           end
         end rescue nil
+        doc.find('//d:parallel_branch/@pass').delete_all!
+        doc.find('//d:parallel_branch/@local').delete_all!
+        doc.find('//d:call').each do |c|
+          c.find('d:annotations').first.add c.find('d:parameters/d:_context_data_analysis')
+          c.find('d:annotations').first.add c.find('d:parameters/d:_report')
+          if c.find('d:documentation').empty?
+            node = c.add('d:documentation')
+            node.add c.find('d:input')
+            node.add c.find('d:output')
+            node.add c.find('d:implementation')
+            node.add c.find('d:code[d:description]')
+          end
+        end
         doc.find('//x:handlerwrapper').delete_all!
         doc.find('//d:finalize | //d:update | //d:prepare | //d:rescue').each do |e|
           if e.parent.qname.name != 'code'
