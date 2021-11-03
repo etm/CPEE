@@ -8,6 +8,7 @@ function WFAdaptorManifestation(adaptor) {
   this.compact = false;
   this.striped = false;
   this.endpoints = {};
+  this.presstimer;
 
   //{{{ transform the details data to description parts based on rng
   this.source = function(base,opts) {
@@ -137,69 +138,80 @@ function WFAdaptorManifestation(adaptor) {
     }
   } //}}}
 
+  function contextMenuHandling(svgid,e,child,sibling) { //{{{
+    if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
+
+    var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
+    var group = null;
+    var menu = {};
+
+    if (child) {
+      group = self.elements[xml_node.get(0).tagName].permissible_children(xml_node,'into');
+      if(group.length > 0) {
+        menu['Insert into'] = group;
+        copyOrMove(menu['Insert into'],group,xml_node,self.adaptor.description.insert_first_into);
+      }
+      if (self.elements[xml_node.get(0).tagName].permissible_children_expert) {
+        group = self.elements[xml_node.get(0).tagName].permissible_children_expert(xml_node,'into');
+        if(group.length > 0) {
+          menu['Insert into (Experts Only!)'] = group;
+          copyOrMove(menu['Insert into (Experts Only!)'],group,xml_node,self.adaptor.description.insert_first_into);
+        }
+      }
+    }
+    if (sibling) {
+      group = self.elements[xml_node.parent().get(0).tagName].permissible_children(xml_node,'after');
+      if(group.length > 0) {
+        menu['Insert after'] = group;
+        copyOrMove(menu['Insert after'],group,xml_node,self.adaptor.description.insert_after);
+      }
+      if (self.elements[xml_node.parent().get(0).tagName].permissible_children_expert) {
+        group = self.elements[xml_node.parent().get(0).tagName].permissible_children_expert(xml_node,'after');
+        if(group.length > 0) {
+          menu['Insert after (Experts Only!)'] = group;
+          copyOrMove(menu['Insert after (Experts Only!)'],group,xml_node,self.adaptor.description.insert_after);
+        }
+      }
+    }
+
+    if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
+      var icon =  self.elements[xml_node.get(0).tagName].illustrator.svg.clone();
+      icon.children('.rfill').addClass('menu');
+      menu['Delete'] = [{
+        'label': 'Remove Element',
+        'function_call': function(selector,target,selected){ self.adaptor.description.remove(selector,target); self.adaptor.illustrator.get_label_by_svg_id(selected).addClass('selected'); },
+        'menu_icon': icon,
+        'type': undefined,
+        'params': [null, xml_node, self.selected()]
+      }];
+    }
+    if($('> code', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
+      var icon =  self.elements.callmanipulate.illustrator.svg.clone();
+      icon.children('.rfill:last').addClass('menu');
+      menu['Delete'].push({
+        'label': 'Remove Output Transformation',
+        'function_call': self.adaptor.description.remove,
+        'menu_icon': icon,
+        'type': undefined,
+        'params': ['> code', xml_node]
+      });
+    }
+    new CustomMenu(e).contextmenu(menu);
+  } //}}}
+
   // Events
+  this.events.touchend = function(svgid, e) { // {{{
+    clearTimeout(self.presstimer);
+  } // }}}
+  this.events.touchstart = function(svgid, e, child, sibling) { // {{{
+    self.presstimer = window.setTimeout(function() { contextMenuHandling(svgid,e,child,sibling); },1000);
+    return false;
+  } // }}}
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
     } else if(e.button == 2) { // right-click
-      if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
-
-      var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
-      var group = null;
-      var menu = {};
-
-      if (child) {
-        group = self.elements[xml_node.get(0).tagName].permissible_children(xml_node,'into');
-        if(group.length > 0) {
-          menu['Insert into'] = group;
-          copyOrMove(menu['Insert into'],group,xml_node,self.adaptor.description.insert_first_into);
-        }
-        if (self.elements[xml_node.get(0).tagName].permissible_children_expert) {
-          group = self.elements[xml_node.get(0).tagName].permissible_children_expert(xml_node,'into');
-          if(group.length > 0) {
-            menu['Insert into (Experts Only!)'] = group;
-            copyOrMove(menu['Insert into (Experts Only!)'],group,xml_node,self.adaptor.description.insert_first_into);
-          }
-        }
-      }
-      if (sibling) {
-        group = self.elements[xml_node.parent().get(0).tagName].permissible_children(xml_node,'after');
-        if(group.length > 0) {
-          menu['Insert after'] = group;
-          copyOrMove(menu['Insert after'],group,xml_node,self.adaptor.description.insert_after);
-        }
-        if (self.elements[xml_node.parent().get(0).tagName].permissible_children_expert) {
-          group = self.elements[xml_node.parent().get(0).tagName].permissible_children_expert(xml_node,'after');
-          if(group.length > 0) {
-            menu['Insert after (Experts Only!)'] = group;
-            copyOrMove(menu['Insert after (Experts Only!)'],group,xml_node,self.adaptor.description.insert_after);
-          }
-        }
-      }
-
-      if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
-        var icon =  self.elements[xml_node.get(0).tagName].illustrator.svg.clone();
-        icon.children('.rfill').addClass('menu');
-        menu['Delete'] = [{
-          'label': 'Remove Element',
-          'function_call': function(selector,target,selected){ self.adaptor.description.remove(selector,target); self.adaptor.illustrator.get_label_by_svg_id(selected).addClass('selected'); },
-          'menu_icon': icon,
-          'type': undefined,
-          'params': [null, xml_node, self.selected()]
-        }];
-      }
-      if($('> code', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
-        var icon =  self.elements.callmanipulate.illustrator.svg.clone();
-        icon.children('.rfill:last').addClass('menu');
-        menu['Delete'].push({
-          'label': 'Remove Output Transformation',
-          'function_call': self.adaptor.description.remove,
-          'menu_icon': icon,
-          'type': undefined,
-          'params': ['> code', xml_node]
-        });
-      }
-      new CustomMenu(e).contextmenu(menu);
+      contextMenuHandling(svgid,e,child,sibling);
     }
     return false;
   } // }}}
@@ -302,6 +314,8 @@ function WFAdaptorManifestation(adaptor) {
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dragstart': self.events.dragstart,
       'mouseover': self.events.mouseover,
@@ -328,6 +342,8 @@ function WFAdaptorManifestation(adaptor) {
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,false,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'mouseover': self.events.mouseover,
       'mouseout': self.events.mouseout
@@ -345,6 +361,8 @@ function WFAdaptorManifestation(adaptor) {
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,false,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'mouseover': self.events.mouseover,
       'mouseout': self.events.mouseout
@@ -362,6 +380,8 @@ function WFAdaptorManifestation(adaptor) {
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,false,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'mouseover': self.events.mouseover,
       'mouseout': self.events.mouseout
@@ -380,6 +400,8 @@ function WFAdaptorManifestation(adaptor) {
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,false,false); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,false,false); },
+      'touchend': self.events.touchend,
       'mouseover': self.events.mouseover,
       'mouseout': self.events.mouseout
     }//}}}
@@ -391,9 +413,7 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/end.svg'
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.suppress();
-      }
+      'mousedown': function (node,e) { self.events.suppress(); }
     }//}}}
   }; /*}}}*/
   this.elements.event_end = { /*{{{*/
@@ -403,9 +423,7 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/event_end.svg'
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.suppress();
-      },
+      'mousedown': function (node,e) { self.events.suppress(); },
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -426,9 +444,9 @@ function WFAdaptorManifestation(adaptor) {
       },
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,true);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -447,9 +465,9 @@ function WFAdaptorManifestation(adaptor) {
       'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg',
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,true);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -474,9 +492,9 @@ function WFAdaptorManifestation(adaptor) {
       },
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,true);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -539,9 +557,9 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,true);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -623,9 +641,9 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,false);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,false); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,false); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -715,9 +733,9 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,true);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -811,9 +829,9 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,true);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -904,9 +922,9 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,true);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -998,9 +1016,9 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,true);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -1080,9 +1098,9 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,true);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -1112,9 +1130,9 @@ function WFAdaptorManifestation(adaptor) {
       ];
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,true);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,true); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
@@ -1190,9 +1208,9 @@ function WFAdaptorManifestation(adaptor) {
       return childs;
     }, //}}}
     'adaptor': {//{{{
-      'mousedown': function (node,e) {
-        self.events.mousedown(node,e,true,false);
-      },
+      'mousedown': function (node,e) { self.events.mousedown(node,e,true,false); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,true,false); },
+      'touchend': self.events.touchend,
       'click': self.events.click,
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
