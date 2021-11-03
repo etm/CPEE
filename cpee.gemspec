@@ -28,4 +28,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'redis', '~> 4.1'
   s.add_runtime_dependency 'rubyzip', '~>2'
   s.add_runtime_dependency 'charlock_holmes', '~>0'
+  s.add_runtime_dependency 'mimemagic', '~>0'
 end
