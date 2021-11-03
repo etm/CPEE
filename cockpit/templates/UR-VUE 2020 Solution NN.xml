@@ -51,6 +51,7 @@
               <_notes_general/>
             </_notes>
           </annotations>
+          <documentation/>
         </call>
         <call id="a3" endpoint="get_items_neural">
           <parameters>
@@ -81,6 +82,7 @@ data.item = result[0]</finalize>
               <_notes_general/>
             </_notes>
           </annotations>
+          <documentation/>
         </call>
         <choose mode="exclusive">
           <alternative condition="data.items.length &gt; 0">
@@ -109,6 +111,7 @@ data.item = result[0]</finalize>
                   <_notes_general/>
                 </_notes>
               </annotations>
+              <documentation/>
             </call>
             <call id="a6" endpoint="get_offset_neural">
               <parameters>
@@ -141,6 +144,7 @@ data.item = result[0]</finalize>
                   <_notes_general/>
                 </_notes>
               </annotations>
+              <documentation/>
             </call>
             <call id="a8" endpoint="grip_and_place">
               <parameters>
@@ -169,6 +173,7 @@ data.item = result[0]</finalize>
                   <_notes_general/>
                 </_notes>
               </annotations>
+              <documentation/>
             </call>
             <_probability>
               <_probability_min/>

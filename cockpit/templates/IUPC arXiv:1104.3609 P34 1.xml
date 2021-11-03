@@ -39,6 +39,8 @@
         <code>
           <finalize output="result">data.x += "a1,"</finalize>
         </code>
+        <annotations/>
+        <documentation/>
       </call>
       <call id="a2" endpoint="timeouts">
         <parameters>
@@ -53,6 +55,8 @@
         <code>
           <finalize output="result">data.x += "a2,"</finalize>
         </code>
+        <annotations/>
+        <documentation/>
       </call>
       <call id="a3" endpoint="timeout">
         <parameters>
@@ -67,6 +71,8 @@
         <code>
           <finalize output="result">data.x += "a3,"</finalize>
         </code>
+        <annotations/>
+        <documentation/>
       </call>
     </description>
   </description>

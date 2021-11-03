@@ -26,6 +26,8 @@
         <code>
           <finalize>data.bla = result</finalize>
         </code>
+        <annotations/>
+        <documentation/>
       </call>
     </description>
   </description>

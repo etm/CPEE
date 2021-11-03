@@ -44,6 +44,7 @@ data.direction_first['y'] = data.direction_first['dir_y'] * 6</finalize>
             <_notes_general/>
           </_notes>
         </annotations>
+        <documentation/>
       </call>
       <call id="a10" endpoint="move_rel">
         <parameters>
@@ -70,6 +71,7 @@ data.direction_first['y'] = data.direction_first['dir_y'] * 6</finalize>
             <_notes_general/>
           </_notes>
         </annotations>
+        <documentation/>
       </call>
       <call id="a17" endpoint="get_offset_base">
         <parameters>
@@ -107,6 +109,7 @@ data.direction_second['y'] = data.direction_second['dir_y'] * data.len</finalize
             <_notes_general/>
           </_notes>
         </annotations>
+        <documentation/>
       </call>
       <call id="a12" endpoint="move_rel">
         <parameters>
@@ -133,6 +136,7 @@ data.direction_second['y'] = data.direction_second['dir_y'] * data.len</finalize
             <_notes_general/>
           </_notes>
         </annotations>
+        <documentation/>
       </call>
       <call id="a2" endpoint="get_offset_base">
         <parameters>
@@ -162,6 +166,7 @@ data.direction_second['y'] = data.direction_second['dir_y'] * data.len</finalize
             <_notes_general/>
           </_notes>
         </annotations>
+        <documentation/>
       </call>
       <manipulate id="a11" label="Calculate new position">data.item = {}
 data.item['adjust_x'] = (data.direction_first['x'] + data.direction_second['x']).round(0)

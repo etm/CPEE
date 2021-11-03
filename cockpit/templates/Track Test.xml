@@ -17,7 +17,7 @@
               <_probability_max/>
               <_probability_avg/>
             </_probability>
-            <parallel_branch pass="" local="">
+            <parallel_branch>
               <call id="a1" endpoint="start_url">
                 <parameters>
                   <label>Start</label>
@@ -52,6 +52,7 @@
                     <_notes_general/>
                   </_notes>
                 </annotations>
+                <documentation/>
               </call>
             </parallel_branch>
             <manipulate id="a4" label="">data.i += 1</manipulate>
