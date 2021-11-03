@@ -13,6 +13,7 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'charlock_holmes'
+require 'mimemagic'
 require 'base64'
 
 class ConnectionWrapper < WEEL::ConnectionWrapperBase
@@ -199,7 +200,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @controller.notify("status/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :id => status.id, :message => status.message)
     end
     unless changed_dataelements.nil? || changed_dataelements.empty?
-      de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = detect_encoding(v); (enc == 'BINARY' ? convert_to_base64(v) : (enc == 'UTF-8' ? v : v.encode('UTF-8',enc))) }
+      de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = detect_encoding(v); (enc == 'OTHER' ? v.inspect : (v.encode('UTF-8',enc) rescue convert_to_base64(v))) }
       @controller.notify("dataelements/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => de)
     end
     unless changed_endpoints.nil? || changed_endpoints.empty?
@@ -245,19 +246,25 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def detect_encoding(text)
     if text.is_a? String
-      res = CharlockHolmes::EncodingDetector.detect(text)
-      if res.is_a?(Hash) && res[:type] == :text && res[:encoding].match(/(ISO|UTF-8)/)
-        res[:encoding]
+      if text.valid_encoding? && text.encoding.name == 'UTF-8'
+        'UTF-8'
       else
-        'BINARY'
+        res = CharlockHolmes::EncodingDetector.detect(text)
+        if res.is_a?(Hash) && res[:type] == :text && res[:ruby_encoding] != "binary"
+          res[:encoding]
+        elsif res.is_a?(Hash) && res[:type] == :binary
+          'BINARY'
+        else
+          'ISO-8859-1'
+        end
       end
     else
-      'UTF-8'
+      'OTHER'
     end
   end
 
   def convert_to_base64(text)
-    'data:application/octet-stream;base64,' + Base64::urlsafe_encode64(text)
+    ('data:' + MimeMagic.by_magic(text).type + ';base64,' + Base64::encode64(text)) rescue ('data:application/octet-stream;base64,' + Base64::encode64(text))
   end
 
   def structurize_result(result)
@@ -266,20 +273,28 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         { 'name' => r.name, 'data' => r.value }
       elsif r.is_a? Riddl::Parameter::Complex
         res = if r.mimetype == 'application/json'
-          JSON::parse(r.value.read) rescue nil
+          ttt = JSON::parse(r.value.read) rescue nil
+          if ttt.nil?
+            ''
+          else
+            enc = detect_encoding(ttt)
+            enc == 'OTHER' ? ttt.inspect : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
+          end
         elsif r.mimetype == 'text/plain' || r.mimetype == 'text/html'
           ttt = r.value.read
           ttt = ttt.to_f if ttt == ttt.to_f.to_s
           ttt = ttt.to_i if ttt == ttt.to_i.to_s
-          ttt
+          enc = detect_encoding(ttt)
+          enc == 'OTHER' ? ttt.inspect : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
         else
-          r.value.read
+          convert_to_base64(r.value.read)
+          r.value.rewind
         end
-        enc = detect_encoding(res)
+
         tmp = {
           'name' => r.name == '' ? 'result' : r.name,
           'mimetype' => r.mimetype,
-          'data' => (enc == 'BINARY' ? convert_to_base64(res) : (enc == 'UTF-8' ? res : res.encode('UTF-8',enc)))
+          'data' => res.to_s
         }
         r.value.rewind
         tmp

@@ -901,7 +901,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'label': function(node){
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        var ret = [ { column: 'Label', value: $(node).attr('overrun') } ];
+        var ret = [ { column: 'Label', value: ($(node).attr('overrun') + ', ' + $(node).attr('execution')) } ];
         if (avg != '') {
           ret.push({ column: 'Average', value: avg + '%' });
         }
