@@ -155,7 +155,7 @@
       </element>
     </element>
   </element>
-  <element name="input" rngui:header="Documentation">
+  <element name="documentation" rngui:header="Documentation">
     <element name="input" rngui:header="Input Arguments" rngui:fold="closed">
       <zeroOrMore rngui:label="Create Argument">
         <element name="item" rngui:label="Description">
