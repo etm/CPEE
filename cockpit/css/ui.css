@@ -242,4 +242,4 @@ span.vote {
   overflow: auto;
 }
 #disclaimer p { max-width: 82ex; text-align: justify; }
-#disclaimer input { margin:0; padding:0; vertical-align:bottom; margin-right: 0.5em; }
+#disclaimer input { margin:0; padding:0; vertical-align:baseline; margin-right: 0.5em; }
