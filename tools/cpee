@@ -119,14 +119,22 @@ elsif command == 'convert'
         doc.find('//d:parallel_branch/@pass').delete_all!
         doc.find('//d:parallel_branch/@local').delete_all!
         doc.find('//d:call').each do |c|
-          c.find('d:annotations').first.add c.find('d:parameters/d:_context_data_analysis')
-          c.find('d:annotations').first.add c.find('d:parameters/d:_report')
+          if c.find('d:annotations').empty?
+            c.add('d:annotations')
+          end
+          c.find('d:annotations').first.add c.find('d:parameters/d:_context_data_analysis') rescue nil
+          c.find('d:annotations').first.add c.find('d:parameters/d:report') rescue nil
+          c.find('d:annotations').first.add c.find('d:_timing') rescue nil
+          c.find('d:annotations').first.add c.find('d:_notes') rescue nil
+          c.find('d:parameters/d:sensors').delete_all! rescue nil
+          c.find('d:parameters/d:stream').delete_all! rescue nil
+          c.find('d:annotations').first.add c.find('d:parameters/d:report') rescue nil
           if c.find('d:documentation').empty?
             node = c.add('d:documentation')
-            node.add c.find('d:input')
-            node.add c.find('d:output')
-            node.add c.find('d:implementation')
-            node.add c.find('d:code[d:description]')
+            node.add c.find('d:input') rescue nil
+            node.add c.find('d:output') rescue nil
+            node.add c.find('d:implementation') rescue nil
+            node.add c.find('d:code[d:description]') rescue nil
           end
         end
         doc.find('//x:handlerwrapper').delete_all!

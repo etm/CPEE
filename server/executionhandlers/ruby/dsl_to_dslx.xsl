@@ -403,6 +403,8 @@
   <xsl:template match="d:parameters">
     <xsl:apply-templates select="d:label" mode="parameter"/>
     <xsl:apply-templates select="d:*[not(name()='label')]" mode="parameter"/>
+    <xsl:if test="count(*) &gt; 0">, </xsl:if>
+    <xsl:apply-templates select="../d:annotations" mode="annotations"/>
   </xsl:template>
   <xsl:template match="d:label" mode="parameter">
     <xsl:text>:</xsl:text>
@@ -410,6 +412,12 @@
     <xsl:text> =&gt; "</xsl:text>
     <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
     <xsl:text>"</xsl:text>
+  </xsl:template>
+  <xsl:template match="d:annotations" mode="annotations">
+    <xsl:text>:</xsl:text>
+    <xsl:value-of select="name()"/>
+    <xsl:text> =&gt; </xsl:text>
+    <xsl:apply-templates select="d:*" mode="plainmulti"/>
   </xsl:template>
   <xsl:template match="d:*[not(name()='label')]" mode="parameter">
     <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
@@ -422,24 +430,6 @@
         <xsl:text>[</xsl:text>
         <xsl:apply-templates select="d:*" mode="sub"/>
         <xsl:text>]</xsl:text>
-      </xsl:when>
-      <xsl:when test="count(*) &gt; 0 and name()='sensors'">
-        <xsl:text>[</xsl:text>
-        <xsl:apply-templates select="d:*" mode="plainmulti"/>
-        <xsl:text>]</xsl:text>
-      </xsl:when>
-      <xsl:when test="count(*) &gt; 0 and name()='aggregators'">
-        <xsl:text>[</xsl:text>
-        <xsl:apply-templates select="d:*" mode="plainmulti"/>
-        <xsl:text>]</xsl:text>
-      </xsl:when>
-      <xsl:when test="count(*) &gt; 0 and name()='costs'">
-        <xsl:text>[</xsl:text>
-        <xsl:apply-templates select="d:*" mode="plainmulti"/>
-        <xsl:text>]</xsl:text>
-      </xsl:when>
-      <xsl:when test="count(*) &gt; 0 and name()='report'">
-        <xsl:apply-templates select="d:*" mode="plainmulti"/>
       </xsl:when>
       <xsl:when test="count(*) &gt; 0 and not(name()='arguments')">
         <xsl:text>{</xsl:text>

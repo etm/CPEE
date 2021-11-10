@@ -149,10 +149,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def activity_handle(passthrough, parameters) # {{{
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
-    @sensors = parameters.dig(:stream,:sensors)
-    @aggregators = parameters.dig(:stream,:aggregators)
-    @costs = parameters.dig(:stream,:costs)
-    @controller.notify("activity/calling", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
+    @anno = parameters[:annotations]
+    @controller.notify("activity/calling", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :annotations => anno)
     if passthrough.to_s.empty?
       proto_curl parameters
     else
@@ -303,7 +301,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end
 
   def callback(result=nil,options={})
-    @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :sensors => @sensors, :aggregators => @aggregators, :costs => @costs)
+    @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :annotations => @anno)
     @guard_files += result
     @handler_returnValue = simplify_result(result)
     @handler_returnOptions = options

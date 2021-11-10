@@ -480,7 +480,9 @@ function WFAdaptorManifestation(adaptor) {
       'endnodes': 'this',
       'svg': self.adaptor.theme_dir + 'symbols/parallel.svg',
       'resolve_symbol': function(node) {
-        if($(node).attr('cancel') == 'last' && $(node).attr('wait') == '-1') {
+        if($(node).children(':not(parallel_branch)').length > 0) {
+          return 'parallel_complex';
+        } else if($(node).attr('cancel') == 'last' && $(node).attr('wait') == '-1') {
           return 'parallel_simple';
         } else if($(node).attr('cancel') == 'first' && $(node).attr('wait') == '-1') {
           return 'parallel_event_all';
