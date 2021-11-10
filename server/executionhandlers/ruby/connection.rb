@@ -150,7 +150,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
     @anno = parameters[:annotations]
-    @controller.notify("activity/calling", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :annotations => anno)
+    @controller.notify("activity/calling", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :annotations => @anno)
     if passthrough.to_s.empty?
       proto_curl parameters
     else
