@@ -23,7 +23,7 @@
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="timeout">
         <parameters>
-          <label>Wait</label>
+          <label>Wait </label>
           <method>:post</method>
           <arguments>
             <timeout>2</timeout>
