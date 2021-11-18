@@ -25,6 +25,11 @@ module CPEE
 
     def self::implementation(id,opts)
       Proc.new do
+        unless CPEE::Persistence::exists(id,opts)
+          run CPEE::Properties::FAIL
+          return
+        end
+
         run CPEE::Properties::Get, id, opts if get
         run CPEE::Properties::Patch, id, opts if patch 'set-some-properties'
         run CPEE::Properties::Put, id, opts if put 'set-some-properties'
@@ -93,6 +98,13 @@ module CPEE
         end
       end
     end
+
+    class FAIL < Riddl::Implementation #{{{
+      def response
+        @status = 404
+        nil
+      end
+    end #}}}
 
     class Get < Riddl::Implementation #{{{
       def response
