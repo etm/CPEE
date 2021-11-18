@@ -263,7 +263,7 @@ module CPEE
     def response
       opts = @a[0]
       id = @r[0].to_i
-      unless opts[:redis].exists?("instance:#{id}/state")
+      unless CPEE::Persistence::exists?(id,opts)
         @status = 404
         return
       end
@@ -285,7 +285,7 @@ module CPEE
       opts = @a[0]
       redis = opts[:redis]
       id = @r[0].to_i
-      unless redis.exists?("instance:#{id}/state")
+      unless CPEE::Persistence::exists?(id,opts)
         @status = 404
         return
       end
@@ -296,5 +296,12 @@ module CPEE
       end
     end
   end #}}}
+
+    class FAIL < Riddl::Implementation #{{{
+      def response
+        @status = 404
+        nil
+      end
+    end #}}}
 
 end

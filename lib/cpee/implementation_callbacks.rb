@@ -19,11 +19,15 @@ module CPEE
 
     def self::implementation(id,opts)
       Proc.new do
-        run CPEE::Callbacks::Callbacks, id, opts if get
-        on resource do
-          run CPEE::Callbacks::GetCallback, id, opts if get
-          run CPEE::Callbacks::DelCallback, id, opts if delete
-          run CPEE::Callbacks::ExCallback, id, opts if put
+        if CPEE::Persistence::exists?(id,opts)
+          run CPEE::Callbacks::Callbacks, id, opts if get
+          on resource do
+            run CPEE::Callbacks::GetCallback, id, opts if get
+            run CPEE::Callbacks::DelCallback, id, opts if delete
+            run CPEE::Callbacks::ExCallback, id, opts if put
+          end
+        else
+          run CPEE::FAIL
         end
       end
     end

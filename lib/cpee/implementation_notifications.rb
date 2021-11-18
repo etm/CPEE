@@ -19,23 +19,27 @@ module CPEE
 
     def self::implementation(id,opts)
       Proc.new do
-        on resource "notifications" do
-          run CPEE::Notifications::Overview if get
-          on resource "topics" do
-            run CPEE::Notifications::Topics, opts if get
-          end
-          on resource "subscriptions" do
-            run CPEE::Notifications::Subscriptions, id, opts if get
-            run CPEE::Notifications::CreateSubscription, id, opts if post 'create_subscription'
-            on resource do
-              run CPEE::Notifications::Subscription, id, opts if get
-              run CPEE::Notifications::UpdateSubscription, id, opts if put 'change_subscription'
-              run CPEE::Notifications::DeleteSubscription, id, opts if delete
-              on resource 'sse' do
-                run CPEE::Notifications::SSE, id, opts if sse
+        if CPEE::Persistence::exists?(id,opts)
+          on resource "notifications" do
+            run CPEE::Notifications::Overview if get
+            on resource "topics" do
+              run CPEE::Notifications::Topics, opts if get
+            end
+            on resource "subscriptions" do
+              run CPEE::Notifications::Subscriptions, id, opts if get
+              run CPEE::Notifications::CreateSubscription, id, opts if post 'create_subscription'
+              on resource do
+                run CPEE::Notifications::Subscription, id, opts if get
+                run CPEE::Notifications::UpdateSubscription, id, opts if put 'change_subscription'
+                run CPEE::Notifications::DeleteSubscription, id, opts if delete
+                on resource 'sse' do
+                  run CPEE::Notifications::SSE, id, opts if sse
+                end
               end
             end
           end
+        else
+          run CPEE::FAIL
         end
       end
     end

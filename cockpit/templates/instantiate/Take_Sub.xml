@@ -19,14 +19,6 @@
             <endpoints/>
             <stream/>
           </arguments>
-          <stream>
-            <sensors/>
-            <aggregators/>
-            <costs/>
-          </stream>
-          <report>
-            <url/>
-          </report>
         </parameters>
         <annotations>
           <_timing>
@@ -39,7 +31,11 @@
           <_notes>
             <_notes_general/>
           </_notes>
+          <report>
+            <url/>
+          </report>
         </annotations>
+        <documentation/>
       </call>
     </description>
   </description>

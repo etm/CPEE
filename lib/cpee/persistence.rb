@@ -63,6 +63,10 @@ module CPEE
       opts[:redis].get("instance:#{id}/#{item}")
     end #}}}
 
+    def self::exists?(id,opts) #{{{
+      opts[:redis].exists?("instance:#{id}/state")
+    end #}}}
+
     def self::set_handler(id,opts,key,url,values,update=false) #{{{
       exis = opts[:redis].smembers("instance:#{id}/handlers/#{key}")
 
