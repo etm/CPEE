@@ -149,7 +149,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def activity_handle(passthrough, parameters) # {{{
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
-    @anno = parameters[:annotations]
+    @anno = parameters.delete(:annotations) rescue nil
     @controller.notify("activity/calling", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :annotations => anno)
     if passthrough.to_s.empty?
       proto_curl parameters
@@ -198,7 +198,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @controller.notify("status/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :id => status.id, :message => status.message)
     end
     unless changed_dataelements.nil? || changed_dataelements.empty?
-      de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = detect_encoding(v); (enc == 'OTHER' ? v.inspect : (v.encode('UTF-8',enc) rescue convert_to_base64(v))) }
+      de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = detect_encoding(v); (enc == 'OTHER' ? JSON::parse(v) : (v.encode('UTF-8',enc) rescue convert_to_base64(v))) }
       @controller.notify("dataelements/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => de)
     end
     unless changed_endpoints.nil? || changed_endpoints.empty?
