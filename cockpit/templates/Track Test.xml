@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <dataelements>
@@ -6,7 +7,17 @@
   <endpoints>
     <start_url>https://cpee.org/flow/start/url/</start_url>
   </endpoints>
-  <positions/>
+  <attributes>
+    <info>Track Test</info>
+    <modeltype>CPEE</modeltype>
+    <theme>default</theme>
+    <customer>pilotfabrik</customer>
+    <status>development</status>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <design_stage>development</design_stage>
+    <design_dir>Templates.dir</design_dir>
+  </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <loop mode="pre_test" condition="true">
@@ -26,33 +37,36 @@
                     <behavior>wait_running</behavior>
                     <url>https://cpee.org/flow/templates/instantiate/Take_Sub.xml</url>
                     <init>
-                      <time>4</time>
+                      <time>5</time>
                     </init>
                     <endpoints/>
-                    <stream/>
+                    <customization/>
                   </arguments>
-                  <stream>
-                    <sensors/>
-                    <aggregators/>
-                    <costs/>
-                  </stream>
-                  <report>
-                    <url/>
-                  </report>
                 </parameters>
                 <annotations>
                   <_timing>
-                    <_timing_wait/>
-                    <_timing_threshold/>
-                    <_timing_min/>
-                    <_timing_max/>
+                    <_timing_weight/>
                     <_timing_avg/>
+                    <_context_data_analysis>
+                      <probes/>
+                      <ips/>
+                    </_context_data_analysis>
+                    <report>
+                      <url/>
+                    </report>
+                    <explanations/>
                   </_timing>
                   <_notes>
                     <_notes_general/>
                   </_notes>
                 </annotations>
-                <documentation/>
+                <documentation>
+                  <input/>
+                  <output/>
+                  <implementation>
+                    <description/>
+                  </implementation>
+                </documentation>
               </call>
             </parallel_branch>
             <manipulate id="a4" label="">data.i += 1</manipulate>
@@ -73,15 +87,4 @@
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes>
-    <info>Track Test</info>
-    <modeltype>CPEE</modeltype>
-    <theme>default</theme>
-    <customer>pilotfabrik</customer>
-    <status>development</status>
-    <creator>Christine Ashcreek</creator>
-    <author>Christine Ashcreek</author>
-    <design_stage>development</design_stage>
-    <design_dir>Templates.dir</design_dir>
-  </attributes>
 </testset>
