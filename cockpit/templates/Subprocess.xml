@@ -1,18 +1,11 @@
+<?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
-  <dataelements/>
   <executionhandler>ruby</executionhandler>
+  <dataelements/>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
     <subprocess>https://cpee.org/flow/start/url/</subprocess>
   </endpoints>
-  <description>
-    <description xmlns="http://cpee.org/ns/description/1.0"/>
-  </description>
-  <transformation>
-    <description type="copy"/>
-    <dataelements type="none"/>
-    <endpoints type="none"/>
-  </transformation>
   <attributes>
     <info>Subprocess</info>
     <creator>Christine Ashcreek</creator>
@@ -26,4 +19,61 @@
     <design_dir>Templates.dir</design_dir>
     <design_stage>development</design_stage>
   </attributes>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="subprocess">
+        <parameters>
+          <label>Sub</label>
+          <method>:post</method>
+          <arguments>
+            <behavior>wait_running</behavior>
+            <url>https://cpee.org/design/server/Templates.dir/Wait.xml</url>
+            <init>
+              <bla>3</bla>
+            </init>
+            <endpoints/>
+            <customization/>
+          </arguments>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result">data.test = result</finalize>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
 </testset>
