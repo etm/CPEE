@@ -62,6 +62,12 @@ Daemonite.new do |opts|
             end
           end
         end
+        unless opts[:redis].exists?("instance:#{instance}/state")
+          empt = opts[:redis].keys("instance:#{instance}/*").to_a
+          opts[:redis].multi do |multi|
+            multi.del empt
+          end
+        end
       rescue => e
         puts e.message
         puts e.backtrace

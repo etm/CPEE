@@ -1,3 +1,2 @@
-*.author
-*.creator
-*.stage
+*.active*
+*.attrs

@@ -251,6 +251,12 @@ module CPEE
         multi.set(File.join(instance, 'state', '@changed'), Time.now.xmlschema(3))
       end
 
+      content = {
+        :state => 'ready',
+        :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+      }
+      CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,uuid,name,content,redis)
+
       @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
       @headers << Riddl::Header.new("CPEE-INSTANCE-URL", File.join(opts[:url].to_s,id.to_s,'/'))
       @headers << Riddl::Header.new("CPEE-INSTANCE-UUID", uuid)
@@ -289,7 +295,18 @@ module CPEE
         @status = 404
         return
       end
+
+      content = {
+        :state => 'purged',
+        :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+      }
+      state = CPEE::Persistence::extract_item(id,opts,'state')
+      if state == 'stopped' || state == 'ready'
+        CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,content[:attributes]['uuid'],content[:attributes]['info'],content,redis)
+      end
+
       empt = redis.keys("instance:#{id}/*").to_a
+      empt.delete_if{|e| e =~ /\/handlers/ }
       redis.multi do |multi|
         multi.del empt
         multi.zrem 'instances', id
