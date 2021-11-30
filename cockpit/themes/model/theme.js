@@ -292,7 +292,7 @@ function WFAdaptorManifestation(adaptor) {
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
-        if($('code', node).length > 0) {
+        if($('> code', node).length > 0) {
           return 'callmanipulate';
         } else {
           return 'call';
