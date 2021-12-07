@@ -16,6 +16,7 @@ require 'fileutils'
 require 'redis'
 require 'riddl/server'
 require 'riddl/client'
+require_relative 'fail'
 require_relative 'redis'
 require_relative 'message'
 require_relative 'persistence'
@@ -313,12 +314,5 @@ module CPEE
       end
     end
   end #}}}
-
-    class FAIL < Riddl::Implementation #{{{
-      def response
-        @status = 404
-        nil
-      end
-    end #}}}
 
 end

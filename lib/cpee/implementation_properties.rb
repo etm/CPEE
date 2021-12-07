@@ -13,6 +13,7 @@
 # <http://www.gnu.org/licenses/>.
 
 require_relative 'attributes_helper'
+require_relative 'fail'
 require_relative 'value_helper'
 require 'json'
 require 'erb'
