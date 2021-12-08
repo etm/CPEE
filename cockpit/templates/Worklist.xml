@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements>
-    <bla>ok</bla>
-  </dataelements>
+  <dataelements/>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
     <worklist>https://cpee.org/worklist/server/</worklist>
