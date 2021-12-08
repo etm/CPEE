@@ -27,8 +27,8 @@
           <arguments>
             <orgmodel>organisation1</orgmodel>
             <domain>VirtualBusiness1</domain>
-            <form>http://cpee.org/~demo/form/form-f.html</form>
-            <role>Regular</role>
+            <form>https://cpee.org/~demo/form/form-f.html</form>
+            <role>Assistant</role>
             <schaden>55546</schaden>
             <text>fetzen hin</text>
           </arguments>
@@ -67,6 +67,7 @@
           </code>
         </documentation>
       </call>
+      <stop id="a2"/>
     </description>
   </description>
   <transformation>
