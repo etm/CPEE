@@ -4,7 +4,7 @@
   <dataelements/>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <worklist>https://cpee.org/worklist/server/</worklist>
+    <worklist>https-post://cpee.org/worklist/server/</worklist>
   </endpoints>
   <attributes>
     <info>Worklist</info>
@@ -21,14 +21,15 @@
       <call id="a1" endpoint="worklist">
         <parameters>
           <label>OK OR NOT OK</label>
-          <method>:post</method>
           <arguments>
             <orgmodel>organisation1</orgmodel>
             <domain>VirtualBusiness1</domain>
             <form>https://cpee.org/~demo/form/form-f.html</form>
             <role>Assistant</role>
-            <schaden>55546</schaden>
-            <text>fetzen hin</text>
+            <data>
+              <schaden>10000</schaden>
+              <text>M&#xFC;sli</text>
+            </data>
           </arguments>
         </parameters>
         <code>
@@ -65,6 +66,7 @@
           </code>
         </documentation>
       </call>
+      <stop id="a2"/>
     </description>
   </description>
   <transformation>
