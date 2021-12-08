@@ -4,7 +4,12 @@
   <dataelements/>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
     <worklist>https-post://cpee.org/worklist/server/</worklist>
+    <send>https-post://cpee.org/ing/correlators/message/send/</send>
+    <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
+    <user>https-post://cpee.org/services/timeout-user.php</user>
+    <auto>https-post://cpee.org/services/timeout-auto.php</auto>
   </endpoints>
   <attributes>
     <info>Worklist</info>
@@ -28,7 +33,7 @@
             <role>Assistant</role>
             <data>
               <schaden>10000</schaden>
-              <text>M&#xFC;sli</text>
+              <text>destroyed</text>
             </data>
           </arguments>
         </parameters>
