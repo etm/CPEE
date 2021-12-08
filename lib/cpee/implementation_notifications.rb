@@ -189,7 +189,7 @@ module CPEE
         on.pmessage do |pat, what, message|
           if pat == 'forward:*'
             id, key = what.match(/forward:([^\/]+)\/(.+)/).captures
-            if sse = opts.dig(:sse_connections,id.to_i,key)
+            if sse = opts.dig(:sse_connections,id,key)
               sse.send message
             else
               DeleteSubscription::set(id,opts,key)

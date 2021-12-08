@@ -84,7 +84,7 @@ module CPEE
     opts[:sse_connections]            = {}
 
     opts[:statemachine]               = CPEE::StateMachine.new opts[:states], %w{running simulating replaying finishing stopping abandoned finished} do |id|
-      opts[:redis].get("instance:#{id}/state")
+      CPEE::Persistence::extract_item(id,opts,"state")
     end
 
     opts[:runtime_cmds]               << [
@@ -177,16 +177,14 @@ module CPEE
 
   class Instances < Riddl::Implementation #{{{
     def response
-      redis = @a[0][:redis]
+      opts = @a[0]
       Riddl::Parameter::Complex.new("wis","text/xml") do
         ins = XML::Smart::string('<instances/>')
-        redis.zrevrange('instances',0,-1).each do |instance|
-          statekey = "instance:#{instance}/state"
-          attributes = "instance:#{instance}/attributes/"
-          info = redis.get(attributes + 'info')
-          uuid = redis.get(attributes + 'uuid')
-          state = redis.get(statekey)
-          state_changed = redis.get(File.join(statekey,'@changed'))
+        CPEE::Persistence::each_object(opts) do |instance|
+          info = CPEE::Persistence::extract_item(instance,opts,'attributes/info')
+          uuid = CPEE::Persistence::extract_item(instance,opts,'attributes/uuid')
+          state = CPEE::Persistence::extract_item(instance,opts,'state')
+          state_changed = CPEE::Persistence::extract_item(instance,opts,'state/@changed')
           ins.root.add('instance', info,  'uuid' => uuid, 'id' => instance, 'state' => state, 'state_changed' => state_changed )
         end
         ins.to_s
@@ -210,9 +208,9 @@ module CPEE
       doc = XML::Smart::open_unprotected(opts[:properties_init])
       doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
       name     = @p[0].value
-      id       = redis.zrevrange('instances', 0, 0).first.to_i + 1
+      id       = CPEE::Persistence::new_object(opts)
       uuid     = SecureRandom.uuid
-      instance = 'instance:' + id.to_s
+      instance = CPEE::Persistence::OBJ + ':' + id.to_s
       redis.multi do |multi|
         multi.zadd('instances',id,id)
         doc.root.find(PROPERTIES_PATHS_FULL.join(' | ')).each do |e|
@@ -236,12 +234,12 @@ module CPEE
             doc.register_namespace 'np', 'http://riddl.org/ns/common-patterns/notifications-producer/2.0'
             key = File.basename(File.dirname(f))
             url = doc.find('string(/np:subscription/@url)')
-            multi.sadd("instance:#{id}/handlers",key)
-            multi.set("instance:#{id}/handlers/#{key}/url",url)
+            multi.sadd(CPEE::Persistence::OBJ + ":#{id}/handlers",key)
+            multi.set(CPEE::Persistence::OBJ + ":#{id}/handlers/#{key}/url",url)
             doc.find('/np:subscription/np:topic/*').each do |e|
               c = File.join(e.parent.attributes['id'],e.qname.name,e.text)
-              multi.sadd("instance:#{id}/handlers/#{key}",c)
-              multi.sadd("instance:#{id}/handlers/#{c}",key)
+              multi.sadd(CPEE::Persistence::OBJ + ":#{id}/handlers/#{key}",c)
+              multi.sadd(CPEE::Persistence::OBJ + ":#{id}/handlers/#{c}",key)
             end
           end rescue nil # all the ones that are not ok, are ignored
         end
@@ -306,7 +304,7 @@ module CPEE
         CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,content[:attributes]['uuid'],content[:attributes]['info'],content,redis)
       end
 
-      empt = redis.keys("instance:#{id}/*").to_a
+      empt = CPEE::Persistence::keys(id,opts)to_a
       empt.delete_if{|e| e =~ /\/handlers/ }
       redis.multi do |multi|
         multi.del empt
