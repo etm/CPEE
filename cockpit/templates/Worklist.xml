@@ -22,7 +22,7 @@
         <parameters>
           <label>OK OR NOT OK</label>
           <arguments>
-            <orgmodel>organisation1</orgmodel>
+            <orgmodel>https://cpee.org/~demo/orgviz/organisation_informatik.xml</orgmodel>
             <domain>VirtualBusiness1</domain>
             <form>https://cpee.org/~demo/form/form-f.html</form>
             <role>Assistant</role>
