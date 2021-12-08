@@ -2,11 +2,11 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <dataelements>
-    <bla/>
+    <bla>ok</bla>
   </dataelements>
   <endpoints>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <worklist>http://cpee.org:9398</worklist>
+    <worklist>https://cpee.org/worklist/server/</worklist>
   </endpoints>
   <attributes>
     <info>Worklist</info>
@@ -67,7 +67,6 @@
           </code>
         </documentation>
       </call>
-      <stop id="a2"/>
     </description>
   </description>
   <transformation>
