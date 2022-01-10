@@ -304,9 +304,7 @@ module CPEE
         CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,content[:attributes]['uuid'],content[:attributes]['info'],content,redis)
       end
 
-      # start edit by m: added '.' before 'to_a'
       empt = CPEE::Persistence::keys(id,opts).to_a
-      # end edit by m: added '.' before 'to_a'
       empt.delete_if{|e| e =~ /\/handlers/ }
       redis.multi do |multi|
         multi.del empt
