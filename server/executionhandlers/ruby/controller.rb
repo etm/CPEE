@@ -21,6 +21,7 @@ require 'cpee/value_helper'
 require 'cpee/attributes_helper'
 require 'cpee/message'
 require 'cpee/redis'
+require 'cpee/persistence'
 
 require 'ostruct'
 class ParaStruct < OpenStruct
@@ -41,8 +42,8 @@ class Controller
     @id = id
 
     @attributes = {}
-    @redis.keys("instance:#{id}/attributes/*").each do |key|
-      @attributes[File.basename(key)] = @redis.get(key)
+    CPEE::Persistence::extract_list(id,opts,'attributes').each do |de|
+      @attributes[de[0]] = de[1]
     end
 
     @attributes_helper = AttributesHelper.new
@@ -152,7 +153,8 @@ class Controller
     topic, name = what.split('/')
     handler = File.join(topic,'vote',name)
     votes = []
-    @redis.smembers("instance:#{id}/handlers/#{handler}").each do |client|
+
+    CPEE::Persistence::extract_handler(id,@opts,handler).each do |client|
       voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
       content[:key] = voteid
       content[:attributes] = attributes_translated
