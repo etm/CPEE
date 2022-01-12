@@ -6,10 +6,10 @@
   <xsl:template match="/">
     <xsl:text>control flow do</xsl:text>
     <xsl:call-template name="print-newline"/>
-    <xsl:apply-templates select="//d:description"/>
+    <xsl:apply-templates select="/d:description"/>
     <xsl:text>end</xsl:text>
   </xsl:template>
-  <xsl:template match="//d:description">
+  <xsl:template match="/d:description">
     <xsl:apply-templates>
       <xsl:with-param name="myspace">
         <xsl:value-of select="0*$myspacemultiplier"/>

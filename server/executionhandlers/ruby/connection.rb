@@ -220,6 +220,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       elsif result[0].is_a? Riddl::Parameter::Complex
         if result[0].mimetype == 'application/json'
           result = JSON::parse(result[0].value.read) rescue nil
+        elsif result[0].mimetype == 'text/yaml'
+          result = YAML::load(result[0].value.read) rescue nil
         elsif result[0].mimetype == 'application/xml' || result[0].mimetype == 'text/xml'
           result = XML::Smart::string(result[0].value.read) rescue nil
         elsif result[0].mimetype == 'text/plain'

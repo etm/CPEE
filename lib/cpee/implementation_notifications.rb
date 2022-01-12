@@ -198,7 +198,7 @@ module CPEE
             mess = JSON.parse(message[message.index(' ')+1..-1])
             state = mess.dig('content','state')
             if state == 'finished' || state == 'abandoned'
-              opts.dig(:sse_connections,mess.dig('instance').to_i)&.each do |key,sse|
+              opts.dig(:sse_connections,mess.dig('instance').to_s)&.each do |key,sse|
                 EM.add_timer(10) do # just to be sure that all messages arrived. 10 seconds should be enough ... we think ... therefore we are (not sure)
                   sse.close
                 end
@@ -219,7 +219,7 @@ module CPEE
     class SSE < Riddl::SSEImplementation #{{{
       def onopen
         @opts = @a[1]
-        @id = @a[0]
+        @id = @a[0].to_s
         @key = @r[-2]
         if CPEE::Persistence::exists_handler?(@id,@opts,@key)
           @opts[:sse_connections][@id] ||= {}
