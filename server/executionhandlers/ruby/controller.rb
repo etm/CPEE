@@ -53,9 +53,9 @@ class Controller
     @loop_guard = {}
 
     @callback_keys = {}
-    @psredis = @opts[:redis_dyn].call "Instance #{@id} Callback Response"
 
-    Thread.new do
+    @subs = Thread.new do
+      @psredis = @opts[:redis_dyn].call "Instance #{@id} Callback Response"
       @psredis.psubscribe('callback-response:*','callback-end:*') do |on|
         on.pmessage do |pat, what, message|
           if pat == 'callback-response:*' && @callback_keys.has_key?(what[18..-1])
@@ -78,6 +78,12 @@ class Controller
           end
         end
       end
+      @psredis.close
+    rescue =>  e
+      sleep 1
+      retry
+      puts e.message
+      puts e.backtrace
     end
   end
 
@@ -137,7 +143,6 @@ class Controller
         CPEE::Message::send(:'vote-response',key,base,@id,uuid,info,true,@redis)
       end
     end
-    @thread.join if !@thread.nil? && @thread.alive?
   end
 
   def info
