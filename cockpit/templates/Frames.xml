@@ -1,18 +1,13 @@
+<?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
-  <dataelements/>
   <executionhandler>ruby</executionhandler>
+  <dataelements/>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
     <subprocess>https://cpee.org/flow/start/url/</subprocess>
+    <frames_init>https-post://cpee.org/out/frames/simple/</frames_init>
+    <frames_display>https-put://cpee.org/out/frames/simple/</frames_display>
   </endpoints>
-  <description>
-    <description xmlns="http://cpee.org/ns/description/1.0"/>
-  </description>
-  <transformation>
-    <description type="copy"/>
-    <dataelements type="none"/>
-    <endpoints type="none"/>
-  </transformation>
   <attributes>
     <info>Frames</info>
     <creator>Christine Ashcreek</creator>
@@ -26,4 +21,228 @@
     <design_dir>Templates.dir</design_dir>
     <design_stage>development</design_stage>
   </attributes>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="frames_init">
+        <parameters>
+          <label>Init Frame</label>
+          <arguments>
+            <style_url/>
+            <document_url/>
+            <x_amount>5</x_amount>
+            <y_amount>8</y_amount>
+            <lang>de-at</lang>
+            <document_name>Show Info</document_name>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <explanations/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+        </documentation>
+      </call>
+      <call id="a3" endpoint="frames_display">
+        <parameters>
+          <label>Clear</label>
+          <arguments>
+            <type>set</type>
+            <lx>0</lx>
+            <ly>0</ly>
+            <x_amount>5</x_amount>
+            <y_amount>8</y_amount>
+            <button/>
+            <style/>
+            <urls/>
+            <default/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <explanations/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+        </documentation>
+      </call>
+      <call id="a6" endpoint="frames_display">
+        <parameters>
+          <label>Show Header</label>
+          <arguments>
+            <type>set</type>
+            <lx>0</lx>
+            <ly>0</ly>
+            <x_amount>5</x_amount>
+            <y_amount>1</y_amount>
+            <button/>
+            <style/>
+            <urls>
+              <urls_item>
+                <lang>de-at</lang>
+                <url>https://cpee.org/form/tum-header.html</url>
+              </urls_item>
+            </urls>
+            <default/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <explanations/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+        </documentation>
+      </call>
+      <loop mode="post_test" condition="true">
+        <_probability>
+          <_probability_min/>
+          <_probability_max/>
+          <_probability_avg/>
+        </_probability>
+        <call id="a2" endpoint="frames_display">
+          <parameters>
+            <label>Show Button</label>
+            <arguments>
+              <type>wait</type>
+              <lx>0</lx>
+              <ly>1</ly>
+              <x_amount>1</x_amount>
+              <y_amount>1</y_amount>
+              <button/>
+              <style/>
+              <urls>
+                <urls_item>
+                  <lang>de-at</lang>
+                  <url>https://cpee.org/form/button.html</url>
+                </urls_item>
+              </urls>
+              <default/>
+            </arguments>
+          </parameters>
+          <annotations>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <explanations/>
+            </_timing>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+          </documentation>
+        </call>
+        <call id="a7" endpoint="frames_display">
+          <parameters>
+            <label>Clear Button</label>
+            <arguments>
+              <type>set</type>
+              <lx>0</lx>
+              <ly>1</ly>
+              <x_amount>1</x_amount>
+              <y_amount>1</y_amount>
+              <button/>
+              <style/>
+              <urls/>
+              <default/>
+            </arguments>
+          </parameters>
+          <annotations>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <explanations/>
+            </_timing>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+          </documentation>
+        </call>
+        <stop id="a4"/>
+      </loop>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
 </testset>
