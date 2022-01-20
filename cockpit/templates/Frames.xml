@@ -27,7 +27,7 @@
         <parameters>
           <label>Init Frame</label>
           <arguments>
-            <style_url/>
+            <style_url>https://cpee.org/form/frames.css</style_url>
             <document_url/>
             <x_amount>5</x_amount>
             <y_amount>8</y_amount>
