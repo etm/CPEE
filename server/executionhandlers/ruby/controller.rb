@@ -82,8 +82,6 @@ class Controller
     rescue =>  e
       sleep 1
       retry
-      puts e.message
-      puts e.backtrace
     end
   end
 

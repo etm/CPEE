@@ -77,7 +77,15 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end #}}}
 
   def additional #{{{
-    { :attributes => @controller.attributes }
+    {
+      :attributes => @controller.attributes,
+      :cpee => {
+        'base' => @controller.base_url,
+        'instance' => @controller.instance_id,
+        'instance_url' => @controller.instance_url,
+        'instance_uuid' => @controller.uuid
+      }
+    }
   end #}}}
 
   def proto_curl(parameters) #{{{
