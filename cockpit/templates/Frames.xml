@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements>
-    <test>https://cpee.org/flow/graph.html?monitor=https://cpee.org/flow/engine/4571/</test>
-  </dataelements>
+  <dataelements/>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
     <subprocess>https://cpee.org/flow/start/url/</subprocess>
