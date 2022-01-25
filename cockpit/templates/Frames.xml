@@ -1,12 +1,18 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements/>
+  <dataelements>
+    <test>https://cpee.org/flow/graph.html?monitor=https://cpee.org/flow/engine/4571/</test>
+  </dataelements>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
     <subprocess>https://cpee.org/flow/start/url/</subprocess>
     <frames_init>https-post://cpee.org/out/frames/simple/</frames_init>
+    <send>https-post://cpee.org/ing/correlators/message/send/</send>
     <frames_display>https-put://cpee.org/out/frames/simple/</frames_display>
+    <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
+    <user>https-post://cpee.org/services/timeout-user.php</user>
+    <auto>https-post://cpee.org/services/timeout-auto.php</auto>
   </endpoints>
   <attributes>
     <info>Frames</info>
@@ -25,7 +31,7 @@
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="frames_init">
         <parameters>
-          <label>Init Frame</label>
+          <label>"Init Frame"</label>
           <arguments>
             <style_url>https://cpee.org/form/frames.css</style_url>
             <document_url/>
@@ -62,7 +68,7 @@
       </call>
       <call id="a3" endpoint="frames_display">
         <parameters>
-          <label>Clear</label>
+          <label>Clear </label>
           <arguments>
             <type>set</type>
             <lx>0</lx>
@@ -115,6 +121,51 @@
               <urls_item>
                 <lang>de-at</lang>
                 <url>https://cpee.org/form/tum-header.html</url>
+              </urls_item>
+            </urls>
+            <default/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <explanations/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+        </documentation>
+      </call>
+      <call id="a5" endpoint="frames_display">
+        <parameters>
+          <label>Display Graph</label>
+          <arguments>
+            <type>set</type>
+            <lx>3</lx>
+            <ly>1</ly>
+            <x_amount>2</x_amount>
+            <y_amount>7</y_amount>
+            <button/>
+            <style/>
+            <urls>
+              <urls_item>
+                <lang>de-at</lang>
+                <url>!"https://cpee.org/flow/graph.html?monitor=" + cpee.instance_url</url>
               </urls_item>
             </urls>
             <default/>
