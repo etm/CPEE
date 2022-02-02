@@ -4,7 +4,7 @@
   <dataelements/>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
-    <subprocess>https://cpee.org/flow/start/url/</subprocess>
+    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
   </endpoints>
   <attributes>
     <info>Subprocess</info>
