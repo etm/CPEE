@@ -227,7 +227,7 @@ module CPEE
     end #}}}
     class PutState < Riddl::Implementation #{{{
       def self::set(id,opts,state)
-        CPEE::Persistence::set_item(id,opts,'state',:state => state, :timestamp => Time.now.xmlschema(3))
+        CPEE::Persistence::set_item(id,opts,'state',:state => state, :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h)
       end
 
       def self::run(id,opts,state)
