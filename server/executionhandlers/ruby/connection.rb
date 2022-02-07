@@ -311,10 +311,14 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end
 
   def callback(result=nil,options={})
-    @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :annotations => @anno)
+    recv = structurize_result(result)
+    @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
     @guard_files += result
     @handler_returnValue = simplify_result(result)
     @handler_returnOptions = options
+    if options['CPEE_EVENT']
+      @controller.notify("task/#{headers['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
+    end
     if options['CPEE_UPDATE']
       if options['CPEE_UPDATE_STATUS']
         @controller.notify("activity/status", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'])
