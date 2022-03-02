@@ -15,19 +15,22 @@
           <method>:get</method>
           <arguments/>
         </parameters>
-        <_timing>
-          <_timing_min/>
-          <_timing_max/>
-          <_timing_avg/>
-        </_timing>
-        <_notes>
-          <_notes_general/>
-          <_attachments/>
-        </_notes>
         <code>
           <finalize output="result"/>
           <update output="result"/>
         </code>
+        <annotations>
+          <_timing>
+            <_timing_min/>
+            <_timing_max/>
+            <_timing_avg/>
+          </_timing>
+          <_notes>
+            <_notes_general/>
+            <_attachments/>
+          </_notes>
+        </annotations>
+        <documentation/>
       </call>
     </description>
   </description>

@@ -3,43 +3,35 @@
   <executionhandler>ruby</executionhandler>
   <dataelements/>
   <endpoints>
-    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
-    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
-    <worklist>https-post://cpee.org/worklist/server/</worklist>
-    <send>https-post://cpee.org/ing/correlators/message/send/</send>
-    <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
-    <user>https-post://cpee.org/services/timeout-user.php</user>
-    <auto>https-post://cpee.org/services/timeout-auto.php</auto>
+    <timeout>https://cpee.org/services/timeout.php</timeout>
+    <subprocess>https://cpee.org/flow/start/url/</subprocess>
   </endpoints>
   <attributes>
-    <info>Worklist</info>
-    <modeltype>CPEE</modeltype>
-    <organisation1>http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
-    <theme>extended</theme>
+    <info>Wait</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
-    <design_stage>development</design_stage>
+    <modeltype>CPEE</modeltype>
+    <guarded>none</guarded>
+    <guarded_id/>
+    <model_uuid>c09dad6b-547e-41a9-8f31-95c40e71c607</model_uuid>
+    <model_version/>
+    <theme>extended</theme>
     <design_dir>Templates.dir</design_dir>
+    <design_stage>development</design_stage>
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <call id="a1" endpoint="worklist">
+      <call id="a1" endpoint="timeout">
         <parameters>
-          <label>OK OR NOT OK</label>
+          <label>Wait </label>
+          <method>:post</method>
           <arguments>
-            <orgmodel>https://cpee.org/~demo/orgviz/organisation_informatik.xml</orgmodel>
-            <domain>VirtualBusiness1</domain>
-            <form>https://cpee.org/~demo/form/form-f.html</form>
-            <role>Assistant</role>
-            <data>
-              <schaden>10000</schaden>
-              <text>destroyed</text>
-            </data>
+            <timeout>2</timeout>
           </arguments>
         </parameters>
         <code>
           <prepare/>
-          <finalize output="result">data.bla = result</finalize>
+          <finalize output="result">data.test = 7</finalize>
           <update output="result"/>
           <rescue output="result"/>
         </code>

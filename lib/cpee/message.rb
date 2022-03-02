@@ -15,25 +15,27 @@
 module CPEE
 
   module Message
+    WHO = 'cpee'
+    TYPE = 'instance'
 
     def self::send(type, event, cpee, instance, instance_uuid, instance_name, content={}, backend)
       topic = ::File::dirname(event)
       name = ::File::basename(event)
+      payload = {
+        WHO => cpee,
+        TYPE + '-url' => File.join(cpee,instance.to_s),
+        TYPE => instance,
+        'topic' => topic,
+        'type' => type,
+        'name' => name,
+        'timestamp' =>  Time.now.xmlschema(3),
+        'content' => content
+      }
+      payload[TYPE + '-uuid'] = instance_uuid if instance_uuid
+      payload[TYPE + '-name'] = instance_name if instance_name
       backend.publish(type.to_s + ':' + event,
         instance.to_s + ' ' +
-        JSON::generate(
-          { 'cpee' => cpee,
-            'instance-url' => File.join(cpee,instance.to_s),
-            'instance-uuid' => instance_uuid,
-            'instance-name' => instance_name,
-            'instance' => instance,
-            'topic' => topic,
-            'type' => type,
-            'name' => name,
-            'timestamp' =>  Time.now.xmlschema(3),
-            'content' => content
-          }
-        )
+        JSON::generate(payload)
       )
     end
 

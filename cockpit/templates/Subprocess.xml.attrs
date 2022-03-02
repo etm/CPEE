@@ -1,0 +1,13 @@
+{
+  "info": "Subprocess",
+  "creator": "Christine Ashcreek",
+  "author": "Christine Ashcreek",
+  "modeltype": "CPEE",
+  "guarded": "none",
+  "guarded_id": "",
+  "model_uuid": "1fc43528-3e4a-40ee-8503-c0ed7e5d883c",
+  "model_version": "",
+  "theme": "extended",
+  "design_dir": "Templates.dir",
+  "design_stage": "development"
+}

@@ -66,8 +66,10 @@ Daemonite.new do |opts|
             end
           when 'event:state/change'
             opts[:redis].multi do |multi|
-              multi.set("instance:#{instance}/state",mess.dig('content','state'))
-              multi.set("instance:#{instance}/state/@changed",mess.dig('timestamp'))
+              unless mess.dig('content','state') == 'purged'
+                multi.set("instance:#{instance}/state",mess.dig('content','state'))
+                multi.set("instance:#{instance}/state/@changed",mess.dig('timestamp'))
+              end
             end
           when 'event:executionhandler/change'
             opts[:redis].set("instance:#{instance}/executionhandler",mess.dig('content','executionhandler'))

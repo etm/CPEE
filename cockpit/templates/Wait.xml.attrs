@@ -1,0 +1,13 @@
+{
+  "info": "Wait",
+  "creator": "Christine Ashcreek",
+  "author": "Christine Ashcreek",
+  "modeltype": "CPEE",
+  "guarded": "none",
+  "guarded_id": "",
+  "model_uuid": "c09dad6b-547e-41a9-8f31-95c40e71c607",
+  "model_version": "",
+  "theme": "extended",
+  "design_dir": "Templates.dir",
+  "design_stage": "development"
+}

@@ -78,7 +78,15 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end #}}}
 
   def additional #{{{
-    { :attributes => @controller.attributes }
+    {
+      :attributes => @controller.attributes,
+      :cpee => {
+        'base' => @controller.base_url,
+        'instance' => @controller.instance_id,
+        'instance_url' => @controller.instance_url,
+        'instance_uuid' => @controller.uuid
+      }
+    }
   end #}}}
 
   def proto_curl(parameters) #{{{
@@ -151,7 +159,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
     @anno = parameters.delete(:annotations) rescue nil
-    @controller.notify("activity/calling", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :annotations => anno)
+    @controller.notify("activity/calling", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :annotations => @anno)
     if passthrough.to_s.empty?
       proto_curl parameters
     else
@@ -200,7 +208,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @controller.notify("status/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :id => status.id, :message => status.message)
     end
     unless changed_dataelements.nil? || changed_dataelements.empty?
-      de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = detect_encoding(v); (enc == 'OTHER' ? JSON::parse(v) : (v.encode('UTF-8',enc) rescue convert_to_base64(v))) }
+      de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = detect_encoding(v); (enc == 'OTHER' ? v : (v.encode('UTF-8',enc) rescue convert_to_base64(v))) }
       @controller.notify("dataelements/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => de)
     end
     unless changed_endpoints.nil? || changed_endpoints.empty?
@@ -222,6 +230,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       elsif result[0].is_a? Riddl::Parameter::Complex
         if result[0].mimetype == 'application/json'
           result = JSON::parse(result[0].value.read) rescue nil
+        elsif result[0].mimetype == 'text/yaml'
+          result = YAML::load(result[0].value.read) rescue nil
         elsif result[0].mimetype == 'application/xml' || result[0].mimetype == 'text/xml'
           result = XML::Smart::string(result[0].value.read) rescue nil
         elsif result[0].mimetype == 'text/plain'
@@ -278,7 +288,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
             ''
           else
             enc = detect_encoding(ttt)
-            enc == 'OTHER' ? ttt.inspect : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
+            enc == 'OTHER' ? ttt : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
           end
         elsif r.mimetype == 'text/plain' || r.mimetype == 'text/html'
           ttt = r.value.read
@@ -303,10 +313,14 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end
 
   def callback(result=nil,options={})
-    @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => structurize_result(result), :annotations => @anno)
+    recv = structurize_result(result)
+    @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
     @guard_files += result
     @handler_returnValue = simplify_result(result)
     @handler_returnOptions = options
+    if options['CPEE_EVENT']
+      @controller.notify("task/#{headers['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
+    end
     if options['CPEE_UPDATE']
       if options['CPEE_UPDATE_STATUS']
         @controller.notify("activity/status", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'])

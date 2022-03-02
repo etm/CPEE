@@ -13,29 +13,34 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'json'
+require_relative 'fail'
 
 module CPEE
   module Notifications
 
     def self::implementation(id,opts)
       Proc.new do
-        on resource "notifications" do
-          run CPEE::Notifications::Overview if get
-          on resource "topics" do
-            run CPEE::Notifications::Topics, opts if get
-          end
-          on resource "subscriptions" do
-            run CPEE::Notifications::Subscriptions, id, opts if get
-            run CPEE::Notifications::CreateSubscription, id, opts if post 'create_subscription'
-            on resource do
-              run CPEE::Notifications::Subscription, id, opts if get
-              run CPEE::Notifications::UpdateSubscription, id, opts if put 'change_subscription'
-              run CPEE::Notifications::DeleteSubscription, id, opts if delete
-              on resource 'sse' do
-                run CPEE::Notifications::SSE, id, opts if sse
+        if CPEE::Persistence::exists?(id,opts)
+          on resource "notifications" do
+            run CPEE::Notifications::Overview if get
+            on resource "topics" do
+              run CPEE::Notifications::Topics, opts if get
+            end
+            on resource "subscriptions" do
+              run CPEE::Notifications::Subscriptions, id, opts if get
+              run CPEE::Notifications::CreateSubscription, id, opts if post 'create_subscription'
+              on resource do
+                run CPEE::Notifications::Subscription, id, opts if get
+                run CPEE::Notifications::UpdateSubscription, id, opts if put 'change_subscription'
+                run CPEE::Notifications::DeleteSubscription, id, opts if delete
+                on resource 'sse' do
+                  run CPEE::Notifications::SSE, id, opts if sse
+                end
               end
             end
           end
+        else
+          run CPEE::FAIL
         end
       end
     end
@@ -184,7 +189,7 @@ module CPEE
         on.pmessage do |pat, what, message|
           if pat == 'forward:*'
             id, key = what.match(/forward:([^\/]+)\/(.+)/).captures
-            if sse = opts.dig(:sse_connections,id.to_i,key)
+            if sse = opts.dig(:sse_connections,id,key)
               sse.send message
             else
               DeleteSubscription::set(id,opts,key)
@@ -193,7 +198,7 @@ module CPEE
             mess = JSON.parse(message[message.index(' ')+1..-1])
             state = mess.dig('content','state')
             if state == 'finished' || state == 'abandoned'
-              opts.dig(:sse_connections,mess.dig('instance').to_i)&.each do |key,sse|
+              opts.dig(:sse_connections,mess.dig('instance').to_s)&.each do |key,sse|
                 EM.add_timer(10) do # just to be sure that all messages arrived. 10 seconds should be enough ... we think ... therefore we are (not sure)
                   sse.close
                 end
@@ -214,7 +219,7 @@ module CPEE
     class SSE < Riddl::SSEImplementation #{{{
       def onopen
         @opts = @a[1]
-        @id = @a[0]
+        @id = @a[0].to_s
         @key = @r[-2]
         if CPEE::Persistence::exists_handler?(@id,@opts,@key)
           @opts[:sse_connections][@id] ||= {}

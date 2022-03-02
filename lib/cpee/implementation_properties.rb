@@ -13,6 +13,7 @@
 # <http://www.gnu.org/licenses/>.
 
 require_relative 'attributes_helper'
+require_relative 'fail'
 require_relative 'value_helper'
 require 'json'
 require 'erb'
@@ -25,86 +26,78 @@ module CPEE
 
     def self::implementation(id,opts)
       Proc.new do
-        unless CPEE::Persistence::exists(id,opts)
-          run CPEE::Properties::FAIL
-          return
-        end
-
-        run CPEE::Properties::Get, id, opts if get
-        run CPEE::Properties::Patch, id, opts if patch 'set-some-properties'
-        run CPEE::Properties::Put, id, opts if put 'set-some-properties'
-        on resource 'state' do
-          run CPEE::Properties::GetStateMachine, id, opts if get 'machine'
-          run CPEE::Properties::GetState, id, opts if get
-          run CPEE::Properties::PutState, id, opts if put 'state'
-          on resource '@changed' do
-            run CPEE::Properties::GetStateChanged, id, opts if get
-          end
-        end
-        on resource 'status' do
-          run CPEE::Properties::GetStatus, id, opts if get
-          run CPEE::Properties::PutStatus, id, opts if put 'status'
-          on resource 'id' do
-            run CPEE::Properties::GetStatusID, id, opts if get
-          end
-          on resource 'message' do
-            run CPEE::Properties::GetStatusMessage, id, opts if get
-          end
-        end
-        on resource 'executionhandler' do
-          run CPEE::Properties::GetExecutionHandler, id, opts if get
-          run CPEE::Properties::PutExecutionHandler, id, opts if put 'executionhandler'
-        end
-        on resource 'positions' do
-          run CPEE::Properties::GetPositions, id, opts if get
-          run CPEE::Properties::PatchPositions, id, opts if patch 'positions'
-          run CPEE::Properties::PutPositions, id, opts if put 'positions'
-          run CPEE::Properties::PostPositions, id, opts if post 'position'
-          on resource do
-            run CPEE::Properties::GetDetail, 'positions', id, opts if get
-            run CPEE::Properties::SetDetail, id, opts if put 'detail'
-            run CPEE::Properties::DelDetail, id, opts if delete
-            on resource '@passthrough' do
-              run CPEE::Properties::GetPt, id, opts if get
+        if CPEE::Persistence::exists?(id,opts)
+          run CPEE::Properties::Get, id, opts if get
+          run CPEE::Properties::Patch, id, opts if patch 'set-some-properties'
+          run CPEE::Properties::Put, id, opts if put 'set-some-properties'
+          on resource 'state' do
+            run CPEE::Properties::GetStateMachine, id, opts if get 'machine'
+            run CPEE::Properties::GetState, id, opts if get
+            run CPEE::Properties::PutState, id, opts if put 'state'
+            on resource '@changed' do
+              run CPEE::Properties::GetStateChanged, id, opts if get
             end
           end
-        end
-        %w{dataelements endpoints attributes}.each do |ele|
-          on resource ele do
-            run CPEE::Properties::GetItems, ele, id, opts if get
-            run CPEE::Properties::PatchItems, ele, id, opts if patch ele
-            run CPEE::Properties::PutItems, ele, id, opts if put ele
-            run CPEE::Properties::PostItem, ele, id, opts if post ele[0..-2]
+          on resource 'status' do
+            run CPEE::Properties::GetStatus, id, opts if get
+            run CPEE::Properties::PutStatus, id, opts if put 'status'
+            on resource 'id' do
+              run CPEE::Properties::GetStatusID, id, opts if get
+            end
+            on resource 'message' do
+              run CPEE::Properties::GetStatusMessage, id, opts if get
+            end
+          end
+          on resource 'executionhandler' do
+            run CPEE::Properties::GetExecutionHandler, id, opts if get
+            run CPEE::Properties::PutExecutionHandler, id, opts if put 'executionhandler'
+          end
+          on resource 'positions' do
+            run CPEE::Properties::GetPositions, id, opts if get
+            run CPEE::Properties::PatchPositions, id, opts if patch 'positions'
+            run CPEE::Properties::PutPositions, id, opts if put 'positions'
+            run CPEE::Properties::PostPositions, id, opts if post 'position'
             on resource do
-              run CPEE::Properties::GetItem, ele, id, opts if get
-              run CPEE::Properties::SetItem, ele, id, opts if put 'string'
-              run CPEE::Properties::DelItem, ele, id, opts if delete
+              run CPEE::Properties::GetDetail, 'positions', id, opts if get
+              run CPEE::Properties::SetDetail, id, opts if put 'detail'
+              run CPEE::Properties::DelDetail, id, opts if delete
+              on resource '@passthrough' do
+                run CPEE::Properties::GetPt, id, opts if get
+              end
             end
           end
-        end
-        on resource 'dsl' do
-          run CPEE::Properties::GetComplex, 'dsl', 'text/plain', id, opts if get
-        end
-        on resource 'dslx' do
-          run CPEE::Properties::GetComplex, 'dslx', 'text/xml', id, opts if get
-        end
-        on resource 'description' do
-          run CPEE::Properties::GetComplex, 'description', 'text/xml', id, opts if get
-          run CPEE::Properties::PutDescription, id, opts if put 'description'
-        end
-        on resource 'transformation' do
-          run CPEE::Properties::GetTransformation, id, opts if get
-          run CPEE::Properties::PutTransformation, id, opts if put 'transformation'
+          %w{dataelements endpoints attributes}.each do |ele|
+            on resource ele do
+              run CPEE::Properties::GetItems, ele, id, opts if get
+              run CPEE::Properties::PatchItems, ele, id, opts if patch ele
+              run CPEE::Properties::PutItems, ele, id, opts if put ele
+              run CPEE::Properties::PostItem, ele, id, opts if post ele[0..-2]
+              on resource do
+                run CPEE::Properties::GetItem, ele, id, opts if get
+                run CPEE::Properties::SetItem, ele, id, opts if put 'string'
+                run CPEE::Properties::DelItem, ele, id, opts if delete
+              end
+            end
+          end
+          on resource 'dsl' do
+            run CPEE::Properties::GetComplex, 'dsl', 'text/plain', id, opts if get
+          end
+          on resource 'dslx' do
+            run CPEE::Properties::GetComplex, 'dslx', 'text/xml', id, opts if get
+          end
+          on resource 'description' do
+            run CPEE::Properties::GetComplex, 'description', 'text/xml', id, opts if get
+            run CPEE::Properties::PutDescription, id, opts if put 'description'
+          end
+          on resource 'transformation' do
+            run CPEE::Properties::GetTransformation, id, opts if get
+            run CPEE::Properties::PutTransformation, id, opts if put 'transformation'
+          end
+        else
+          run CPEE::FAIL
         end
       end
     end
-
-    class FAIL < Riddl::Implementation #{{{
-      def response
-        @status = 404
-        nil
-      end
-    end #}}}
 
     class Get < Riddl::Implementation #{{{
       def response
@@ -234,7 +227,7 @@ module CPEE
     end #}}}
     class PutState < Riddl::Implementation #{{{
       def self::set(id,opts,state)
-        CPEE::Persistence::set_item(id,opts,'state',:state => state, :timestamp => Time.now.xmlschema(3))
+        CPEE::Persistence::set_item(id,opts,'state',:state => state, :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h)
       end
 
       def self::run(id,opts,state)

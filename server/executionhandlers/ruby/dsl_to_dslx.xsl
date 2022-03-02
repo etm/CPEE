@@ -6,10 +6,10 @@
   <xsl:template match="/">
     <xsl:text>control flow do</xsl:text>
     <xsl:call-template name="print-newline"/>
-    <xsl:apply-templates select="//d:description"/>
+    <xsl:apply-templates select="/d:description"/>
     <xsl:text>end</xsl:text>
   </xsl:template>
-  <xsl:template match="//d:description">
+  <xsl:template match="/d:description">
     <xsl:apply-templates>
       <xsl:with-param name="myspace">
         <xsl:value-of select="0*$myspacemultiplier"/>
@@ -749,9 +749,9 @@
               <xsl:otherwise>
                 <xsl:choose>
                   <xsl:when test="substring(.,1,1) = '!'">
-                    <xsl:text>#{</xsl:text>
-                    <xsl:value-of select="str:replace(str:replace(substring(.,2),'\','\\'),'&quot;','\\\&quot;')"/>
-                    <xsl:text>.to_json}</xsl:text>
+                    <xsl:text>#{(</xsl:text>
+                    <xsl:value-of select="substring(.,2)"/>
+                    <xsl:text>).to_json}</xsl:text>
                   </xsl:when>
                   <xsl:otherwise>
                     <xsl:text>\"</xsl:text>
