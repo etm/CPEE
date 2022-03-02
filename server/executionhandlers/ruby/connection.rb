@@ -15,6 +15,7 @@
 require 'charlock_holmes'
 require 'mimemagic'
 require 'base64'
+require 'get_process_mem'
 
 class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::loop_guard(arguments,id,count) # {{{
@@ -184,6 +185,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def inform_activity_done # {{{
     @controller.notify("activity/done", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
+    @controller.notify("status/resource_utilization", :mib => GetProcessMem.new.mb, **Process.times.to_h)
   end # }}}
   def inform_activity_manipulate # {{{
     @controller.notify("activity/manipulating", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
