@@ -68,6 +68,9 @@ module CPEE
     opts[:watchdog_start_off]         ||= false
     opts[:infinite_loop_stop]         ||= 10000
 
+    opts[:heartbeat_frequency]        ||= 7
+    opts[:heartbeat_location]         ||= nil
+
     ### set redis_cmd to nil if you want to do global
     ### at least redis_path or redis_url and redis_db have to be set if you do global
     opts[:redis_path]                 ||= 'redis.sock' # use e.g. /tmp/redis.sock for global stuff. Look it up in your redis config
