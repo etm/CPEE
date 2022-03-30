@@ -24,9 +24,9 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'riddl', '~> 0.114'
   s.add_runtime_dependency 'weel', '~> 1.99', '>= 1.99.99'
   s.add_runtime_dependency 'highline', '~> 2.0'
-  s.add_runtime_dependency 'json', '~>2.1'
   s.add_runtime_dependency 'redis', '~> 4.1'
   s.add_runtime_dependency 'rubyzip', '~>2'
   s.add_runtime_dependency 'charlock_holmes', '~>0'
   s.add_runtime_dependency 'mimemagic', '~>0'
+  s.add_runtime_dependency 'get_process_mem', '~>0.2'
 end

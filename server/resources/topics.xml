@@ -41,6 +41,7 @@
     <vote>change</vote>
   </topic>
   <topic id='status'>
+    <event>resource_utilization</event>
     <event>change</event>
   </topic>
   <topic id='dataelements'>

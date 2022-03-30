@@ -69,7 +69,7 @@ module CPEE
     opts[:infinite_loop_stop]         ||= 10000
 
     opts[:dashing_frequency]          ||= 3
-    opts[:dashing_taeget]             ||= nil
+    opts[:dashing_target]             ||= nil
 
     ### set redis_cmd to nil if you want to do global
     ### at least redis_path or redis_url and redis_db have to be set if you do global
