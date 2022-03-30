@@ -39,6 +39,26 @@ module CPEE
       )
     end
 
+    def self::send_url(type, event, cpee, content={}, backend)
+      topic = ::File::dirname(event)
+      name = ::File::basename(event)
+      client = Riddl::Client.new(url)
+      payload = {
+        WHO => cpee,
+        'topic' => topic,
+        'type' => type,
+        'name' => name,
+        'timestamp' =>  Time.now.xmlschema(3),
+        'content' => content
+      }
+      client = Riddl::Client.new(backend)
+      client.post [
+        Riddl::Parameter::Simple::new('type',type),
+        Riddl::Parameter::Simple::new('topic',topic),
+        Riddl::Parameter::Simple::new('event',name),
+        Riddl::Parameter::Complex::new('notification','application/json',JSON::generate(payload))
+      ]
+    end
   end
 
 end
