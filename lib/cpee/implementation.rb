@@ -118,7 +118,7 @@ module CPEE
           CPEE::Notifications::sse_heartbeat(opts)
         end
 
-        if opt[:dashing_target]
+        if opts[:dashing_target]
           cpu_last = 0
           idl_last = 0
           EM.add_periodic_timer(opts[:dashing_frequency]) do
@@ -159,7 +159,7 @@ module CPEE
             content['mem_available'] = mem_ava
             content['mem_bufferedandcached'] = mem_buc
             content['mem_used'] = mem_usd
-            CPEE::Message::send_url(:event,'node/resource_utilization',File.join(opts[:url],'/'),content,opts[:dashing_target])
+            CPEE::Message::send_url(:event,'node/resource_utilization',File.join(opts[:url],'/'),content,File.join(opts[:dashing_target],'/dash/events'))
 
             # Keep this as last for our next read
             idl_last = sci
