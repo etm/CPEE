@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements/>
+  <dataelements>
+    <test>{ "a": 3 }</test>
+  </dataelements>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
     <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
@@ -24,12 +26,11 @@
       <call id="a1" endpoint="subprocess">
         <parameters>
           <label>Sub</label>
-          <method>:post</method>
           <arguments>
             <behavior>wait_running</behavior>
             <url>https://cpee.org/design/server/Templates.dir/Wait.xml</url>
             <init>
-              <bla>3</bla>
+              <bla>!data.test</bla>
             </init>
             <endpoints/>
             <customization/>
