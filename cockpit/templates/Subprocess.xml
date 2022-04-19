@@ -2,7 +2,7 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <dataelements>
-    <test>{ "a": 3 }</test>
+    <brr>{ "a": 3 }</brr>
   </dataelements>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
@@ -30,7 +30,7 @@
             <behavior>wait_running</behavior>
             <url>https://cpee.org/design/server/Templates.dir/Wait.xml</url>
             <init>
-              <bla>!data.test</bla>
+              <bla>!data.brr</bla>
             </init>
             <endpoints/>
             <customization/>
