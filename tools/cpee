@@ -235,7 +235,9 @@ elsif command == 'abandon'
     print "Working on: " + name.to_s + "\r"
     res1 = Typhoeus.get(File.join(base,name.to_s,'properties','state','/'))
     if res1.success?
-      if res1.response_body == 'ready' || res1.response_body == 'stopped'
+      if res1.response_body == 'running'
+        Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=stopping")
+      elsif res1.response_body == 'ready' || res1.response_body == 'stopped'
         Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
       end
     end
