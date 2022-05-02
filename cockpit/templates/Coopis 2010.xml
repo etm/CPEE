@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <dataelements>
@@ -11,7 +12,9 @@
   </dataelements>
   <endpoints>
     <bookAir>http://gruppe.wst.univie.ac.at/~mangler/services/airline.php</bookAir>
+    <timeout>https://cpee.org/services/timeout.php</timeout>
     <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
+    <subprocess>https://cpee.org/flow/start/url/</subprocess>
     <approve>http://gruppe.wst.univie.ac.at/~mangler/services/approval.php</approve>
   </endpoints>
   <attributes>
@@ -19,14 +22,19 @@
     <info>Coopis 2010</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
+    <modeltype>CPEE</modeltype>
     <design_stage>development</design_stage>
+    <guarded>none</guarded>
     <design_dir>Templates.dir</design_dir>
+    <guarded_id/>
+    <model_uuid>a1cbb855-90e3-4d8c-b44b-d3ba7bff9f4e</model_uuid>
+    <model_version/>
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="bookAir">
         <parameters>
-          <label>Book Airline</label>
+          <label>Book Airline 1</label>
           <method>:post</method>
           <arguments>
             <from>data.from</from>
@@ -35,12 +43,40 @@
           </arguments>
         </parameters>
         <code>
+          <prepare/>
           <finalize output="result">data.airline = result.value('id')
 data.costs += result.value('costs').to_f
 status.update 1, 'Hotel'</finalize>
+          <update output="result"/>
+          <rescue output="result"/>
         </code>
-        <annotations/>
-        <documentation/>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
       </call>
       <parallel wait="-1" cancel="last">
         <loop mode="pre_test" condition="data.persons &gt; 0">
