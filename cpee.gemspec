@@ -29,4 +29,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'charlock_holmes', '~>0'
   s.add_runtime_dependency 'mimemagic', '~>0'
   s.add_runtime_dependency 'get_process_mem', '~>0.2'
+  s.add_runtime_dependency 'webrick', '~>1.7'
 end
