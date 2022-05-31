@@ -21,8 +21,8 @@ $(document).ready(function() {
   });
   $(document).on('keypress','#dat_details [contenteditable]',function(e){
     if (e.keyCode == 13) {
-      document.execCommand('insertText', false, '\n');
-      return false;
+      document.execCommand('insertLineBreak')
+      e.preventDefault()
     }
   });
   $(document).on('relaxngui_remove', '#dat_details', function(e){

@@ -159,6 +159,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
     @anno = parameters.delete(:annotations) rescue nil
+    @controller.notify("status/resource_utilization", :mib => GetProcessMem.new.mb, **Process.times.to_h)
     @controller.notify("activity/calling", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :annotations => @anno)
     if passthrough.to_s.empty?
       proto_curl parameters
