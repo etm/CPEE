@@ -33,6 +33,9 @@
               <bla>!data.brr</bla>
             </init>
             <endpoints/>
+            <attributes>
+              <info>blurger</info>
+            </attributes>
             <customization/>
           </arguments>
         </parameters>
