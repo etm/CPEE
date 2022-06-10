@@ -54,6 +54,8 @@ module CPEE
     /p:properties/p:attributes/p:*
   }
   def self::implementation(opts)
+    opts[:see_instances]              ||= opts[:see_instances].nil? ? true : opts[:see_instances]
+
     opts[:instances]                  ||= File.expand_path(File.join(__dir__,'..','..','server','instances'))
     opts[:global_executionhandlers]   ||= File.expand_path(File.join(__dir__,'..','..','server','executionhandlers'))
     opts[:executionhandlers]          ||= ''
@@ -230,16 +232,20 @@ module CPEE
   class Instances < Riddl::Implementation #{{{
     def response
       opts = @a[0]
-      Riddl::Parameter::Complex.new("wis","text/xml") do
-        ins = XML::Smart::string('<instances/>')
-        CPEE::Persistence::each_object(opts) do |instance|
-          info = CPEE::Persistence::extract_item(instance,opts,'attributes/info')
-          uuid = CPEE::Persistence::extract_item(instance,opts,'attributes/uuid')
-          state = CPEE::Persistence::extract_item(instance,opts,'state')
-          state_changed = CPEE::Persistence::extract_item(instance,opts,'state/@changed')
-          ins.root.add('instance', info,  'uuid' => uuid, 'id' => instance, 'state' => state, 'state_changed' => state_changed )
+      if opts[:see_instances]
+        Riddl::Parameter::Complex.new("wis","text/xml") do
+          ins = XML::Smart::string('<instances/>')
+          CPEE::Persistence::each_object(opts) do |instance|
+            info = CPEE::Persistence::extract_item(instance,opts,'attributes/info')
+            uuid = CPEE::Persistence::extract_item(instance,opts,'attributes/uuid')
+            state = CPEE::Persistence::extract_item(instance,opts,'state')
+            state_changed = CPEE::Persistence::extract_item(instance,opts,'state/@changed')
+            ins.root.add('instance', info,  'uuid' => uuid, 'id' => instance, 'state' => state, 'state_changed' => state_changed )
+          end
+          ins.to_s
         end
-        ins.to_s
+      else
+        Riddl::Parameter::Complex.new("wis","text/xml",'<instances><!-- instances list disabled. --></instances>')
       end
     end
   end #}}}
