@@ -232,7 +232,7 @@ module CPEE
   class Instances < Riddl::Implementation #{{{
     def response
       opts = @a[0]
-      if opts[:see_instances]
+      if opts[:see_instances] || @h['SEE_INSTANCES'] == 'true'
         Riddl::Parameter::Complex.new("wis","text/xml") do
           ins = XML::Smart::string('<instances/>')
           CPEE::Persistence::each_object(opts) do |instance|
