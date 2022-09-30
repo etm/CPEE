@@ -42,7 +42,6 @@ module CPEE
     def self::send_url(type, event, cpee, content={}, backend)
       topic = ::File::dirname(event)
       name = ::File::basename(event)
-      client = Riddl::Client.new(backend)
       payload = {
         WHO => cpee,
         'topic' => topic,
