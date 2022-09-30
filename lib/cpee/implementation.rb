@@ -232,6 +232,7 @@ module CPEE
   class Instances < Riddl::Implementation #{{{
     def response
       opts = @a[0]
+      pp @request[:env]['REMOTE_ADDR']
       if opts[:see_instances] || @h['SEE_INSTANCES'] == 'true'
         Riddl::Parameter::Complex.new("wis","text/xml") do
           ins = XML::Smart::string('<instances/>')
@@ -362,11 +363,15 @@ module CPEE
         CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,content[:attributes]['uuid'],content[:attributes]['info'],content,redis)
       end
 
-      empt = CPEE::Persistence::keys(id,opts).to_a
-      empt.delete_if{|e| e =~ /\/handlers/ }
-      redis.multi do |multi|
-        multi.del empt
-        multi.zrem 'instances', id
+      EM::add_timer(30) do
+        empt = CPEE::Persistence::keys(id,opts).to_a
+        ### is there to avoid that returning calls get intro problems
+        ### as we have add_timer now, it should work without this
+        # empt.delete_if{|e| e =~ /\/handlers/ }
+        redis.multi do |multi|
+          multi.del empt
+          multi.zrem 'instances', id
+        end
       end
     end
   end #}}}
