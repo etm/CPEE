@@ -235,6 +235,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       elsif result[0].is_a? Riddl::Parameter::Complex
         if result[0].mimetype == 'application/json'
           result = JSON::parse(result[0].value.read) rescue nil
+        elsif result[0].mimetype == 'text/csv'
+          result = result[0].value.read
         elsif result[0].mimetype == 'text/yaml'
           result = YAML::load(result[0].value.read) rescue nil
         elsif result[0].mimetype == 'application/xml' || result[0].mimetype == 'text/xml'
@@ -256,7 +258,12 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         end
       end
     end
-    result
+    if result.is_a? String
+      enc = detect_encoding(result)
+      enc == 'OTHER' ? result : (result.encode('UTF-8',enc) rescue convert_to_base64(result))
+    else
+      result
+    end
   end
 
   def detect_encoding(text)
@@ -295,6 +302,10 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
             enc = detect_encoding(ttt)
             enc == 'OTHER' ? ttt : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
           end
+        elsif r.mimetype == 'text/csv'
+          ttt = r.value.read
+          enc = detect_encoding(ttt)
+          enc == 'OTHER' ? ttt.inspect : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
         elsif r.mimetype == 'text/plain' || r.mimetype == 'text/html'
           ttt = r.value.read
           ttt = ttt.to_f if ttt == ttt.to_f.to_s
@@ -303,7 +314,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
           enc == 'OTHER' ? ttt.inspect : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
         else
           convert_to_base64(r.value.read)
-          r.value.rewind
         end
 
         tmp = {
