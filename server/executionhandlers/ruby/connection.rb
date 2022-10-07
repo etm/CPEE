@@ -86,6 +86,10 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         'instance_url' => @controller.instance_url,
         'instance_uuid' => @controller.uuid
       }
+      :task => {
+        'label' => @label,
+        'id' => @handler_position
+      }
     }
   end #}}}
 
