@@ -6,7 +6,7 @@
 }
 #graphcolumn {
   flex: 0 1 auto;
-  width: 35em;
+  width: 40em;
   min-width: 15em;
   border-right: 0 none;
   overflow: auto;
