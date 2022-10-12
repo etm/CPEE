@@ -329,10 +329,18 @@ function WFAdaptorManifestation(adaptor) {
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
-        if($('> code', node).length > 0) {
-          return 'callmanipulate';
+        if ($('> annotations > _context_data_analysis > probes > probe', node).length > 0) {
+          if ($('> code', node).length > 0) {
+            return 'callmanipulate_sensor';
+          } else {
+            return 'call_sensor';
+          }
         } else {
-          return 'call';
+          if ($('> code', node).length > 0) {
+            return 'callmanipulate';
+          } else {
+            return 'call';
+          }
         }
       },
       'svg': self.adaptor.theme_dir + 'symbols/call.svg'
@@ -1276,13 +1284,25 @@ function WFAdaptorManifestation(adaptor) {
   // Abstract Elements
   // * they may only have an illustrator (or other parts)
   // * they HAVE TO have a parent
+  this.elements.call_sensor = { /*{{{*/
+    'parent': 'call',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/call_sensor.svg'
+    }//}}}
+  }; /*}}}*/
   this.elements.callmanipulate = { /*{{{*/
     'parent': 'call',
     'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
-      'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
-    },//}}}
+    }//}}}
+  }; /*}}}*/
+  this.elements.callmanipulate_sensor = { /*{{{*/
+    'parent': 'call',
+    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callmanipulate_sensor.svg'
+    }//}}}
   }; /*}}}*/
   this.elements.loop_head = { /*{{{*/
     'parent': 'loop',
