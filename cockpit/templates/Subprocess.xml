@@ -8,21 +8,17 @@
     <sensor>sensor</sensor>
     <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
     <human>human</human>
-    <worklist>https-post://cpee.org/worklist/server/</worklist>
     <plc>plc</plc>
-    <send>https-post://cpee.org/ing/correlators/message/send/</send>
-    <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
     <robot>robot</robot>
     <robot_subprocess>robot_subprocess</robot_subprocess>
-    <user>https-post://cpee.org/services/timeout-user.php</user>
-    <auto>https-post://cpee.org/services/timeout-auto.php</auto>
+    <send>send</send>
+    <receive>receive</receive>
     <wait>wait</wait>
   </endpoints>
   <attributes>
     <info>Subprocess</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
-    <organisation1>http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
     <modeltype>CPEE</modeltype>
     <guarded>none</guarded>
     <guarded_id/>
@@ -34,10 +30,118 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <manipulate id="a2" label="initialize values">data.all_documents = rand(0..1)</manipulate>
+      <manipulate id="a2" label="initialize values"/>
+      <call id="a3" endpoint="timeout">
+        <parameters>
+          <label>3 weeks prior to the callover day</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
       <call id="a1" endpoint="timeout">
         <parameters>
-          <label>send mortgage offer</label>
+          <label>preparation of callover</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <call id="a4" endpoint="timeout">
+        <parameters>
+          <label>1 week prior to the callover day</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <call id="a5" endpoint="timeout">
+        <parameters>
+          <label>contact involved parties</label>
           <method>:post</method>
           <arguments>
             <timeout/>
@@ -72,62 +176,53 @@
         </documentation>
       </call>
       <choose mode="exclusive">
-        <alternative condition="customer sends documents">
+        <alternative condition="involved parties are ready to go to trial">
           <_probability>
             <_probability_min/>
             <_probability_max/>
             <_probability_avg/>
           </_probability>
-          <choose mode="exclusive">
-            <alternative condition="data.all_documents == 1">
-              <_probability>
-                <_probability_min/>
-                <_probability_max/>
-                <_probability_avg/>
-              </_probability>
-            </alternative>
-            <otherwise>
-              <call id="a4" endpoint="timeout">
-                <parameters>
-                  <label>request outstanding documents</label>
-                  <method>:post</method>
-                  <arguments>
-                    <timeout/>
-                  </arguments>
-                </parameters>
-                <annotations>
-                  <_timing>
-                    <_timing_weight/>
-                    <_timing_avg/>
-                    <explanations/>
-                  </_timing>
-                  <_context_data_analysis>
-                    <probes/>
-                    <ips/>
-                  </_context_data_analysis>
-                  <report>
-                    <url/>
-                  </report>
-                  <_notes>
-                    <_notes_general/>
-                  </_notes>
-                </annotations>
-                <documentation>
-                  <input/>
-                  <output/>
-                  <implementation>
-                    <description/>
-                  </implementation>
-                  <code>
-                    <description/>
-                  </code>
-                </documentation>
-              </call>
-            </otherwise>
-          </choose>
-          <call id="a5" endpoint="timeout">
+          <call id="a6" endpoint="timeout">
             <parameters>
-              <label>move case to administration for completion</label>
+              <label>set callover</label>
+              <method>:post</method>
+              <arguments>
+                <timeout/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </alternative>
+        <otherwise>
+          <call id="a7" endpoint="timeout">
+            <parameters>
+              <label>deferred callover to next available slot</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -162,88 +257,80 @@
             </documentation>
           </call>
           <terminate/>
-        </alternative>
-        <alternative condition="2 Weeks">
-          <_probability>
-            <_probability_min/>
-            <_probability_max/>
-            <_probability_avg/>
-          </_probability>
-        </alternative>
-        <otherwise/>
+        </otherwise>
       </choose>
-      <parallel wait="-1" cancel="last">
-        <parallel_branch pass="" local="">
-          <call id="a6" endpoint="timeout">
-            <parameters>
-              <label>case details updated</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-            </documentation>
-          </call>
-        </parallel_branch>
-        <parallel_branch pass="" local="">
-          <call id="a7" endpoint="timeout">
-            <parameters>
-              <label>work is archived prior to cancellation</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-            </documentation>
-          </call>
-        </parallel_branch>
-      </parallel>
+      <call id="a8" endpoint="timeout">
+        <parameters>
+          <label>callover day</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <call id="a9" endpoint="timeout">
+        <parameters>
+          <label>prepare material and held callover</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
     </description>
   </description>
   <transformation>
