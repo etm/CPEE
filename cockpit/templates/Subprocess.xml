@@ -30,10 +30,13 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <manipulate id="a2" label="initialize values"/>
+      <manipulate id="a2" label="initialize values">data.new_records = rand(0..1)
+data.new_returns = rand(0..1)
+data.advised = rand(0..1)
+data.completed = rand(0..1)</manipulate>
       <call id="a1" endpoint="timeout">
         <parameters>
-          <label>november</label>
+          <label>weekday morning</label>
           <method>:post</method>
           <arguments>
             <timeout/>
@@ -69,7 +72,7 @@
       </call>
       <call id="a3" endpoint="timeout">
         <parameters>
-          <label>coordination unit adds draft dates to calendars</label>
+          <label>back-up database</label>
           <method>:post</method>
           <arguments>
             <timeout/>
@@ -103,89 +106,28 @@
           </code>
         </documentation>
       </call>
-      <parallel wait="-1" cancel="last">
-        <parallel_branch pass="" local="">
-          <call id="a8" endpoint="timeout">
-            <parameters>
-              <label>support officer checks dates</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
-        </parallel_branch>
-        <parallel_branch pass="" local="">
-          <call id="a9" endpoint="timeout">
-            <parameters>
-              <label>support officer suggests modifications</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
-        </parallel_branch>
-      </parallel>
-      <parallel wait="-1" cancel="last">
-        <parallel_branch pass="" local="">
+      <choose mode="exclusive">
+        <alternative condition="data.new_records == 1">
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
+        </alternative>
+        <otherwise>
+          <terminate/>
+        </otherwise>
+      </choose>
+      <choose mode="exclusive">
+        <alternative condition="data.new_returns == 1">
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
           <call id="a4" endpoint="timeout">
             <parameters>
-              <label>coordinator unit rechecks dates</label>
+              <label>register defaulting accounts and customers</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -219,11 +161,97 @@
               </code>
             </documentation>
           </call>
-        </parallel_branch>
-        <parallel_branch pass="" local="">
-          <call id="a10" endpoint="timeout">
+          <choose mode="exclusive">
+            <alternative condition="data.advised == 0">
+              <call id="a12" endpoint="timeout">
+                <parameters>
+                  <label>produce table of defaulting accounts</label>
+                  <method>:post</method>
+                  <arguments>
+                    <timeout/>
+                  </arguments>
+                </parameters>
+                <annotations>
+                  <_timing>
+                    <_timing_weight/>
+                    <_timing_avg/>
+                    <explanations/>
+                  </_timing>
+                  <_context_data_analysis>
+                    <probes/>
+                    <ips/>
+                  </_context_data_analysis>
+                  <report>
+                    <url/>
+                  </report>
+                  <_notes>
+                    <_notes_general/>
+                  </_notes>
+                </annotations>
+                <documentation>
+                  <input/>
+                  <output/>
+                  <implementation>
+                    <description/>
+                  </implementation>
+                </documentation>
+              </call>
+              <call id="a13" endpoint="timeout">
+                <parameters>
+                  <label>send to account management</label>
+                  <method>:post</method>
+                  <arguments>
+                    <timeout/>
+                  </arguments>
+                </parameters>
+                <annotations>
+                  <_timing>
+                    <_timing_weight/>
+                    <_timing_avg/>
+                    <explanations/>
+                  </_timing>
+                  <_context_data_analysis>
+                    <probes/>
+                    <ips/>
+                  </_context_data_analysis>
+                  <report>
+                    <url/>
+                  </report>
+                  <_notes>
+                    <_notes_general/>
+                  </_notes>
+                </annotations>
+                <documentation>
+                  <input/>
+                  <output/>
+                  <implementation>
+                    <description/>
+                  </implementation>
+                </documentation>
+              </call>
+              <_probability>
+                <_probability_min/>
+                <_probability_max/>
+                <_probability_avg/>
+              </_probability>
+            </alternative>
+            <otherwise/>
+          </choose>
+        </alternative>
+        <otherwise/>
+      </choose>
+      <choose mode="exclusive">
+        <alternative condition="data.completed == 1 before 2:30pm">
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
+        </alternative>
+        <otherwise>
+          <call id="a7" endpoint="timeout">
             <parameters>
-              <label>coordinator unit looks for conflicts</label>
+              <label>send alert to supervisor</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -257,11 +285,11 @@
               </code>
             </documentation>
           </call>
-        </parallel_branch>
-      </parallel>
-      <call id="a6" endpoint="timeout">
+        </otherwise>
+      </choose>
+      <call id="a8" endpoint="timeout">
         <parameters>
-          <label>send final schedule to committee members</label>
+          <label>new defaulting account report completed</label>
           <method>:post</method>
           <arguments>
             <timeout/>
@@ -295,11 +323,52 @@
           </code>
         </documentation>
       </call>
-      <parallel wait="-1" cancel="last">
-        <parallel_branch pass="" local="">
-          <call id="a5" endpoint="timeout">
+      <call id="a9" endpoint="timeout">
+        <parameters>
+          <label>check the CRM system</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <choose mode="exclusive">
+        <alternative condition="data.new_returns == 1">
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
+          <call id="a10" endpoint="timeout">
             <parameters>
-              <label>committee members check their diaries</label>
+              <label>reconcile with existing account defulters table</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -333,11 +402,21 @@
               </code>
             </documentation>
           </call>
-        </parallel_branch>
-        <parallel_branch pass="" local="">
+        </alternative>
+        <otherwise/>
+      </choose>
+      <choose mode="exclusive">
+        <alternative condition="before 4:30pm">
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
+        </alternative>
+        <otherwise>
           <call id="a11" endpoint="timeout">
             <parameters>
-              <label>committee members advice of conflicts</label>
+              <label>supervisor sends message</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -371,8 +450,8 @@
               </code>
             </documentation>
           </call>
-        </parallel_branch>
-      </parallel>
+        </otherwise>
+      </choose>
     </description>
   </description>
   <transformation>
