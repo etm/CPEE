@@ -32,63 +32,15 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <manipulate id="a2" label="initialize values"/>
-      <call id="a3" endpoint="timeout">
-        <parameters>
-          <label>3 weeks prior to the callover day</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <code>
-          <prepare/>
-          <finalize output="result"/>
-          <update output="result"/>
-          <rescue output="result"/>
-        </code>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
+      <manipulate id="a2" label="initialize values">data.response = rand(0..1)</manipulate>
       <call id="a1" endpoint="timeout">
         <parameters>
-          <label>preparation of callover</label>
+          <label>send questionnaire</label>
           <method>:post</method>
           <arguments>
             <timeout/>
           </arguments>
         </parameters>
-        <code>
-          <prepare/>
-          <finalize output="result">data.test = result</finalize>
-          <update output="result"/>
-          <rescue output="result"/>
-        </code>
         <annotations>
           <_timing>
             <_timing_weight/>
@@ -117,62 +69,14 @@
           </code>
         </documentation>
       </call>
-      <call id="a4" endpoint="timeout">
+      <call id="a3" endpoint="timeout">
         <parameters>
-          <label>1 week prior to the callover day</label>
+          <label>5 days</label>
           <method>:post</method>
           <arguments>
             <timeout/>
           </arguments>
         </parameters>
-        <code>
-          <prepare/>
-          <finalize output="result"/>
-          <update output="result"/>
-          <rescue output="result"/>
-        </code>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <call id="a5" endpoint="timeout">
-        <parameters>
-          <label>contact involved parties</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <code>
-          <prepare/>
-          <finalize output="result"/>
-          <update output="result"/>
-          <rescue output="result"/>
-        </code>
         <annotations>
           <_timing>
             <_timing_weight/>
@@ -202,185 +106,96 @@
         </documentation>
       </call>
       <choose mode="exclusive">
-        <alternative condition="involved parties are ready to go to trial">
+        <alternative condition="data.response == 1">
           <_probability>
             <_probability_min/>
             <_probability_max/>
             <_probability_avg/>
           </_probability>
-          <call id="a6" endpoint="timeout">
-            <parameters>
-              <label>set callover</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <code>
-              <prepare/>
-              <finalize output="result"/>
-              <update output="result"/>
-              <rescue output="result"/>
-            </code>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
+          <terminate/>
         </alternative>
         <otherwise>
-          <call id="a7" endpoint="timeout">
-            <parameters>
-              <label>deferred callover to next available slot</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <code>
-              <prepare/>
-              <finalize output="result"/>
-              <update output="result"/>
-              <rescue output="result"/>
-            </code>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
-          <terminate/>
+          <loop mode="pre_test" condition="data.response == 0">
+            <_probability>
+              <_probability_min/>
+              <_probability_max/>
+              <_probability_avg/>
+            </_probability>
+            <call id="a5" endpoint="timeout">
+              <parameters>
+                <label>5 days</label>
+                <method>:post</method>
+                <arguments>
+                  <timeout/>
+                </arguments>
+              </parameters>
+              <annotations>
+                <_timing>
+                  <_timing_weight/>
+                  <_timing_avg/>
+                  <explanations/>
+                </_timing>
+                <_context_data_analysis>
+                  <probes/>
+                  <ips/>
+                </_context_data_analysis>
+                <report>
+                  <url/>
+                </report>
+                <_notes>
+                  <_notes_general/>
+                </_notes>
+              </annotations>
+              <documentation>
+                <input/>
+                <output/>
+                <implementation>
+                  <description/>
+                </implementation>
+                <code>
+                  <description/>
+                </code>
+              </documentation>
+            </call>
+            <call id="a4" endpoint="timeout">
+              <parameters>
+                <label>send reminder</label>
+                <method>:post</method>
+                <arguments>
+                  <timeout/>
+                </arguments>
+              </parameters>
+              <annotations>
+                <_timing>
+                  <_timing_weight/>
+                  <_timing_avg/>
+                  <explanations/>
+                </_timing>
+                <_context_data_analysis>
+                  <probes/>
+                  <ips/>
+                </_context_data_analysis>
+                <report>
+                  <url/>
+                </report>
+                <_notes>
+                  <_notes_general/>
+                </_notes>
+              </annotations>
+              <documentation>
+                <input/>
+                <output/>
+                <implementation>
+                  <description/>
+                </implementation>
+                <code>
+                  <description/>
+                </code>
+              </documentation>
+            </call>
+          </loop>
         </otherwise>
       </choose>
-      <call id="a8" endpoint="timeout">
-        <parameters>
-          <label>callover day</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <code>
-          <prepare/>
-          <finalize output="result"/>
-          <update output="result"/>
-          <rescue output="result"/>
-        </code>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <call id="a9" endpoint="timeout">
-        <parameters>
-          <label>prepare material and held callover</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <code>
-          <prepare/>
-          <finalize output="result"/>
-          <update output="result"/>
-          <rescue output="result"/>
-        </code>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
     </description>
   </description>
   <transformation>
