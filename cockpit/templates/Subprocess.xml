@@ -32,11 +32,10 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <manipulate id="a17" label="initialize values">data.transaction_status = rand(0..2)
-data.payment_received = rand(0..1)</manipulate>
-      <call id="a2" endpoint="timeout">
+      <manipulate id="a2" label="initialize values"/>
+      <call id="a1" endpoint="timeout">
         <parameters>
-          <label>day 1</label>
+          <label>november</label>
           <method>:post</method>
           <arguments>
             <timeout/>
@@ -72,7 +71,7 @@ data.payment_received = rand(0..1)</manipulate>
       </call>
       <call id="a3" endpoint="timeout">
         <parameters>
-          <label>email invoice to customer</label>
+          <label>coordination unit adds draft dates to calendars</label>
           <method>:post</method>
           <arguments>
             <timeout/>
@@ -106,478 +105,11 @@ data.payment_received = rand(0..1)</manipulate>
           </code>
         </documentation>
       </call>
-      <call id="a4" endpoint="timeout">
-        <parameters>
-          <label>day 7</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <call id="a5" endpoint="timeout">
-        <parameters>
-          <label>debit outstanding amount</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <choose mode="exclusive">
-        <alternative condition="data.transaction_status == 2">
-          <_probability>
-            <_probability_min/>
-            <_probability_max/>
-            <_probability_avg/>
-          </_probability>
-          <call id="a9" endpoint="timeout">
-            <parameters>
-              <label>day 10</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
-          <call id="a10" endpoint="timeout">
-            <parameters>
-              <label>charge late fee</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
-          <call id="a11" endpoint="timeout">
-            <parameters>
-              <label>day 14</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
-          <call id="a12" endpoint="timeout">
-            <parameters>
-              <label>suspend internet service</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
-          <choose mode="exclusive">
-            <alternative condition="data.payment_received == 1">
-              <_probability>
-                <_probability_min/>
-                <_probability_max/>
-                <_probability_avg/>
-              </_probability>
-              <terminate/>
-            </alternative>
-            <otherwise/>
-          </choose>
-          <call id="a13" endpoint="timeout">
-            <parameters>
-              <label>day 30</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
-          <choose mode="exclusive">
-            <alternative condition="data.payment_received == 1">
-              <_probability>
-                <_probability_min/>
-                <_probability_max/>
-                <_probability_avg/>
-              </_probability>
-            </alternative>
-            <otherwise>
-              <call id="a14" endpoint="timeout">
-                <parameters>
-                  <label>close account</label>
-                  <method>:post</method>
-                  <arguments>
-                    <timeout/>
-                  </arguments>
-                </parameters>
-                <annotations>
-                  <_timing>
-                    <_timing_weight/>
-                    <_timing_avg/>
-                    <explanations/>
-                  </_timing>
-                  <_context_data_analysis>
-                    <probes/>
-                    <ips/>
-                  </_context_data_analysis>
-                  <report>
-                    <url/>
-                  </report>
-                  <_notes>
-                    <_notes_general/>
-                  </_notes>
-                </annotations>
-                <documentation>
-                  <input/>
-                  <output/>
-                  <implementation>
-                    <description/>
-                  </implementation>
-                  <code>
-                    <description/>
-                  </code>
-                </documentation>
-              </call>
-              <call id="a15" endpoint="timeout">
-                <parameters>
-                  <label>disconnection fee</label>
-                  <method>:post</method>
-                  <arguments>
-                    <timeout/>
-                  </arguments>
-                </parameters>
-                <annotations>
-                  <_timing>
-                    <_timing_weight/>
-                    <_timing_avg/>
-                    <explanations/>
-                  </_timing>
-                  <_context_data_analysis>
-                    <probes/>
-                    <ips/>
-                  </_context_data_analysis>
-                  <report>
-                    <url/>
-                  </report>
-                  <_notes>
-                    <_notes_general/>
-                  </_notes>
-                </annotations>
-                <documentation>
-                  <input/>
-                  <output/>
-                  <implementation>
-                    <description/>
-                  </implementation>
-                  <code>
-                    <description/>
-                  </code>
-                </documentation>
-              </call>
-              <call id="a16" endpoint="timeout">
-                <parameters>
-                  <label>debt-recovery procedure</label>
-                  <method>:post</method>
-                  <arguments>
-                    <timeout/>
-                  </arguments>
-                </parameters>
-                <annotations>
-                  <_timing>
-                    <_timing_weight/>
-                    <_timing_avg/>
-                    <explanations/>
-                  </_timing>
-                  <_context_data_analysis>
-                    <probes/>
-                    <ips/>
-                  </_context_data_analysis>
-                  <report>
-                    <url/>
-                  </report>
-                  <_notes>
-                    <_notes_general/>
-                  </_notes>
-                </annotations>
-                <documentation>
-                  <input/>
-                  <output/>
-                  <implementation>
-                    <description/>
-                  </implementation>
-                  <code>
-                    <description/>
-                  </code>
-                </documentation>
-              </call>
-              <terminate/>
-            </otherwise>
-          </choose>
-        </alternative>
-        <alternative condition="data.transaction_status == 1">
-          <_probability>
-            <_probability_min/>
-            <_probability_max/>
-            <_probability_avg/>
-          </_probability>
-          <call id="a6" endpoint="timeout">
-            <parameters>
-              <label>day 8</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
-          <call id="a7" endpoint="timeout">
-            <parameters>
-              <label>customer is notified</label>
-              <method>:post</method>
-              <arguments>
-                <timeout/>
-              </arguments>
-            </parameters>
-            <annotations>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
+      <parallel wait="-1" cancel="last">
+        <parallel_branch pass="" local="">
           <call id="a8" endpoint="timeout">
             <parameters>
-              <label>day 9</label>
+              <label>support officer checks dates</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -611,9 +143,238 @@ data.payment_received = rand(0..1)</manipulate>
               </code>
             </documentation>
           </call>
-        </alternative>
-        <otherwise/>
-      </choose>
+        </parallel_branch>
+        <parallel_branch pass="" local="">
+          <call id="a9" endpoint="timeout">
+            <parameters>
+              <label>support officer suggests modifications</label>
+              <method>:post</method>
+              <arguments>
+                <timeout/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </parallel_branch>
+      </parallel>
+      <parallel wait="-1" cancel="last">
+        <parallel_branch pass="" local="">
+          <call id="a4" endpoint="timeout">
+            <parameters>
+              <label>coordinator unit rechecks dates</label>
+              <method>:post</method>
+              <arguments>
+                <timeout/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </parallel_branch>
+        <parallel_branch pass="" local="">
+          <call id="a10" endpoint="timeout">
+            <parameters>
+              <label>coordinator unit looks for conflicts</label>
+              <method>:post</method>
+              <arguments>
+                <timeout/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </parallel_branch>
+      </parallel>
+      <call id="a6" endpoint="timeout">
+        <parameters>
+          <label>send final schedule to committee members</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <parallel wait="-1" cancel="last">
+        <parallel_branch pass="" local="">
+          <call id="a5" endpoint="timeout">
+            <parameters>
+              <label>committee members check their diaries</label>
+              <method>:post</method>
+              <arguments>
+                <timeout/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </parallel_branch>
+        <parallel_branch pass="" local="">
+          <call id="a11" endpoint="timeout">
+            <parameters>
+              <label>committee members advice of conflicts</label>
+              <method>:post</method>
+              <arguments>
+                <timeout/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </parallel_branch>
+      </parallel>
     </description>
   </description>
   <transformation>
