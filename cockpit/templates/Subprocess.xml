@@ -32,91 +32,12 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <manipulate id="a2" label="initialize values">data.missing_files = rand(0..1)</manipulate>
-      <call id="a1" endpoint="timeout">
-        <parameters>
-          <label>each morning</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <call id="a3" endpoint="timeout">
-        <parameters>
-          <label>check files</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <choose mode="exclusive">
-        <alternative condition="data.missing_files == 0">
-          <_probability>
-            <_probability_min/>
-            <_probability_max/>
-            <_probability_avg/>
-          </_probability>
-        </alternative>
-        <otherwise>
-          <call id="a4" endpoint="timeout">
+      <manipulate id="a2" label="initialize values"/>
+      <parallel wait="-1" cancel="last">
+        <parallel_branch pass="" local="">
+          <call id="a3" endpoint="timeout">
             <parameters>
-              <label>initiate search</label>
+              <label>update group calendars</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -150,85 +71,11 @@
               </code>
             </documentation>
           </call>
-        </otherwise>
-      </choose>
-      <call id="a5" endpoint="timeout">
-        <parameters>
-          <label>check physical files</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <call id="a6" endpoint="timeout">
-        <parameters>
-          <label>all files are ready</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <parallel wait="-1" cancel="last">
-        <parallel_branch pass="" local="">
-          <call id="a7" endpoint="timeout">
+        </parallel_branch>
+        <parallel_branch>
+          <call id="a4" endpoint="timeout">
             <parameters>
-              <label>hand files to associate</label>
+              <label>create meeting folders</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -264,9 +111,9 @@
           </call>
         </parallel_branch>
         <parallel_branch pass="" local="">
-          <call id="a8" endpoint="timeout">
+          <call id="a5" endpoint="timeout">
             <parameters>
-              <label>distribute judge's lawlist</label>
+              <label>ensure that documents are uploaded</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -302,9 +149,264 @@
           </call>
         </parallel_branch>
       </parallel>
-      <call id="a9" endpoint="timeout">
+      <call id="a6" endpoint="timeout">
         <parameters>
-          <label>conduct directions hearings</label>
+          <label>a week before each meeting</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <call id="a7" endpoint="timeout">
+        <parameters>
+          <label>read related documents</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <parallel wait="-1" cancel="last">
+        <parallel_branch pass="" local="">
+          <call id="a1" endpoint="timeout">
+            <parameters>
+              <label>committee members hold their meeting</label>
+              <method>:post</method>
+              <arguments>
+                <timeout/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+            </documentation>
+          </call>
+        </parallel_branch>
+        <parallel_branch pass="" local="">
+          <call id="a9" endpoint="timeout">
+            <parameters>
+              <label>support office produces minutes</label>
+              <method>:post</method>
+              <arguments>
+                <timeout/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </parallel_branch>
+      </parallel>
+      <call id="a10" endpoint="timeout">
+        <parameters>
+          <label>coordination unit conducts a QA test</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <call id="a11" endpoint="timeout">
+        <parameters>
+          <label>5 working days</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <call id="a12" endpoint="timeout">
+        <parameters>
+          <label>send QA test to committee members</label>
+          <method>:post</method>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <call id="a13" endpoint="timeout">
+        <parameters>
+          <label>support officer updates departmental records</label>
           <method>:post</method>
           <arguments>
             <timeout/>
