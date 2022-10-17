@@ -69,7 +69,7 @@
           <label>check files</label>
           <method>:post</method>
           <arguments>
-            <timeout/>
+            <timeout>1</timeout>
           </arguments>
         </parameters>
         <annotations>
@@ -95,9 +95,6 @@
           <implementation>
             <description/>
           </implementation>
-          <code>
-            <description/>
-          </code>
         </documentation>
       </call>
       <choose mode="exclusive">
@@ -114,7 +111,7 @@
               <label>initiate search</label>
               <method>:post</method>
               <arguments>
-                <timeout/>
+                <timeout>1</timeout>
               </arguments>
             </parameters>
             <annotations>
@@ -140,9 +137,6 @@
               <implementation>
                 <description/>
               </implementation>
-              <code>
-                <description/>
-              </code>
             </documentation>
           </call>
         </otherwise>
@@ -152,7 +146,7 @@
           <label>check physical files</label>
           <method>:post</method>
           <arguments>
-            <timeout/>
+            <timeout>1</timeout>
           </arguments>
         </parameters>
         <annotations>
@@ -178,9 +172,6 @@
           <implementation>
             <description/>
           </implementation>
-          <code>
-            <description/>
-          </code>
         </documentation>
       </call>
       <call id="a6" endpoint="timeout">
@@ -188,7 +179,7 @@
           <label>all files are ready</label>
           <method>:post</method>
           <arguments>
-            <timeout/>
+            <timeout>1</timeout>
           </arguments>
         </parameters>
         <annotations>
@@ -214,9 +205,6 @@
           <implementation>
             <description/>
           </implementation>
-          <code>
-            <description/>
-          </code>
         </documentation>
       </call>
       <parallel wait="-1" cancel="last">
@@ -226,7 +214,7 @@
               <label>hand files to associate</label>
               <method>:post</method>
               <arguments>
-                <timeout/>
+                <timeout>1</timeout>
               </arguments>
             </parameters>
             <annotations>
@@ -252,9 +240,6 @@
               <implementation>
                 <description/>
               </implementation>
-              <code>
-                <description/>
-              </code>
             </documentation>
           </call>
         </parallel_branch>
@@ -264,7 +249,7 @@
               <label>distribute judge's lawlist</label>
               <method>:post</method>
               <arguments>
-                <timeout/>
+                <timeout>1</timeout>
               </arguments>
             </parameters>
             <annotations>
@@ -290,9 +275,6 @@
               <implementation>
                 <description/>
               </implementation>
-              <code>
-                <description/>
-              </code>
             </documentation>
           </call>
         </parallel_branch>
@@ -302,7 +284,7 @@
           <label>conduct directions hearings</label>
           <method>:post</method>
           <arguments>
-            <timeout/>
+            <timeout>1</timeout>
           </arguments>
         </parameters>
         <annotations>
@@ -328,9 +310,6 @@
           <implementation>
             <description/>
           </implementation>
-          <code>
-            <description/>
-          </code>
         </documentation>
       </call>
     </description>
