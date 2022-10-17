@@ -30,46 +30,14 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <manipulate id="a2" label="initialize values">data.parties_ready = rand(0..1)</manipulate>
-      <call id="a3" endpoint="timeout">
-        <parameters>
-          <label>3 weeks prior to the callover day</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
+      <manipulate id="a2" label="initialize values">data.new_records = rand(0..1)
+data.new_returns = rand(0..1)
+data.advised = rand(0..1)
+data.completed = rand(0..1)
+data.hour = rand(0..24)</manipulate>
       <call id="a1" endpoint="timeout">
         <parameters>
-          <label>preparation of callover</label>
+          <label>weekday morning</label>
           <method>:post</method>
           <arguments>
             <timeout/>
@@ -103,45 +71,9 @@
           </code>
         </documentation>
       </call>
-      <call id="a4" endpoint="timeout">
+      <call id="a3" endpoint="timeout">
         <parameters>
-          <label>1 week prior to the callover day</label>
-          <method>:post</method>
-          <arguments>
-            <timeout/>
-          </arguments>
-        </parameters>
-        <annotations>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <call id="a5" endpoint="timeout">
-        <parameters>
-          <label>contact involved parties</label>
+          <label>back-up database</label>
           <method>:post</method>
           <arguments>
             <timeout/>
@@ -176,15 +108,27 @@
         </documentation>
       </call>
       <choose mode="exclusive">
-        <alternative condition="data.parties_ready == 1">
+        <alternative condition="data.new_records == 1">
           <_probability>
             <_probability_min/>
             <_probability_max/>
             <_probability_avg/>
           </_probability>
-          <call id="a6" endpoint="timeout">
+        </alternative>
+        <otherwise>
+          <terminate/>
+        </otherwise>
+      </choose>
+      <choose mode="exclusive">
+        <alternative condition="data.new_returns == 1">
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
+          <call id="a4" endpoint="timeout">
             <parameters>
-              <label>set callover</label>
+              <label>register defaulting accounts and customers</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -218,11 +162,97 @@
               </code>
             </documentation>
           </call>
+          <choose mode="exclusive">
+            <alternative condition="data.advised == 0">
+              <call id="a12" endpoint="timeout">
+                <parameters>
+                  <label>produce table of defaulting accounts</label>
+                  <method>:post</method>
+                  <arguments>
+                    <timeout/>
+                  </arguments>
+                </parameters>
+                <annotations>
+                  <_timing>
+                    <_timing_weight/>
+                    <_timing_avg/>
+                    <explanations/>
+                  </_timing>
+                  <_context_data_analysis>
+                    <probes/>
+                    <ips/>
+                  </_context_data_analysis>
+                  <report>
+                    <url/>
+                  </report>
+                  <_notes>
+                    <_notes_general/>
+                  </_notes>
+                </annotations>
+                <documentation>
+                  <input/>
+                  <output/>
+                  <implementation>
+                    <description/>
+                  </implementation>
+                </documentation>
+              </call>
+              <call id="a13" endpoint="timeout">
+                <parameters>
+                  <label>send to account management</label>
+                  <method>:post</method>
+                  <arguments>
+                    <timeout/>
+                  </arguments>
+                </parameters>
+                <annotations>
+                  <_timing>
+                    <_timing_weight/>
+                    <_timing_avg/>
+                    <explanations/>
+                  </_timing>
+                  <_context_data_analysis>
+                    <probes/>
+                    <ips/>
+                  </_context_data_analysis>
+                  <report>
+                    <url/>
+                  </report>
+                  <_notes>
+                    <_notes_general/>
+                  </_notes>
+                </annotations>
+                <documentation>
+                  <input/>
+                  <output/>
+                  <implementation>
+                    <description/>
+                  </implementation>
+                </documentation>
+              </call>
+              <_probability>
+                <_probability_min/>
+                <_probability_max/>
+                <_probability_avg/>
+              </_probability>
+            </alternative>
+            <otherwise/>
+          </choose>
+        </alternative>
+        <otherwise/>
+      </choose>
+      <choose mode="exclusive">
+        <alternative condition="data.completed == 1 &amp;&amp; data.hour &lt; 14:30">
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
         </alternative>
         <otherwise>
           <call id="a7" endpoint="timeout">
             <parameters>
-              <label>deferred callover to next available slot</label>
+              <label>send alert to supervisor</label>
               <method>:post</method>
               <arguments>
                 <timeout/>
@@ -256,12 +286,11 @@
               </code>
             </documentation>
           </call>
-          <terminate/>
         </otherwise>
       </choose>
       <call id="a8" endpoint="timeout">
         <parameters>
-          <label>callover day</label>
+          <label>new defaulting account report completed</label>
           <method>:post</method>
           <arguments>
             <timeout/>
@@ -297,7 +326,7 @@
       </call>
       <call id="a9" endpoint="timeout">
         <parameters>
-          <label>prepare material and held callover</label>
+          <label>check the CRM system</label>
           <method>:post</method>
           <arguments>
             <timeout/>
@@ -331,6 +360,99 @@
           </code>
         </documentation>
       </call>
+      <choose mode="exclusive">
+        <alternative condition="data.new_returns == 1">
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
+          <call id="a10" endpoint="timeout">
+            <parameters>
+              <label>reconcile with existing account defulters table</label>
+              <method>:post</method>
+              <arguments>
+                <timeout/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </alternative>
+        <otherwise/>
+      </choose>
+      <choose mode="exclusive">
+        <alternative condition="data.hour &lt; 16">
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
+        </alternative>
+        <otherwise>
+          <call id="a11" endpoint="timeout">
+            <parameters>
+              <label>supervisor sends message</label>
+              <method>:post</method>
+              <arguments>
+                <timeout/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </otherwise>
+      </choose>
     </description>
   </description>
   <transformation>
