@@ -2,6 +2,7 @@
   "info": "Subprocess",
   "creator": "Christine Ashcreek",
   "author": "Christine Ashcreek",
+  "organisation1": "http://cpee.org/~demo/orgviz/organisation_informatik.xml",
   "modeltype": "CPEE",
   "guarded": "none",
   "guarded_id": "",
