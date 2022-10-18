@@ -295,13 +295,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         { 'name' => r.name, 'data' => r.value }
       elsif r.is_a? Riddl::Parameter::Complex
         res = if r.mimetype == 'application/json'
-          ttt = JSON::parse(r.value.read) rescue nil
-          if ttt.nil?
-            ''
-          else
-            enc = detect_encoding(ttt)
-            enc == 'OTHER' ? ttt : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
-          end
+          ttt = r.value.read
+          enc = detect_encoding(ttt)
+          enc == 'OTHER' ? ttt.inspect : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
         elsif r.mimetype == 'text/csv'
           ttt = r.value.read
           enc = detect_encoding(ttt)
@@ -372,8 +368,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end
 
   def simulate(type,nesting,tid,parent,parameters={}) #{{{
-    pp "#{type} - #{nesting} - #{tid} - #{parent} - #{parameters.inspect}"
-
     @controller.vote("simulating/step",
       :'activity-uuid' => @handler_activity_uuid,
       :label => @label,
