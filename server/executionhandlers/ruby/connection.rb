@@ -33,13 +33,13 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{
     controller = arguments[0]
-    controller.notify("description/error", :message => err.message)
+    controller.notify("description/error", :message => err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') + err.message)
   end# }}}
   def self::inform_connectionwrapper_error(arguments,err) # {{{
     controller = arguments[0]
     p err.message
     p err.backtrace
-    controller.notify("executionhandler/error", :message => err.message)
+    controller.notify("executionhandler/error", :message => err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') + err.message)
   end # }}}
   def self::inform_position_change(arguments,ipc={}) # {{{
     controller = arguments[0]
@@ -362,7 +362,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end #}}}
 
   def test_condition(mr,code)
-    res = mr.instance_eval(code)
+    res = mr.instance_eval(code,'Condition',1)
     @controller.notify("condition/eval", :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"))
     res
   end
