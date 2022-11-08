@@ -32,7 +32,7 @@ module CPEE
         {
           :changed => values.keys,
           :deleted => deleted,
-          :values => values,
+          :values => values.transform_values{|val| JSON::parse(val) rescue val },
           :attributes => ah.translate(attributes,dataelements,endpoints),
         },
         opts[:redis]
