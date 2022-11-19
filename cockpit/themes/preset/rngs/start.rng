@@ -1,4 +1,19 @@
 <element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="description" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+    <element name="_shifting" rngui:header="Log Time Shifting">
+      <element name="_shifting_factor" rngui:label="Multiplication Factor">
+        <data type="string" rngui:label="e.g.: 2 hours"/>
+      </element>
+      <optional>
+        <element name="_shifting_start" rngui:label="Starting Point">
+          <data type="string" rngui:label="e.g.: monday, 5pm"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="_shifting_modifier" rngui:label="Random +/- Starting Shift">
+          <data type="float" rngui:label="in seconds"/>
+        </element>
+      </optional>
+    </element>
     <element name="_context_data_analysis" rngui:header="Context Data Analysis" rngui:hint="All data returned from the endpoint implementing this task as well as arbitray external data streams can be consumed and transformed in data probes. All probes can be the basis for impact factors. Please go to start to define instance data probes.">
 
       <element name="probes" rngui:header="Data Probes - Context Data Extraction" rngui:fold="closed_conditional">
