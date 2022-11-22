@@ -25,8 +25,9 @@
     <vote>syncing_before</vote>
     <vote>syncing_after</vote>
   </topic>
-  <topic id='condition'>
-    <event>eval</event>
+  <topic id='gateway'>
+    <event>decide</event>
+    <event>join</event>
   </topic>
   <topic id='position'>
     <event>change</event>

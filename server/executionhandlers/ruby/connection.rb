@@ -363,8 +363,12 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def test_condition(mr,code)
     res = mr.instance_eval(code,'Condition',1)
-    @controller.notify("condition/eval", :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"))
+    @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"))
     res
+  end
+
+  def join_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]
+    @controller.notify("gateway/join", :instance_uuid => @controller.uuid, :branches => branches)
   end
 
   def simulate(type,nesting,tid,parent,parameters={}) #{{{
