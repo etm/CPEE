@@ -33,7 +33,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{
     controller = arguments[0]
-    controller.notify("description/error", :message => err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') + err.message)
+    mess = err.backtrace ? err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') : ''
+    mess += err.message
+    controller.notify("description/error", :message => mess)
   end# }}}
   def self::inform_connectionwrapper_error(arguments,err) # {{{
     controller = arguments[0]
