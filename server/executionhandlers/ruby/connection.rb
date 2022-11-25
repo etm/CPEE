@@ -32,6 +32,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 		controller.notify("state/change", :state => newstate)
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{
+    # TODO extract spot (code) where error happened for better error handling (ruby 3.1 only)
+    # https://github.com/rails/rails/pull/45818/commits/3beb2aff3be712e44c34a588fbf35b79c0246ca5
     controller = arguments[0]
     mess = err.backtrace ? err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') : ''
     mess += err.message
