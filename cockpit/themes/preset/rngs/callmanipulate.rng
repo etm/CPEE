@@ -93,9 +93,11 @@
           <value>Ends</value>
         </choice>
       </element>
-      <element name="_shifting_expression" rngui:label="Expression">
-        <data type="string" rngui:label="e.g.: same day, 16:00; 2 and a half weeks"/>
-      </element>
+      <optional>
+        <element name="_shifting_expression" rngui:label="Expression">
+          <data type="string" rngui:label="e.g.: same day, 16:00; 2 and a half weeks"/>
+        </element>
+      </optional>
     </element>
     <element name="_context_data_analysis" rngui:header="Context Data Analysis" rngui:hint="All data returned from the endpoint implementing this task as well as arbitray external data streams can be consumed and transformed in data probes. All probes can be the basis for impact factors. Please go to start to define instance data probes.">
 
