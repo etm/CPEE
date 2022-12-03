@@ -242,7 +242,6 @@ module CPEE
               PutState::set id, opts, 'stopped'
             end
           else
-            ### Most probably this is never needed. Lets see.
             PutState::set id, opts, state
         end
       end
