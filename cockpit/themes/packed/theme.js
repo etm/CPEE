@@ -1176,6 +1176,30 @@ function WFAdaptorManifestation(adaptor) {
       'expansion': function(node) {
         return 'vertical';
       },
+      'resolve_symbol': function(node) {
+        let plist = []
+        let dirty = false
+        $('*:not(:has(*))',node).each(function(i,n) {
+          let lines = n.textContent.split(/(\r\n)|\n|;/)
+          for (const l of lines) {
+            if (l != null) {
+              let m0 = l.match(/^[^=]*data\.([a-z0-9A-Z_]+)[^=]*=/)
+              if (m0 != null) {
+                plist.push(m0[1])
+              }
+              let m1 = l.match(/=[^=].*data\.([a-z0-9A-Z_]+)/)
+              let m2 = l.match(/^[^=]*data\.([a-z0-9A-Z_]+)[^=]*$/)
+              if (m1 != null && !plist.includes(m1[1])) {
+                dirty = true
+              }
+              if (m2 != null && !plist.includes(m2[1])) {
+                dirty = true
+              }
+            }
+          }
+        })
+        if (dirty) { return 'start_event'; }
+      },
       'closing_symbol': 'end',
       'col_shift': function(node) {
         return true;
@@ -1249,6 +1273,12 @@ function WFAdaptorManifestation(adaptor) {
   // Abstract Elements
   // * they may only have an illustrator (or other parts)
   // * they HAVE TO have a parent
+  this.elements.start_event = { /*{{{*/
+    'parent': 'start',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/start_event.svg'
+    }//}}}
+  }; /*}}}*/
   this.elements.call_sensor = { /*{{{*/
     'parent': 'call',
     'illustrator': {//{{{
