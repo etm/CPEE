@@ -565,7 +565,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (illustrator.elements[sname].label) {
         labels.push({row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)});
       }
-      illustrator.draw.draw_symbol('start', 'description', 'START', pos.row, pos.col, group);
+      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.col, group);
     } // }}}
 
     $(root).children().filter(function(){ return this.localName[0] != '_'; }).each(function() {
@@ -658,6 +658,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     else if(typeof illustrator.elements[tname].resolve_symbol == 'function') {sname = illustrator.elements[tname].resolve_symbol(context,illustrator.elements[tname].col_shift ? illustrator.elements[tname].col_shift(context) : undefined);}
     else if(typeof illustrator.elements[tname].resolve_symbol == 'string')   {sname = illustrator.elements[tname].resolve_symbol;}
     else                                                                     {sname = tname;}
+    if (sname == null) {sname = tname;}
     return sname;
   } //}}}
   var set_details = function(tname,sname,pos,context,simple) { //{{{
