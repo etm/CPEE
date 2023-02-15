@@ -1,0 +1,13 @@
+#trackfull {
+  display: flex;
+  flex-direction:row;
+  align-items: stretch;
+  height: 100vh;
+}
+#graphcolumn {
+  flex: 0 1 auto;
+  width: 100vw;
+  min-width: 15em;
+  border-right: 0 none;
+  overflow: auto;
+}
