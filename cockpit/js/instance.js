@@ -270,7 +270,7 @@ function sse() { //{{{
       if (data['type'] == 'event') {
         switch(data['topic']) {
           case 'dataelements':
-            monitor_instance_values("dataelements");
+            monitor_instance_values("dataelements",data.content.values);
             break;
           case 'description':
             monitor_instance_dsl();
@@ -390,87 +390,106 @@ function monitor_instance(cin,rep,load,exec) {// {{{
   });
 }// }}}
 
-function monitor_instance_values(val) {// {{{
+function monitor_instance_values(type,vals) {// {{{
   var url = $('body').attr('current-instance');
   var rep = $('body').attr('current-resources');
   var bas = $('body').attr('current-base');
 
-  $.ajax({
-    type: "GET",
-    url: url + "/properties/" + val + "/",
-    success: function(res){
-      save[val].content(res);
-      if (val == "endpoints") {
-        save['endpoints_list'] = {};
-        var tmp = {};
-        $(res).find(" > endpoints > *").each(function(k,v) {
-          save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
-          $.ajax({
-            url: rep + 'endpoints/' + encodeURIComponent($(v).text()),
-            success: function() {
-              tmp[v.tagName] = {};
-              var deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
-              $.ajax({
-                url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/symbol.svg",
-                success: function(res) {
-                  tmp[v.tagName]['symbol'] = res;
-                  deferreds[0].resolve(true);
-                },
-                error: deferreds[0].resolve
-              })
-              $.ajax({
-                url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/schema.rng",
-                success: function(res) {
-                  tmp[v.tagName]['schema'] = res;
-                  deferreds[1].resolve(true);
-                },
-                error: deferreds[1].resolve
-              })
-              $.ajax({
-                url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/properties.json",
-                success: function(res) {
-                  tmp[v.tagName]['properties'] = res;
-                  deferreds[2].resolve(true);
-                },
-                error: deferreds[2].resolve
-              })
-              $.when.apply($, deferreds).then(function(x) {
-                save['endpoints_cache'] = tmp;
-                // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
-                $('#dat_details').empty();
-                adaptor_update();
-              });
-            }
-          });
-        });
-      } else if(val == "attributes") {
-        if ($('#modifiers > div').length == 0) {
-          modifiers_display().then(function(){ modifiers_select(); });
+  if (type == "dataelements" && save['state'] == "running") {
+    let de = save[type].save();
+    Object.entries(vals).forEach(([key,value]) => {
+      let entry = $(de).find(' > dataelements > ' + key);
+      if (entry.length > 0) {
+        if (typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number') {
+          entry.text(value)
         } else {
-          modifiers_select();
+          entry.text(JSON.stringify(value))
         }
-        var text = $(" > attributes > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
-        $('#title').text(text);
-        document.title = text;
-        if ($('body').attr('current-save')) {
-          $('body').attr('current-save-dir',$(" > attributes > design_dir",res).text());
-        }
-        if ($('body').attr('current-logs')) {
-          var uuid = $(" > attributes > uuid",res).text();
-          $("#current-log").show();
-          $("#shifted-log").show();
-          $("#current-log").attr('href',$('body').attr('current-logs') + uuid + '.xes.yaml');
-          $("#shifted-log").attr('href',$('body').attr('current-logs') + uuid + '.xes.shift.yaml');
-          if ($("#current-log").text() == '') {
-            $("#current-log").text(uuid + '.xes.yaml');
+      } else {
+        let ele = $X('<' + key + ' xmlns="http://cpee.org/ns/properties/2.0"/>')
+        $(ele).text(value)
+        $(de).find(' > dataelements').append(ele)
+      }
+    });
+    save[type].content(de);
+  } else {
+    $.ajax({
+      type: "GET",
+      url: url + "/properties/" + type + "/",
+      success: function(res){
+        save[type].content(res);
+        if (type == "endpoints") {
+          save['endpoints_list'] = {};
+          var tmp = {};
+          $(res).find(" > endpoints > *").each(function(k,v) {
+            save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
+            $.ajax({
+              url: rep + 'endpoints/' + encodeURIComponent($(v).text()),
+              success: function() {
+                tmp[v.tagName] = {};
+                var deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
+                $.ajax({
+                  url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/symbol.svg",
+                  success: function(res) {
+                    tmp[v.tagName]['symbol'] = res;
+                    deferreds[0].resolve(true);
+                  },
+                  error: deferreds[0].resolve
+                })
+                $.ajax({
+                  url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/schema.rng",
+                  success: function(res) {
+                    tmp[v.tagName]['schema'] = res;
+                    deferreds[1].resolve(true);
+                  },
+                  error: deferreds[1].resolve
+                })
+                $.ajax({
+                  url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/properties.json",
+                  success: function(res) {
+                    tmp[v.tagName]['properties'] = res;
+                    deferreds[2].resolve(true);
+                  },
+                  error: deferreds[2].resolve
+                })
+                $.when.apply($, deferreds).then(function(x) {
+                  save['endpoints_cache'] = tmp;
+                  // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
+                  $('#dat_details').empty();
+                  adaptor_update();
+                });
+              }
+            });
+          });
+        } else if(type == "attributes") {
+          if ($('#modifiers > div').length == 0) {
+            modifiers_display().then(function(){ modifiers_select(); });
+          } else {
+            modifiers_select();
           }
-          if ($("#shifted-log").text() == '') {
-            $("#shifted-log").text(uuid + '.xes.shift.yaml');
+          var text = $(" > attributes > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
+          $('#title').text(text);
+          document.title = text;
+          if ($('body').attr('current-save')) {
+            $('body').attr('current-save-dir',$(" > attributes > design_dir",res).text());
+          }
+          if ($('body').attr('current-logs')) {
+            var uuid = $(" > attributes > uuid",res).text();
+            $("#current-log").show();
+            $("#shifted-log").show();
+            $("#current-log").attr('href',$('body').attr('current-logs') + uuid + '.xes.yaml');
+            $("#shifted-log").attr('href',$('body').attr('current-logs') + uuid + '.xes.shift.yaml');
+            if ($("#current-log").text() == '') {
+              $("#current-log").text(uuid + '.xes.yaml');
+            }
+            if ($("#shifted-log").text() == '') {
+              $("#shifted-log").text(uuid + '.xes.shift.yaml');
+            }
           }
         }
       }
-    }
-  });
+    });
+  }
 } // }}}
 
 function adaptor_update() { //{{{
@@ -1199,6 +1218,7 @@ function format_visual_remove(what,cls) {//{{{
 }//}}}
 
 function scroll_into_view(what) { //{{{
+  if (save['state'] != "running") return;
   var tcontainer = $('#graphcolumn')[0];
   if ($('g[element-id="' + what + '"]').length > 0) {
     var telement = $('g[element-id="' + what + '"]')[0].getBBox().y;

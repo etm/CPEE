@@ -212,7 +212,7 @@ module CPEE
            else
              system "#{s}.rb -u \"#{url}\" -d #{db} restart 1>/dev/null 2>&1"
            end
-           puts "➡ Service #{File.basename(s,'.rb')} started ..."
+           puts "➡ Service '#{File.basename(s)}.rb -p \"#{path}\" -d #{db}' started ..."
          end
        end
     end
