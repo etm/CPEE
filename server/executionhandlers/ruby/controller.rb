@@ -37,6 +37,7 @@ class Controller
     CPEE::redis_connect(opts,"Instance #{id}")
 
     @redis = opts[:redis]
+    @workers = opts[:workers]
     @votes = []
 
     @id = id
@@ -149,7 +150,7 @@ class Controller
 
   def notify(what,content={})
     content[:attributes] = attributes_translated
-    CPEE::Message::send(:event,what,base,@id,uuid,info,content,@redis)
+    CPEE::Message::send(:event,what,base,@id,uuid,info,content,@redis,@workers)
   end
 
   def vote(what,content={})
@@ -190,7 +191,7 @@ class Controller
   end
 
   def callback(hw,key,content)
-    CPEE::Message::send(:callback,'activity/content',base,@id,uuid,info,content.merge(:key => key),@redis)
+    CPEE::Message::send(:callback,'activity/content',base,@id,uuid,info,content.merge(:key => key),@redis,@workers)
     @callback_keys[key] = hw
   end
 

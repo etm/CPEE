@@ -69,6 +69,9 @@ module CPEE
     opts[:watchdog_frequency]         ||= 7
     opts[:watchdog_start_off]         ||= false
     opts[:infinite_loop_stop]         ||= 10000
+    opts[:workers]                    ||= 2
+    opts[:workers_single]             ||= ['end','forward-votes']
+    opts[:workers_multi]              ||= ['persist','forward-events']
 
     opts[:dashing_frequency]          ||= 3
     opts[:dashing_target]             ||= nil
@@ -161,7 +164,7 @@ module CPEE
             content['mem_available'] = mem_ava
             content['mem_bufferedandcached'] = mem_buc
             content['mem_used'] = mem_usd
-            CPEE::Message::send_url(:event,'node/resource_utilization',File.join(opts[:url],'/'),content,File.join(opts[:dashing_target],'/dash/events'))
+            CPEE::Message::send_url(:event,'node/resource_utilization',File.join(opts[:url],'/'),content,File.join(opts[:dashing_target],'/dash/events'),opts[:workers])
 
             # Keep this as last for our next read
             idl_last = sci
@@ -200,31 +203,46 @@ module CPEE
     end
   end
 
-  def self::watch_services(watchdog_start_off,url,path,db)
+  def self::watch_services(watchdog_start_off,url,path,db,workers,workers_single,workers_multi)
     return if watchdog_start_off
-     EM.defer do
-       Dir[File.join(__dir__,'..','..','server','routing','*.rb')].each do |s|
-         s = s.sub(/\.rb$/,'')
-         pid = (File.read(s + '.pid').to_i rescue nil)
-         if (pid.nil? || !(Process.kill(0, pid) rescue false)) && !File.exist?(s + '.lock')
-           if url.nil?
-             system "#{s}.rb -p \"#{path}\" -d #{db} restart 1>/dev/null 2>&1"
-           else
-             system "#{s}.rb -u \"#{url}\" -d #{db} restart 1>/dev/null 2>&1"
-           end
-           puts "➡ Service #{File.basename(s,'.rb')} started ..."
-         end
-       end
+    EM.defer do
+      workers_single.each do |s|
+        s = File.join(__dir__,'..','..','server','routing',s)
+        next if File.exist?(s + '.lock')
+        pid = (File.read(s + '.pid').to_i rescue nil)
+        if (pid.nil? || !(Process.kill(0, pid) rescue false))
+          if url.nil?
+            system "#{s}.rb -p \"#{path}\" -d #{db} restart 1>/dev/null 2>&1"
+          else
+            system "#{s}.rb -u \"#{url}\" -d #{db} restart 1>/dev/null 2>&1"
+          end
+          puts "➡ Service #{File.basename(s)} started ..."
+        end
+      end
+      [0...workers].each do |s|
+        s = File.join(__dir__,'..','..','server','routing',s)
+        next if File.exist?(s + '.lock')
+        workers.each do |w|
+          pid = (File.read(s + '-' + w + '.pid').to_i rescue nil)
+          if (pid.nil? || !(Process.kill(0, pid) rescue false))
+            if url.nil?
+              system "#{s}.rb -p \"#{path}\" -d #{db} -w #{w} restart 1>/dev/null 2>&1"
+            else
+              system "#{s}.rb -u \"#{url}\" -d #{db} -w #{w} restart 1>/dev/null 2>&1"
+            end
+            puts "➡ Service #{File.basename(s)}-#{w} started ..."
+          end
+        end
+      end
     end
   end
   def self::cleanup_services(watchdog_start_off)
     return if watchdog_start_off
-    Dir[File.join(__dir__,'..','..','server','routing','*.rb')].each do |s|
-      s = s.sub(/\.rb$/,'')
-      pid = (File.read(s + '.pid').to_i rescue nil)
+    Dir[File.join(__dir__,'..','..','server','routing','*.pid')].each do |s|
+      pid = (File.read(s).to_i rescue nil)
       if !pid.nil? || (Process.kill(0, pid) rescue false)
         system "#{s}.rb stop 1>/dev/null 2>&1"
-        puts "➡ Service #{File.basename(s,'.rb')} stopped ..."
+        puts "➡ Service #{File.basename(s,'.pid')} stopped ..."
       end
     end
   end
@@ -313,7 +331,7 @@ module CPEE
         :state => 'ready',
         :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
       }
-      CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,uuid,name,content,redis)
+      CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,uuid,name,content,redis,opts[:workers])
 
       @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
       @headers << Riddl::Header.new("CPEE-INSTANCE-URL", File.join(opts[:url].to_s,id.to_s,'/'))
@@ -360,7 +378,7 @@ module CPEE
       }
       state = CPEE::Persistence::extract_item(id,opts,'state')
       if state == 'stopped' || state == 'ready'
-        CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,content[:attributes]['uuid'],content[:attributes]['info'],content,redis)
+        CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,content[:attributes]['uuid'],content[:attributes]['info'],content,redis,opts[:workers])
       end
 
       EM::add_timer(30) do

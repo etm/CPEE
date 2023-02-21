@@ -23,25 +23,26 @@ Daemonite.new do |opts|
   opts[:runtime_opts] += [
     ["--url=URL", "-uURL", "Specify redis url", ->(p){ opts[:redis_url] = p }],
     ["--path=PATH", "-pPATH", "Specify redis path, e.g. /tmp/redis.sock", ->(p){ opts[:redis_path] = p }],
-    ["--db=DB", "-dDB", "Specify redis db, e.g. 1", ->(p) { opts[:redis_db] = p.to_i }]
+    ["--db=DB", "-dDB", "Specify redis db, e.g. 1", ->(p) { opts[:redis_db] = p.to_i }],
+    ["--worker=NUM", "-wNUM", "Specify the worker id, e.g. 0", ->(p) { opts[:worker] = p.to_i }]
   ]
 
   on startup do
     opts[:redis_path] ||= '/tmp/redis.sock'
     opts[:redis_db] ||= 1
+    opts[:pidfile] = File.basename(opts[:pidfile],'.pid') + '-' + opts[:worker] + '.pid',
 
     CPEE::redis_connect opts, 'Server Routing Forward Events'
     opts[:pubsubredis] = opts[:redis_dyn].call 'Server Routing Forward Events Sub'
   end
 
   run do
-    opts[:pubsubredis].psubscribe('event:*') do |on|
+    opts[:pubsubredis].psubscribe("event:#{opts[:worker]}:*") do |on|
       on.pmessage do |pat, what, message|
         index = message.index(' ')
         mess = message[index+1..-1]
         instance = message[0...index]
-        type = pat[0..-3]
-        event = what[(type.length+1)..-1]
+        type, worker, event = what.split(';')
         topic = ::File::dirname(event)
         name = ::File::basename(event)
         long = File.join(topic,type,name)
@@ -51,7 +52,6 @@ Daemonite.new do |opts|
             if url.nil? || url == ""
               opts[:redis].publish("forward:#{instance}/#{key}",mess)
             else
-              p "#{type}/#{topic}/#{event}-#{url}"
               client = Riddl::Client.new(url)
               client.post [
                 Riddl::Parameter::Simple::new('type',type),

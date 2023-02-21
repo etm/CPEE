@@ -18,7 +18,9 @@ module CPEE
     WHO = 'cpee'
     TYPE = 'instance'
 
-    def self::send(type, event, cpee, instance, instance_uuid, instance_name, content={}, backend)
+    def self::send(type, event, cpee, instance, instance_uuid, instance_name, content={}, backend=nil, workers=nil)
+      distro = 0
+      distro = rand(0...worker) unless workers.nil?
       topic = ::File::dirname(event)
       name = ::File::basename(event)
       payload = {
@@ -33,7 +35,7 @@ module CPEE
       }
       payload[TYPE + '-uuid'] = instance_uuid if instance_uuid
       payload[TYPE + '-name'] = instance_name if instance_name
-      backend.publish(type.to_s + ':' + event,
+      backend.publish(type.to_s + ':' + distro + ':' + event,
         instance.to_s + ' ' +
         JSON::generate(payload)
       )
@@ -52,14 +54,12 @@ module CPEE
           'content' => content
         }
         client = Riddl::Client.new(backend)
-        p backend
         client.post [
           Riddl::Parameter::Simple::new('type',type),
           Riddl::Parameter::Simple::new('topic',topic),
           Riddl::Parameter::Simple::new('event',name),
           Riddl::Parameter::Complex::new('notification','application/json',JSON::generate(payload))
         ]
-        p backend + '------'
       end
     end
   end

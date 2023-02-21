@@ -35,9 +35,9 @@ Daemonite.new do |opts|
   end
 
   run do
-    opts[:pubsubredis].psubscribe('callback-end:*') do |on|
+    opts[:pubsubredis].psubscribe('callback-end:00:*') do |on|
       on.pmessage do |pat, what, message|
-        _, key = what.split(':')
+        _, worker, key = what.split(':')
         index = message.index(' ')
         instance = message[0...index]
         opts[:redis].multi do |multi|
