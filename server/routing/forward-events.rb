@@ -52,13 +52,16 @@ Daemonite.new do |opts|
             if url.nil? || url == ""
               opts[:redis].publish("forward:#{instance}/#{key}",mess)
             else
-              client = Riddl::Client.new(url)
-              client.post [
-                Riddl::Parameter::Simple::new('type',type),
-                Riddl::Parameter::Simple::new('topic',topic),
-                Riddl::Parameter::Simple::new('event',name),
-                Riddl::Parameter::Complex::new('notification','application/json',mess)
-              ]
+              # Ractor.new(url,type,topic,name,mess) do |url,type,topic,name,mess|
+              # sadly typhoes does not support ractors
+              Thread.new do
+                Riddl::Client.new(url).post [
+                  Riddl::Parameter::Simple::new('type',type),
+                  Riddl::Parameter::Simple::new('topic',topic),
+                  Riddl::Parameter::Simple::new('event',name),
+                  Riddl::Parameter::Complex::new('notification','application/json',mess)
+                ]
+              end
             end
           end
         end

@@ -1,0 +1,5 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="15" cy="15" r="14" class="cline stand"/>
+  <rect x="7" y="10" width="16" height="11" class="black" style="fill: none"/>
+  <path d="m 7,10 8,6 8,-6" class="black" style="fill: none"/>
+</svg>

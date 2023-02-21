@@ -374,17 +374,7 @@
         <xsl:value-of select="$myspace+$myspacemultiplier"/>
       </xsl:with-param>
     </xsl:call-template>
-    <xsl:text>parallel_branch</xsl:text>
-    <xsl:if test="@pass">
-      <xsl:text> </xsl:text>
-      <xsl:value-of select="@pass"/>
-    </xsl:if>
-    <xsl:text> do</xsl:text>
-    <xsl:if test="@local">
-      <xsl:text> |</xsl:text>
-      <xsl:value-of select="@local"/>
-      <xsl:text>|</xsl:text>
-    </xsl:if>
+    <xsl:text>parallel_branch data do |local|</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
       <xsl:with-param name="myspace">
