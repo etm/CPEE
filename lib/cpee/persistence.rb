@@ -35,8 +35,7 @@ module CPEE
           :values => values.transform_values{|val| JSON::parse(val) rescue val },
           :attributes => ah.translate(attributes,dataelements,endpoints),
         },
-        opts[:redis],
-        opts[:workers]
+        opts[:redis]
       )
     end #}}}
     def self::extract_set(id,opts,item) #{{{
@@ -59,8 +58,7 @@ module CPEE
         Persistence::extract_item(id,opts,'attributes/uuid'),
         Persistence::extract_item(id,opts,'attributes/info'),
         value,
-        opts[:redis],
-        opts[:workers]
+        opts[:redis]
       )
     end #}}}
     def self::extract_item(id,opts,item) #{{{
@@ -116,8 +114,7 @@ module CPEE
           :deleted => deleted,
           :attributes => ah.translate(attributes,dataelements,endpoints),
         },
-        opts[:redis],
-        opts[:workers]
+        opts[:redis]
       )
 
       200

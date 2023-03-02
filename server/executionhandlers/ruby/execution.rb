@@ -46,6 +46,7 @@ module CPEE
             :redis_url => opts[:redis_url],
             :redis_path => File.join(opts[:basepath],opts[:redis_path]),
             :redis_db => opts[:redis_db],
+            :workers => opts[:workers],
             :global_executionhandlers => opts[:global_executionhandlers],
             :executionhandlers => opts[:executionhandlers],
             :executionhandler => hw

@@ -30,33 +30,37 @@ Daemonite.new do |opts|
     ["--worker=NUM", "-wNUM", "Specify the worker id, e.g. 0", ->(p) { opts[:worker] = p.to_i }]
   ]
 
+  on setup do
+    opts[:worker] ||= 0
+    opts[:worker] = ('%02i' % opts[:worker]).freeze
+    opts[:pidfile] = File.basename(opts[:pidfile],'.pid') + '-' + opts[:worker].to_s + '.pid'
+  end
+
   on startup do
     opts[:redis_path] ||= '/tmp/redis.sock'.freeze
     opts[:redis_db] ||= 1
-    opts[:pidfile] = File.basename(opts[:pidfile],'.pid') + '-' + opts[:worker] + '.pid',
-    opts[:worker] ||= 0
-    opts[:worker] = ('%02i' % opts[:worker]).freeze
     opts[:events] = [
-      'event:' + opts[:worker'] + ':state/change',
-      'event:' + opts[:worker'] + ':executionhandler/change",
-      'event' + opts[:worker'] + ':description/change',
-      'event:' + opts[:worker'] + ':dataelements/change',
-      'event:' + opts[:worker'] + ':endpoints/change',
-      'event:' + opts[:worker'] + ':attributes/change',
-      'event:' + opts[:worker'] + ':transformation/change',
-      'event:' + opts[:worker'] + ':status/change',
-      'event:' + opts[:worker'] + ':position/change',
-      'event:' + opts[:worker'] + ':handler/change',
-      'callback:' + opts[:worker'] + ':activity/content'
+      'event:' + opts[:worker].to_s + ':state/change',
+      'event:' + opts[:worker].to_s + ':executionhandler/change',
+      'event:' + opts[:worker].to_s + ':description/change',
+      'event:' + opts[:worker].to_s + ':dataelements/change',
+      'event:' + opts[:worker].to_s + ':endpoints/change',
+      'event:' + opts[:worker].to_s + ':attributes/change',
+      'event:' + opts[:worker].to_s + ':transformation/change',
+      'event:' + opts[:worker].to_s + ':status/change',
+      'event:' + opts[:worker].to_s + ':position/change',
+      'event:' + opts[:worker].to_s + ':handler/change',
+      'callback:' + opts[:worker].to_s + ':activity/content'
     ].freeze
-
     CPEE::redis_connect opts, 'Server Routing Persist'
     opts[:pubsubredis] = opts[:redis_dyn].call 'Server Routing Persist Sub'
   end
 
   run do
-    opts[:pubsubredis].subscribe(EVENTS) do |on|
+    p opts[:events]
+    opts[:pubsubredis].subscribe(opts[:events]) do |on|
       on.message do |what, message|
+        p 'rrrr'
         mess = JSON.parse(message[message.index(' ')+1..-1])
         instance = mess.dig('instance')
         case what

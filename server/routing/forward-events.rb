@@ -27,11 +27,15 @@ Daemonite.new do |opts|
     ["--worker=NUM", "-wNUM", "Specify the worker id, e.g. 0", ->(p) { opts[:worker] = p.to_i }]
   ]
 
+  on setup do
+    opts[:worker] ||= 0
+    opts[:worker] = ('%02i' % opts[:worker]).freeze
+    opts[:pidfile] = File.basename(opts[:pidfile],'.pid') + '-' + opts[:worker].to_s + '.pid'
+  end
+
   on startup do
     opts[:redis_path] ||= '/tmp/redis.sock'
     opts[:redis_db] ||= 1
-    opts[:pidfile] = File.basename(opts[:pidfile],'.pid') + '-' + opts[:worker] + '.pid',
-
     CPEE::redis_connect opts, 'Server Routing Forward Events'
     opts[:pubsubredis] = opts[:redis_dyn].call 'Server Routing Forward Events Sub'
   end
@@ -42,7 +46,7 @@ Daemonite.new do |opts|
         index = message.index(' ')
         mess = message[index+1..-1]
         instance = message[0...index]
-        type, worker, event = what.split(';')
+        type, worker, event = what.split(':',3)
         topic = ::File::dirname(event)
         name = ::File::basename(event)
         long = File.join(topic,type,name)

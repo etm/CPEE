@@ -18,9 +18,17 @@ module CPEE
     WHO = 'cpee'
     TYPE = 'instance'
 
-    def self::send(type, event, cpee, instance, instance_uuid, instance_name, content={}, backend=nil, workers=nil)
-      distro = 0
-      distro = rand(0...worker) unless workers.nil?
+    def self::set_workers(workers)
+      @@tworkers = (workers < 1 && workers > 99 ? 1 : workers).freeze
+      @@last = -1
+    end
+
+    def self::target
+      @@last < @@tworkers-1 ? @@last += 1 : @@last = 0
+    end
+
+    def self::send(type, event, cpee, instance, instance_uuid, instance_name, content={}, backend=nil)
+      target = '%02i' % CPEE::Message::target
       topic = ::File::dirname(event)
       name = ::File::basename(event)
       payload = {
@@ -35,7 +43,8 @@ module CPEE
       }
       payload[TYPE + '-uuid'] = instance_uuid if instance_uuid
       payload[TYPE + '-name'] = instance_name if instance_name
-      backend.publish(type.to_s + ':' + distro + ':' + event,
+
+      backend.publish(type.to_s + ':' + target + ':' + event.to_s,
         instance.to_s + ' ' +
         JSON::generate(payload)
       )

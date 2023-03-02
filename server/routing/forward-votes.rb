@@ -61,14 +61,13 @@ Daemonite.new do |opts|
   end
 
   run do
-    opts[:pubsubredis].psubscribe('vote:00:*') do |on|
+    opts[:pubsubredis].psubscribe('vote:*') do |on|
       on.pmessage do |pat, what, message|
         index = message.index(' ')
+        instance = message[0...index]
         mess = message[index+1..-1]
 
-        instance = message[0...index]
-        type = 'vote'
-        event = what[(8..-1]
+        type, worker, event = what.split(':',3)
         topic = ::File::dirname(event)
         name = ::File::basename(event)
         long = File.join(topic,type,name)

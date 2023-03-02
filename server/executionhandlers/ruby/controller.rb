@@ -35,9 +35,9 @@ def ⭐(a); ParaStruct.new(a); end
 class Controller
   def initialize(id,dir,opts)
     CPEE::redis_connect(opts,"Instance #{id}")
+    CPEE::Message::set_workers(opts[:workers])
 
     @redis = opts[:redis]
-    @workers = opts[:workers]
     @votes = []
 
     @id = id
@@ -150,7 +150,7 @@ class Controller
 
   def notify(what,content={})
     content[:attributes] = attributes_translated
-    CPEE::Message::send(:event,what,base,@id,uuid,info,content,@redis,@workers)
+    CPEE::Message::send(:event,what,base,@id,uuid,info,content,@redis)
   end
 
   def vote(what,content={})
@@ -191,7 +191,7 @@ class Controller
   end
 
   def callback(hw,key,content)
-    CPEE::Message::send(:callback,'activity/content',base,@id,uuid,info,content.merge(:key => key),@redis,@workers)
+    CPEE::Message::send(:callback,'activity/content',base,@id,uuid,info,content.merge(:key => key),@redis)
     @callback_keys[key] = hw
   end
 

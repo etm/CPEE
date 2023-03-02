@@ -69,7 +69,7 @@ module CPEE
     opts[:watchdog_frequency]         ||= 7
     opts[:watchdog_start_off]         ||= false
     opts[:infinite_loop_stop]         ||= 10000
-    opts[:workers]                    ||= 2
+    opts[:workers]                    ||= 1
     opts[:workers_single]             ||= ['end','forward-votes']
     opts[:workers_multi]              ||= ['persist','forward-events']
 
@@ -110,11 +110,12 @@ module CPEE
       Dir[File.join(opts[:executionhandlers],'*','execution.rb')].each do |h|
         require h
       end unless opts[:executionhandlers].nil? || opts[:executionhandlers].strip == ''
+      CPEE::Message::set_workers(opts[:workers])
 
       parallel do
-        CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],File.join(opts[:basepath],opts[:redis_path]),opts[:redis_db])
+        CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],File.join(opts[:basepath],opts[:redis_path]),opts[:redis_db],opts[:workers],opts[:workers_single],opts[:workers_multi])
         EM.add_periodic_timer(opts[:watchdog_frequency]) do ### start services
-          CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],File.join(opts[:basepath],opts[:redis_path]),opts[:redis_db])
+          CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],File.join(opts[:basepath],opts[:redis_path]),opts[:redis_db],opts[:workers],opts[:workers_single],opts[:workers_multi])
         end
         EM.defer do ### catch all sse connections
           CPEE::Notifications::sse_distributor(opts)
@@ -164,7 +165,7 @@ module CPEE
             content['mem_available'] = mem_ava
             content['mem_bufferedandcached'] = mem_buc
             content['mem_used'] = mem_usd
-            CPEE::Message::send_url(:event,'node/resource_utilization',File.join(opts[:url],'/'),content,File.join(opts[:dashing_target],'/dash/events'),opts[:workers])
+            CPEE::Message::send_url(:event,'node/resource_utilization',File.join(opts[:url],'/'),content,File.join(opts[:dashing_target],'/dash/events'))
 
             # Keep this as last for our next read
             idl_last = sci
@@ -219,18 +220,20 @@ module CPEE
           puts "➡ Service #{File.basename(s)} started ..."
         end
       end
-      [0...workers].each do |s|
-        s = File.join(__dir__,'..','..','server','routing',s)
+      workers_multi.each do |s|
+        s = File.join(__dir__,'..','..','server','routing',s.to_s)
         next if File.exist?(s + '.lock')
-        workers.each do |w|
+        (0...workers).each do |w|
+          w = '%02i' % w
           pid = (File.read(s + '-' + w + '.pid').to_i rescue nil)
           if (pid.nil? || !(Process.kill(0, pid) rescue false))
-            if url.nil?
-              system "#{s}.rb -p \"#{path}\" -d #{db} -w #{w} restart 1>/dev/null 2>&1"
+            cmd = if url.nil?
+              "-p \"#{path}\" -d #{db} -w #{w} restart"
             else
-              system "#{s}.rb -u \"#{url}\" -d #{db} -w #{w} restart 1>/dev/null 2>&1"
+              "-u \"#{url}\" -d #{db} -w #{w} restart"
             end
-            puts "➡ Service #{File.basename(s)}-#{w} started ..."
+            system "#{s}.rb " + cmd + " 1>/dev/null 2>&1"
+            puts "➡ Service #{File.basename(s)}-#{w} (#{cmd}) started ..."
           end
         end
       end
@@ -241,7 +244,12 @@ module CPEE
     Dir[File.join(__dir__,'..','..','server','routing','*.pid')].each do |s|
       pid = (File.read(s).to_i rescue nil)
       if !pid.nil? || (Process.kill(0, pid) rescue false)
-        system "#{s}.rb stop 1>/dev/null 2>&1"
+        f = s.sub(/(-(\d+))?\.pid$/,'.rb')
+        if $2.nil?
+          system "#{f} stop 1>/dev/null 2>&1"
+        else
+          system "#{f} -w #{$2} stop 1>/dev/null 2>&1"
+        end
         puts "➡ Service #{File.basename(s,'.pid')} stopped ..."
       end
     end
@@ -377,7 +385,7 @@ module CPEE
       }
       state = CPEE::Persistence::extract_item(id,opts,'state')
       if state == 'stopped' || state == 'ready'
-        CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,content[:attributes]['uuid'],content[:attributes]['info'],content,redis,opts[:workers])
+        CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,content[:attributes]['uuid'],content[:attributes]['info'],content,redis)
       end
 
       empt = CPEE::Persistence::keys(id,opts).to_a
