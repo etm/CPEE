@@ -27,44 +27,43 @@ Daemonite.new do |opts|
     ["--url=URL", "-uURL", "Specify redis url", ->(p){ opts[:redis_url] = p }],
     ["--path=PATH", "-pPATH", "Specify redis path, e.g. /tmp/redis.sock", ->(p){ opts[:redis_path] = p }],
     ["--db=DB", "-dDB", "Specify redis db, e.g. 1", ->(p) { opts[:redis_db] = p.to_i }],
-    ["--worker=NUM", "-wNUM", "Specify the worker id, e.g. 0", ->(p) { opts[:worker] = p.to_i }]
+    ["--workers=NUM", "-wNUM", "Number of workers that are expected, e.g. 3", ->(p) { opts[:workers] = p.to_i }]
   ]
-
-  on setup do
-    opts[:worker] ||= 0
-    opts[:worker] = ('%02i' % opts[:worker]).freeze
-    opts[:pidfile] = File.basename(opts[:pidfile],'.pid') + '-' + opts[:worker].to_s + '.pid'
-  end
 
   on startup do
     opts[:redis_path] ||= '/tmp/redis.sock'.freeze
     opts[:redis_db] ||= 1
-    opts[:events] = [
-      'event:' + opts[:worker].to_s + ':state/change',
-      'event:' + opts[:worker].to_s + ':executionhandler/change',
-      'event:' + opts[:worker].to_s + ':description/change',
-      'event:' + opts[:worker].to_s + ':dataelements/change',
-      'event:' + opts[:worker].to_s + ':endpoints/change',
-      'event:' + opts[:worker].to_s + ':attributes/change',
-      'event:' + opts[:worker].to_s + ':transformation/change',
-      'event:' + opts[:worker].to_s + ':status/change',
-      'event:' + opts[:worker].to_s + ':position/change',
-      'event:' + opts[:worker].to_s + ':handler/change',
-      'callback:' + opts[:worker].to_s + ':activity/content'
-    ].freeze
+    opts[:events] = []
+    0.upto(opts[:workers]-1) do |w|
+      opts[:events] += [
+        'event:' + ('%02i' % w) + ':state/change',
+        'event:' + ('%02i' % w) + ':executionhandler/change',
+        'event:' + ('%02i' % w) + ':description/change',
+        'event:' + ('%02i' % w) + ':dataelements/change',
+        'event:' + ('%02i' % w) + ':endpoints/change',
+        'event:' + ('%02i' % w) + ':attributes/change',
+        'event:' + ('%02i' % w) + ':transformation/change',
+        'event:' + ('%02i' % w) + ':status/change',
+        'event:' + ('%02i' % w) + ':position/change',
+        'event:' + ('%02i' % w) + ':handler/change',
+        'callback:' + ('%02i' % w) + ':activity/content'
+      ]
+    end
+    opts[:events].freeze
     CPEE::redis_connect opts, 'Server Routing Persist'
     opts[:pubsubredis] = opts[:redis_dyn].call 'Server Routing Persist Sub'
+  rescue => e
+    puts e.message
+    puts e.backtrace
   end
 
   run do
-    p opts[:events]
     opts[:pubsubredis].subscribe(opts[:events]) do |on|
       on.message do |what, message|
-        p 'rrrr'
         mess = JSON.parse(message[message.index(' ')+1..-1])
         instance = mess.dig('instance')
         case what
-          when 'callback:' + opts[:worker] + ':activity/content'
+          when /callback:\d+:activity\/content/
             key = mess.dig('content','key')
             opts[:redis].multi do |multi|
               multi.sadd("instance:#{instance}/callbacks",key)
@@ -73,28 +72,28 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/callback/#{key}/position",mess.dig('content','activity'))
               multi.set("instance:#{instance}/callback/#{key}/type",'callback')
             end
-          when 'event:' + opts[:worker] + ':state/change'
+          when /event:\d+:state\/change/
             opts[:redis].multi do |multi|
               unless mess.dig('content','state') == 'purged'
                 multi.set("instance:#{instance}/state",mess.dig('content','state'))
                 multi.set("instance:#{instance}/state/@changed",mess.dig('timestamp'))
               end
             end
-          when 'event:' + opts[:worker] + ':executionhandler/change'
+          when /event:\d+:executionhandler\/change/
             opts[:redis].set("instance:#{instance}/executionhandler",mess.dig('content','executionhandler'))
-          when 'event:' + opts[:worker] + ':description/change'
+          when /event:\d+:description\/change/
             opts[:redis].multi do |multi|
               multi.set("instance:#{instance}/description",mess.dig('content','description'))
               multi.set("instance:#{instance}/dslx",mess.dig('content','dslx'))
               multi.set("instance:#{instance}/dsl",mess.dig('content','dsl'))
             end
-          when 'event:' + opts[:worker] + ':dataelements/change', 'event:' + opts[:worker] + ':endpoints/change', 'event:' + opts[:worker] + ':attributes/change'
+          when /event:\d+:dataelements\/change/, /event:\d+:endpoints\/change/, /event:\d+:attributes\/change/
             topic = mess.dig('topic')
             opts[:redis].multi do |multi|
               mess.dig('content','changed')&.each_with_index do |c,i|
-                unless what == 'event:' + opts[:worker] + ':attributes/change' && c == 'uuid'
+                unless what =~ /event:\d+:attributes\/change/ && c == 'uuid'
                   multi.zadd("instance:#{instance}/#{topic}",i,c)
-                  if what == 'event:' + opts[:worker] + ':dataelements/change'
+                  if what =~ /event:\d+:dataelements\/change/
                     multi.set("instance:#{instance}/#{topic}/#{c}",CPEE::ValueHelper::generate(mess.dig('content','values',c)))
                   else
                     multi.set("instance:#{instance}/#{topic}/#{c}",mess.dig('content','values',c))
@@ -102,13 +101,13 @@ Daemonite.new do |opts|
                 end
               end
               mess.dig('content','deleted')&.to_a&.each do |c|
-                unless what == 'event:' + opts[:worker] + ':attributes/change' && c == 'uuid'
+                unless what =~ /event:\d+:attributes\/change/ && c == 'uuid'
                   multi.zrem("instance:#{instance}/#{topic}",c)
                   multi.del("instance:#{instance}/#{topic}/#{c}")
                 end
               end
             end
-          when 'event:' + opts[:worker] + ':transformation/change'
+          when /event:\d+:transformation\/change/
             opts[:redis].multi do |multi|
               multi.set("instance:#{instance}/transformation/description",mess.dig('content','description'))
               multi.set("instance:#{instance}/transformation/description/@type",mess.dig('content','description_type'))
@@ -117,12 +116,12 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/transformation/endpoints",mess.dig('content','endpoints'))
               multi.set("instance:#{instance}/transformation/endpoints/@type",mess.dig('content','endpoints_type'))
             end
-          when 'event:' + opts[:worker] + ':status/change'
+          when /event:\d+:status\/change/
             opts[:redis].multi do |multi|
               multi.set("instance:#{instance}/status/id",mess.dig('content','id'))
               multi.set("instance:#{instance}/status/message",mess.dig('content','message'))
             end
-          when 'event:' + opts[:worker] + ':position/change'
+          when /event:\d+:position\/change/
             opts[:redis].multi do |multi|
               c = mess.dig('content')
               c.dig('unmark')&.each do |ele|
@@ -149,7 +148,7 @@ Daemonite.new do |opts|
                 multi.set("instance:#{instance}/positions/#{ele['position']}",'after')
               end
             end
-          when 'event:' + opts[:worker] + ':handler/change'
+          when /event:\d+:handler\/change/
             opts[:redis].multi do |multi|
               mess.dig('content','changed').each do |c|
                 multi.sadd("instance:#{instance}/handlers",mess.dig('content','key'))

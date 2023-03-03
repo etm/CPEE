@@ -59,23 +59,27 @@ class Controller
       @psredis = @opts[:redis_dyn].call "Instance #{@id} Callback Response"
       @psredis.psubscribe('callback-response:*','callback-end:*') do |on|
         on.pmessage do |pat, what, message|
-          if pat == 'callback-response:*' && @callback_keys.has_key?(what[18..-1])
-            index = message.index(' ')
-            mess = message[index+1..-1]
-            instance = message[0...index]
-            m = JSON.parse(mess)
-            resp = []
-            m['content']['values'].each do |e|
-              if e[1][0] == 'simple'
-                resp << Riddl::Parameter::Simple.new(e[0],e[1][1])
-              elsif e[1][0] == 'complex'
-                resp << Riddl::Parameter::Complex.new(e[0],e[1][1],File.open(e[1][2]))
+          if pat == 'callback-response:*'
+            _, worker, identifier = what.split(':')
+            if @callback_keys.has_key?(identifier)
+              index = message.index(' ')
+              mess = message[index+1..-1]
+              instance = message[0...index]
+              m = JSON.parse(mess)
+              resp = []
+              m['content']['values'].each do |e|
+                if e[1][0] == 'simple'
+                  resp << Riddl::Parameter::Simple.new(e[0],e[1][1])
+                elsif e[1][0] == 'complex'
+                  resp << Riddl::Parameter::Complex.new(e[0],e[1][1],File.open(e[1][2]))
+                end
               end
+              @callback_keys[identifier].send(:callback,resp,m['content']['headers'])
             end
-            @callback_keys[what[18..-1]].send(:callback,resp,m['content']['headers'])
           end
           if pat == 'callback-end:*'
-            @callback_keys.delete(what[13..-1])
+            _, worker, identifier = what.split(':')
+            @callback_keys.delete(identifier)
           end
         end
       end

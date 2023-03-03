@@ -70,8 +70,8 @@ module CPEE
     opts[:watchdog_start_off]         ||= false
     opts[:infinite_loop_stop]         ||= 10000
     opts[:workers]                    ||= 1
-    opts[:workers_single]             ||= ['end','forward-votes']
-    opts[:workers_multi]              ||= ['persist','forward-events']
+    opts[:workers_single]             ||= ['end','persist','forward-votes']
+    opts[:workers_multi]              ||= ['forward-events']
 
     opts[:dashing_frequency]          ||= 3
     opts[:dashing_target]             ||= nil
@@ -212,12 +212,13 @@ module CPEE
         next if File.exist?(s + '.lock')
         pid = (File.read(s + '.pid').to_i rescue nil)
         if (pid.nil? || !(Process.kill(0, pid) rescue false))
-          if url.nil?
-            system "#{s}.rb -p \"#{path}\" -d #{db} restart 1>/dev/null 2>&1"
+          cmd = if url.nil?
+            "-p \"#{path}\" -d #{db} -w #{workers} restart 1>/dev/null 2>&1"
           else
-            system "#{s}.rb -u \"#{url}\" -d #{db} restart 1>/dev/null 2>&1"
+            "-u \"#{url}\" -d #{db} -w #{workers} restart 1>/dev/null 2>&1"
           end
-          puts "➡ Service #{File.basename(s)} started ..."
+          system "#{s}.rb " + cmd + " 1>/dev/null 2>&1"
+          puts "➡ Service #{File.basename(s)} (#{cmd}) started ..."
         end
       end
       workers_multi.each do |s|
@@ -338,7 +339,7 @@ module CPEE
         :state => 'ready',
         :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
       }
-      CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,uuid,name,content,redis,opts[:workers])
+      CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,uuid,name,content,redis)
 
       @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
       @headers << Riddl::Header.new("CPEE-INSTANCE-URL", File.join(opts[:url].to_s,id.to_s,'/'))
