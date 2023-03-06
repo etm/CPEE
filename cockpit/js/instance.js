@@ -695,10 +695,10 @@ function monitor_instance_running(content,event) {// {{{
     }
   } else if (event == "done") {
     if (save['activity_states'][content['activity-uuid']]) {
-      save['activity_states'][content['activity-uuid']] = true
-      format_visual_remove(content.activity,"active")
-      setTimeout(() => {delete save['activity_states'][content['activity-uuid']]},5000);
+      format_visual_remove(content.activity,"active");
     }
+    save['activity_states'][content['activity-uuid']] = true
+    setTimeout(() => {delete save['activity_states'][content['activity-uuid']]},5000);
   }
 } // }}}
 function monitor_instance_state_change(notification) { //{{{
