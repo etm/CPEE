@@ -19,7 +19,8 @@ function global_init() {
   subscription_state = 'less';
   save['state']= undefined;
   save['dsl'] = undefined;
-  save['activity_states'] = {}
+  save['activity_red_states'] = {}
+  save['activity_blue_states'] = {}
   save['graph'] = undefined;
   save['graph_theme'] = undefined;
   save['graph_adaptor'] = undefined;
@@ -682,36 +683,49 @@ function monitor_instance_pos() {// {{{
 }// }}}
 
 function monitor_instance_running(content,event) {// {{{
-  if (save['state'] == "stopping") return;
   if (event == "calling") {
-    if (!save['activity_states'][content['activity-uuid']]) {
-      save['activity_states'][content['activity-uuid']] = true
+    if (!save['activity_red_states'][content['activity-uuid']]) {
+      save['activity_red_states'][content['activity-uuid']] = true
       format_visual_add(content.activity,"active")
     }
   } else if (event == "manipulating") {
-    if (!save['activity_states'][content['activity-uuid']]) {
-      save['activity_states'][content['activity-uuid']] = true
+    if (!save['activity_red_states'][content['activity-uuid']]) {
+      save['activity_red_states'][content['activity-uuid']] = true
       format_visual_add(content.activity,"active")
     }
   } else if (event == "done") {
-    if (save['activity_states'][content['activity-uuid']]) {
+    if (save['activity_red_states'][content['activity-uuid']]) {
       format_visual_remove(content.activity,"active");
     }
-    save['activity_states'][content['activity-uuid']] = true
-    setTimeout(() => {delete save['activity_states'][content['activity-uuid']]},5000);
+    save['activity_red_states'][content['activity-uuid']] = true
+    setTimeout(() => {delete save['activity_red_states'][content['activity-uuid']]},5000);
   }
 } // }}}
-
 function monitor_instance_pos_change(content) {// {{{
-  console.log(content);
-  if (content['unmark']) {
-    $.each(content['unmark'],function(a,b){
-      format_visual_remove(b.position,"passive")
-    });
-  }
   if (content['at']) {
     $.each(content['at'],function(a,b){
-      format_visual_add(b.position,"passive");
+      if (!save['activity_blue_states'][b.uuid]) {
+        save['activity_blue_states'][b.uuid] = true
+        format_visual_add(b.position,"passive");
+      }
+    });
+  }
+  if (content['after']) {
+    $.each(content['after'],function(a,b){
+      if (!save['activity_blue_states'][b.uuid]) {
+        save['activity_blue_states'][b.uuid] = true
+        format_visual_add(b.position,"passive");
+      }
+    });
+  }
+  if (content['unmark']) {
+    $.each(content['unmark'],function(a,b){
+      if (save['activity_blue_states'][b.uuid]) {
+        format_visual_remove(b.position,"passive")
+        console.log('rrrrr');
+      }
+      save['activity_blue_states'][b.uuid] = true
+      setTimeout(() => {delete save['activity_blue_states'][b.uuid]},5000);
     });
   }
   if (!content['at'] && !content['unmark'] && !content['after'] && !content['wait']) {
