@@ -200,6 +200,10 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     true
   end # }}}
 
+  def activity_uuid
+    @handler_activity_uuid
+  end
+
   def inform_activity_done # {{{
     @controller.notify("activity/done", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
     @controller.notify("status/resource_utilization", :mib => GetProcessMem.new.mb, **Process.times.to_h)

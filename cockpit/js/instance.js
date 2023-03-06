@@ -701,6 +701,25 @@ function monitor_instance_running(content,event) {// {{{
     setTimeout(() => {delete save['activity_states'][content['activity-uuid']]},5000);
   }
 } // }}}
+
+function monitor_instance_pos_change(content) {// {{{
+  console.log(content);
+  if (content['unmark']) {
+    $.each(content['unmark'],function(a,b){
+      format_visual_remove(b.position,"passive")
+    });
+  }
+  if (content['at']) {
+    $.each(content['at'],function(a,b){
+      format_visual_add(b.position,"passive");
+    });
+  }
+  if (!content['at'] && !content['unmark'] && !content['after'] && !content['wait']) {
+    monitor_instance_pos();
+  }
+} // }}}
+
+
 function monitor_instance_state_change(notification) { //{{{
   if ($('#trackcolumn').length > 0) {
     if (notification == "finished" || notification == "abandoned") {
@@ -763,22 +782,6 @@ function monitor_instance_state_change(notification) { //{{{
     $("#state_text").text(notification);
   }
 }   //}}}
-function monitor_instance_pos_change(content) {// {{{
-  if (content['unmark']) {
-    $.each(content['unmark'],function(a,b){
-      format_visual_remove(b.position,"passive")
-    });
-  }
-  if (content['at']) {
-    $.each(content['at'],function(a,b){
-      format_visual_add(b.position,"passive");
-    });
-  }
-  if (!content['at'] && !content['unmark'] && !content['after'] && !content['wait']) {
-    monitor_instance_pos();
-  }
-} // }}}
-
 function monitor_instance_vote_add(parts) {// {{{
   var ctv = $("#votes");
 
