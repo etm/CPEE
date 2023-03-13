@@ -27,7 +27,7 @@
   --wfadaptor-selected: #f57900;
   --wfadaptor-stripe: #e9e9e9;
   --wfadaptor-background: #ffffff;
-  --wfadaptor-background-menu: #ff7f7f;
+  --wfadaptor-menu: #ef2929;
   --wfadaptor-border: #a1a1a1;
 }
 
@@ -73,7 +73,11 @@ svg g.vote .rline {
 }
 
 svg .rfill.menu {
-  fill: var(--wfadaptor-background-menu);
+  fill: var(--wfadaptor-menu);
+  fill-opacity:1;
+}
+svg .hfill.menu {
+  fill: var(--wfadaptor-menu);
   fill-opacity:1;
 }
 
@@ -129,6 +133,9 @@ svg .standfat {
   stroke-miterlimit:4;
   stroke-opacity:1;
   stroke-dasharray:none;
+}
+svg .standfat.menu {
+  stroke: var(--wfadaptor-menu);
 }
 svg .normal {
   fill: var(--wfadaptor-base);

@@ -93,7 +93,7 @@ function WFAdaptorManifestation(adaptor) {
 
     nodes = JSON.parse(nodes);
     $(nodes).each(function(key,str) {
-      nodes[key] = $X(str);;
+      nodes[key] = $X(str);
     });
 
     var check1 = [];
@@ -176,14 +176,40 @@ function WFAdaptorManifestation(adaptor) {
 
     if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
       var icon =  self.elements[xml_node.get(0).tagName].illustrator.svg.clone();
-      icon.children('.rfill').addClass('menu');
+      icon.find('.rfill').addClass('menu');
+      icon.find('.hfill').addClass('menu');
       menu['Delete'] = [{
         'label': 'Remove Element',
-        'function_call': function(selector,target,selected){ self.adaptor.description.remove(selector,target); self.adaptor.illustrator.get_label_by_svg_id(selected).addClass('selected'); },
+        'function_call': function(selector,target,selected){
+          del_ui_pos(target)
+          self.adaptor.description.remove(selector,target);
+        },
         'menu_icon': icon,
         'type': undefined,
         'params': [null, xml_node, self.selected()]
       }];
+      var nodes = localStorage.getItem('marked');
+      nodes = JSON.parse(nodes);
+      if (nodes && nodes.length > 0) {
+        var icond =  self.resources['delete'].clone();
+        icond.children('.standfat').addClass('menu');
+        menu['Delete'].push({
+          'label': 'Remove Marked Elements',
+          'function_call': function(){
+            $(nodes).each(function(key,str) {
+              nodes[key] = $X(str);
+            });
+            $(nodes).each(function(key,node){
+              var target = self.adaptor.description.get_node_by_svg_id($(node).attr('svg-id'));
+              del_ui_pos(target)
+              self.adaptor.description.remove(null,target);
+            });
+          },
+          'menu_icon': icond,
+          'type': undefined,
+          'params': []
+        })
+      }
     }
     if($('> code', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
       var icon =  self.elements.callmanipulate.illustrator.svg.clone();
@@ -198,7 +224,7 @@ function WFAdaptorManifestation(adaptor) {
     }
     if (xml_node.get(0).tagName == "call" || xml_node.get(0).tagName == "manipulate" || xml_node.get(0).tagName == "stop") {
       var icon =  self.elements.call.illustrator.svg.clone();
-      icon.children('g.replace').addClass('active');
+      icon.children('g.replace').addClass('passive');
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
         if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
@@ -299,6 +325,7 @@ function WFAdaptorManifestation(adaptor) {
 
   // other resources
   this.resources.arrow =  self.adaptor.theme_dir + 'symbols/arrow.svg';
+  this.resources.delete =  self.adaptor.theme_dir + 'symbols/delete.svg';
 
   // Primitive Elements
   this.elements.call = { /*{{{*/

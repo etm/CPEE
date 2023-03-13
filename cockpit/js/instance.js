@@ -722,7 +722,6 @@ function monitor_instance_pos_change(content) {// {{{
     $.each(content['unmark'],function(a,b){
       if (save['activity_blue_states'][b.uuid]) {
         format_visual_remove(b.position,"passive")
-        console.log('rrrrr');
       }
       save['activity_blue_states'][b.uuid] = true
       setTimeout(() => {delete save['activity_blue_states'][b.uuid]},5000);
@@ -1432,12 +1431,12 @@ function ui_pos(e,bl) {
   var url = $('body').attr('current-instance');
   var coll = [];
   $('g.element.primitive > g.activities.active, g.element.primitive > g.activities.passive').each(function(a,b){
-    coll.push($(b).parent().attr('element-id'));
+    coll.push([$(b).parent().attr('element-id'), $(b).parent().attr('element-type') == 'stop' ? 'after' : 'at']);
   });
   coll = bl(coll);
   var vals = "";
   $(coll).each(function(k,ele){
-    vals += "<" + ele + ">at</"  + ele + ">";
+    vals += "<" + ele[0] + ">" + ele[1] + "</"  + ele[0] + ">";
   });
   vals = "<positions xmlns='http://cpee.org/ns/properties/2.0'>" + vals + "</positions>";
   $.ajax({
@@ -1461,7 +1460,7 @@ function del_ui_pos(e) {
 }
 function add_ui_pos(e) {
   ui_pos(e,function(coll){
-    coll.push($(e).attr('id'));
+    coll.push([$(e).attr('id'), e.nodeName == 'stop' ? 'after' : 'at']);
     return coll;
   });
 }
