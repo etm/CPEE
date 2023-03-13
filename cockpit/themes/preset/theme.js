@@ -183,6 +183,8 @@ function WFAdaptorManifestation(adaptor) {
         'function_call': function(selector,target,selected){
           del_ui_pos(target)
           self.adaptor.description.remove(selector,target);
+          localStorage.removeItem('marked');
+          localStorage.removeItem('marked_from');
         },
         'menu_icon': icon,
         'type': undefined,
@@ -203,6 +205,8 @@ function WFAdaptorManifestation(adaptor) {
               var target = self.adaptor.description.get_node_by_svg_id($(node).attr('svg-id'));
               del_ui_pos(target)
               self.adaptor.description.remove(null,target);
+              localStorage.removeItem('marked');
+              localStorage.removeItem('marked_from');
             });
           },
           'menu_icon': icond,
