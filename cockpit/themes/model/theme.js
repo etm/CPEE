@@ -240,6 +240,15 @@ function WFAdaptorManifestation(adaptor) {
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
+      var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
+      var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+      if (vtarget.length > 0) {
+        if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
+          del_ui_pos(xml_node);
+        } else {
+          add_ui_pos(xml_node);
+        }
+      }
     } else if(e.button == 2) { // right-click
       contextMenuHandling(svgid,e,child,sibling);
     }

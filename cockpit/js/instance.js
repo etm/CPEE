@@ -17,6 +17,7 @@ function global_init() {
   loading = false;
   subscription = undefined;
   subscription_state = 'less';
+  save['states']= {};
   save['state']= undefined;
   save['dsl'] = undefined;
   save['activity_red_states'] = {}
@@ -292,6 +293,7 @@ function sse() { //{{{
             }
             break;
           case 'state':
+            save['states'][data['content']['state']] = Date.parse(data.timestamp);
             monitor_instance_state_change(data['content']['state']);
             break;
           case 'position':
@@ -734,6 +736,13 @@ function monitor_instance_pos_change(content) {// {{{
 
 
 function monitor_instance_state_change(notification) { //{{{
+  // sometimes, out of sheer network routingness, stopping comes after stopped, which fucks the UI hard
+  // thus, we are having none of it
+  if (notification == 'stopping' && save['states']['stopping'] - save['states']['stopped'] < 10)
+    notification = 'stopped';
+  if (notification == 'stopping' && save['state'] == 'stopped')
+    return;
+
   if ($('#trackcolumn').length > 0) {
     if (notification == "finished" || notification == "abandoned") {
       parent.closeIFrame(window.location.search);
@@ -743,10 +752,6 @@ function monitor_instance_state_change(notification) { //{{{
     $("#state button").removeAttr('disabled');
   }
 
-  // sometimes, out of sheer network routingness, stopping comes after stopped, which fucks the UI hard
-  // thus, we are having none of it
-  if (notification == 'stopping' && save['state'] == 'stopped')
-    return;
   if (notification != save['state']) {
     save['state'] = notification;
 
