@@ -6,17 +6,17 @@ opts[:pid] = Process.pid
 
 global_controller = File.join(opts[:global_executionhandlers],opts[:executionhandler],'controller.rb')
 controller        = File.join(opts[:executionhandlers],       opts[:executionhandler],'controller.rb')
-if File.exists? global_controller
+if File.exist? global_controller
   require global_controller
-elsif File.exists? controller
+elsif File.exist? controller
   require controller
 end
 
 global_connectionhandler = File.join(opts[:global_executionhandlers],opts[:executionhandler],'connection.rb')
 connectionhandler        = File.join(opts[:executionhandlers],       opts[:executionhandler],'connection.rb')
-if File.exists? global_connectionhandler
+if File.exist? global_connectionhandler
   require global_connectionhandler
-elsif File.exists? connectionhandler
+elsif File.exist? connectionhandler
   require connectionhandler
 end
 
