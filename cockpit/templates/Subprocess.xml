@@ -3,19 +3,9 @@
   <executionhandler>ruby</executionhandler>
   <dataelements/>
   <endpoints>
-    <machine>machine</machine>
     <timeout>https://cpee.org/services/timeout.php</timeout>
-    <sensor>sensor</sensor>
-    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
-    <human>human</human>
     <user>https-post://cpee.org/services/timeout-user.php</user>
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
-    <plc>plc</plc>
-    <robot>robot</robot>
-    <robot_subprocess>robot_subprocess</robot_subprocess>
-    <send>send</send>
-    <receive>receive</receive>
-    <wait>wait</wait>
   </endpoints>
   <attributes>
     <info>Subprocess</info>
@@ -32,6 +22,50 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="user">
+        <parameters>
+          <label/>
+          <arguments>
+            <timeout/>
+          </arguments>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result"/>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
       <call id="a3" endpoint="timeout">
         <parameters>
           <label>coordination unit adds draft dates to calendars</label>
