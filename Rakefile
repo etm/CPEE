@@ -28,6 +28,6 @@ end
 desc "Clean instances"
 task :clean do
   Dir.glob("server/instances/*").collect{ |i| i if i =~ /\/\d+$/ }.compact.each do |i|
-    rm_rf i if File.exists?(i)
+    rm_rf i if File.exist?(i)
   end
 end
