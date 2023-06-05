@@ -15,7 +15,7 @@
 module CPEE
 
   module Persistence
-    OBJ = 'instance'
+    @@obj = 'instance'
 
     def self::set_list(id,opts,item,values,deleted=[]) #{{{
       ah = AttributesHelper.new
@@ -39,13 +39,13 @@ module CPEE
       )
     end #}}}
     def self::extract_set(id,opts,item) #{{{
-      opts[:redis].smembers(OBJ + ":#{id}/#{item}").map do |e|
-        [e,opts[:redis].get(OBJ + ":#{id}/#{item}/#{e}")]
+      opts[:redis].smembers(@@obj + ":#{id}/#{item}").map do |e|
+        [e,opts[:redis].get(@@obj + ":#{id}/#{item}/#{e}")]
       end
     end #}}}
     def self::extract_list(id,opts,item) #{{{
-      opts[:redis].zrange(OBJ + ":#{id}/#{item}",0,-1).map do |e|
-        [e,opts[:redis].get(OBJ + ":#{id}/#{item}/#{e}")]
+      opts[:redis].zrange(@@obj + ":#{id}/#{item}",0,-1).map do |e|
+        [e,opts[:redis].get(@@obj + ":#{id}/#{item}/#{e}")]
       end
     end #}}}
 
@@ -62,32 +62,32 @@ module CPEE
       )
     end #}}}
     def self::extract_item(id,opts,item) #{{{
-      opts[:redis].get(OBJ + ":#{id}/#{item}")
+      opts[:redis].get(@@obj + ":#{id}/#{item}")
     end #}}}
 
     def self::exists?(id,opts) #{{{
-      opts[:redis].exists?(OBJ + ":#{id}/state")
+      opts[:redis].exists?(@@obj + ":#{id}/state")
     end #}}}
     def self::is_member?(id,opts,item,value) #{{{
-      opts[:redis].sismember(OBJ + ":#{id}/#{item}",value)
+      opts[:redis].sismember(@@obj + ":#{id}/#{item}",value)
     end  #}}}
 
     def self::each_object(opts)
-      opts[:redis].zrevrange(OBJ + 's',0,-1).each do |instance|
+      opts[:redis].zrevrange(@@obj + 's',0,-1).each do |instance|
         yield instance
       end
     end
 
     def self::new_object(opts)
-      opts[:redis].zrevrange(OBJ + 's', 0, 0).first.to_i + 1
+      opts[:redis].zrevrange(@@obj + 's', 0, 0).first.to_i + 1
     end
 
     def self::keys(id,opts,item=nil)
-      opts[:redis].keys(File.join(OBJ + ":#{id}",item.to_s,'*'))
+      opts[:redis].keys(File.join(@@obj + ":#{id}",item.to_s,'*'))
     end
 
     def self::set_handler(id,opts,key,url,values,update=false) #{{{
-      exis = opts[:redis].smembers(OBJ + ":#{id}/handlers/#{key}")
+      exis = opts[:redis].smembers(@@obj + ":#{id}/handlers/#{key}")
 
       if update == false && exis.length > 0
         return 405
@@ -120,14 +120,14 @@ module CPEE
       200
     end #}}}
     def self::extract_handler(id,opts,key) #{{{
-      opts[:redis].smembers(OBJ + ":#{id}/handlers/#{key}")
+      opts[:redis].smembers(@@obj + ":#{id}/handlers/#{key}")
     end #}}}
     def self::exists_handler?(id,opts,key) #{{{
-      opts[:redis].exists?(OBJ + ":#{id}/handlers/#{key}")
+      opts[:redis].exists?(@@obj + ":#{id}/handlers/#{key}")
     end #}}}
     def self::extract_handlers(id,opts) #{{{
-      opts[:redis].smembers(OBJ + ":#{id}/handlers").map do |e|
-        [e, opts[:redis].get(OBJ + ":#{id}/handlers/#{e}/url")]
+      opts[:redis].smembers(@@obj + ":#{id}/handlers").map do |e|
+        [e, opts[:redis].get(@@obj + ":#{id}/handlers/#{e}/url")]
       end
     end #}}}
   end

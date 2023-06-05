@@ -1026,7 +1026,7 @@ function WFAdaptorManifestation(adaptor) {
         } else {
           valtext = '';
         }
-        var ret = [ { column: 'Label', value: 'measure: f = ' + $(node).attr('frequency') + ' Hz' + valtext } ];
+        var ret = [ { column: 'Label', value: 'measure: t = ' + $(node).attr('ctime') + ' ms' + valtext } ];
         return ret;
       },
       'svg': self.adaptor.theme_dir + 'symbols/closed_loop_measuring.svg'
@@ -1108,7 +1108,7 @@ function WFAdaptorManifestation(adaptor) {
         } else {
           valtext = '';
         }
-        var ret = [ { column: 'Label', value: 'control: f = ' + $(node).attr('frequency') + ' Hz' + valtext } ];
+        var ret = [ { column: 'Label', value: 'control: t = ' + $(node).attr('ctime') + ' ms' + valtext } ];
         return ret;
       },
       'svg': self.adaptor.theme_dir + 'symbols/closed_loop_control.svg'

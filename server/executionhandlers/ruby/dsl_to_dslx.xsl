@@ -221,6 +221,67 @@
       <xsl:text>end</xsl:text>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
+    <xsl:if test="name()='closed_loop'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>closed_loop</xsl:text>
+      <xsl:if test="@overrun">
+        <xsl:text> :overrun =&gt; </xsl:text>
+        <xsl:value-of select="@overrun"/>
+        <xsl:if test="@execution">
+          <xsl:text>, :execution =&gt; :</xsl:text>
+          <xsl:value-of select="@execution"/>
+        </xsl:if>
+      </xsl:if>
+      <xsl:text> do</xsl:text>
+      <xsl:call-template name="print-newline"/>
+      <xsl:apply-templates>
+        <xsl:with-param name="myspace">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:apply-templates>
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>end</xsl:text>
+      <xsl:call-template name="print-newline"/>
+    </xsl:if>
+    <xsl:if test="name()='closed_loop_measuring' or name()='closed_loop_control'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>closed_loop_slice :type =&gt; :</xsl:text>
+      <xsl:value-of select="substring(name(),13,10)"/>
+      <xsl:if test="@ctime">
+        <xsl:text>, :ctime =&gt; </xsl:text>
+        <xsl:value-of select="@ctime"/>
+      </xsl:if>
+      <xsl:text> do</xsl:text>
+      <xsl:call-template name="print-newline"/>
+      <xsl:apply-templates>
+        <xsl:with-param name="myspace">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:apply-templates>
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>end</xsl:text>
+      <xsl:call-template name="print-newline"/>
+    </xsl:if>
     <xsl:if test="name()='choose'">
       <xsl:call-template name="print-space">
         <xsl:with-param name="i">1</xsl:with-param>
@@ -229,14 +290,6 @@
         </xsl:with-param>
       </xsl:call-template>
       <xsl:text>choose </xsl:text>
-      <xsl:choose>
-        <xsl:when test="@mode='exclusive'">
-          <xsl:text>:exclusive</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:text>:inclusive</xsl:text>
-        </xsl:otherwise>
-      </xsl:choose>
       <xsl:text> do</xsl:text>
       <xsl:call-template name="print-newline"/>
       <xsl:apply-templates>
