@@ -16,6 +16,9 @@ module CPEE
 
   module Persistence
     @@obj = 'instance'
+    def self::obj #{{{
+      @@obj
+    end #}}}
 
     def self::set_list(id,opts,item,values,deleted=[]) #{{{
       ah = AttributesHelper.new
