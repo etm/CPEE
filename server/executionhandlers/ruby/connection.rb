@@ -353,6 +353,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @handler_passthrough = nil
       if options['CPEE_SALVAGE']
         @handler_continue.continue WEEL::Signal::Salvage
+      elsif options['CPEE_STOP']
+        @handler_continue.continue WEEL::Signal::Stop
       else
         @handler_continue.continue
       end
