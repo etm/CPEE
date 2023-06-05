@@ -27,6 +27,14 @@
     </element>
   </element>
   <element name="annotations" rngui:header="Annotations">
+    <element name="_generic" rngui:header="Generic" rngui:fold="closed">
+      <zeroOrMore rngui:label="Create Annotation Pair">
+        <element rngui:label="Name" rngui:labeltype="xml">
+          <anyName/>
+          <data type="string" rngui:label="Value"/>
+        </element>
+      </zeroOrMore>
+    </element>
     <element name="_timing" rngui:header="Timing" rngui:fold="closed">
       <element name="_timing_weight" rngui:label="&#x3C9; - Weight">
         <data type="float" rngui:label="[0,1]"/>
