@@ -64,10 +64,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end # }}}
 
   def prepare(readonly, endpoints, parameters, replay=false) #{{{
-    if replay && @controller.attributes[:replayer]
-      @handler_endpoint = @controller.attributes[:replayer]
-    else
-      @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
+    @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
+    if @controller.attributes['mock']
+      @handler_endpoint = @controller.attributes['mock'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
     end
     params = parameters.dup
     params[:arguments] = params[:arguments].dup if params[:arguments]
@@ -140,6 +139,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @controller.callback(self,callback,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
 
     status, result, headers = client.request type => params
+
     if status < 200 || status >= 300
       headers['CPEE_SALVAGE'] = true
       c = result[0]&.value
