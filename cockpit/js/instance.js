@@ -1459,7 +1459,7 @@ function ui_pos(e,bl) {
 }
 function del_ui_pos(e) {
   ui_pos(e,function(coll){
-    coll.splice(coll.indexOf($(e).attr('id')),1);
+    coll.splice(coll.findIndex((ele)=>ele[0] == $(e).attr('id')),1);
     return coll;
   });
 }

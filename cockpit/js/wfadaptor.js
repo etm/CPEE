@@ -402,9 +402,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
-    self.set_labels(graph);
-    // set labels
     illustrator.set_svg(graph);
+    // set labels
+    self.set_labels(graph);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
     var serxml = $(description.get(0).documentElement).clone(true);
@@ -454,9 +454,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0});
-    self.set_labels(graph);
-    // set labels
     illustrator.set_svg(graph);
+    // set labels
+    self.set_labels(graph);
     doit(self);
   }
   var update = this.update = function(svgid) { // {{{
@@ -465,8 +465,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       labels = [];
       illustrator.clear();
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
-      self.set_labels(graph);
       illustrator.set_svg(graph);
+      self.set_labels(graph);
     }
 
     var newn = $('*[new=true]',description);
