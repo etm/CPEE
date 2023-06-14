@@ -410,7 +410,11 @@ function monitor_instance_values(type,vals) {// {{{
         }
       } else {
         let ele = $X('<' + key + ' xmlns="http://cpee.org/ns/properties/2.0"/>')
-        $(ele).text(value)
+        if (typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number') {
+          $(ele).text(value)
+        } else {
+          $(ele).text(JSON.stringify(value))
+        }
         $(de).find(' > dataelements').append(ele)
       }
     });
