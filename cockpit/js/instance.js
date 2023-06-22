@@ -762,9 +762,9 @@ function monitor_instance_state_change(notification) { //{{{
     if (notification == "stopped") {
       monitor_instance_pos();
     }
-    if (notification == "running") {
-      format_visual_clear();
-    }
+    // if (notification == "running") {
+    //   format_visual_clear();
+    // }
 
     var but = "";
     if (notification == "ready" || notification == "stopped") {

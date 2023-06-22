@@ -253,6 +253,18 @@ function WFAdaptorManifestation(adaptor) {
     new CustomMenu(e).contextmenu(menu);
   } //}}}
 
+  function positionHandling(svgid) {
+    var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
+    var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+    if (vtarget.length > 0) {
+      if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
+        del_ui_pos(xml_node);
+      } else {
+        add_ui_pos(xml_node);
+      }
+    }
+  }
+
   // Events
   this.events.touchend = function(svgid, e) { // {{{
     clearTimeout(self.presstimer);
@@ -264,15 +276,7 @@ function WFAdaptorManifestation(adaptor) {
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
     if(e.button == 0) {  // left-click
     } else if(e.button == 1) { // middle-click
-      var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
-      var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
-      if (vtarget.length > 0) {
-        if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
-          del_ui_pos(xml_node);
-        } else {
-          add_ui_pos(xml_node);
-        }
-      }
+      positionHandling(svgid);
     } else if(e.button == 2) { // right-click
       contextMenuHandling(svgid,e,child,sibling);
     }
@@ -305,6 +309,8 @@ function WFAdaptorManifestation(adaptor) {
           localStorage.removeItem('marked_from');
         }
       }
+    } else if (e && (e.shiftKey)) {
+      positionHandling(svgid);
     } else {
       self.adaptor.illustrator.get_elements().removeClass('marked');
       localStorage.removeItem('marked');
