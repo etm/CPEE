@@ -25,7 +25,9 @@
         <parameters>
           <label>Wait</label>
           <method>:post</method>
-          <arguments/>
+          <arguments>
+            <timeout>2</timeout>
+          </arguments>
         </parameters>
         <annotations>
           <_generic/>
