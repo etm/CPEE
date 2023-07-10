@@ -2,7 +2,9 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <dataelements/>
-  <endpoints/>
+  <endpoints>
+    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
+  </endpoints>
   <attributes>
     <info>Subprocess</info>
     <creator>Christine Ashcreek</creator>
@@ -18,11 +20,54 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a2" endpoint="timeout">
+        <parameters>
+          <label>Wait</label>
+          <method>:post</method>
+          <arguments/>
+        </parameters>
+        <annotations>
+          <_generic/>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+        </documentation>
+      </call>
       <call id="a1" endpoint="subprocess">
         <parameters>
           <label>Create Sub</label>
-          <method>:post</method>
-          <arguments/>
+          <arguments>
+            <behavior>wait_running</behavior>
+            <url>https://cpee.org/hub/server/Templates.dir/Wait.xml</url>
+            <init>
+              <b>!rand(1..17)</b>
+            </init>
+            <endpoints/>
+            <attributes/>
+            <customization/>
+          </arguments>
         </parameters>
         <code>
           <prepare/>
