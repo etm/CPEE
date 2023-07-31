@@ -66,6 +66,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def prepare(readonly, endpoints, parameters, replay=false) #{{{
     @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
     if @controller.attributes['mock']
+      @handler_endpoint_orig = @handler_endpoint
       @handler_endpoint = @controller.attributes['mock'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
     end
     params = parameters.dup
@@ -130,15 +131,22 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
     end
 
-    tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
-    type = $2 || parameters[:method] || 'post'
+    status = result = headers = nil
+    catch :no_mock do
+      tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
+      type = $2 || parameters[:method] || 'post'
 
-    client = Riddl::Client.new(tendpoint)
+      client = Riddl::Client.new(tendpoint)
 
-    @handler_passthrough = callback
-    @controller.callback(self,callback,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
+      @handler_passthrough = callback
+      @controller.callback(self,callback,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
 
-    status, result, headers = client.request type => params
+      status, result, headers = client.request type => params
+      if status == 561
+        @handler_endpoint = @handler_endpoint_orig
+        throw :no_mock
+      end
+    end
 
     if status < 200 || status >= 300
       headers['CPEE_SALVAGE'] = true
@@ -270,7 +278,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       enc = detect_encoding(result)
       enc == 'OTHER' ? result : (result.encode('UTF-8',enc) rescue convert_to_base64(result))
     else
-      result
+      Riddl::Parameter::Array[*result]
     end
   end
 
