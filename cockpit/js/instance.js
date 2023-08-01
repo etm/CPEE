@@ -550,18 +550,18 @@ function adaptor_init(url,theme,dslx) { //{{{
         });
         $('#graphgrid').css({
           'grid-template-rows': (shift/2) + 'px repeat(' + max.row + ', 1fr) ' + (shift/2) + 'px',
-          'grid-template-columns': 'max-content' + (tcolumns.length > 0 ? ' repeat(' + tcolumns.length.toString() + ',max-content)' : '') +  ' auto'
+          'grid-template-columns': 'max-content' + (tcolumns.length > 0 ? ' repeat(' + tcolumns.length.toString() + ',max-content)' : '') + ' auto'
         });
         for (var i = 0; i < max.row; i++) {
-          for (var j =0; j < tcolumns.length; j++) {
+          for (var j = 0; j < tcolumns.length; j++) {
             if (tlabels[i+1] != undefined && tlabels[i+1][j] != undefined && tlabels[i+1][j].label != undefined && tlabels[i+1][j].label != '') {
               var col = tlabels[i+1][j];
-              var ele = $('<div class="graphlabel ' + (i % 2 == 0 ? 'odd' : 'even') + '" element-type="' + col.type + '" element-id="' + col.id + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '"><span>' + col.label + '</span></div>');
-              graphrealization.illustrator.draw.bind_event(ele,col.type,false);
+              var ele = $('<div element-row="' + i + '" class="graphlabel ' + (i % 2 == 0 ? 'odd' : 'even') + '" element-type="' + col.type + '" element-id="' + col.id + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '"><span>' + col.label + '</span></div>');
+              graphrealization.illustrator.draw.bind_event(ele, col.type, false);
               $('#graphgrid').append(ele);
             } else {
               if (tcolumncount[tcolumns[j]] != 0) {
-                var ele = $('<div class="graphempty ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px">&#032;</div>');
+                var ele = $('<div element-row="' + i + '" class="graphempty ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px">&#032;</div>');
                 $('#graphgrid').append(ele);
               }
             }
