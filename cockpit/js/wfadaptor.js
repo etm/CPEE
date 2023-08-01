@@ -219,7 +219,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // Helper Functions {{{
   var draw_stripe = this.draw.draw_stripe = function (row, maxcol) { // {{{
     if (maxcol < 1) maxcol = 1;
-    var g = $X('<rect class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + (self.width * maxcol + self.width - self.width_shift) + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
+    var g = $X('<rect element-row="' + row + '" class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + (self.width * maxcol + self.width - self.width_shift) + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
     self.svg.container.prepend(g);
     return g;
   } // }}}
@@ -366,15 +366,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
   // Set Labels //{{{
   this.set_labels = function(graph) {
-    if (illustrator.compact == false) {
-      adaptor.draw_labels(graph.max,labels,illustrator.height_shift,illustrator.striped == true ? true : false);
-    } else {
-      adaptor.draw_labels(graph.max,[],illustrator.height_shift,false);
-    }
     if (illustrator.striped == true && illustrator.compact == false) {
       for (var i=0; i < graph.max.row; i++) {
         illustrator.draw.draw_stripe(i,graph.max.col);
       }
+    }
+    if (illustrator.compact == false) {
+      adaptor.draw_labels(graph.max,labels,illustrator.height_shift,illustrator.striped == true ? true : false);
+    } else {
+      adaptor.draw_labels(graph.max,[],illustrator.height_shift,false);
     }
     if (illustrator.compact == false) {
       if (labels.length > 0) {
