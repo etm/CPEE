@@ -217,6 +217,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   // }}}
   // Helper Functions {{{
+  var get_y = this.draw.get_y = function (row) { // {{{
+    return { y: row * self.height - self.height, height_shift: self.height_shift};
+  } // }}}
+
   var draw_stripe = this.draw.draw_stripe = function (row, maxcol) { // {{{
     if (maxcol < 1) maxcol = 1;
     var g = $X('<rect element-row="' + row + '" class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + (self.width * maxcol + self.width - self.width_shift) + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
@@ -563,7 +567,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       $(root).attr('svg-subtype','description');
       group.attr('element-id','group-description');
       if (illustrator.elements[sname].label) {
-        labels.push({row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)});
+        // javascript object spread syntax is my new weird crush - the JS designers must be serious people
+        labels.push({...{row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)},...illustrator.draw.get_y(pos.row)});
       }
       illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.col, group);
     } // }}}
