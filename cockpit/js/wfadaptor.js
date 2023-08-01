@@ -680,7 +680,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (lab && lab[0] && lab[0].value && lab[0].column == 'Label' && lab[0].value != '') {
         $(context).attr('svg-label', lab[0].value);
       }
-      labels.push({row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab});
+      labels.push({...{row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab},...illustrator.draw.get_y(pos.row)});
     }
   } //}}}
   var draw_position = function(tname,pos,prev,block,group,endnodes,context,second) { // private {{{
