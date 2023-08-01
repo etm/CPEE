@@ -264,6 +264,7 @@ function WFAdaptorManifestation(adaptor) {
       }
     }
   }
+
   // Events
   this.events.touchend = function(svgid, e) { // {{{
     clearTimeout(self.presstimer);
