@@ -273,12 +273,14 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
           result = result[0]
         end
       end
+    else
+      Riddl::Parameter::Array[*result]
     end
     if result.is_a? String
       enc = detect_encoding(result)
       enc == 'OTHER' ? result : (result.encode('UTF-8',enc) rescue convert_to_base64(result))
     else
-      Riddl::Parameter::Array[*result]
+      result
     end
   end
 
