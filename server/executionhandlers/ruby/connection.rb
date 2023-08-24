@@ -381,7 +381,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
   end #}}}
 
-  def test_condition(mr,code)
+  def test_condition(mr,code,args)
     res = mr.instance_eval(code,'Condition',1)
     @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"))
     res
