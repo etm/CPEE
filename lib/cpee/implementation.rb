@@ -295,7 +295,7 @@ module CPEE
       name     = @p[0].value
       id       = CPEE::Persistence::new_object(opts)
       uuid     = SecureRandom.uuid
-      instance = CPEE::Persistence::OBJ + ':' + id.to_s
+      instance = CPEE::Persistence::obj + ':' + id.to_s
       redis.multi do |multi|
         multi.zadd('instances',id,id)
         doc.root.find(PROPERTIES_PATHS_FULL.join(' | ')).each do |e|
@@ -319,12 +319,12 @@ module CPEE
             doc.register_namespace 'np', 'http://riddl.org/ns/common-patterns/notifications-producer/2.0'
             key = File.basename(File.dirname(f))
             url = doc.find('string(/np:subscription/@url)')
-            multi.sadd(CPEE::Persistence::OBJ + ":#{id}/handlers",key)
-            multi.set(CPEE::Persistence::OBJ + ":#{id}/handlers/#{key}/url",url)
+            multi.sadd(CPEE::Persistence::obj + ":#{id}/handlers",key)
+            multi.set(CPEE::Persistence::obj + ":#{id}/handlers/#{key}/url",url)
             doc.find('/np:subscription/np:topic/*').each do |e|
               c = File.join(e.parent.attributes['id'],e.qname.name,e.text)
-              multi.sadd(CPEE::Persistence::OBJ + ":#{id}/handlers/#{key}",c)
-              multi.sadd(CPEE::Persistence::OBJ + ":#{id}/handlers/#{c}",key)
+              multi.sadd(CPEE::Persistence::obj + ":#{id}/handlers/#{key}",c)
+              multi.sadd(CPEE::Persistence::obj + ":#{id}/handlers/#{c}",key)
             end
           end rescue nil # all the ones that are not ok, are ignored
         end

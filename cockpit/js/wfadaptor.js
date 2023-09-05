@@ -217,9 +217,13 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   // }}}
   // Helper Functions {{{
+  var get_y = this.draw.get_y = function (row) { // {{{
+    return { y: row * self.height - self.height, height_shift: self.height_shift};
+  } // }}}
+
   var draw_stripe = this.draw.draw_stripe = function (row, maxcol) { // {{{
     if (maxcol < 1) maxcol = 1;
-    var g = $X('<rect class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + (self.width * maxcol + self.width - self.width_shift) + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
+    var g = $X('<rect element-row="' + row + '" class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + (self.width * maxcol + self.width - self.width_shift) + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
     self.svg.container.prepend(g);
     return g;
   } // }}}
@@ -366,15 +370,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
   // Set Labels //{{{
   this.set_labels = function(graph) {
-    if (illustrator.compact == false) {
-      adaptor.draw_labels(graph.max,labels,illustrator.height_shift,illustrator.striped == true ? true : false);
-    } else {
-      adaptor.draw_labels(graph.max,[],illustrator.height_shift,false);
-    }
     if (illustrator.striped == true && illustrator.compact == false) {
       for (var i=0; i < graph.max.row; i++) {
         illustrator.draw.draw_stripe(i,graph.max.col);
       }
+    }
+    if (illustrator.compact == false) {
+      adaptor.draw_labels(graph.max,labels,illustrator.height_shift,illustrator.striped == true ? true : false);
+    } else {
+      adaptor.draw_labels(graph.max,[],illustrator.height_shift,false);
     }
     if (illustrator.compact == false) {
       if (labels.length > 0) {
@@ -402,9 +406,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
-    self.set_labels(graph);
-    // set labels
     illustrator.set_svg(graph);
+    // set labels
+    self.set_labels(graph);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
     var serxml = $(description.get(0).documentElement).clone(true);
@@ -454,9 +458,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0});
-    self.set_labels(graph);
-    // set labels
     illustrator.set_svg(graph);
+    // set labels
+    self.set_labels(graph);
     doit(self);
   }
   var update = this.update = function(svgid) { // {{{
@@ -465,8 +469,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       labels = [];
       illustrator.clear();
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
-      self.set_labels(graph);
       illustrator.set_svg(graph);
+      self.set_labels(graph);
     }
 
     var newn = $('*[new=true]',description);
@@ -563,7 +567,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       $(root).attr('svg-subtype','description');
       group.attr('element-id','group-description');
       if (illustrator.elements[sname].label) {
-        labels.push({row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)});
+        // javascript object spread syntax is my new weird crush - the JS designers must be serious people
+        labels.push({...{row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)},...illustrator.draw.get_y(pos.row)});
       }
       illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.col, group);
     } // }}}
@@ -675,7 +680,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (lab && lab[0] && lab[0].value && lab[0].column == 'Label' && lab[0].value != '') {
         $(context).attr('svg-label', lab[0].value);
       }
-      labels.push({row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab});
+      labels.push({...{row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab},...illustrator.draw.get_y(pos.row)});
     }
   } //}}}
   var draw_position = function(tname,pos,prev,block,group,endnodes,context,second) { // private {{{

@@ -36,7 +36,9 @@ ARGV.options { |opt|
 	opt.on("")
   opt.on(wrap("[archive DIR URL]      save properties from all finished instances listed at URL into DIR. Examples:\ncpee archive ./archive http://localhost:9298/1/\ncpee archive ./archive http://localhost:9298/1-200\ncpee archive ./archive http://localhost:9298/*"))
 	opt.on("")
-  opt.on(wrap("[abandon URL]          running processes are stopped; ready or stopped processes are abandoned. Examples:\ncpee abandon http://localhost:9298/1/\ncpee abandon http://localhost:9298/1-200\ncpee abandon http://localhost:9298/*"))
+  opt.on(wrap("[abandon! URL]         running processes are stopped; ready or stopped processes are abandoned. Examples:\ncpee abandon! http://localhost:9298/1/\ncpee abandon http://localhost:9298/1-200\ncpee abandon http://localhost:9298/*"))
+	opt.on("")
+  opt.on(wrap("[abandon URL]          ready or stopped processes are abandoned. Examples:\ncpee abandon http://localhost:9298/1/\ncpee abandon http://localhost:9298/1-200\ncpee abandon http://localhost:9298/*"))
 	opt.on("")
   opt.on(wrap("[a_by_name URL STRING] ready or stopped processes are abandoned by regex on attributes/info. Examples:\ncpee abandon http://localhost:9298/1/ \"aa.a\"\ncpee abandon http://localhost:9298/1-200 aaa"))
 	opt.on("")
@@ -55,7 +57,7 @@ ARGV.options { |opt|
 }
 if (ARGV.length == 0) ||
    (ARGV.length == 1  && !(%w(ui convert).include?(ARGV[0]))) ||
-   (ARGV.length == 2  && !(%w(abandon start delete! cpui new).include?(ARGV[0]))) ||
+   (ARGV.length == 2  && !(%w(abandon abandon! start delete! cpui new).include?(ARGV[0]))) ||
    (ARGV.length == 3  && !(%w(archive a_by_name).include?(ARGV[0]))) ||
    (ARGV.length >  3)
   puts ARGV.options
@@ -176,7 +178,7 @@ elsif command == 'archive'
       exit
     end
   else
-    names << File.basename(p2)
+    names << File.basename(p2).to_i
   end
   names.each do |name|
     print "Working on: " + name.to_s + "\r"
@@ -211,7 +213,6 @@ elsif command == 'archive'
       end
     end
   end
-  puts
 elsif command == 'a_by_name'
   p1 = File.join(p1,'*') if p1 =~ /([a-zA-Z]|\/)$/
   base = File.dirname(p1)
@@ -231,7 +232,7 @@ elsif command == 'a_by_name'
       exit
     end
   else
-    names << File.basename(p1)
+    names << File.basename(p1).to_i
   end
   names.each do |name|
     print "Working on: " + name.to_s + "\r"
@@ -249,7 +250,40 @@ elsif command == 'a_by_name'
       end
     end
   end
-  puts
+elsif command == 'abandon!'
+  p1 = File.join(p1,'*') if p1 =~ /([a-zA-Z]|\/)$/
+  base = File.dirname(p1)
+  names = []
+  if File.basename(p1) =~ /(\d+)-(\d+)/
+    names = ($1.to_i..$2.to_i).to_a
+  elsif File.basename(p1) == '*'
+    res = Typhoeus.get(File.join(base,'/'), headers: { 'see-instances' => 'true' })
+    if res.success?
+      XML::Smart.string(res.response_body) do |doc|
+        doc.find('//instance/@id').each do |ele|
+          names << ele.value
+        end
+      end
+      names.reverse!
+    else
+      exit
+    end
+  else
+    names << File.basename(p1).to_i
+  end
+  names.each do |name|
+    print "Working on: " + name.to_s + "\r"
+    res1 = Typhoeus.get(File.join(base,name.to_s,'properties','state','/'))
+    if res1.success?
+      if res1.response_body == 'running'
+        Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=stopping")
+      elsif res1.response_body == 'stopping'
+        Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=stopping")
+      elsif res1.response_body == 'ready' || res1.response_body == 'stopped'
+        Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
+      end
+    end
+  end
 elsif command == 'abandon'
   p1 = File.join(p1,'*') if p1 =~ /([a-zA-Z]|\/)$/
   base = File.dirname(p1)
@@ -269,22 +303,19 @@ elsif command == 'abandon'
       exit
     end
   else
-    names << File.basename(p1)
+    names << File.basename(p1).to_i
   end
   names.each do |name|
     print "Working on: " + name.to_s + "\r"
     res1 = Typhoeus.get(File.join(base,name.to_s,'properties','state','/'))
     if res1.success?
-      if res1.response_body == 'running'
-        Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=stopping")
-      elsif res1.response_body == 'stopping'
+      if res1.response_body == 'stopping'
         Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=stopping")
       elsif res1.response_body == 'ready' || res1.response_body == 'stopped'
         Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
       end
     end
   end
-  puts
 elsif command == 'start'
   p1 = File.join(p1,'*') if p1 =~ /([a-zA-Z]|\/)$/
   base = File.dirname(p1)

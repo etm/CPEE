@@ -64,10 +64,10 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end # }}}
 
   def prepare(readonly, endpoints, parameters, replay=false) #{{{
-    if replay && @controller.attributes[:replayer]
-      @handler_endpoint = @controller.attributes[:replayer]
-    else
-      @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
+    @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
+    if @controller.attributes['mock']
+      @handler_endpoint_orig = @handler_endpoint
+      @handler_endpoint = @controller.attributes['mock'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
     end
     params = parameters.dup
     params[:arguments] = params[:arguments].dup if params[:arguments]
@@ -131,15 +131,23 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
     end
 
-    tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
-    type = $2 || parameters[:method] || 'post'
+    status = result = headers = nil
+    catch :no_mock do
+      tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
+      type = $2 || parameters[:method] || 'post'
 
-    client = Riddl::Client.new(tendpoint)
+      client = Riddl::Client.new(tendpoint)
 
-    @handler_passthrough = callback
-    @controller.callback(self,callback,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
+      @handler_passthrough = callback
+      @controller.callback(self,callback,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
 
-    status, result, headers = client.request type => params
+      status, result, headers = client.request type => params
+      if status == 561
+        @handler_endpoint = @handler_endpoint_orig
+        throw :no_mock
+      end
+    end
+
     if status < 200 || status >= 300
       headers['CPEE_SALVAGE'] = true
       c = result[0]&.value
@@ -265,6 +273,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
           result = result[0]
         end
       end
+    else
+      Riddl::Parameter::Array[*result]
     end
     if result.is_a? String
       enc = detect_encoding(result)
@@ -353,6 +363,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @handler_passthrough = nil
       if options['CPEE_SALVAGE']
         @handler_continue.continue WEEL::Signal::Salvage
+      elsif options['CPEE_STOP']
+        @handler_continue.continue WEEL::Signal::Stop
       else
         @handler_continue.continue
       end
@@ -369,7 +381,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
   end #}}}
 
-  def test_condition(mr,code)
+  def test_condition(mr,code,args)
     res = mr.instance_eval(code,'Condition',1)
     @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"))
     res
