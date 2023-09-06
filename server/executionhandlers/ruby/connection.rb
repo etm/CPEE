@@ -132,7 +132,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
 
     status = result = headers = nil
-    catch :no_mock do
+    begin
       tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
       type = $2 || parameters[:method] || 'post'
 
@@ -144,9 +144,16 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       status, result, headers = client.request type => params
       if status == 561
         @handler_endpoint = @handler_endpoint_orig
-        throw :no_mock
+        params.delete_if { |p| p.name == 'original_endpoint' }
+        params.each do |p|
+          if p.name == 'attributes'
+            t = JSON::parse(p.value) rescue {}
+            t['mock'] = @controller.attributes['mock']
+            p.value = t.to_json
+          end
+        end
       end
-    end
+    end while status == 561
 
     if status < 200 || status >= 300
       headers['CPEE_SALVAGE'] = true
