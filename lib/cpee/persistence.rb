@@ -82,7 +82,9 @@ module CPEE
     end
 
     def self::new_object(opts)
-      opts[:redis].zrevrange(@@obj + 's', 0, 0).first.to_i + 1
+      id = opts[:redis].zrevrange(@@obj + 's', 0, 0).first.to_i + 1
+      opts[:redis].zadd(@@obj + 's',id,id)
+      id
     end
 
     def self::keys(id,opts,item=nil)
