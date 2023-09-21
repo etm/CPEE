@@ -281,7 +281,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         end
       end
     else
-      Riddl::Parameter::Array[*result]
+      result = Riddl::Parameter::Array[*result]
     end
     if result.is_a? String
       enc = detect_encoding(result)
