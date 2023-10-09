@@ -22,6 +22,7 @@
   --wfadaptor-exec-vote-text: #73d216;
   --wfadaptor-highlight: #0081c7;
   --wfadaptor-base: #000000;
+  --wfadaptor-base-light: #A9A9A9;
   --wfadaptor-label: #d4d4d4;
   --wfadaptor-mark: #d4d4d4;
   --wfadaptor-selected: #f57900;
@@ -134,6 +135,17 @@ svg .standfat {
   stroke-opacity:1;
   stroke-dasharray:none;
 }
+svg .greyfat {
+  fill: var(--wfadaptor-background);
+  fill-opacity:1;
+  stroke: var(--wfadaptor-base-light);
+  stroke-width:3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
 svg .standfat.menu {
   stroke: var(--wfadaptor-menu);
 }
@@ -163,6 +175,17 @@ svg .black {
   fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke: var(--wfadaptor-base);
+  stroke-width: 1.6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
+svg .grey {
+  fill: var(--wfadaptor-base-light);
+  fill-opacity:1;
+  stroke: var(--wfadaptor-base-light);
   stroke-width: 1.6;
   stroke-linecap:round;
   stroke-linejoin:round;
