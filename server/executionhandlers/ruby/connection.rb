@@ -20,6 +20,7 @@ require 'get_process_mem'
 class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::loop_guard(arguments,id,count) # {{{
     controller = arguments[0]
+    return false if controller.attributes['nednoamol']
     tsn = Time.now
     tso = controller.loop_guard[id][:timestamp] rescue Time.now
     controller.loop_guard[id] = { :count => count, :timestamp => tsn }
