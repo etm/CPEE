@@ -143,6 +143,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @controller.callback(self,callback,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
 
       status, result, headers = client.request type => params
+      @guard_files += result
+
       if status == 561
         @handler_endpoint = @handler_endpoint_orig
         params.delete_if { |p| p.name == 'original_endpoint' }
@@ -353,6 +355,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     recv = structurize_result(result)
     @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
     @guard_files += result
+
     @handler_returnValue = simplify_result(result)
     @handler_returnOptions = options
     if options['CPEE_INSTANTIATION']
@@ -380,13 +383,15 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end
 
   def mem_guard() #{{{
-    @guard_files.each do |p|
+    @guard_files.delete_if do |p|
       if p&.respond_to?(:close)
         p.close
       elsif  p&.value&.respond_to?(:close)
         p.value.close
       end
+      true
     end
+    GC.start
   end #}}}
 
   def test_condition(mr,code,args)
