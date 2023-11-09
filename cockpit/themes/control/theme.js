@@ -1772,7 +1772,7 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.parallel_event_one = { /*{{{*/
     'parent': 'parallel_finish',
     'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/parallel_eventbased_exclusive.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
     }//}}}
   }; /*}}}*/
   this.elements.parallel_branch_normal = { /*{{{*/
