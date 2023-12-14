@@ -261,14 +261,14 @@ function create_instance(base,name,load,exec) {// {{{
   }
 }// }}}
 
-function sse() { //{{{
+async function sse() { //{{{
   var url = $('body').attr('current-instance');
   if (subscription) {
     es = new EventSource(url + "/notifications/subscriptions/" + subscription + "/sse/");
     es.onopen = function() {
       append_to_log("monitoring", "opened", "nice.");
     };
-    es.onmessage = function(e) {
+    es.onmessage = async function(e) {
       data = JSON.parse(e.data);
       if (data['type'] == 'event') {
         switch(data['topic']) {
@@ -282,7 +282,12 @@ function sse() { //{{{
             monitor_instance_values("endpoints");
             break;
           case 'attributes':
-            monitor_instance_values("attributes");
+            if (save['resources'] !=  data.content.values.resource) {
+              await monitor_instance_values("attributes");
+              monitor_instance_values("endpoints");
+            } else {
+              monitor_instance_values("attributes");
+            }
             if (save['graph_theme'] != data.content.values.theme) {
               monitor_graph_change(true);
             }
@@ -315,7 +320,7 @@ function sse() { //{{{
       // setTimeout(sse,10000);
     };
   }
-  monitor_instance_values("attributes"); // attributes first, to catch the <resources> attribute which overrides current-resources
+  await monitor_instance_values("attributes"); // attributes first, to catch the <resources> attribute which overrides current-resources
   monitor_instance_values("dataelements");
   monitor_instance_values("endpoints");
   monitor_instance_dsl();
@@ -394,11 +399,37 @@ function monitor_instance(cin,rep,load,exec) {// {{{
   });
 }// }}}
 
-function monitor_instance_values(type,vals) {// {{{
-  var url = $('body').attr('current-instance');
-  var rep = $('body').attr('current-resources');
-  var bas = $('body').attr('current-base');
+function get_resource(base, key, loc, cache) {
+  cache[key] = {};
+  let deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
+  $.ajax({
+    url: base + 'endpoints/' + encodeURIComponent(loc) + "/symbol.svg",
+    success: function(res) {
+      cache[key]['symbol'] = res;
+      deferreds[0].resolve(true);
+    },
+    error: deferreds[0].resolve
+  })
+  $.ajax({
+    url: base + 'endpoints/' + encodeURIComponent(loc) + "/schema.rng",
+    success: function(res) {
+      cache[key]['schema'] = res;
+      deferreds[1].resolve(true);
+    },
+    error: deferreds[1].resolve
+  })
+  $.ajax({
+    url: base + 'endpoints/' + encodeURIComponent(loc) + "/properties.json",
+    success: function(res) {
+      cache[key]['properties'] = res;
+      deferreds[2].resolve(true);
+    },
+    error: deferreds[2].resolve
+  })
+  return deferreds;
+}
 
+function monitor_instance_values(type,vals) {// {{{
   if (type == "dataelements" && save['state'] == "running") {
     let de = save[type].save();
     Object.entries(vals).forEach(([key,value]) => {
@@ -421,7 +452,8 @@ function monitor_instance_values(type,vals) {// {{{
     });
     save[type].content(de);
   } else {
-    $.ajax({
+    let url = $('body').attr('current-instance');
+    return $.ajax({
       type: "GET",
       url: url + "/properties/" + type + "/",
       success: function(res){
@@ -431,36 +463,12 @@ function monitor_instance_values(type,vals) {// {{{
           var tmp = {};
           $(res).find(" > endpoints > *").each(function(k,v) {
             save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
+            let rep = $('body').attr('current-resources');
             $.ajax({
               url: rep + 'endpoints/' + encodeURIComponent($(v).text()),
               success: function() {
                 tmp[v.tagName] = {};
-                var deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
-                $.ajax({
-                  url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/symbol.svg",
-                  success: function(res) {
-                    tmp[v.tagName]['symbol'] = res;
-                    deferreds[0].resolve(true);
-                  },
-                  error: deferreds[0].resolve
-                })
-                $.ajax({
-                  url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/schema.rng",
-                  success: function(res) {
-                    tmp[v.tagName]['schema'] = res;
-                    deferreds[1].resolve(true);
-                  },
-                  error: deferreds[1].resolve
-                })
-                $.ajax({
-                  url: rep + 'endpoints/' + encodeURIComponent($(v).text()) + "/properties.json",
-                  success: function(res) {
-                    tmp[v.tagName]['properties'] = res;
-                    deferreds[2].resolve(true);
-                  },
-                  error: deferreds[2].resolve
-                })
-                $.when.apply($, deferreds).then(function(x) {
+                $.when.apply($, get_resource(rep,v.tagName,$(v).text(),tmp)).then(function(x) {
                   save['endpoints_cache'] = tmp;
                   // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
                   $('#dat_details').empty();
@@ -468,10 +476,27 @@ function monitor_instance_values(type,vals) {// {{{
                 });
               }
             });
+            if (save['resources']) {
+              let rep = save['resources'];
+              $.ajax({
+                url: rep + 'endpoints/' + encodeURIComponent(encodeURIComponent($(v).text())),
+                success: function() {
+                  tmp[v.tagName] = {};
+                  $.when.apply($, get_resource(rep,v.tagName,encodeURIComponent($(v).text()),tmp)).then(function(x) {
+                    save['endpoints_cache'] = tmp;
+                    // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
+                    $('#dat_details').empty();
+                    adaptor_update();
+                  });
+                }
+              });
+            }
           });
         } else if(type == "attributes") {
           if ($(" > attributes > resources",res).length > 0) {
             save['resources'] = $(" > attributes > resources",res).text();
+          } else {
+            save['resources'] = undefined;
           }
           if ($('#modifiers > div').length == 0) {
             modifiers_display().then(function(){ modifiers_select(); });
@@ -766,9 +791,17 @@ function monitor_instance_state_change(notification) { //{{{
     if (notification == "stopped") {
       monitor_instance_pos();
     }
-    // if (notification == "running") {
-    //   format_visual_clear();
-    // }
+    if (notification == "running") {
+      // // we cant do that, because the events might not be ordered. so jus remove all the blue ones.
+      // format_visual_clear();
+
+      for (const [key, ele] of Object.entries(node_state)) {
+        for (i=0; i<ele.passive; i++) {
+          format_visual_remove(key,'passive');
+        }
+      }
+      // save_blue_states has to be left alone, because we dont know the uuid
+    }
 
     var but = "";
     if (notification == "ready" || notification == "stopped") {
