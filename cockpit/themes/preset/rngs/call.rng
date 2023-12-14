@@ -3,7 +3,9 @@
     <data type="string" rngui:readonly="true"/>
   </attribute>
   <attribute name="endpoint" rngui:label="Endpoint">
-    <data type="string"/>
+    <data type="string">
+      <param name="pattern">^[a-z_][a-zA-Z0-9_]*$</param>
+    </data>
   </attribute>
   <element name="parameters" rngui:header="Properties">
     <element name="label" rngui:label="Label">
