@@ -33,6 +33,7 @@ function global_init() {
   save['modifiers'] = {};
   save['modifiers_active'] = {};
   save['modifiers_additional'] = {};
+  save['resources'] = undefined;
   node_state = {};
 }
 
@@ -314,9 +315,9 @@ function sse() { //{{{
       // setTimeout(sse,10000);
     };
   }
+  monitor_instance_values("attributes"); // attributes first, to catch the <resources> attribute which overrides current-resources
   monitor_instance_values("dataelements");
   monitor_instance_values("endpoints");
-  monitor_instance_values("attributes");
   monitor_instance_dsl();
   monitor_instance_state();
 } //}}}
@@ -469,6 +470,9 @@ function monitor_instance_values(type,vals) {// {{{
             });
           });
         } else if(type == "attributes") {
+          if ($(" > attributes > resources",res).length > 0) {
+            save['resources'] = $(" > attributes > resources",res).text();
+          }
           if ($('#modifiers > div').length == 0) {
             modifiers_display().then(function(){ modifiers_select(); });
           } else {
