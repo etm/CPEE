@@ -25,10 +25,12 @@ $(document).ready(function() {
       e.preventDefault()
     }
   });
+
   $(document).on('relaxngui_remove', '#dat_details', function(e){
     clearTimeout(timer);
     do_main_save();
   });
+  
   $(document).on('relaxngui_move', '#dat_details', function(e){
     clearTimeout(timer);
     do_main_save();
@@ -61,6 +63,80 @@ function do_main_work() { //{{{
   if (node[0].namespaceURI == nnew.attr('xmlns')) { // remove xmlns when it is the same as in the parent node
     nnew[0].removeAttribute('xmlns');
   }
+
+  if (Array.from($(node).find("sod")).length > Array.from($(nnew).find("sod")).length) {
+    Array.from($(node).find("sod")).forEach(function(element) {
+      if (!$(nnew).find('sod:contains("'+element.children[0].innerHTML+'")')[0]){
+        target = desc.get_node_by_svg_id(element.children[0].innerHTML)
+        target.find('sod:contains("'+svgid+'")').remove()
+      }
+    })
+  } else if (Array.from($(node).find("sod")).length < Array.from($(nnew).find("sod")).length){
+    Array.from($(nnew).find("sod")).forEach(function(element) {
+      if (!$(node).find('sod:contains("'+element.children[0].innerHTML+'")')[0]){
+        target = desc.get_node_by_svg_id(element.children[0].innerHTML)
+        if (!$(target).find('sod:contains("'+node[0].id+'")')[0]){
+          if (!$(target).find('> bodsod')){
+            $($.parseXML('<bodsod><_sod></_sod></bodsod>')).find('bodsod').insertAfter($(target).find('> parameters'))
+          }
+          $($.parseXML('<sod><id>'+node[0].id+'</id></sod>')).find('sod').appendTo($(target).find('> bodsod > _sod'))
+        }
+      }
+    })
+  } else {
+    nnewArray = Array.from($(nnew).find("sod"))
+    nodeArray = Array.from($(node).find("sod"))
+    for (let i = 0; i < nnewArray.length; i++) {
+      if (nnewArray[i].children[0].innerHTML != nodeArray[i].children[0].innerHTML) {
+          desc.get_node_by_svg_id(nodeArray[i].children[0].innerHTML).find('sod:contains("'+svgid+'")').remove()
+          target = desc.get_node_by_svg_id(nnewArray[i].children[0].innerHTML)
+          if (!$(target).find('sod:contains("'+node[0].id+'")')[0]){
+            if (!$(target).find('> bodsod')){
+              $($.parseXML('<bodsod><_sod></_sod></bodsod>')).find('bodsod').insertAfter($(target).find('> parameters'))
+            }
+            $($.parseXML('<sod><id>'+node[0].id+'</id></sod>')).find('sod').appendTo($(target).find('> bodsod > _sod'))
+          }
+        break
+      }
+    }
+  }
+  if (Array.from($(node).find("bod")).length > Array.from($(nnew).find("bod")).length) {
+    Array.from($(node).find("bod")).forEach(function(element) {
+      if (!$(nnew).find('bod:contains("'+element.children[0].innerHTML+'")')[0]){
+        target = desc.get_node_by_svg_id(element.children[0].innerHTML)
+        target.find('bod:contains("'+svgid+'")').remove()
+      }
+    })
+  } else if (Array.from($(node).find("bod")).length < Array.from($(nnew).find("bod")).length){
+    Array.from($(nnew).find("bod")).forEach(function(element) {
+      if (!$(node).find('bod:contains("'+element.children[0].innerHTML+'")')[0]){
+        target = desc.get_node_by_svg_id(element.children[0].innerHTML)
+        if (!$(target).find('bod:contains("'+node[0].id+'")')[0]){
+          if (!$(target).find('> bodsod')){
+            $($.parseXML('<bodsod><_bod></_bod></bodsod>')).find('bodsod').insertAfter($(target).find('> parameters'))
+          }
+          $($.parseXML('<bod><id>'+node[0].id+'</id></bod>')).find('bod').appendTo($(target).find('> bodsod > _bod'))
+        }
+      }
+    })
+  } else {
+    nnewArray = Array.from($(nnew).find("bod"))
+    nodeArray = Array.from($(node).find("bod"))
+    for (let i = 0; i < nnewArray.length; i++) {
+      if (nnewArray[i].children[0].innerHTML != nodeArray[i].children[0].innerHTML) {
+          desc.get_node_by_svg_id(nodeArray[i].children[0].innerHTML).find('bod:contains("'+svgid+'")').remove()
+          target = desc.get_node_by_svg_id(nnewArray[i].children[0].innerHTML)
+          if (!$(target).find('bod:contains("'+node[0].id+'")')[0]){
+            if (!$(target).find('> bodsod')){
+              $($.parseXML('<bodsod><_bod></_bod></bodsod>')).find('bodsod').insertAfter($(target).find('> parameters'))
+            }
+            $($.parseXML('<bod><id>'+node[0].id+'</id></bod>')).find('bod').appendTo($(target).find('> bodsod > _bod'))
+          }
+        break
+      }
+    }
+  }
+
   node.replaceWith(nnew);
 
   var ttarget = manifestation.adaptor.illustrator.get_node_by_svg_id(svgid);
