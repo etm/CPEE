@@ -41,6 +41,10 @@ body {
 #graphgrid.striped .graphlabel, #graphgrid.striped .graphempty {
   border-left: 1pt solid var(--wfadaptor-border);
 }
+#graphgrid.striped #resources rect.border {
+  width: 1pt;
+  fill: var(--wfadaptor-border);
+}
 #graphgrid.striped .graphlabel.even, #graphgrid.striped .graphempty.even, #graphgrid.striped .graphlast.even {
   background-color: #e9e9e9;
 }

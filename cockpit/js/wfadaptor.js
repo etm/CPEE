@@ -48,7 +48,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   } // }}}
   this.notify = function() { // public {{{
   } // }}}
-  this.draw_labels = function(max,labels,height_shift,striped){ // public {{{
+  this.draw_labels = function(max,labels,dimensions,striped){ // public {{{
   } // }}}
   this.set_svg_container = function (container) { // {{{
     illustrator.set_svg_container(container); // TODO: shadowing the container element
@@ -376,9 +376,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       }
     }
     if (illustrator.compact == false) {
-      adaptor.draw_labels(graph.max,labels,illustrator.height_shift,illustrator.striped == true ? true : false);
+      adaptor.draw_labels(graph.max,labels,{ 'height': illustrator.height, 'height_shift': illustrator.height_shift },illustrator.striped == true ? true : false);
     } else {
-      adaptor.draw_labels(graph.max,[],illustrator.height_shift,false);
+      adaptor.draw_labels(graph.max,[],{ 'height': illustrator.height, 'height_shift': illustrator.height_shift },false);
     }
     if (illustrator.compact == false) {
       if (labels.length > 0) {

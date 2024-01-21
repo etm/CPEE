@@ -342,6 +342,33 @@ function WFAdaptorManifestation(adaptor) {
   this.events.dragstart = function (svgid, e) { //{{{
   } //}}}
 
+  function dataflow_extract(subject,mixed,extract) {
+    let dict = {};
+    var regassi =      /data.([a-zA-Z_]+)\s*(=[^=]|\+\=|\-\=|\*\=|\/\=|<<|>>)/g; // we do not have to check for &gt;/&lt; version of stuff as only conditions are in attributes, and conditions can not contain assignments
+    var reg_not_assi = /data.([a-zA-Z_]+)\s*/g;
+
+    $(subject).each(function(_,ele){
+      let item = extract(ele);
+      if (mixed && item.length > 0 && item[0].charAt(0) != '!') { return }
+
+      let indices = [];
+      for (const match of item.matchAll(regassi)) {
+        indices.push(match.index);
+        dict[match[1]] = "Assign";
+      }
+      for (const match of item.matchAll(reg_not_assi)) {
+        const arg1 = match[1];
+        if (indices.includes(match.index)) { continue; }
+        if (dict[arg1] == "Assign" || dict[arg1] == "AssignRead") {
+          dict[arg1] = "AssignRead";
+        } else {
+          dict[arg1] = "Read";
+        }
+      }
+    });
+    return dict;
+  }
+
   // other resources
   this.resources.arrow =  self.adaptor.theme_dir + 'symbols/arrow.svg';
   this.resources.delete =  self.adaptor.theme_dir + 'symbols/delete.svg';
@@ -359,6 +386,12 @@ function WFAdaptorManifestation(adaptor) {
         var adur = $('_timing_avg',$(node).children('annotations')).text();
         var lab = $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'');
         var ret = [ { column: 'ID', value: $(node).attr('id') } ];
+
+        // For Blue Points
+        let dict1 = dataflow_extract($('arguments > *',$(node).children('parameters')),true,function(target){ return $(target).text(); });
+        let dict2 = dataflow_extract($(node).children('code').children(),false,function(target){ return $(target).text(); });
+        let dict = {...dict1,...dict2};
+        ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
         if (lab != '') {
           ret.unshift( { column: 'Label', value: lab } );
         }
@@ -763,6 +796,10 @@ function WFAdaptorManifestation(adaptor) {
         if (avg != '') {
           ret.push({ column: 'Average', value: avg + '%' });
         }
+
+        let dict = dataflow_extract($(node),false,function(target){ return $(target).attr('condition'); });
+        ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
+
         return ret;
       },
       'endnodes': 'passthrough',
@@ -1391,6 +1428,10 @@ function WFAdaptorManifestation(adaptor) {
         if (avg != '') {
           ret.push({ column: 'Average', value: avg + 'ｘ' });
         }
+
+        let dict = dataflow_extract($(node),false,function(target){ return $(target).attr('condition'); });
+        ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
+
         return ret;
       },
     }//}}}
