@@ -1288,7 +1288,7 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'description',
     'illustrator': {//{{{
       'endnodes': 'passthrough',
-      'label': function(node){ return [ { column: 'Label'}, { column: 'ID' }, { column: 'Resource' }, { column: 'RP' }, { column: 'R#' } ]; },
+      'label': function(node){ return [ { column: 'ID' }, { column: 'Dataflow'}, { column: 'Label'}, { column: 'RP' }, { column: 'R#' } ]; },
       'closeblock': false,
       'balance': true,
       'expansion': function(node) {
