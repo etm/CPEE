@@ -397,7 +397,10 @@ function WFAdaptorManifestation(adaptor) {
           ret.push({ column: 'SOD', value: 'SOD'})
         }
         if ($(node).find('bod')[0]) {
-          ret.push({ column: 'BOD', value: 'BOD'})
+          array = Array.from($(node).find('bod > id')).map((value) => value.innerHTML)
+          array.push(node.id)
+          array.sort()
+          ret.push({ column: 'BOD'+array[0], value: 'BOD'})
         }
         return ret;
       },
