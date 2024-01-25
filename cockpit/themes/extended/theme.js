@@ -76,26 +76,17 @@ function WFAdaptorManifestation(adaptor) {
         $(rng).find(' > element[name="parameters"] > element[name="method"]').remove();
       }
       if (save['endpoints_cache'][$(node).attr('endpoint')] && save['endpoints_cache'][$(node).attr('endpoint')].properties && save['endpoints_cache'][$(node).attr('endpoint')].properties.resource){
-        rawSodXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="SOD/BOD" name="bodsod"><element rngui:header="SOD" name="_sod" rngui:fold="closed"><zeroOrMore rngui:label="Add SOD"><element name="sod"><element name="id" rngui:label="ID"><choice><value>Choose id</value>\n';
+        sodXml = $($.parseXML('<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:label="SOD" name="sod"><choice><value>No</value><value>Yes</value></choice></element>\n')).find("element");
+        sodXml.insertAfter($(rng).find(' > element[name="parameters"] > element[name="label"]'));
+        rawBodXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="BOD" name="bod" rngui:fold="closed">\n';
         Array.from($($.parseXML(self.adaptor.description.get_description())).find("call")).toSorted((a,b) => (a.id > b.id ? 1: -1)).forEach(function (element) { 
           if (element.id != node.id && save['endpoints_cache'][element.getAttribute('endpoint')] && save['endpoints_cache'][element.getAttribute('endpoint')].properties.resource) {
-            rawSodXml += '<value>'+element.attributes.id.nodeValue+'</value>';
+            rawBodXml += '   <element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:label="'+element.attributes.id.nodeValue+'" name="bod'+element.attributes.id.nodeValue+'">\n      <choice>\n         <value>No</value>\n         <value>Yes</value>\n      </choice>\n   </element>\n';
           }
         });
-        rawSodXml += '</choice></element></element></zeroOrMore></element></element>';
-        sodXml = $($.parseXML(rawSodXml)).find('element[name="bodsod"]');
-        sodXml.insertAfter($(rng).find(' > element[name="parameters"]'));
-
-        rawBodXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="BOD" name="_bod" rngui:fold="closed"><zeroOrMore rngui:label="Add BOD"><element name="bod"><element name="id" rngui:label="ID"><choice><value>Choose id</value>\n';
-        Array.from($($.parseXML(self.adaptor.description.get_description())).find("call")).toSorted((a,b) => (a.id > b.id ? 1: -1)).forEach(function (element) { 
-          if (element.id != node.id && save['endpoints_cache'][element.getAttribute('endpoint')] && save['endpoints_cache'][element.getAttribute('endpoint')].properties.resource) {
-            rawBodXml += '<value>'+element.attributes.id.nodeValue+'</value>';
-          }
-        });
-        rawBodXml += '</choice></element></element></zeroOrMore></element>';
-
-        bodXml = $($.parseXML(rawBodXml)).find('element[name="_bod"]');
-        bodXml.insertAfter($(rng).find('> element[name="bodsod"] > element[name="_sod"]'));
+        rawBodXml += '</element>\n';
+        bodXml = $($.parseXML(rawBodXml)).find('element[name="bod"]');
+        bodXml.insertAfter($(rng).find(' > element[name="parameters"] > element[name="sod"]'));
       }
       save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
       var nn = $X($(node).serializeXML());
@@ -392,15 +383,6 @@ function WFAdaptorManifestation(adaptor) {
         }
         if (adur != '') {
           ret.push({ column: 'Duration', value: '~T = ' + adur + 'm' });
-        }
-        if ($(node).find('sod')[0]) {
-          ret.push({ column: 'SOD', value: 'SOD'})
-        }
-        if ($(node).find('bod')[0]) {
-          array = Array.from($(node).find('bod > id')).map((value) => value.innerHTML)
-          array.push(node.id)
-          array.sort()
-          ret.push({ column: 'BOD'+array[0], value: 'BOD'})
         }
         return ret;
       },
