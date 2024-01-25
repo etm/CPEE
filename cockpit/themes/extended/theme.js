@@ -75,19 +75,6 @@ function WFAdaptorManifestation(adaptor) {
       if (save['endpoints_list'][$(node).attr('endpoint')] && (!save['endpoints_list'][$(node).attr('endpoint')].startsWith('http') || save['endpoints_list'][$(node).attr('endpoint')].match(/^https?-/))) {
         $(rng).find(' > element[name="parameters"] > element[name="method"]').remove();
       }
-      if (save['endpoints_cache'][$(node).attr('endpoint')] && save['endpoints_cache'][$(node).attr('endpoint')].properties && save['endpoints_cache'][$(node).attr('endpoint')].properties.resource){
-        sodXml = $($.parseXML('<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:label="SOD" name="sod"><choice><value>No</value><value>Yes</value></choice></element>\n')).find("element");
-        sodXml.insertAfter($(rng).find(' > element[name="parameters"] > element[name="label"]'));
-        rawBodXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="BOD" name="bod" rngui:fold="closed">\n';
-        Array.from($($.parseXML(self.adaptor.description.get_description())).find("call")).toSorted((a,b) => (a.id > b.id ? 1: -1)).forEach(function (element) { 
-          if (element.id != node.id && save['endpoints_cache'][element.getAttribute('endpoint')] && save['endpoints_cache'][element.getAttribute('endpoint')].properties.resource) {
-            rawBodXml += '   <element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:label="'+element.attributes.id.nodeValue+'" name="bod'+element.attributes.id.nodeValue+'">\n      <choice>\n         <value>No</value>\n         <value>Yes</value>\n      </choice>\n   </element>\n';
-          }
-        });
-        rawBodXml += '</element>\n';
-        bodXml = $($.parseXML(rawBodXml)).find('element[name="bod"]');
-        bodXml.insertAfter($(rng).find(' > element[name="parameters"] > element[name="sod"]'));
-      }
       save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
       var nn = $X($(node).serializeXML());
           nn.removeAttr('svg-id');
