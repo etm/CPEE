@@ -672,7 +672,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         });
 
         for (var i = 0; i < max.row; i++) {
-          for (var j = 0; j < tcolumns.length - 1; j++) {
+          for (var j = 0; j < tcolumns.length; j++) {
             if (thidden != tcolumns[j]) {
               if (tlabels[i+1] != undefined && tlabels[i+1][j] != undefined && tlabels[i+1][j].label != undefined && tlabels[i+1][j].label != '') {
                 var col = tlabels[i+1][j];

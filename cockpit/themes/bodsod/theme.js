@@ -1,3 +1,5 @@
+var node_deleted = new Event("node:deleted", {"bubbles":true, "cancelable":false})
+
 function WFAdaptorManifestation(adaptor) {
   var self = this;
 
@@ -203,6 +205,9 @@ function WFAdaptorManifestation(adaptor) {
       menu['Delete'] = [{
         'label': 'Remove Element',
         'function_call': function(selector,target,selected){
+          node_deleted.node = target
+          node_deleted.description = self.adaptor.description
+          document.dispatchEvent(node_deleted)
           del_ui_pos(target)
           self.adaptor.description.remove(selector,target);
           localStorage.removeItem('marked');
