@@ -125,12 +125,7 @@ module CPEE
           doc.find('/p:properties/p:dslx').first.add XML::Smart::string(val).root rescue nil
         end #}}}
         if val = CPEE::Persistence::extract_item(id,opts,'description') #{{{
-          d = XML::Smart::string(val).root rescue nil
-          if d.nil?
-            doc.find('/p:properties/p:description').first.text = val
-          else
-            doc.find('/p:properties/p:description').first.add d
-          end
+          doc.find('/p:properties/p:description').first.add XML::Smart::string(val).root rescue nil
         end #}}}
         doc.find('/p:properties/p:transformation/p:description').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/description')
         doc.find('/p:properties/p:transformation/p:dataelements').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dataelements')
@@ -653,26 +648,21 @@ module CPEE
 
     class PutDescription < Riddl::Implementation #{{{
       def self::transform(descxml,tdesc,tdesctype,tdata,tdatatype,tendp,tendptype,hw,opts) #{{{
-        desc = XML::Smart::string(descxml) rescue nil
-        if desc.nil?
-          if descxml.empty?
-            tdesctype = tdatatype = tendptype = 'clean'
-          end
-        else
-          desc.register_namespace  'p', 'http://cpee.org/ns/description/1.0'
-          if desc.root.children.empty?
-            tdesctype = tdatatype = tendptype = 'clean'
-          end
-        end
+        desc = XML::Smart::string(descxml)
+        desc.register_namespace  'p', 'http://cpee.org/ns/description/1.0'
 
         dslx = nil
         dsl = nil
         de = {}
         ep = {}
 
+        if desc.root.children.empty?
+          tdesctype = tdatatype = tendptype = 'clean'
+        end
+
         ### description transformation, including dslx to dsl
         addit = if tdesctype == 'copy' || tdesc.empty?
-          desc || ''
+          desc
         elsif tdesctype == 'rest' && !tdesc.empty?
           srv = Riddl::Client.interface(tdesc,opts[:transformation_service])
           status, res = srv.post [
@@ -680,15 +670,15 @@ module CPEE
             Riddl::Parameter::Simple.new("type","description")
           ]
           if status >= 200 && status < 300
-            XML::Smart::string(res[0].value.read)
+            XML::Smart::string(res[0].value.read).root
           else
             raise 'Could not extract dslx'
           end
         elsif tdesctype == 'xslt' && !tdesc.empty?
           trans = XML::Smart::open_unprotected(tdesc)
-          desc.transform_with(trans)
+          desc.transform_with(trans).root
         elsif tdesctype == 'clean'
-          XML::Smart::open_unprotected(opts[:empty_dslx])
+          XML::Smart::open_unprotected(opts[:empty_dslx]).root
         else
           nil
         end
@@ -699,7 +689,7 @@ module CPEE
 
         ### dataelements extraction
         addit = if tdatatype == 'rest' && !tdata.empty?
-          srv = Riddl::Client.interface(tdata,opts[:transformation_service])
+          srv = Riddl::Client.interface(tdata,@opts[:transformation_service])
           status, res = srv.post [
             Riddl::Parameter::Complex.new("description","text/xml",descxml),
             Riddl::Parameter::Simple.new("type","dataelements")
@@ -725,7 +715,7 @@ module CPEE
 
         ### endpoints extraction
         addit = if tendptype == 'rest' && !tdata.empty?
-          srv = Riddl::Client.interface(tendp,opts[:transformation_service])
+          srv = Riddl::Client.interface(tendp,@opts[:transformation_service])
           status, res = srv.post [
             Riddl::Parameter::Complex.new("description","text/xml",descxml),
             Riddl::Parameter::Simple.new("type","endpoints")

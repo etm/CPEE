@@ -19,6 +19,9 @@ module CPEE
     def self::obj #{{{
       @@obj
     end #}}}
+    def self::obj=(it) #{{{
+      @@obj = it
+    end #}}}
 
     def self::set_list(id,opts,item,values,deleted=[]) #{{{
       ah = AttributesHelper.new
@@ -81,6 +84,15 @@ module CPEE
       end
     end
 
+    def self::new_object(opts)
+      id = opts[:redis].zrevrange(@@obj + 's', 0, 0).first.to_i + 1
+      opts[:redis].zadd(@@obj + 's',id,id)
+      id
+    end
+    def self::new_static_object(id,opts)
+      opts[:redis].set(File.join(@@obj + ":#{id}",'state'),'')
+      nil
+    end
     def self::new_object(opts)
       id = opts[:redis].zrevrange(@@obj + 's', 0, 0).first.to_i + 1
       opts[:redis].zadd(@@obj + 's',id,id)
