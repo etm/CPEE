@@ -28,7 +28,6 @@
           <label>OK OR NOT OK</label>
           <arguments>
             <orgmodel>https://cpee.org/~demo/orgviz/organisation_informatik.xml</orgmodel>
-            <domain>VirtualBusiness1</domain>
             <form>https://cpee.org/~demo/form/form-f.html</form>
             <role>Assistant</role>
             <data>
@@ -44,11 +43,15 @@
           <rescue output="result"/>
         </code>
         <annotations>
+          <_generic/>
           <_timing>
             <_timing_weight/>
             <_timing_avg/>
             <explanations/>
           </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
           <_context_data_analysis>
             <probes/>
             <ips/>
