@@ -66,9 +66,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def prepare(readonly, endpoints, parameters, replay=false) #{{{
     @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
-    if @controller.attributes['mock']
+    if @controller.attributes['twin_engine']
       @handler_endpoint_orig = @handler_endpoint
-      @handler_endpoint = @controller.attributes['mock'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
+      @handler_endpoint = @controller.attributes['twin_engine'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
     end
     params = parameters.dup
     params[:arguments] = params[:arguments].dup if params[:arguments]
@@ -146,15 +146,42 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @guard_files += result
 
       if status == 561
-        @handler_endpoint = @handler_endpoint_orig
+        if @controller.attributes['twin_translate']
+          gettrans = Riddl::Client.new(@controller.attributes['twin_translate'])
+          gtstatus, gtresult, gtheaders = gettrans.get
+          if gtstatus >= 200 && gtstatus < 300
+            transwhat = case headers['CPEE-TWIN-TASKTYPE']
+              when 'i'; 'instantiation'
+              when 'ir'; 'ipc-receive'
+              when 'is'; 'ipc-send'
+              else
+                'instantiation'
+            end
+            JSON::parse(gtresult.value.read).each do |e|
+              if e['type'] == transwhat
+                @handler_endpoint = e['endpoint'] if e['endpoint']
+                e['arguments']&.each do |k,a|
+                  params.each do |p|
+                    p.value = a if p.name == k
+                  end
+                end
+              end
+            end
+          end
+        else
+          @handler_endpoint = @handler_endpoint_orig
+        end
         params.delete_if { |p| p.name == 'original_endpoint' }
         params.each do |p|
           if p.name == 'attributes'
             t = JSON::parse(p.value) rescue {}
-            t['mock'] = @controller.attributes['mock']
+            t['twin_engine'] = @controller.attributes['twin_engine'] if @controller.attributes['twin_engine']
+            t['twin_target'] = @controller.attributes['twin_target'] if @controller.attributes['twin_target']
+            t['twin_translate'] = @controller.attributes['twin_engine'] if @controller.attributes['twin_translate']
             p.value = t.to_json
           end
         end
+        pp params
       end
     end while status == 561
 

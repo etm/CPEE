@@ -61,7 +61,9 @@ async function modifiers_display() {
       url: rep + 'modifiers/'
     }).then(async function(res) {
       let ipromises = [];
+      let iinserts = {};
       $('resource',res).each(function(_,r) {
+        iinserts[$(r).text()] = '';
         ipromises.push(
           $.ajax({
             url: rep + 'modifiers/' + $(r).text()
@@ -87,13 +89,18 @@ async function modifiers_display() {
               );
 
             });
-            $(clone).insertBefore($('#modifiers template'));
+            iinserts[$(r).text()] = $(clone);
 
             await Promise.all(cpromises);
           })
         );
       });
       await Promise.all(ipromises);
+
+      // always insert in order
+      for (const [_, fragment] of Object.entries(iinserts)) {
+        fragment.insertBefore($('#modifiers template'));
+      }
     })
   );
   await Promise.all(promises);
