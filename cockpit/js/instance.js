@@ -554,7 +554,7 @@ function adaptor_init(url,theme,dslx) { //{{{
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       manifestation.endpoints = save.endpoints_list;
-      graphrealization.draw_labels = function(max,labels,shift,striped) {
+      graphrealization.draw_labels = function(max,labels,dimensions,striped) {
         $('#graphcanvas').css('grid-row', '1/span ' + (max.row + 2));
         if (striped == true) {
           if (!$('#graphgrid').hasClass('striped')) {
@@ -564,10 +564,17 @@ function adaptor_init(url,theme,dslx) { //{{{
           $('#graphgrid').removeClass('striped');
         }
 
-        $('#graphgrid .graphlabel, #graphgrid .graphempty, #graphgrid .graphlast').remove();
+        $('#graphgrid .graphlabel, #graphgrid .graphempty, #resources, #graphgrid .graphlast').remove();
         var tlabels = {};
         var tcolumns = [];
         var tcolumncount = {}
+        var thidden = [];
+
+        var tsvgs = {};
+        const mapPoints = new Map();
+        let iconsize = 14;
+        let iconshift = 7;
+
         _.each(labels,function(val){
           if (val.label != "") {
             tlabels[val.row] = [];
@@ -576,34 +583,142 @@ function adaptor_init(url,theme,dslx) { //{{{
                 tcolumns.push(col.column);
                 tcolumncount[col.column] = 0;
               }
+              if (!thidden.includes(col.column) && col.type == 'resource') {
+                thidden.push(col.column);
+              }
               if (col.value != undefined) {
+
+                // Start Peilei
+                if (col.type == "resource") {
+                  let str = '';
+                  for (const [k, v] of Object.entries(col.value)) {
+                    var p = {};
+                    p.AR = v;
+                    p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
+                    if (!mapPoints.has(k)) {
+                      p.y0 = p.y0 == undefined ? (dimensions.height_shift/2 + dimensions.height * val.row - 20) : p.y0;
+                      p.ymax = (p.ymax == undefined) ? p.y0 : p.ymax; //(dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax ? dimensions.height_shift/2 + dimensions.height * val.row - 20 : p.ymax);
+                    } else {
+                      p.y0 = mapPoints.get(k).y0;
+                      p.ymax = mapPoints.get(k).ymax; //(dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax ? dimensions.height_shift/2 + dimensions.height * val.row - 20 : p.ymax);
+                    }
+                    mapPoints.set(k, p);
+                  }
+                  var cx = iconshift*2;
+                  str += '<g xmlns="http://www.w3.org/2000/svg">';
+
+                  for (const [k, p] of mapPoints) {
+                    let firstAssignFlag = 0;
+                    p.x0 = p.xc = cx;
+
+                    // Including Triangle
+                    if (k in col.value) {   // Define points for a triangle pointing to the right
+                      if (p.AR == "Read") {
+                        str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 20) + ' ' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 15) + ' ' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 25) + '" fill="green" class="resource-point">';
+                        if (p.yc == p.y0) {
+                          firstAssignFlag = 1;
+                        }
+                      } else if (p.AR == "Assign") {    // Define points for a triangle pointing to the left
+                        str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 20) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 15) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 25) + '" fill="orange" class="resource-point">';
+                      } else if (p.AR == "AssignRead") {
+                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
+                        str += '<circle xmlns="http://www.w3.org/2000/svg" cx="' + cx + '" cy="' + p.yc + '" r="5" fill="blue" class="resource-point">';
+                      }
+
+                      if (dimensions.height_shift/2 + dimensions.height * val.row != p.y0) {
+                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
+                        if (dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax) {
+                          p.ymax = dimensions.height_shift/2 + dimensions.height * val.row - 20;
+                        }
+                      }
+
+                      // Converted from <title>
+                      str += '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text>';
+
+                      if (p.AR == "Read" || p.AR == "Assign") {
+                        str += '</polygon>';
+                      } else if (p.AR == "AssignRead") {
+                        str += '</circle>';
+                      }
+                    }
+
+                    if (firstAssignFlag == 1) {
+                      // Additional logic and construction of another polygon for orange triangle pointing left
+                      p.y0 -= dimensions.height;
+                      str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * (val.row - 1) - 20) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * (val.row - 1) - 15) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * (val.row - 1) - 25) + '" fill="orange" class="resource-point">' + '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text></polygon>';
+                    }
+                    cx += iconsize;
+                  }
+
+                  for (const [k, p] of mapPoints) {
+                    if(k in col.value) {
+                      if (dimensions.height_shift/2+dimensions.height*val.row != p.y0) {
+                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
+                        if(dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax) {
+                          p.ymax = dimensions.height_shift/2 + dimensions.height * val.row - 20;
+                        }
+                      }
+                    }
+                  }
+                  str += '</g>';
+
+                  tsvgs[val.row] = $X(str);
+                }
+
                 tcolumncount[col.column] += 1;
               }
               tlabels[val.row][tcolumns.indexOf(col.column)] = { label: col.value, type: val.tname, id: val.element_id };
             });
           }
         });
+
         $('#graphgrid').css({
-          'grid-template-rows': (shift/2) + 'px repeat(' + max.row + ', 1fr) ' + (shift/2) + 'px',
+          'grid-template-rows': (dimensions.height_shift/2) + 'px repeat(' + max.row + ', 1fr) ' + (dimensions.height_shift/2) + 'px',
           'grid-template-columns': 'max-content' + (tcolumns.length > 0 ? ' repeat(' + tcolumns.length.toString() + ',max-content)' : '') + ' auto'
         });
+
         for (var i = 0; i < max.row; i++) {
-          for (var j = 0; j < tcolumns.length; j++) {
-            if (tlabels[i+1] != undefined && tlabels[i+1][j] != undefined && tlabels[i+1][j].label != undefined && tlabels[i+1][j].label != '') {
-              var col = tlabels[i+1][j];
-              var ele = $('<div element-row="' + i + '" class="graphlabel ' + (i % 2 == 0 ? 'odd' : 'even') + '" element-type="' + col.type + '" element-id="' + col.id + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '"><span>' + col.label + '</span></div>');
-              graphrealization.illustrator.draw.bind_event(ele, col.type, false);
-              $('#graphgrid').append(ele);
-            } else {
-              if (tcolumncount[tcolumns[j]] != 0) {
-                var ele = $('<div element-row="' + i + '" class="graphempty ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px">&#032;</div>');
+          for (var j = 0; j < tcolumns.length - 1; j++) {
+            if (thidden != tcolumns[j]) {
+              if (tlabels[i+1] != undefined && tlabels[i+1][j] != undefined && tlabels[i+1][j].label != undefined && tlabels[i+1][j].label != '') {
+                var col = tlabels[i+1][j];
+                var ele = $('<div element-row="' + i + '" class="graphlabel ' + (i % 2 == 0 ? 'odd' : 'even') + '" element-type="' + col.type + '" element-id="' + col.id + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '"><span>' + col.label + '</span></div>');
+                graphrealization.illustrator.draw.bind_event(ele, col.type, false);
                 $('#graphgrid').append(ele);
+              } else {
+                if (tcolumncount[tcolumns[j]] != 0) {
+                  var ele = $('<div element-row="' + i + '" class="graphempty ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
+                  $('#graphgrid').append(ele);
+                }
               }
             }
           }
+
           var j = tcolumns.length;
-          var ele = $('<div element-row="' + i + '" class="graphlast ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + shift + 'px">&#032;</div>');
+          var ele = $('<div element-row="' + i + '" class="graphlast ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
           $('#graphgrid').append(ele);
+        }
+
+        if (Object.keys(tsvgs).length > 0) {
+          let dataflow = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id="resources"></svg>');
+          dataflow.css('grid-row', '1/span ' + (max.row + 2));
+          dataflow.css('grid-column', tcolumns.indexOf(thidden.first) + 2);
+          dataflow.attr('height', $('#graphcanvas').attr('height'));
+          dataflow.attr('width', mapPoints.size * iconsize + iconshift * 2);
+
+          for (var i = 0; i < max.row; i++) {   // Needs parenthesises below
+            dataflow.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + 5.2) + '" width="' + (mapPoints.size * iconsize + iconshift * 2) + '" height="' + dimensions.height + '"></rect>'));
+            dataflow.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="border" x="0" y="' + (dimensions.height * i + 5.2) + '" height="' + dimensions.height + '"></rect>'));
+          }
+          for (const [k, p] of mapPoints) {
+            dataflow.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line" stroke-opacity="0.1" stroke="orange" stroke-width="10" marker-end="url(#arrowhead)"><text>' + k + '</text></line>'));
+          }
+          for (var i = 0; i < max.row; i++) {
+            dataflow.append($(tsvgs[i+1]));
+          }
+          $('#graphgrid').append(dataflow);
+
+          $('.resource-label').hide();  // Speech Bubble hide by default
         }
       };
       graphrealization.set_svg_container($('#graphcanvas'));
