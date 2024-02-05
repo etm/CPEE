@@ -70,7 +70,8 @@ function do_main_work() { //{{{
 
   node.replaceWith(nnew);
 
-
+  node_updated.svgid = svgid
+  node_updated.desc = desc
   node_updated.node = node
   node_updated.nnew = nnew
   document.dispatchEvent(node_updated)

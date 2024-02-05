@@ -682,6 +682,9 @@ function adaptor_init(url,theme,dslx) { //{{{
               } else {
                 if (tcolumncount[tcolumns[j]] != 0) {
                   var ele = $('<div element-row="' + i + '" class="graphempty ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
+                  if (/c\d+/.test(tcolumns[j]) && i == 0) {
+                    var ele = $('<div element-row="' + i + '" class="graphlabel ' + (i % 2 == 0 ? 'odd' : 'even') + '" element-id="' + tcolumns[j] + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '"><span>' + tcolumns[j] + '</span></div>');
+                  }
                   $('#graphgrid').append(ele);
                 }
               }

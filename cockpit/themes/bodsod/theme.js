@@ -78,26 +78,7 @@ function WFAdaptorManifestation(adaptor) {
         $(rng).find(' > element[name="parameters"] > element[name="method"]').remove();
       }
       if (save['endpoints_cache'][$(node).attr('endpoint')] && save['endpoints_cache'][$(node).attr('endpoint')].properties && save['endpoints_cache'][$(node).attr('endpoint')].properties.resource){
-        rawSodXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="SOD/BOD" name="bodsod"><element rngui:header="SOD" name="_sod" rngui:fold="closed"><zeroOrMore rngui:label="Add SOD"><element name="sod"><element name="id" rngui:label="ID"><choice><value>Choose id</value>\n';
-        Array.from($($.parseXML(self.adaptor.description.get_description())).find("call")).toSorted((a,b) => (a.id > b.id ? 1: -1)).forEach(function (element) { 
-          if (element.id != node.id && save['endpoints_cache'][element.getAttribute('endpoint')] && save['endpoints_cache'][element.getAttribute('endpoint')].properties.resource) {
-            rawSodXml += '<value>'+element.attributes.id.nodeValue+'</value>';
-          }
-        });
-        rawSodXml += '</choice></element></element></zeroOrMore></element></element>';
-        sodXml = $($.parseXML(rawSodXml)).find('element[name="bodsod"]');
-        sodXml.insertAfter($(rng).find(' > element[name="parameters"]'));
-
-        rawBodXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="BOD" name="_bod" rngui:fold="closed"><zeroOrMore rngui:label="Add BOD"><element name="bod"><element name="id" rngui:label="ID"><choice><value>Choose id</value>\n';
-        Array.from($($.parseXML(self.adaptor.description.get_description())).find("call")).toSorted((a,b) => (a.id > b.id ? 1: -1)).forEach(function (element) { 
-          if (element.id != node.id && save['endpoints_cache'][element.getAttribute('endpoint')] && save['endpoints_cache'][element.getAttribute('endpoint')].properties.resource) {
-            rawBodXml += '<value>'+element.attributes.id.nodeValue+'</value>';
-          }
-        });
-        rawBodXml += '</choice></element></element></zeroOrMore></element>';
-
-        bodXml = $($.parseXML(rawBodXml)).find('element[name="_bod"]');
-        bodXml.insertAfter($(rng).find('> element[name="bodsod"] > element[name="_sod"]'));
+        generateConcernUI(rng)
       }
       save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
       var nn = $X($(node).serializeXML());
@@ -106,9 +87,32 @@ function WFAdaptorManifestation(adaptor) {
           nn.removeAttr('svg-subtype');
           nn.removeAttr('svg-label');
       save['details'].content(nn);
+      removeAlreadySelectedConcerns();
       format_visual_forms();
     }
   }; //}}}
+
+  function generateConcernUI(rng) {
+    rawConcernXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="Concerns" name="_concerns" rngui:fold="closed"><zeroOrMore rngui:label="Add Concern"><element name="concern"><element name="id" rngui:label="ID"><choice><value>Choose id</value>\n';
+    Array.from($($.parseXML(self.adaptor.description.get_description())).find("description > _concerns > concern")).toSorted((a,b) => (a.id > b.id ? 1: -1)).forEach(function (element) { 
+        rawConcernXml += '<value>'+element.id+'</value>';
+    });
+    rawConcernXml += '</choice></element></element></zeroOrMore></element>';
+    concernXml = $($.parseXML(rawConcernXml)).find('element[name="_concerns"]');
+    concernXml.insertAfter($(rng).find(' > element[name="parameters"]'));
+  }
+
+  function removeAlreadySelectedConcerns() {
+    Array.from($('select[data-relaxngui-path=" > call > _concerns > concern > id"]')).forEach(function(e1) {
+      if($(e1).val() != 'Choose id') {
+        Array.from($('select[data-relaxngui-path=" > call > _concerns > concern > id"]')).forEach(function(e2) {
+          if($(e1).val() != $(e2).val()) {
+            $(e2).find('option[value="'+$(e1).val()+'"]').remove()
+          }
+        })
+      }
+    })
+  }
 
   function copyOrMove(menu,group,xml_node,mode) { //{{{
     var nodes = localStorage.getItem('marked');
@@ -398,14 +402,10 @@ function WFAdaptorManifestation(adaptor) {
         if (adur != '') {
           ret.push({ column: 'Duration', value: '~T = ' + adur + 'm' });
         }
+        Array.from($(node).find('concern')).toSorted((a,b) => a.textContent > b.textContent ? 1:-1).forEach(function(e) {
+          ret.push({ column: $(e).find('id')[0].innerHTML, value: '•'})
+        })
         if ($(node).find('sod')[0]) {
-          ret.push({ column: 'SOD', value: 'SOD'})
-        }
-        if ($(node).find('bod')[0]) {
-          array = Array.from($(node).find('bod > id')).map((value) => value.innerHTML)
-          array.push(node.id)
-          array.sort()
-          ret.push({ column: 'BOD'+array[0], value: 'BOD'})
         }
         return ret;
       },
