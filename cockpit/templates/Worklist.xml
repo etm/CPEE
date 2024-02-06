@@ -24,6 +24,7 @@
             <orgmodel>https://cpee.org/~demo/orgviz/organisation_informatik.xml</orgmodel>
             <form>https://cpee.org/~demo/form/form-f.html</form>
             <role>Assistant</role>
+            <restrictions/>
             <data>
               <schaden>10000</schaden>
               <text>destroyed</text>
