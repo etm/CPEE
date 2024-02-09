@@ -15,8 +15,20 @@
 module CPEE
 
   module Message
-    WHO = 'cpee'
-    TYPE = 'instance'
+    @@who = 'cpee'
+    @@type = 'instance'
+    def self::who #{{{
+      @@who
+    end #}}}
+    def self::who=(it) #{{{
+      @@who = it
+    end #}}}
+    def self::type #{{{
+      @@type
+    end #}}}
+    def self::type=(it) #{{{
+      @@type = it
+    end #}}}
 
     def self::set_workers(workers)
       @@tworkers = (workers < 1 && workers > 99 ? 1 : workers).freeze
@@ -32,17 +44,17 @@ module CPEE
       topic = ::File::dirname(event)
       name = ::File::basename(event)
       payload = {
-        WHO => cpee,
-        TYPE + '-url' => File.join(cpee,instance.to_s),
-        TYPE => instance,
+        @@who => cpee,
+        @@type + '-url' => File.join(cpee,instance.to_s),
+        @@type => instance,
         'topic' => topic,
         'type' => type,
         'name' => name,
         'timestamp' =>  Time.now.xmlschema(3),
         'content' => content
       }
-      payload[TYPE + '-uuid'] = instance_uuid if instance_uuid
-      payload[TYPE + '-name'] = instance_name if instance_name
+      payload[@@type + '-uuid'] = instance_uuid if instance_uuid
+      payload[@@type + '-name'] = instance_name if instance_name
 
       backend.publish(type.to_s + ':' + target + ':' + event.to_s,
         instance.to_s + ' ' +
@@ -55,7 +67,7 @@ module CPEE
         topic = ::File::dirname(event)
         name = ::File::basename(event)
         payload = {
-          WHO => cpee,
+          @@who => cpee,
           'topic' => topic,
           'type' => type,
           'name' => name,
