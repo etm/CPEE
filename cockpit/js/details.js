@@ -1,3 +1,5 @@
+var details_updated = new Event("details:updated", {"bubbles":true, "cancelable":false});
+
 $(document).ready(function() {
   var timer;
 
@@ -61,6 +63,9 @@ function do_main_work() { //{{{
   if (node[0].namespaceURI == nnew.attr('xmlns')) { // remove xmlns when it is the same as in the parent node
     nnew[0].removeAttribute('xmlns');
   }
+
+  parameters_changed
+
   node.replaceWith(nnew);
 
   var ttarget = manifestation.adaptor.illustrator.get_node_by_svg_id(svgid);
