@@ -14,22 +14,6 @@ $(document).ready(function(){
 
     })
 
-    $(document).on('node:deleted',function(e){
-      var node = e.originalEvent.node
-      var description = e.originalEvent.description
-
-      Array.from($(node).find("sod")).forEach(function(element) {
-          target = description.get_node_by_svg_id(element.children[0].innerHTML)
-          target.find('sod:contains("'+node[0].id+'")').remove()
-      })
-
-      Array.from($(node).find("bod")).forEach(function(element) {
-          target = description.get_node_by_svg_id(element.children[0].innerHTML)
-          target.find('bod:contains("'+node[0].id+'")').remove()
-      })
-
-    })
-
     $(document).on('node:updated',function(e){
 
         var svgid    = e.originalEvent.svgid;
