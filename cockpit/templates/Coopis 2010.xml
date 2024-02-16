@@ -18,11 +18,11 @@
     <approve>http://gruppe.wst.univie.ac.at/~mangler/services/approval.php</approve>
   </endpoints>
   <attributes>
+    <modeltype>CPEE</modeltype>
     <theme>extended</theme>
     <info>Coopis 2010</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
-    <modeltype>CPEE</modeltype>
     <design_stage>development</design_stage>
     <guarded>none</guarded>
     <design_dir>Templates.dir</design_dir>
