@@ -133,7 +133,7 @@
     <parameter name="dslx" mimetype="*/xml"/>
   </message> <!--}}}-->
   <message name="description"> <!--{{{-->
-    <parameter name="description" mimetype="*/xml"/>
+    <parameter name="description" mimetype="*"/>
   </message> <!--}}}-->
 
   <message name="transformation"> <!--{{{-->

@@ -134,8 +134,13 @@ data.costs += result.value('costs').to_f</finalize>
           <manipulate id="a3">data.persons -= 1</manipulate>
         </loop>
       </parallel>
-      <choose mode="inclusive">
+      <choose mode="exclusive">
         <alternative condition="data.costs &gt; 700">
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
           <call id="a4" endpoint="approve">
             <parameters>
               <label>Approve Hotel</label>
@@ -173,6 +178,7 @@ data.costs += result.value('costs').to_f</finalize>
             </documentation>
           </call>
         </alternative>
+        <otherwise/>
       </choose>
     </description>
   </description>
