@@ -55,7 +55,9 @@
     <script type="text/javascript" src="js/parameters.js"></script>
     <script type="text/javascript" src="js/edit.js"></script>
     <script type="text/javascript" src="js/modifiers.js"></script>
+    <script type="text/javascript" src="js/resources.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
+    <link rel="stylesheet" href="css/resources.css" type="text/css"/>
     <link rel="stylesheet" href="/global_ui/uicpee.css" type="text/css"/>
     <style>
       /* has to be fucking inline, because firefox and chrome disagree how to handle filter urls */
@@ -242,8 +244,9 @@
         <ui-behind                                                 ><a style='display:none' target='_blank' id='current-track'>T</a><a style='display:none' target='_blank' id='current-graph'>G</a></ui-behind>
       </ui-tabbar>
       <ui-content>
-        <ui-area data-belongs-to-tab="details" id='graphcolumn'>
+        <ui-area data-belongs-to-tab="details" id='graphcolumn' oncontextmenu='return false'>
           <div id='graphgrid'>
+            <div class="resource-label" style="display: none"></div>
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
           </div>
         </ui-area>
