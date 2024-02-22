@@ -42,7 +42,7 @@ body {
   border-left: 1pt solid var(--wfadaptor-border);
 }
 #graphgrid.striped #resources rect.border {
-  width: 1pt;
+  width: 0.8pt;
   fill: var(--wfadaptor-border);
 }
 #graphgrid.striped .graphlabel.even, #graphgrid.striped .graphempty.even, #graphgrid.striped .graphlast.even {

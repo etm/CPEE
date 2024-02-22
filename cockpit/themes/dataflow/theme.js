@@ -388,7 +388,7 @@ function WFAdaptorManifestation(adaptor) {
         var ret = [ { column: 'ID', value: $(node).attr('id') } ];
 
         // For Blue Points
-        let dict1 = dataflow_extract($('arguments > *',$(node).children('parameters')),true,function(target){ return $(target).text(); });
+        let dict1 = dataflow_extract($('arguments *',$(node).children('parameters')),true,function(target){ return $(target).text(); });
         let dict2 = dataflow_extract($(node).children('code').children(),false,function(target){ return $(target).text(); });
         let dict = {...dict1,...dict2};
         ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
