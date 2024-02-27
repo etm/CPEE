@@ -1,0 +1,257 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" ns="http://cpee.org/ns/description/1.0" name="call" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <attribute name="id" rngui:label="ID" rngui:default="javascript:get_free_id()">
+    <data type="string" rngui:readonly="true"/>
+  </attribute>
+  <attribute name="endpoint" rngui:label="Endpoint">
+    <data type="string">
+      <param name="pattern">^[a-z_][a-zA-Z0-9_]*$</param>
+    </data>
+  </attribute>
+  <element name="parameters" rngui:header="Properties">
+    <element name="label" rngui:label="Label">
+      <data type="string" rngui:label="Short description of the task"/>
+    </element>
+    <element name="method" rngui:label="Method">
+      <choice>
+        <value>:post</value>
+        <value>:get</value>
+        <value>:put</value>
+        <value>:delete</value>
+      </choice>
+    </element>
+    <element name="arguments" rngui:header="Arguments">
+      <zeroOrMore rngui:label="Create Argument Pair">
+        <element rngui:label="Name" rngui:labeltype="xml">
+          <anyName/>
+          <data type="string" rngui:label="Value"/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </element>
+  <element name="code" rngui:header="Output Handling">
+    <element name="prepare" rngui:header="Prepare" rngui:label="Code" rngui:fold="closed_conditional">
+      <text rngui:label="Script that is executed, before a service call"/>
+    </element>
+    <element name="finalize" rngui:header="Finalize" rngui:label="Code" rngui:fold="closed_conditional">
+      <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+        <data type="string" rngui:readonly="true"/>
+      </attribute>
+      <text rngui:label="Script that is executed, when a service returns data"/>
+    </element>
+    <element name="update" rngui:header="Update" rngui:label="Code" rngui:fold="closed_conditional">
+      <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+        <data type="string" rngui:readonly="true"/>
+      </attribute>
+      <text rngui:label="Script that is executed, when a service sends intermediate data"/>
+    </element>
+    <element name="rescue" rngui:header="Rescue" rngui:label="Code" rngui:fold="closed_conditional">
+      <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+        <data type="string" rngui:readonly="true"/>
+      </attribute>
+      <text rngui:label="Script that is executed, if a service call fails"/>
+    </element>
+  </element>
+  <element name="annotations" rngui:header="Annotations">
+    <element name="_generic" rngui:header="Generic" rngui:fold="closed">
+      <zeroOrMore rngui:label="Create Annotation Pair">
+        <element rngui:label="Name" rngui:labeltype="xml">
+          <anyName/>
+          <data type="string" rngui:label="Value"/>
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="_timing" rngui:header="Timing" rngui:fold="closed">
+      <element name="_timing_weight" rngui:label="&#x3C9; - Weight">
+        <data type="float" rngui:label="[0,1]"/>
+      </element>
+      <element name="_timing_avg" rngui:label="Avg in min">
+        <data type="float" rngui:label="Minutes"/>
+      </element>
+      <element name="explanations" rngui:header="Explanations">
+        <zeroOrMore rngui:label="Add Explanation">
+          <element name="explanation">
+            <element name="type" rngui:label="Type">
+              <choice>
+                <value>&gt;</value>
+                <value>&lt;</value>
+              </choice>
+            </element>
+            <element name="deviation" rngui:label="Deviation">
+              <data type="float" rngui:label="Minutes"/>
+            </element>
+            <element name="behaviour" rngui:label="Behaviour">
+              <choice>
+                <value>Immediately</value>
+                <value>Wait until next</value>
+                <value>Use grace period value</value>
+              </choice>
+            </element>
+            <element name="grace" rngui:label="Grace Period" rngui:default="0.0">
+              <data type="float" rngui:label="Minutes"/>
+            </element>
+            <element name="text" rngui:label="Explanation">
+              <data type="string" rngui:label="Patterns"/>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+    </element>
+    <element name="_shifting" rngui:header="Log Time Shifting" rngui:fold="closed_conditional">
+      <element name="_shifting_type" rngui:label="Type">
+        <choice>
+          <value>Duration</value>
+          <value>Ends</value>
+        </choice>
+      </element>
+      <optional>
+        <element name="_shifting_expression" rngui:label="Expression">
+          <data type="string" rngui:label="e.g.: same day, 16:00; 2 and a half weeks"/>
+        </element>
+      </optional>
+    </element>
+    <element name="_context_data_analysis" rngui:header="Context Data Analysis" rngui:hint="All data returned from the endpoint implementing this task as well as arbitray external data streams can be consumed and transformed in data probes. All probes can be the basis for impact factors. Please go to start to define instance data probes.">
+
+      <element name="probes" rngui:header="Data Probes - Context Data Extraction" rngui:fold="closed_conditional">
+        <zeroOrMore rngui:label="Add Probe">
+          <element name="probe">
+            <element name="id" rngui:label="ID">
+              <data type="string" rngui:label="ID"/>
+            </element>
+            <element name="source" rngui:label="Source">
+              <data type="string" rngui:label="Where does the sensor value come from?"/>
+            </element>
+            <element name="extractor_type" rngui:label="Extractor Type">
+              <choice>
+                <value id='intrinsic'>Intrinsic</value>
+                <value id='extrinsic'>Extrinsic</value>
+                <value id='separate'>Separate</value>
+              </choice>
+            </element>
+            <element name="extractor_code" rngui:label="Extractor Code" rngui:hint='For intrinsic &amp; extrinsic data'>
+              <text rngui:label="Code"/>
+            </element>
+            <element name="extractor_url" rngui:label="Extractor Service" rngui:hint='For separate data'>
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="extractor_params" rngui:label="Extractor Service Arguments:">
+              <zeroOrMore rngui:label="Create Argument Pairs">
+                <element rngui:label="Name">
+                  <anyName/>
+                  <data type="string" rngui:label="Value / Json"/>
+                </element>
+              </zeroOrMore>
+            </element>
+            <element name="visualizer_url" rngui:label="Visualizer Url">
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="visualizer_params" rngui:label="Visualizer Arguments">
+              <zeroOrMore rngui:label="Create Argument Pairs">
+                <element rngui:label="Name">
+                  <anyName/>
+                  <data type="string" rngui:label="Value / Json"/>
+                </element>
+              </zeroOrMore>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+
+      <element name="ips" rngui:header="Impact Profiles" rngui:fold="closed">
+        <zeroOrMore rngui:label="Add Impact Profile">
+          <element name="ip">
+            <element name="name" rngui:label="Label">
+              <data type="string" rngui:label="Label"/>
+            </element>
+            <element name="target" rngui:label="Target Value">
+              <data type="string" rngui:label="Value"/>
+            </element>
+            <element name="ifs" rngui:header="Impact Factors">
+              <zeroOrMore rngui:label="Add Impact Factor">
+                <element name="if">
+                  <element name="ivs" rngui:header="Impact Values">
+                    <zeroOrMore rngui:label="Add Impact Value ">
+                      <element name="iv">
+                        <element name="extractor_url" rngui:label="Extractor Url">
+                          <data type="string" rngui:label="Service Url + Parameters"/>
+                        </element>
+                        <element name="extractor_params" rngui:header="Extractor Arguments">
+                          <zeroOrMore rngui:label="Create Extractor Argument Pairs">
+                            <element rngui:label="Name">
+                              <anyName/>
+                              <data type="string" rngui:label="Value / Json"/>
+                            </element>
+                          </zeroOrMore>
+                        </element>
+                        <element name="aggregator_url" rngui:label="Aggregator Url">
+                          <data type="string" rngui:label="Service Url + Parameters"/>
+                        </element>
+                        <element name="aggregator_params" rngui:header="Extractor Arguments">
+                          <zeroOrMore rngui:label="Create Aggregator Argument Pairs">
+                            <element rngui:label="Name">
+                              <anyName/>
+                              <data type="string" rngui:label="Value / Json"/>
+                            </element>
+                          </zeroOrMore>
+                        </element>
+                      </element>
+                    </zeroOrMore>
+                  </element>
+                  <element name="aggregator_url" rngui:label="Impact Function Url">
+                    <data type="string" rngui:label="Service Url + Parameters"/>
+                  </element>
+                </element>
+              </zeroOrMore>
+            </element>
+            <element name="vfunc_url" rngui:label="Violation Function Url">
+              <data type="string" rngui:label="Service Url + Parameters"/>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+
+    </element>
+    <element name="report" rngui:header="Reporting" rngui:fold="closed">
+      <element name="url" rngui:label='HTML Snippet'>
+        <data type="string" rngui:label="url to report snippet"/>
+      </element>
+    </element>
+    <element name="_notes" rngui:header="Notes" rngui:fold="closed">
+      <element name="_notes_general" rngui:label="General">
+        <text rngui:wrap="true" rngui:label="Notes"/>
+      </element>
+    </element>
+  </element>
+
+  <element name="documentation" rngui:header="Documentation">
+    <element name="input" rngui:header="Input Arguments" rngui:fold="closed">
+      <zeroOrMore rngui:label="Create Argument">
+        <element name="item" rngui:label="Description">
+          <attribute name="label" rngui:label="Name">
+            <data type="string"/>
+          </attribute>
+          <text rngui:wrap="true" rngui:label="What does it do?"/>
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="output" rngui:header="Output Elements" rngui:fold="closed">
+      <zeroOrMore rngui:label="Create Element">
+        <element name="item" rngui:label="Description">
+          <attribute name="label" rngui:label="Name">
+            <data type="string"/>
+          </attribute>
+          <text rngui:wrap="true" rngui:label="What does it do?"/>
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="implementation" rngui:header="Implementation" rngui:fold="closed">
+      <element name="description" rngui:label="Description">
+        <text rngui:wrap="true" rngui:label="What is supposed to happen?"/>
+      </element>
+    </element>
+    <element name="code" rngui:header="Output Handling" rngui:fold="closed">
+      <element name="description" rngui:label="Description">
+        <text rngui:wrap="true" rngui:label="Which output elements are important? How to transform and save them?"/>
+      </element>
+    </element>
+  </element>
+</element>

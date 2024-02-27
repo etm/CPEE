@@ -390,6 +390,15 @@ function WFAdaptorManifestation(adaptor) {
         var adur = $('_timing_avg',$(node).children('annotations')).text();
         var lab = $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'');
         var ret = [ { column: 'ID', value: $(node).attr('id') } ];
+
+        if ($(node).find('concern')[0]) {
+          dict = {}
+          Array.from($(node).find('concern')).toSorted((a,b) => a.textContent > b.textContent ? 1:-1).forEach(function(e) {
+          dict[$(e).find('id')[0].innerHTML] = "AssignRead"
+          })
+          ret.push({ column: "Concerns", value: dict, type: 'bodsod'})
+        }
+
         if (lab != '') {
           ret.unshift( { column: 'Label', value: lab } );
         }
@@ -402,11 +411,7 @@ function WFAdaptorManifestation(adaptor) {
         if (adur != '') {
           ret.push({ column: 'Duration', value: '~T = ' + adur + 'm' });
         }
-        Array.from($(node).find('concern')).toSorted((a,b) => a.textContent > b.textContent ? 1:-1).forEach(function(e) {
-          ret.push({ column: $(e).find('id')[0].innerHTML, value: '•'})
-        })
-        if ($(node).find('sod')[0]) {
-        }
+
         return ret;
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
@@ -1287,7 +1292,7 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'description',
     'illustrator': {//{{{
       'endnodes': 'passthrough',
-      'label': function(node){ return [ { column: 'Label'}, { column: 'ID' }, { column: 'Resource' }, { column: 'RP' }, { column: 'R#' } ]; },
+      'label': function(node){ return [ { column: 'ID' }, {column: 'Concerns'}, { column: 'Label'}, { column: 'Resource' }, { column: 'RP' }, { column: 'R#' } ]; },
       'closeblock': false,
       'balance': true,
       'expansion': function(node) {

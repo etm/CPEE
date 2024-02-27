@@ -1,23 +1,92 @@
-<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="description" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
-    <element name="_shifting" rngui:header="Log Time Shifting">
-      <optional>
-        <element name="_shifting_factor" rngui:label="Multiplication Factor">
-          <data type="string" rngui:label="e.g.: 2 hours"/>
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" ns="http://cpee.org/ns/description/1.0" name="call" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <attribute name="id" rngui:label="ID" rngui:default="javascript:get_free_id()">
+    <data type="string" rngui:readonly="true"/>
+  </attribute>
+  <attribute name="endpoint" rngui:label="Endpoint">
+    <data type="string">
+      <param name="pattern">^[a-z_][a-zA-Z0-9_]*$</param>
+    </data>
+  </attribute>
+  <element name="parameters" rngui:header="Properties">
+    <element name="label" rngui:label="Label">
+      <data type="string" rngui:label="Short description of the task"/>
+    </element>
+    <element name="method" rngui:label="Method">
+      <choice>
+        <value>:post</value>
+        <value>:get</value>
+        <value>:put</value>
+        <value>:delete</value>
+      </choice>
+    </element>
+    <element name="arguments" rngui:header="Arguments">
+      <zeroOrMore rngui:label="Create Argument Pair">
+        <element rngui:label="Name" rngui:labeltype="xml">
+          <anyName/>
+          <data type="string" rngui:label="Value"/>
         </element>
-      </optional>
-      <optional>
-        <element name="_shifting_start" rngui:label="Starting Point">
-          <data type="string" rngui:label="e.g.: monday, 5pm"/>
+      </zeroOrMore>
+    </element>
+  </element>
+  <element name="annotations" rngui:header="Annotations">
+    <element name="_generic" rngui:header="Generic" rngui:fold="closed">
+      <zeroOrMore rngui:label="Create Annotation Pair">
+        <element rngui:label="Name" rngui:labeltype="xml">
+          <anyName/>
+          <data type="string" rngui:label="Value"/>
         </element>
-      </optional>
+      </zeroOrMore>
+    </element>
+    <element name="_timing" rngui:header="Timing" rngui:fold="closed">
+      <element name="_timing_weight" rngui:label="&#x3C9; - Weight">
+        <data type="float" rngui:label="[0,1]"/>
+      </element>
+      <element name="_timing_avg" rngui:label="Avg in min">
+        <data type="float" rngui:label="Minutes"/>
+      </element>
+      <element name="explanations" rngui:header="Explanations">
+        <zeroOrMore rngui:label="Add Explanation">
+          <element name="explanation">
+            <element name="type" rngui:label="Type">
+              <choice>
+                <value>&gt;</value>
+                <value>&lt;</value>
+              </choice>
+            </element>
+            <element name="deviation" rngui:label="Deviation">
+              <data type="float" rngui:label="Minutes"/>
+            </element>
+            <element name="behaviour" rngui:label="Behaviour">
+              <choice>
+                <value>Immediately</value>
+                <value>Wait until next</value>
+                <value>Use grace period value</value>
+              </choice>
+            </element>
+            <element name="grace" rngui:label="Grace Period" rngui:default="0.0">
+              <data type="float" rngui:label="Minutes"/>
+            </element>
+            <element name="text" rngui:label="Explanation">
+              <data type="string" rngui:label="Patterns"/>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+    </element>
+    <element name="_shifting" rngui:header="Log Time Shifting" rngui:fold="closed_conditional">
+      <element name="_shifting_type" rngui:label="Type">
+        <choice>
+          <value>Duration</value>
+          <value>Ends</value>
+        </choice>
+      </element>
       <optional>
-        <element name="_shifting_modifier" rngui:label="Random +/- Starting Shift">
-          <data type="float" rngui:label="in seconds"/>
+        <element name="_shifting_expression" rngui:label="Expression">
+          <data type="string" rngui:label="e.g.: same day, 16:00; 2 and a half weeks"/>
         </element>
       </optional>
     </element>
     <element name="_context_data_analysis" rngui:header="Context Data Analysis" rngui:hint="All data returned from the endpoint implementing this task as well as arbitray external data streams can be consumed and transformed in data probes. All probes can be the basis for impact factors. Please go to start to define instance data probes.">
-
       <element name="probes" rngui:header="Data Probes - Context Data Extraction" rngui:fold="closed_conditional">
         <zeroOrMore rngui:label="Add Probe">
           <element name="probe">
@@ -117,5 +186,43 @@
       </element>
 
     </element>
+    <element name="report" rngui:header="Reporting" rngui:fold="closed">
+      <element name="url" rngui:label='HTML Snippet'>
+        <data type="string" rngui:label="url to report snippet"/>
+      </element>
+    </element>
+    <element name="_notes" rngui:header="Notes" rngui:fold="closed">
+      <element name="_notes_general" rngui:label="General">
+        <text rngui:wrap="true" rngui:label="Notes"/>
+      </element>
+    </element>
+  </element>
 
+  <element name="documentation" rngui:header="Documentation">
+    <element name="input" rngui:header="Input Arguments" rngui:fold="closed">
+      <zeroOrMore rngui:label="Create Argument">
+        <element name="item" rngui:label="Description">
+          <attribute name="label" rngui:label="Name">
+            <data type="string"/>
+          </attribute>
+          <text rngui:wrap="true" rngui:label="What does it do?"/>
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="output" rngui:header="Output Elements" rngui:fold="closed">
+      <zeroOrMore rngui:label="Create Element">
+        <element name="item" rngui:label="Description">
+          <attribute name="label" rngui:label="Name">
+            <data type="string"/>
+          </attribute>
+          <text rngui:wrap="true" rngui:label="What does it do?"/>
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="implementation" rngui:header="Implementation" rngui:fold="closed">
+      <element name="description" rngui:label="Description">
+        <text rngui:wrap="true" rngui:label="What is supposed to happen?"/>
+      </element>
+    </element>
+  </element>
 </element>

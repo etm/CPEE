@@ -16,6 +16,25 @@
         </element>
       </optional>
     </element>
+    <element name="_concerns" rngui:header="Concerns" rngui:fold="closed">
+      <zeroOrMore rngui:label="Create Concern">
+        <element name="concern">
+          <attribute name="id" rngui:label="ID">
+              <data type="string" rngui:readonly="true"/>
+          </attribute>
+          <attribute name="name" rngui:label="Name">
+            <data type="string" rngui:label="Name"/>
+          </attribute>
+          <attribute name="type" rngui:label="Type">
+            <choice>
+              <value>None</value>
+              <value>BOD</value>
+              <value>SOD</value>
+            </choice>
+          </attribute>
+        </element>
+      </zeroOrMore>
+    </element>
     <element name="_context_data_analysis" rngui:header="Context Data Analysis" rngui:hint="All data returned from the endpoint implementing this task as well as arbitray external data streams can be consumed and transformed in data probes. All probes can be the basis for impact factors. Please go to start to define instance data probes.">
 
       <element name="probes" rngui:header="Data Probes - Context Data Extraction" rngui:fold="closed_conditional">

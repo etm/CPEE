@@ -1,0 +1,25 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="alternative" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+  <attribute name="condition" rngui:label="Condition">
+    <data type="string" rngui:label="Condition"/>
+  </attribute>
+  <element name="_probability" rngui:mark="true" rngui:header="Execution Probability">
+    <element name="_probability_min" rngui:label="Min in %">
+      <data type="integer" rngui:label="Percent 0-100">
+        <param name="minInclusive">1</param>
+        <param name="maxInclusive">100</param>
+      </data>
+    </element>
+    <element name="_probability_max" rngui:label="Max in %">
+      <data type="integer" rngui:label="Percent 0-100">
+        <param name="minInclusive">1</param>
+        <param name="maxInclusive">100</param>
+      </data>
+    </element>
+    <element name="_probability_avg" rngui:label="Avg in %">
+      <data type="integer" rngui:label="Percent 0-100">
+        <param name="minInclusive">1</param>
+        <param name="maxInclusive">100</param>
+      </data>
+    </element>
+  </element>
+</element>

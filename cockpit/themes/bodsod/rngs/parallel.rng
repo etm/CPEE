@@ -1,0 +1,27 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="parallel" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+  <attribute name="wait" rngui:label="Wait" rngui:default="-1" rngui:hint="-1 to wait for all branches.">
+    <data type="integer"/>
+  </attribute>
+  <attribute name="cancel" rngui:label="Cancel" rngui:default="last" rngui:hint="Set 'Wait' to 1 for standard Event-based Gateway.">
+    <choice>
+      <value id='last'>After Last Task in Branch</value>
+      <value id='first'>After First Task in Branch (Event-Based Gateway)</value>
+    </choice>
+  </attribute>
+  <element rngui:ignore="true" name="parallel_branch">
+    <attribute name="pass">
+      <data type="string"/>
+    </attribute>
+    <attribute name="local">
+      <data type="string"/>
+    </attribute>
+  </element>
+  <element rngui:ignore="true" name="parallel_branch">
+    <attribute name="pass">
+      <data type="string"/>
+    </attribute>
+    <attribute name="local">
+      <data type="string"/>
+    </attribute>
+  </element>
+</element>
