@@ -2,12 +2,12 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <dataelements>
+    <from>Vienna</from>
+    <to>Prague</to>
     <persons>3</persons>
     <card>Visa_12345</card>
     <airline/>
     <hotels>[]</hotels>
-    <from>Vienna</from>
-    <to>Prague</to>
     <costs>0</costs>
   </dataelements>
   <endpoints>
@@ -22,7 +22,7 @@
     <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
   </endpoints>
   <attributes>
-    <theme>extended</theme>
+    <theme>dataflow</theme>
     <info>Coopis 2010</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
