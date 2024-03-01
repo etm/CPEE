@@ -33,9 +33,6 @@
     <guarded_id/>
     <model_uuid>a1cbb855-90e3-4d8c-b44b-d3ba7bff9f4e</model_uuid>
     <model_version/>
-    <replay>https://cpee.org/replay/</replay>
-    <replay_target>https://cpee.org/replay-data/coopis/1274c1de-286e-4d73-9375-30b363d280fa.xes.yaml</replay_target>
-    <replay_instantiate>https://cpee.org/flow/start/url/</replay_instantiate>
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
