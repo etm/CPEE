@@ -109,6 +109,7 @@ module CPEE
         doc.find('/p:properties/p:state/@changed').first.value = CPEE::Persistence::extract_item(id,opts,'state/@changed')
         doc.find('/p:properties/p:status/p:id').first.text = CPEE::Persistence::extract_item(id,opts,'status/id')
         doc.find('/p:properties/p:status/p:message').first.text = CPEE::Persistence::extract_item(id,opts,'status/message')
+        doc.find('/p:properties/p:executionhandler').first.text = CPEE::Persistence::extract_item(id,opts,'executionhandler')
         %w{dataelements endpoints attributes}.each do |item|
           des = doc.find("/p:properties/p:#{item}").first
           CPEE::Persistence::extract_list(id,opts,item).each{ |de| des.add(*de) }
