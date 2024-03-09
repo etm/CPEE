@@ -91,7 +91,7 @@ module CPEE
     opts[:sse_keepalive_frequency]    ||= 10
     opts[:sse_connections]            = {}
 
-    opts[:statemachine]               = CPEE::StateMachine.new opts[:states], %w{running simulating replaying finishing stopping abandoned finished} do |id|
+    opts[:statemachine]               = CPEE::StateMachine.new opts[:states], %w{running simulating finishing stopping abandoned finished} do |id|
       CPEE::Persistence::extract_item(id,opts,"state")
     end
 

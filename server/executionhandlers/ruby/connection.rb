@@ -42,8 +42,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end# }}}
   def self::inform_connectionwrapper_error(arguments,err) # {{{
     controller = arguments[0]
-    p err.message
-    p err.backtrace
+    puts err.message
+    puts err.backtrace
     controller.notify("executionhandler/error", :message => err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') + err.message)
   end # }}}
   def self::inform_position_change(arguments,ipc={}) # {{{
@@ -64,7 +64,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @guard_items = []
   end # }}}
 
-  def prepare(readonly, endpoints, parameters, replay=false) #{{{
+  def prepare(readonly, endpoints, parameters) #{{{
     @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
     if @controller.attributes['twin_engine']
       @handler_endpoint_orig = @handler_endpoint
@@ -127,7 +127,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     params << Riddl::Header.new("CPEE-CALLBACK-ID",callback)
     params << Riddl::Header.new("CPEE-ACTIVITY",@handler_position)
     params << Riddl::Header.new("CPEE-LABEL",@label||'')
-    params << Riddl::Header.new("CPEE-REPLAY",@controller.attributes['replayer_target']) if @controller.attributes[:replayer] && @controller.attributes['replayer_target']
+    params << Riddl::Header.new("CPEE-TWIN-TARGET",@controller.attributes['twin_target']) if @controller.attributes['twin_target']
     @controller.attributes.each do |key,value|
       params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
     end
@@ -141,6 +141,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
       @handler_passthrough = callback
       @controller.callback(self,callback,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
+
+      pp params
 
       status, result, headers = client.request type => params
       @guard_files += result
@@ -157,12 +159,29 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
               else
                 'instantiation'
             end
-            JSON::parse(gtresult.value.read).each do |e|
+            JSON::parse(gtresult.first.value.read).each do |e|
               if e['type'] == transwhat
                 @handler_endpoint = e['endpoint'] if e['endpoint']
                 e['arguments']&.each do |k,a|
+                  if a.is_a? String
+                    hname = a.gsub(/-/,'_')
+                    a = headers[hname] if headers[hname]
+                  elsif a.is_a? Hash
+                    a.each do |k_ht, a_ht|
+                      hname = a_ht.gsub(/-/,'_')
+                      a[k_ht] = headers[hname] if headers[hname]
+                    end
+                  end
                   params.each do |p|
-                    p.value = a if p.name == k
+                    if p.name == k
+                      if a.is_a? String
+                        p.value = a
+                      elsif a.is_a? Hash
+                        ohash = JSON::parse(p.value) rescue {}
+                        ohash.merge!(a)
+                        p.value = JSON.generate(ohash)
+                      end
+                    end
                   end
                 end
               end
@@ -172,16 +191,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
           @handler_endpoint = @handler_endpoint_orig
         end
         params.delete_if { |p| p.name == 'original_endpoint' }
-        params.each do |p|
-          if p.name == 'attributes'
-            t = JSON::parse(p.value) rescue {}
-            t['twin_engine'] = @controller.attributes['twin_engine'] if @controller.attributes['twin_engine']
-            t['twin_target'] = @controller.attributes['twin_target'] if @controller.attributes['twin_target']
-            t['twin_translate'] = @controller.attributes['twin_engine'] if @controller.attributes['twin_translate']
-            p.value = t.to_json
-          end
-        end
-        pp params
       end
     end while status == 561
 

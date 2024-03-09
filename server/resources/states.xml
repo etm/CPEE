@@ -8,7 +8,6 @@
       <ready/>
       <running/>
       <simulating/>
-      <replaying/>
       <abandoned/>
     </ready>
     <running><!-- in this state you can set the following state -->
@@ -20,7 +19,6 @@
     <stopped><!-- in this state you can set the following four states -->
       <running/>
       <simulating/>
-      <replaying/>
       <abandoned/>
       <stopped/>
     </stopped>
@@ -36,10 +34,6 @@
       <ready/>
       <stopped/>
     </simulating>
-    <replaying>
-      <stopping/>
-      <finishing/>
-    </replaying>
     <finishing>
       <finished/>
     </finishing>
