@@ -15,7 +15,6 @@
       <value rngui:label="Receive Message">receive</value>
       <value rngui:label="Wait">wait</value>
     </choice>
-    </choice>
   </attribute>
   <element name="parameters" rngui:header="Properties">
     <element name="label" rngui:label="Label">
