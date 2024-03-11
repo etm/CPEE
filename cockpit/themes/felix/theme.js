@@ -63,6 +63,9 @@ function WFAdaptorManifestation(adaptor) {
   //{{{ Render the details from rng (right hand side of graph tab)
   this.update_details = function(svgid){
     var tab  = $('#dat_details');
+    var focus_ele  = $(':focus',tab);
+    var focus_path = focus_ele.attr('data-relaxngui-path');
+    var focus_pos  = focus_ele.prop('selectionStart');
     var node = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
         tab.empty();
     if (self.adaptor.description.elements[$(node).attr('svg-subtype')]) {
@@ -82,6 +85,14 @@ function WFAdaptorManifestation(adaptor) {
           nn.removeAttr('svg-subtype');
           nn.removeAttr('svg-label');
       save['details'].content(nn);
+      // only after setting content can we set the focus and position. It might loose some stuff nonetheless.
+      if (focus_ele.length > 0) {
+        var ele = $('[data-relaxngui-path="' + focus_path + '"]',tab)[0];
+        ele.focus();
+        if (ele.setSelectionRange) {
+          ele.setSelectionRange(focus_pos,focus_pos);
+        }
+      }
       format_visual_forms();
     }
   }; //}}}
