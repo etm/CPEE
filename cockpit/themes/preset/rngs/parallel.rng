@@ -4,8 +4,8 @@
   </attribute>
   <attribute name="cancel" rngui:label="Cancel" rngui:default="last" rngui:hint="Set 'Wait' to 1 for standard Event-based Gateway.">
     <choice>
-      <value id='last'>After Last Task in Branch</value>
-      <value id='first'>After First Task in Branch (Event-Based Gateway)</value>
+      <value rngui:label='After Last Task in Branch'>last</value>
+      <value rngui:label='After First Task in Branch (Event-Based Gateway)'>first</value>
     </choice>
   </attribute>
   <element rngui:ignore="true" name="parallel_branch">

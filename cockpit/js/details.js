@@ -7,20 +7,6 @@ $(document).ready(function() {
     clearTimeout(timer);
     timer = setTimeout(do_main_save, 5000);
   });
-  $(document).on('change','#dat_details select',function(e){
-    clearTimeout(timer);
-    do_main_save();
-  });
-  $(document).on('blur','#dat_details input, #dat_details textarea, #dat_details [contenteditable]',function(e){
-    clearTimeout(timer);
-    do_main_save();
-  });
-  $(document).on('keypress','#dat_details input',function(e){
-    if (e.keyCode == 13) {
-      clearTimeout(timer);
-      do_main_save();
-    }
-  });
   $(document).on('keypress','#dat_details [contenteditable]',function(e){
     if (e.keyCode == 13) {
       document.execCommand('insertLineBreak')
@@ -37,7 +23,10 @@ $(document).ready(function() {
     clearTimeout(timer);
     do_main_save();
   });
-
+  $(document).on('relaxngui_change', '#dat_details', function(e){
+    clearTimeout(timer);
+    do_main_save();
+  });
 });
 
 

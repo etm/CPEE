@@ -7,20 +7,6 @@ $(document).ready(function() {
     clearTimeout(timer);
     timer = setTimeout(function(){ do_mod_save(e.target) }, 5000);
   });
-  $(document).on('change','#modifiers div.additional select',function(e){
-    clearTimeout(timer);
-    do_mod_save(e.target);
-  });
-  $(document).on('blur','#modifiers div.additional input, #modifiers div.additional textarea, #modifiers div.additional [contenteditable]',function(e){
-    clearTimeout(timer);
-    do_mod_save(e.target);
-  });
-  $(document).on('keypress','#modifiers div.additional input',function(e){
-    if (e.keyCode == 13) {
-      clearTimeout(timer);
-      do_mod_save(e.target);
-    }
-  });
   $(document).on('keypress','#modifiers div.additional [contenteditable]',function(e){
     if (e.keyCode == 13) {
       document.execCommand('insertText', false, '\n');
@@ -32,6 +18,10 @@ $(document).ready(function() {
     do_mod_save(e.target);
   });
   $(document).on('relaxngui_move', '#modifiers div.additional', function(e){
+    clearTimeout(timer);
+    do_mod_save(e.target);
+  });
+  $(document).on('relaxngui_change', '#modifiers div.additional', function(e){
     clearTimeout(timer);
     do_mod_save(e.target);
   });

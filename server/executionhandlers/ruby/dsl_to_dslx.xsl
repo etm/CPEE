@@ -290,6 +290,14 @@
         </xsl:with-param>
       </xsl:call-template>
       <xsl:text>choose </xsl:text>
+      <xsl:choose>
+        <xsl:when test="@mode='exclusive'">
+          <xsl:text>:exclusive</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>:inclusive</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:text> do</xsl:text>
       <xsl:call-template name="print-newline"/>
       <xsl:apply-templates>
@@ -594,67 +602,69 @@
     </xsl:choose>
   </xsl:template>
   <xsl:template match="d:*" mode="sub">
-    <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
-    <xsl:text>⭐(</xsl:text>
-    <xsl:text>:name =&gt; :</xsl:text>
-    <xsl:choose>
-      <xsl:when test="substring(name(),1,1) = '_'">
-        <xsl:call-template name="format-name">
-          <xsl:with-param name="tname">
-            <xsl:value-of select="substring(name(),2)"/>
-          </xsl:with-param>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:call-template name="format-name">
-          <xsl:with-param name="tname">
-            <xsl:value-of select="name()"/>
-          </xsl:with-param>
-        </xsl:call-template>
-      </xsl:otherwise>
-    </xsl:choose>
-    <xsl:text>, :value =&gt; -&gt;{ </xsl:text>
-    <xsl:choose>
-      <xsl:when test="not(node())">
-        <xsl:text>nil</xsl:text>
-      </xsl:when>
-      <xsl:when test="child::node()[not(self::text())]">
-        <!-- FUUUU, there is probably much more TODO. Updated Matthias und Juergen, we tested for ing-opcua/execute -->
-        <xsl:choose>
-          <xsl:when test="child::* and name(child::*)=concat(name(.),'_item') and count(child::*[not(name()=name(../child::*[1]))])=0">
-            <xsl:text>"[ </xsl:text>
-            <xsl:apply-templates select="*" mode="JSONArrayItem"/>
-            <xsl:text>]"</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>"{ </xsl:text>
-            <xsl:apply-templates select="*" mode="JSONSUB"/>
-            <xsl:text>}"</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:choose>
-          <xsl:when test="substring(text(),1,1) = '!'">
-            <xsl:value-of select="substring(text(),2)"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>"</xsl:text>
-            <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
-            <xsl:text>"</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:otherwise>
-    </xsl:choose>
-    <xsl:text> }</xsl:text>
-    <xsl:for-each select="@*">
-      <xsl:text>, :</xsl:text>
-      <xsl:value-of select="name()"/>
-      <xsl:text> =&gt; "</xsl:text>
-      <xsl:value-of select="string(.)"/>
-      <xsl:text>"</xsl:text>
-    </xsl:for-each>
-    <xsl:text>)</xsl:text>
+    <xsl:if test="not(@rngui-nonfunctional)">
+      <xsl:if test="count(preceding-sibling::*[not(@rngui-nonfunctional)]) &gt; 0">, </xsl:if>
+      <xsl:text>⭐(</xsl:text>
+      <xsl:text>:name =&gt; :</xsl:text>
+      <xsl:choose>
+        <xsl:when test="substring(name(),1,1) = '_'">
+          <xsl:call-template name="format-name">
+            <xsl:with-param name="tname">
+              <xsl:value-of select="substring(name(),2)"/>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="format-name">
+            <xsl:with-param name="tname">
+              <xsl:value-of select="name()"/>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:text>, :value =&gt; -&gt;{ </xsl:text>
+      <xsl:choose>
+        <xsl:when test="not(node())">
+          <xsl:text>nil</xsl:text>
+        </xsl:when>
+        <xsl:when test="child::node()[not(self::text())]">
+          <!-- FUUUU, there is probably much more TODO. Updated Matthias und Juergen, we tested for ing-opcua/execute -->
+          <xsl:choose>
+            <xsl:when test="child::* and name(child::*)=concat(name(.),'_item') and count(child::*[not(name()=name(../child::*[1]))])=0">
+              <xsl:text>"[ </xsl:text>
+              <xsl:apply-templates select="*" mode="JSONArrayItem"/>
+              <xsl:text>]"</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>"{ </xsl:text>
+              <xsl:apply-templates select="*" mode="JSONSUB"/>
+              <xsl:text>}"</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="substring(text(),1,1) = '!'">
+              <xsl:value-of select="substring(text(),2)"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>"</xsl:text>
+              <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
+              <xsl:text>"</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:text> }</xsl:text>
+      <xsl:for-each select="@*">
+        <xsl:text>, :</xsl:text>
+        <xsl:value-of select="name()"/>
+        <xsl:text> =&gt; "</xsl:text>
+        <xsl:value-of select="string(.)"/>
+        <xsl:text>"</xsl:text>
+      </xsl:for-each>
+      <xsl:text>)</xsl:text>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="d:finalize | d:update | d:prepare | d:rescue" mode="part-of-call">

@@ -7,6 +7,9 @@ document.addEventListener('parameters:changed', function (e) {
 document.addEventListener('modifiers:changed', function (e) {
   $("button[name=save]").prop("disabled",false);
 }, false);
+document.addEventListener('model:loaded', function (e) {
+  $("button[name=save]").prop("disabled",false);
+}, false);
 
 function leading_zeros(dt) {
   return (dt < 10 ? '0' : '') + dt;

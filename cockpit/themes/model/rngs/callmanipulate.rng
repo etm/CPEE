@@ -4,16 +4,16 @@
   </attribute>
   <attribute name="endpoint" rngui:label="Type">
     <choice>
-      <value id="machine">Machine Invocation</value>
-      <value id="sensor">Read From Sensor</value>
-      <value id="human">Human Task</value>
-      <value id="subprocess">Subprocess</value>
-      <value id="robot">Robot Task</value>
-      <value id="robot_subprocess">Robot Subprocess</value>
-      <value id="plc">PLC</value>
-      <value id="send">Send Message</value>
-      <value id="receive">Receive Message</value>
-      <value id="wait">Wait</value>
+      <value rngui:label="Machine Invocation">machine</value>
+      <value rngui:label="Read From Sensor">sensor</value>
+      <value rngui:label="Human Task">human</value>
+      <value rngui:label="Subprocess">subprocess</value>
+      <value rngui:label="Robot Task">robot</value>
+      <value rngui:label="Robot Subprocess">robot_subprocess</value>
+      <value rngui:label="PLC">plc</value>
+      <value rngui:label="Send Message">send</value>
+      <value rngui:label="Receive Message">receive</value>
+      <value rngui:label="Wait">wait</value>
     </choice>
   </attribute>
   <element name="parameters" rngui:header="Properties">

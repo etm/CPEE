@@ -122,9 +122,9 @@
             </element>
             <element name="extractor_type" rngui:label="Extractor Type">
               <choice>
-                <value id='intrinsic'>Intrinsic</value>
-                <value id='extrinsic'>Extrinsic</value>
-                <value id='separate'>Separate</value>
+                <value rngui:label='Intrinsic'>intrinsic</value>
+                <value rngui:label='Extrinsic'>extrinsic</value>
+                <value rngui:label='Separate'>separate</value>
               </choice>
             </element>
             <element name="extractor_code" rngui:label="Extractor Code" rngui:hint='For intrinsic &amp; extrinsic data'>

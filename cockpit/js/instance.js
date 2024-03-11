@@ -6,6 +6,7 @@ var loading = false;
 var subscription;
 var subscription_state = 'less';
 var graph_changed = new Event("graph:changed", {"bubbles":true, "cancelable":false});
+var model_loaded = new Event("model:loaded", {"bubbles":true, "cancelable":false});
 var save = {};
     save['endpoints'] = undefined;
     save['dataelements'] = undefined;
@@ -598,14 +599,15 @@ function adaptor_init(url,theme,dslx) { //{{{
                   let str = '';
                   for (const [k, v] of Object.entries(col.value)) {
                     var p = {};
+                    p.row = val.row;
                     p.AR = v;
                     p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
                     if (!mapPoints.has(k)) {
                       p.y0 = p.y0 == undefined ? (dimensions.height_shift/2 + dimensions.height * val.row - 20) : p.y0;
-                      p.ymax = (p.ymax == undefined) ? p.y0 : p.ymax; //(dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax ? dimensions.height_shift/2 + dimensions.height * val.row - 20 : p.ymax);
+                      p.ymax = (p.ymax == undefined) ? p.y0 : p.ymax;
                     } else {
                       p.y0 = mapPoints.get(k).y0;
-                      p.ymax = mapPoints.get(k).ymax; //(dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax ? dimensions.height_shift/2 + dimensions.height * val.row - 20 : p.ymax);
+                      p.ymax = mapPoints.get(k).ymax;
                     }
                     mapPoints.set(k, p);
                   }
@@ -649,8 +651,8 @@ function adaptor_init(url,theme,dslx) { //{{{
 
                     if (firstAssignFlag == 1) {
                       // Additional logic and construction of another polygon for orange triangle pointing left
-                      p.y0 -= dimensions.height;
-                      str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * (val.row - 1) - 20) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * (val.row - 1) - 15) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * (val.row - 1) - 25) + '" fill="orange" class="resource-point">' + '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text></polygon>';
+                      p.y0 -= ((p.row-1) * dimensions.height);
+                      str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height - 20) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height - 15) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height - 25) + '" fill="orange" class="resource-point">' + '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text></polygon>';
                     }
                     cx += iconsize;
                   }
@@ -1311,6 +1313,8 @@ async function set_testset(testset,exec) {// {{{
 
   await Promise.all(promises);
 
+  document.dispatchEvent(model_loaded);
+
   $.ajax({
     type: "GET",
     url: url + "/properties/state/",
@@ -1327,7 +1331,9 @@ async function set_testset(testset,exec) {// {{{
       });
     }
   });
- }// }}}
+
+
+}// }}}
 
 function load_testsetfile_after() { //{{{
   if (loading) return;
@@ -1447,7 +1453,10 @@ async function load_des(url,model) { //{{{
       'CPEE-Event-Source': myid
     },
     data: model,
-    error: report_failure
+    error: report_failure,
+    success: () => {
+      document.dispatchEvent(model_loaded);
+    }
   });
 } //}}}
 
