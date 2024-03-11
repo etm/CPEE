@@ -79,16 +79,20 @@ function WFAdaptorManifestation(adaptor) {
         $(rng).find(' > element[name="parameters"] > element[name="method"]').remove();
       }
       save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
-      if (focus_ele.length > 0) {
-        var ele = $('[data-relaxngui-path="' + focus_path + '"]',tab)[0];
-        setTimeout(function() { ele.focus(); ele.setSelectionRange(focus_pos,focus_pos); },0);
-      }
       var nn = $X($(node).serializeXML());
           nn.removeAttr('svg-id');
           nn.removeAttr('svg-type');
           nn.removeAttr('svg-subtype');
           nn.removeAttr('svg-label');
       save['details'].content(nn);
+      // only after setting content can we set the focus and position. It might loose some stuff nonetheless.
+      if (focus_ele.length > 0) {
+        var ele = $('[data-relaxngui-path="' + focus_path + '"]',tab)[0];
+        ele.focus();
+        if (ele.setSelectionRange) {
+          ele.setSelectionRange(focus_pos,focus_pos);
+        }
+      }
       format_visual_forms();
     }
   }; //}}}
