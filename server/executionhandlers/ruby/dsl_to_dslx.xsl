@@ -290,6 +290,14 @@
         </xsl:with-param>
       </xsl:call-template>
       <xsl:text>choose </xsl:text>
+      <xsl:choose>
+        <xsl:when test="@mode='exclusive'">
+          <xsl:text>:exclusive</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>:inclusive</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:text> do</xsl:text>
       <xsl:call-template name="print-newline"/>
       <xsl:apply-templates>
