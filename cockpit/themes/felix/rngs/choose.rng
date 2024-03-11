@@ -1,0 +1,14 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="choose" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+  <attribute name="mode" rngui:label="Mode" rngui:default="exclusive">
+    <choice>
+      <value>exclusive</value>
+      <value>inclusive</value>
+    </choice>
+  </attribute>
+  <element rngui:ignore="true" name="alternative">
+    <attribute name="condition">
+      <data type="string"/>
+    </attribute>
+  </element>
+  <element rngui:ignore="true" name="otherwise"/>
+</element>

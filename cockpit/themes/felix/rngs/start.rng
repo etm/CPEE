@@ -1,0 +1,121 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="description" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+    <element name="_shifting" rngui:header="Log Time Shifting">
+      <optional>
+        <element name="_shifting_factor" rngui:label="Multiplication Factor">
+          <data type="string" rngui:label="e.g.: 2 hours"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="_shifting_start" rngui:label="Starting Point">
+          <data type="string" rngui:label="e.g.: monday, 5pm"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="_shifting_modifier" rngui:label="Random +/- Starting Shift">
+          <data type="float" rngui:label="in seconds"/>
+        </element>
+      </optional>
+    </element>
+    <element name="_context_data_analysis" rngui:header="Context Data Analysis" rngui:hint="All data returned from the endpoint implementing this task as well as arbitray external data streams can be consumed and transformed in data probes. All probes can be the basis for impact factors. Please go to start to define instance data probes.">
+
+      <element name="probes" rngui:header="Data Probes - Context Data Extraction" rngui:fold="closed_conditional">
+        <zeroOrMore rngui:label="Add Probe">
+          <element name="probe">
+            <element name="id" rngui:label="ID">
+              <data type="string" rngui:label="ID"/>
+            </element>
+            <element name="source" rngui:label="Source">
+              <data type="string" rngui:label="Where does the sensor value come from?"/>
+            </element>
+            <element name="extractor_type" rngui:label="Extractor Type">
+              <choice>
+                <value id='intrinsic'>Intrinsic</value>
+                <value id='extrinsic'>Extrinsic</value>
+                <value id='separate'>Separate</value>
+              </choice>
+            </element>
+            <element name="extractor_code" rngui:label="Extractor Code" rngui:hint='For intrinsic &amp; extrinsic data'>
+              <text rngui:label="Code"/>
+            </element>
+            <element name="extractor_url" rngui:label="Extractor Service" rngui:hint='For separate data'>
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="extractor_params" rngui:label="Extractor Service Arguments:">
+              <zeroOrMore rngui:label="Create Argument Pairs">
+                <element rngui:label="Name">
+                  <anyName/>
+                  <data type="string" rngui:label="Value / Json"/>
+                </element>
+              </zeroOrMore>
+            </element>
+            <element name="visualizer_url" rngui:label="Visualizer Url">
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="visualizer_params" rngui:label="Visualizer Arguments">
+              <zeroOrMore rngui:label="Create Argument Pairs">
+                <element rngui:label="Name">
+                  <anyName/>
+                  <data type="string" rngui:label="Value / Json"/>
+                </element>
+              </zeroOrMore>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+
+      <element name="ips" rngui:header="Impact Profiles" rngui:fold="closed">
+        <zeroOrMore rngui:label="Add Impact Profile">
+          <element name="ip">
+            <element name="name" rngui:label="Label">
+              <data type="string" rngui:label="Label"/>
+            </element>
+            <element name="target" rngui:label="Target Value">
+              <data type="string" rngui:label="Value"/>
+            </element>
+            <element name="ifs" rngui:header="Impact Factors">
+              <zeroOrMore rngui:label="Add Impact Factor">
+                <element name="if">
+                  <element name="ivs" rngui:header="Impact Values">
+                    <zeroOrMore rngui:label="Add Impact Value ">
+                      <element name="iv">
+                        <element name="extractor_url" rngui:label="Extractor Url">
+                          <data type="string" rngui:label="Service Url + Parameters"/>
+                        </element>
+                        <element name="extractor_params" rngui:header="Extractor Arguments">
+                          <zeroOrMore rngui:label="Create Extractor Argument Pairs">
+                            <element rngui:label="Name">
+                              <anyName/>
+                              <data type="string" rngui:label="Value / Json"/>
+                            </element>
+                          </zeroOrMore>
+                        </element>
+                        <element name="aggregator_url" rngui:label="Aggregator Url">
+                          <data type="string" rngui:label="Service Url + Parameters"/>
+                        </element>
+                        <element name="aggregator_params" rngui:header="Extractor Arguments">
+                          <zeroOrMore rngui:label="Create Aggregator Argument Pairs">
+                            <element rngui:label="Name">
+                              <anyName/>
+                              <data type="string" rngui:label="Value / Json"/>
+                            </element>
+                          </zeroOrMore>
+                        </element>
+                      </element>
+                    </zeroOrMore>
+                  </element>
+                  <element name="aggregator_url" rngui:label="Impact Function Url">
+                    <data type="string" rngui:label="Service Url + Parameters"/>
+                  </element>
+                </element>
+              </zeroOrMore>
+            </element>
+            <element name="vfunc_url" rngui:label="Violation Function Url">
+              <data type="string" rngui:label="Service Url + Parameters"/>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+
+    </element>
+
+</element>
