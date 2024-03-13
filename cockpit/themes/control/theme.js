@@ -63,11 +63,7 @@ function WFAdaptorManifestation(adaptor) {
   //{{{ Render the details from rng (right hand side of graph tab)
   this.update_details = function(svgid){
     var tab  = $('#dat_details');
-    var focus_ele  = $(':focus',tab);
-    var focus_path = focus_ele.attr('data-relaxngui-path');
-    var focus_pos  = focus_ele.prop('selectionStart');
     var node = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
-        tab.empty();
     if (self.adaptor.description.elements[$(node).attr('svg-subtype')]) {
       save['details_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
       var rng = self.adaptor.description.elements[$(node).attr('svg-subtype')].clone();
@@ -78,20 +74,16 @@ function WFAdaptorManifestation(adaptor) {
       if (save['endpoints_list'][$(node).attr('endpoint')] && (!save['endpoints_list'][$(node).attr('endpoint')].startsWith('http') || save['endpoints_list'][$(node).attr('endpoint')].match(/^https?-/))) {
         $(rng).find(' > element[name="parameters"] > element[name="method"]').remove();
       }
-      save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
       var nn = $X($(node).serializeXML());
           nn.removeAttr('svg-id');
           nn.removeAttr('svg-type');
           nn.removeAttr('svg-subtype');
           nn.removeAttr('svg-label');
+
+      tab.empty();
+      save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
       save['details'].content(nn);
-      if (focus_ele.length > 0) {
-        var ele = $('[data-relaxngui-path="' + focus_path + '"]',tab)[0];
-        ele.focus();
-        if (ele.setSelectionRange) {
-          ele.setSelectionRange(focus_pos,focus_pos);
-        }
-      }
+
       format_visual_forms();
     }
   }; //}}}
