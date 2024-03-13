@@ -377,10 +377,18 @@ function WFAdaptorManifestation(adaptor) {
       },
       'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'resolve_symbol': function(node) {
-        if($('> code', node).length > 0) {
-          return 'callmanipulate';
+        if ($('> annotations > _context_data_analysis > probes > probe', node).length > 0) {
+          if ($('> code', node).length > 0) {
+            return 'callmanipulate_sensor';
+          } else {
+            return 'call_sensor';
+          }
         } else {
-          return 'call';
+          if ($('> code', node).length > 0) {
+            return 'callmanipulate';
+          } else {
+            return 'call';
+          }
         }
       },
       'svg': self.adaptor.theme_dir + 'symbols/call.svg'
@@ -974,7 +982,7 @@ function WFAdaptorManifestation(adaptor) {
           ret.push({ column: 'Average', value: avg + '%' });
         }
         return ret;
-      },
+      ,
       'svg': self.adaptor.theme_dir + 'symbols/closed_loop.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/closed_loop.rng',
@@ -1578,13 +1586,42 @@ function WFAdaptorManifestation(adaptor) {
       'expansion': function(node) {
         return 'vertical';
       },
+      'resolve_symbol': function(node) {
+        let alist = []
+        let plist = []
+
+        var regassi =      /data\.([a-zA-Z_]+)\s*(=[^=]|\+\=|\-\=|\*\=|\/\=|<<|>>)/g; // we do not have to check for &gt;/&lt; version of stuff as only conditions are in attributes, and conditions can not contain assignments
+        var reg_not_assi = /data\.([a-zA-Z_]+)\s*/g;
+        $ ('call > parameters > arguments > *, call > code > *, loop[condition], alternative[condition]',node).each(function(i,n) {
+          let item;
+          if (n.hasAttribute('condition')) {
+            item = n.getAttribute('condition');
+          } else {
+            item = n.textContent;
+          }
+          if (n.parentNode.nodeName == 'arguments' && item.charAt(0) != '!' ) { return }
+
+          let indices = [];
+
+          for (const match of item.matchAll(regassi)) {
+            indices.push(match.index);
+            alist.push(match[1]);
+          }
+          for (const match of item.matchAll(reg_not_assi)) {
+            const arg1 = match[1];
+            if (indices.includes(match.index)) { continue; }
+            if (!alist.includes(arg1)) { plist.push(arg1); }
+          }
+        })
+        if (plist.length > 0) { return 'start_event'; }
+      },
       'closing_symbol': 'end',
       'col_shift': function(node) {
         return true;
       },
       'svg': self.adaptor.theme_dir + 'symbols/start.svg'
     },//}}}
-    'description': null,
+    'description': self.adaptor.theme_dir + 'rngs/start.rng',
     'permissible_children': function(node,mode) { //{{{
       var func = null;
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
@@ -1656,13 +1693,31 @@ function WFAdaptorManifestation(adaptor) {
   // Abstract Elements
   // * they may only have an illustrator (or other parts)
   // * they HAVE TO have a parent
+  this.elements.start_event = { /*{{{*/
+    'parent': 'start',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/start_event.svg'
+    }//}}}
+  }; /*}}}*/
+  this.elements.call_sensor = { /*{{{*/
+    'parent': 'call',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/call_sensor.svg'
+    }//}}}
+  }; /*}}}*/
   this.elements.callmanipulate = { /*{{{*/
     'parent': 'call',
     'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
-      'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
-    },//}}}
+    }//}}}
+  }; /*}}}*/
+  this.elements.callmanipulate_sensor = { /*{{{*/
+    'parent': 'call',
+    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callmanipulate_sensor.svg'
+    }//}}}
   }; /*}}}*/
   this.elements.loop_head = { /*{{{*/
     'parent': 'loop',

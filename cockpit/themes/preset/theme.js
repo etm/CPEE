@@ -1226,28 +1226,33 @@ function WFAdaptorManifestation(adaptor) {
         return 'vertical';
       },
       'resolve_symbol': function(node) {
+        let alist = []
         let plist = []
-        let dirty = false
-        $('*:not(:has(*))',node).each(function(i,n) {
-          let lines = n.textContent.split(/(\r\n)|\n|;/)
-          for (const l of lines) {
-            if (l != null) {
-              let m0 = l.match(/^[^=]*data\.([a-z0-9A-Z_]+)[^=]*=/)
-              if (m0 != null) {
-                plist.push(m0[1])
-              }
-              let m1 = l.match(/=[^=].*data\.([a-z0-9A-Z_]+)/)
-              let m2 = l.match(/^[^=]*data\.([a-z0-9A-Z_]+)[^=]*$/)
-              if (m1 != null && !plist.includes(m1[1])) {
-                dirty = true
-              }
-              if (m2 != null && !plist.includes(m2[1])) {
-                dirty = true
-              }
-            }
+
+        var regassi =      /data\.([a-zA-Z_]+)\s*(=[^=]|\+\=|\-\=|\*\=|\/\=|<<|>>)/g; // we do not have to check for &gt;/&lt; version of stuff as only conditions are in attributes, and conditions can not contain assignments
+        var reg_not_assi = /data\.([a-zA-Z_]+)\s*/g;
+        $ ('call > parameters > arguments > *, call > code > *, loop[condition], alternative[condition]',node).each(function(i,n) {
+          let item;
+          if (n.hasAttribute('condition')) {
+            item = n.getAttribute('condition');
+          } else {
+            item = n.textContent;
+          }
+          if (n.parentNode.nodeName == 'arguments' && item.charAt(0) != '!' ) { return }
+
+          let indices = [];
+
+          for (const match of item.matchAll(regassi)) {
+            indices.push(match.index);
+            alist.push(match[1]);
+          }
+          for (const match of item.matchAll(reg_not_assi)) {
+            const arg1 = match[1];
+            if (indices.includes(match.index)) { continue; }
+            if (!alist.includes(arg1)) { plist.push(arg1); }
           }
         })
-        if (dirty) { return 'start_event'; }
+        if (plist.length > 0) { return 'start_event'; }
       },
       'closing_symbol': 'end',
       'col_shift': function(node) {
