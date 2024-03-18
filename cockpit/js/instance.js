@@ -566,15 +566,16 @@ function adaptor_init(url,theme,dslx) { //{{{
         }
 
         $('#graphgrid .graphlabel, #graphgrid .graphempty, #resources, #graphgrid .graphlast').remove();
-        var tlabels = {};
-        var tcolumns = [];
-        var tcolumncount = {}
-        var thidden = [];
+        let tlabels = {};
+        let tcolumns = [];
+        let tcolumntype = {};
+        let tcolumncount = {}
+        let thidden = [];
 
-        var tsvgs = {};
         const mapPoints = new Map();
-        let iconsize = 14;
-        let iconshift = 7;
+        const tcolumnsvgs = {};
+        const iconsize = 10;
+        const iconspace = 4;
 
         _.each(labels,function(val){
           if (val.label != "") {
@@ -584,21 +585,27 @@ function adaptor_init(url,theme,dslx) { //{{{
                 tcolumns.push(col.column);
                 tcolumncount[col.column] = 0;
               }
+              if (tcolumntype[col.column] == undefined && col.type != undefined) {
+                tcolumntype[col.column] = col.type;
+              }
               if (!thidden.includes(col.column) && col.type == 'resource') {
                 thidden.push(col.column);
+                tcolumnsvgs[col.column] = {};
+              }
+              if (!thidden.includes(col.column) && col.type == 'label') {
+                thidden.push(col.column);
+                tcolumnsvgs[col.column] = {};
               }
               if (col.value != undefined) {
+                let pos = dimensions.height_shift/2 + dimensions.height * (val.row - 1) + (dimensions.height / 2);
+                let firstpos = dimensions.height_shift/2 + (dimensions.height / 2);
 
                 // Start Peilei
                 if (col.type == "resource") {
-                  let str = '';
                   for (const [k, v] of Object.entries(col.value)) {
-                    var p = {};
-                    p.row = val.row;
-                    p.AR = v;
-                    p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
+                    var p = { AR: v };
                     if (!mapPoints.has(k)) {
-                      p.y0 = p.y0 == undefined ? (dimensions.height_shift/2 + dimensions.height * val.row - 20) : p.y0;
+                      p.y0 = p.y0 == undefined ? pos : p.y0;
                       p.ymax = (p.ymax == undefined) ? p.y0 : p.ymax;
                     } else {
                       p.y0 = mapPoints.get(k).y0;
@@ -606,65 +613,49 @@ function adaptor_init(url,theme,dslx) { //{{{
                     }
                     mapPoints.set(k, p);
                   }
-                  var cx = iconshift*2;
-                  str += '<g xmlns="http://www.w3.org/2000/svg">';
 
+                  let tsvg = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
+
+                  var cx = iconsize + iconspace;
                   for (const [k, p] of mapPoints) {
-                    let firstAssignFlag = 0;
-                    p.x0 = p.xc = cx;
+                    let firstAssignFlag = false;
+                    p.x = cx;
 
                     // Including Triangle
                     if (k in col.value) {   // Define points for a triangle pointing to the right
+                      let inner;
+
                       if (p.AR == "Read") {
-                        str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 20) + ' ' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 15) + ' ' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 25) + '" fill="green" class="resource-point">';
-                        if (p.yc == p.y0) {
-                          firstAssignFlag = 1;
-                        }
+                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x - iconsize/2) + ',' + pos + ' ' + (p.x + iconsize/2) + ',' + (pos + iconsize/2) + ' ' + (p.x + iconsize/2) + ',' + (pos - iconsize/2) + '" class="resource-point read"></polygon>');
+                        if (pos == p.y0) { firstAssignFlag = true; }
                       } else if (p.AR == "Assign") {    // Define points for a triangle pointing to the left
-                        str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 20) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 15) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 25) + '" fill="orange" class="resource-point">';
+                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x + iconsize/2) + ',' + pos + ' ' + (p.x - iconsize/2) + ',' + (pos + iconsize/2) + ' ' + (p.x - iconsize/2) + ',' + (pos - iconsize/2) + '" class="resource-point write"></polygon>');
                       } else if (p.AR == "AssignRead") {
-                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        str += '<circle xmlns="http://www.w3.org/2000/svg" cx="' + cx + '" cy="' + p.yc + '" r="5" fill="blue" class="resource-point">';
+                        inner = $X('<circle xmlns="http://www.w3.org/2000/svg" cx="' + p.x + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="resource-point both"></circle>');
                       }
 
-                      if (dimensions.height_shift/2 + dimensions.height * val.row != p.y0) {
-                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        if (dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax) {
-                          p.ymax = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        }
+                      // extend the bars
+                      if (pos > p.ymax) {
+                        p.ymax = pos;
                       }
 
-                      // Converted from <title>
-                      str += '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text>';
-
-                      if (p.AR == "Read" || p.AR == "Assign") {
-                        str += '</polygon>';
-                      } else if (p.AR == "AssignRead") {
-                        str += '</circle>';
-                      }
+                      inner.append($X('<text xmlns="http://www.w3.org/2000/svg">' + k + '</text>'));
+                      tsvg.append(inner);
                     }
 
-                    if (firstAssignFlag == 1) {
+                    if (firstAssignFlag) {
                       // Additional logic and construction of another polygon for orange triangle pointing left
-                      p.y0 -= ((p.row-1) * dimensions.height);
-                      str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height - 20) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height - 15) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height - 25) + '" fill="orange" class="resource-point">' + '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text></polygon>';
+                      p.y0 -= (val.row-1) * dimensions.height;
+                      tsvg.append($X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x + iconsize/2) + ',' + firstpos + ' ' + (p.x - iconsize/2) + ',' + (firstpos + iconsize/2) + ' ' + (p.x - iconsize/2) + ',' + (firstpos - iconsize/2) + '" class="resource-point write">' + '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text></polygon>'));
                     }
-                    cx += iconsize;
+                    cx += iconsize + iconspace;
                   }
 
-                  for (const [k, p] of mapPoints) {
-                    if(k in col.value) {
-                      if (dimensions.height_shift/2+dimensions.height*val.row != p.y0) {
-                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        if(dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax) {
-                          p.ymax = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        }
-                      }
-                    }
-                  }
-                  str += '</g>';
-
-                  tsvgs[val.row] = $X(str);
+                  tcolumnsvgs[col.column][val.row] = tsvg;
+                } else if (col.type == "label") {
+                  // tsvg = $X('<text xmlns="http://www.w3.org/2000/svg">' + k + '</text>');
+                  // tcolumnsvgs[col.column][val.row] = tsvg;
+                  //    inner.append(
                 }
 
                 tcolumncount[col.column] += 1;
@@ -681,7 +672,7 @@ function adaptor_init(url,theme,dslx) { //{{{
 
         for (var i = 0; i < max.row; i++) {
           for (var j = 0; j < tcolumns.length - 1; j++) {
-            if (thidden != tcolumns[j]) {
+            if (!thidden.includes(tcolumns[j])) {
               if (tlabels[i+1] != undefined && tlabels[i+1][j] != undefined && tlabels[i+1][j].label != undefined && tlabels[i+1][j].label != '') {
                 var col = tlabels[i+1][j];
                 var ele = $('<div element-row="' + i + '" class="graphlabel ' + (i % 2 == 0 ? 'odd' : 'even') + '" element-type="' + col.type + '" element-id="' + col.id + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '"><span>' + col.label + '</span></div>');
@@ -701,27 +692,33 @@ function adaptor_init(url,theme,dslx) { //{{{
           $('#graphgrid').append(ele);
         }
 
-        if (Object.keys(tsvgs).length > 0) {
-          let dataflow = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id="resources"></svg>');
-          dataflow.css('grid-row', '1/span ' + (max.row + 2));
-          dataflow.css('grid-column', tcolumns.indexOf(thidden.first) + 2);
-          dataflow.attr('height', $('#graphcanvas').attr('height'));
-          dataflow.attr('width', mapPoints.size * iconsize + iconshift * 2);
+        thidden.forEach(h => {
+          if (Object.keys(tcolumnsvgs[h]).length > 0) {
+            let twidth = (mapPoints.size + 1) * (iconsize + iconspace);
 
-          for (var i = 0; i < max.row; i++) {   // Needs parenthesises below
-            dataflow.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + 5.2) + '" width="' + (mapPoints.size * iconsize + iconshift * 2) + '" height="' + dimensions.height + '"></rect>'));
-            dataflow.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="border" x="0" y="' + (dimensions.height * i + 5.2) + '" height="' + dimensions.height + '"></rect>'));
-          }
-          for (const [k, p] of mapPoints) {
-            dataflow.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line" stroke-opacity="0.1" stroke="orange" stroke-width="10" marker-end="url(#arrowhead)"><text>' + k + '</text></line>'));
-          }
-          for (var i = 0; i < max.row; i++) {
-            dataflow.append($(tsvgs[i+1]));
-          }
-          $('#graphgrid').append(dataflow);
+            let dataflow = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id="resources"></svg>');
+            dataflow.css('grid-row', '1/span ' + (max.row + 2))
+            dataflow.css('grid-column', tcolumns.indexOf(thidden.first) + 2);
+            dataflow.attr('height', $('#graphcanvas').attr('height'));
+            dataflow.attr('width', twidth);
 
-          $('.resource-label').hide();  // Speech Bubble hide by default
-        }
+            for (var i = 0; i < max.row; i++) {   // Needs parenthesises below
+              dataflow.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" width="' + twidth + '" height="' + dimensions.height + '"></rect>'));
+              dataflow.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="border" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '"></rect>'));
+            }
+            if (tcolumntype[h] == "resource") {
+              for (const [k, p] of mapPoints) {
+                dataflow.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x + '" y1="' + p.y0 + '" x2="' + p.x + '" y2="' + p.ymax + '" class="resource-line" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
+              }
+            }
+            for (var i = 0; i < max.row; i++) {
+              dataflow.append($(tcolumnsvgs[h][i+1]));
+            }
+            $('#graphgrid').append(dataflow);
+
+            $('.resource-label').hide();  // Speech Bubble hide by default
+          }
+        });
       };
       graphrealization.set_svg_container($('#graphcanvas'));
       graphrealization.set_label_container($('#graphgrid'));
