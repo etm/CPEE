@@ -683,9 +683,9 @@ function adaptor_init(url,theme,dslx) { //{{{
                 svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="border" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '" width="1"></rect>'));
               }
             }
-            if (tcolumntype[h] == "resource") {
+            if (tcolumntype[h] == 'resource' || tcolumntype[h] == 'bodsod') {
               for (const [k, p] of mapPoints) {
-                svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + p.ymax + '" class="resource-line" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
+                svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + p.ymax + '" class="' + tcolumntype[h] + '-line" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
               }
             }
 
