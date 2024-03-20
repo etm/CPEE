@@ -505,10 +505,12 @@ function monitor_instance_values(type,vals) {// {{{
           } else {
             save['modeltype'] = undefined;
           }
-          if ($('#modifiers > div').length == 0) {
-            modifiers_display().then(function(){ modifiers_select(); });
-          } else {
-            modifiers_select();
+          if ($('#modifiers').length > 0) {
+            if ($('#modifiers > div').length == 0) {
+              modifiers_display().then(function(){ modifiers_select(); });
+            } else {
+              modifiers_select();
+            }
           }
           var text = $(" > attributes > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
           $('#title').text(text);
@@ -566,41 +568,30 @@ function adaptor_init(url,theme,dslx) { //{{{
         }
 
         $('#graphgrid .graphlabel, #graphgrid .graphempty, #resources, #graphgrid .graphlast').remove();
-        let tlabels = {};
         let tcolumns = [];
         let tcolumntype = {};
         let tcolumncount = {}
-        let thidden = [];
 
         const mapPoints = new Map();
         const tcolumnsvgs = {};
         const iconsize = 10;
-        const iconspace = 4;
+        const space = 5;
 
         _.each(labels,function(val){
           if (val.label != "") {
-            tlabels[val.row] = [];
             _.each(val.label,function(col) {
               if (!tcolumns.includes(col.column)) {
                 tcolumns.push(col.column);
                 tcolumncount[col.column] = 0;
+                tcolumnsvgs[col.column] = {};
               }
               if (tcolumntype[col.column] == undefined && col.type != undefined) {
                 tcolumntype[col.column] = col.type;
-              }
-              if (!thidden.includes(col.column) && col.type == 'resource') {
-                thidden.push(col.column);
-                tcolumnsvgs[col.column] = {};
-              }
-              if (!thidden.includes(col.column) && col.type == 'label') {
-                thidden.push(col.column);
-                tcolumnsvgs[col.column] = {};
               }
               if (col.value != undefined) {
                 let pos = dimensions.height_shift/2 + dimensions.height * (val.row - 1) + (dimensions.height / 2);
                 let firstpos = dimensions.height_shift/2 + (dimensions.height / 2);
 
-                // Start Peilei
                 if (col.type == "resource") {
                   for (const [k, v] of Object.entries(col.value)) {
                     var p = { AR: v };
@@ -616,7 +607,7 @@ function adaptor_init(url,theme,dslx) { //{{{
 
                   let tsvg = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
 
-                  var cx = iconsize + iconspace;
+                  var cx = space;
                   for (const [k, p] of mapPoints) {
                     let firstAssignFlag = false;
                     p.x = cx;
@@ -626,12 +617,12 @@ function adaptor_init(url,theme,dslx) { //{{{
                       let inner;
 
                       if (p.AR == "Read") {
-                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x - iconsize/2) + ',' + pos + ' ' + (p.x + iconsize/2) + ',' + (pos + iconsize/2) + ' ' + (p.x + iconsize/2) + ',' + (pos - iconsize/2) + '" class="resource-point read"></polygon>');
+                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x) + ',' + pos + ' ' + (p.x + iconsize) + ',' + (pos + iconsize/2) + ' ' + (p.x + iconsize) + ',' + (pos - iconsize/2) + '" class="resource-point read"></polygon>');
                         if (pos == p.y0) { firstAssignFlag = true; }
                       } else if (p.AR == "Assign") {    // Define points for a triangle pointing to the left
-                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x + iconsize/2) + ',' + pos + ' ' + (p.x - iconsize/2) + ',' + (pos + iconsize/2) + ' ' + (p.x - iconsize/2) + ',' + (pos - iconsize/2) + '" class="resource-point write"></polygon>');
+                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x + iconsize) + ',' + pos + ' ' + (p.x) + ',' + (pos + iconsize/2) + ' ' + (p.x) + ',' + (pos - iconsize/2) + '" class="resource-point write"></polygon>');
                       } else if (p.AR == "AssignRead") {
-                        inner = $X('<circle xmlns="http://www.w3.org/2000/svg" cx="' + p.x + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="resource-point both"></circle>');
+                        inner = $X('<circle xmlns="http://www.w3.org/2000/svg" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="resource-point both"></circle>');
                       }
 
                       // extend the bars
@@ -646,21 +637,19 @@ function adaptor_init(url,theme,dslx) { //{{{
                     if (firstAssignFlag) {
                       // Additional logic and construction of another polygon for orange triangle pointing left
                       p.y0 -= (val.row-1) * dimensions.height;
-                      tsvg.append($X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x + iconsize/2) + ',' + firstpos + ' ' + (p.x - iconsize/2) + ',' + (firstpos + iconsize/2) + ' ' + (p.x - iconsize/2) + ',' + (firstpos - iconsize/2) + '" class="resource-point write">' + '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text></polygon>'));
+                      tsvg.append($X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x + iconsize) + ',' + firstpos + ' ' + (p.x) + ',' + (firstpos + iconsize/2) + ' ' + (p.x) + ',' + (firstpos - iconsize/2) + '" class="resource-point write">' + '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text></polygon>'));
                     }
-                    cx += iconsize + iconspace;
+                    cx += iconsize + space;
                   }
 
                   tcolumnsvgs[col.column][val.row] = tsvg;
-                } else if (col.type == "label") {
-                  // tsvg = $X('<text xmlns="http://www.w3.org/2000/svg">' + k + '</text>');
-                  // tcolumnsvgs[col.column][val.row] = tsvg;
-                  //    inner.append(
+                } else {
+                  tsvg = $X('<text  x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg">' + col.value + '</text>');
+                  tcolumnsvgs[col.column][val.row] = tsvg;
                 }
 
                 tcolumncount[col.column] += 1;
               }
-              tlabels[val.row][tcolumns.indexOf(col.column)] = { label: col.value, type: val.tname, id: val.element_id };
             });
           }
         });
@@ -670,55 +659,46 @@ function adaptor_init(url,theme,dslx) { //{{{
           'grid-template-columns': 'max-content' + (tcolumns.length > 0 ? ' repeat(' + tcolumns.length.toString() + ',max-content)' : '') + ' auto'
         });
 
-        for (var i = 0; i < max.row; i++) {
-          for (var j = 0; j < tcolumns.length - 1; j++) {
-            if (!thidden.includes(tcolumns[j])) {
-              if (tlabels[i+1] != undefined && tlabels[i+1][j] != undefined && tlabels[i+1][j].label != undefined && tlabels[i+1][j].label != '') {
-                var col = tlabels[i+1][j];
-                var ele = $('<div element-row="' + i + '" class="graphlabel ' + (i % 2 == 0 ? 'odd' : 'even') + '" element-type="' + col.type + '" element-id="' + col.id + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '"><span>' + col.label + '</span></div>');
-                graphrealization.illustrator.draw.bind_event(ele, col.type, false);
-                $('#graphgrid').append(ele);
-              } else {
-                if (tcolumncount[tcolumns[j]] != 0) {
-                  var ele = $('<div element-row="' + i + '" class="graphempty ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
-                  $('#graphgrid').append(ele);
-                }
-              }
-            }
-          }
-
-          var j = tcolumns.length;
-          var ele = $('<div element-row="' + i + '" class="graphlast ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
-          $('#graphgrid').append(ele);
-        }
-
-        thidden.forEach(h => {
+        tcolumns.forEach(h => {
           if (Object.keys(tcolumnsvgs[h]).length > 0) {
-            let twidth = (mapPoints.size + 1) * (iconsize + iconspace);
+            const svgcolumn = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id="resources"></svg>');
+            const svgback = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
+            const svgfront = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
+            let xwidth = 0;
+            svgcolumn.append(svgback);
+            svgcolumn.append(svgfront);
+            svgcolumn.css('grid-row', '1/span ' + (max.row + 2))
+            svgcolumn.css('grid-column', tcolumns.indexOf(tcolumns.first) + 2);
+            svgcolumn.attr('height', $('#graphcanvas').attr('height'));
+            $('#graphgrid').append(svgcolumn);
 
-            let dataflow = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id="resources"></svg>');
-            dataflow.css('grid-row', '1/span ' + (max.row + 2))
-            dataflow.css('grid-column', tcolumns.indexOf(thidden.first) + 2);
-            dataflow.attr('height', $('#graphcanvas').attr('height'));
-            dataflow.attr('width', twidth);
-
-            for (var i = 0; i < max.row; i++) {   // Needs parenthesises below
-              dataflow.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" width="' + twidth + '" height="' + dimensions.height + '"></rect>'));
-              dataflow.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="border" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '"></rect>'));
+            for (var i = 0; i < max.row; i++) {
+              let node = svgfront.append($(tcolumnsvgs[h][i+1]));
+              if (xwidth < node[0].getBBox().width) { xwidth = node[0].getBBox().width; }
+            }
+            xwidth = xwidth + 2 * space;
+            for (var i = 0; i < max.row; i++) {
+              svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" width="' + (xwidth + 1) + '" height="' + dimensions.height + '"></rect>'));
+              svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="border" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '" width="1"></rect>'));
             }
             if (tcolumntype[h] == "resource") {
               for (const [k, p] of mapPoints) {
-                dataflow.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x + '" y1="' + p.y0 + '" x2="' + p.x + '" y2="' + p.ymax + '" class="resource-line" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
+                svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + p.ymax + '" class="resource-line" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
               }
             }
-            for (var i = 0; i < max.row; i++) {
-              dataflow.append($(tcolumnsvgs[h][i+1]));
-            }
-            $('#graphgrid').append(dataflow);
 
             $('.resource-label').hide();  // Speech Bubble hide by default
+
+            svgcolumn.attr('width', xwidth);
           }
         });
+
+        // Add the last stripe
+        var j = tcolumns.length;
+        for (var i = 0; i < max.row; i++) {
+          var ele = $('<div element-row="' + i + '" class="graphlast ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
+          $('#graphgrid').append(ele);
+        }
       };
       graphrealization.set_svg_container($('#graphcanvas'));
       graphrealization.set_label_container($('#graphgrid'));
@@ -1119,47 +1099,49 @@ function save_svgfile() {// {{{
   var url = $('body').attr('current-instance');
 
   var gc = $('#graphcanvas').clone();
+  var start = parseInt(gc.attr('width'));
+  $('#graphgrid > svg:not(#graphcanvas)').each( (i,ele) => {
+    const gr = $X('<g transform="translate(' + start + ')" xmlns="http://www.w3.org/2000/svg"></g>');
+    start = start + parseInt(ele.getAttribute('width'));
+    $('g',ele).each((j,g) => {
+      gr.append($(g).clone());
+    });
+    gc.append(gr);
+  });
+  var varreps = {};
+  $(window.document.styleSheets).each(function(i,x){
+    if (x && x.href && x.ownerNode.attributes.getNamedItem('data-include-export')) {
+      $(x.cssRules).each(function(j,y){
+        if (y.selectorText == ":root") {
+          $(y.style).each(function(k,z) {
+            varreps['var\\(' + z + '\\)'] = getComputedStyle(document.documentElement).getPropertyValue(z).toString();
+          });
+        }
+        var loc = $(gc).find(y.selectorText.replace(/svg /g,''));
+        var cst = y.style.cssText;
+        for (k in varreps) {
+          cst = cst.replace(new RegExp(k,'g'),varreps[k]);
+        }
+        loc.each(function(k,loco) {
+          var sty = $(loco).attr('style') == undefined ? '' : $(loco).attr('style');
+          $(loco).attr('style',cst + sty);
+          console.log(loco);
+        });
+      });
+      var loc = $(gc).find('text.super');
+      loc.attr('style',loc.attr('style') + ' display: none; ');
+    }
+  });
+  gc.attr('width',start+1);
   $.ajax({
     type: "GET",
-    url: "css/wfadaptor.css",
+    url: url + "/properties/attributes/info/",
     success: function(res){
-      gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
-      $(window.document.styleSheets).each(function(i,x){
-        if (x && x.href && x.href.match(/wfadaptor\.css$/)) {
-					var varreps = {};
-          $(x.cssRules).each(function(j,y){
-            if (y.selectorText == ":root") {
-              $(y.style).each(function(k,z) {
-								varreps['var\\(' + z + '\\)'] = getComputedStyle(document.documentElement).getPropertyValue(z).toString();
-							});
-            }
-            var loc = $(gc).find(y.selectorText.replace(/svg /g,''));
-						var cst = y.style.cssText;
-            for (k in varreps) {
-							cst = cst.replace(new RegExp(k,'g'),varreps[k]);
-						}
-            loc.each(function(k,loco) {
-              var sty = $(loco).attr('style') == undefined ? '' : $(loco).attr('style');
-              $(loco).attr('style',cst + sty);
-            });
-          });
-          var loc = $(gc).find('text.super');
-          loc.attr('style',loc.attr('style') + ' display: none');
-          var loc = $(gc).find('.stripe');
-          loc.attr('style',loc.attr('style') + ' display: none');
-        }
-      });
-      $.ajax({
-        type: "GET",
-        url: url + "/properties/attributes/info/",
-        success: function(res){
-          $('#savesvgfile').attr('download',res + '.svg');
-          $('#savesvgfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializeXML()));
-          document.getElementById('savesvgfile').click();
-        },
-        error: report_failure
-      });
-    }
+      $('#savesvgfile').attr('download',res + '.svg');
+      $('#savesvgfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializePrettyXML()));
+      document.getElementById('savesvgfile').click();
+    },
+    error: report_failure
   });
 }// }}}
 async function set_testset(testset,exec) {// {{{

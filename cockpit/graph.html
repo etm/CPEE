@@ -55,7 +55,10 @@
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
     <script type="text/javascript" src="js/modifiers.js"></script>
+    <script type="text/javascript" src="js/resources.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
+    <link rel="stylesheet" href="css/resources-label.css" type="text/css"/>
+    <link rel="stylesheet" href="css/resources-svg.css" type="text/css" data-include-export="true"/>
     <link rel="stylesheet" href="css/graph.css" type="text/css"/>
   </head>
   <body data-base-port="8298" data-res-port="9303" data-theme-base="themes" is="x-ui-">
@@ -63,6 +66,7 @@
     <div id="trackfull">
       <div id='graphcolumn'>
         <div id='graphgrid'>
+          <div class="resource-label" style="display: none"></div>
           <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
         </div>
       </div>

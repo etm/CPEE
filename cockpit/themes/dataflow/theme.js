@@ -395,7 +395,7 @@ function WFAdaptorManifestation(adaptor) {
         let dict = {...dict1,...dict2};
         ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
         if (lab != '') {
-          ret.unshift( { column: 'Label', value: lab } );
+          ret.unshift( { type: 'label', column: 'Label', value: lab } );
         }
         if (wait != '') {
           ret.push({ column: 'Wait', value: 'ω = ' + wait });
@@ -455,7 +455,7 @@ function WFAdaptorManifestation(adaptor) {
       'label': function(node){
         var lab = $(node).attr('label');
         if (lab) {
-          return [ { column: 'Label', value: lab.replace(/^['"]/,'').replace(/['"]$/,'') }, { column: 'ID', value: $(node).attr('id') } ];
+          return [ { type: 'label', column: 'Label', value: lab.replace(/^['"]/,'').replace(/['"]$/,'') }, { column: 'ID', value: $(node).attr('id') } ];
         }  else {
           return [ { column: 'ID', value: $(node).attr('id') } ];
         }
@@ -589,7 +589,7 @@ function WFAdaptorManifestation(adaptor) {
       'closeblock': true,
       'label': function(node){
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        var ret = [ { type: 'label', column: 'Label', value: $(node).attr('condition') } ];
         if (avg != '') {
           ret.push({ column: 'Average', value: avg + 'ｘ' });
         }
@@ -641,7 +641,7 @@ function WFAdaptorManifestation(adaptor) {
   this.elements.choose = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){ return [ { column: 'Label', value: $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' } ]; },
+      'label': function(node){ return [ { type: 'label', column: 'Label', value: $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' } ]; },
       'endnodes': 'aggregate',
       'closeblock': false,
       'closing_symbol': 'choose_finish',
@@ -794,7 +794,7 @@ function WFAdaptorManifestation(adaptor) {
     'illustrator': {//{{{
       'label': function(node){
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        var ret = [ { type: 'label', column: 'Label', value: $(node).attr('condition') } ];
         if (avg != '') {
           ret.push({ column: 'Average', value: avg + '%' });
         }
@@ -1290,7 +1290,7 @@ function WFAdaptorManifestation(adaptor) {
     'type': 'description',
     'illustrator': {//{{{
       'endnodes': 'passthrough',
-      'label': function(node){ return [ { column: 'ID' }, { column: 'Dataflow'}, { column: 'Label'}, { column: 'RP' }, { column: 'R#' } ]; },
+      'label': function(node){ return [ { column: 'ID' }, { column: 'Dataflow', type: 'resource' }, { column: 'Label', type: 'label' }, { column: 'RP' }, { column: 'R#' } ]; },
       'closeblock': false,
       'balance': true,
       'expansion': function(node) {
@@ -1431,7 +1431,7 @@ function WFAdaptorManifestation(adaptor) {
       'closeblock': true,
       'label': function(node){
         var avg = $('> _probability_avg',$(node).children('_probability')).text();
-        var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+        var ret = [ { type: 'label', column: 'Label', value: $(node).attr('condition') } ];
         if (avg != '') {
           ret.push({ column: 'Average', value: avg + 'ｘ' });
         }

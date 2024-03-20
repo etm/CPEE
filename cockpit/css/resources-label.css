@@ -1,24 +1,3 @@
-resources {
-  border-left: 1pt solid var(--wfadaptor-border);
-}
-#resources .resource-point.read {
-  fill: green;
-}
-#resources .resource-point.write {
-  fill: orange;
-}
-#resources .resource-point.both {
-  fill: blue;
-}
-#resources line.resource-line {
-  stroke: red;
-  stroke-opacity: 0.1;
-}
-#resources line.resource-line:hover {
-  stroke: red;
-  stroke-opacity: 0.2;
-}
-
 .resource-label {
   position: absolute;
   padding-left: 0.5em;

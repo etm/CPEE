@@ -228,24 +228,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return g;
   } // }}}
 
-  var draw_label = this.draw.draw_label = function (tname, id, label, row, col, group) { // {{{
-    var g = $X('<text class="label" transform="translate(' + String(col*self.width-self.width_shift) + ',' + String(row*self.height+20-(self.height-self.height_shift)) + ')" xmlns="http://www.w3.org/2000/svg"></text>');
-    var spli = $(label.split(/\n/));
-    spli.each(function(k,v) {
-      var tspan = $X('<tspan x="0" dy="' + (spli.length > 1 ? '-7' : '0') + '" xmlns="http://www.w3.org/2000/svg"></tspan>');
-      if (k == 0) {
-        tspan.text(v);
-      } else {
-        tspan.text(v);
-        tspan.attr('dy','15');
-        tspan.attr('dx','15');
-      }
-      g.append(tspan);
-    });
-    if(group) { group.find('g.element[element-id=' + id + ']').append(g); }
-    else {self.svg.container.append(g);}
-    return g;
-  } // }}}
   var draw_symbol = this.draw.draw_symbol = function (sname, id, title, row, col, group, addition) { // {{{
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
     if (addition) {
@@ -379,15 +361,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       adaptor.draw_labels(graph.max,labels,{ 'height': illustrator.height, 'height_shift': illustrator.height_shift },illustrator.striped == true ? true : false);
     } else {
       adaptor.draw_labels(graph.max,[],{ 'height': illustrator.height, 'height_shift': illustrator.height_shift },false);
-    }
-    if (illustrator.compact == false) {
-      if (labels.length > 0) {
-        _.each(labels,function(a,key) {
-          if (a.label && a.label[0] && a.label[0].column == 'Label' && a.label[0].value) {
-            illustrator.draw.draw_label(a.tname, a.element_id, a.label[0].value, a.row, graph.max.col + 1, graph.svg);
-          }
-        });
-      }
     }
   } //}}}
 
