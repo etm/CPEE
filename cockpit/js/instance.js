@@ -679,8 +679,8 @@ function adaptor_init(url,theme,dslx) { //{{{
             xwidth = xwidth + 2 * space;
             if (striped == true) {
               for (var i = 0; i < max.row; i++) {
-                svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" width="' + (xwidth + 1) + '" height="' + dimensions.height + '"></rect>'));
-                svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="border" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '" width="1"></rect>'));
+                svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" width="' + (xwidth + 1) + '" height="' + dimensions.height + '"></rect>'));
+                svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="border" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '" width="1"></rect>'));
               }
             }
             if (tcolumntype[h] == "resource") {
