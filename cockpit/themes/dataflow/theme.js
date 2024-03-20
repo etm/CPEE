@@ -203,8 +203,17 @@ function WFAdaptorManifestation(adaptor) {
             $(nodes).each(function(key,str) {
               nodes[key] = $X(str);
             });
+            let svgids = [];
             $(nodes).each(function(key,node){
-              var target = self.adaptor.description.get_node_by_svg_id($(node).attr('svg-id'));
+              svgids.push($(node).attr('svg-id'));
+            });
+            svgids.sort((a,b) => {
+              if (a > b) { return -1; }
+              else if (a < b) { return 1; }
+              else { return 0; }
+            });
+            svgids.forEach(svgid => {
+              var target = self.adaptor.description.get_node_by_svg_id(svgid);
               del_ui_pos(target)
               self.adaptor.description.remove(null,target);
               localStorage.removeItem('marked');
