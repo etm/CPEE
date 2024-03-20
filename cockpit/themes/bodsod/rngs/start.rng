@@ -25,12 +25,19 @@
           <attribute name="name" rngui:label="Name">
             <data type="string" rngui:label="Name"/>
           </attribute>
+          <attribute name="orgmodel" rngui:label="Organisation Model">
+            <data type="string" rngui:label="Link to an XML Org-Model"/>
+          </attribute>
+          <attribute name="role" rngui:label="Role">
+            <data type="string" rngui:label="e.g. Assistant"/>
+          </attribute>
           <attribute name="type" rngui:label="Type">
-            <choice>
-              <value>None</value>
-              <value>BOD</value>
-              <value>SOD</value>
-            </choice>
+            <data type="string"/>
+              <choice>
+                <value>None</value>
+                <value>BOD</value>
+                <value>SOD</value>
+              </choice>
           </attribute>
         </element>
       </zeroOrMore>

@@ -64,7 +64,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @guard_items = []
   end # }}}
 
-  def prepare(readonly, endpoints, parameters) #{{{
+  def prepare(readonly, endpoints, parameters, test) #{{{
     @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
     if @controller.attributes['twin_engine']
       @handler_endpoint_orig = @handler_endpoint

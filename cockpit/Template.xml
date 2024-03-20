@@ -1,0 +1,93 @@
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements/>
+  <endpoints>
+    <worklist>http-post://localhost:3000</worklist>
+  </endpoints>
+  <attributes>
+    <info>Enter info here</info>
+    <modeltype>CPEE</modeltype>
+    <theme>bodsod</theme>
+  </attributes>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <_shifting/>
+      <_concerns>
+        <concern id="c1" name="Test123" orgmodel="https://cpee.org/~demo/orgviz/organisation_informatik.xml" role="Assistant" type="BOD"/>
+        <concern id="c2" name="Test456" orgmodel="https://cpee.org/~demo/orgviz/organisation_informatik.xml" role="Assistant" type="SOD"/>
+      </_concerns>
+      <_context_data_analysis>
+        <probes/>
+        <ips/>
+      </_context_data_analysis>
+      <call id="a1" endpoint="worklist">
+        <parameters>
+          <label>OK OR NOT OK</label>
+          <arguments>
+            <orgmodel>https://cpee.org/~demo/orgviz/organisation_informatik.xml</orgmodel>
+            <form>http://localhost:81/form-f.html</form>
+            <role>Assistant</role>
+            <priority>42</priority>
+            <handling rngui-nonfunctional="">single</handling>
+            <collect>0</collect>
+            <restrictions/>
+            <data>
+              <schaden>10000</schaden>
+              <text>destroyed</text>
+            </data>
+            <_concerns>
+              <concern>
+                <id>c1</id>
+              </concern>
+              <concern>
+                <id>c2</id>
+              </concern>
+            </_concerns>
+          </arguments>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result">data.bla = result</finalize>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+</testset>

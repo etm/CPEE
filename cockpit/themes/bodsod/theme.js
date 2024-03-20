@@ -93,13 +93,13 @@ function WFAdaptorManifestation(adaptor) {
   }; //}}}
 
   function generateConcernUI(rng) {
-    rawConcernXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="Concerns" name="_concerns" rngui:fold="closed"><zeroOrMore rngui:label="Add Concern"><element name="concern"><element name="id" rngui:label="ID"><choice><value>Choose id</value>\n';
+    rawConcernXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="Concerns" name="_concerns" rngui:fold="closed"><zeroOrMore rngui:label="Add Concern"><element name="concern"><element name="id" rngui:label="ID"><data type="string"/><choice><value>Choose id</value>\n';
     Array.from($($.parseXML(self.adaptor.description.get_description())).find("description > _concerns > concern")).toSorted((a,b) => (a.id > b.id ? 1: -1)).forEach(function (element) { 
         rawConcernXml += '<value>'+element.id+'</value>';
     });
     rawConcernXml += '</choice></element></element></zeroOrMore></element>';
     concernXml = $($.parseXML(rawConcernXml)).find('element[name="_concerns"]');
-    concernXml.insertAfter($(rng).find(' > element[name="parameters"]'));
+    concernXml.appendTo($(rng).find(' > element[name="parameters"] > element[name="arguments"]'));
   }
 
   function removeAlreadySelectedConcerns() {
