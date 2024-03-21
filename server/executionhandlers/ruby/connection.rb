@@ -389,10 +389,13 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def callback(result=nil,options={})
     recv = structurize_result(result)
-    @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
+    if result.length > 0
+      @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
+    end
     @guard_files += result
 
     @handler_returnValue = simplify_result(result)
+
     @handler_returnOptions = options
     if options['CPEE_INSTANTIATION']
       @controller.notify("task/instantiation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(options['CPEE_INSTANTIATION']))
