@@ -630,21 +630,21 @@ function adaptor_init(url,theme,dslx) { //{{{
                         p.ymax = pos;
                       }
 
-                      inner.append($X('<text xmlns="http://www.w3.org/2000/svg">' + k + '</text>'));
+                      inner.append($X('<text xmlns="http://www.w3.org/2000/svg"></text>').text(k));
                       tsvg.append(inner);
                     }
 
                     if (firstAssignFlag) {
                       // Additional logic and construction of another polygon for orange triangle pointing left
                       p.y0 -= (val.row-1) * dimensions.height;
-                      tsvg.append($X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x + iconsize) + ',' + firstpos + ' ' + (p.x) + ',' + (firstpos + iconsize/2) + ' ' + (p.x) + ',' + (firstpos - iconsize/2) + '" class="resource-point write">' + '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text></polygon>'));
+                      tsvg.append($X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x + iconsize) + ',' + firstpos + ' ' + (p.x) + ',' + (firstpos + iconsize/2) + ' ' + (p.x) + ',' + (firstpos - iconsize/2) + '" class="resource-point write"></polygon>').append($X('<text xmlns="http://www.w3.org/2000/svg"></text>').text(k)));
                     }
                     cx += iconsize + space;
                   }
 
                   tcolumnsvgs[col.column][val.row] = tsvg;
                 } else {
-                  tsvg = $X('<text  x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg">' + col.value + '</text>');
+                  tsvg = $X('<text  x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>').text(col.value);
                   tcolumnsvgs[col.column][val.row] = tsvg;
                 }
 
