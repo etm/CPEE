@@ -389,24 +389,23 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def callback(result=nil,options={})
     recv = structurize_result(result)
-    if result.length > 0
-      @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
-    end
+    @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
+
     @guard_files += result
 
-    @handler_returnValue = simplify_result(result)
-
-    @handler_returnOptions = options
     if options['CPEE_INSTANTIATION']
       @controller.notify("task/instantiation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(options['CPEE_INSTANTIATION']))
     end
     if options['CPEE_EVENT']
       @controller.notify("task/#{options['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
+    else
+      @handler_returnValue = simplify_result(result)
+      @handler_returnOptions = options
+    end
+    if options['CPEE_STATUS']
+      @controller.notify("activity/status", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_STATUS'])
     end
     if options['CPEE_UPDATE']
-      if options['CPEE_UPDATE_STATUS']
-        @controller.notify("activity/status", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_UPDATE_STATUS'])
-      end
       @handler_continue.continue WEEL::Signal::Again
     else
       @controller.cancel_callback(@handler_passthrough)
