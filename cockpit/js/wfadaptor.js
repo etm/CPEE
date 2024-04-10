@@ -153,12 +153,14 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
 } // }}}
 
 // WfIllustrator:
-// Is in charge of displaying the Graph. It is further able insert and remove elements with given ID's from the illsutration.
+// Is in charge of displaying the Graph. It is further able insert and remove elements with given ID's from the illustration.
 function WfIllustrator(wf_adaptor) { // View  {{{
   // Variable {{{
     // public
     this.height = 40;
     this.width = 40;
+    this.default_width = 40;
+    this.default_height = 40;
     this.height_shift = this.height * 0.26;
     this.width_shift = this.width * 0.39;
     this.elements = {}; // the svgs
@@ -230,14 +232,16 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
   var draw_symbol = this.draw.draw_symbol = function (sname, id, title, row, col, group, addition) { // {{{
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
+    let center_x = (self.width - self.default_width) / 2;
+    let center_y = (self.height - self.default_height) / 2;
     if (addition) {
       var g = $X('<g class="element" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
-                    '<g transform="translate(' + String(col*self.width-self.width_shift) + ',' + String(row*self.height-(self.height-self.height_shift)) + ')"></g>' +
+                    '<g transform="translate(' + String(col*self.width+center_x-self.width_shift) + ',' + String(row*self.height+center_y-(self.height-self.height_shift)) + ')"></g>' +
                  '</g>');
     } else {
       var g = $X('<g class="element" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
-                    '<g transform="translate(' + String(col*self.width-self.width_shift) + ',' + String(row*self.height-(self.height-self.height_shift)) + ')">' +
-                      '<text class="super" transform="translate(30,8.4)">' +
+                    '<g transform="translate(' + String(col*self.width+center_x-self.width_shift) + ',' + String(row*self.height+center_y-(self.height-self.height_shift)) + ')">' +
+                      '<text class="super" transform="translate(' + (self.default_width-10) + ',8.4)">' +
                         '<tspan class="active">0</tspan>' +
                         '<tspan class="colon">,</tspan>' +
                         '<tspan class="vote">0</tspan>' +
