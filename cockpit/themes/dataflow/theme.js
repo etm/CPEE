@@ -360,6 +360,7 @@ function WFAdaptorManifestation(adaptor) {
 
     $(subject).each(function(_,ele){
       let item = extract(ele);
+      if (item === undefined) { return; }
       if (mixed && item.length > 0 && item[0].charAt(0) != '!') { return }
 
       let indices = [];
@@ -404,7 +405,7 @@ function WFAdaptorManifestation(adaptor) {
         let dict = {...dict1,...dict2};
         ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
         if (lab != '') {
-          ret.unshift( { type: 'label', column: 'Label', value: lab } );
+          ret.unshift( { column: 'Label', value: lab } );
         }
         if (wait != '') {
           ret.push({ column: 'Wait', value: 'ω = ' + wait });
