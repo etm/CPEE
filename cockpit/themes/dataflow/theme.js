@@ -9,8 +9,8 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       var reg_not_assi = /data\.([a-zA-Z_]+)\s*/g;
 
       $(subject).each(function(_,ele){
-        if (item === undefined) { return }
         let item = extract(ele);
+        if (item === undefined) { return }
         if (mixed && item.length > 0 && item[0].charAt(0) != '!') { return }
 
         let indices = [];
