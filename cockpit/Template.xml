@@ -1,4 +1,14 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
+  <subscriptions>
+	  <subscription xmlns="http://riddl.org/ns/common-patterns/notifications-producer/2.0" url="http://localhost:3001" id="_maxiking">
+      <topic id="activity">
+        <event>calling</event>
+	<event>done</event>
+	<event>status</event>
+	<event>receiving</event>
+      </topic>
+    </subscription>
+  </subscriptions>
   <executionhandler>ruby</executionhandler>
   <dataelements/>
   <endpoints>
@@ -24,17 +34,6 @@
         <parameters>
           <label>OK OR NOT OK</label>
           <arguments>
-            <orgmodel>https://cpee.org/~demo/orgviz/organisation_informatik.xml</orgmodel>
-            <form>http://localhost:81/form-f.html</form>
-            <role>Assistant</role>
-            <priority>42</priority>
-            <handling rngui-nonfunctional="">single</handling>
-            <collect>0</collect>
-            <restrictions/>
-            <data>
-              <schaden>10000</schaden>
-              <text>destroyed</text>
-            </data>
             <_concerns>
               <concern>
                 <id>c1</id>

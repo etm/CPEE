@@ -25,7 +25,7 @@ $(document).ready(function(){
           if (Array.from($(node).find("concern")).length > Array.from($(nnew).find("concern")).length) {
             Array.from($(node).find("concern")).forEach(function(element) {
               if (!$(nnew).find('concern:contains("'+element.children[0].innerHTML+'")')[0]){
-                Array.from($('select[data-relaxngui-path=" > call > _concerns > concern > id"]')).forEach(function(e1) {
+                Array.from($('select[data-relaxngui-path=" > call > parameters > arguments > _concerns > concern > id"]')).forEach(function(e1) {
                   if(!$(e1).find('option[value="'+element.children[0].innerHTML+'"]')[0]) {
                     $($.parseHTML('<option value="'+element.children[0].innerHTML+'">'+element.children[0].innerHTML+'</option>')).appendTo(e1)
                     oldValue = $(e1)[0].value
@@ -38,7 +38,7 @@ $(document).ready(function(){
           } else if (Array.from($(node).find("concern")).length < Array.from($(nnew).find("concern")).length){
             Array.from($(nnew).find("concern")).forEach(function(element) {
               if (!$(node).find('concern:contains("'+element.children[0].innerHTML+'")')[0]){
-                Array.from($('select[data-relaxngui-path=" > call > _concerns > concern > id"]')).forEach(function(e1) {
+                Array.from($('select[data-relaxngui-path=" > call > parameters > arguments > _concerns > concern > id"]')).forEach(function(e1) {
                   if(element.children[0].innerHTML != "Choose id" && e1.value != element.children[0].innerHTML) {
                     $(e1).find('option[value="'+element.children[0].innerHTML+'"]').remove()
                   }
@@ -50,7 +50,7 @@ $(document).ready(function(){
             nodeArray = Array.from($(node).find("concern")).toSorted((a,b) => a.textContent > b.textContent ? 1:-1)
             for (let i = 0; i < nnewArray.length; i++) {
               if (nnewArray[i].children[0].innerHTML != nodeArray[i].children[0].innerHTML) {
-                  Array.from($('select[data-relaxngui-path=" > call > _concerns > concern > id"]')).forEach(function(e1) {
+                  Array.from($('select[data-relaxngui-path=" > call > parameters > arguments > _concerns > concern > id"]')).forEach(function(e1) {
                     if(!$(e1).find('option[value="'+nodeArray[i].children[0].innerHTML+'"]')[0]) {
                       $($.parseHTML('<option value="'+nodeArray[i].children[0].innerHTML+'">'+nodeArray[i].children[0].innerHTML+'</option>')).appendTo(e1)
                       oldValue = $(e1)[0].value
@@ -59,7 +59,7 @@ $(document).ready(function(){
                     }
                   })
                   
-                  Array.from($('select[data-relaxngui-path=" > call > _concerns > concern > id"]')).forEach(function(e1) {
+                  Array.from($('select[data-relaxngui-path=" > call > parameters > arguments > _concerns > concern > id"]')).forEach(function(e1) {
                     if(nnewArray[i].children[0].innerHTML != "Choose id" && e1.value != nnewArray[i].children[0].innerHTML) {
                       $(e1).find('option[value="'+nnewArray[i].children[0].innerHTML+'"]').remove()
                     }
