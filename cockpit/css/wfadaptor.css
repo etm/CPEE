@@ -218,6 +218,13 @@ svg .marked .cline {
   stroke-dasharray:none;
 }
 
+svg.labelsrow text.label {
+  cursor: pointer;
+}
+svg text.label.selected {
+  color: var(--wfadaptor-selected);
+  fill: var(--wfadaptor-selected);
+}
 svg .selected text.label {
   color: var(--wfadaptor-selected);
   fill: var(--wfadaptor-selected);

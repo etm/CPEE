@@ -567,7 +567,7 @@ function adaptor_init(url,theme,dslx) { //{{{
           $('#graphgrid').removeClass('striped');
         }
 
-        $('#graphgrid .graphlabel, #graphgrid .graphempty, #resources, #graphgrid .graphlast').remove();
+        $('.labelsrow, #graphgrid .graphlast').remove();
         let tcolumns = [];
         let tcolumntype = {};
         let tcolumncount = {}
@@ -642,9 +642,13 @@ function adaptor_init(url,theme,dslx) { //{{{
                     cx += iconsize + space;
                   }
 
-                  tcolumnsvgs[col.column][val.row] = tsvg;
+                  if (tsvg.children().length > 0) {
+                    tcolumnsvgs[col.column][val.row] = tsvg;
+                  }
                 } else {
-                  tsvg = $X('<text  x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>').text(col.value);
+                  tsvg = $X('<text class="label" element-id="' + val.element_id + '" x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
+                  tsvg.text(col.value);
+                  tsvg.click(function(ev){ manifestation.events.click($(ev.currentTarget).attr('element-id')); });
                   tcolumnsvgs[col.column][val.row] = tsvg;
                 }
 
@@ -661,7 +665,7 @@ function adaptor_init(url,theme,dslx) { //{{{
 
         tcolumns.forEach(h => {
           if (Object.keys(tcolumnsvgs[h]).length > 0) {
-            const svgcolumn = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id="resources"></svg>');
+            const svgcolumn = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" class="labelsrow"></svg>');
             const svgback = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
             const svgfront = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
             let xwidth = 0;
@@ -1110,6 +1114,7 @@ function save_svgfile() {// {{{
     });
     gc.append(gr);
   });
+  gc.find('.selected').removeClass('selected');
   var varreps = {};
   $(window.document.styleSheets).each(function(i,x){
     if (x && x.href && x.ownerNode.attributes.getNamedItem('data-include-export')) {
@@ -1127,7 +1132,6 @@ function save_svgfile() {// {{{
         loc.each(function(k,loco) {
           var sty = $(loco).attr('style') == undefined ? '' : $(loco).attr('style');
           $(loco).attr('style',cst + sty);
-          console.log(loco);
         });
       });
       var loc = $(gc).find('text.super');

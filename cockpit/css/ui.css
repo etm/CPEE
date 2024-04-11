@@ -22,54 +22,14 @@ body {
 #graphcanvas {
   grid-column: 1;
 }
-#graphgrid .graphlabel {
-  padding-left: 0.5em;
-  padding-right: 0.5em;
-  display: flex;
-  flex-direction: row;
-}
-#graphgrid .graphempty {
-  padding-left: 0.5em;
-  display: flex;
-  flex-direction: row;
-}
 #graphgrid .graphlast {
   padding-left: 0.5em;
   display: flex;
   flex-direction: row;
 }
-#graphgrid.striped .graphlabel, #graphgrid.striped .graphempty {
-  border-left: 1pt solid var(--wfadaptor-border);
-}
-#graphgrid.striped .graphlabel.even, #graphgrid.striped .graphempty.even, #graphgrid.striped .graphlast.even {
-  background-color: #e9e9e9;
-}
-#graphgrid .graphlabel > span {
-  align-self: center;
-  white-space: nowrap;
-}
-#graphgrid .graphlabel.hover {
-  color: var(--wfadaptor-selected);
-  cursor: pointer;
-}
-#graphgrid .graphlabel.selected {
-  color: var(--wfadaptor-selected);
-}
 
-#graphgrid .graphlabel.selected a, #graphgrid .graphlabel.hover a {
-  color: var(--wfadaptor-selected);
-}
-#graphgrid .graphlabel a {
-  color: var(--x-ui-light-text-color);
-}
-#graphgrid .graphlabel a::after {
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: 0.8em;
-  text-rendering: auto;
-	content: ' ';
-}
-#graphgrid .graphlabel.selected a::after, graphgrid .graphlabel.hover a::after {
-  color: var(--wfadaptor-selected);
+#graphgrid.striped .graphlast.even {
+  background-color: #e9e9e9;
 }
 
 #instance ui-content { height: 7em; }

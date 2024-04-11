@@ -2,7 +2,7 @@ $(document).ready(function() {
   $('.resource-label').on('mouseover',()=>{
     $('.resource-label').hide(); // Speech Bubble hide when over
   });
-  $('#graphgrid').on('mouseover','#resources line.resource-line, #resources g polygon.resource-point',(data)=>{
+  $('#graphgrid').on('mouseover','svg line.resource-line, svg g polygon.resource-point',(data)=>{
     const left = $('.resource-label').offset().left;
     const pos = $(data.target).offset().left - 11;
     if ($('.resource-label').is(":hidden") || left != pos) {

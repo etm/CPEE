@@ -302,8 +302,7 @@ function WFAdaptorManifestationBase(adaptor) {
       return;
     }
 
-    self.adaptor.illustrator.get_elements().removeClass('selected');
-    self.adaptor.illustrator.get_labels().removeClass('selected');
+    $('#graphgrid .selected').removeClass('selected');
 
     if (e && (e.ctrlKey || e.metaKey)) {
       if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
@@ -333,6 +332,7 @@ function WFAdaptorManifestationBase(adaptor) {
         vtarget.parents('g.element[element-id]').addClass('selected');
       }
       self.adaptor.illustrator.get_label_by_svg_id(svgid).addClass('selected');
+      $('#graphgrid [element-id=' + svgid + ']').addClass('selected');
 
       self.update_details(svgid);
     }

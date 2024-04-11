@@ -68,6 +68,7 @@ function do_main_work() { //{{{
       vtarget.parents('g.element[element-id]').addClass('selected');
     }
     manifestation.adaptor.illustrator.get_label_by_svg_id(svgid).addClass('selected');
+    $('#graphgrid [element-id=' + svgid + ']').addClass('selected');
 
 
     var newnode = vtarget.parents('g.element[element-id]');
