@@ -60,11 +60,15 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     };
     this.elements.manipulate.illustrator.label = function(node) {
       var lab = $(node).attr('label');
-      if (lab) {
-        return [ { column: 'Label', value: lab.replace(/^['"]/,'').replace(/['"]$/,'') }, { column: 'ID', value: $(node).attr('id') } ];
-      }  else {
-        return [ { column: 'ID', value: $(node).attr('id') } ];
+      var ret = [ { column: 'ID', value: $(node).attr('id') } ];
+
+      let dict = dataflowExtract($(node),false,function(target){ return $(target).text(); });
+      ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
+
+      if (lab && lab != '') {
+        ret.unshift( { column: 'Label', value: lab } );
       }
+      return ret;
     }; //}}}
     this.elements.stop.illustrator.label = function(node) { //{{{
       return [ { column: 'ID', value: $(node).attr('id') } ];
