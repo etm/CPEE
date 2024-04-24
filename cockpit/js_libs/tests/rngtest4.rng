@@ -1,0 +1,19 @@
+<element rngui:version="1.2" name="call" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <element name="_workorders">
+    <zeroOrMore rngui:label="Create Work Order">
+      <element name='_workorder'>
+        <attribute name="label" rngui:label="Note">
+          <data type="string"/>
+        </attribute>
+        <attribute name="duration" rngui:label="Duration">
+          <data type="string"/>
+        </attribute>
+        <zeroOrMore rngui:label="Add Attachment">
+          <element name='_attachment' rngui:label='Attachment'>
+            <data type="string"/>
+          </element>
+        </zeroOrMore>
+      </element>
+    </zeroOrMore>
+  </element>
+</element>

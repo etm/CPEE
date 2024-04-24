@@ -1,0 +1,8 @@
+<element name="argument">
+  <element name="test">
+    <data type="integer"/>
+  </element>
+  <element name="aaa">
+    <data type="string"/>
+  </element>
+</element>

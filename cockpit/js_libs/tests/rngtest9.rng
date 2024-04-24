@@ -1,0 +1,31 @@
+<element rngui:version="1.2" name="arguments" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <element name="behavior" rngui:label="Mode">
+    <choice>
+      <value>wait_running</value>
+      <value>fork_running</value>
+      <value>wait_ready</value>
+      <value>fork_ready</value>
+    </choice>
+  </element>
+  <element name="model" rngui:label="Model">
+    <data type="string" rngui:label="Relative path in to process (dir/process.xml)"/>
+  </element>
+  <element name="input" rngui:header="Input Arguments">
+    <zeroOrMore rngui:label="Create Argument" rngui:reorder="true">
+      <element name='item' rngui:label='Description'>
+        <attribute name="label" rngui:label="Name">
+          <data type="string"/>
+        </attribute>
+        <text rngui:wrap='true' rngui:label='What does it do?'/>
+      </element>
+    </zeroOrMore>
+  </element>
+  <element name="init" rngui:header="Initialize Data Elements">
+    <zeroOrMore rngui:label="New Data Element">
+      <element rngui:label='Name'>
+        <anyName/>
+        <data type="string" rngui:label="Value"/>
+      </element>
+    </zeroOrMore>
+  </element>
+</element>

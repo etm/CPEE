@@ -1,0 +1,40 @@
+<call>
+  <parameters>
+    <label></label>
+    <method>:post</method>
+    <arguments>
+      <nc-program>Kuli</nc-program>
+      <material-name>3</material-name>
+      <material-pic>http://centurio.work/customers/prime/part.jpg</material-pic>
+      <result-pic>http://centurio.work/customers/prime/result.jpg</result-pic>
+      <comment>Hallo</comment>
+      <tools>
+        <tool>
+          <place>1</place>
+          <tool-name>Schrupper (500)</tool-name>
+          <tool-holder>x3</tool-holder>
+          <tool-orientation>gegenspindel axial</tool-orientation>
+          <corrections>
+            <correction length-x="0" length-z="0" radius="70"/>
+            <correction length-x="1" length-z="1" radius="60"/>
+          </corrections>
+          <attachments>
+            <attachment label="Bla">http://centurio.work/customers/prime/attachment1.jpg</attachment>
+          </attachments>
+        </tool>
+        <tool>
+          <place>2</place>
+          <tool-name>Schaftfräser d6</tool-name>
+          <tool-holder>SK45</tool-holder>
+          <tool-orientation>-</tool-orientation>
+          <corrections>
+            <correction length-x="2" length-z="1" radius="2"/>
+          </corrections>
+          <attachments>
+            <attachment label="Tool">https://centurio.work/customers/prime/schaftfraeser.jpg</attachment>
+          </attachments>
+        </tool>
+      </tools>
+    </arguments>
+  </parameters>
+</call>

@@ -1,0 +1,13 @@
+<call id="a1" endpoint="timeout" xmlns="http://cpee.org">
+  <parameters>
+    <label></label>
+    <method>:post</method>
+    <arguments>
+      <timeout>2</timeout>
+    </arguments>
+  </parameters>
+  <code>
+    <finalize output="result">  data.x += "a1,"</finalize>
+    <update output="result">  data.x += "a1,"</update>
+  </code>
+</call>

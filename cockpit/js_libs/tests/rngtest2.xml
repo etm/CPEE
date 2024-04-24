@@ -1,0 +1,3 @@
+<manipulate id="a1">
+  data.x += "a1,"
+</manipulate>

@@ -1,0 +1,24 @@
+<element rngui:version="1.2" rngui:header="Arguments" name="arguments" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <element name="behavior" rngui:label="Mode">
+    <choice>
+      <value>wait_running</value>
+      <value>fork_running</value>
+      <value>wait_ready</value>
+      <value>fork_ready</value>
+    </choice>
+  </element>
+  <element name="url" rngui:label="Process">
+    <data type="string" rngui:label="Link to centurio.work testset"/>
+  </element>
+  <element name="date" rngui:label="Due Date">
+    <data type="date" rngui:label="Due Date"/>
+  </element>
+  <element name="init" rngui:header="Initialize">
+    <zeroOrMore rngui:label="New Argument Pair">
+      <element rngui:label='Name'>
+        <anyName/>
+        <data type="string" rngui:label="Value"/>
+      </element>
+    </zeroOrMore>
+  </element>
+</element>

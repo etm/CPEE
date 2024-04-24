@@ -1,0 +1,13 @@
+<element rngui:version="1.2" name="parallel" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <attribute name="wait" rngui:label="Wait" rngui:default="-1" rngui:hint="-1 to wait for all branches.">
+    <data type="integer"/>
+  </attribute>
+  <element name="parallel_branch">
+    <attribute name="pass"><data type="string"/></attribute>
+    <attribute name="local"><data type="string"/></attribute>
+  </element>
+  <element name="parallel_branch">
+    <attribute name="pass"><data type="string"/></attribute>
+    <attribute name="local"><data type="string"/></attribute>
+  </element>
+</element>

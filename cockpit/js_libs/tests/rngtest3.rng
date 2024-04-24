@@ -1,0 +1,23 @@
+<element rngui:version="1.2" name="call" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <element name="arguments" rngui:header="Arguments">
+    <zeroOrMore rngui:label="Create Argument Pair">
+      <element rngui:label='Name'>
+        <anyName/>
+        <data type="string" rngui:label="Value"/>
+      </element>
+    </zeroOrMore>
+  </element>
+  <element name="_attachments">
+    <zeroOrMore rngui:label="Create Attachment">
+      <element name='_attachment' rngui:label='Attachment'>
+        <attribute name="label" rngui:label="Note">
+          <data type="string"/>
+        </attribute>
+        <attribute name="xxx" rngui:label="XXX">
+          <data type="string"/>
+        </attribute>
+        <data type="string" rngui:label="Url"/>
+      </element>
+    </zeroOrMore>
+  </element>
+</element>

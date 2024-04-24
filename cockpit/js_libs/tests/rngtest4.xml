@@ -1,0 +1,12 @@
+<call>
+  <_workorders>
+    <_workorder label="a" duration="b">
+      <_attachment>1</_attachment>
+      <_attachment>2</_attachment>
+    </_workorder>
+    <_workorder label="c" duration="d">
+      <_attachment>3</_attachment>
+      <_attachment>4</_attachment>
+    </_workorder>
+  </_workorders>
+</call>

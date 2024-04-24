@@ -1,0 +1,35 @@
+<element rngui:version="1.2" name="element" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <attribute name="name" rngui:readonly="true" rngui:default="arguments">
+    <data type="string"/>
+  </attribute>
+  <choice>
+    <zeroOrMore rngui:label="Create Unnamed Element">
+      <element name="element">
+        <element name="anyname"/>
+        <element name="data">
+          <attribute name="type" rngui:label="Type">
+            <choice>
+              <value>integer</value>
+              <value>string</value>
+            </choice>
+          </attribute>
+        </element>
+      </element>
+    </zeroOrMore>
+    <zeroOrMore rngui:label="Create Named Element">
+      <element name="element">
+        <attribute name="name" rngui:label="Name">
+          <data type="string"/>
+        </attribute>
+        <element name="data">
+          <attribute name="type" rngui:label="Type">
+            <choice>
+              <value>integer</value>
+              <value>string</value>
+            </choice>
+          </attribute>
+        </element>
+      </element>
+    </zeroOrMore>
+  </choice>
+</element>

@@ -1,0 +1,85 @@
+/*
+  This file is part of CPEE.
+
+  CPEE is free software: you can redistribute it and/or modify it under the terms
+  of the GNU General Public License as published by the Free Software Foundation,
+  either version 3 of the License, or (at your option) any later version.
+
+  CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along with
+  CPEE (file COPYING in the main directory).  If not, see
+  <http://www.gnu.org/licenses/>.
+*/
+
+div.contextmenu, div.menu {
+  padding: 0;
+  margin: 0;
+  z-index: 100000;
+  position: absolute;
+  display:none;
+  background: Menu;
+  border: 1px solid #a1a1a1;
+  -moz-box-sizing:    border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing:         border-box;
+  box-shadow: 0.1em 0.1em 0.1em #a1a1a1;
+}
+
+table.contextmenu {
+  border-collapse:collapse;
+  border-spacing: 0;
+  border: 0 none;
+  padding: 0;
+  margin: 0;
+}
+
+tr.contextmenuheader {
+  font-style:italic;
+  color: #a1a1a1;
+  font-size: small;
+}
+
+tr.contextmenuheader > td{
+  padding-left: 0.5em;
+  padding-right: 1em;
+}
+tr.contextmenuheader:not(:first-child) {
+  border-top: 1px solid #a1a1a1;
+}
+
+div.menu > div {
+  height: 1.5em;
+}
+
+tr.contextmenuitem, div.menu > div {
+  font-size: small;
+  color: #333;
+}
+tr.contextmenuitem:hover, div.menu > div:hover {
+  background-color:Highlight;
+  color: HighlightText;
+}
+tr.contextmenuitem > td, div.menu > div {
+  padding: 0;
+  margin: 0;
+  padding-left: 0.5em;
+  padding-right: 1em;
+  vertical-align: top;
+}
+tr.contextmenuitem > .contextmenuicon {
+  margin-left: 0.7em;
+  padding-right: 0em;
+}
+tr.contextmenuitem > .contextmenuicon div {
+  height: 1.5em;
+  width: 1.5em;
+  vertical-align:bottom;
+}
+tr.contextmenuitem > .contextmenuicon div svg {
+  height: 1.5em;
+  width: 1.5em;
+  vertical-align:bottom;
+}

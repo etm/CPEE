@@ -1,0 +1,75 @@
+<element rngui:version="1.2" name="call" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <element name='parameters' rngui:header="Parameters">
+    <element name="label" rngui:label="Label">
+      <data type="string" rngui:label="Short description of the task"/>
+    </element>
+    <element name="method" rngui:label="Method">
+      <choice>
+        <value>:post</value>
+        <value>:get</value>
+        <value>:put</value>
+        <value>:delete</value>
+      </choice>
+    </element>
+    <element name="arguments" rngui:header="Arguments">
+      <element name="nc-program" rngui:label="NC Program">
+        <data type="string" rngui:label="Unique ID of the NC Program"/>
+      </element>
+      <element name="material-name" rngui:label="Material Name">
+        <data type="string" rngui:label="Name of the raw material"/>
+      </element>
+      <element name="material-pic" rngui:label="Material Picture">
+        <data type="string" rngui:label="Picture of the raw material"/>
+      </element>
+      <element name="result-pic" rngui:label="Result Picture">
+        <data type="string" rngui:label="Picture of the result"/>
+      </element>
+      <element name="comment" rngui:label="Comment">
+        <text rngui:wrap='true' rngui:label='Additional comments for the operator'/>
+      </element>
+      <element name="tools" rngui:header="Tools">
+        <zeroOrMore rngui:label="Add Tool">
+          <element name="tool">
+            <element name="place" rngui:label="Position">
+              <data type="integer" rngui:label="Position in Tool Magazine"/>
+            </element>
+            <element name="tool-name" rngui:label="Tool">
+              <data type="string" rngui:label="Name of Tool"/>
+            </element>
+            <element name="tool-holder" rngui:label="Holder">
+              <data type="string" rngui:label="Name of Tool Holder"/>
+            </element>
+            <element name="tool-orientation" rngui:label="Orientation">
+              <data type="string" rngui:label="Orientation in Tool Holder"/>
+            </element>
+            <element name="corrections" rngui:header="Corrections">
+              <zeroOrMore rngui:label="Add Correction">
+                <element name="correction">
+                  <attribute name="length-x" rngui:label="Length X">
+                    <data type="float"/>
+                  </attribute>
+                  <attribute name="length-z" rngui:label="Length Y">
+                    <data type="float"/>
+                  </attribute>
+                  <attribute name="radius" rngui:label="Radius">
+                    <data type="float"/>
+                  </attribute>
+                </element>
+              </zeroOrMore>
+            </element>
+            <element name="attachments" rngui:header="Attachments">
+              <zeroOrMore rngui:label="Add Attachment">
+                <element name="attachment" rngui:label="URL">
+                  <attribute name="label" rngui:label="Label">
+                    <data type="string" rngui:label="Label"/>
+                  </attribute>
+                  <data type="string" rngui:label="URL"/>
+                </element>
+              </zeroOrMore>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+    </element>
+  </element>
+</element>

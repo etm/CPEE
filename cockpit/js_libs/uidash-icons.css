@@ -1,0 +1,98 @@
+/*
+  Icon Font: uidash-icons
+*/
+
+@font-face {
+  font-family: "uidash-icons";
+  src: url("./uidash-icons.eot");
+  src: url("./uidash-icons.eot?#iefix") format("embedded-opentype"),
+       url("./uidash-icons.woff2") format("woff2"),
+       url("./uidash-icons.woff") format("woff"),
+       url("./uidash-icons.ttf") format("truetype"),
+       url("./uidash-icons.svg#uidash-icons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "uidash-icons";
+    src: url("./uidash-icons.svg#uidash-icons") format("svg");
+  }
+}
+
+[data-icon]:before { content: attr(data-icon); }
+
+[data-icon]:before,
+.icon-uidash-bookmark-outer-symbolic:before,
+.icon-uidash-bookmark-symbolic:before,
+.icon-uidash-check-symbolic:before,
+.icon-uidash-comment-symbolic:before,
+.icon-uidash-details-symbolic:before,
+.icon-uidash-edit-symbolic:before,
+.icon-uidash-expand-symbolic:before,
+.icon-uidash-filter-symbolic:before,
+.icon-uidash-forward-symbolic:before,
+.icon-uidash-homepage-symbolic:before,
+.icon-uidash-info-symbolic:before,
+.icon-uidash-language-symbolic:before,
+.icon-uidash-link-symbolic:before,
+.icon-uidash-login-symbolic:before,
+.icon-uidash-logout-symbolic:before,
+.icon-uidash-menu-symbolic:before,
+.icon-uidash-more-symbolic:before,
+.icon-uidash-neutral-symbolic:before,
+.icon-uidash-phone-symbolic:before,
+.icon-uidash-quicklinks-symbolic:before,
+.icon-uidash-reduce-symbolic:before,
+.icon-uidash-register-symbolic:before,
+.icon-uidash-rewind-symbolic:before,
+.icon-uidash-search-symbolic:before,
+.icon-uidash-slink-symbolic:before,
+.icon-uidash-structure-symbolic:before,
+.icon-uidash-target-symbolic:before,
+.icon-uidash-units-symbolic:before,
+.icon-uidash-user-symbolic:before {
+  display: inline-block;
+  font-family: "uidash-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+.icon-uidash-bookmark-outer-symbolic:before { content: "\f100"; }
+.icon-uidash-bookmark-symbolic:before { content: "\f101"; }
+.icon-uidash-check-symbolic:before { content: "\f102"; }
+.icon-uidash-comment-symbolic:before { content: "\f103"; }
+.icon-uidash-details-symbolic:before { content: "\f104"; }
+.icon-uidash-edit-symbolic:before { content: "\f105"; }
+.icon-uidash-expand-symbolic:before { content: "\f106"; }
+.icon-uidash-filter-symbolic:before { content: "\f107"; }
+.icon-uidash-forward-symbolic:before { content: "\f108"; }
+.icon-uidash-homepage-symbolic:before { content: "\f109"; }
+.icon-uidash-info-symbolic:before { content: "\f10a"; }
+.icon-uidash-language-symbolic:before { content: "\f10b"; }
+.icon-uidash-link-symbolic:before { content: "\f10c"; }
+.icon-uidash-login-symbolic:before { content: "\f10d"; }
+.icon-uidash-logout-symbolic:before { content: "\f10e"; }
+.icon-uidash-menu-symbolic:before { content: "\f10f"; }
+.icon-uidash-more-symbolic:before { content: "\f110"; }
+.icon-uidash-neutral-symbolic:before { content: "\f111"; }
+.icon-uidash-phone-symbolic:before { content: "\f112"; }
+.icon-uidash-quicklinks-symbolic:before { content: "\f113"; }
+.icon-uidash-reduce-symbolic:before { content: "\f114"; }
+.icon-uidash-register-symbolic:before { content: "\f115"; }
+.icon-uidash-rewind-symbolic:before { content: "\f116"; }
+.icon-uidash-search-symbolic:before { content: "\f117"; }
+.icon-uidash-slink-symbolic:before { content: "\f118"; }
+.icon-uidash-structure-symbolic:before { content: "\f119"; }
+.icon-uidash-target-symbolic:before { content: "\f11a"; }
+.icon-uidash-units-symbolic:before { content: "\f11b"; }
+.icon-uidash-user-symbolic:before { content: "\f11c"; }

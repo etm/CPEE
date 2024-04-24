@@ -1,0 +1,1 @@
+./vkbeautify.0.99.00.beta.js

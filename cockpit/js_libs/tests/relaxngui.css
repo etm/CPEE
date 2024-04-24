@@ -1,0 +1,203 @@
+/*
+  This file is part of RelaxNGui.
+
+  RelaxNGui is free software: you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free Software
+  Foundation, either version 3 of the License, or (at your option) any later
+  version.
+
+  RelaxNGui is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+  A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along with
+  RelaxNGui (file COPYING in the main directory).  If not, see
+  <http://www.gnu.org/licenses/>.
+*/
+
+.relaxngui_table { }
+.relaxngui_table .relaxngui_table { }
+
+.relaxngui_table.closed > .relaxngui_table,
+.relaxngui_table.closed > .relaxngui_dyn,
+.relaxngui_table.closed > .relaxngui_row,
+.relaxngui_table.closed > .relaxngui_control {
+  display: none;
+}
+.relaxngui_header.fold  {
+  cursor: pointer;
+}
+.relaxngui_table.closed .relaxngui_fold:after {
+  content: "▶";
+  font-weight: bold;
+  vertical-align:top;
+  margin-right: 0.5em;
+  position: relative;
+  top: -0.13em;
+}
+.relaxngui_table .relaxngui_fold:after {
+  content: "▽";
+  font-weight: bold;
+  vertical-align:top;
+  margin-right: 0.5em;
+  position: relative;
+  top: -0.13em;
+}
+
+.relaxngui_table > .relaxngui_table > .relaxngui_table {
+  padding: 0;
+  padding-top: 0.2em;
+  padding-bottom: 0.5em;
+  padding-left: 1em;
+}
+.relaxngui_dyn {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 0.25em;
+  padding-top: 0.25em;
+  margin-left: 0.5em;
+}
+.relaxngui_dyn > *:nth-child(1), .relaxngui_dyn > *:nth-child(2) {
+  margin: 0;
+  padding: 0;
+  font-size: 1em;
+  margin-right: 0.2em;
+  margin-left: 0.2em;
+  vertical-align: baseline;
+  cursor: pointer;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+.relaxngui_dyn > *:nth-child(2) {
+  background-color: #000000;
+  color: #fff;
+  vertical-align: middle;
+  width: 1.5em;
+  display: flex;
+  align-self: stretch;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  cursor: grab;
+}
+.relaxngui_dyn.moveable > *:nth-child(2) {
+  background-color: #ff0000;
+  cursor: grabbing;
+}
+.relaxngui_dyn.moveable {
+  cursor: grabbing;
+}
+.relaxngui_dyn > *:nth-child(3) {
+  flex: 1 1 auto;
+}
+
+.relaxngui_dyn > .relaxngui_table                       { padding: 0; margin: 0; }
+.relaxngui_dyn:nth-child(even)                          { background-color: #fff; }
+.relaxngui_dyn:nth-child(odd)                           { background-color: #e9e9e9; }
+.relaxngui_table.even > .relaxngui_row:nth-child(even)  { background-color: #fff; }
+.relaxngui_table.even > .relaxngui_row:nth-child(odd)   { background-color: #e9e9e9; }
+.relaxngui_table.odd  > .relaxngui_row:nth-child(even)  { background-color: #e9e9e9; }
+.relaxngui_table.odd  > .relaxngui_row:nth-child(odd)   { background-color: #fff; }
+.relaxngui_table.even > .relaxngui_hint:nth-child(odd)  { background-color: #fff; }
+.relaxngui_table.even > .relaxngui_hint:nth-child(even) { background-color: #e9e9e9; }
+.relaxngui_table.odd  > .relaxngui_hint:nth-child(odd)  { background-color: #e9e9e9; }
+.relaxngui_table.odd  > .relaxngui_hint:nth-child(even) { background-color: #fff; }
+
+.relaxngui_dyn:nth-child(even) > .relaxngui_table > .relaxngui_row:nth-child(1):nth-last-child(1) {
+  background-color: #fff;
+}
+.relaxngui_dyn:nth-child(odd) > .relaxngui_table > .relaxngui_row:nth-child(1):nth-last-child(1) {
+  background-color: #e9e9e9;
+}
+
+.relaxngui_table.even { background-color: #e9e9e9; }
+.relaxngui_table.odd  { background-color: #fff; }
+
+.relaxngui_row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+.relaxngui_hint {
+  padding-left: 0.2em;
+}
+.relaxngui_hint::before {
+ 	content: "↳ ";
+}
+.relaxngui_header {
+  margin: 0;
+  padding: 0;
+  padding-top: 0.7em;
+  padding-bottom: 0.2em;
+  padding-left: 0.1em;
+  display: block;
+  font-weight: bold;
+}
+.relaxngui_header[data-relaxngui-level="1"] {
+  font-size: 1.2em;
+}
+.relaxngui_dyn .relaxngui_header {
+  font-size: 1em;
+}
+button.relaxngui_control {
+  margin: 0.5em 0;
+  align-self: flex-start;
+}
+
+.relaxngui_cell { }
+
+.relaxngui_cell.optional { text-decoration: line-through; }
+
+.relaxngui_cell:nth-child(1), .relaxngui_cell:nth-child(2) {
+  margin: 0;
+  padding: 0.1em 0.2em;
+  font-size: 1em;
+  font-family: sans-serif;
+}
+input.relaxngui_cell:nth-child(1) {
+  border: 0 none;
+  background: none;
+}
+.relaxngui_cell:nth-child(3) {
+  margin: 0;
+  padding: 0.1em 0.2em;
+  flex: 1 1 auto;
+  font-size: 1em;
+  font-family: sans-serif;
+}
+select.relaxngui_cell:nth-child(3) {
+  -webkit-appearance: none;  /*Removes default chrome and safari style*/
+  -moz-appearance: none; /* Removes Default Firefox style*/
+  padding: 0;
+}
+select.relaxngui_cell:nth-child(3), button.relaxngui_cell:nth-child(3), textarea.relaxngui_cell:nth-child(3), input.relaxngui_cell:nth-child(3), [contenteditable].relaxngui_cell:nth-child(3) {
+  border: 0 none;
+  background: none;
+}
+
+[contenteditable].relaxngui_cell:nth-child(3) {
+  overflow-x: auto;
+  overflow-wrap: normal;
+  white-space: pre;
+  font-family: monospace,monospace;
+}
+[contenteditable][data-relaxngui-wrap='true'].relaxngui_cell:nth-child(3) {
+  white-space: pre-wrap;
+}
+[contenteditable].relaxngui_cell:focus {
+  outline: 0px solid transparent;
+}
+[contenteditable].relaxngui_cell:empty:before {
+  font-family: sans-serif;
+  color: #a1a1a1;
+  white-space: normal;
+  content: attr(placeholder);
+  display: block;
+}
+
+.relaxngui_template {
+  display: none;
+}

@@ -1,0 +1,147 @@
+<element rngui:version="1.2" ns="http://cpee.org" name="call" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <attribute name="id" rngui:label="ID" rngui:default="javascript:get_free_id()">
+    <data type="string" rngui:readonly="true"/>
+  </attribute>
+  <attribute name="endpoint" rngui:label="Endpoint">
+    <data type="string"/>
+  </attribute>
+  <element name='parameters' rngui:header="Properties">
+    <element name="label" rngui:label="Label">
+      <data type="string" rngui:label="Short description of the task"/>
+    </element>
+    <element name="method" rngui:label="Method">
+      <choice>
+        <value>:post</value>
+        <value>:get</value>
+        <value>:put</value>
+        <value>:delete</value>
+      </choice>
+    </element>
+    <element name="arguments" rngui:header="Arguments">
+      <zeroOrMore rngui:label="Create Argument Pair">
+        <element rngui:label='Name'>
+          <anyName/>
+          <data type="string" rngui:label="Value"/>
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="stream" rngui:header="Data Stream Handling" rngui:fold="closed">
+      <element name="sensors" rngui:header="Sensors" rngui:fold="closed">
+        <zeroOrMore rngui:label="Add Sensor">
+          <element name="sensor">
+            <element name="name" rngui:label="Label">
+              <data type="string" rngui:label="Label"/>
+            </element>
+            <element name="extractor_url" rngui:label="Extractor Url">
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="extractor_arg" rngui:label="Extractor Argument">
+              <data type="string" rngui:label="Value / Json"/>
+            </element>
+            <element name="visualizer_url" rngui:label="Visualizer Url">
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="visualizer_params" rngui:header="Visualizer Arguments">
+              <zeroOrMore rngui:label="Create Visualizer Argument Pairs">
+                <element rngui:label='Name'>
+                  <anyName/>
+                  <data type="string" rngui:label="Value / Json"/>
+                </element>
+              </zeroOrMore>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+      <element name="aggregators" rngui:header="Aggregators" rngui:fold="closed">
+        <zeroOrMore rngui:label="Add Aggregator">
+          <element name="aggregator">
+            <element name="name" rngui:label="Label">
+              <data type="string" rngui:label="Label"/>
+            </element>
+            <element name="aggregator_url" rngui:label="Aggregator Url">
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="aggregator_arg" rngui:label="Aggregator Argument">
+              <data type="string" rngui:label="Value / Json"/>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+      <element name="_cost" rngui:header="Costs" rngui:fold="closed">
+        <zeroOrMore rngui:label="Create Cost Factor">
+          <element name='_cost_factor'>
+            <element name="name" rngui:label="Label">
+              <data type="string" rngui:label="Label"/>
+            </element>
+            <element name="target" rngui:label="Target Value">
+              <data type="string" rngui:label="Value"/>
+            </element>
+            <element name="vfunc_url" rngui:label="Violation Function Url">
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="vfunc_arg" rngui:label="Violation Function Argument">
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="vcost" rngui:label="Violation Cost">
+              <data type="string" rngui:label="Value"/>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+    </element>
+  </element>
+  <element name="code" rngui:header="Implementation">
+    <element name="prepare" rngui:header="Prepare" rngui:label="Code" rngui:fold='closed_conditional'>
+      <text rngui:label='Script that is executed, before a service call'/>
+    </element>
+    <element name="finalize" rngui:header="Finalize" rngui:label="Code" rngui:fold='closed_conditional'>
+      <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+        <data type="string" rngui:readonly="true"/>
+      </attribute>
+      <text rngui:label='Script that is executed, when a service returns data'/>
+    </element>
+    <element name="update" rngui:header="Update" rngui:label="Code" rngui:fold='closed_conditional'>
+      <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+        <data type="string" rngui:readonly="true"/>
+      </attribute>
+      <text rngui:label='Script that is executed, when a service sends intermediate data'/>
+    </element>
+    <element name="rescue" rngui:header="Rescue" rngui:label="Code" rngui:fold='closed_conditional'>
+      <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+        <data type="string" rngui:readonly="true"/>
+      </attribute>
+      <text rngui:label='Script that is executed, if a service call fails'/>
+    </element>
+  </element>
+  <element name="annotations" rngui:header="Annotations">
+    <element name="_timing" rngui:header="Timing" rngui:fold="closed">
+      <element name="_timing_min" rngui:label='Min in min'>
+        <data type='float' rngui:label='Minutes'/>
+      </element>
+      <element name="_timing_max" rngui:label='Max in min'>
+        <data type='float' rngui:label='Minutes'/>
+      </element>
+      <element name="_timing_avg" rngui:label='Avg in min'>
+        <data type='float' rngui:label='Minutes'/>
+      </element>
+    </element>
+    <element name="_notes" rngui:header="Notes" rngui:fold="closed">
+      <element name="_notes_general" rngui:label='General'>
+        <text rngui:wrap='true' rngui:label='Notes'/>
+      </element>
+      <element name="_notes_output" rngui:label='Output'>
+        <text rngui:wrap='true' rngui:label='Notes'/>
+      </element>
+      <element name="_attachments">
+        <zeroOrMore rngui:label="Create Attachment">
+          <element name='_attachment' rngui:label='Attachment'>
+            <attribute name="label" rngui:label="Note">
+              <data type="string"/>
+            </attribute>
+            <data type="string" rngui:label="Url"/>
+          </element>
+        </zeroOrMore>
+      </element>
+    </element>
+  </element>
+</element>

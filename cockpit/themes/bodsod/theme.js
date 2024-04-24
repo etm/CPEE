@@ -93,7 +93,7 @@ function WFAdaptorManifestation(adaptor) {
   }; //}}}
 
   function generateConcernUI(rng) {
-    rawConcernXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="Concerns" name="_concerns" rngui:fold="closed"><zeroOrMore rngui:label="Add Concern"><element name="concern"><element name="id" rngui:label="ID"><data type="string"/><choice><value>Choose id</value>\n';
+    rawConcernXml = '<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" rngui:header="Concerns" name="_concerns"><zeroOrMore rngui:label="Add Concern"><element name="concern"><element name="id" rngui:label="ID"><data type="string"/><choice><value>Choose id</value>\n';
     Array.from($($.parseXML(self.adaptor.description.get_description())).find("description > _concerns > concern")).toSorted((a,b) => (a.id > b.id ? 1: -1)).forEach(function (element) { 
         rawConcernXml += '<value>'+element.id+'</value>';
     });
@@ -103,9 +103,9 @@ function WFAdaptorManifestation(adaptor) {
   }
 
   function removeAlreadySelectedConcerns() {
-    Array.from($('select[data-relaxngui-path=" > call > _concerns > concern > id"]')).forEach(function(e1) {
+    Array.from($('select[data-relaxngui-path=" > call > parameters > arguments > _concerns > concern > id"]')).forEach(function(e1) {
       if($(e1).val() != 'Choose id') {
-        Array.from($('select[data-relaxngui-path=" > call > _concerns > concern > id"]')).forEach(function(e2) {
+        Array.from($('select[data-relaxngui-path=" > call > parameters > arguments > _concerns > concern > id"]')).forEach(function(e2) {
           if($(e1).val() != $(e2).val()) {
             $(e2).find('option[value="'+$(e1).val()+'"]').remove()
           }
@@ -394,7 +394,9 @@ function WFAdaptorManifestation(adaptor) {
         if ($(node).find('concern')[0]) {
           dict = {}
           Array.from($(node).find('concern')).toSorted((a,b) => a.textContent > b.textContent ? 1:-1).forEach(function(e) {
-          dict[$(e).find('id')[0].innerHTML] = "AssignRead"
+            if ($(e).find('id')[0].innerHTML != "Choose id") {
+              dict[$(e).find('id')[0].innerHTML] = "AssignRead"
+            }
           })
           ret.push({ column: "Concerns", value: dict, type: 'bodsod'})
         }
