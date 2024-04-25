@@ -235,11 +235,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let center_x = (self.width - self.default_width) / 2;
     let center_y = (self.height - self.default_height) / 2;
     if (addition) {
-      var g = $X('<g class="element" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
+      var g = $X('<g class="element" element-row="' + (row-1) + '" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
                     '<g transform="translate(' + String(col*self.width+center_x-self.width_shift) + ',' + String(row*self.height+center_y-(self.height-self.height_shift)) + ')"></g>' +
                  '</g>');
     } else {
-      var g = $X('<g class="element" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
+      var g = $X('<g class="element" element-row="' + (row-1) + '" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
                     '<g transform="translate(' + String(col*self.width+center_x-self.width_shift) + ',' + String(row*self.height+center_y-(self.height-self.height_shift)) + ')">' +
                       '<text class="super" transform="translate(' + (self.default_width-10) + ',8.4)">' +
                         '<tspan class="active">0</tspan>' +
