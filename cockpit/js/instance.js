@@ -651,6 +651,8 @@ function adaptor_init(url,theme,dslx) { //{{{
                 } else {
                   tsvg = $X('<text class="label" element-id="' + val.element_id + '" x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
                   tsvg.text(col.value);
+                  tsvg.mouseover(function(ev){ manifestation.events.mouseover($(ev.currentTarget).attr('element-id')); });
+                  tsvg.mouseout(function(ev){ manifestation.events.mouseout($(ev.currentTarget).attr('element-id')); });
                   tsvg.click(function(ev){ manifestation.events.click($(ev.currentTarget).attr('element-id')); });
                   tcolumnsvgs[col.column][val.row] = tsvg;
                 }

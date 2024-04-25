@@ -340,6 +340,7 @@ function WFAdaptorManifestationBase(adaptor) {
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
   this.events.mouseover = function(svgid, e) { // {{{
+    console.log(self.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"]'));
     self.adaptor.illustrator.svg.container.find('.tile[element-id = "' + svgid + '"]').css('display','block');
     self.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"]').addClass('hover');
     self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').addClass('hover');

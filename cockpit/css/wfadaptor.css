@@ -221,7 +221,7 @@ svg .marked .cline {
 svg.labelsrow text.label {
   cursor: pointer;
 }
-svg.labelsrow text.label:hover {
+svg.labelsrow text.label:hover, svg.labelsrow text.label.hover {
   fill: var(--wfadaptor-selected);
 }
 svg text.label.selected {
