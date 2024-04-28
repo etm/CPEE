@@ -121,6 +121,17 @@
     <div class='menu' id='templates'></div>
     <div class='menu' id='modeltypes'></div>
 
+    <template id="label">
+      <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" style="position: absolute; top: 0; left: 0;" class="displaylabel">
+        <g transform="translate(1 %%1) rotate(-%%2)">
+          <rect class="displaylabel" width="200" height="14" x="8" y="0" rx="5" ry="5"/>
+          <path class="displaylabel" d="M10,13 0,13 8,8"/>
+          <path class="displaylabelinner" d="M10,11.5 8.5,11.5 8.5,9.5 10,9.5"/>
+          <text class="label" x="18" y="10">aaaa</text>
+        </g>
+      </svg>
+    </template>
+
     <ui-tabbed id="instance">
       <ui-tabbar>
         <ui-tab class="switch"                                                ></ui-tab>

@@ -470,3 +470,40 @@ svg g.element[element-id].hover .cline {
   stroke-opacity:1;
   stroke-dasharray:none;
 }
+
+svg.displaylabel .displaylabel {
+  fill: var(--wfadaptor-background);
+  fill-opacity:1;
+  stroke: var(--wfadaptor-border);
+  stroke-width:1.6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
+svg.displaylabel .displaylabelinner {
+  fill: var(--wfadaptor-background);
+  fill-opacity:1;
+  stroke: var(--wfadaptor-background);
+  stroke-width:1.6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
+svg.displaylabel text.label {
+  font-size:12px;
+  font-style:normal;
+  font-variant:normal;
+  font-stretch:normal;
+  text-align:center;
+  line-height:125%;
+  writing-mode:horizontal-tb;
+  text-anchor:start;
+  fill: var(--wfadaptor-base);
+  fill-opacity:1;
+  stroke:none;
+  font-family:Arial;
+}
