@@ -24,10 +24,10 @@ function show_label(x,y,deg,text) {
 }
 
 function show_row_label(data) {
-  let pos = data.target.getBoundingClientRect();
+  let pos = data.getBoundingClientRect();
   let pos_top = $('#graphcolumn')[0].getBoundingClientRect();
   let pos_y;
-  let text = $('text',data.target).text();
+  let text = $('text',data).text();
   if (pos.y < (pos_top.y + 10)) {
     pos_y = pos_top.y + 10;
   } else {
@@ -38,7 +38,7 @@ function show_row_label(data) {
 
 $(document).ready(function() {
   var current_label;
-  $('#graphgrid').on('mouseout','svg .resource-line, svg .resource-point',(data)=>{
+  $('#graphgrid').on('mouseout','svg .resource-column, svg .resource-point',(data)=>{
     $('.displaylabel').remove();
     current_label = undefined;
   });
@@ -48,13 +48,17 @@ $(document).ready(function() {
       show_row_label(current_label);
     }
   });
-  $('#graphgrid').on('mouseover','svg .resource-line',(data)=>{
+  $('#graphgrid').on('mouseover','svg .resource-column',(data)=>{
+    show_row_label(data.target);
+    current_label = data.target;
+  });
+  $('#graphgrid').on('mouseover','svg .resource-point',(ev)=>{
+    let rc = $(ev.target).attr('resource-column');
+    let data = $('.resource-column[resource-column=' + rc + ']')[0];
     show_row_label(data);
     current_label = data;
-  });
-  $('#graphgrid').on('mouseover','svg .resource-point',(data)=>{
-    let pos = data.target.getBoundingClientRect();
-    let text = $('text',data.target).text();
-    show_label(pos.x + 12, pos.y + 5, 60, text);
+    // let pos = data.target.getBoundingClientRect();
+    // let text = $('text',data.target).text();
+    // show_label(pos.x + 12, pos.y + 5, 60, text);
   });
 });

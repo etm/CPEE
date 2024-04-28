@@ -10,11 +10,11 @@ svg .resource-point.write {
 svg .resource-point.both {
   fill: blue;
 }
-svg line.resource-line {
+svg line.resource-column {
   stroke: red;
   stroke-opacity: 0.1;
 }
-svg line.resource-line:hover {
+svg line.resource-column:hover {
   stroke: red;
   stroke-opacity: 0.2;
 }

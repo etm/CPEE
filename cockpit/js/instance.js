@@ -608,6 +608,7 @@ function adaptor_init(url,theme,dslx) { //{{{
                   let tsvg = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-row" element-row="' + (val.row-1) + '"></g>');
 
                   var cx = space;
+                  var count = 0;
                   for (const [k, p] of mapPoints) {
                     let firstAssignFlag = false;
                     p.x = cx;
@@ -617,12 +618,12 @@ function adaptor_init(url,theme,dslx) { //{{{
                       let inner;
 
                       if (p.AR == "Read") {
-                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x) + ',' + pos + ' ' + (p.x + iconsize) + ',' + (pos + iconsize/2) + ' ' + (p.x + iconsize) + ',' + (pos - iconsize/2) + '" class="resource-point read"></polygon>');
+                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" points="' + (p.x) + ',' + pos + ' ' + (p.x + iconsize) + ',' + (pos + iconsize/2) + ' ' + (p.x + iconsize) + ',' + (pos - iconsize/2) + '" class="resource-point read"></polygon>');
                         if (pos == p.y0) { firstAssignFlag = true; }
                       } else if (p.AR == "Assign") {    // Define points for a triangle pointing to the left
-                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x + iconsize) + ',' + pos + ' ' + (p.x) + ',' + (pos + iconsize/2) + ' ' + (p.x) + ',' + (pos - iconsize/2) + '" class="resource-point write"></polygon>');
+                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" points="' + (p.x + iconsize) + ',' + pos + ' ' + (p.x) + ',' + (pos + iconsize/2) + ' ' + (p.x) + ',' + (pos - iconsize/2) + '" class="resource-point write"></polygon>');
                       } else if (p.AR == "AssignRead") {
-                        inner = $X('<circle xmlns="http://www.w3.org/2000/svg" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="resource-point both"></circle>');
+                        inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="resource-point both"></circle>');
                       }
 
                       // extend the bars
@@ -640,9 +641,10 @@ function adaptor_init(url,theme,dslx) { //{{{
                       if (tcolumnsvgs[col.column][1] == undefined) {
                         tcolumnsvgs[col.column][1] = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-row" element-row="' + 0 + '"></g>');
                       }
-                      tcolumnsvgs[col.column][1].append($X('<polygon xmlns="http://www.w3.org/2000/svg" points="' + (p.x + iconsize) + ',' + firstpos + ' ' + (p.x) + ',' + (firstpos + iconsize/2) + ' ' + (p.x) + ',' + (firstpos - iconsize/2) + '" class="resource-point write"></polygon>').append($X('<text xmlns="http://www.w3.org/2000/svg"></text>').text(k)));
+                      tcolumnsvgs[col.column][1].append($X('<polygon xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" points="' + (p.x + iconsize) + ',' + firstpos + ' ' + (p.x) + ',' + (firstpos + iconsize/2) + ' ' + (p.x) + ',' + (firstpos - iconsize/2) + '" class="resource-point write"></polygon>').append($X('<text xmlns="http://www.w3.org/2000/svg"></text>').text(k)));
                     }
                     cx += iconsize + space;
+                    count += 1;
                   }
 
                   if (tsvg.children().length > 0) {
@@ -693,8 +695,10 @@ function adaptor_init(url,theme,dslx) { //{{{
               }
             }
             if (tcolumntype[h] == 'resource' || tcolumntype[h] == 'bodsod') {
+              let count = 0;
               for (const [k, p] of mapPoints) {
-                svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + p.ymax + '" class="' + tcolumntype[h] + '-line" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
+                svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
+                count += 1;
               }
             }
 
