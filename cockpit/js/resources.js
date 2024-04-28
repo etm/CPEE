@@ -23,21 +23,34 @@ function show_label(x,y,deg,text) {
   $('rect',clone).attr('width',width);
 }
 
+function show_row_label(data) {
+  let pos = data.target.getBoundingClientRect();
+  let pos_top = $('#graphcolumn')[0].getBoundingClientRect();
+  let pos_y;
+  let text = $('text',data.target).text();
+  if (pos.y < pos_top.y) {
+    pos_y = pos_top.y + 10;
+  } else {
+    pos_y = pos.y;
+  }
+  show_label(pos.x + 12, pos_y, 60, text);
+}
+
 $(document).ready(function() {
+  var current_label;
   $('#graphgrid').on('mouseout','svg line.resource-line, svg g polygon.resource-point',(data)=>{
     $('.displaylabel').remove();
+    current_label = undefined;
+  });
+  $('#graphcolumn').scroll((data)=>{
+    if (current_label != undefined) {
+      $('.displaylabel').remove();
+      show_row_label(current_label);
+    }
   });
   $('#graphgrid').on('mouseover','svg line.resource-line',(data)=>{
-    let pos = data.target.getBoundingClientRect();
-    let pos_top = $('#graphcolumn')[0].getBoundingClientRect();
-    let pos_y;
-    let text = $('text',data.target).text();
-    if (pos.y < pos_top.y) {
-      pos_y = pos_top.y + 10;
-    } else {
-      pos_y = pos.y;
-    }
-    show_label(pos.x + 12, pos_y, 60, text);
+    show_row_label(data);
+    current_label = data;
   });
   $('#graphgrid').on('mouseover','svg g polygon.resource-point',(data)=>{
     let pos = data.target.getBoundingClientRect();
