@@ -1330,33 +1330,6 @@ function load_modeltype() {// {{{
   });
 }// }}}
 
-function show_label(x,y,deg,text) {
-  const degrees_to_radians = deg => (deg * Math.PI) / 180.0;
-
-  let clone = $('svg',document.querySelector('#label').content.cloneNode(true));
-  $('text',clone).text(text);
-  let n = $('body').append(clone);
-  let dim = $('text',clone)[0].getBBox();
-  let height = $('rect',clone).attr('height');
-  let width = dim.width + dim.x;
-  let shift = (width + 10) * Math.sin(degrees_to_radians(deg));
-  let shift_plus = height * Math.sin(degrees_to_radians(90-deg));
-  let neigh = (width + 10) * Math.cos(degrees_to_radians(deg)) + height * Math.cos(degrees_to_radians(90-deg));
-
-  let top_y = 23 * Math.cos(degrees_to_radians(deg));
-  let top_x = 23 * Math.sin(degrees_to_radians(deg));
-
-  $(clone).css('left',x-top_x);
-  $(clone).css('top',y-shift-top_y);
-
-  $(clone).attr('height',shift + shift_plus + 2);
-  $(clone).attr('width',neigh + 2);
-  $('g',clone).attr('transform',$('g',clone).attr('transform').replace(/%%1/, shift + 1).replace(/%%2/, deg));
-  $('rect',clone).attr('width',width);
-
-
-}
-
 async function load_des(url,model) { //{{{
   return $.ajax({
     type: "PUT",
