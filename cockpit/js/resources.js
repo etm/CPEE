@@ -28,7 +28,7 @@ function show_row_label(data) {
   let pos_top = $('#graphcolumn')[0].getBoundingClientRect();
   let pos_y;
   let text = $('text',data.target).text();
-  if (pos.y < pos_top.y) {
+  if (pos.y < (pos_top.y + 10)) {
     pos_y = pos_top.y + 10;
   } else {
     pos_y = pos.y;
