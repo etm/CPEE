@@ -38,7 +38,7 @@ function show_row_label(data) {
 
 $(document).ready(function() {
   var current_label;
-  $('#graphgrid').on('mouseout','svg line.resource-line, svg g polygon.resource-point',(data)=>{
+  $('#graphgrid').on('mouseout','svg .resource-line, svg .resource-point',(data)=>{
     $('.displaylabel').remove();
     current_label = undefined;
   });
@@ -48,11 +48,11 @@ $(document).ready(function() {
       show_row_label(current_label);
     }
   });
-  $('#graphgrid').on('mouseover','svg line.resource-line',(data)=>{
+  $('#graphgrid').on('mouseover','svg .resource-line',(data)=>{
     show_row_label(data);
     current_label = data;
   });
-  $('#graphgrid').on('mouseover','svg g polygon.resource-point',(data)=>{
+  $('#graphgrid').on('mouseover','svg .resource-point',(data)=>{
     let pos = data.target.getBoundingClientRect();
     let text = $('text',data.target).text();
     show_label(pos.x + 12, pos.y + 5, 60, text);
