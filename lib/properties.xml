@@ -64,7 +64,7 @@
 
   <message name="executionhandler"> <!--{{{-->
     <parameter name="value" type="string">
-      <param name="pattern">[A-Z][a-zA-Z]*</param>
+      <param name="pattern">[a-z][a-zA-Z]*</param>
     </parameter>
   </message> <!--}}}-->
 

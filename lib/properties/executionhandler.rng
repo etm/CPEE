@@ -2,7 +2,7 @@
   <define name="executionhandler">
     <element name="executionhandler" ns="http://cpee.org/ns/properties/2.0">
       <data type="string">
-        <param name="pattern">[a-zA-Z]+</param>
+        <param name="pattern">[a-z][a-zA-Z]*</param>
       </data>
     </element>
   </define>

@@ -1165,7 +1165,7 @@ async function set_testset(testset,exec) {// {{{
   var promises = [];
 
   var tset = $X('<properties xmlns="http://cpee.org/ns/properties/2.0"/>');
-  tset.append($("testset > executionwrapper",testset));
+  tset.append($("testset > executionhandler",testset));
   tset.append($("testset > positions",testset));
   tset.append($("testset > dataelements",testset));
   tset.append($("testset > endpoints",testset));
