@@ -697,7 +697,7 @@ function adaptor_init(url,theme,dslx) { //{{{
                         p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
                         if($(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0]){
                           type = $(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value
-                          if(type == 'None') {
+                          if(type == 'No constraint') {
                             str += '<circle xmlns="http://www.w3.org/2000/svg" cx="' + cx + '" cy="' + p.yc + '" r="5" fill="blue" class="resource-point">';
                           }else if (type == 'BOD'){
                             str += '<circle xmlns="http://www.w3.org/2000/svg" cx="' + cx + '" cy="' + p.yc + '" r="5" fill="green" class="resource-point">';
@@ -808,13 +808,13 @@ function adaptor_init(url,theme,dslx) { //{{{
           for (const [k, p] of mapPointsBodSod) {
             if($(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0]){
               type = $(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value
-              text = k+": "+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["name"].value
-              if(type == 'None') {
-                bodsod.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line" stroke-opacity="0.1" stroke="blue" stroke-width="10" marker-end="url(#arrowhead)"><text>' + text + '</text></line>'));
+              text = k+": "+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["name"].value+" ("+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["role"].value+") "+" ["+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value+"]"
+              if(type == 'No constraint') {
+                bodsod.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line blue" stroke-opacity="0.1" stroke="blue" stroke-width="10" marker-end="url(#arrowhead)"><text>' + text + '</text></line>'));
               }else if (type == 'BOD'){
-                bodsod.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line" stroke-opacity="0.1" stroke="green" stroke-width="10" marker-end="url(#arrowhead)"><text>' + text + '</text></line>'));
+                bodsod.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line green" stroke-opacity="0.1" stroke="green" stroke-width="10" marker-end="url(#arrowhead)"><text>' + text + '</text></line>'));
               }else {
-                bodsod.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line" stroke-opacity="0.1" stroke="red" stroke-width="10" marker-end="url(#arrowhead)"><text>' + text + '</text></line>'));
+                bodsod.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line red" stroke-opacity="0.1" stroke="red" stroke-width="10" marker-end="url(#arrowhead)"><text>' + text + '</text></line>'));
               }
             }
           }

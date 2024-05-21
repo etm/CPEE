@@ -34,7 +34,7 @@
           <attribute name="type" rngui:label="Type">
             <data type="string"/>
               <choice>
-                <value>None</value>
+                <value>No constraint</value>
                 <value>BOD</value>
                 <value>SOD</value>
               </choice>
