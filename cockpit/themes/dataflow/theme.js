@@ -22,7 +22,11 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
           const arg1 = match[1];
           if (indices.includes(match.index)) { continue; }
           if (dict[arg1] == "Assign" || dict[arg1] == "AssignRead") {
-            dict[arg1] = "AssignRead";
+            if (match.index < indices[0]) {
+              dict[arg1] = "ReadAssign";
+            } else {
+              dict[arg1] = "AssignRead";
+            }
           } else {
             dict[arg1] = "Read";
           }
@@ -42,7 +46,20 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       // For Blue Points
       let dict1 = dataflowExtract($('arguments *',$(node).children('parameters')),true,function(target){ return $(target).text(); });
       let dict2 = dataflowExtract($(node).children('code').children(),false,function(target){ return $(target).text(); });
-      let dict = {...dict1,...dict2};
+      let dict = structuredClone(dict1);
+      Object.keys(dict2).forEach((key) => {
+        if (dict[key] == 'Read' && (dict2[key] == 'Assign' || dict2[key] == 'AssignRead')) {
+          dict[key] = 'ReadAssign';
+        } else if (dict[key] == 'Assign' && dict2[key] == 'Assign') {
+          dict[key] = 'Assign';
+        } else if (dict[key] == 'Assign' && dict2[key] != 'Assign') {
+          dict[key] = 'AssignRead';
+        } else {
+          dict[key] = dict2[key];
+        }
+      });
+
+      console.log(dict);
       ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
       if (lab != '') {
         ret.unshift( { column: 'Label', value: lab } );

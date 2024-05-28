@@ -558,6 +558,7 @@ function adaptor_init(url,theme,dslx) { //{{{
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       manifestation.endpoints = save.endpoints_list;
       graphrealization.draw_labels = function(max,labels,dimensions,striped) {
+        console.log(labels);
         $('#graphcanvas').css('grid-row', '1/span ' + (max.row + 2));
         if (striped == true) {
           if (!$('#graphgrid').hasClass('striped')) {
@@ -624,6 +625,9 @@ function adaptor_init(url,theme,dslx) { //{{{
                         inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" points="' + (p.x + iconsize) + ',' + pos + ' ' + (p.x) + ',' + (pos + iconsize/2) + ' ' + (p.x) + ',' + (pos - iconsize/2) + '" class="resource-point write"></polygon>');
                       } else if (p.AR == "AssignRead") {
                         inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="resource-point both"></circle>');
+                      } else if (p.AR == "ReadAssign") {
+                        inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="resource-point both"></circle>');
+                        if (pos == p.y0) { firstAssignFlag = true; }
                       }
 
                       // extend the bars
