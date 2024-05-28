@@ -59,7 +59,6 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         }
       });
 
-      console.log(dict);
       ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
       if (lab != '') {
         ret.unshift( { column: 'Label', value: lab } );

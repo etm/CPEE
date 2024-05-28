@@ -558,7 +558,6 @@ function adaptor_init(url,theme,dslx) { //{{{
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       manifestation.endpoints = save.endpoints_list;
       graphrealization.draw_labels = function(max,labels,dimensions,striped) {
-        console.log(labels);
         $('#graphcanvas').css('grid-row', '1/span ' + (max.row + 2));
         if (striped == true) {
           if (!$('#graphgrid').hasClass('striped')) {
