@@ -1248,7 +1248,7 @@ function WFAdaptorManifestationBase(adaptor) {
 
         var regassi =      /data\.([a-zA-Z_]+)\s*(=[^=]|\+\=|\-\=|\*\=|\/\=|<<|>>)/g; // we do not have to check for &gt;/&lt; version of stuff as only conditions are in attributes, and conditions can not contain assignments
         var reg_not_assi = /data\.([a-zA-Z_]+)\s*/g;
-        $ ('call > parameters > arguments > *, call > code > *, loop[condition], alternative[condition]',node).each(function(i,n) {
+        $.merge($('call > code > prepare',node), $('call > parameters > arguments > *, call > code > finalize, call > code > update, call > code > rescue, loop[condition], alternative[condition]',node)).each(function(i,n) {
           let item;
           if (n.hasAttribute('condition')) {
             item = n.getAttribute('condition');
@@ -1266,7 +1266,11 @@ function WFAdaptorManifestationBase(adaptor) {
           for (const match of item.matchAll(reg_not_assi)) {
             const arg1 = match[1];
             if (indices.includes(match.index)) { continue; }
-            if (!alist.includes(arg1)) { plist.push(arg1); }
+            if (!alist.includes(arg1)) {
+              if (match.index >= indices[0]) {
+                plist.push(arg1);
+              }
+            }
           }
         })
         if (plist.length > 0) { return 'start_event'; }

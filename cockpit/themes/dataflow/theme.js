@@ -34,6 +34,22 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       });
       return dict;
     } //}}}
+    var dataflowMerge = function(dict,merge) {
+      Object.keys(merge).forEach((key) => {
+        if (dict[key] == 'Read' && (merge[key] == 'Assign' || merge[key] == 'AssignRead')) {
+          dict[key] = 'ReadAssign';
+        } else if (dict[key] == 'Assign' && merge[key] == 'Assign') {
+          dict[key] = 'Assign';
+        } else if (dict[key] == 'Assign' && merge[key] != 'Assign') {
+          dict[key] = 'AssignRead';
+        } else if (dict[key] == 'AssignRead' || dict[key] == 'ReadAssign') {
+        } else {
+          dict[key] = merge[key];
+        }
+      });
+      return dict;
+    }
+
     this.elements.call.illustrator.label = function(node) { //{{{
       var rep = $('body').attr('current-resources');
       var ep = self.endpoints[$(node).attr('endpoint')];
@@ -44,21 +60,12 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       var ret = [ { column: 'ID', value: $(node).attr('id') } ];
 
       // For Blue Points
+      let dict0 = dataflowExtract($(node).children('code').children('prepare'),false,function(target){ return $(target).text(); });
       let dict1 = dataflowExtract($('arguments *',$(node).children('parameters')),true,function(target){ return $(target).text(); });
       let dict2 = dataflowExtract($(node).children('code').children(),false,function(target){ return $(target).text(); });
-      let dict = structuredClone(dict1);
-      Object.keys(dict2).forEach((key) => {
-        if (dict[key] == 'Read' && (dict2[key] == 'Assign' || dict2[key] == 'AssignRead')) {
-          dict[key] = 'ReadAssign';
-        } else if (dict[key] == 'Assign' && dict2[key] == 'Assign') {
-          dict[key] = 'Assign';
-        } else if (dict[key] == 'Assign' && dict2[key] != 'Assign') {
-          dict[key] = 'AssignRead';
-        } else {
-          dict[key] = dict2[key];
-        }
-      });
-
+      let dict = structuredClone(dict0);
+      dataflowMerge(dict,dict1);
+      dataflowMerge(dict,dict2);
       ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
       if (lab != '') {
         ret.unshift( { column: 'Label', value: lab } );
