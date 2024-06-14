@@ -142,8 +142,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @handler_passthrough = callback
       @controller.callback(self,callback,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
 
-      pp params
-
       status, result, headers = client.request type => params
       @guard_files += result
 

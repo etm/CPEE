@@ -98,10 +98,16 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     }; //}}}
     this.elements.loop_finish.illustrator.label = function(node) { //{{{
       var avg = $('> _probability_avg',$(node).children('_probability')).text();
-      var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+      var lab = $(node).attr('condition');
+      var ret = [ ];
+      if (lab != '') {
+        ret.unshift( { column: 'Label', value: lab } );
+      }
       if (avg != '') {
         ret.push({ column: 'Average', value: avg + 'ｘ' });
       }
+      let dict = dataflowExtract($(node),false,function(target){ return $(target).attr('condition'); });
+      ret.push({ column: 'Dataflow', value: dict, type: 'resource' });
       return ret;
     }; //}}}
     this.elements.otherwise.illustrator.label = function(node) { //{{{
@@ -110,7 +116,11 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     }; //}}}
     this.elements.alternative.illustrator.label = function(node) { //{{{
       var avg = $('> _probability_avg',$(node).children('_probability')).text();
-      var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+      var lab = $(node).attr('condition');
+      var ret = [ ];
+      if (lab != '') {
+        ret.unshift( { column: 'Label', value: lab } );
+      }
       if (avg != '') {
         ret.push({ column: 'Average', value: avg + '%' });
       }
@@ -125,7 +135,11 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     }; //}}}
     this.elements.loop_head.illustrator.label = function(node) { //{{{
       var avg = $('> _probability_avg',$(node).children('_probability')).text();
-      var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+      var lab = $(node).attr('condition');
+      var ret = [ ];
+      if (lab != '') {
+        ret.unshift( { column: 'Label', value: lab } );
+      }
       if (avg != '') {
         ret.push({ column: 'Average', value: avg + 'ｘ' });
       }

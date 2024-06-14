@@ -27,18 +27,22 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     };
     this.elements.manipulate.illustrator.label = function(node) {
       var lab = $(node).attr('label');
-      if (lab) {
-        return [ { column: 'Label', value: lab.replace(/^['"]/,'').replace(/['"]$/,'') }, { column: 'ID', value: $(node).attr('id') } ];
-      }  else {
-        return [ { column: 'ID', value: $(node).attr('id') } ];
+      var ret = [ { column: 'ID', value: $(node).attr('id') } ];
+      if (lab && lab != '') {
+        ret.unshift( { column: 'Label', value: lab } );
       }
+      return ret;
     }; //}}}
     this.elements.stop.illustrator.label = function(node) { //{{{
       return [ { column: 'ID', value: $(node).attr('id') } ];
     }; //}}}
     this.elements.loop_finish.illustrator.label = function(node) { //{{{
       var avg = $('> _probability_avg',$(node).children('_probability')).text();
-      var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+      var lab = $(node).attr('condition');
+      var ret = [ ];
+      if (lab != '') {
+        ret.unshift( { column: 'Label', value: lab } );
+      }
       if (avg != '') {
         ret.push({ column: 'Average', value: avg + 'ｘ' });
       }
@@ -50,7 +54,11 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     }; //}}}
     this.elements.alternative.illustrator.label = function(node) { //{{{
       var avg = $('> _probability_avg',$(node).children('_probability')).text();
-      var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+      var lab = $(node).attr('condition');
+      var ret = [ ];
+      if (lab != '') {
+        ret.unshift( { column: 'Label', value: lab } );
+      }
       if (avg != '') {
         ret.push({ column: 'Average', value: avg + '%' });
       }
@@ -61,7 +69,11 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     }; //}}}
     this.elements.loop_head.illustrator.label = function(node) { //{{{
       var avg = $('> _probability_avg',$(node).children('_probability')).text();
-      var ret = [ { column: 'Label', value: $(node).attr('condition') } ];
+      var lab = $(node).attr('condition');
+      var ret = [ ];
+      if (lab != '') {
+        ret.unshift( { column: 'Label', value: lab } );
+      }
       if (avg != '') {
         ret.push({ column: 'Average', value: avg + 'ｘ' });
       }
