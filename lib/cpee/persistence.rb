@@ -120,7 +120,6 @@ module CPEE
       [@@obj + ":#{id}/#{File.join(*item)}"]
     end
 
-
     def self::keys(id,opts)
       res = []
       res += Persistence::keys_extract_zset(opts,id,'dataelements')
@@ -129,7 +128,11 @@ module CPEE
       res += Persistence::keys_extract_name(opts,id,'attributes')
       res += Persistence::keys_extract_zset(opts,id,'endpoints')
       res += Persistence::keys_extract_name(opts,id,'endpoints')
-      res += Persistence::keys_extract_set(opts,id,'positions')
+      pos = Persistence::keys_extract_set(opts,id,'positions')
+      res += pos
+      pos.each do |p|
+        res << File.join(p,'@passthrough')
+      end
       res += Persistence::keys_extract_name(opts,id,'positions')
       hnd = Persistence::keys_extract_set(opts,id,'handlers')
       res += hnd
@@ -137,6 +140,16 @@ module CPEE
       hnd.each do |h|
         res << File.join(h,'url')
         res += Persistence::keys_extract_set_raw(opts,h)
+      end
+      cbs = Persistence::keys_extract_set(opts,id,'callbacks')
+      res += cbs
+      res += Persistence::keys_extract_name(opts,id,'callbacks')
+      cbs.each do |c|
+        ckey = Persistence::keys_extract_set_raw(opts,c)
+        res << File.join(ckey,'position')
+        res << File.join(ckey,'label')
+        res << File.join(ckey,'uuid')
+        res << File.join(ckey,'type')
       end
       res += Persistence::keys_extract_name(opts,id,'dsl')
       res += Persistence::keys_extract_name(opts,id,'dslx')
