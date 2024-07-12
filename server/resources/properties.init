@@ -26,7 +26,12 @@
   <positions/>
   <dataelements/>
   <endpoints>
-    <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
+    <user>https-post://cpee.org/services/timeout-user.php</user>
+    <auto>https-post://cpee.org/services/timeout-auto.php</auto>
+    <timeout>https-post://cpee.org/services/timeout.php</timeout>
+    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
+    <send>https-post://cpee.org/ing/correlators/message/send/</send>
+    <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
   </endpoints>
   <attributes>
     <info/>
