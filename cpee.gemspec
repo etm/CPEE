@@ -2,8 +2,8 @@ Gem::Specification.new do |s|
   s.name             = "cpee"
   s.version          = "2.1.59"
   s.platform         = Gem::Platform::RUBY
-  s.license          = "LGPL-3.0"
-  s.summary          = "Preliminary release of cloud process execution engine (cpee.org). If you just need workflow execution, without a rest service exposing it, then use WEEL."
+  s.license          = "LGPL-3.0-or-later"
+  s.summary          = "The cloud process execution engine (cpee.org). If you just need workflow execution, without a rest service exposing it, then use WEEL."
 
   s.description      = "see http://cpee.org"
 
