@@ -1,11 +1,11 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <subscriptions>
-	  <subscription xmlns="http://riddl.org/ns/common-patterns/notifications-producer/2.0" url="http://localhost:3001" id="_maxiking">
+	  <subscription xmlns="http://riddl.org/ns/common-patterns/notifications-producer/2.0" url="http://localhost:3001" id="compliance-checker">
       <topic id="activity">
         <event>calling</event>
-	<event>done</event>
-	<event>status</event>
-	<event>receiving</event>
+        <event>done</event>
+        <event>status</event>
+        <event>receiving</event>
       </topic>
     </subscription>
   </subscriptions>
