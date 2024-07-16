@@ -1,5 +1,6 @@
 var es;
 var suspended_redrawing = false;
+var skip_location = false;
 var myid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
 var paths = '#dat_details input, #dat_details textarea, #dat_details select, #dat_details button, #dat_details [contenteditable], #dat_dataelements input, #dat_dataelements textarea, #dat_dataelements select, #dat_dataelements button, #dat_dataelements [contenteditable], #dat_endpoints input, #dat_endpoints textarea, #dat_endpoints select, #dat_endpoints button, #dat_endpoints [contenteditable], #dat_attributes input, #dat_attributes textarea, #dat_attributes select, #dat_attributes button, #dat_attributes [contenteditable]';
 var loading = false;
@@ -1175,7 +1176,10 @@ async function set_testset(testset,exec) {// {{{
   tset.append($("testset > attributes",testset));
   tset.append($("testset > description",testset));
   tset.append($("testset > transformation",testset));
-  $('testset > attributes > info',tset).remove();
+  if (skip_location) {
+    $('properties > attributes > info',tset).remove();
+    $('properties > attributes > design_dir',tset).remove();
+  }
 
   promises.push(
     $.ajax({
