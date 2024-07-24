@@ -17,6 +17,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
   <head>
+    <meta charset="utf-8"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>CPEE Cockpit</title>
 
@@ -46,18 +47,20 @@
 
     <!-- modelling ui -->
     <script type="text/javascript" src="js/wfadaptor.js"></script>
-    <link rel="stylesheet" href="css/wfadaptor.css" type="text/css"/>
+    <link rel="stylesheet" href="css/wfadaptor.css" type="text/css" data-include-export="true"/>
 
     <!-- custom stuff, play arround  -->
     <script type="text/javascript" src="js/ui.js"></script>
     <script type="text/javascript" src="js/instance.js"></script>
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
+    <script type="text/javascript" src="js/resources.js"></script>
     <script type="text/javascript" src="js/edit.js"></script>
     <script type="text/javascript" src="js/modifiers.js"></script>
-    <script type="text/javascript" src="js/resources.js"></script>
+    <script type="text/javascript" src="themes/base.js"></script>
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
-    <link rel="stylesheet" href="css/resources.css" type="text/css"/>
+    <link rel="stylesheet" href="css/resources-label.css" type="text/css"/>
+    <link rel="stylesheet" href="css/resources-svg.css" type="text/css" data-include-export="true"/>
     <link rel="stylesheet" href="/global_ui/uicpee.css" type="text/css"/>
     <style>
       /* has to be fucking inline, because firefox and chrome disagree how to handle filter urls */
@@ -118,6 +121,17 @@
 
     <div class='menu' id='templates'></div>
     <div class='menu' id='modeltypes'></div>
+
+    <template id="label">
+      <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" style="position: absolute; top: 0; left: 0;" class="displaylabel">
+        <g transform="translate(1 %%1) rotate(-%%2)">
+          <rect class="displaylabel" width="200" height="14" x="8" y="0" rx="5" ry="5"/>
+          <path class="displaylabel" d="M10,13 0,13 8,8"/>
+          <path class="displaylabelinner" d="M10,11.5 8.5,11.5 8.5,9.5 10,9.5"/>
+          <text class="label" x="18" y="10">aaaa</text>
+        </g>
+      </svg>
+    </template>
 
     <ui-tabbed id="instance">
       <ui-tabbar>

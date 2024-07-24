@@ -99,8 +99,73 @@ module CPEE
       id
     end
 
-    def self::keys(id,opts,item=nil)
-      opts[:redis].keys(File.join(@@obj + ":#{id}",item.to_s,'*'))
+    def self::keys_extract_zset(opts,id,item)
+      path = @@obj + ":#{id}/#{item}"
+      opts[:redis].zrange(path,0,-1).map do |e|
+        File.join(path,e)
+      end
+    end
+    def self::keys_extract_set(opts,id,item)
+      path = @@obj + ":#{id}/#{item}"
+      opts[:redis].smembers(path).map do |e|
+        File.join(path,e)
+      end
+    end
+    def self::keys_extract_set_raw(opts,path)
+      opts[:redis].smembers(path).map do |e|
+        File.join(File.dirname(path),e)
+      end
+    end
+    def self::keys_extract_name(opts,id,*item)
+      [@@obj + ":#{id}/#{File.join(*item)}"]
+    end
+
+    def self::keys(id,opts)
+      res = []
+      res += Persistence::keys_extract_zset(opts,id,'dataelements')
+      res += Persistence::keys_extract_name(opts,id,'dataelements')
+      res += Persistence::keys_extract_zset(opts,id,'attributes')
+      res += Persistence::keys_extract_name(opts,id,'attributes')
+      res += Persistence::keys_extract_zset(opts,id,'endpoints')
+      res += Persistence::keys_extract_name(opts,id,'endpoints')
+      pos = Persistence::keys_extract_set(opts,id,'positions')
+      res += pos
+      pos.each do |p|
+        res << File.join(p,'@passthrough')
+      end
+      res += Persistence::keys_extract_name(opts,id,'positions')
+      hnd = Persistence::keys_extract_set(opts,id,'handlers')
+      res += hnd
+      res += Persistence::keys_extract_name(opts,id,'handlers')
+      hnd.each do |h|
+        res << File.join(h,'url')
+        res += Persistence::keys_extract_set_raw(opts,h)
+      end
+      cbs = Persistence::keys_extract_set(opts,id,'callbacks')
+      res += cbs
+      res += Persistence::keys_extract_name(opts,id,'callbacks')
+      cbs.each do |c|
+        ckey = Persistence::keys_extract_set_raw(opts,c)
+        res << File.join(ckey,'position')
+        res << File.join(ckey,'label')
+        res << File.join(ckey,'uuid')
+        res << File.join(ckey,'type')
+      end
+      res += Persistence::keys_extract_name(opts,id,'dsl')
+      res += Persistence::keys_extract_name(opts,id,'dslx')
+      res += Persistence::keys_extract_name(opts,id,'status','message')
+      res += Persistence::keys_extract_name(opts,id,'status','id')
+      res += Persistence::keys_extract_name(opts,id,'executionhandler')
+      res += Persistence::keys_extract_name(opts,id,'description')
+      res += Persistence::keys_extract_name(opts,id,'state')
+      res += Persistence::keys_extract_name(opts,id,'state','@changed')
+      res += Persistence::keys_extract_name(opts,id,'transformation','endpoints')
+      res += Persistence::keys_extract_name(opts,id,'transformation','endpoints','@type')
+      res += Persistence::keys_extract_name(opts,id,'transformation','description')
+      res += Persistence::keys_extract_name(opts,id,'transformation','description','@type')
+      res += Persistence::keys_extract_name(opts,id,'transformation','dataelements')
+      res += Persistence::keys_extract_name(opts,id,'transformation','dataelements','@type')
+      res
     end
 
     def self::set_handler(id,opts,key,url,values,update=false) #{{{

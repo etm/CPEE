@@ -1,5 +1,6 @@
 var es;
 var suspended_redrawing = false;
+var skip_location = false;
 var myid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
 var paths = '#dat_details input, #dat_details textarea, #dat_details select, #dat_details button, #dat_details [contenteditable], #dat_dataelements input, #dat_dataelements textarea, #dat_dataelements select, #dat_dataelements button, #dat_dataelements [contenteditable], #dat_endpoints input, #dat_endpoints textarea, #dat_endpoints select, #dat_endpoints button, #dat_endpoints [contenteditable], #dat_attributes input, #dat_attributes textarea, #dat_attributes select, #dat_attributes button, #dat_attributes [contenteditable]';
 var loading = false;
@@ -505,10 +506,12 @@ function monitor_instance_values(type,vals) {// {{{
           } else {
             save['modeltype'] = undefined;
           }
-          if ($('#modifiers > div').length == 0) {
-            modifiers_display().then(function(){ modifiers_select(); });
-          } else {
-            modifiers_select();
+          if ($('#modifiers').length > 0) {
+            if ($('#modifiers > div').length == 0) {
+              modifiers_display().then(function(){ modifiers_select(); });
+            } else {
+              modifiers_select();
+            }
           }
           var text = $(" > attributes > info",res).text() + " (" + url.replace(/\/$/,'').split(/[\\/]/).pop() + ")";
           $('#title').text(text);
@@ -565,45 +568,40 @@ function adaptor_init(url,theme,dslx) { //{{{
           $('#graphgrid').removeClass('striped');
         }
 
-        $('#graphgrid .graphlabel, #graphgrid .graphempty, #resources, #graphgrid .graphlast').remove();
-        var tlabels = {};
-        var tcolumns = [];
-        var tcolumncount = {}
-        var thidden = [];
+        $('.labelsrow, #graphgrid .graphlast').remove();
+        let tcolumns = [];
+        let tcolumntype = {};
+        let tcolumncount = {}
 
-        var tsvgs = {};
-        var tsvgsBodSod = {};
         const mapPoints = new Map();
+        const tcolumnsvgs = {};
+        const iconsize = 10;
+        const space = 5;
+
+        var tsvgsBodSod = {};
         const mapPointsBodSod = new Map();
-        let iconsize = 14;
-        let iconshift = 7;
 
         _.each(labels,function(val){
           if (val.label != "") {
-            tlabels[val.row] = [];
             _.each(val.label,function(col) {
               if (!tcolumns.includes(col.column)) {
                 tcolumns.push(col.column);
                 tcolumncount[col.column] = 0;
+                tcolumnsvgs[col.column] = {};
               }
-              if (!thidden.includes(col.column) && col.type == 'resource') {
-                thidden.push(col.column);
+              if (tcolumntype[col.column] == undefined && col.type != undefined) {
+                tcolumntype[col.column] = col.type;
               }
-              if (!thidden.includes(col.column) && col.type == 'bodsod') {
-                thidden.push(col.column);
-              }
-              if (col.value != undefined) {
 
-                // Start Peilei
+              if (col.value != undefined) {
+                let pos = dimensions.height_shift/2 + dimensions.height * (val.row - 1) + (dimensions.height / 2);
+                let firstpos = dimensions.height_shift/2 + (dimensions.height / 2);
+
                 if (col.type == "resource") {
-                  let str = '';
                   for (const [k, v] of Object.entries(col.value)) {
-                    var p = {};
-                    p.row = val.row;
-                    p.AR = v;
-                    p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
+                    var p = { AR: v };
                     if (!mapPoints.has(k)) {
-                      p.y0 = p.y0 == undefined ? (dimensions.height_shift/2 + dimensions.height * val.row - 20) : p.y0;
+                      p.y0 = p.y0 == undefined ? pos : p.y0;
                       p.ymax = (p.ymax == undefined) ? p.y0 : p.ymax;
                     } else {
                       p.y0 = mapPoints.get(k).y0;
@@ -611,61 +609,54 @@ function adaptor_init(url,theme,dslx) { //{{{
                     }
                     mapPoints.set(k, p);
                   }
-                  var cx = iconshift*2;
-                  str += '<g xmlns="http://www.w3.org/2000/svg">';
 
+                  let tsvg = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-row" element-row="' + (val.row-1) + '"></g>');
+
+                  var cx = space;
+                  var count = 0;
                   for (const [k, p] of mapPoints) {
-                    let firstAssignFlag = 0;
-                    p.x0 = p.xc = cx;
+                    let firstAssignFlag = false;
+                    p.x = cx;
 
                     // Including Triangle
                     if (k in col.value) {   // Define points for a triangle pointing to the right
+                      let inner;
+
                       if (p.AR == "Read") {
-                        str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 20) + ' ' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 15) + ' ' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 25) + '" fill="green" class="resource-point">';
-                        if (p.yc == p.y0) {
-                          firstAssignFlag = 1;
-                        }
+                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" points="' + (p.x) + ',' + pos + ' ' + (p.x + iconsize) + ',' + (pos + iconsize/2) + ' ' + (p.x + iconsize) + ',' + (pos - iconsize/2) + '" class="resource-point read"></polygon>');
+                        if (pos == p.y0) { firstAssignFlag = true; }
                       } else if (p.AR == "Assign") {    // Define points for a triangle pointing to the left
-                        str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 20) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 15) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height * val.row - 25) + '" fill="orange" class="resource-point">';
+                        inner = $X('<polygon xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" points="' + (p.x + iconsize) + ',' + pos + ' ' + (p.x) + ',' + (pos + iconsize/2) + ' ' + (p.x) + ',' + (pos - iconsize/2) + '" class="resource-point write"></polygon>');
                       } else if (p.AR == "AssignRead") {
-                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        str += '<circle xmlns="http://www.w3.org/2000/svg" cx="' + cx + '" cy="' + p.yc + '" r="5" fill="blue" class="resource-point">';
+                        inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="resource-point both"></circle>');
+                      } else if (p.AR == "ReadAssign") {
+                        inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="resource-point both"></circle>');
+                        if (pos == p.y0) { firstAssignFlag = true; }
                       }
 
-                      if (dimensions.height_shift/2 + dimensions.height * val.row != p.y0) {
-                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        if (dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax) {
-                          p.ymax = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        }
+                      // extend the bars
+                      if (pos > p.ymax) {
+                        p.ymax = pos;
                       }
 
-                      // Converted from <title>
-                      str += '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text>';
-
-                      if (p.AR == "Read" || p.AR == "Assign") {
-                        str += '</polygon>';
-                      } else if (p.AR == "AssignRead") {
-                        str += '</circle>';
-                      }
+                      inner.append($X('<text xmlns="http://www.w3.org/2000/svg"></text>').text(k));
+                      tsvg.append(inner);
                     }
 
-                    if (firstAssignFlag == 1) {
-                      // Additional logic and construction of another polygon for orange triangle pointing left
-                      p.y0 -= ((p.row-1) * dimensions.height);
-                      str += '<polygon xmlns="http://www.w3.org/2000/svg" points="' + (cx + 5) + ',' + (dimensions.height_shift/2 + dimensions.height - 20) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height - 15) + ' ' + (cx - 5) + ',' + (dimensions.height_shift/2 + dimensions.height - 25) + '" fill="orange" class="resource-point">' + '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text></polygon>';
+                    if (firstAssignFlag) {
+                      // Additional logic and construction of another polygon for orange triangle pointing left in row 0
+                      p.y0 -= (val.row-1) * dimensions.height;
+                      if (tcolumnsvgs[col.column][1] == undefined) {
+                        tcolumnsvgs[col.column][1] = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-row" element-row="' + 0 + '"></g>');
+                      }
+                      tcolumnsvgs[col.column][1].append($X('<polygon xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" points="' + (p.x + iconsize) + ',' + firstpos + ' ' + (p.x) + ',' + (firstpos + iconsize/2) + ' ' + (p.x) + ',' + (firstpos - iconsize/2) + '" class="resource-point write"></polygon>').append($X('<text xmlns="http://www.w3.org/2000/svg"></text>').text(k)));
                     }
-                    cx += iconsize;
+                    cx += iconsize + space;
+                    count += 1;
                   }
 
-                  for (const [k, p] of mapPoints) {
-                    if(k in col.value) {
-                      if (dimensions.height_shift/2+dimensions.height*val.row != p.y0) {
-                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        if(dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax) {
-                          p.ymax = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        }
-                      }
-                    }
+                  if (tsvg.children().length > 0) {
+                    tcolumnsvgs[col.column][val.row] = tsvg;
                   }
                   str += '</g>';
 
@@ -737,11 +728,17 @@ function adaptor_init(url,theme,dslx) { //{{{
                   str += '</g>';
 
                   tsvgsBodSod[val.row] = $X(str);
+                } else {
+                  tsvg = $X('<text class="label" element-id="' + val.element_id + '" x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
+                  tsvg.text(col.value);
+                  tsvg.mouseover(function(ev){ manifestation.events.mouseover($(ev.currentTarget).attr('element-id')); });
+                  tsvg.mouseout(function(ev){ manifestation.events.mouseout($(ev.currentTarget).attr('element-id')); });
+                  tsvg.click(function(ev){ manifestation.events.click($(ev.currentTarget).attr('element-id')); });
+                  tcolumnsvgs[col.column][val.row] = tsvg;
                 }
 
                 tcolumncount[col.column] += 1;
               }
-              tlabels[val.row][tcolumns.indexOf(col.column)] = { label: col.value, type: val.tname, id: val.element_id };
             });
           }
         });
@@ -751,49 +748,51 @@ function adaptor_init(url,theme,dslx) { //{{{
           'grid-template-columns': 'max-content' + (tcolumns.length > 0 ? ' repeat(' + tcolumns.length.toString() + ',max-content)' : '') + ' auto'
         });
 
-        for (var i = 0; i < max.row; i++) {
-          for (var j = 0; j < tcolumns.length-1; j++) {
-            if (thidden != tcolumns[j]) {
-              if (tlabels[i+1] != undefined && tlabels[i+1][j] != undefined && tlabels[i+1][j].label != undefined && tlabels[i+1][j].label != '') {
-                var col = tlabels[i+1][j];
-                var ele = $('<div element-row="' + i + '" class="graphlabel ' + (i % 2 == 0 ? 'odd' : 'even') + '" element-type="' + col.type + '" element-id="' + col.id + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '"><span>' + col.label + '</span></div>');
-                graphrealization.illustrator.draw.bind_event(ele, col.type, false);
-                $('#graphgrid').append(ele);
-              } else {
-                if (tcolumncount[tcolumns[j]] != 0) {
-                  var ele = $('<div element-row="' + i + '" class="graphempty ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
-                  $('#graphgrid').append(ele);
-                }
+        tcolumns.forEach(h => {
+          if (Object.keys(tcolumnsvgs[h]).length > 0) {
+            const svgcolumn = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" class="labelsrow"></svg>');
+            const svgback = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
+            const svgfront = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
+            let xwidth = 0;
+            svgcolumn.append(svgback);
+            svgcolumn.append(svgfront);
+            svgcolumn.css('grid-row', '1/span ' + (max.row + 2))
+            svgcolumn.css('grid-column', tcolumns.indexOf(tcolumns.first) + 2);
+            svgcolumn.attr('height', $('#graphcanvas').attr('height'));
+            $('#graphgrid').append(svgcolumn);
+
+            for (var i = 0; i < max.row; i++) {
+              let node = svgfront.append($(tcolumnsvgs[h][i+1]));
+              if (xwidth < node[0].getBBox().width) { xwidth = node[0].getBBox().width; }
+            }
+            xwidth = xwidth + 2 * space;
+            if (striped == true) {
+              for (var i = 0; i < max.row; i++) {
+                svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" width="' + (xwidth + 1) + '" height="' + dimensions.height + '"></rect>'));
+                svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="border" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '" width="1"></rect>'));
               }
             }
-          }
+            if (tcolumntype[h] == 'resource' || tcolumntype[h] == 'bodsod') {
+              let count = 0;
+              for (const [k, p] of mapPoints) {
+                svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
+                count += 1;
+              }
+            }
 
-          var j = tcolumns.length;
+            $('.resource-label').hide();  // Speech Bubble hide by default
+
+            svgcolumn.attr('width', xwidth);
+          }
+        });
+
+        // Add the last stripe
+        var j = tcolumns.length;
+        for (var i = 0; i < max.row; i++) {
           var ele = $('<div element-row="' + i + '" class="graphlast ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
           $('#graphgrid').append(ele);
         }
 
-        if (Object.keys(tsvgs).length > 0) {
-          let dataflow = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id="resources"></svg>');
-          dataflow.css('grid-row', '1/span ' + (max.row + 2));
-          dataflow.css('grid-column', tcolumns.indexOf(thidden.first) + 2);
-          dataflow.attr('height', $('#graphcanvas').attr('height'));
-          dataflow.attr('width', mapPoints.size * iconsize + iconshift * 2);
-
-          for (var i = 0; i < max.row; i++) {   // Needs parenthesises below
-            dataflow.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + 5.2) + '" width="' + (mapPoints.size * iconsize + iconshift * 2) + '" height="' + dimensions.height + '"></rect>'));
-            dataflow.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="border" x="0" y="' + (dimensions.height * i + 5.2) + '" height="' + dimensions.height + '"></rect>'));
-          }
-          for (const [k, p] of mapPoints) {
-            dataflow.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line" stroke-opacity="0.1" stroke="orange" stroke-width="10" marker-end="url(#arrowhead)"><text>' + k + '</text></line>'));
-          }
-          for (var i = 0; i < max.row; i++) {
-            dataflow.append($(tsvgs[i+1]));
-          }
-          $('#graphgrid').append(dataflow);
-
-          $('.resource-label').hide();  // Speech Bubble hide by default
-        }
         if (Object.keys(tsvgsBodSod).length > 0) {
           let bodsod = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id="resources"></svg>');
           bodsod.css('grid-row', '1/span ' + (max.row + 2));
@@ -1225,47 +1224,49 @@ function save_svgfile() {// {{{
   var url = $('body').attr('current-instance');
 
   var gc = $('#graphcanvas').clone();
+  var start = parseInt(gc.attr('width'));
+  $('#graphgrid > svg:not(#graphcanvas)').each( (i,ele) => {
+    const gr = $X('<g transform="translate(' + start + ')" xmlns="http://www.w3.org/2000/svg"></g>');
+    start = start + parseInt(ele.getAttribute('width'));
+    $('g',ele).each((j,g) => {
+      gr.append($(g).clone());
+    });
+    gc.append(gr);
+  });
+  gc.find('.selected').removeClass('selected');
+  var varreps = {};
+  $(window.document.styleSheets).each(function(i,x){
+    if (x && x.href && x.ownerNode.attributes.getNamedItem('data-include-export')) {
+      $(x.cssRules).each(function(j,y){
+        if (y.selectorText == ":root") {
+          $(y.style).each(function(k,z) {
+            varreps['var\\(' + z + '\\)'] = getComputedStyle(document.documentElement).getPropertyValue(z).toString();
+          });
+        }
+        var loc = $(gc).find(y.selectorText.replace(/svg /g,''));
+        var cst = y.style.cssText;
+        for (k in varreps) {
+          cst = cst.replace(new RegExp(k,'g'),varreps[k]);
+        }
+        loc.each(function(k,loco) {
+          var sty = $(loco).attr('style') == undefined ? '' : $(loco).attr('style');
+          $(loco).attr('style',cst + sty);
+        });
+      });
+      var loc = $(gc).find('text.super');
+      loc.attr('style',loc.attr('style') + ' display: none; ');
+    }
+  });
+  gc.attr('width',start+1);
   $.ajax({
     type: "GET",
-    url: "css/wfadaptor.css",
+    url: url + "/properties/attributes/info/",
     success: function(res){
-      gc.prepend($X('<style xmlns="http://www.w3.org/2000/svg" type="text/css"><![CDATA[' + res + ']]></style>'));
-      $(window.document.styleSheets).each(function(i,x){
-        if (x && x.href && x.href.match(/wfadaptor\.css$/)) {
-					var varreps = {};
-          $(x.cssRules).each(function(j,y){
-            if (y.selectorText == ":root") {
-              $(y.style).each(function(k,z) {
-								varreps['var\\(' + z + '\\)'] = getComputedStyle(document.documentElement).getPropertyValue(z).toString();
-							});
-            }
-            var loc = $(gc).find(y.selectorText.replace(/svg /g,''));
-						var cst = y.style.cssText;
-            for (k in varreps) {
-							cst = cst.replace(new RegExp(k,'g'),varreps[k]);
-						}
-            loc.each(function(k,loco) {
-              var sty = $(loco).attr('style') == undefined ? '' : $(loco).attr('style');
-              $(loco).attr('style',cst + sty);
-            });
-          });
-          var loc = $(gc).find('text.super');
-          loc.attr('style',loc.attr('style') + ' display: none');
-          var loc = $(gc).find('.stripe');
-          loc.attr('style',loc.attr('style') + ' display: none');
-        }
-      });
-      $.ajax({
-        type: "GET",
-        url: url + "/properties/attributes/info/",
-        success: function(res){
-          $('#savesvgfile').attr('download',res + '.svg');
-          $('#savesvgfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializeXML()));
-          document.getElementById('savesvgfile').click();
-        },
-        error: report_failure
-      });
-    }
+      $('#savesvgfile').attr('download',res + '.svg');
+      $('#savesvgfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializePrettyXML()));
+      document.getElementById('savesvgfile').click();
+    },
+    error: report_failure
   });
 }// }}}
 async function set_testset(testset,exec) {// {{{
@@ -1274,14 +1275,17 @@ async function set_testset(testset,exec) {// {{{
   var promises = [];
 
   var tset = $X('<properties xmlns="http://cpee.org/ns/properties/2.0"/>');
-  tset.append($("testset > executionwrapper",testset));
+  tset.append($("testset > executionhandler",testset));
   tset.append($("testset > positions",testset));
   tset.append($("testset > dataelements",testset));
   tset.append($("testset > endpoints",testset));
   tset.append($("testset > attributes",testset));
   tset.append($("testset > description",testset));
   tset.append($("testset > transformation",testset));
-  $('testset > attributes > info',tset).remove();
+  if (skip_location) {
+    $('properties > attributes > info',tset).remove();
+    $('properties > attributes > design_dir',tset).remove();
+  }
 
   promises.push(
     $.ajax({

@@ -41,7 +41,8 @@ def send_response(instance,key,url,value,redis) #{{{
     {},
     {},
     value,
-    redis
+    redis,
+    0
   )
 end #}}}
 

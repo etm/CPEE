@@ -1,0 +1,20 @@
+svg rect.border {
+  fill: var(--wfadaptor-border);
+}
+svg .resource-point.read {
+  fill: green;
+}
+svg .resource-point.write {
+  fill: orange;
+}
+svg .resource-point.both {
+  fill: blue;
+}
+svg line.resource-column {
+  stroke: red;
+  stroke-opacity: 0.1;
+}
+svg line.resource-column:hover {
+  stroke: red;
+  stroke-opacity: 0.2;
+}

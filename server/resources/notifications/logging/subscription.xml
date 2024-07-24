@@ -15,11 +15,17 @@
   </topic>
   <topic id="task">
     <event>instantiation</event>
+    <event>take</event>
+    <event>giveback</event>
   </topic>
   <topic id="state">
     <event>change</event>
   </topic>
   <topic id="description">
     <event>change</event>
+  </topic>
+  <topic id="gateway">
+    <event>decide</event>
+    <event>join</event>
   </topic>
 </subscription>

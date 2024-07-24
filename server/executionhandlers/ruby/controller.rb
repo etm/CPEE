@@ -175,7 +175,7 @@ class Controller
       @votes += votes
       psredis = @opts[:redis_dyn].call "Instance #{@id} Vote"
       collect = []
-      psredis.subscribe(votes.map{|e| ['vote-response:' + e.to_s] }.flatten) do |on|
+      psredis.subscribe(votes.map{|e| ['vote-response:00:' + e.to_s] }.flatten) do |on|
         on.message do |what, message|
           index = message.index(' ')
           mess = message[index+1..-1]

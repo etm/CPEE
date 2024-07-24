@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements>
+    <res>[]</res>
+    <results>[{"user":"manglej6","raw":[{"name":"ok","value":"ok"}],"data":{"ok":"ok"}},{"user":"weissh9","raw":[{"name":"ok","value":"ok"}],"data":{"ok":"ok"}}]</results>
+  </dataelements>
+  <endpoints>
+    <worklist>https-post://cpee.org/worklist/server/</worklist>
+  </endpoints>
+  <attributes>
+    <info>Worklist Vote</info>
+    <modeltype>CPEE</modeltype>
+    <organisation1>http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
+    <theme>extended</theme>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <design_stage>development</design_stage>
+    <design_dir>Templates.dir/</design_dir>
+  </attributes>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <loop mode="pre_test" condition="true">
+        <call id="a1" endpoint="worklist">
+          <parameters>
+            <label>OK OR NOT OK</label>
+            <arguments>
+              <orgmodel>https://cpee.org/~demo/orgviz/organisation_vote.xml</orgmodel>
+              <form>https://cpee.org/~demo/form/form-f.html</form>
+              <role>Assistant</role>
+              <priority>42</priority>
+              <handling rngui-nonfunctional="true">collect</handling>
+              <collect>2</collect>
+              <deadline>3 days</deadline>
+              <restrictions/>
+              <data>
+                <schaden>10000</schaden>
+                <text>destroyed</text>
+              </data>
+            </arguments>
+          </parameters>
+          <code>
+            <prepare/>
+            <finalize output="result">data.res = result</finalize>
+            <update output="result">data.results ||= []
+data.results &lt;&lt; result unless result.empty?</update>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+        <stop id="a2"/>
+        <_probability>
+          <_probability_min/>
+          <_probability_max/>
+          <_probability_avg/>
+        </_probability>
+      </loop>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+</testset>

@@ -39,8 +39,8 @@ module CPEE
       @@last < @@tworkers-1 ? @@last += 1 : @@last = 0
     end
 
-    def self::send(type, event, cpee, instance, instance_uuid, instance_name, content={}, backend=nil)
-      target = '%02i' % CPEE::Message::target
+    def self::send(type, event, cpee, instance, instance_uuid, instance_name, content={}, backend=nil, tt=nil)
+      target = '%02i' % (tt || CPEE::Message::target)
       topic = ::File::dirname(event)
       name = ::File::basename(event)
       payload = {

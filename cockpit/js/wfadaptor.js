@@ -153,12 +153,14 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
 } // }}}
 
 // WfIllustrator:
-// Is in charge of displaying the Graph. It is further able insert and remove elements with given ID's from the illsutration.
+// Is in charge of displaying the Graph. It is further able insert and remove elements with given ID's from the illustration.
 function WfIllustrator(wf_adaptor) { // View  {{{
   // Variable {{{
     // public
     this.height = 40;
     this.width = 40;
+    this.default_width = 40;
+    this.default_height = 40;
     this.height_shift = this.height * 0.26;
     this.width_shift = this.width * 0.39;
     this.elements = {}; // the svgs
@@ -228,34 +230,18 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return g;
   } // }}}
 
-  var draw_label = this.draw.draw_label = function (tname, id, label, row, col, group) { // {{{
-    var g = $X('<text class="label" transform="translate(' + String(col*self.width-self.width_shift) + ',' + String(row*self.height+20-(self.height-self.height_shift)) + ')" xmlns="http://www.w3.org/2000/svg"></text>');
-    var spli = $(label.split(/\n/));
-    spli.each(function(k,v) {
-      var tspan = $X('<tspan x="0" dy="' + (spli.length > 1 ? '-7' : '0') + '" xmlns="http://www.w3.org/2000/svg"></tspan>');
-      if (k == 0) {
-        tspan.text(v);
-      } else {
-        tspan.text(v);
-        tspan.attr('dy','15');
-        tspan.attr('dx','15');
-      }
-      g.append(tspan);
-    });
-    if(group) { group.find('g.element[element-id=' + id + ']').append(g); }
-    else {self.svg.container.append(g);}
-    return g;
-  } // }}}
   var draw_symbol = this.draw.draw_symbol = function (sname, id, title, row, col, group, addition) { // {{{
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
+    let center_x = (self.width - self.default_width) / 2;
+    let center_y = (self.height - self.default_height) / 2;
     if (addition) {
-      var g = $X('<g class="element" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
-                    '<g transform="translate(' + String(col*self.width-self.width_shift) + ',' + String(row*self.height-(self.height-self.height_shift)) + ')"></g>' +
+      var g = $X('<g class="element" element-row="' + (row-1) + '" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
+                    '<g transform="translate(' + String(col*self.width+center_x-self.width_shift) + ',' + String(row*self.height+center_y-(self.height-self.height_shift)) + ')"></g>' +
                  '</g>');
     } else {
-      var g = $X('<g class="element" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
-                    '<g transform="translate(' + String(col*self.width-self.width_shift) + ',' + String(row*self.height-(self.height-self.height_shift)) + ')">' +
-                      '<text class="super" transform="translate(30,8.4)">' +
+      var g = $X('<g class="element" element-row="' + (row-1) + '" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
+                    '<g transform="translate(' + String(col*self.width+center_x-self.width_shift) + ',' + String(row*self.height+center_y-(self.height-self.height_shift)) + ')">' +
+                      '<text class="super" transform="translate(' + (self.default_width-10) + ',8.4)">' +
                         '<tspan class="active">0</tspan>' +
                         '<tspan class="colon">,</tspan>' +
                         '<tspan class="vote">0</tspan>' +
@@ -379,15 +365,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       adaptor.draw_labels(graph.max,labels,{ 'height': illustrator.height, 'height_shift': illustrator.height_shift },illustrator.striped == true ? true : false);
     } else {
       adaptor.draw_labels(graph.max,[],{ 'height': illustrator.height, 'height_shift': illustrator.height_shift },false);
-    }
-    if (illustrator.compact == false) {
-      if (labels.length > 0) {
-        _.each(labels,function(a,key) {
-          if (a.label && a.label[0] && a.label[0].column == 'Label' && a.label[0].value) {
-            illustrator.draw.draw_label(a.tname, a.element_id, a.label[0].value, a.row, graph.max.col + 1, graph.svg);
-          }
-        });
-      }
     }
   } //}}}
 

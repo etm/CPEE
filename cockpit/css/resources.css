@@ -1,6 +1,11 @@
 resources {
   border-left: 1pt solid var(--wfadaptor-border);
 }
+
+#resources line.resource-line:hover {
+  stroke: red;
+}
+
 #resources line.resource-line.red:hover {
   stroke: rgb(80, 0, 0);
 }

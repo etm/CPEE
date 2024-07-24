@@ -1,0 +1,62 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="closed_loop" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+  <attribute name="overrun" rngui:label="Interval duration overrun">
+    <choice>
+      <value>wait</value>
+      <value>cancel</value>
+    </choice>
+  </attribute>
+  <attribute name="execution" rngui:label="Measure-control cycle execution">
+    <choice>
+      <value>sequential</value>
+      <value>parallel</value>
+    </choice>
+  </attribute>
+  <element name="_probability" rngui:mark="true" rngui:header="Execution Probability">
+    <element name="_probability_min" rngui:label="Min times">
+      <data type="nonNegativeInteger" rngui:label="Times"/>
+    </element>
+    <element name="_probability_max" rngui:label="Max times">
+      <data type="nonNegativeInteger" rngui:label="Times"/>
+    </element>
+    <element name="_probability_avg" rngui:label="Avg times">
+      <data type="nonNegativeInteger" rngui:label="Times"/>
+    </element>
+  </element>
+  <element rngui:ignore="true" name="closed_loop_measuring">
+    <attribute name="frequency" rngui:label="Interval frequency in Hz" rngui:default="0.1">
+      <data type="float" rngui:label="Hz"/>
+    </attribute>
+    <element name="_expected" rngui:header="Values Expected to Change">
+      <zeroOrMore rngui:label="Add Value">
+        <element name="value" rngui:label="Value">
+          <data type="string" rngui:label="a dataelement"/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </element>
+  <element rngui:ignore="true" name="closed_loop_control">
+    <attribute name="frequency" rngui:label="Interval frequency in Hz" rngui:default="0.1">
+      <data type="float" rngui:label="Hz"/>
+    </attribute>
+    <element name="_expected" rngui:header="Values Expected to Change">
+      <zeroOrMore rngui:label="Add Value">
+        <element name="change">
+          <element name="value" rngui:label="Value">
+            <data type="string" rngui:label="a dataelement"/>
+          </element>
+          <element name="upper" rngui:label="Upper Limit">
+            <data type="float" rngui:label="Max value after next measure"/>
+          </element>
+          <element name="lower" rngui:label="Lower Limit">
+            <data type="float" rngui:label="Min value after next measure"/>
+          </element>
+        </element>
+      </zeroOrMore>
+    </element>
+  </element>
+  <element rngui:ignore="true" name="closed_loop_cancel">
+    <attribute name="condition" rngui:label="Condition">
+      <data type="string" rngui:label="Condition"/>
+    </attribute>
+  </element>
+</element>

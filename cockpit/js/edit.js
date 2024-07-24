@@ -1,3 +1,5 @@
+skip_location = true;
+
 document.addEventListener('graph:changed', function (e) {
   $("button[name=save]").prop("disabled",false);
 }, false);
