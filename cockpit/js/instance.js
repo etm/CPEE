@@ -591,7 +591,6 @@ function adaptor_init(url,theme,dslx) { //{{{
               if (tcolumntype[col.column] == undefined && col.type != undefined) {
                 tcolumntype[col.column] = col.type;
               }
-
               if (col.value != undefined) {
                 let pos = dimensions.height_shift/2 + dimensions.height * (val.row - 1) + (dimensions.height / 2);
                 let firstpos = dimensions.height_shift/2 + (dimensions.height / 2);
@@ -657,6 +656,8 @@ function adaptor_init(url,theme,dslx) { //{{{
                   if (tsvg.children().length > 0) {
                     tcolumnsvgs[col.column][val.row] = tsvg;
                   }
+
+                //BODSOD Visualization
                 }else if (col.type == "bodsod") {
                   for (const [k, v] of Object.entries(col.value)) {
                     var p = { AR: v };
@@ -709,6 +710,8 @@ function adaptor_init(url,theme,dslx) { //{{{
                   if (tsvg.children().length > 0) {
                     tcolumnsvgs[col.column][val.row] = tsvg;
                   }
+
+                //END BODSOD Visualization
                 } else {
                   tsvg = $X('<text class="label" element-id="' + val.element_id + '" x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
                   tsvg.text(col.value);
@@ -759,6 +762,7 @@ function adaptor_init(url,theme,dslx) { //{{{
                 svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
                 count += 1;
               }
+            //BODSOD Line Generation
             } else if (tcolumntype[h] == 'bodsod'){
               let count = 0;
               for (const [k, p] of mapPointsBodSod) {
@@ -776,6 +780,7 @@ function adaptor_init(url,theme,dslx) { //{{{
                 }
               }
             }
+            //END BODSOD Line Generation
 
             $('.resource-label').hide();  // Speech Bubble hide by default
 
