@@ -1,9 +1,0 @@
-<call>
-  <arguments>
-    <timeout>2</timeout>
-  </arguments>
-  <_attachments>
-    <_attachment label="a" xxx="1">b</_attachment>
-    <_attachment label="c" xxx="2">d</_attachment>
-  </_attachments>
-</call>
