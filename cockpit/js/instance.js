@@ -578,6 +578,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         const iconsize = 10;
         const space = 5;
 
+        var iconshift = 7;
         var tsvgsBodSod = {};
         const mapPointsBodSod = new Map();
 
@@ -658,76 +659,58 @@ function adaptor_init(url,theme,dslx) { //{{{
                   if (tsvg.children().length > 0) {
                     tcolumnsvgs[col.column][val.row] = tsvg;
                   }
-                  str += '</g>';
-
-                  tsvgs[val.row] = $X(str);
                 }else if (col.type == "bodsod") {
-                  let str = '';
                   for (const [k, v] of Object.entries(col.value)) {
-                    var p = {};
-                    p.AR = v;
-                    p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
+                    var p = { AR: v };
                     if (!mapPointsBodSod.has(k)) {
-                      p.y0 = p.y0 == undefined ? (dimensions.height_shift/2 + dimensions.height * val.row - 20) : p.y0;
-                      p.ymax = (p.ymax == undefined) ? p.y0 : p.ymax; //(dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax ? dimensions.height_shift/2 + dimensions.height * val.row - 20 : p.ymax);
+                      p.y0 = p.y0 == undefined ? pos : p.y0;
+                      p.ymax = (p.ymax == undefined) ? p.y0 : p.ymax;
                     } else {
                       p.y0 = mapPointsBodSod.get(k).y0;
-                      p.ymax = mapPointsBodSod.get(k).ymax; //(dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax ? dimensions.height_shift/2 + dimensions.height * val.row - 20 : p.ymax);
+                      p.ymax = mapPointsBodSod.get(k).ymax;
                     }
                     mapPointsBodSod.set(k, p);
                   }
-                  var cx = iconshift*2;
-                  str += '<g xmlns="http://www.w3.org/2000/svg">';
 
+                  let tsvg = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-row" element-row="' + (val.row-1) + '"></g>');
+
+                  var cx = space;
+                  var count = 0;
                   for (const [k, p] of mapPointsBodSod) {
-                    p.x0 = p.xc = cx;
+                    p.x = cx;
 
                     // Including Triangle
                     if (k in col.value) {   // Define points for a triangle pointing to the right
+                      let inner;
                       if (p.AR == "AssignRead") {
                         p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
                         if($(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0]){
                           type = $(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value
                           if(type == 'No constraint') {
-                            str += '<circle xmlns="http://www.w3.org/2000/svg" cx="' + cx + '" cy="' + p.yc + '" r="5" fill="blue" class="resource-point">';
+                            inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="bodsod-point none"></circle>');
                           }else if (type == 'BOD'){
-                            str += '<circle xmlns="http://www.w3.org/2000/svg" cx="' + cx + '" cy="' + p.yc + '" r="5" fill="green" class="resource-point">';
+                            inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="bodsod-point bod"></circle>');
                           }else {
-                            str += '<circle xmlns="http://www.w3.org/2000/svg" cx="' + cx + '" cy="' + p.yc + '" r="5" fill="red" class="resource-point">';
+                            inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="bodsod-point sod"></circle>');
                           }
                         }
                       }
 
-                      if (dimensions.height_shift/2 + dimensions.height * val.row != p.y0) {
-                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        if (dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax) {
-                          p.ymax = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        }
+                      // extend the bars
+                      if (pos > p.ymax) {
+                        p.ymax = pos;
                       }
 
-                      // Converted from <title>
-                      str += '<text xmlns="http://www.w3.org/2000/svg">' + k + '</text>';
-
-                      if (p.AR == "AssignRead") {
-                        str += '</circle>';
-                      }
+                      inner.append($X('<text xmlns="http://www.w3.org/2000/svg"></text>').text(k));
+                      tsvg.append(inner);
                     }
-                    cx += iconsize;
+                    cx += iconsize + space;
+                    count += 1
                   }
 
-                  for (const [k, p] of mapPointsBodSod) {
-                    if(k in col.value) {
-                      if (dimensions.height_shift/2+dimensions.height*val.row != p.y0) {
-                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        if(dimensions.height_shift/2 + dimensions.height * val.row - 20 > p.ymax) {
-                          p.ymax = dimensions.height_shift/2 + dimensions.height * val.row - 20;
-                        }
-                      }
-                    }
+                  if (tsvg.children().length > 0) {
+                    tcolumnsvgs[col.column][val.row] = tsvg;
                   }
-                  str += '</g>';
-
-                  tsvgsBodSod[val.row] = $X(str);
                 } else {
                   tsvg = $X('<text class="label" element-id="' + val.element_id + '" x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
                   tsvg.text(col.value);
@@ -772,11 +755,27 @@ function adaptor_init(url,theme,dslx) { //{{{
                 svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="border" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '" width="1"></rect>'));
               }
             }
-            if (tcolumntype[h] == 'resource' || tcolumntype[h] == 'bodsod') {
+            if (tcolumntype[h] == 'resource') {
               let count = 0;
               for (const [k, p] of mapPoints) {
                 svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
                 count += 1;
+              }
+            } else if (tcolumntype[h] == 'bodsod'){
+              let count = 0;
+              for (const [k, p] of mapPointsBodSod) {
+                if($(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0]){
+                  type = $(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value
+                  text = k+": "+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["name"].value+" ("+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["role"].value+") "+" ["+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value+"]"
+                  if(type == 'No constraint') {
+                    svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column none" stroke-width="' + iconsize + '"><text>' + text + '</text></line>'));
+                  }else if (type == 'BOD'){
+                    svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column bod" stroke-width="' + iconsize + '"><text>' + text + '</text></line>'));
+                  }else {
+                    svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column sod" stroke-width="' + iconsize + '"><text>' + text + '</text></line>'));
+                  }
+                  count += 1;
+                }
               }
             }
 
@@ -791,38 +790,6 @@ function adaptor_init(url,theme,dslx) { //{{{
         for (var i = 0; i < max.row; i++) {
           var ele = $('<div element-row="' + i + '" class="graphlast ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
           $('#graphgrid').append(ele);
-        }
-
-        if (Object.keys(tsvgsBodSod).length > 0) {
-          let bodsod = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id="resources"></svg>');
-          bodsod.css('grid-row', '1/span ' + (max.row + 2));
-          bodsod.css('grid-column', tcolumns.indexOf(thidden.first) + 2);
-          bodsod.attr('height', $('#graphcanvas').attr('height'));
-          bodsod.attr('width', mapPointsBodSod.size * iconsize + iconshift * 2);
-
-          for (var i = 0; i < max.row; i++) {   // Needs parenthesises below
-            bodsod.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + 5.2) + '" width="' + (mapPointsBodSod.size * iconsize + iconshift * 2) + '" height="' + dimensions.height + '"></rect>'));
-            bodsod.append($X('<rect xmlns="http://www.w3.org/2000/svg" class="border" x="0" y="' + (dimensions.height * i + 5.2) + '" height="' + dimensions.height + '"></rect>'));
-          }
-          for (const [k, p] of mapPointsBodSod) {
-            if($(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0]){
-              type = $(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value
-              text = k+": "+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["name"].value+" ("+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["role"].value+") "+" ["+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value+"]"
-              if(type == 'No constraint') {
-                bodsod.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line blue" stroke-opacity="0.1" stroke="blue" stroke-width="10" marker-end="url(#arrowhead)"><text>' + text + '</text></line>'));
-              }else if (type == 'BOD'){
-                bodsod.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line green" stroke-opacity="0.1" stroke="green" stroke-width="10" marker-end="url(#arrowhead)"><text>' + text + '</text></line>'));
-              }else {
-                bodsod.append($X('<line xmlns="http://www.w3.org/2000/svg" x1="' + p.x0 + '" y1="' + p.y0 + '" x2="' + p.xc + '" y2="' + p.ymax + '" class="resource-line red" stroke-opacity="0.1" stroke="red" stroke-width="10" marker-end="url(#arrowhead)"><text>' + text + '</text></line>'));
-              }
-            }
-          }
-          for (var i = 0; i < max.row; i++) {
-            bodsod.append($(tsvgsBodSod[i+1]));
-          }
-          $('#graphgrid').append(bodsod);
-
-          $('.resource-label').hide();  // Speech Bubble hide by default
         }
       };
       graphrealization.set_svg_container($('#graphcanvas'));
