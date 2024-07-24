@@ -578,8 +578,6 @@ function adaptor_init(url,theme,dslx) { //{{{
         const iconsize = 10;
         const space = 5;
 
-        var iconshift = 7;
-        var tsvgsBodSod = {};
         const mapPointsBodSod = new Map();
 
         _.each(labels,function(val){

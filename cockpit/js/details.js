@@ -13,12 +13,10 @@ $(document).ready(function() {
       e.preventDefault()
     }
   });
-
   $(document).on('relaxngui_remove', '#dat_details', function(e){
     clearTimeout(timer);
     do_main_save();
   });
-  
   $(document).on('relaxngui_move', '#dat_details', function(e){
     clearTimeout(timer);
     do_main_save();
@@ -28,7 +26,6 @@ $(document).ready(function() {
     do_main_save();
   });
 });
-
 
 function do_main_save() { //{{{
   if (save['details'].has_changed()) {
@@ -57,13 +54,13 @@ function do_main_work() { //{{{
     nnew[0].removeAttribute('xmlns');
   }
 
-  node.replaceWith(nnew);
-
   node_updated.svgid = svgid
   node_updated.desc = desc
   node_updated.node = node
   node_updated.nnew = nnew
   document.dispatchEvent(node_updated)
+
+  node.replaceWith(nnew);
 
   var ttarget = manifestation.adaptor.illustrator.get_node_by_svg_id(svgid);
   var tnewnode = ttarget.parents('g.element[element-id]');
