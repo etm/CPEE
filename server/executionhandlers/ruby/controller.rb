@@ -29,7 +29,6 @@ class ParaStruct < OpenStruct
     table.to_json
   end
 end
-def →(a); ParaStruct.new(a); end
 def ⭐(a); ParaStruct.new(a); end
 
 class Controller
