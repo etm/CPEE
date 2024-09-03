@@ -622,7 +622,7 @@
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:text>, :value =&gt;  </xsl:text>
+      <xsl:text>, :value =&gt; </xsl:text>
       <xsl:choose>
         <xsl:when test="not(node())">
           <xsl:text>nil</xsl:text>
@@ -645,7 +645,7 @@
         <xsl:otherwise>
           <xsl:choose>
             <xsl:when test="substring(text(),1,1) = '!'">
-              <xsl:text> →("</xsl:text>
+              <xsl:text>🠊("</xsl:text>
               <xsl:value-of select="str:replace(str:replace(substring(text(),2),'\','\\'),'&quot;','\&quot;')"/>
               <xsl:text>")</xsl:text>
             </xsl:when>
