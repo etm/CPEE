@@ -16,6 +16,7 @@ require 'charlock_holmes'
 require 'mimemagic'
 require 'base64'
 require 'get_process_mem'
+require 'cpee-eval-ruby/translation'
 
 class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::loop_guard(arguments,id,count) # {{{
@@ -35,6 +36,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::inform_syntax_error(arguments,err,code)# {{{
     # TODO extract spot (code) where error happened for better error handling (ruby 3.1 only)
     # https://github.com/rails/rails/pull/45818/commits/3beb2aff3be712e44c34a588fbf35b79c0246ca5
+    puts err.message
+    puts err.backtrace
+
     controller = arguments[0]
     mess = err.backtrace ? err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') : ''
     mess += err.message
@@ -273,7 +277,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @controller.notify("status/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :id => status.id, :message => status.message)
     end
     unless changed_dataelements.nil? || changed_dataelements.empty?
-      de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = detect_encoding(v); (enc == 'OTHER' ? v : (v.encode('UTF-8',enc) rescue convert_to_base64(v))) }
+      de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = CPEE::EvalRuby::Translation::detect_encoding(v); (enc == 'OTHER' ? v : (v.encode('UTF-8',enc) rescue CPEE::EvalRuby::Translation::convert_to_base64(v))) }
       @controller.notify("dataelements/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => de)
     end
     unless changed_endpoints.nil? || changed_endpoints.empty?
@@ -288,105 +292,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @controller.vote("activity/syncing_before", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters)
   end # }}}
 
-  def simplify_result(result)
-    if result.length == 1
-      if result[0].is_a? Riddl::Parameter::Simple
-        result = result[0].value
-      elsif result[0].is_a? Riddl::Parameter::Complex
-        if result[0].mimetype == 'application/json'
-          result = JSON::parse(result[0].value.read) rescue nil
-        elsif result[0].mimetype == 'text/csv'
-          result = result[0].value.read
-        elsif result[0].mimetype == 'text/yaml'
-          result = YAML::load(result[0].value.read) rescue nil
-        elsif result[0].mimetype == 'application/xml' || result[0].mimetype == 'text/xml'
-          result = XML::Smart::string(result[0].value.read) rescue nil
-        elsif result[0].mimetype == 'text/plain'
-          result = result[0].value.read
-          if result.start_with?("<?xml version=")
-            result = XML::Smart::string(result)
-          else
-            result = result.to_f if result == result.to_f.to_s
-            result = result.to_i if result == result.to_i.to_s
-          end
-        elsif result[0].mimetype == 'text/html'
-          result = result[0].value.read
-          result = result.to_f if result == result.to_f.to_s
-          result = result.to_i if result == result.to_i.to_s
-        else
-          result = result[0]
-        end
-      end
-    else
-      result = Riddl::Parameter::Array[*result]
-    end
-    if result.is_a? String
-      enc = detect_encoding(result)
-      enc == 'OTHER' ? result : (result.encode('UTF-8',enc) rescue convert_to_base64(result))
-    else
-      result
-    end
-  end
-
-  def detect_encoding(text)
-    if text.is_a? String
-      if text.valid_encoding? && text.encoding.name == 'UTF-8'
-        'UTF-8'
-      else
-        res = CharlockHolmes::EncodingDetector.detect(text)
-        if res.is_a?(Hash) && res[:type] == :text && res[:ruby_encoding] != "binary"
-          res[:encoding]
-        elsif res.is_a?(Hash) && res[:type] == :binary
-          'BINARY'
-        else
-          'ISO-8859-1'
-        end
-      end
-    else
-      'OTHER'
-    end
-  end
-
-  def convert_to_base64(text)
-    ('data:' + MimeMagic.by_magic(text).type + ';base64,' + Base64::encode64(text)) rescue ('data:application/octet-stream;base64,' + Base64::encode64(text))
-  end
-
-  def structurize_result(result)
-    result.map do |r|
-      if r.is_a? Riddl::Parameter::Simple
-        { 'name' => r.name, 'data' => r.value }
-      elsif r.is_a? Riddl::Parameter::Complex
-        res = if r.mimetype == 'application/json'
-          ttt = r.value.read
-          enc = detect_encoding(ttt)
-          enc == 'OTHER' ? ttt.inspect : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
-        elsif r.mimetype == 'text/csv'
-          ttt = r.value.read
-          enc = detect_encoding(ttt)
-          enc == 'OTHER' ? ttt.inspect : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
-        elsif r.mimetype == 'text/plain' || r.mimetype == 'text/html'
-          ttt = r.value.read
-          ttt = ttt.to_f if ttt == ttt.to_f.to_s
-          ttt = ttt.to_i if ttt == ttt.to_i.to_s
-          enc = detect_encoding(ttt)
-          enc == 'OTHER' ? ttt.inspect : (ttt.encode('UTF-8',enc) rescue convert_to_base64(ttt))
-        else
-          convert_to_base64(r.value.read)
-        end
-
-        tmp = {
-          'name' => r.name == '' ? 'result' : r.name,
-          'mimetype' => r.mimetype,
-          'data' => res.to_s
-        }
-        r.value.rewind
-        tmp
-      end
-    end
-  end
-
   def callback(result=nil,options={})
-    recv = structurize_result(result)
+    recv = CPEE::EvalRuby::Translation::structurize_result(result)
     @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
 
     @guard_files += result
@@ -397,7 +304,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     if options['CPEE_EVENT']
       @controller.notify("task/#{options['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
     else
-      @handler_returnValue = simplify_result(result)
+      @handler_returnValue = recv
       @handler_returnOptions = options
     end
     if options['CPEE_STATUS']
@@ -430,10 +337,23 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     GC.start
   end #}}}
 
-  def test_condition(mr,code,args)
-    res = mr.instance_eval(code,'Condition',1)
+  def test_condition(dataelements,endpoints,local,additional,code,args={})
+    res = WEEL::ReadStructure.new(dataelements,endpoints,local,additional).instance_eval(code,'Condition',1)
     @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"))
     res
+  end
+  def eval_expression(dataelements,endpoints,local,additional,code)
+    WEEL::ReadStructure.new(dataelements,endpoints,local,additional).instance_eval(code)
+  end
+  def manipulate(readonly,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil)
+    result = CPEE::EvalRuby::Translation::simplify_structurized_result(result)
+    struct = if readonly
+      WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
+    else
+      WEEL::ManipulateStructure.new(dataelements,endpoints,status,local,additional)
+    end
+    struct.instance_eval(code,where,1)
+    struct
   end
 
   def join_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]

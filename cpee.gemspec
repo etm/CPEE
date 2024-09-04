@@ -31,4 +31,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'get_process_mem', '~>0.2'
   s.add_runtime_dependency 'webrick', '~>1.7'
   s.add_runtime_dependency 'rbtrace', '~>0.4'
+  s.add_runtime_dependency 'cpee-eval-ruby', '~> 1.0'
 end
