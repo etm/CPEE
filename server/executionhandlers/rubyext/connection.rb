@@ -358,7 +358,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     else
       nil
     end
-    recv ? true : false
+    recv && recv == "true" ? true : false
   end
   def eval_expression(dataelements,endpoints,local,additional,code)
     send = []
@@ -403,6 +403,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         WEEL::ManipulateStructure.new(dataelements, endpoints, status, local, additional)
       end
       struct.update(changed_dataelements,changed_endpoints,changed_status)
+      p dataelements
+      p where
+
       struct
     else
       nil
