@@ -293,10 +293,17 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end # }}}
 
   def callback(result=nil,options={})
-    recv = CPEE::EvalRuby::Translation::structurize_result(result)
+    status, ret, headers = Riddl::Client.new(@controller.url_result_transformation).request 'put' => result
+    recv = if status >= 200 && status < 300
+      JSON::parse(ret[0].value.read)
+    else
+      nil
+    end
+
     @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
 
     @guard_files += result
+    @guard_files += ret
 
     if options['CPEE_INSTANTIATION']
       @controller.notify("task/instantiation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(options['CPEE_INSTANTIATION']))
@@ -338,22 +345,71 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end #}}}
 
   def test_condition(dataelements,endpoints,local,additional,code,args={})
-    res = WEEL::ReadStructure.new(dataelements,endpoints,local,additional).instance_eval(code,'Condition',1)
-    @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"))
-    res
+    send = []
+    send.push Riddl::Parameter::Simple::new('code',code)
+    send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
+    send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(local)) if local
+    send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(endpoints))
+    send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(additional))
+
+    status, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
+    recv = if status >= 200 && status < 300
+      ret[0].value
+    else
+      nil
+    end
+    recv && recv == "true" ? true : false
   end
   def eval_expression(dataelements,endpoints,local,additional,code)
-    WEEL::ReadStructure.new(dataelements,endpoints,local,additional).instance_eval(code)
+    send = []
+    send.push Riddl::Parameter::Simple::new('code',code)
+    send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
+    send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(local)) if local
+    send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(endpoints))
+    send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(additional))
+
+    status, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
+    recv = if status >= 200 && status < 300
+      ret[0].value
+    else
+      nil
+    end
+    recv
   end
   def manipulate(readonly,lock,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil)
-    result = CPEE::EvalRuby::Translation::simplify_structurized_result(result)
-    struct = if readonly
-      WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
-    else
-      WEEL::ManipulateStructure.new(dataelements,endpoints,status,local,additional)
+    lock.synchronize do
+      send = []
+      send.push  Riddl::Parameter::Simple::new('code',code)
+      send.push  Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
+      send.push  Riddl::Parameter::Complex::new('local','application/json', JSON::generate(local)) if local
+      send.push  Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(endpoints))
+      send.push  Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(additional))
+      send.push  Riddl::Parameter::Complex::new('status','application/json', JSON::generate(status)) if status
+      send.push  Riddl::Parameter::Complex::new('call_result','application/json', JSON::generate(result))
+      send.push  Riddl::Parameter::Complex::new('call_headers','application/json', JSON::generate(options))
+
+      stat, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
+      if stat >= 200 && stat < 300
+        ret.shift # drop result
+        signal = changed_status = nil
+        changed_dataelements = changed_local = changed_endpoints = []
+        signal = ret.shift.value if ret.any? && ret[0].name == 'signal'
+        changed_dataelements = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_dataelements'
+        changed_endpoints = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_endpoints'
+        changed_status = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_status'
+
+        struct = if readonly
+          WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
+        else
+          WEEL::ManipulateStructure.new(dataelements, endpoints, status, local, additional)
+        end
+        struct.update(changed_dataelements,changed_endpoints,changed_status)
+
+        struct
+      else
+        nil
+      end
     end
-    struct.instance_eval(code,where,1)
-    struct
   end
 
   def join_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]
