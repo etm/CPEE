@@ -376,39 +376,39 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
     recv
   end
-  def manipulate(readonly,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil)
-    send = []
-    send.push  Riddl::Parameter::Simple::new('code',code)
-    send.push  Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
-    send.push  Riddl::Parameter::Complex::new('local','application/json', JSON::generate(local)) if local
-    send.push  Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(endpoints))
-    send.push  Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(additional))
-    send.push  Riddl::Parameter::Complex::new('status','application/json', JSON::generate(status)) if status
-    send.push  Riddl::Parameter::Complex::new('call_result','application/json', JSON::generate(result))
-    send.push  Riddl::Parameter::Complex::new('call_headers','application/json', JSON::generate(options))
+  def manipulate(readonly,lock,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil)
+    lock.synchronize do
+      send = []
+      send.push  Riddl::Parameter::Simple::new('code',code)
+      send.push  Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
+      send.push  Riddl::Parameter::Complex::new('local','application/json', JSON::generate(local)) if local
+      send.push  Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(endpoints))
+      send.push  Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(additional))
+      send.push  Riddl::Parameter::Complex::new('status','application/json', JSON::generate(status)) if status
+      send.push  Riddl::Parameter::Complex::new('call_result','application/json', JSON::generate(result))
+      send.push  Riddl::Parameter::Complex::new('call_headers','application/json', JSON::generate(options))
 
-    stat, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
-    if stat >= 200 && stat < 300
-      ret.shift # drop result
-      signal = changed_status = nil
-      changed_dataelements = changed_local = changed_endpoints = []
-      signal = ret.shift.value if ret.any? && ret[0].name == 'signal'
-      changed_dataelements = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_dataelements'
-      changed_endpoints = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_endpoints'
-      changed_status = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_status'
+      stat, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
+      if stat >= 200 && stat < 300
+        ret.shift # drop result
+        signal = changed_status = nil
+        changed_dataelements = changed_local = changed_endpoints = []
+        signal = ret.shift.value if ret.any? && ret[0].name == 'signal'
+        changed_dataelements = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_dataelements'
+        changed_endpoints = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_endpoints'
+        changed_status = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_status'
 
-      struct = if readonly
-        WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
+        struct = if readonly
+          WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
+        else
+          WEEL::ManipulateStructure.new(dataelements, endpoints, status, local, additional)
+        end
+        struct.update(changed_dataelements,changed_endpoints,changed_status)
+
+        struct
       else
-        WEEL::ManipulateStructure.new(dataelements, endpoints, status, local, additional)
+        nil
       end
-      struct.update(changed_dataelements,changed_endpoints,changed_status)
-      p dataelements
-      p where
-
-      struct
-    else
-      nil
     end
   end
 
