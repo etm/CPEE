@@ -345,7 +345,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def eval_expression(dataelements,endpoints,local,additional,code)
     WEEL::ReadStructure.new(dataelements,endpoints,local,additional).instance_eval(code)
   end
-  def manipulate(readonly,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil)
+  def manipulate(readonly,lock,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil)
     result = CPEE::EvalRuby::Translation::simplify_structurized_result(result)
     struct = if readonly
       WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
