@@ -27,6 +27,7 @@
   </topic>
   <topic id='gateway'>
     <event>decide</event>
+    <event>split</event>
     <event>join</event>
   </topic>
   <topic id='position'>

@@ -318,7 +318,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @controller.notify("activity/status", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_STATUS'])
     end
     if options['CPEE_UPDATE']
-      @handler_continue.continue WEEL::Signal::Again
+      @handler_continue.continue WEEL::Signal::UpdateAgain
     else
       @controller.cancel_callback(@handler_passthrough)
       @handler_passthrough = nil
@@ -358,7 +358,10 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     else
       nil
     end
-    recv && recv == "true" ? true : false
+    recv = 'false' unless receive
+    recv = (recv == 'false' || recv == 'null' || recv == 'nil' ? false : true)
+    @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => recv)
+    recv
   end
   def eval_expression(dataelements,endpoints,local,additional,code)
     send = []
@@ -412,20 +415,10 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
   end
 
+  def split_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]
+    @controller.notify("gateway/split", :instance_uuid => @controller.uuid, :branches => branches)
+  end
   def join_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]
     @controller.notify("gateway/join", :instance_uuid => @controller.uuid, :branches => branches)
   end
-
-  def simulate(type,nesting,tid,parent,parameters={}) #{{{
-    @controller.vote("simulating/step",
-      :'activity-uuid' => @handler_activity_uuid,
-      :label => @label,
-      :activity => tid,
-      :endpoint => @handler_endpoint,
-      :type => type,
-      :nesting => nesting,
-      :parent => parent,
-      :parameters => parameters
-    )
-  end #}}}
 end
