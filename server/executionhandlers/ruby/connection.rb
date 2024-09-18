@@ -319,13 +319,18 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     GC.start
   end #}}}
 
-  def prepare(__struct, __endpoints, __parameters) #{{{
-    @handler_endpoint = __endpoints.is_a?(Array) ? __endpoints.map{ |ep| __struct.endpoints[ep] }.compact : __struct.endpoints[__endpoints]
+  def prepare(__lock,__dataelements,__endpoints,__status,__local,__additional,__code,__exec_endpoints,__exec_parameters) #{{{
+    __struct = if __code
+      manipulate(true,__lock,__dataelements,__endpoints,__status,__local,__additional,__code,'Parameter')
+    else
+      WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional)
+    end
+    @handler_endpoint = __exec_endpoints.is_a?(Array) ? __exec_endpoints.map{ |ep| __struct.endpoints[ep] }.compact : __struct.endpoints[__exec_endpoints]
     if @controller.attributes['twin_engine']
       @handler_endpoint_orig = @handler_endpoint
       @handler_endpoint = @controller.attributes['twin_engine'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
     end
-    __params = __parameters.dup
+    __params = __exec_parameters.dup
     __params[:arguments] = __params[:arguments].dup if __params[:arguments]
     __params[:arguments]&.map! do |__ele|
       __tmp = __ele.dup
