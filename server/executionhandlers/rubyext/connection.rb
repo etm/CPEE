@@ -370,7 +370,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     else
       nil
     end
-    recv = 'false' unless receive
+    recv = 'false' unless recv
     recv = (recv == 'false' || recv == 'null' || recv == 'nil' ? false : true)
     @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => recv)
     recv

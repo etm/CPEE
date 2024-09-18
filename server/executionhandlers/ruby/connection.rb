@@ -338,7 +338,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end #}}}
   def test_condition(__dataelements,__endpoints,__local,__additional,__code,__args={}) #{{{
     __struct = WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional).instance_eval(__code,'Condition',1)
-    @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => (__struct ? "true" : "false"))
+    @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => __code, :condition => (__struct ? "true" : "false"))
     __struct
   end #}}}
   def manipulate(__readonly,__lock,__dataelements,__endpoints,__status,__local,__additional,__code,__where,__result=nil,__options=nil) #{{{
