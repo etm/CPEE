@@ -330,7 +330,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     struct = if code
       manipulate(true,lock,dataelements,endpoints,status,local,additional,code,'Parameter')
     else
-      WEEL::ReadStructure.new(data,endpoints,local,additional)
+      WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
     end
     @handler_endpoint = exec_endpoints.is_a?(Array) ? exec_endpoints.map{ |ep| struct.endpoints[ep] }.compact : struct.endpoints[exec_endpoints]
     if @controller.attributes['twin_engine']
