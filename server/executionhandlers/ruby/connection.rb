@@ -68,24 +68,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @guard_items = []
   end # }}}
 
-  def prepare(readonly, endpoints, parameters) #{{{
-    @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
-    if @controller.attributes['twin_engine']
-      @handler_endpoint_orig = @handler_endpoint
-      @handler_endpoint = @controller.attributes['twin_engine'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
-    end
-    params = parameters.dup
-    params[:arguments] = params[:arguments].dup if params[:arguments]
-    params[:arguments]&.map! do |ele|
-      t = ele.dup
-      if t.value.is_a?(Proc)
-        t.value = readonly.instance_exec &t.value
-      end
-      t
-    end
-    params
-  end #}}}
-
   def additional #{{{
     {
       :attributes => @controller.attributes,
@@ -256,9 +238,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     true
   end # }}}
 
-  def activity_uuid
+  def activity_uuid #{{{
     @handler_activity_uuid
-  end
+  end #}}}
 
   def inform_activity_done # {{{
     @controller.notify("activity/done", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
@@ -292,7 +274,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @controller.vote("activity/syncing_before", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters)
   end # }}}
 
-  def callback(result=nil,options={})
+  def callback(result=nil,options={}) #{{{
     recv = CPEE::EvalRuby::Translation::structurize_result(result)
     @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
 
@@ -323,7 +305,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         @handler_continue.continue
       end
     end
-  end
+  end #}}}
 
   def mem_guard() #{{{
     @guard_files.delete_if do |p|
@@ -337,29 +319,43 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     GC.start
   end #}}}
 
-  def test_condition(dataelements,endpoints,local,additional,code,args={})
-    res = WEEL::ReadStructure.new(dataelements,endpoints,local,additional).instance_eval(code,'Condition',1)
-    @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => (res ? "true" : "false"))
-    res
-  end
-  def eval_expression(dataelements,endpoints,local,additional,code)
-    WEEL::ReadStructure.new(dataelements,endpoints,local,additional).instance_eval(code)
-  end
-  def manipulate(readonly,lock,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil)
-    result = CPEE::EvalRuby::Translation::simplify_structurized_result(result)
-    struct = if readonly
-      WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
-    else
-      WEEL::ManipulateStructure.new(dataelements,endpoints,status,local,additional)
+  def prepare(__struct, __endpoints, __parameters) #{{{
+    @handler_endpoint = __endpoints.is_a?(Array) ? __endpoints.map{ |ep| __struct.endpoints[ep] }.compact : __struct.endpoints[__endpoints]
+    if @controller.attributes['twin_engine']
+      @handler_endpoint_orig = @handler_endpoint
+      @handler_endpoint = @controller.attributes['twin_engine'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
     end
-    struct.instance_eval(code,where,1)
-    struct
-  end
+    __params = __parameters.dup
+    __params[:arguments] = __params[:arguments].dup if __params[:arguments]
+    __params[:arguments]&.map! do |__ele|
+      __tmp = __ele.dup
+      if __tmp.value.is_a?(WEEL::ProcString)
+        __tmp.value = __struct.instance_eval __tmp.value.code, 'Parameter', 1
+      end
+      __tmp
+    end
+    __params
+  end #}}}
+  def test_condition(__dataelements,__endpoints,__local,__additional,__code,__args={}) #{{{
+    __struct = WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional).instance_eval(__code,'Condition',1)
+    @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => (__struct ? "true" : "false"))
+    __struct
+  end #}}}
+  def manipulate(__readonly,__lock,__dataelements,__endpoints,__status,__local,__additional,__code,__where,__result=nil,__options=nil) #{{{
+    result = CPEE::EvalRuby::Translation::simplify_structurized_result(__result)
+    __struct = if __readonly
+      WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional)
+    else
+      WEEL::ManipulateStructure.new(__dataelements,__endpoints,__status,__local,__additional)
+    end
+    __struct.instance_eval(__code,__where,1)
+    __struct
+  end #}}}
 
-  def split_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]
+  def split_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]{{{
     @controller.notify("gateway/split", :instance_uuid => @controller.uuid, :branches => branches)
-  end
-  def join_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]
+  end #}}}
+  def join_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]{{{
     @controller.notify("gateway/join", :instance_uuid => @controller.uuid, :branches => branches)
-  end
+  end #}}}
 end

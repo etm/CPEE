@@ -68,24 +68,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @guard_items = []
   end # }}}
 
-  def prepare(readonly, endpoints, parameters) #{{{
-    @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| readonly.endpoints[ep] }.compact : readonly.endpoints[endpoints]
-    if @controller.attributes['twin_engine']
-      @handler_endpoint_orig = @handler_endpoint
-      @handler_endpoint = @controller.attributes['twin_engine'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
-    end
-    params = parameters.dup
-    params[:arguments] = params[:arguments].dup if params[:arguments]
-    params[:arguments]&.map! do |ele|
-      t = ele.dup
-      if t.value.is_a?(Proc)
-        t.value = readonly.instance_exec &t.value
-      end
-      t
-    end
-    params
-  end #}}}
-
   def additional #{{{
     {
       :attributes => @controller.attributes,
@@ -256,9 +238,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     true
   end # }}}
 
-  def activity_uuid
+  def activity_uuid #{{{
     @handler_activity_uuid
-  end
+  end #}}}
 
   def inform_activity_done # {{{
     @controller.notify("activity/done", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
@@ -292,7 +274,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @controller.vote("activity/syncing_before", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters)
   end # }}}
 
-  def callback(result=nil,options={})
+  def callback(result=nil,options={}) #{{{
     status, ret, headers = Riddl::Client.new(@controller.url_result_transformation).request 'put' => result
     recv = if status >= 200 && status < 300
       JSON::parse(ret[0].value.read)
@@ -330,7 +312,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         @handler_continue.continue
       end
     end
-  end
+  end #}}}
 
   def mem_guard() #{{{
     @guard_files.delete_if do |p|
@@ -344,7 +326,37 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     GC.start
   end #}}}
 
-  def test_condition(dataelements,endpoints,local,additional,code,args={})
+  def prepare(struct, endpoints, parameters) #{{{
+    @handler_endpoint = endpoints.is_a?(Array) ? endpoints.map{ |ep| struct.endpoints[ep] }.compact : struct.endpoints[endpoints]
+    if @controller.attributes['twin_engine']
+      @handler_endpoint_orig = @handler_endpoint
+      @handler_endpoint = @controller.attributes['twin_engine'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
+    end
+    params = parameters.dup
+    params[:arguments] = params[:arguments].dup if params[:arguments]
+    params[:arguments]&.map! do |ele|
+      t = ele.dup
+      if t.value.is_a?(WEEL::ProcString)
+        send = []
+        send.push Riddl::Parameter::Simple::new('code',t.value.code)
+        send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(struct.data))
+        send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(struct.local)) if struct.local
+        send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(struct.endpoints))
+        send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(struct.additional))
+
+        status, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
+        recv = if status >= 200 && status < 300
+          ret[0].value
+        else
+          nil
+        end
+        t.value = recv
+      end
+      t
+    end
+    params
+  end #}}}
+  def test_condition(dataelements,endpoints,local,additional,code,args={}) #{{{
     send = []
     send.push Riddl::Parameter::Simple::new('code',code)
     send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
@@ -362,24 +374,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     recv = (recv == 'false' || recv == 'null' || recv == 'nil' ? false : true)
     @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => recv)
     recv
-  end
-  def eval_expression(dataelements,endpoints,local,additional,code)
-    send = []
-    send.push Riddl::Parameter::Simple::new('code',code)
-    send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
-    send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(local)) if local
-    send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(endpoints))
-    send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(additional))
-
-    status, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
-    recv = if status >= 200 && status < 300
-      ret[0].value
-    else
-      nil
-    end
-    recv
-  end
-  def manipulate(readonly,lock,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil)
+  end #}}}
+  def manipulate(readonly,lock,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil) #{{{
     lock.synchronize do
       send = []
       send.push  Riddl::Parameter::Simple::new('code',code)
@@ -413,12 +409,12 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         nil
       end
     end
-  end
+  end #}}}
 
-  def split_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]
+  def split_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]{{{
     @controller.notify("gateway/split", :instance_uuid => @controller.uuid, :branches => branches)
-  end
-  def join_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]
+  end #}}}
+  def join_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]{{{
     @controller.notify("gateway/join", :instance_uuid => @controller.uuid, :branches => branches)
-  end
+  end #}}}
 end
