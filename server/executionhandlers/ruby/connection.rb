@@ -38,7 +38,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     # https://github.com/rails/rails/pull/45818/commits/3beb2aff3be712e44c34a588fbf35b79c0246ca5
     puts err.message
     puts err.backtrace
-
     controller = arguments[0]
     mess = err.backtrace ? err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') : ''
     mess += err.message

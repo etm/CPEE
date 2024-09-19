@@ -435,7 +435,7 @@
         <xsl:value-of select="$myspace+$myspacemultiplier"/>
       </xsl:with-param>
     </xsl:call-template>
-    <xsl:text>parallel_branch data do |local|</xsl:text>
+    <xsl:text>parallel_branch do |local|</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
       <xsl:with-param name="myspace">

@@ -36,8 +36,11 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::inform_syntax_error(arguments,err,code)# {{{
     # TODO extract spot (code) where error happened for better error handling (ruby 3.1 only)
     # https://github.com/rails/rails/pull/45818/commits/3beb2aff3be712e44c34a588fbf35b79c0246ca5
+    p err
+    p err.message
+    p err.backtrace
     controller = arguments[0]
-    controller.notify("executionhandler/error", :message => err.backtrace[0].match(/(.*?), Line (\d+):\s(.*)/)[3] + err.message, :line => err.backtrace[0].match(/(.*?), Line (\d+):/)[2], :where => err.backtrace[0].match(/(.*?), Line (\d+):/)[1])
+    controller.notify("executionhandler/error", :message => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):\s(.*)/)[4] + err.message, :line => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[3], :where => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[1])
     #mess = err.backtrace ? err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') : ''
     #mess += err.message
     #controller.notify("description/error", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
