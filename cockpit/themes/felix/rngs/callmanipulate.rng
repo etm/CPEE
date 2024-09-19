@@ -253,7 +253,15 @@
     <attribute name="allocated_to" rngui:label="allocated_to" rngui:default="not_allocated">
       <data type="string" rngui:readonly="true"/>
     </attribute>
-
   </element>
 
+  <element name="expectedready" rngui:label="Expected Ready">
+    <data name="expectedready" type="decimal" rngui:readonly="true"/>
+  </element>
+  <element name="plannedstart" rngui:label="Planned Start Time">
+    <data name="plannedstart" type="decimal" rngui:readonly="true"/>
+  </element>
+  <element name="plannedend" rngui:label="Planned End Time">
+    <data name="plannedend" type="decimal" rngui:readonly="true"/>
+  </element>
 </element>

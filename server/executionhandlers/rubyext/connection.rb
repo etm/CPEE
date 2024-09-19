@@ -36,19 +36,15 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::inform_syntax_error(arguments,err,code)# {{{
     # TODO extract spot (code) where error happened for better error handling (ruby 3.1 only)
     # https://github.com/rails/rails/pull/45818/commits/3beb2aff3be712e44c34a588fbf35b79c0246ca5
-    puts err.message
-    puts err.backtrace
-
     controller = arguments[0]
-    mess = err.backtrace ? err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') : ''
-    mess += err.message
-    controller.notify("description/error", :message => mess)
+    controller.notify("executionhandler/error", :message => err.backtrace[0].match(/(.*?), Line (\d+):\s(.*)/)[3] + err.message, :line => err.backtrace[0].match(/(.*?), Line (\d+):/)[2], :where => err.backtrace[0].match(/(.*?), Line (\d+):/)[1])
+    #mess = err.backtrace ? err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') : ''
+    #mess += err.message
+    #controller.notify("description/error", :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end# }}}
   def self::inform_connectionwrapper_error(arguments,err) # {{{
     controller = arguments[0]
-    puts err.message
-    puts err.backtrace
-    controller.notify("executionhandler/error", :message => err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') + err.message)
+    controller.notify("executionhandler/error", :message => err.backtrace[0].match(/(.*?), Line (\d+):\s(.*)/)[3] + err.message, :line => err.backtrace[0].match(/(.*?), Line (\d+):/)[2], :where => err.backtrace[0].match(/(.*?), Line (\d+):/)[1])
   end # }}}
   def self::inform_position_change(arguments,ipc={}) # {{{
     controller = arguments[0]
@@ -250,9 +246,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @controller.notify("activity/manipulating", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
   end # }}}
   def inform_activity_failed(err) # {{{
-    puts err.message
-    puts err.backtrace
-    @controller.notify("activity/failed", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    @controller.notify("activity/failed", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :message => err.backtrace[0].match(/(.*?):(\d+):\s(.*)/)[3], :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end # }}}
   def inform_manipulate_change(status,changed_dataelements,changed_endpoints,dataelements,endpoints) # {{{
     unless status.nil?
@@ -326,9 +320,21 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     GC.start
   end #}}}
 
-  def prepare(lock,dataelements,endpoints,status,local,additional,code,exec_endpoints,exec_parameters)
+  def code_error_handling(ret,where,what=RuntimeError) #{{{
+    sig = ret.find{|e| e.name == "signal" }.value
+    sigt = ret.find{|e| e.name == "signal_text" }.value
+    case sig
+      when 'Signal::Again'; throw WEEL::Signal::Again
+      when 'Signal::Error'; raise what, '', [where + ' ' + sigt]
+      when 'Signal::Stop'; raise WEEL::Signal::Stop
+      when 'Signal::SyntaxError'; raise SyntaxError, '', [where + ' ' + sigt]
+      else
+        raise 'something bad happened, but we dont know what.'
+    end
+  end #}}}
+  def prepare(lock,dataelements,endpoints,status,local,additional,code,exec_endpoints,exec_parameters) #{{{
     struct = if code
-      manipulate(true,lock,dataelements,endpoints,status,local,additional,code,'Parameter')
+      manipulate(true,lock,dataelements,endpoints,status,local,additional,code,'prepare')
     else
       WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
     end
@@ -353,7 +359,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         recv = if status >= 200 && status < 300
           ret[0].value
         else
-          nil
+          code_error_handling ret, 'Parameter ' + t.value.code
         end
         t.value = recv
       end
@@ -373,7 +379,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     recv = if status >= 200 && status < 300
       ret[0].value
     else
-      nil
+      code_error_handling ret, 'Condition ' + code, WEEL::Signal::Error
     end
     recv = 'false' unless recv
     recv = (recv == 'false' || recv == 'null' || recv == 'nil' ? false : true)
@@ -411,7 +417,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
         struct
       else
-        nil
+        code_error_handling ret, where
       end
     end
   end #}}}
