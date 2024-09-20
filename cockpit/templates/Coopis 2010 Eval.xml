@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>rubyext</executionhandler>
   <dataelements>
@@ -23,7 +22,7 @@
   </endpoints>
   <attributes>
     <theme>extended</theme>
-    <info>Coopis 2010 Ext</info>
+    <info>Coopis 2010 Eval</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <modeltype>CPEE</modeltype>
