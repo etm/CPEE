@@ -18,9 +18,9 @@ module CPEE
 
     module Ruby
       BACKEND_INSTANCE = 'instance.rb'
-      BACKEND_OPTS     = 'opts.yaml'
       DSL_TO_DSLX_XSL  = File.expand_path(File.join(__dir__,'dsl_to_dslx.xsl'))
       BACKEND_RUN      = File.expand_path(File.join(__dir__,'backend','run'))
+      BACKEND_OPTS     = File.expand_path(File.join(__dir__,'backend','opts.yaml'))
       BACKEND_TEMPLATE = File.expand_path(File.join(__dir__,'backend','instance.template'))
 
       def self::dslx_to_dsl(dslx) # transpile
@@ -39,18 +39,20 @@ module CPEE
         positions.map! do |k, v|
           [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
         end
-        File.open(File.join(opts[:instances],id.to_s,ExecutionHandler::Ruby::BACKEND_OPTS),'w') do |f|
-          YAML::dump({
-            :host => opts[:host],
-            :url => opts[:url],
-            :redis_url => opts[:redis_url],
-            :redis_path => File.join(opts[:basepath],opts[:redis_path]),
-            :redis_db => opts[:redis_db],
-            :workers => opts[:workers],
-            :global_executionhandlers => opts[:global_executionhandlers],
-            :executionhandlers => opts[:executionhandlers],
-            :executionhandler => hw
-          },f)
+        iopts = YAML::load_file(ExecutionHandler::Ruby::BACKEND_OPTS)
+        pp iopts
+        iopts[:host] = opts[:host]
+        iopts[:url] = opts[:url]
+        iopts[:redis_url] = opts[:redis_url]
+        iopts[:redis_path] = File.join(opts[:basepath],opts[:redis_path])
+        iopts[:redis_db] = opts[:redis_db]
+        iopts[:workers] = opts[:workers]
+        iopts[:global_executionhandlers] = opts[:global_executionhandlers]
+        iopts[:executionhandlers] = opts[:executionhandlers]
+        iopts[:executionhandler] = hw
+
+        File.open(File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_OPTS)),'w') do |f|
+          YAML::dump(iopts,f)
         end
         template = ERB.new(File.read(ExecutionHandler::Ruby::BACKEND_TEMPLATE), trim_mode: '-')
         res = template.result_with_hash(dsl: dsl, dataelements: dataelements, endpoints: endpoints, positions: positions)

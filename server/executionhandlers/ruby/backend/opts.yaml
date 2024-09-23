@@ -4,3 +4,5 @@
 :redis_db: 3
 :executionhandlers: ../../executionhandlers/
 :executionhandler: ruby
+:url_result_transformation: http://localhost:9302/structurize
+:url_code: http://localhost:9302/exec

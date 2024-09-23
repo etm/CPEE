@@ -1,8 +1,0 @@
-:host: localhost
-:url: http://localhost:8298/
-:redis_path: /tmp/redis.sock
-:redis_db: 3
-:executionhandlers: ../../executionhandlers/
-:executionhandler: rubyext
-:url_result_transformation: http://localhost:9302/structurize
-:url_code: http://localhost:9302/exec

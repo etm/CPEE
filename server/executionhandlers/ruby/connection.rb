@@ -36,18 +36,20 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::inform_syntax_error(arguments,err,code)# {{{
     # TODO extract spot (code) where error happened for better error handling (ruby 3.1 only)
     # https://github.com/rails/rails/pull/45818/commits/3beb2aff3be712e44c34a588fbf35b79c0246ca5
-    puts err.message
-    puts err.backtrace
     controller = arguments[0]
-    mess = err.backtrace ? err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') : ''
-    mess += err.message
-    controller.notify("description/error", :message => mess)
+    begin
+      controller.notify("executionhandler/error", :message => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):\s(.*)/)[4] + err.message, :line => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[3], :where => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[1])
+    rescue => e
+      controller.notify("executionhandler/error", :message => err.message)
+    end
   end# }}}
   def self::inform_connectionwrapper_error(arguments,err) # {{{
     controller = arguments[0]
-    puts err.message
-    puts err.backtrace
-    controller.notify("executionhandler/error", :message => err.backtrace[0].gsub(/([\w -_]+):(\d+):in.*/,'\\1, Line \2: ') + err.message)
+    begin
+      controller.notify("executionhandler/error", :message => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):\s(.*)/)[4] + err.message, :line => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[3], :where => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[1])
+    rescue => e
+      controller.notify("executionhandler/error", :message => err.message)
+    end
   end # }}}
   def self::inform_position_change(arguments,ipc={}) # {{{
     controller = arguments[0]
@@ -249,9 +251,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @controller.notify("activity/manipulating", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
   end # }}}
   def inform_activity_failed(err) # {{{
-    puts err.message
-    puts err.backtrace
-    @controller.notify("activity/failed", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :message => err.message, :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    @controller.notify("activity/failed", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :message => err.backtrace[0].match(/(.*?):(\d+):\s(.*)/)[3], :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end # }}}
   def inform_manipulate_change(status,changed_dataelements,changed_endpoints,dataelements,endpoints) # {{{
     unless status.nil?
@@ -274,10 +274,17 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end # }}}
 
   def callback(result=nil,options={}) #{{{
-    recv = CPEE::EvalRuby::Translation::structurize_result(result)
+    status, ret, headers = Riddl::Client.new(@controller.url_result_transformation).request 'put' => result
+    recv = if status >= 200 && status < 300
+      JSON::parse(ret[0].value.read)
+    else
+      nil
+    end
+
     @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
 
     @guard_files += result
+    @guard_files += ret
 
     if options['CPEE_INSTANTIATION']
       @controller.notify("task/instantiation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(options['CPEE_INSTANTIATION']))
@@ -318,42 +325,106 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     GC.start
   end #}}}
 
-  def prepare(__lock,__dataelements,__endpoints,__status,__local,__additional,__code,__exec_endpoints,__exec_parameters) #{{{
-    __struct = if __code
-      manipulate(true,__lock,__dataelements,__endpoints,__status,__local,__additional,__code,'Parameter')
-    else
-      WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional)
+  def code_error_handling(ret,where,what=RuntimeError) #{{{
+    sig = ret.find{|e| e.name == "signal" }.value
+    sigt = ret.find{|e| e.name == "signal_text" }.value
+    case sig
+      when 'Signal::Again'; throw WEEL::Signal::Again
+      when 'Signal::Error'; raise what, '', [where + ' ' + sigt]
+      when 'Signal::Stop'; raise WEEL::Signal::Stop
+      when 'Signal::SyntaxError'; raise SyntaxError, '', [where + ' ' + sigt]
+      else
+        raise 'something bad happened, but we dont know what.'
     end
-    @handler_endpoint = __exec_endpoints.is_a?(Array) ? __exec_endpoints.map{ |ep| __struct.endpoints[ep] }.compact : __struct.endpoints[__exec_endpoints]
+  end #}}}
+  def prepare(lock,dataelements,endpoints,status,local,additional,code,exec_endpoints,exec_parameters) #{{{
+    struct = if code
+      manipulate(true,lock,dataelements,endpoints,status,local,additional,code,'prepare')
+    else
+      WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
+    end
+    @handler_endpoint = exec_endpoints.is_a?(Array) ? exec_endpoints.map{ |ep| struct.endpoints[ep] }.compact : struct.endpoints[exec_endpoints]
     if @controller.attributes['twin_engine']
       @handler_endpoint_orig = @handler_endpoint
       @handler_endpoint = @controller.attributes['twin_engine'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
     end
-    __params = __exec_parameters.dup
-    __params[:arguments] = __params[:arguments].dup if __params[:arguments]
-    __params[:arguments]&.map! do |__ele|
-      __tmp = __ele.dup
-      if __tmp.value.is_a?(WEEL::ProcString)
-        __tmp.value = __struct.instance_eval __tmp.value.code, 'Parameter', 1
+    params = exec_parameters.dup
+    params[:arguments] = params[:arguments].dup if params[:arguments]
+    params[:arguments]&.map! do |ele|
+      t = ele.dup
+      if t.value.is_a?(WEEL::ProcString)
+        send = []
+        send.push Riddl::Parameter::Simple::new('code',t.value.code)
+        send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(struct.data))
+        send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(struct.local)) if struct.local
+        send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(struct.endpoints))
+        send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(struct.additional))
+
+        status, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
+        recv = if status >= 200 && status < 300
+          ret.empty? ? nil : JSON::parse(ret[0].value.read)
+        else
+          code_error_handling ret, 'Parameter ' + t.value.code
+        end
+        t.value = recv
       end
-      __tmp
+      t
     end
-    __params
+    params
   end #}}}
-  def test_condition(__dataelements,__endpoints,__local,__additional,__code,__args={}) #{{{
-    __struct = WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional).instance_eval(__code,'Condition',1)
-    @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => __code, :condition => (__struct ? "true" : "false"))
-    __struct
-  end #}}}
-  def manipulate(__readonly,__lock,__dataelements,__endpoints,__status,__local,__additional,__code,__where,__result=nil,__options=nil) #{{{
-    result = CPEE::EvalRuby::Translation::simplify_structurized_result(__result)
-    __struct = if __readonly
-      WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional)
+  def test_condition(dataelements,endpoints,local,additional,code,args={}) #{{{
+    send = []
+    send.push Riddl::Parameter::Simple::new('code',code)
+    send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
+    send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(local)) if local
+    send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(endpoints))
+    send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(additional))
+
+    status, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
+    recv = if status >= 200 && status < 300
+      ret.empty? ? nil : JSON::parse(ret[0].value.read)
     else
-      WEEL::ManipulateStructure.new(__dataelements,__endpoints,__status,__local,__additional)
+      code_error_handling ret, 'Condition ' + code, WEEL::Signal::Error
     end
-    __struct.instance_eval(__code,__where,1)
-    __struct
+    recv = 'false' unless recv
+    recv = (recv == 'false' || recv == 'null' || recv == 'nil' || recv == false ? false : true)
+    @controller.notify("gateway/decide", :instance_uuid => @controller.uuid, :code => code, :condition => recv)
+    recv
+  end #}}}
+  def manipulate(readonly,lock,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil) #{{{
+    lock.synchronize do
+      send = []
+      send.push  Riddl::Parameter::Simple::new('code',code)
+      send.push  Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
+      send.push  Riddl::Parameter::Complex::new('local','application/json', JSON::generate(local)) if local
+      send.push  Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(endpoints))
+      send.push  Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(additional))
+      send.push  Riddl::Parameter::Complex::new('status','application/json', JSON::generate(status)) if status
+      send.push  Riddl::Parameter::Complex::new('call_result','application/json', JSON::generate(result))
+      send.push  Riddl::Parameter::Complex::new('call_headers','application/json', JSON::generate(options))
+
+      stat, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
+      if stat >= 200 && stat < 300
+        ret.shift # drop result
+        signal = changed_status = nil
+        changed_dataelements = changed_local = changed_endpoints = []
+        signal = ret.shift.value if ret.any? && ret[0].name == 'signal'
+        changed_dataelements = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_dataelements'
+        changed_endpoints = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_endpoints'
+        changed_status = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_status'
+
+        struct = if readonly
+          WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
+        else
+          WEEL::ManipulateStructure.new(dataelements, endpoints, status, local, additional)
+        end
+        struct.update(changed_dataelements,changed_endpoints,changed_status)
+
+        struct
+      else
+        code_error_handling ret, where
+      end
+    end
   end #}}}
 
   def split_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]{{{
