@@ -1,0 +1,18 @@
+<%# coding: UTF-8 %>
+class Instance < WEEL
+  connectionwrapper ConnectionWrapper
+
+<% for key, value in endpoints -%>
+  endpoint :<%= key %> => <%=  CPEE::ValueHelper::parse(value).inspect %>
+<% end  -%>
+
+<% for key, value in dataelements -%>
+  data :<%= key %> => <%=  CPEE::ValueHelper::parse(value).inspect %>
+<% end -%>
+
+<% unless positions.nil? || positions.empty? -%>
+  search <% positions.each_with_index { |de,i| %><%= (i > 0 ? ', ' : '') %>Position.new(:<%= de[0] %>, 0, :<%=de[1] %>, <%= de[2].nil? || de[2].strip.empty? ? 'nil' : '"' + de[2] + '"' %>)<% } %>
+<% end -%>
+
+  <%= dsl.strip.gsub(/\n/,"\n  ") %>
+end
