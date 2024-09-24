@@ -578,6 +578,8 @@ function adaptor_init(url,theme,dslx) { //{{{
         const iconsize = 10;
         const space = 5;
 
+        const mapPointsBodSod = new Map();
+
         _.each(labels,function(val){
           if (val.label != "") {
             _.each(val.label,function(col) {
@@ -654,6 +656,62 @@ function adaptor_init(url,theme,dslx) { //{{{
                   if (tsvg.children().length > 0) {
                     tcolumnsvgs[col.column][val.row] = tsvg;
                   }
+
+                //BODSOD Visualization
+                }else if (col.type == "bodsod") {
+                  for (const [k, v] of Object.entries(col.value)) {
+                    var p = { AR: v };
+                    if (!mapPointsBodSod.has(k)) {
+                      p.y0 = p.y0 == undefined ? pos : p.y0;
+                      p.ymax = (p.ymax == undefined) ? p.y0 : p.ymax;
+                    } else {
+                      p.y0 = mapPointsBodSod.get(k).y0;
+                      p.ymax = mapPointsBodSod.get(k).ymax;
+                    }
+                    mapPointsBodSod.set(k, p);
+                  }
+
+                  let tsvg = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-row" element-row="' + (val.row-1) + '"></g>');
+
+                  var cx = space;
+                  var count = 0;
+                  for (const [k, p] of mapPointsBodSod) {
+                    p.x = cx;
+
+                    // Including Triangle
+                    if (k in col.value) {   // Define points for a triangle pointing to the right
+                      let inner;
+                      if (p.AR == "AssignRead") {
+                        p.yc = dimensions.height_shift/2 + dimensions.height * val.row - 20;
+                        if($(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0]){
+                          type = $(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value
+                          if(type == 'No constraint') {
+                            inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="bodsod-point none"></circle>');
+                          }else if (type == 'BOD'){
+                            inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="bodsod-point bod"></circle>');
+                          }else {
+                            inner = $X('<circle xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '" class="bodsod-point sod"></circle>');
+                          }
+                        }
+                      }
+
+                      // extend the bars
+                      if (pos > p.ymax) {
+                        p.ymax = pos;
+                      }
+
+                      inner.append($X('<text xmlns="http://www.w3.org/2000/svg"></text>').text(k));
+                      tsvg.append(inner);
+                    }
+                    cx += iconsize + space;
+                    count += 1
+                  }
+
+                  if (tsvg.children().length > 0) {
+                    tcolumnsvgs[col.column][val.row] = tsvg;
+                  }
+
+                //END BODSOD Visualization
                 } else {
                   tsvg = $X('<text class="label" element-id="' + val.element_id + '" x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
                   tsvg.text(col.value);
@@ -698,13 +756,31 @@ function adaptor_init(url,theme,dslx) { //{{{
                 svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="border" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '" width="1"></rect>'));
               }
             }
-            if (tcolumntype[h] == 'resource' || tcolumntype[h] == 'bodsod') {
+            if (tcolumntype[h] == 'resource') {
               let count = 0;
               for (const [k, p] of mapPoints) {
                 svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
                 count += 1;
               }
+            //BODSOD Line Generation
+            } else if (tcolumntype[h] == 'bodsod'){
+              let count = 0;
+              for (const [k, p] of mapPointsBodSod) {
+                if($(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0]){
+                  type = $(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value
+                  text = k+": "+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["name"].value+" ("+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["role"].value+") "+" ["+$(save['graph_adaptor'].get_description()).find('> concern[id="'+k+'"]')[0].attributes["type"].value+"]"
+                  if(type == 'No constraint') {
+                    svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column none" stroke-width="' + iconsize + '"><text>' + text + '</text></line>'));
+                  }else if (type == 'BOD'){
+                    svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column bod" stroke-width="' + iconsize + '"><text>' + text + '</text></line>'));
+                  }else {
+                    svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column sod" stroke-width="' + iconsize + '"><text>' + text + '</text></line>'));
+                  }
+                  count += 1;
+                }
+              }
             }
+            //END BODSOD Line Generation
 
             $('.resource-label').hide();  // Speech Bubble hide by default
 

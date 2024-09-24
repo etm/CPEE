@@ -1,0 +1,3 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" name="group" rngui:version="1.2" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+  <text rngui:label="A group of tasks, that belongs together"/>
+</element>
