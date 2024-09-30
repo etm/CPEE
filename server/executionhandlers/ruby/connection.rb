@@ -114,7 +114,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     params << Riddl::Header.new("CPEE-CALLBACK-ID",callback)
     params << Riddl::Header.new("CPEE-ACTIVITY",@handler_position)
     params << Riddl::Header.new("CPEE-LABEL",@label||'')
-    params << Riddl::Header.new("CPEE-TWIN-TARGET",@controller.attributes['twin_target']) if @controller.attributes['twin_target']
+    params << Riddl::Header.new("CPEE-SIM-TARGET",@controller.attributes['sim_target']) if @controller.attributes['sim_target']
     @controller.attributes.each do |key,value|
       params << Riddl::Header.new("CPEE-ATTR-#{key.to_s.gsub(/_/,'-')}",value)
     end
@@ -133,11 +133,11 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @guard_files += result
 
       if status == 561
-        if @controller.attributes['twin_translate']
-          gettrans = Riddl::Client.new(@controller.attributes['twin_translate'])
+        if @controller.attributes['sim_translate']
+          gettrans = Riddl::Client.new(@controller.attributes['sim_translate'])
           gtstatus, gtresult, gtheaders = gettrans.get
           if gtstatus >= 200 && gtstatus < 300
-            transwhat = case headers['CPEE-TWIN-TASKTYPE']
+            transwhat = case headers['CPEE-SIM-TASKTYPE']
               when 'i'; 'instantiation'
               when 'ir'; 'ipc-receive'
               when 'is'; 'ipc-send'
@@ -344,9 +344,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
     end
     @handler_endpoint = exec_endpoints.is_a?(Array) ? exec_endpoints.map{ |ep| struct.endpoints[ep] }.compact : struct.endpoints[exec_endpoints]
-    if @controller.attributes['twin_engine']
+    if @controller.attributes['sim_engine']
       @handler_endpoint_orig = @handler_endpoint
-      @handler_endpoint = @controller.attributes['twin_engine'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
+      @handler_endpoint = @controller.attributes['sim_engine'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
     end
     params = exec_parameters.dup
     params[:arguments] = params[:arguments].dup if params[:arguments]
