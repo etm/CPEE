@@ -38,9 +38,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     # https://github.com/rails/rails/pull/45818/commits/3beb2aff3be712e44c34a588fbf35b79c0246ca5
     controller = arguments[0]
     begin
-      controller.notify("executionhandler/error", :message => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):\s(.*)/)[4] + err.message, :line => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[3], :where => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[1])
+      controller.notify("description/error", :message => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):\s(.*)/)[4] + err.message, :line => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[3], :where => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[1])
     rescue => e
-      controller.notify("executionhandler/error", :message => err.message)
+      controller.notify("description/error", :message => err.message)
     end
   end# }}}
   def self::inform_connectionwrapper_error(arguments,err) # {{{
