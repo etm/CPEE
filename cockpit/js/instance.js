@@ -7,6 +7,8 @@ var loading = false;
 var subscription;
 var subscription_state = 'less';
 var graph_changed = new Event("graph:changed", {"bubbles":true, "cancelable":false});
+var graph_theme = null;
+var graph_position = null;
 var model_loaded = new Event("model:loaded", {"bubbles":true, "cancelable":false});
 var save = {};
     save['endpoints'] = undefined;
@@ -125,6 +127,8 @@ function cockpit() { //{{{
         uidash_toggle_vis_tab($('#instance'));
         uidash_toggle_vis_tab($('#parameters'));
       }
+      if (q.theme) { graph_theme = q.theme; }
+      if (q.position) { graph_position = q.position; }
       if (q.monitor && q.load) {
         if (q.load.match(/https?:\/\//)) {
           $('body').attr('load-testset',q.load);
@@ -371,7 +375,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       $("#current-track").show();
       $("#current-track").attr('href','track.html?monitor=' + url);
       var q = $.parseQuerySimple();
-      history.replaceState({}, '', '?' + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
+      history.replaceState({}, '', '?' + (graph_position ? "position=" + graph_position + "&" : "") + (graph_theme ? "theme=" + graph_theme + "&" : "") + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").prop( "checked", false );
@@ -552,6 +556,7 @@ function adaptor_update() { //{{{
 function adaptor_init(url,theme,dslx) { //{{{
   // while inside and svgs are reloaded, do nothing here
   if (suspended_redrawing) { return; }
+  if (graph_theme) { theme = graph_theme; }
   if (save['graph_theme'] != theme) {
     // while inside and svgs are reloaded, do nothing here
     suspended_redrawing = true;
@@ -857,6 +862,12 @@ function monitor_instance_state() {// {{{
 }// }}}
 
 function monitor_instance_pos() {// {{{
+  if (graph_position) {
+    save['instance_pos'] = $X('<' + graph_position + '>after</' + graph_position + '>');
+    format_visual_clear();
+    format_instance_pos();
+    return;
+  };
   var url = $('body').attr('current-instance');
   $.ajax({
     type: "GET",
@@ -889,6 +900,7 @@ function monitor_instance_running(content,event) {// {{{
   }
 } // }}}
 function monitor_instance_pos_change(content) {// {{{
+  if (graph_position) { return } ;
   if (content['at']) {
     $.each(content['at'],function(a,b){
       if (!save['activity_blue_states'][b.uuid]) {
