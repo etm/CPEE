@@ -76,6 +76,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         'base' => @controller.base_url,
         'instance' => @controller.instance_id,
         'instance_url' => @controller.instance_url,
+        'instance_url_encoded' => Riddl::Protocols::Utils::escape(@controller.instance_url),
         'instance_uuid' => @controller.uuid
       },
       :task => {
