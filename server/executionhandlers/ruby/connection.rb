@@ -428,10 +428,14 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
   end #}}}
 
-  def split_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]{{{
-    @controller.notify("gateway/split", :instance_uuid => @controller.uuid, :branches => branches)
+  def split_branches(id, branches = []) # factual, so for inclusive or [[a],[b],[c,d,e]] {{{
+    payload = { :instance_uuid => @controller.uuid, :id => id.to_s }
+    payload[:branches] = branches.length if branches.length > 0
+    @controller.notify("gateway/split", payload )
   end #}}}
-  def join_branches(branches) # factual, so for inclusive or [[a],[b],[c,d,e]]{{{
-    @controller.notify("gateway/join", :instance_uuid => @controller.uuid, :branches => branches)
+  def join_branches(id, branches = []) # factual, so for inclusive or [[a],[b],[c,d,e]] {{{
+    payload = { :instance_uuid => @controller.uuid, :id => id.to_s }
+    payload[:branches] = branches.length if branches.length > 0
+    @controller.notify("gateway/join", payload )
   end #}}}
 end
