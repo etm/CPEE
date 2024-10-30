@@ -8,7 +8,7 @@ var subscription;
 var subscription_state = 'less';
 var graph_changed = new Event("graph:changed", {"bubbles":true, "cancelable":false});
 var graph_theme = null;
-var graph_position = null;
+var graph_position = true;
 var model_loaded = new Event("model:loaded", {"bubbles":true, "cancelable":false});
 var save = {};
     save['endpoints'] = undefined;
@@ -128,7 +128,7 @@ function cockpit() { //{{{
         uidash_toggle_vis_tab($('#parameters'));
       }
       if (q.theme) { graph_theme = q.theme; }
-      if (q.position) { graph_position = q.position; }
+      if (q.position) { graph_position = q.position == "true" ? true : false; }
       if (q.monitor && q.load) {
         if (q.load.match(/https?:\/\//)) {
           $('body').attr('load-testset',q.load);
@@ -862,8 +862,8 @@ function monitor_instance_state() {// {{{
 }// }}}
 
 function monitor_instance_pos() {// {{{
-  if (graph_position) {
-    save['instance_pos'] = $X('<' + graph_position + '>after</' + graph_position + '>');
+  if (graph_position == false) {
+    save['instance_pos'] = [];
     format_visual_clear();
     format_instance_pos();
     return;

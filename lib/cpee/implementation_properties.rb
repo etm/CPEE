@@ -332,6 +332,16 @@ module CPEE
     class PutExecutionHandler < Riddl::Implementation #{{{
       def self::set(id,opts,hw)
         CPEE::Persistence::set_item(id,opts,'executionhandler',:executionhandler => hw)
+        desc = CPEE::Persistence::extract_item(id,opts,'description')
+        dslx = CPEE::Persistence::extract_item(id,opts,'dslx')
+        xml = XML::Smart::string(dslx)
+        xml.register_namespace 'd', 'http://cpee.org/ns/description/1.0'
+        dsl = Object.const_get('CPEE::ExecutionHandler::' + hw.capitalize)::dslx_to_dsl(xml)
+        CPEE::Persistence::set_item(id,opts,'description',
+          :description => xml,
+          :dslx => dslx,
+          :dsl => dsl
+        )
       end
       def response
         id = @a[0]

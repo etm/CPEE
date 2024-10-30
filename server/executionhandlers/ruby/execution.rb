@@ -40,7 +40,6 @@ module CPEE
           [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
         end
         iopts = YAML::load_file(ExecutionHandler::Ruby::BACKEND_OPTS)
-        pp iopts
         iopts[:host] = opts[:host]
         iopts[:url] = opts[:url]
         iopts[:redis_url] = opts[:redis_url]
