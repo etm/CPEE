@@ -1,0 +1,14 @@
+{
+  "instance_id": 0,
+  "host": "localhost",
+  "cpee_base_url": "http://localhost:8298/",
+  "redis_url": null,
+  "redis_path": "unix:///tmp/redis.sock",
+  "redis_db": 0,
+  "redis_workers": 1,
+  "executionhandlers": "../../executionhandlers/",
+  "executionhandler": "rust",
+  "eval_language": "ruby",
+  "eval_backend_exec_full": "http://localhost:9302/exec-full",
+  "eval_backend_structurize": "http://localhost:9302/structurize"
+}
