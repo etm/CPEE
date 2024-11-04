@@ -572,7 +572,7 @@ else
 end</manipulate>
       <call id="a13" endpoint="worklist">
         <parameters>
-          <label>output</label>
+          <label>output 12</label>
           <arguments>
             <orgmodel>https://lehre.bpm.in.tum.de/~yanggu/inputdata.xml</orgmodel>
             <form>https://lehre.bpm.in.tum.de/~yanggu/outputdata.html</form>
