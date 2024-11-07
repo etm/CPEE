@@ -17,13 +17,145 @@ module CPEE
   module ExecutionHandler
 
     module Rust
-      BACKEND_INSTANCE = 'instance.rs'
-      BACKEND_OPTS     = 'opts.yaml'
+      BACKEND_INSTANCE = File.expand_path(File.join(__dir__,'backend','instance.rs'))
+      BACKEND_OPTS     = File.expand_path(File.join(__dir__,'backend','opts.json'))
+      BACKEND_CONTEXT  = File.expand_path(File.join(__dir__,'backend','context.json'))
       BACKEND_COMPILE  = File.expand_path(File.join(__dir__,'backend','compile.sh'))
       BACKEND_RUN      = File.expand_path(File.join(__dir__,'backend','run'))
+      INDENT = 4
+
+      module Translate
+        def self::_indent(indent) #{{{
+          " " * CPEE::ExecutionHandler::Rust::INDENT * indent
+        end #}}}
+
+        def self::_nl #{{{
+          "\n"
+        end #}}}
+        def self::_nln #{{{
+          ',' + self::_nl
+        end #}}}
+
+        def self::f_call(node,indent) #{{{
+          x = ''
+          x << self::_indent(indent) + 'weel.call(' + self::_nl
+          x << self::_indent(indent+1) + %Q["#{node.find('string(@id)')}"] + self::_nln
+          x << self::_indent(indent+1) + %Q["#{node.find('string(@endpoint)')}"] + self::_nln
+
+          # parameters
+          x << self::_indent(indent+1) + 'HTTPRequest {' + self::_nl
+          x << self::_indent(indent+2) + 'label: ' + %Q["#{node.find('string(d:parameters/d:label)')}"] + self::_nln
+          x << self::_indent(indent+2) + 'method: ' + 'HTTP::' + node.find('string(d:parameters/d:method)')[1..-1].upcase + self::_nln
+
+          # arguments
+          x << self::_indent(indent+2) + 'arguments: Some(vec![' + self::_nl
+          node.find('d:parameters/d:arguments/*').each do |e|
+            if e.text[0] == '!'
+              x << self::_indent(indent+3) + 'controller:new_key_value_pair_ex("' + e.qname.name + '", "' + e.text[1..-1] + '")' + self::_nln
+            else
+              x << self::_indent(indent+3) + 'Controller::new_key_value_pair("' + e.qname.name + '", "' + e.text + '")' + self::_nln
+            end
+          end
+          x << self::_indent(indent+2) + '])' + self::_nln
+
+          %w(prepare finalize update rescue).each do |c|
+            if n = node.find('d:code/d:' + c).first
+              if n.text == ''
+                x << self::_indent(indent+1) + 'Option::None' + self::_nln
+              else
+                x << self::_indent(indent+1) + 'Some(indoc! {r###"' + self::_nl
+                x << self::_indent(indent+2) + n.text.gsub(/\n/, "\n#{self::_indent(indent+2)}") + self::_nl
+                x << self::_indent(indent+1) + '"###})' + self::_nln
+              end
+            else
+              x << self::_indent(indent+1) + 'Option::None' + self::_nln
+            end
+          end
+          x << self::_indent(indent) + ');'
+          x + self::_nl
+        end #}}}
+
+        def self::f_manipulate(node,indent) #{{{
+          x = ''
+          x << self::_indent(indent) +   %Q[weel.manipulate(] + self::_nl
+          x << self::_indent(indent+1) + %Q[#{(node.find('string(@id)'))}] + self::_nln
+          if %Q[#{node.find('string(@label)')}] == ''
+            x << self::_indent(indent+1) + 'Option::None' + self::_nln
+          else
+            x << self::_indent(indent+1) + %Q[#{(node.find('string(@label)'))}] + self::_nln
+          end
+          x << self::_indent(indent+1) +  %Q[indoc! {r###"] + self::_nl +  self::_indent(indent+1) +  node.text + self::_nl
+          x << self::_indent(indent) +  %Q["###}] + self::_nln
+          x << self::_indent(indent) + ")" + self::_nl
+          x + self::_nl
+        end #}}}
+
+        def self::f_parallel(node,indent) #{{{
+          x = ''
+          x << %Q[weel.parallel_do(]
+          if node.find('string(@wait)').to_i < 0
+            x << "Option::None,"
+          else
+            x << "Option::Some(#{node.find('string(@wait)')},"
+          end
+          x << %Q[ "#{node.find('string(@cancel)')}", ]
+          x << '|| {' + self::_nl
+          x + self::_nl
+        end #}}}
+
+        def self::f_parallel_branch(node,indent) #{{{
+          x = ''
+          x <<  self::_indent(indent) + "weel.parallel_branch(data, |_local: &str| {)" + self::_nl
+          x + self::_nl
+        end #}}}
+
+        def self::f_loop(node,indent) #{{{
+          x = ''
+          x << self::_indent(indent) +   %Q[weel.loop_exec(weel.] + %Q[#{node.find('string(@mode)')}]
+          x << %Q[("#{node.find('string(@condition)')}"), || {]  + self::_nl
+          x + self::_nl
+        end #}}}
+
+        def self::f_choose(node,indent) #{{{
+          x = ''
+          x <<  self::_indent(indent) + %Q[weel.choose("#{node.find('string(@mode)')}", || {] + self::_nl
+          x + self::_nl
+        end #}}}
+
+        def self::f_alternative(node,indent) #{{{
+          x = ''
+          x <<  self::_indent(indent) + %Q[weel.alternative("#{node.find('string(@condition)')}", || {] + self::_nl
+          x + self::_nl
+        end #}}}
+
+        def self::f_otherwise(node,indent) #{{{
+        end #}}}
+
+        def self::rec(nodes,indent=0) #{{{
+          coll = ''
+          nodes.each do |node|
+            case node.qname.name
+              when 'parallel', 'choose', 'otherwise', 'parallel_branch' then
+                coll << send('f_' + node.qname.name, node, indent)
+                coll << rec(node.children, indent+1)
+                coll << self::_indent(indent) + "});" + self::_nl
+              when 'alternative', 'loop' then
+                coll << send('f_' + node.qname.name, node, indent)
+                coll << rec(node.children, indent+1)
+                coll << indent(indent) + "})" + self::_nl
+              else
+                if node.qname.name !~ /^_/
+                  coll << send('f_' + node.qname.name, node, indent)
+                end
+            end
+          end
+          coll
+        end #}}}
+
+      end
 
       def self::dslx_to_dsl(dslx) # transpile
-        'hello world'
+        Translate::rec dslx.root.children
       end
 
       def self::prepare(id,opts) # write result to disk
@@ -38,24 +170,29 @@ module CPEE
         positions.map! do |k, v|
           [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
         end
-        File.open(File.join(opts[:instances],id.to_s,ExecutionHandler::Rust::BACKEND_OPTS),'w') do |f|
-          YAML::dump({
-            :host => opts[:host],
-            :url => opts[:url],
-            :redis_url => opts[:redis_url],
-            :redis_path => File.join(opts[:basepath],opts[:redis_path]),
-            :redis_db => opts[:redis_db],
-            :workers => opts[:workers],
-            :global_executionhandlers => opts[:global_executionhandlers],
-            :executionhandlers => opts[:executionhandlers],
-            :executionhandler => hw,
-            :endpoints => endpoints,
-            :dataelements => dataelements,
-            :positions => positions,
-            :attributes => attributes
-          },f)
+        iopts = JSON::load_file(ExecutionHandler::Rust::BACKEND_OPTS)
+        iopts['instance_id'] = id.to_i
+        iopts['host'] = opts[:host]
+        iopts['cpee_base_url'] = opts[:url]
+        iopts['redis_url'] = opts[:redis_url]
+        iopts['redis_path'] = 'unix://' + File.join(opts[:basepath],opts[:redis_path])
+        iopts['redis_db'] = opts[:redis_db]
+        iopts['workers'] = opts[:workers]
+        iopts['global_executionhandlers'] = opts[:global_executionhandlers]
+        iopts['executionhandlers'] = opts[:executionhandlers]
+        iopts['executionhandler'] = hw
+        iopts['attributes'] = attributes
+        File.open(File.join(opts[:instances],id.to_s,File::basename(ExecutionHandler::Rust::BACKEND_OPTS)),'w') do |f|
+          f.write JSON::pretty_generate(iopts)
         end
-        File.write(File.join(opts[:instances],id.to_s,ExecutionHandler::Rust::BACKEND_INSTANCE),dsl)
+        File.open(File.join(opts[:instances],id.to_s,File::basename(ExecutionHandler::Rust::BACKEND_CONTEXT)),'w') do |f|
+          f.write JSON::pretty_generate({
+            'endpoints' => endpoints,
+            'dataelements' => dataelements,
+            'positions' => positions
+          })
+        end
+        File.write(File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Rust::BACKEND_INSTANCE)),dsl)
         `#{File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Rust::BACKEND_COMPILE))}`
       end
 
