@@ -194,16 +194,11 @@ module CPEE
 
       def self::prepare(id,opts) # write result to disk #{{{
         Dir.mkdir(File.join(opts[:instances],id.to_s)) rescue nil
-        FileUtils.copy(ExecutionHandler::Rust::BACKEND_COMPILE,File.join(opts[:instances],id.to_s))
+
+        # Write opts.json
         dsl = CPEE::Persistence::extract_item(id,opts,'dsl')
         hw = CPEE::Persistence::extract_item(id,opts,'executionhandler')
-        endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints').to_h
-        dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements').to_h
         attributes = CPEE::Persistence::extract_list(id,opts,'attributes').to_h
-        positions = CPEE::Persistence::extract_set(id,opts,'positions')
-        positions.map! do |k, v|
-          [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
-        end
         iopts = JSON::load_file(ExecutionHandler::Rust::BACKEND_OPTS)
         iopts['instance_id'] = id.to_i
         iopts['host'] = opts[:host]
@@ -219,14 +214,29 @@ module CPEE
         File.open(File.join(opts[:instances],id.to_s,File::basename(ExecutionHandler::Rust::BACKEND_OPTS)),'w') do |f|
           f.write JSON::pretty_generate(iopts)
         end
+
+        # Write context.json
+        endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints').to_h
+        dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements').to_h
+        data = {}
+        dataelements.each do |k, v|
+          data[k] = CPEE::ValueHelper::parse(v)
+        end
+        pos = {}
+        positions = CPEE::Persistence::extract_set(id,opts,'positions')
+        positions.each do |k, v|
+          pos[k] = {"position" => k, "uuid" => "0", "detail" => v, "handler_passthrough" => CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough'))}
+        end
         File.open(File.join(opts[:instances],id.to_s,File::basename(ExecutionHandler::Rust::BACKEND_CONTEXT)),'w') do |f|
           f.write JSON::pretty_generate({
             'endpoints' => endpoints,
-            'dataelements' => dataelements,
-            'positions' => positions
+            'data' => data,
+            'positions' => pos
           })
         end
         File.write(File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Rust::BACKEND_INSTANCE)),dsl)
+
+        FileUtils.copy(ExecutionHandler::Rust::BACKEND_COMPILE,File.join(opts[:instances],id.to_s))
         `#{File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Rust::BACKEND_COMPILE))}`
       end #}}}
 
