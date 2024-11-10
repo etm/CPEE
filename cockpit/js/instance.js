@@ -8,7 +8,9 @@ var subscription;
 var subscription_state = 'less';
 var graph_changed = new Event("graph:changed", {"bubbles":true, "cancelable":false});
 var graph_theme = null;
-var graph_position = true;
+var graph_position = null;
+var graph_highlight = null;
+var graph_highlight_color = null;
 var model_loaded = new Event("model:loaded", {"bubbles":true, "cancelable":false});
 var save = {};
     save['endpoints'] = undefined;
@@ -25,7 +27,6 @@ function global_init() {
   save['state']= undefined;
   save['dsl'] = undefined;
   save['activity_red_states'] = {}
-  save['activity_blue_states'] = {}
   save['graph'] = undefined;
   save['graph_theme'] = undefined;
   save['graph_adaptor'] = undefined;
@@ -128,7 +129,10 @@ function cockpit() { //{{{
         uidash_toggle_vis_tab($('#parameters'));
       }
       if (q.theme) { graph_theme = q.theme; }
-      if (q.position) { graph_position = q.position == "true" ? true : false; }
+      if (q.position) { graph_position = q.position == 'false' ? 'false' : 'true'; }
+      if (q.highlight) {
+        graph_highlight = q.highlight.match(/(a\d+),(\d\d\d\d\d\d)/);
+      }
       if (q.monitor && q.load) {
         if (q.load.match(/https?:\/\//)) {
           $('body').attr('load-testset',q.load);
@@ -862,7 +866,7 @@ function monitor_instance_state() {// {{{
 }// }}}
 
 function monitor_instance_pos() {// {{{
-  if (graph_position == false) {
+  if (graph_position && graph_position == 'false') {
     save['instance_pos'] = [];
     format_visual_clear();
     format_instance_pos();
@@ -896,34 +900,24 @@ function monitor_instance_running(content,event) {// {{{
       format_visual_remove(content.activity,"active");
     }
     save['activity_red_states'][content['activity-uuid']] = true
-    setTimeout(() => {delete save['activity_red_states'][content['activity-uuid']]},5000);
+    setTimeout(() => {delete save['activity_red_states'][content['activity-uuid']]},1);
   }
 } // }}}
 function monitor_instance_pos_change(content) {// {{{
-  if (graph_position) { return } ;
+  if (graph_position && graph_position == 'false') { return; }
   if (content['at']) {
     $.each(content['at'],function(a,b){
-      if (!save['activity_blue_states'][b.uuid]) {
-        save['activity_blue_states'][b.uuid] = true
-        format_visual_add(b.position,"passive");
-      }
+      format_visual_add(b.position,"passive",false);
     });
   }
   if (content['after']) {
     $.each(content['after'],function(a,b){
-      if (!save['activity_blue_states'][b.uuid]) {
-        save['activity_blue_states'][b.uuid] = true
-        format_visual_add(b.position,"passive");
-      }
+      format_visual_add(b.position,"passive",false);
     });
   }
   if (content['unmark']) {
     $.each(content['unmark'],function(a,b){
-      if (save['activity_blue_states'][b.uuid]) {
-        format_visual_remove(b.position,"passive")
-      }
-      save['activity_blue_states'][b.uuid] = true
-      setTimeout(() => {delete save['activity_blue_states'][b.uuid]},5000);
+      format_visual_remove(b.position,"passive",false)
     });
   }
   if (!content['at'] && !content['unmark'] && !content['after'] && !content['wait']) {
@@ -956,15 +950,11 @@ function monitor_instance_state_change(notification) { //{{{
       monitor_instance_pos();
     }
     if (notification == "running") {
-      // // we cant do that, because the events might not be ordered. so jus remove all the blue ones.
-      // format_visual_clear();
-
       for (const [key, ele] of Object.entries(node_state)) {
         for (i=0; i<ele.passive; i++) {
           format_visual_remove(key,'passive');
         }
       }
-      // save_blue_states has to be left alone, because we dont know the uuid
     }
 
     var but = "";
@@ -1436,15 +1426,18 @@ async function load_testset_handlers(url,testset,vals) {// {{{
   return Promise.all(promises);
 }// }}}
 
-function format_visual_add(what,cls) {//{{{
+function format_visual_add(what,cls,sum=true) {//{{{
   if (node_state[what] == undefined)
     node_state[what] = {};
   if (node_state[what][cls] == undefined)
     node_state[what][cls] = 0;
   node_state[what][cls] += 1;
+  if (sum == false && node_state[what][cls] > 1) {
+    node_state[what][cls] = 1;
+  }
   format_visual_set(what);
 }//}}}
-function format_visual_remove(what,cls) {//{{{
+function format_visual_remove(what,cls,sum=true) {//{{{
   if (node_state[what] == undefined)
     node_state[what] = {};
   if (node_state[what][cls] == undefined)
@@ -1452,6 +1445,9 @@ function format_visual_remove(what,cls) {//{{{
   node_state[what][cls] -= 1;
   if (node_state[what][cls] < 0)
     node_state[what][cls] = 0;
+  if (sum == false && node_state[what][cls] < 0) {
+    node_state[what][cls] = 0;
+  }
   format_visual_set(what);
 }//}}}
 
