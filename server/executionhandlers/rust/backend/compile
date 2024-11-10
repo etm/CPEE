@@ -1,0 +1,22 @@
+CDIR=$(dirname "$0")
+echo "CDir is: ${CDIR}"
+INSTANCE_DIR=$1
+echo "Target dir is: $INSTANCE_DIR"
+INSTANCE_ID=$(basename $(pwd))
+echo "Basename is: $INSTANCE_ID"
+: << 'END'
+# copy source code over
+ln -s "$CDIR/rusty_weel/http_helper" $1
+ln -s "$CDIR/rusty_weel/weel_lib" $1
+ln -s "$CDIR/rusty_weel/weel_macro" $1
+cp -r "$CDIR/rusty_weel/weel_bin" $1
+
+# copy and run build script (will crate instance binary
+ln -s "$CDIR/rusty_weel/build" $1
+cd $1
+./build.sh "$CDIR/rusty_weel/target" $INSTANCE_ID
+mkdir "$1/target"
+# Now link the directory
+ln -s "$CDIR/target/release" "$1/bin"
+ln -s "$CDIR/rusty_weel/run" $1
+END

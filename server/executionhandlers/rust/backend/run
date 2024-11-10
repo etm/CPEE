@@ -1,0 +1,4 @@
+#! /bin/bash
+cd ./bin
+export LD_LIBRARY_PATH=./
+rustup run stable ./weel_bin
