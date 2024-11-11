@@ -64,7 +64,7 @@ module CPEE
           x << self::_indent(indent+2) + '])' + self::_nln
           x << self::_indent(indent+1) + "}" + self::_nln
 
-          %w(prepare finalize update rescue).each do |c|
+          %w(prepare update finalize rescue).each do |c|
             if n = node.find('d:code/d:' + c).first
               if n.text == ''
                 x << self::_indent(indent+1) + 'None' + self::_nln
@@ -95,7 +95,7 @@ module CPEE
           x << self::_indent(indent+1) +  'r###"' + self::_nl
           x << self::_indent(indent+2) +  node.text + self::_nl
           x << self::_indent(indent+1) +  %Q["###}] + self::_nln
-          x << self::_indent(indent) + ")?;" + self::_nl
+          x << self::_indent(indent) + ")?;" + self::_nl
           x
         end #}}}
 
@@ -231,18 +231,17 @@ module CPEE
           f.write JSON::pretty_generate({
             'endpoints' => endpoints,
             'data' => data,
-            'positions' => pos
+            'search_positions' => pos
           })
         end
         File.write(File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Rust::BACKEND_INSTANCE)),dsl)
 
-        FileUtils.copy(ExecutionHandler::Rust::BACKEND_COMPILE,File.join(opts[:instances],id.to_s))
-        `#{File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Rust::BACKEND_COMPILE))}`
+        system(ExecutionHandler::Rust::BACKEND_COMPILE, File.join(opts[:instances],id.to_s))
       end #}}}
 
       def self::run(id,opts) # {{{
         exe = File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Rust::BACKEND_RUN))
-        pid = Kernel.spawn(exe , :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
+        pid = Kernel.spawn(exe, id.to_s, :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
         Process.detach pid
         File.write(exe + '.pid',pid)
       end #}}}

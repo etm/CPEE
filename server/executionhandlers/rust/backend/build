@@ -1,7 +1,6 @@
-# needs to be copied into the instance directory
-# $1: The build directory for cargo $2: the instance id
-export CARGO_TARGET_DIR=$1
-
+INSTANCE_ID=$1
 cd ./weel_bin
-sed -i 's/name = "weel_bin"/name = "weel_bin_$2"/' ./Cargo.toml
-RUSTFLAGS='-C prefer-dynamic' cargo build --release
+BIN_NAME="weel_bin_$INSTANCE_ID"
+sed -i "s/name = \"weel_bin\"/name = \"$BIN_NAME\"/" ./Cargo.toml
+
+cargo build --release
