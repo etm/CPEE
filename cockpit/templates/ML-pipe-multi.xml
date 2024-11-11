@@ -1,0 +1,635 @@
+<?xml version="1.0"?>
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements>
+    <best_pipeline/>
+    <res>[]</res>
+    <current_performance>1.0</current_performance>
+    <results>[{"user":"manglej6","raw":[{"name":"ok","value":"ok"}],"data":{"ok":"ok"}},{"user":"weissh9","raw":[{"name":"ok","value":"ok"}],"data":{"ok":"ok"}}]</results>
+    <current_pipeline>```python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+
+# Load the dataset
+DATASET_PATH = 'path_to_your_dataset.csv'  # Replace with your actual dataset path
+data = pd.read_csv(DATASET_PATH)
+
+# Data Preprocessing
+# Remove 'Id' column
+data = data.drop(columns=['Id'])
+
+# Separate features and target
+X = data.iloc[:, :-1]  # Features: all columns except the last one
+y = data.iloc[:, -1]   # Target: the last column
+
+# Split into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Model Selection with a pipeline
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),  # Feature Engineering: Scaling
+    ('classifier', RandomForestClassifier(random_state=42))  # Model Selection: Random Forest Classifier
+])
+
+# Train the model
+pipeline.fit(X_train, y_train)
+
+# Predict on the test set
+y_predict = pipeline.predict(X_test)
+
+# Model Evaluation
+performance = f1_score(y_test, y_predict, average='macro')
+```</current_pipeline>
+    <dec_DP>1</dec_DP>
+    <dec_FE>0</dec_FE>
+    <final_pipeline>```python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+
+# Load the dataset
+DATASET_PATH = 'path_to_your_dataset.csv'  # Replace with your actual dataset path
+data = pd.read_csv(DATASET_PATH)
+
+# Data Preprocessing
+# Remove 'Id' column
+data = data.drop(columns=['Id'])
+
+# Separate features and target
+X = data.iloc[:, :-1]  # Features: all columns except the last one
+y = data.iloc[:, -1]   # Target: the last column
+
+# Split into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Model Selection with a pipeline
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),  # Feature Engineering: Scaling
+    ('classifier', RandomForestClassifier(random_state=42))  # Model Selection: Random Forest Classifier
+])
+
+# Train the model
+pipeline.fit(X_train, y_train)
+
+# Predict on the test set
+y_predict = pipeline.predict(X_test)
+
+# Model Evaluation
+performance = f1_score(y_test, y_predict, average='macro')
+```</final_pipeline>
+    <output>{"user":"yg","raw":[{"name":"textual_des","value":"-Overview: This is a 3-class, 4-feature tabular classification task aimed at identifying the species of an iris plant based on input data.\r\n-Dataset Description: The dataset is a CSV table with six columns. The first column, 'Id', contains the unique identifiers for each iris (e.g., 1). The second to fifth columns represent different properties of the iris. The sixth column indicates the species name, such as 'Iris-setosa'.\r\n-Evaluation Metric: The performance will be evaluated using the Macro-F1 score."},{"name":"dataset_name","value":"Iris.csv"}],"data":{"textual_des":"-Overview: This is a 3-class, 4-feature tabular classification task aimed at identifying the species of an iris plant based on input data.\r\n-Dataset Description: The dataset is a CSV table with six columns. The first column, 'Id', contains the unique identifiers for each iris (e.g., 1). The second to fifth columns represent different properties of the iris. The sixth column indicates the species name, such as 'Iris-setosa'.\r\n-Evaluation Metric: The performance will be evaluated using the Macro-F1 score.","dataset_name":"Iris.csv"}}</output>
+    <best_performance>0</best_performance>
+    <final_performance>1.0</final_performance>
+    <textual_des>-Overview: This is a 3-class, 4-feature tabular classification task aimed at identifying the species of an iris plant based on input data.
+-Dataset Description: The dataset is a CSV table with six columns. The first column, 'Id', contains the unique identifiers for each iris (e.g., 1). The second to fifth columns represent different properties of the iris. The sixth column indicates the species name, such as 'Iris-setosa'.
+-Evaluation Metric: The performance will be evaluated using the Macro-F1 score.</textual_des>
+    <dataset_name>Iris.csv</dataset_name>
+    <round>1</round>
+  </dataelements>
+  <endpoints>
+    <user>https-post://cpee.org/services/timeout-user.php</user>
+    <auto>https-post://cpee.org/services/timeout-auto.php</auto>
+    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
+    <timeout>https-post://cpee.org/services/timeout.php</timeout>
+    <send>https-post://cpee.org/ing/correlators/message/send/</send>
+    <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
+    <worklist>https-post://cpee.org/worklist/server/</worklist>
+    <llm_api>https://lehre.bpm.in.tum.de/ports/17777/llm</llm_api>
+    <evaluate_api>https://lehre.bpm.in.tum.de/ports/17778/evaluate</evaluate_api>
+  </endpoints>
+  <attributes>
+    <info>ML-pipe-multi</info>
+    <modeltype>CPEE</modeltype>
+    <theme>extended</theme>
+    <organisation1>http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <design_stage>development</design_stage>
+    <design_dir>Templates.dir/</design_dir>
+  </attributes>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <call id="a1" endpoint="worklist">
+        <parameters>
+          <label>Input Textual Task Desc. and Real Dataset</label>
+          <arguments>
+            <orgmodel>https://lehre.bpm.in.tum.de/~yanggu/inputdata.xml</orgmodel>
+            <form>https://lehre.bpm.in.tum.de/~yanggu/inputdata.html</form>
+            <role>Engineer</role>
+            <priority>2</priority>
+            <handling rngui-nonfunctional="true">single</handling>
+            <restrictions/>
+            <data/>
+          </arguments>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result">data.output = result
+data.textual_des = result['data']['textual_des']
+data.dataset_name = result['data']['dataset_name']
+#data.dataset = result['data']['dataset']</finalize>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <manipulate id="a10" label="Initialize #round, the current pipeline and its performance">data.current_pipeline = ""
+data.current_performance = 0
+data.round = 0</manipulate>
+      <loop mode="post_test" condition="data.current_performance &gt; data.best_performance &amp;&amp; data.current_performance != 1">
+        <_probability>
+          <_probability_min/>
+          <_probability_max/>
+          <_probability_avg/>
+        </_probability>
+        <manipulate id="a12" label="Record #round, the best pipeline and its performance">data.best_pipeline = data.current_pipeline
+data.best_performance = data.current_performance
+data.round = data.round + 1</manipulate>
+        <call id="a4" endpoint="llm_api">
+          <parameters>
+            <label>Make Dec. of Data Preprocessing by LLM</label>
+            <method>:post</method>
+            <arguments>
+              <prompt>!data.prompt1</prompt>
+            </arguments>
+          </parameters>
+          <code>
+            <prepare>if data.round == 1
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a complete ML pipeline in Python for a given ML task. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory.\n\nFor this subtask, decide whether the pipeline requires a 'Data Preprocessing' component based on the following textual task description. If the answer is Yes, return only '1'. If the answer is No, return only '0'. \nImportant: Always return only '1' or '0'."
+  data.prompt1 = data.temp + "\n# Textual Task Description: \n" + data.textual_des
+else
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a new complete ML pipeline in Python for a given ML task, aiming to achieve performance that surpasses the previous pipeline. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, carefully think and reason to decide whether the pipeline requires a 'Data Preprocessing' component based on the following textual task description and previous ML pipeline with its performance. If the answer is Yes, return only '1'. If the answer is No, return only '0'. \nImportant: Always return only '1' or '0'."
+  data.prompt1 = data.temp + "\n# Textual Task Description: \n" + data.textual_des + "\n# Previous Pipeline Code: \n" + data.best_pipeline + "\n# Previous Pipeline Performance: \n" + data.best_performance.to_s
+end</prepare>
+            <finalize output="result">data.dec_DP = result['llm']['output']</finalize>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+        <choose mode="exclusive">
+          <alternative condition="data.dec_DP == '1'">
+            <_probability>
+              <_probability_min/>
+              <_probability_max/>
+              <_probability_avg/>
+            </_probability>
+            <call id="a5" endpoint="llm_api">
+              <parameters>
+                <label>Generate Code of DP by LLM</label>
+                <method>:post</method>
+                <arguments>
+                  <prompt>!data.prompt2</prompt>
+                </arguments>
+              </parameters>
+              <code>
+                <prepare>if data.round == 1
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a complete ML pipeline in Python for a given ML task. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, generate the pipeline code up to the 'Data Preprocessing' component based on the following textual task description. \nImportant: Your output should only contain the generated pipeline code, which must be a directly executable Python file without any manual adjustments or any errors. Use {pd.read_csv(DATASET_PATH)} to load the dataset. Import necessary python packages."
+  data.prompt2 = data.temp + "\n# Textual Task Description: \n" + data.textual_des
+else
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a new complete ML pipeline in Python for a given ML task, aiming to achieve performance that surpasses the previous pipeline. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, carefully think and reason through the following textual task description and previous ML pipeline with its performance. Generate the pipeline code up to the 'Data Preprocessing' component, aiming to achieve improved performance results. \nImportant: Your output should only contain the generated pipeline code, which must be a directly executable Python file without any manual adjustments or any errors. Use {pd.read_csv(DATASET_PATH)} to load the dataset. Import necessary python packages."
+  data.prompt2 = data.temp + "\n# Textual Task Description: \n" + data.textual_des + "\n# Previous Pipeline Code: \n" + data.best_pipeline + "\n# Previous Pipeline Performance: \n" + data.best_performance.to_s
+end</prepare>
+                <finalize output="result">data.current_pipeline = result['llm']['output']</finalize>
+                <update output="result"/>
+                <rescue output="result"/>
+              </code>
+              <annotations>
+                <_generic/>
+                <_timing>
+                  <_timing_weight/>
+                  <_timing_avg/>
+                  <explanations/>
+                </_timing>
+                <_shifting>
+                  <_shifting_type>Duration</_shifting_type>
+                </_shifting>
+                <_context_data_analysis>
+                  <probes/>
+                  <ips/>
+                </_context_data_analysis>
+                <report>
+                  <url/>
+                </report>
+                <_notes>
+                  <_notes_general/>
+                </_notes>
+              </annotations>
+              <documentation>
+                <input/>
+                <output/>
+                <implementation>
+                  <description/>
+                </implementation>
+                <code>
+                  <description/>
+                </code>
+              </documentation>
+            </call>
+          </alternative>
+          <otherwise/>
+        </choose>
+        <call id="a6" endpoint="llm_api">
+          <parameters>
+            <label>Make Dec. of Feature Engineeering by LLM</label>
+            <method>:post</method>
+            <arguments>
+              <prompt>!data.prompt3</prompt>
+            </arguments>
+          </parameters>
+          <code>
+            <prepare>if data.round == 1
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a complete ML pipeline in Python for a given ML task. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, decide whether the pipeline requires a 'Feature Engineering' component based on the following textual task description and current pipeline code. If the answer is Yes, return only '1'. If the answer is No, return only '0'. \nImportant: Always return only '1' or '0'."
+  data.prompt3 = data.temp + "\n# Textual Task Description: \n" + data.textual_des + "\n# Current Pipeline Code: \n" + data.current_pipeline
+else
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a new complete ML pipeline in Python for a given ML task, aiming to achieve performance that surpasses the previous pipeline. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, carefully think and reason to decide whether the pipeline requires a 'Feature Engineering' component based on the following textual task description, previous ML pipeline with its performance, and current pipeline code. If the answer is Yes, return only '1'. If the answer is No, return only '0'. \nImportant: Always return only '1' or '0'."
+  data.prompt3 = data.temp + "\n# Textual Task Description: \n" + data.textual_des + "\n# Previous Pipeline Code: \n" + data.best_pipeline + "\n# Previous Pipeline Performance: \n" + data.best_performance.to_s + "\n# Current Pipeline Code: \n" + data.current_pipeline
+end</prepare>
+            <finalize output="result">data.dec_FE = result['llm']['output']</finalize>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+        <choose mode="exclusive">
+          <alternative condition="data.dec_FE == '1'">
+            <_probability>
+              <_probability_min/>
+              <_probability_max/>
+              <_probability_avg/>
+            </_probability>
+            <call id="a7" endpoint="llm_api">
+              <parameters>
+                <label>Generate Code of FE by LLM</label>
+                <method>:post</method>
+                <arguments>
+                  <prompt>!data.prompt4</prompt>
+                </arguments>
+              </parameters>
+              <code>
+                <prepare>if data.round == 1
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a complete ML pipeline in Python for a given ML task. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, generate the pipeline code up to the 'Feature Engineering' component based on the following textual task description and current pipeline code. \nImportant: Your output should only contain the generated pipeline code, which must be a directly executable Python file without any manual adjustments or any errors. Ensure that the current pipeline code remains unchanged and necessary python packages are imported."
+  data.prompt4 = data.temp + "\n# Textual Task Description: \n" + data.textual_des + "\n# Current Pipeline Code: \n" + data.current_pipeline
+else
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a new complete ML pipeline in Python for a given ML task, aiming to achieve performance that surpasses the previous pipeline. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, carefully think and reason through the following textual task description, previous ML pipeline with its performance, and current pipeline code. Generate the pipeline code up to the 'Feature Engineering' component, aiming to achieve improved performance results. \nImportant: Your output should only contain the generated pipeline code, which must be a directly executable Python file without any manual adjustments or any errors. Ensure that the current pipeline code remains unchanged and necessary python packages are imported."
+  data.prompt4 = data.temp + "\n# Textual Task Description: \n" + data.textual_des + "\n# Previous Pipeline Code: \n" + data.best_pipeline + "\n# Previous Pipeline Performance: \n" + data.best_performance.to_s + "\n# Current Pipeline Code: \n" + data.current_pipeline
+end</prepare>
+                <finalize output="result">data.current_pipeline = result['llm']['output']</finalize>
+                <update output="result"/>
+                <rescue output="result"/>
+              </code>
+              <annotations>
+                <_generic/>
+                <_timing>
+                  <_timing_weight/>
+                  <_timing_avg/>
+                  <explanations/>
+                </_timing>
+                <_shifting>
+                  <_shifting_type>Duration</_shifting_type>
+                </_shifting>
+                <_context_data_analysis>
+                  <probes/>
+                  <ips/>
+                </_context_data_analysis>
+                <report>
+                  <url/>
+                </report>
+                <_notes>
+                  <_notes_general/>
+                </_notes>
+              </annotations>
+              <documentation>
+                <input/>
+                <output/>
+                <implementation>
+                  <description/>
+                </implementation>
+                <code>
+                  <description/>
+                </code>
+              </documentation>
+            </call>
+          </alternative>
+          <otherwise/>
+        </choose>
+        <call id="a8" endpoint="llm_api">
+          <parameters>
+            <label>Generate Code of Model Selection by LLM</label>
+            <method>:post</method>
+            <arguments>
+              <prompt>!data.prompt5</prompt>
+            </arguments>
+          </parameters>
+          <code>
+            <prepare>if data.round == 1
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a complete ML pipeline in Python for a given ML task. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, generate the pipeline code up to the 'Model Selection' component based on the following textual task description and current pipeline code. \nImportant: Your output should only contain the generated pipeline code, which must be a directly executable Python file without any manual adjustments or any errors. Ensure that only one best model is directly defined without hyperparameter tuning algorithm in the code, the current pipeline code remains unchanged, and necessary python packages are imported."
+  data.prompt5 = data.temp + "\n# Textual Task Description: \n" + data.textual_des + "\n# Current Pipeline Code: \n" + data.current_pipeline
+else
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a new complete ML pipeline in Python for a given ML task, aiming to achieve performance that surpasses the previous pipeline. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, carefully think and reason through the following textual task description, previous ML pipeline with its performance, and current pipeline code. Generate the pipeline code up to the 'Model Selection' component, aiming to achieve improved performance results. \nImportant: Your output should only contain the generated pipeline code, which must be a directly executable Python file without any manual adjustments or any errors. Ensure that only one best model is defined without hyperparameter tuning algorithm in the code, the current pipeline code remains unchanged, and necessary python packages are imported."
+  data.prompt5 = data.temp + "\n# Textual Task Description: \n" + data.textual_des + "\n# Previous Pipeline Code: \n" + data.best_pipeline + "\n# Previous Pipeline Performance: \n" + data.best_performance.to_s + "\n# Current Pipeline Code: \n" + data.current_pipeline
+end</prepare>
+            <finalize output="result">data.current_pipeline = result['llm']['output']</finalize>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+        <call id="a9" endpoint="llm_api">
+          <parameters>
+            <label>Generate Code of Model Evaluation by LLM</label>
+            <method>:post</method>
+            <arguments>
+              <prompt>!data.prompt6</prompt>
+            </arguments>
+          </parameters>
+          <code>
+            <prepare>if data.round == 1
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a complete ML pipeline in Python for a given ML task. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, generate the complete ML pipeline code up to the 'Model Evaluation' component based on the following textual task description and current pipeline code. \nImportant: (1) Your output should only include the generated pipeline code, which must be a directly executable Python file without any manual adjustments or any errors. (2) Use {X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)} to split the data. Train the model on (X_train, y_train) and use the trained model to predict {y_predict} for {X_test}. Then, for the classification task, calculate the macro F1 score on the test dataset as the final evaluation metric using {performance = sklearn.metrics.f1_score(y_test, y_predict, average='macro')}. For the regression task, calculate the R2 score on the test dataset as the final evaluation metric using {performance = sklearn.metrics.r2_score(y_test, y_predict)}. (3) Must use 'performance' variable as the final evaluation metric and Don't include any other performance evaluation code. (4) Ensure that the current pipeline code remains unchanged and necessary python packages are imported."
+  data.prompt6 = data.temp + "\n# Textual Task Description: \n" + data.textual_des + "\n# Current Pipeline Code: \n" + data.current_pipeline
+else
+  data.temp = "You are an expert machine learning algorithm engineer, and your final task is to create a new complete ML pipeline in Python for a given ML task, aiming to achieve performance that surpasses the previous pipeline. A complete ML pipeline typically includes up to four components: Data Preprocessing, Feature Engineering, Model Selection, and Model Evaluation. The last two components are mandatory. \n\nFor this subtask, carefully think and reason through the following textual task description, previous ML pipeline with its performance, and current pipeline code. Generate the pipeline code up to the 'Model Evaluation' component, aiming to achieve improved performance results. \nImportant: (1) Your output should only include the generated pipeline code, which must be a directly executable Python file without any manual adjustments or any errors. (2) Use {X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)} to split the data. Train the model on (X_train, y_train) and use the trained model to predict {y_predict} for {X_test}. Then, for the classification task, calculate the macro F1 score on the test dataset as the final evaluation metric using {performance = sklearn.metrics.f1_score(y_test, y_predict, average='macro')}. For the regression task, calculate the R2 score on the test dataset as the final evaluation metric using {performance = sklearn.metrics.r2_score(y_test, y_predict)}. (3) Must use 'performance' variable as the final evaluation metric and Don't include any other performance evaluation code. (4) Ensure that the current pipeline code remains unchanged and necessary python packages are imported."
+  data.prompt6 = data.temp + "\n# Textual Task Description: \n" + data.textual_des + "\n# Previous Pipeline Code: \n" + data.best_pipeline + "\n# Previous Pipeline Performance: \n" + data.best_performance.to_s + "\n# Current Pipeline Code: \n" + data.current_pipeline
+end</prepare>
+            <finalize output="result">data.current_pipeline = result['llm']['output']</finalize>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+        <call id="a3" endpoint="evaluate_api">
+          <parameters>
+            <label>Evaluate Whole ML Pipeline</label>
+            <method>:post</method>
+            <arguments>
+              <pipeline_code>!data.current_pipeline</pipeline_code>
+              <dataset_path>!data.dataset_path</dataset_path>
+              <round>!data.round</round>
+            </arguments>
+          </parameters>
+          <code>
+            <prepare>data.dataset_path = "/home/yanggu/public_html/Execute/" + data.dataset_name</prepare>
+            <finalize output="result">data.current_performance = result['evaluation']['performance']</finalize>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+      </loop>
+      <manipulate id="a2" label="Return Final Pipeline and Performance">if data.current_performance == 1
+  data.final_pipeline = data.current_pipeline
+  data.final_performance = data.current_performance
+else
+  data.final_pipeline = data.best_pipeline
+  data.final_performance = data.best_performance
+end</manipulate>
+      <call id="a13" endpoint="worklist">
+        <parameters>
+          <label>output 12</label>
+          <arguments>
+            <orgmodel>https://lehre.bpm.in.tum.de/~yanggu/inputdata.xml</orgmodel>
+            <form>https://lehre.bpm.in.tum.de/~yanggu/outputdata.html</form>
+            <role>Engineer</role>
+            <priority>2</priority>
+            <handling rngui-nonfunctional="true">single</handling>
+            <restrictions/>
+            <data>
+              <performance>!data.final_performance</performance>
+              <dataset_name>!data.dataset_name</dataset_name>
+            </data>
+          </arguments>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result"/>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <stop id="a11"/>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+</testset>
