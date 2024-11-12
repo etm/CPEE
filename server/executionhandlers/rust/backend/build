@@ -3,4 +3,4 @@ cd ./weel_bin
 BIN_NAME="weel_bin_$INSTANCE_ID"
 sed -i "s/name = \"weel_bin\"/name = \"$BIN_NAME\"/" ./Cargo.toml
 
-cargo build --release
+time cargo build --release --quiet
