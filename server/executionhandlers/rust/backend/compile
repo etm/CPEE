@@ -19,4 +19,4 @@ cd $INSTANCE_DIR
 ./build $INSTANCE_ID
 
 # Dynlink the run script
-ln -sf "$CDIR/run" $INSTANCE_DIR
+cp -f "$CDIR/run" $INSTANCE_DIR
