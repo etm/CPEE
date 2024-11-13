@@ -68,9 +68,9 @@ module CPEE
                 x << self::_indent(indent+1) + 'None' + self::_nln
               else
                 x << self::_indent(indent+1) + 'code! {' + self::_nl
-                x << self::_indent(indent+1) + 'r###"' + self::_nl
+                x << self::_indent(indent+1) + '"' + self::_nl
                 x << self::_indent(indent+2) + n.text.gsub(/\n/, "\n#{self::_indent(indent+2)}") + self::_nl
-                x << self::_indent(indent+1) + '"###}' + self::_nln
+                x << self::_indent(indent+1) + '"}' + self::_nln
               end
             else
               x << self::_indent(indent+1) + 'None' + self::_nln
@@ -88,6 +88,8 @@ module CPEE
               else
                 return self::_indent(indent + 1) + '"' + node.qname.name + '": ' + content.to_s
               end
+            elsif node.children.empty?
+              return self::_indent(indent + 1) +  '"' + node.qname.name + '": null'
             else
               x = self::_indent(indent + 1) +  '"' + node.qname.name + '": {' + self::_nl
               childs = []
@@ -99,7 +101,7 @@ module CPEE
             end
         end #}}}
 
-        def self::f_manipulate(node,indent) #{{{
+        def self::f_manipulate(node,indent) #{{{#
           x = ''
           x << self::_indent(indent) +   %Q[weel!().manipulate(] + self::_nl
           x << self::_indent(indent+1) + %Q["#{(node.find('string(@id)'))}"] + self::_nln
@@ -109,9 +111,9 @@ module CPEE
             x << self::_indent(indent+1) + %Q[Some("#{(node.find('string(@label)'))}")] + self::_nln
           end
           x << self::_indent(indent+1) +  %Q[code! {] + self::_nl
-          x << self::_indent(indent+1) +  'r###"' + self::_nl
+          x << self::_indent(indent+1) +  '"' + self::_nl
           x << self::_indent(indent+2) +  node.text + self::_nl
-          x << self::_indent(indent+1) +  %Q["###}] + self::_nln
+          x << self::_indent(indent+1) +  %Q["}] + self::_nln
           x << self::_indent(indent) + ")?;" + self::_nl
           x
         end #}}}
