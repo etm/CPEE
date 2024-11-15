@@ -778,7 +778,10 @@ module CPEE
         CPEE::Persistence::set_item(id,opts,'description',
           :description => xml,
           :dslx => dslx,
-          :dsl => dsl
+          :dsl => dsl,
+          :dataelements => CPEE::Persistence::extract_list(id,opts,'dataelements').to_h,
+          :endpoints => CPEE::Persistence::extract_list(id,opts,'endpoints').to_h,
+          :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
         )
         PatchItems::set_hash('dataelements',id,opts,de) unless de.empty?
         PatchItems::set_hash('dataelements',id,opts,ep) unless ep.empty?
