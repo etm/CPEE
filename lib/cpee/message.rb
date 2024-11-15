@@ -50,7 +50,7 @@ module CPEE
         'topic' => topic,
         'type' => type,
         'name' => name,
-        'timestamp' =>  Time.now.xmlschema(3),
+        'timestamp' =>  Time.now.xmlschema(4),
         'content' => content
       }
       payload[@@type + '-uuid'] = instance_uuid if instance_uuid

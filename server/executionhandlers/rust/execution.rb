@@ -53,15 +53,13 @@ module CPEE
           end
 
           # arguments
-          x << self::_indent(indent+2) + 'arguments: Some(vec![' + self::_nl
+          x << self::_indent(indent+2) + 'arguments: json!({' + self::_nl
+          childs = []
           node.find('d:parameters/d:arguments/*').each do |e|
-            if e.text[0] == '!'
-              x << self::_indent(indent+3) + 'new_key_value_pair_ex("' + e.qname.name + '", "' + e.text[1..-1] + '")' + self::_nln
-            else
-              x << self::_indent(indent+3) + 'new_key_value_pair("' + e.qname.name + '", "' + e.text + '")' + self::_nln
-            end
+              childs << self::construct_json_rec(e, indent + 3)
           end
-          x << self::_indent(indent+2) + '])' + self::_nln
+          x << childs.join(self::_nln) + self::_nl
+          x << self::_indent(indent+2) + "})" + self::_nln
           x << self::_indent(indent+1) + "}" + self::_nln
 
           %w(prepare update finalize rescue).each do |c|
@@ -80,6 +78,25 @@ module CPEE
           end
           x << self::_indent(indent) + ')?;'
           x + self::_nl
+        end #}}}
+
+        def self::construct_json_rec(node, indent) #{{{
+            if node.children.length == 1 && node.text_only?
+              content = CPEE::ValueHelper::parse(node.text)
+              if content.is_a? String
+                return self::_indent(indent + 1) + '"' + node.qname.name + '": "' + content + '"'
+              else
+                return self::_indent(indent + 1) + '"' + node.qname.name + '": ' + content.to_s
+              end
+            else
+              x = self::_indent(indent + 1) +  '"' + node.qname.name + '": {' + self::_nl
+              childs = []
+              node.children.each do |e|
+                childs << self::construct_json_rec(e, indent + 1)
+              end
+              x << childs.join(self::_nln) + self::_nl
+              x << self::_indent(indent + 1) + '}'
+            end
         end #}}}
 
         def self::f_manipulate(node,indent) #{{{
