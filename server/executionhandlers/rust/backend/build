@@ -4,4 +4,4 @@ BIN_NAME="weel_bin_$INSTANCE_ID"
 sed -i "s/name = \"weel_bin\"/name = \"$BIN_NAME\"/" ./Cargo.toml
 
 # CARGO_LOG=cargo::core::compiler::fingerprint=trace cargo build --release
-time cargo build --release --quiet
+time cargo build --release
