@@ -352,6 +352,8 @@ function monitor_instance(cin,rep,load,exec) {// {{{
   $('#parameters ui-content ui-area > button').attr('disabled','disabled');
   $('#dat_details').empty();
 
+  $('#modifiers > div').remove();
+
   url = $("body").attr('current-instance');
 
   $.ajax({
