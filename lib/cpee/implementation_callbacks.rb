@@ -116,7 +116,12 @@ module CPEE
         if CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'callback'
           ret = {}
           ret['values'] = @p.map{ |e|
-            [e.name, e.class == Riddl::Parameter::Simple ? [:simple,e.value] : [:complex,e.mimetype,e.value.path] ]
+            # bei complex wenn kleiner 500KiB statt e.value.path e.value.read
+            # bei complex wenn groesser 500KiB das file ueber nginx in einem verzeichnis verfuegbar machen, mimetype auf cpee/externallink
+            #   aendert, link auf den server in den content. Der eval macht das dann direkt.
+            # Alt: [e.name, e.class == Riddl::Parameter::Simple ? [:simple,e.value] : [:complex,e.mimetype,e.value.path] ]
+            [e.name, e.class == Riddl::Parameter::Simple ? [:simple,e.value] : [:complex,e.mimetype,e.value.read] ]
+
           }
           ret['headers'] =  @h
 
