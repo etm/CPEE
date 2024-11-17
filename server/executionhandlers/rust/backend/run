@@ -4,4 +4,4 @@ CDIR=$(dirname $0)
 BIN_DIR="$CDIR/target/release"
 cd $CDIR
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BIN_DIR:$(rustc --print=sysroot)/lib
-"$BIN_DIR/weel_bin_$INSTANCE_ID"
+exec "$BIN_DIR/weel_bin_$INSTANCE_ID"
