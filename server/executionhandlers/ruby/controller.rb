@@ -70,7 +70,7 @@ class Controller
                 if e[1][0] == 'simple'
                   resp << Riddl::Parameter::Simple.new(e[0],e[1][1])
                 elsif e[1][0] == 'complex'
-                  resp << Riddl::Parameter::Complex.new(e[0],e[1][1],File.open(e[1][2]))
+                  resp << Riddl::Parameter::Complex.new(e[0],e[1][1],e[1][2])
                 end
               end
               @callback_keys[identifier].send(:callback,resp,m['content']['headers'])

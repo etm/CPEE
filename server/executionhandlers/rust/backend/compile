@@ -6,12 +6,15 @@ INSTANCE_ID=$(basename $INSTANCE_DIR)
 # copy source code over
 ln -sf "$CDIR/rusty_weel/http_helper" $INSTANCE_DIR
 ln -sf "$CDIR/rusty_weel/weel_lib" $INSTANCE_DIR
-ln -sf "$CDIR/rusty_weel/weel_macro" $INSTANCE_DIR
+ln -sf "$CDIR/rusty_weel/weel_inject" $INSTANCE_DIR
+ln -sf "$CDIR/rusty_weel/Cargo.toml" $INSTANCE_DIR
+ln -sf "$CDIR/rusty_weel/Cargo.lock" $INSTANCE_DIR
+
 cp -rf "$CDIR/rusty_weel/weel_bin" $INSTANCE_DIR
-mv -f "$INSTANCE_DIR/instance.rs" "$INSTANCE_DIR/weel_bin"
 
 # Link build dir directly into binary crate dir
-ln -s "$CDIR/target" "$INSTANCE_DIR/weel_bin"
+#ln -s "$CDIR/target" "$INSTANCE_DIR/weel_bin"
+ln -s "$CDIR/target" "$INSTANCE_DIR"
 
 # copy and run build script (will crate instance binary
 ln -s "$CDIR/build" $INSTANCE_DIR

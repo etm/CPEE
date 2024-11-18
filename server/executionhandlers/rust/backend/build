@@ -1,6 +1,5 @@
 INSTANCE_ID=$1
-cd ./weel_bin
 BIN_NAME="weel_bin_$INSTANCE_ID"
-sed -i "s/name = \"weel_bin\"/name = \"$BIN_NAME\"/" ./Cargo.toml
+sed -i "s/name = \"weel_bin\"/name = \"$BIN_NAME\"/" ./weel_bin/Cargo.toml
 
-time cargo build --release --quiet
+time RUSTFLAGS="-C prefer-dynamic" cargo build --release --quiet
