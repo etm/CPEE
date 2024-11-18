@@ -1,4 +1,4 @@
-INSTANCE_ID=$1
+INSTANCE_ID=$(grep -Po '(?<=\"instance_id\": )(\d+)' opts.json)
 BIN_NAME="weel_bin_$INSTANCE_ID"
 sed -i "s/name = \"weel_bin\"/name = \"$BIN_NAME\"/" ./weel_bin/Cargo.toml
 

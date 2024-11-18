@@ -1,7 +1,8 @@
 #! /bin/bash
-INSTANCE_ID=$1
 CDIR=$(dirname $0)
 BIN_DIR="$CDIR/target/release"
+# Go into instance dir
 cd $CDIR
+INSTANCE_ID=$(grep -Po '(?<=\"instance_id\": )(\d+)' opts.json)
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BIN_DIR:$(rustc --print=sysroot)/lib
 exec "$BIN_DIR/weel_bin_$INSTANCE_ID"
