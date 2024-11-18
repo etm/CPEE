@@ -299,7 +299,7 @@ async function sse() { //{{{
             } else {
               monitor_instance_values("attributes");
             }
-            if (save['graph_theme'] != data.content.values.theme) {
+            if (typeof data.content.values.theme !== "undefined" && save['graph_theme'] != data.content.values.theme) {
               monitor_graph_change(true);
             }
             break;
@@ -793,6 +793,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         }
       };
       adaptor_update();
+
       monitor_instance_pos();
       $('#dat_details').empty();
 
