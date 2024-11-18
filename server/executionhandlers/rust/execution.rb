@@ -56,6 +56,9 @@ module CPEE
           x << self::_indent(indent+2) + 'arguments: json!({' + self::_nl
           childs = []
           node.find('d:parameters/d:arguments/*').each do |e|
+              if e.attributes["rngui-nonfunctional"] == "true"
+                next
+              end
               childs << self::construct_json_rec(e, indent + 3)
           end
           x << childs.join(self::_nln) + self::_nl
