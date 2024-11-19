@@ -10,6 +10,7 @@ var graph_changed = new Event("graph:changed", {"bubbles":true, "cancelable":fal
 var graph_theme = null;
 var graph_position = null;
 var graph_highlight = null;
+var graph_highlight_tasks = []
 var graph_highlight_color = null;
 var model_loaded = new Event("model:loaded", {"bubbles":true, "cancelable":false});
 var save = {};
@@ -131,7 +132,13 @@ function cockpit() { //{{{
       if (q.theme) { graph_theme = q.theme; }
       if (q.position) { graph_position = q.position == 'false' ? 'false' : 'true'; }
       if (q.highlight) {
-        graph_highlight = q.highlight.match(/(a\d+),(\d\d\d\d\d\d)/);
+        graph_highlight = q.highlight.match(/((a\d+,)+)(\d\d\d\d\d\d)/);
+        if (graph_highlight.length > 0) {
+          graph_highlight_color = graph_highlight[3];
+          graph_highlight_tasks = graph_highlight[1].split(',');
+          graph_highlight_tasks.pop();
+          graph_highlight = graph_highlight[0];
+        }
       }
       if (q.monitor && q.load) {
         if (q.load.match(/https?:\/\//)) {
@@ -381,7 +388,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       $("#current-track").show();
       $("#current-track").attr('href','track.html?monitor=' + url);
       var q = $.parseQuerySimple();
-      history.replaceState({}, '', '?' + (graph_position ? "position=" + graph_position + "&" : "") + (graph_theme ? "theme=" + graph_theme + "&" : "") + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
+      history.replaceState({}, '', '?' + (graph_position ? "position=" + graph_position + "&" : "") + (graph_highlight ? "highlight=" + graph_highlight + "&" : "") + (graph_theme ? "theme=" + graph_theme + "&" : "") + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").prop( "checked", false );
