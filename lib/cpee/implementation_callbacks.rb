@@ -120,8 +120,17 @@ module CPEE
             # bei complex wenn groesser 500KiB das file ueber nginx in einem verzeichnis verfuegbar machen, mimetype auf cpee/externallink
             #   aendert, link auf den server in den content. Der eval macht das dann direkt.
             # Alt: [e.name, e.class == Riddl::Parameter::Simple ? [:simple,e.value] : [:complex,e.mimetype,e.value.path] ]
-            [e.name, e.class == Riddl::Parameter::Simple ? [:simple,e.value] : [:complex,e.mimetype,e.value.read] ]
-
+            [
+              e.name,
+              if e.class == Riddl::Parameter::Simple
+                [:simple,e.value]
+              elsif e.class == Riddl::Parameter::Complex && e.value.size <= 512000
+                [:complex,e.mimetype,e.value.read]
+              else
+                # [:complex,'cpee-external-' + e.mimetype,e.value.read]
+                [:complex, e.mimetype,e.value.read]
+              end
+            ]
           }
           ret['headers'] =  @h
 
