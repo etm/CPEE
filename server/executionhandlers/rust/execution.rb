@@ -63,7 +63,20 @@ module CPEE
           end
           x << childs.join(self::_nln) + self::_nl
           x << self::_indent(indent+2) + "})" + self::_nln
+          # End of HTTP Params
           x << self::_indent(indent+1) + "}" + self::_nln
+
+          # annotations
+          x << self::_indent(indent+1) + 'json!({' + self::_nl
+          childs = []
+          node.find('d:annotations/*').each do |e|
+              if e.attributes["rngui-nonfunctional"] == "true"
+                next
+              end
+              childs << self::construct_json_rec(e, indent + 2)
+          end
+          x << childs.join(self::_nln) + self::_nl
+          x << self::_indent(indent+1) + "})" + self::_nln
 
           %w(prepare update finalize rescue).each do |c|
             if n = node.find('d:code/d:' + c).first
