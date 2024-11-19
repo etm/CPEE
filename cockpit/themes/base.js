@@ -1248,14 +1248,22 @@ function WFAdaptorManifestationBase(adaptor) {
 
         var regassi =      /data\.([a-zA-Z_]+)\s*(=[^=]|\+\=|\-\=|\*\=|\/\=|<<|>>)/g; // we do not have to check for &gt;/&lt; version of stuff as only conditions are in attributes, and conditions can not contain assignments
         var reg_not_assi = /data\.([a-zA-Z_]+)\s*/g;
-        $.merge($('call > code > prepare',node), $('call > parameters > arguments > *, call > code > finalize, call > code > update, call > code > rescue, loop[condition], alternative[condition]',node)).each(function(i,n) {
-          let item;
+
+        $('call, loop[condition], alternative[condition]',node).each(function(i,n) {
+          let item = '';
           if (n.hasAttribute('condition')) {
             item = n.getAttribute('condition');
           } else {
-            item = n.textContent;
+            $('call > code > prepare',n).each(function(j,m){
+              item += m.textContent + '\n';
+            });
+            $('call > parameters > arguments > *, call > code > finalize, call > code > update, call > code > rescue',n).each(function(j,m){
+              let x = m.textContent;
+              if (m.parentNode.nodeName == 'arguments' && x.charAt(0) != '!' ) { return }
+              item += x + '\n';
+            });
           }
-          if (n.parentNode.nodeName == 'arguments' && item.charAt(0) != '!' ) { return }
+          if (item == '') { return; }
 
           let indices = [];
 
@@ -1263,11 +1271,12 @@ function WFAdaptorManifestationBase(adaptor) {
             indices.push(match.index);
             alist.push(match[1]);
           }
+
           for (const match of item.matchAll(reg_not_assi)) {
             const arg1 = match[1];
             if (indices.includes(match.index)) { continue; }
             if (!alist.includes(arg1)) {
-              if (match.index >= indices[0]) {
+              if (match.index >= indices[0] || indices.length == 0) {
                 plist.push(arg1);
               }
             }
