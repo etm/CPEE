@@ -132,7 +132,7 @@ function cockpit() { //{{{
       if (q.theme) { graph_theme = q.theme; }
       if (q.position) { graph_position = q.position == 'false' ? 'false' : 'true'; }
       if (q.highlight) {
-        graph_highlight = q.highlight.match(/((a\d+,)+)(\d\d\d\d\d\d)/);
+        graph_highlight = q.highlight.match(/((a\d+,)+)([a-z0-9]{6})/);
         if (graph_highlight.length > 0) {
           graph_highlight_color = graph_highlight[3];
           graph_highlight_tasks = graph_highlight[1].split(',');
@@ -577,6 +577,15 @@ function adaptor_init(url,theme,dslx) { //{{{
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
       manifestation.endpoints = save.endpoints_list;
       graphrealization.draw_labels = function(max,labels,dimensions,striped) {
+        // highlight
+
+        if (graph_highlight) {
+          let er = $('g[element-id=a1]').attr('element-row');
+          styletext = 'svg rect[element-row="'+ er + '"], div.graphlast[element-row="'+ er + '"] {  fill: #' + graph_highlight_color + ' !important; background-color:  #' + graph_highlight_color + ' !important; } ';
+          $('head').append('<style type="text/css">' + styletext + '</style>');
+        }
+
+        // labels
         $('#graphcanvas').css('grid-row', '1/span ' + (max.row + 2));
         if (striped == true) {
           if (!$('#graphgrid').hasClass('striped')) {
