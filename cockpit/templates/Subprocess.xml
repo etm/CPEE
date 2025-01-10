@@ -1,13 +1,7 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements>
-    <res>{"CPEE-INSTANCE":"820","CPEE-INSTANCE-URL":"https://echo.bpm.in.tum.de/flow/engine/820","CPEE-INSTANCE-UUID":"82552b43-10f3-42e8-b582-914a9c608820","CPEE-STATE":"finished","b":15,"end":1736521652.069764,"start":1736521650.8929343}</res>
-    <start>1736521649.0510066</start>
-    <substart>1.8419277667999268</substart>
-    <subend>3.0187573432922363</subend>
-    <duration>3.2002649307250977</duration>
-  </dataelements>
+  <dataelements/>
   <endpoints>
     <subprocess>https-post://echo.bpm.in.tum.de/flow/start/url/</subprocess>
     <user>https-post://cpee.org/services/timeout-user.php</user>
