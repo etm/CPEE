@@ -1,63 +1,37 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements/>
+  <dataelements>
+    <res>{"CPEE-INSTANCE":"820","CPEE-INSTANCE-URL":"https://echo.bpm.in.tum.de/flow/engine/820","CPEE-INSTANCE-UUID":"82552b43-10f3-42e8-b582-914a9c608820","CPEE-STATE":"finished","b":15,"end":1736521652.069764,"start":1736521650.8929343}</res>
+    <start>1736521649.0510066</start>
+    <substart>1.8419277667999268</substart>
+    <subend>3.0187573432922363</subend>
+    <duration>3.2002649307250977</duration>
+  </dataelements>
   <endpoints>
-    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
+    <subprocess>https-post://echo.bpm.in.tum.de/flow/start/url/</subprocess>
+    <user>https-post://cpee.org/services/timeout-user.php</user>
+    <auto>https-post://cpee.org/services/timeout-auto.php</auto>
     <timeout>https://cpee.org/services/timeout.php</timeout>
+    <send>https-post://cpee.org/ing/correlators/message/send/</send>
+    <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
   </endpoints>
   <attributes>
-    <info>Subprocess</info>
-    <creator>Christine Ashcreek</creator>
-    <author>Christine Ashcreek</author>
-    <modeltype>CPEE</modeltype>
     <guarded>none</guarded>
+    <info>Subprocess</info>
+    <modeltype>CPEE</modeltype>
+    <theme>extended</theme>
+    <creator>Christine Ashcreek</creator>
     <guarded_id/>
+    <author>Christine Ashcreek</author>
     <model_uuid>1fc43528-3e4a-40ee-8503-c0ed7e5d883c</model_uuid>
     <model_version/>
-    <theme>extended</theme>
-    <design_dir>Templates.dir</design_dir>
     <design_stage>development</design_stage>
+    <design_dir>Templates.dir</design_dir>
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <call id="a2" endpoint="timeout">
-        <parameters>
-          <label>Wait</label>
-          <method>:post</method>
-          <arguments>
-            <timeout>2</timeout>
-          </arguments>
-        </parameters>
-        <annotations>
-          <_generic/>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_shifting>
-            <_shifting_type>Duration</_shifting_type>
-          </_shifting>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-        </documentation>
-      </call>
+      <manipulate id="a3" label="">data.start = Time.now.to_f</manipulate>
       <call id="a1" endpoint="subprocess">
         <parameters>
           <label>Create Sub</label>
@@ -74,7 +48,10 @@
         </parameters>
         <code>
           <prepare/>
-          <finalize output="result">data.res = result</finalize>
+          <finalize output="result">data.res = result
+data.substart = result['start'].to_f - data.start.to_f
+data.subend = result['end'].to_f - data.start.to_f
+data.duration = Time.now.to_f - data.start.to_f</finalize>
           <update output="result"/>
           <rescue output="result"/>
         </code>
@@ -110,6 +87,7 @@
           </code>
         </documentation>
       </call>
+      <stop id="a2"/>
     </description>
   </description>
   <transformation>
