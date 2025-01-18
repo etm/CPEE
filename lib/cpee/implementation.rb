@@ -181,6 +181,9 @@ module CPEE
       interface 'main' do
         run CPEE::Instances, opts if get '*'
         run CPEE::NewInstance, opts if post 'instance-new'
+        on resource 'executionhandlers' do
+          run CPEE::ExecutionHandlers, opts if get
+        end
         on resource '\d+' do |r|
           run CPEE::Info, opts if get
           run CPEE::DeleteInstance, opts if delete
@@ -256,6 +259,24 @@ module CPEE
     end
   end
 
+  class ExecutionHandlers < Riddl::Implementation #{{{
+    def response
+      opts = @a[0]
+      doc = XML::Smart::string('<handlers/>')
+      list = []
+      Dir[File.join(opts[:global_executionhandlers],'*','execution.rb')].each do |h|
+        list << File.basename(File.dirname(h))
+      end unless opts[:global_executionhandlers].nil? || opts[:global_executionhandlers].strip == ''
+      Dir[File.join(opts[:executionhandlers],'*','execution.rb')].each do |h|
+        list << File.basename(File.dirname(h))
+      end unless opts[:executionhandlers].nil? || opts[:executionhandlers].strip == ''
+      list.uniq.each do |e|
+        doc.root.add('handler',e)
+      end
+      Riddl::Parameter::Complex.new('wis','text/xml',doc.to_s)
+    end
+  end #}}}
+
   class Instances < Riddl::Implementation #{{{
     def response
       opts = @a[0]
@@ -272,7 +293,7 @@ module CPEE
           ins.to_s
         end
       else
-        Riddl::Parameter::Complex.new("wis","text/xml",'<instances><!-- instances list disabled. --></instances>')
+        Riddl::Parameter::Complex.new('wis','text/xml','<instances><!-- instances list disabled. --></instances>')
       end
     end
   end #}}}

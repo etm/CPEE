@@ -262,6 +262,7 @@ module CPEE
         positions.each do |k, v|
           pos[k] = {"position" => k, "uuid" => "0", "detail" => v, "handler_passthrough" => CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough'))}
         end
+        p pos
         File.open(File.join(opts[:instances],id.to_s,File::basename(ExecutionHandler::Rust::BACKEND_CONTEXT)),'w') do |f|
           f.write JSON::pretty_generate({
             'endpoints' => endpoints,

@@ -36,6 +36,11 @@
       <xi:include href="engine/instance-info.rng"/>
     </parameter>
   </message>
+  <message name="executionhandlerlist">
+    <parameter name="list" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="engine/executionhandler-list.rng"/>
+    </parameter>
+  </message>
 
   <resource>
     <doc:documentation>b</doc:documentation>
@@ -43,6 +48,9 @@
       <doc:documentation>a</doc:documentation>
     </get>
     <post in="instance-new" out="instance-id"/>
+    <resource relative="executionhandlers">
+      <get out="executionhandlerlist"/>
+    </resource>
     <resource relative="\d+">
       <get in="*" out="instance-info"/>
       <delete in="*"/>
