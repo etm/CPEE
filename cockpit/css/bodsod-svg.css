@@ -1,0 +1,39 @@
+svg rect.border {
+    fill: var(--wfadaptor-border);
+  }
+  svg .bodsod-point.bod {
+    fill: green;
+  }
+  svg .bodsod-point.sod {
+    fill: red;
+  }
+  svg .bodsod-point.none {
+    fill: blue;
+  }
+  svg line.bodsod-column.bod {
+    stroke: green;
+    stroke-opacity: 0.1;
+  }
+
+  svg line.bodsod-column.sod {
+    stroke: red;
+    stroke-opacity: 0.1;
+  }
+
+  svg line.bodsod-column.none {
+    stroke: blue;
+    stroke-opacity: 0.1;
+  }
+
+  svg line.bodsod-column.bod:hover {
+    stroke: green;
+    stroke-opacity: 0.2;
+  }
+  svg line.bodsod-column.sod:hover {
+    stroke: red;
+    stroke-opacity: 0.2;
+  }
+  svg line.bodsod-column.none:hover {
+    stroke: blue;
+    stroke-opacity: 0.2;
+  }

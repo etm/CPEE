@@ -1,0 +1,23 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="code" rngui:header="Implementation" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+  <element name="prepare" rngui:header="Prepare" rngui:label="Code" rngui:fold="closed_conditional">
+    <text rngui:label="Script that is executed, before a service call"/>
+  </element>
+  <element name="finalize" rngui:header="Finalize" rngui:label="Code" rngui:fold="closed_conditional">
+    <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+      <data type="string" rngui:readonly="true"/>
+    </attribute>
+    <text rngui:label="Script that is executed, when a service returns data"/>
+  </element>
+  <element name="update" rngui:header="Update" rngui:label="Code" rngui:fold="closed_conditional">
+    <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+      <data type="string" rngui:readonly="true"/>
+    </attribute>
+    <text rngui:label="Script that is executed, when a service sends intermediate data"/>
+  </element>
+  <element name="rescue" rngui:header="Rescue" rngui:label="Code" rngui:fold="closed_conditional">
+    <attribute name="output" rngui:label="Access Variable" rngui:default="result">
+      <data type="string" rngui:readonly="true"/>
+    </attribute>
+    <text rngui:label="Script that is executed, if a service call fails"/>
+  </element>
+</element>

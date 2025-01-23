@@ -1,4 +1,4 @@
-var details_updated = new Event("details:updated", {"bubbles":true, "cancelable":false});
+var node_updated = new Event("node:updated", {"bubbles":true, "cancelable":false})
 
 $(document).ready(function() {
   var timer;
@@ -54,7 +54,11 @@ function do_main_work() { //{{{
     nnew[0].removeAttribute('xmlns');
   }
 
-  parameters_changed
+  node_updated.svgid = svgid
+  node_updated.desc = desc
+  node_updated.node = node
+  node_updated.nnew = nnew
+  document.dispatchEvent(node_updated)
 
   node.replaceWith(nnew);
 

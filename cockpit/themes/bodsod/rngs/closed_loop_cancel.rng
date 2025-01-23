@@ -1,0 +1,5 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" ns="http://cpee.org/ns/description/1.0" name="closed_loop_cancel" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <attribute name="condition" rngui:label="Condition">
+    <data type="string" rngui:label="Condition"/>
+  </attribute>
+</element>
