@@ -334,9 +334,10 @@ module CPEE
         CPEE::Persistence::set_item(id,opts,'executionhandler',:executionhandler => hw)
         desc = CPEE::Persistence::extract_item(id,opts,'description')
         dslx = CPEE::Persistence::extract_item(id,opts,'dslx')
+        endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
         xml = XML::Smart::string(dslx)
         xml.register_namespace 'd', 'http://cpee.org/ns/description/1.0'
-        dsl = Object.const_get('CPEE::ExecutionHandler::' + hw.capitalize)::dslx_to_dsl(xml)
+        dsl = Object.const_get('CPEE::ExecutionHandler::' + hw.capitalize)::dslx_to_dsl(xml,endpoints)
         CPEE::Persistence::set_item(id,opts,'description',
           :description => xml,
           :dslx => dslx,
@@ -663,7 +664,7 @@ module CPEE
     end #}}}
 
     class PutDescription < Riddl::Implementation #{{{
-      def self::transform(descxml,tdesc,tdesctype,tdata,tdatatype,tendp,tendptype,hw,opts) #{{{
+      def self::transform(descxml,tdesc,tdesctype,tdata,tdatatype,tendp,tendptype,hw,id,opts) #{{{
         desc = XML::Smart::string(descxml) rescue nil
         if desc.nil?
           if descxml.empty?
@@ -680,6 +681,32 @@ module CPEE
         dsl = nil
         de = {}
         ep = {}
+
+        ### endpoints extraction
+        addit = if tendptype == 'rest' && !tdata.empty?
+          srv = Riddl::Client.interface(tendp,opts[:transformation_service])
+          status, res = srv.post [
+            Riddl::Parameter::Complex.new("description","text/xml",descxml),
+            Riddl::Parameter::Simple.new("type","endpoints")
+          ]
+          if status >= 200 && status < 300
+            res
+          else
+            raise 'Could not extract endpoints'
+          end
+        elsif tendptype == 'xslt' && !tdata.empty?
+          trans = XML::Smart::open_unprotected(tendp.text)
+          desc.transform_with(trans)
+        elsif tendptype == 'clean'
+          []
+        else
+          nil
+        end
+        unless addit.nil?
+          addit.each_slice(2).each do |k,v|
+            ep[k.value.to_sym] = v.value
+          end
+        end
 
         ### description transformation, including dslx to dsl
         addit = if tdesctype == 'copy' || tdesc.empty?
@@ -705,7 +732,7 @@ module CPEE
         end
         unless addit.nil?
           dslx = addit.to_s
-          dsl = Object.const_get('CPEE::ExecutionHandler::' + hw.capitalize)::dslx_to_dsl(addit)
+          dsl = Object.const_get('CPEE::ExecutionHandler::' + hw.capitalize)::dslx_to_dsl(addit,CPEE::Persistence::extract_list(id,opts,'endpoints').to_h.merge(ep))
         end
 
         ### dataelements extraction
@@ -734,32 +761,6 @@ module CPEE
           end
         end
 
-        ### endpoints extraction
-        addit = if tendptype == 'rest' && !tdata.empty?
-          srv = Riddl::Client.interface(tendp,opts[:transformation_service])
-          status, res = srv.post [
-            Riddl::Parameter::Complex.new("description","text/xml",descxml),
-            Riddl::Parameter::Simple.new("type","endpoints")
-          ]
-          if status >= 200 && status < 300
-            res
-          else
-            raise 'Could not extract endpoints'
-          end
-        elsif tendptype == 'xslt' && !tdata.empty?
-          trans = XML::Smart::open_unprotected(tendp.text)
-          desc.transform_with(trans)
-        elsif tendptype == 'clean'
-          []
-        else
-          nil
-        end
-        unless addit.nil?
-          addit.each_slice(2).each do |k,v|
-            ep[k.value.to_sym] = v.value
-          end
-        end
-
         [dslx, dsl, de, ep]
       end #}}}
 
@@ -773,6 +774,7 @@ module CPEE
           CPEE::Persistence::extract_item(id,opts,'transformation/endpoints'),
           CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type'),
           CPEE::Persistence::extract_item(id,opts,'executionhandler'),
+          id,
           opts
         )
         CPEE::Persistence::set_item(id,opts,'description',

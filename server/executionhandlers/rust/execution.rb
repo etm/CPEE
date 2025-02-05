@@ -53,16 +53,16 @@ module CPEE
           end
 
           # arguments
-          x << self::_indent(indent+2) + 'arguments: json!({' + self::_nl
+          x << self::_indent(indent+2) + 'arguments: json!([' + self::_nl
           childs = []
           node.find('d:parameters/d:arguments/*').each do |e|
               if e.attributes["rngui-nonfunctional"] == "true"
                 next
               end
-              childs << self::construct_json_rec(e, indent + 3)
+              childs << self::construct_json_rec(e, indent + 3, "array")
           end
           x << childs.join(self::_nln) + self::_nl
-          x << self::_indent(indent+2) + "})" + self::_nln
+          x << self::_indent(indent+2) + "])" + self::_nln
           # End of HTTP Params
           x << self::_indent(indent+1) + "}" + self::_nln
 
@@ -73,7 +73,7 @@ module CPEE
               if e.attributes["rngui-nonfunctional"] == "true"
                 next
               end
-              childs << self::construct_json_rec(e, indent + 2)
+              childs << self::construct_json_rec(e, indent + 2, "object")
           end
           x << childs.join(self::_nln) + self::_nl
           x << self::_indent(indent+1) + "})" + self::_nln
@@ -96,24 +96,36 @@ module CPEE
           x + self::_nl
         end #}}}
 
-        def self::construct_json_rec(node, indent) #{{{
+        # mode defines whether the other structure is an array or an object, for objects, key value pairs are generated, for arrays objects containing name, value fields are generated
+        def self::construct_json_rec(node, indent, mode) #{{{
+            # Leaf node
+            content = "null"
             if node.children.length == 1 && node.text_only?
               content = CPEE::ValueHelper::parse(node.text)
               if content.is_a? String
-                return self::_indent(indent + 1) + '"' + node.qname.name + '": "' + content + '"'
+                content = '"' + content.to_s + '"'
               else
-                return self::_indent(indent + 1) + '"' + node.qname.name + '": ' + content.to_s
+                content = '"' + content.to_s + '"'
               end
-            elsif node.children.empty?
-              return self::_indent(indent + 1) +  '"' + node.qname.name + '": null'
-            else
-              x = self::_indent(indent + 1) +  '"' + node.qname.name + '": {' + self::_nl
+            elsif node.children.empty? # Leaf node
+              # Do nothing
+            else # In this case the node itself has children
+              content = '{' + self::_nl
               childs = []
               node.children.each do |e|
-                childs << self::construct_json_rec(e, indent + 1)
+                # In the depth we always create objects for now (special rules later)
+                childs << self::construct_json_rec(e, indent + 1, "object")
               end
-              x << childs.join(self::_nln) + self::_nl
-              x << self::_indent(indent + 1) + '}'
+              content << childs.join(self::_nln) + self::_nl
+              content << self::_indent(indent+2) + '}'
+            end
+            if mode == "array"
+            return self::_indent(indent + 1) + '{' + self::_nl +
+              self::_indent(indent+2) + '"name": "' + node.qname.name + '"' + self::_nln +
+              self::_indent(indent+2) + '"value": ' + content + self::_nl  +
+              self::_indent(indent+1) + '}'
+            else # Assume object mode
+              return self::_indent(indent+2) + '"' + node.qname.name + '": ' + content
             end
         end #}}}
 
@@ -199,8 +211,6 @@ module CPEE
           x << self_indent(indent) + "weel!().escape()?;" + self::_nl
         end #}}}
 
-
-
         def self::rec(nodes,indent=0) #{{{
           coll = ''
           nodes.each do |node|
@@ -221,9 +231,8 @@ module CPEE
         end #}}}
       end #}}}
 
-      def self::dslx_to_dsl(dslx) # transpile {{{
+      def self::dslx_to_dsl(dslx,ep) # transpile {{{
         dslx.register_namespace("d","http://cpee.org/ns/description/1.0")
-        p dslx.namespaces
         Translate::rec dslx.root.children
       end #}}}
 
