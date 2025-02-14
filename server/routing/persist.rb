@@ -36,6 +36,7 @@ Daemonite.new do |opts|
     opts[:events] = []
     0.upto(opts[:workers]-1) do |w|
       opts[:events] += [
+        'event:' + ('%02i' % w) + ':transaction/start',
         'event:' + ('%02i' % w) + ':state/change',
         'event:' + ('%02i' % w) + ':executionhandler/change',
         'event:' + ('%02i' % w) + ':description/change',
@@ -107,6 +108,8 @@ Daemonite.new do |opts|
                 end
               end
             end
+          when /event:(\d+):transaction\/start/
+            opts[:redis].publish('event:' + $1 + ':transaction/finished',message)
           when /event:\d+:transformation\/change/
             opts[:redis].multi do |multi|
               multi.set("instance:#{instance}/transformation/description",mess.dig('content','description'))

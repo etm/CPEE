@@ -86,7 +86,15 @@ module CPEE
     opts[:redis_pid]                  ||= 'redis.pid' # use e.g. /var/run/redis.pid if you do global. Look it up in your redis config
     opts[:redis_db_name]              ||= 'redis.rdb' # use e.g. /var/lib/redis.rdb for global stuff. Look it up in your redis config
 
+    opts[:libs_preload]               ||= ['weel', 'json', 'redis', 'securerandom', 'riddl/client', 'cpee/value_helper', 'cpee/attributes_helper', 'cpee/message', 'cpee/redis', 'cpee/persistence', 'yaml', 'charlock_holmes', 'psych', 'xml/smart', 'ostruct', 'bigdecimal', 'mimemagic', 'cpee-eval-ruby/translation', 'get_process_mem']
+
     CPEE::redis_connect opts, 'Server Main'
+
+    ### start by server
+    if opts[:libs_preload]&.is_a?(Array) && opts[:libs_preload].length > 0
+      puts '(re)starting by-server ... it will keep running, just to let you know ...'
+      `/usr/bin/env by-server '#{opts[:libs_preload].join("' '")}'`
+    end
 
     opts[:sse_keepalive_frequency]    ||= 10
     opts[:sse_connections]            = {}
@@ -181,6 +189,7 @@ module CPEE
       interface 'main' do
         run CPEE::Instances, opts if get '*'
         run CPEE::NewInstance, opts if post 'instance-new'
+        run CPEE::NewInstanceFull, opts if post 'instance-full-new'
         on resource 'executionhandlers' do
           run CPEE::ExecutionHandlers, opts if get
         end
@@ -298,8 +307,53 @@ module CPEE
     end
   end #}}}
 
+  class NewInstanceFull < Riddl::Implementation #{{{
+    def response
+      opts  = @a[0]
+      redis = opts[:redis]
+
+      doc   = XML::Smart::string(@p[0].value.read)
+      doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+      doc.register_namespace 'sub', 'http://riddl.org/ns/common-patterns/notifications-producer/2.0'
+
+      id, uuid = NewInstance::create(opts,redis,doc.find('string(/*/p:attributes/p:info)'))
+
+      subscriptions = []
+      doc.find('/*/sub:subscriptions/sub:subscription').each do |s|
+        sub = []
+        unless sub[0] = s.attributes['id']
+          sub[0] = Digest::MD5.hexdigest(Kernel::rand().to_s)
+        end
+
+        unless sub[1] = s.attributes['url']
+          raise "no url"
+        end
+
+        sub[2] = []
+        s.find('sub:topic').each do |t|
+          %w(event vote).each do |type|
+            t.find('sub:' + type).each do |e|
+              sub[2] << File.join(t.attributes['id'],type,e.text)
+            end
+          end
+        end
+
+        CPEE::Persistence::set_handler(id,opts,*sub)
+      end
+
+      CPEE::Properties::Put::change_first(id,opts,doc)
+      CPEE::Properties::PutState::run(id,opts,'running') if doc.find('string(/*/p:state)') == 'running'
+
+      @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
+      @headers << Riddl::Header.new("CPEE-INSTANCE-URL", File.join(opts[:url].to_s,id.to_s,'/'))
+      @headers << Riddl::Header.new("CPEE-INSTANCE-UUID", uuid)
+
+      Riddl::Parameter::Simple.new("id", id.to_s)
+    end
+  end #}}}
+
   class NewInstance < Riddl::Implementation #{{{
-    def path(e)
+    def self::path(e)
       ret = []
       until e.qname.name == 'properties'
         ret << (e.class == XML::Smart::Dom::Attribute ? '@' : '') + e.qname.name
@@ -308,12 +362,9 @@ module CPEE
       File.join(*ret.reverse)
     end
 
-    def response
-      opts = @a[0]
-      redis = opts[:redis]
+    def self::create(opts,redis,name)
       doc = XML::Smart::open_unprotected(opts[:properties_init])
       doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-      name     = @p[0].value
       id       = CPEE::Persistence::new_object(opts)
       uuid     = SecureRandom.uuid
       instance = CPEE::Persistence::obj + ':' + id.to_s
@@ -322,17 +373,17 @@ module CPEE
         doc.root.find(PROPERTIES_PATHS_FULL.join(' | ')).each do |e|
           if e.class == XML::Smart::Dom::Element && e.element_only?
             val = e.find('*').map { |f| f.dump }.join
-            multi.set(File.join(instance, path(e)), val)
+            multi.set(File.join(instance, NewInstance::path(e)), val)
           else
-            multi.set(File.join(instance, path(e)), e.text)
+            multi.set(File.join(instance, NewInstance::path(e)), e.text)
           end
         end
         doc.root.find(PROPERTIES_PATHS_INDEX_UNORDERED.join(' | ')).each do |e|
-          p = path(e)
+          p = NewInstance::path(e)
           multi.sadd(File.join(instance, File.dirname(p)), File.basename(p))
         end
         doc.root.find(PROPERTIES_PATHS_INDEX_ORDERED.join(' | ')).each_with_index do |e,i|
-          p = path(e)
+          p = NewInstance::path(e)
           multi.zadd(File.join(instance, File.dirname(p)), i, File.basename(p))
         end
         Dir[File.join(opts[:notifications_init],'*','subscription.xml')].each do |f|
@@ -355,12 +406,21 @@ module CPEE
         multi.zadd(File.join(instance, 'attributes'), -1, 'info')
         multi.set(File.join(instance, 'state', '@changed'), Time.now.xmlschema(3))
       end
-
       content = {
         :state => 'ready',
         :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
       }
       CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,uuid,name,content,redis)
+
+      return id, uuid
+    end
+
+    def response
+      opts  = @a[0]
+      redis = opts[:redis]
+      name  = @p[0].value
+
+      id, uuid = NewInstance::create(opts,redis,name)
 
       @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
       @headers << Riddl::Header.new("CPEE-INSTANCE-URL", File.join(opts[:url].to_s,id.to_s,'/'))

@@ -23,6 +23,10 @@ module CPEE
       @@obj = it
     end #}}}
 
+    def self::wait(opts)
+      CPEE::Message::wait(opts[:redis],opts[:redis_dyn].call('Temporary Storage Transaction Subscriber'))
+    end
+
     def self::set_list(id,opts,item,values,deleted=[]) #{{{
       ah = AttributesHelper.new
       attributes = Persistence::extract_list(id,opts,'attributes').to_h

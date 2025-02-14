@@ -1,0 +1,49 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href="state.rng"/>
+  <include href="status.rng"/>
+  <include href="executionhandler.rng"/>
+  <include href="positions.rng"/>
+  <include href="dataelements.rng"/>
+  <include href="endpoints.rng"/>
+  <include href="attributes.rng"/>
+  <include href="description.rng"/>
+  <include href="transformation.rng"/>
+  <include href="subscriptions.rng"/>
+
+  <start>
+    <element name="testset" ns="http://cpee.org/ns/properties/2.0">
+      <interleave>
+        <optional>
+          <ref name="subscriptions"/>
+        </optional>
+        <optional>
+          <ref name="set-state"/>
+        </optional>
+        <optional>
+          <ref name="status"/>
+        </optional>
+        <optional>
+          <ref name="executionhandler"/>
+        </optional>
+        <optional>
+          <ref name="positions"/>
+        </optional>
+        <optional>
+          <ref name="dataelements"/>
+        </optional>
+        <optional>
+          <ref name="endpoints"/>
+        </optional>
+        <optional>
+          <ref name="attributes"/>
+        </optional>
+        <optional>
+          <ref name="description"/>
+        </optional>
+        <optional>
+          <ref name="transformation"/>
+        </optional>
+      </interleave>
+    </element>
+  </start>
+</grammar>
