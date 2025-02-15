@@ -176,7 +176,7 @@ module CPEE
               CPEE::Properties::PatchPositions::set id, opts, node.first.dump
             end
           end
-          # CPEE::Persistence::wait(opts)
+          CPEE::Persistence::wait(opts)
 
           if (node = doc.find('/p:properties/p:state')).any?
             CPEE::Properties::PutState::run id, opts, node.first.text

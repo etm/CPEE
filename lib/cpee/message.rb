@@ -42,13 +42,18 @@ module CPEE
     def self::wait(backend,sub,tt=nil)
       target = '%02i' % (tt || CPEE::Message::target)
       wid = Digest::MD5.hexdigest(Kernel::rand().to_s)
-      backend.publish('event:' + target + ':transaction/start',wid + ' {}')
-      sub.subscribe('event:' + target + ':transaction/finished') do |on|
-        on.message do |what,message|
-          mess = message[0...message.index(' ')]
-          sub.unsubscribe('event:' + target + ':transaction/finished') if mess == wid
+      begin
+        sub.subscribe_with_timeout(2,'event:' + target + ':transaction/finished') do |on|
+          on.message do |what,message|
+            mess = message[0...message.index(' ')]
+            sub.unsubscribe('event:' + target + ':transaction/finished') if mess == wid
+          end
+          backend.publish('event:' + target + ':transaction/start',wid + ' {}')
         end
+      rescue => e
+        puts "timeout error"
       end
+      sub.disconnect!
     end
 
     def self::send(type, event, cpee, instance, instance_uuid, instance_name, content={}, backend=nil, tt=nil)
