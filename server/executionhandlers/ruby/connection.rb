@@ -158,20 +158,25 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
                       a[k_ht] = headers[hname] if headers[hname]
                     end
                   end
-                  params.each do |p|
-                    if p.name == k
-                      if a.is_a? String
-                        p.value = a
-                      elsif a.is_a? Hash
-                        ohash = JSON::parse(p.value) rescue {}
-                        ohash.merge!(a)
-                        p.value = JSON.generate(ohash)
-                      end
-                    end
+                  p = params.find{|p| p.name == k }
+                  if p.nil?
+                    p = Riddl::Parameter::Simple.new(k,'{}')
+                    params << p
+                  end
+
+                  if a.is_a? String
+                    p.value = a
+                  elsif a.is_a? Hash
+                    ohash = JSON::parse(p.value) rescue {}
+                    ohash.merge!(a)
+                    p.value = JSON.generate(ohash)
                   end
                 end
               end
             end
+
+            order = { 'behavior' => 1, 'url' => 2, 'init' => 3, 'endpoints' => 4, 'attributes' => 5, 'customization' => 6 }
+            params.sort!{|a,b| order[a.name].to_i <=> order[b.name].to_i }
           end
         else
           @handler_endpoint = @handler_endpoint_orig

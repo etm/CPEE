@@ -17,6 +17,7 @@
         <value>:get</value>
         <value>:put</value>
         <value>:delete</value>
+        <value>:patch</value>
       </choice>
     </element>
     <element name="arguments" rngui:header="Arguments">
