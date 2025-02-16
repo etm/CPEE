@@ -1,0 +1,43 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="subscriptions">
+    <element name="subscriptions" ns="http://riddl.org/ns/common-patterns/notifications-producer/2.0">
+      <zeroOrMore>
+        <ref name="subscription"/>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="subscription">
+    <element name="subscription" ns="http://riddl.org/ns/common-patterns/notifications-producer/2.0">
+      <attribute name="id">
+        <data type="string">
+          <param name="pattern">[a-zA-Z0-9_]+</param>
+        </data>
+      </attribute>
+      <optional>
+        <attribute name="url">
+          <data type="string"/>
+        </attribute>
+      </optional>
+      <oneOrMore>
+        <element name="topic">
+          <attribute name="id">
+            <data type="string"/>
+          </attribute>
+          <oneOrMore>
+            <element>
+              <choice>
+                <name>event</name>
+                <name>vote</name>
+              </choice>
+              <data type="string">
+                <param name="pattern">[\w_]+</param>
+              </data>
+            </element>
+          </oneOrMore>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+</grammar>

@@ -176,6 +176,7 @@ module CPEE
               CPEE::Properties::PatchPositions::set id, opts, node.first.dump
             end
           end
+          CPEE::Persistence::wait(opts)
 
           if (node = doc.find('/p:properties/p:state')).any?
             CPEE::Properties::PutState::run id, opts, node.first.text
@@ -184,6 +185,41 @@ module CPEE
       end
     end #}}}
     class Put < Riddl::Implementation #{{{
+      def self::change_first(id,opts,doc)
+        if (node = doc.find('/p:properties/p:status')).any?
+          CPEE::Properties::PutStatus::set id, opts, node.first.dump
+        end
+        if (node = doc.find('/p:properties/p:executionhandler')).any?
+          CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text, false
+        end
+
+        %w{dataelements endpoints attributes}.each do |item|
+          if (node = doc.find('/p:properties/p:' + item)).any?
+            CPEE::Properties::PutItems::set item, id, opts, node.first.dump
+          end
+        end
+
+        if (node = doc.find('/p:properties/p:transformation')).any?
+          CPEE::Properties::PutTransformation::set id, opts, node.first.dump
+        end
+        if (node = doc.find('/p:properties/p:description/*')).any?
+          CPEE::Properties::PutDescription::set id, opts, node.first.dump
+        end
+
+        if (node = doc.find('/p:properties/p:positions')).any?
+          if node.first.find('p:*').any?
+            CPEE::Properties::PutPositions::set id, opts, node.first.dump
+          end
+        end
+        CPEE::Persistence::wait(opts)
+      end
+
+      def self::change_last(id,opts,doc)
+        if (node = doc.find('/p:properties/p:state')).any?
+          CPEE::Properties::PutState::run id, opts, node.first.text
+        end
+      end
+
       def response
         id = @a[0]
         opts = @a[1]
@@ -192,35 +228,8 @@ module CPEE
         else
           doc = XML::Smart::string(@p[0].value.read)
           doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-          if (node = doc.find('/p:properties/p:status')).any?
-            CPEE::Properties::PutStatus::set id, opts, node.first.dump
-          end
-          if (node = doc.find('/p:properties/p:executionhandler')).any?
-            CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text
-          end
-
-          %w{dataelements endpoints attributes}.each do |item|
-            if (node = doc.find('/p:properties/p:' + item)).any?
-              CPEE::Properties::PutItems::set item, id, opts, node.first.dump
-            end
-          end
-
-          if (node = doc.find('/p:properties/p:transformation')).any?
-            CPEE::Properties::PutTransformation::set id, opts, node.first.dump
-          end
-          if (node = doc.find('/p:properties/p:description/*')).any?
-            CPEE::Properties::PutDescription::set id, opts, node.first.dump
-          end
-
-          if (node = doc.find('/p:properties/p:positions')).any?
-            if node.first.find('p:*').any?
-              CPEE::Properties::PutPositions::set id, opts, node.first.dump
-            end
-          end
-
-          if (node = doc.find('/p:properties/p:state')).any?
-            CPEE::Properties::PutState::run id, opts, node.first.text
-          end
+          CPEE::Properties::Put::change_first(id,opts,doc)
+          CPEE::Properties::Put::change_last(id,opts,doc)
         end
       end
     end #}}}
@@ -330,19 +339,21 @@ module CPEE
       end
     end #}}}
     class PutExecutionHandler < Riddl::Implementation #{{{
-      def self::set(id,opts,hw)
+      def self::set(id,opts,hw,transform=true)
         CPEE::Persistence::set_item(id,opts,'executionhandler',:executionhandler => hw)
-        desc = CPEE::Persistence::extract_item(id,opts,'description')
-        dslx = CPEE::Persistence::extract_item(id,opts,'dslx')
-        endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
-        xml = XML::Smart::string(dslx)
-        xml.register_namespace 'd', 'http://cpee.org/ns/description/1.0'
-        dsl = Object.const_get('CPEE::ExecutionHandler::' + hw.capitalize)::dslx_to_dsl(xml,endpoints)
-        CPEE::Persistence::set_item(id,opts,'description',
-          :description => xml,
-          :dslx => dslx,
-          :dsl => dsl
-        )
+        if transform
+          desc = CPEE::Persistence::extract_item(id,opts,'description')
+          dslx = CPEE::Persistence::extract_item(id,opts,'dslx')
+          endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
+          xml = XML::Smart::string(dslx)
+          xml.register_namespace 'd', 'http://cpee.org/ns/description/1.0'
+          dsl = Object.const_get('CPEE::ExecutionHandler::' + hw.capitalize)::dslx_to_dsl(xml,endpoints)
+          CPEE::Persistence::set_item(id,opts,'description',
+            :description => xml,
+            :dslx => dslx,
+            :dsl => dsl
+          )
+        end
       end
       def response
         id = @a[0]

@@ -16,6 +16,10 @@
 
 <description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:doc="http://cpee.org/ns/documentation">
 
+  <message name="instance-new">
+    <parameter name="info" type="string"/>
+  </message>
+
   <message name="list-of-workflow-instances">
     <parameter name="wis" mimetype="text/xml" handler="http://riddl.org/ns/handlers/relaxng">
       <doc:documentation>d</doc:documentation>
@@ -27,8 +31,10 @@
     <parameter name="id" type="nonNegativeInteger"/>
   </message>
 
-  <message name="instance-new">
-    <parameter name="info" type="string"/>
+  <message name="instance-full-new">
+    <parameter name="testset" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/set-testset.rng"/>
+    </parameter>
   </message>
 
   <message name="instance-info">
@@ -48,6 +54,7 @@
       <doc:documentation>a</doc:documentation>
     </get>
     <post in="instance-new" out="instance-id"/>
+    <post in="instance-full-new" out="instance-id"/>
     <resource relative="executionhandlers">
       <get out="executionhandlerlist"/>
     </resource>

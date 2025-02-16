@@ -19,11 +19,11 @@ module CPEE
     module Ruby
       BACKEND_INSTANCE = 'instance.rb'
       DSL_TO_DSLX_XSL  = File.expand_path(File.join(__dir__,'dsl_to_dslx.xsl'))
-      BACKEND_RUN      = File.expand_path(File.join(__dir__,'backend','run'))
+      BACKEND_RUN      = File.expand_path(File.join(__dir__,'backend','run.rb'))
       BACKEND_OPTS     = File.expand_path(File.join(__dir__,'backend','opts.yaml'))
       BACKEND_TEMPLATE = File.expand_path(File.join(__dir__,'backend','instance.template'))
 
-      def self::dslx_to_dsl(dslx) # transpile
+      def self::dslx_to_dsl(dslx,ep) # transpile
         trans = XML::Smart::open_unprotected(ExecutionHandler::Ruby::DSL_TO_DSLX_XSL)
         dslx.transform_with(trans).to_s
       end

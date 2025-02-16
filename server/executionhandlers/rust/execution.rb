@@ -103,9 +103,9 @@ module CPEE
             if node.children.length == 1 && node.text_only?
               content = CPEE::ValueHelper::parse(node.text)
               if content.is_a? String
-                content = '"' + content.to_s + '"'
+                content = 'r###"' + content.to_s + '"###'
               else
-                content = '"' + content.to_s + '"'
+                content = 'r###"' + content.to_s + '"###'
               end
             elsif node.children.empty? # Leaf node
               # Do nothing
