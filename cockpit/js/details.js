@@ -29,22 +29,36 @@ $(document).ready(function() {
 
 function do_main_save() { //{{{
   if (save['details'].has_changed()) {
-    do_main_work();
+    do_main_work(save['details_target'].svgid);
   }
 } //}}}
 
-function do_main_work() { //{{{
-  var svgid    = save['details_target'].svgid;
+function do_main_work(svgid) { //{{{
   var desc     = save['details_target'].model;
   var node     = desc.get_node_by_svg_id(svgid);
   var orignode = save['graph_adaptor'].illustrator.get_node_by_svg_id(svgid).parents('g.element[element-id]');
   var origtype = orignode.attr('element-type') + '_' + orignode.attr('element-endpoint');
 
   var url = $('body').attr('current-instance');
-  save['details'].set_checkpoint();
 
-  var nnew = $(save['details'].save().documentElement);
-      nnew.attr('svg-id',svgid);
+  var nnew;
+  if (svgid != save['details_target'].svgid ) {
+    let tn = desc.get_node_by_svg_id(svgid).get(0);
+    let rng = desc.elements[$(tn).attr('svg-subtype')].clone();
+    if (save['endpoints_cache'][$(tn).attr('endpoint')] && save['endpoints_cache'][$(tn).attr('endpoint')].schema) {
+      let schema = save['endpoints_cache'][$(tn).attr('endpoint')].schema.documentElement;
+      $(rng).find(' > element[name="parameters"] > element[name="arguments"]').replaceWith($(schema).clone());
+    }
+    if (save['endpoints_list'][$(tn).attr('endpoint')] && (!save['endpoints_list'][$(tn).attr('endpoint')].startsWith('http') || save['endpoints_list'][$(tn).attr('endpoint')].match(/^https?-/))) {
+      $(rng).find(' > element[name="parameters"] > element[name="method"]').remove();
+    }
+    let rngw = new RelaxNGui(rng,$('#relaxngworker'),desc.context_eval);
+    nnew = $(rngw.save().documentElement);
+  } else {
+    save['details'].set_checkpoint();
+    nnew = $(save['details'].save().documentElement);
+  }
+  nnew.attr('svg-id',svgid);
 
   if ($('*[svg-id]',node).length > 0) {
     nnew.append(node.children().filter(function(){ return this.attributes['svg-id'] != undefined; }));
@@ -53,8 +67,6 @@ function do_main_work() { //{{{
   if (node[0].namespaceURI == nnew.attr('xmlns')) { // remove xmlns when it is the same as in the parent node
     nnew[0].removeAttribute('xmlns');
   }
-
-  parameters_changed
 
   node.replaceWith(nnew);
 
@@ -82,7 +94,7 @@ function do_main_work() { //{{{
 
     if (newtype != origtype) {
       manifestation.update_details(svgid);
-      do_main_work();
+      do_main_work(svgid);
     } else {
       $.ajax({
         type: "PUT",
