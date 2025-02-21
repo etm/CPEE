@@ -322,7 +322,7 @@ module CPEE
       id, uuid = NewInstance::create(opts,redis,doc.find('string(/*/p:attributes/p:info)'))
 
       subscriptions = []
-      doc.find('/*/sub:subscriptions/sub:subscription').each do |s|
+      (doc.find('/*/sub:subscriptions/sub:subscription') rescue []).each do |s|
         sub = []
         unless sub[0] = s.attributes['id']
           sub[0] = Digest::MD5.hexdigest(Kernel::rand().to_s)
