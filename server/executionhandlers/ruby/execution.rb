@@ -60,7 +60,7 @@ module CPEE
 
       def self::run(id,opts)
         exe = File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_RUN))
-        pid = Kernel.spawn(exe , :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
+        pid = Kernel.spawn(opts[:libs_preloaderrun] + ' ' + exe , :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
         Process.detach pid
         File.write(exe + '.pid',pid)
       end

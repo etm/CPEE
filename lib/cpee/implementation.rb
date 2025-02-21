@@ -87,13 +87,16 @@ module CPEE
     opts[:redis_db_name]              ||= 'redis.rdb' # use e.g. /var/lib/redis.rdb for global stuff. Look it up in your redis config
 
     opts[:libs_preload]               ||= ['weel', 'json', 'redis', 'securerandom', 'riddl/client', 'cpee/value_helper', 'cpee/attributes_helper', 'cpee/message', 'cpee/redis', 'cpee/persistence', 'yaml', 'charlock_holmes', 'psych', 'xml/smart', 'ostruct', 'bigdecimal', 'mimemagic', 'cpee-eval-ruby/translation', 'get_process_mem']
+    opts[:libs_preloader]             ||= '~/bin/by-server'
+    opts[:libs_preloaderrun]          ||= '~/bin/by'
 
     CPEE::redis_connect opts, 'Server Main'
 
     ### start by server
     if opts[:libs_preload]&.is_a?(Array) && opts[:libs_preload].length > 0
-      puts '(re)starting by-server ... it will keep running, just to let you know ...'
-      `/usr/bin/env by-server '#{opts[:libs_preload].join("' '")}'`
+      puts '(re)starting by-server ...'
+      `pkill -f #{File.basename(opts[:libs_preloader])}`
+      `#{opts[:libs_preloader]} '#{opts[:libs_preload].join("' '")}'`
     end
 
     opts[:sse_keepalive_frequency]    ||= 10

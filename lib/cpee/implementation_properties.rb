@@ -186,27 +186,27 @@ module CPEE
     end #}}}
     class Put < Riddl::Implementation #{{{
       def self::change_first(id,opts,doc)
-        if (node = doc.find('/p:properties/p:status')).any?
+        if (node = doc.find('/*/p:status')).any?
           CPEE::Properties::PutStatus::set id, opts, node.first.dump
         end
-        if (node = doc.find('/p:properties/p:executionhandler')).any?
+        if (node = doc.find('/*/p:executionhandler')).any?
           CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text, false
         end
 
         %w{dataelements endpoints attributes}.each do |item|
-          if (node = doc.find('/p:properties/p:' + item)).any?
+          if (node = doc.find('/*/p:' + item)).any?
             CPEE::Properties::PutItems::set item, id, opts, node.first.dump
           end
         end
 
-        if (node = doc.find('/p:properties/p:transformation')).any?
+        if (node = doc.find('/*/p:transformation')).any?
           CPEE::Properties::PutTransformation::set id, opts, node.first.dump
         end
-        if (node = doc.find('/p:properties/p:description/*')).any?
+        if (node = doc.find('/*/p:description/*')).any?
           CPEE::Properties::PutDescription::set id, opts, node.first.dump
         end
 
-        if (node = doc.find('/p:properties/p:positions')).any?
+        if (node = doc.find('/*/p:positions')).any?
           if node.first.find('p:*').any?
             CPEE::Properties::PutPositions::set id, opts, node.first.dump
           end
@@ -215,7 +215,7 @@ module CPEE
       end
 
       def self::change_last(id,opts,doc)
-        if (node = doc.find('/p:properties/p:state')).any?
+        if (node = doc.find('/*/p:state')).any?
           CPEE::Properties::PutState::run id, opts, node.first.text
         end
       end
