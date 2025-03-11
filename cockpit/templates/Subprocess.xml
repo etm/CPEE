@@ -45,7 +45,8 @@
           <finalize output="result">data.res = result
 data.substart = result['start'].to_f - data.start.to_f
 data.subend = result['end'].to_f - data.start.to_f
-data.duration = Time.now.to_f - data.start.to_f</finalize>
+data.duration = Time.now.to_f - data.start.to_f
+data.teams = result.teams</finalize>
           <update output="result"/>
           <rescue output="result"/>
         </code>
