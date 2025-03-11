@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements/>
+  <dataelements>
+    <b>4</b>
+    <end>1741703309.6717181</end>
+    <start>1741703308.456953</start>
+  </dataelements>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
     <subprocess>https://cpee.org/flow/start/url/</subprocess>
@@ -78,10 +82,7 @@
         <code>
           <prepare/>
           <finalize output="result">result.register_namespace 'o', 'http://cpee.org/ns/organisation/1.0'
-data.teams = data.resources_estimation.filter{ |e| e['name'] == 'resourcetypes' }.map do |e|
-  value = e['value']
-  [ value, result.find("/o:organisation/o:subjects/o:subject[o:relation/@role='#{value}']/@id").map {|x| x.value } ]
-end.to_h</finalize>
+data.teams = result.find("/o:organisation/o:subjects/o:subject[o:relation/@role='Product Manager']/@id").to_a</finalize>
           <update output="result"/>
           <rescue output="result"/>
         </code>
@@ -124,4 +125,11 @@ end.to_h</finalize>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
+  <subscriptions xmlns="http://riddl.org/ns/common-patterns/notifications-producer/2.0">
+    <subscription id="_instantiation_9c70f0aec95a9c021bb58785ecd8b674" url="http://localhost:9296/callback/_instantiation_9c70f0aec95a9c021bb58785ecd8b674">
+      <topic id="state">
+        <event>change</event>
+      </topic>
+    </subscription>
+  </subscriptions>
 </testset>
