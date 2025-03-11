@@ -105,7 +105,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     }
     for(element in manifestation.elements) {
       if (manifestation.elements[element].illustrator) {
-        if (manifestation.elements[element].illustrator.svg) {
+        if (manifestation.elements[element].illustrator.svg && (typeof manifestation.elements[element].illustrator.svg === 'string' || manifestation.elements[element].illustrator.svg instanceof String)) {
           deferreds.push(
             $.ajax({
               type: "GET",
@@ -114,6 +114,40 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
               context: element,
               success: function(res){
                 manifestation.elements[this].illustrator.svg = $(res.documentElement);
+              }
+            })
+          );
+        } else {
+          deferreds.push(
+            $.ajax({
+              type: "GET",
+              dataType: "xml",
+              url: manifestation.elements[element].illustrator.svg.first,
+              context: element,
+              success: function(res){
+                manifestation.elements[this].illustrator.svg.first = $(res.documentElement);
+              }
+            })
+          );
+          deferreds.push(
+            $.ajax({
+              type: "GET",
+              dataType: "xml",
+              url: manifestation.elements[element].illustrator.svg.middle,
+              context: element,
+              success: function(res){
+                manifestation.elements[this].illustrator.svg.middle = $(res.documentElement);
+              }
+            })
+          );
+          deferreds.push(
+            $.ajax({
+              type: "GET",
+              dataType: "xml",
+              url: manifestation.elements[element].illustrator.svg.last,
+              context: element,
+              success: function(res){
+                manifestation.elements[this].illustrator.svg.last = $(res.documentElement);
               }
             })
           );
