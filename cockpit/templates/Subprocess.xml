@@ -3,7 +3,7 @@
   <executionhandler>ruby</executionhandler>
   <dataelements/>
   <endpoints>
-    <subprocess>https-post://echo.bpm.in.tum.de/flow/start/url/</subprocess>
+    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
     <user>https-post://cpee.org/services/timeout-user.php</user>
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
     <timeout>https://cpee.org/services/timeout.php</timeout>
@@ -12,11 +12,11 @@
   </endpoints>
   <attributes>
     <guarded>none</guarded>
-    <info>Subprocess</info>
     <modeltype>CPEE</modeltype>
     <theme>extended</theme>
-    <creator>Christine Ashcreek</creator>
     <guarded_id/>
+    <info>Subprocess</info>
+    <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <model_uuid>1fc43528-3e4a-40ee-8503-c0ed7e5d883c</model_uuid>
     <model_version/>
