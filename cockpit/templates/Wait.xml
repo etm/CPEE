@@ -5,14 +5,15 @@
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
     <subprocess>https://cpee.org/flow/start/url/</subprocess>
+    <orgmodel>http://localhost/data/ideas_phase1/zt.xml</orgmodel>
   </endpoints>
   <attributes>
     <guarded>none</guarded>
-    <info>Wait</info>
     <modeltype>CPEE</modeltype>
     <theme>extended</theme>
-    <creator>Christine Ashcreek</creator>
     <guarded_id/>
+    <info>Wait</info>
+    <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <model_uuid>c92d0c0b-8bbd-40dd-baad-01c5616dfceb</model_uuid>
     <model_version/>
@@ -33,6 +34,54 @@
         <code>
           <prepare/>
           <finalize output="result">data.end = Time.now.to_f</finalize>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <call id="a3" endpoint="orgmodel">
+        <parameters>
+          <label>Names</label>
+          <method>:get</method>
+          <arguments/>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result">result.register_namespace 'o', 'http://cpee.org/ns/organisation/1.0'
+data.teams = data.resources_estimation.filter{ |e| e['name'] == 'resourcetypes' }.map do |e|
+  value = e['value']
+  [ value, result.find("/o:organisation/o:subjects/o:subject[o:relation/@role='#{value}']/@id").map {|x| x.value } ]
+end.to_h</finalize>
           <update output="result"/>
           <rescue output="result"/>
         </code>
