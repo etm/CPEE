@@ -117,40 +117,6 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
               }
             })
           );
-        } else {
-          deferreds.push(
-            $.ajax({
-              type: "GET",
-              dataType: "xml",
-              url: manifestation.elements[element].illustrator.svg.first,
-              context: element,
-              success: function(res){
-                manifestation.elements[this].illustrator.svg.first = $(res.documentElement);
-              }
-            })
-          );
-          deferreds.push(
-            $.ajax({
-              type: "GET",
-              dataType: "xml",
-              url: manifestation.elements[element].illustrator.svg.middle,
-              context: element,
-              success: function(res){
-                manifestation.elements[this].illustrator.svg.middle = $(res.documentElement);
-              }
-            })
-          );
-          deferreds.push(
-            $.ajax({
-              type: "GET",
-              dataType: "xml",
-              url: manifestation.elements[element].illustrator.svg.last,
-              context: element,
-              success: function(res){
-                manifestation.elements[this].illustrator.svg.last = $(res.documentElement);
-              }
-            })
-          );
         }
         illustrator.elements[element] = manifestation.elements[element].illustrator;
         illustrator.elements[element].type = manifestation.elements[element].type || 'abstract';

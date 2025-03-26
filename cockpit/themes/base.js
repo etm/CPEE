@@ -426,11 +426,7 @@ function WFAdaptorManifestationBase(adaptor) {
           return [];
         }
       },
-      'svg': {
-        first: self.adaptor.theme_dir + 'symbols/manipulate.svg',
-        middle: self.adaptor.theme_dir + 'symbols/manipulate.svg',
-        last: self.adaptor.theme_dir + 'symbols/manipulate.svg'
-      }
+      'svg': self.adaptor.theme_dir + 'symbols/manipulate.svg'
     },//}}}
     'description': self.adaptor.theme_dir + 'rngs/manipulate.rng',
     'permissible_children': function(node,mode) { //{{{
