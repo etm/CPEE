@@ -93,7 +93,7 @@ module CPEE
     CPEE::redis_connect opts, 'Server Main'
 
     ### start by server
-    if opts[:libs_preload]&.is_a?(Array) && opts[:libs_preload].length > 0
+    if opts[:libs_preload]&.is_a?(Array) && opts[:libs_preload].length > 0 && opts[:libs_preloader]&.is_a?(String) && opts[:libs_preloader]&.strip != ''
       puts '(re)starting by-server ...'
       `pkill -f #{File.basename(opts[:libs_preloader])}`
       `#{opts[:libs_preloader]} '#{opts[:libs_preload].join("' '")}'`
