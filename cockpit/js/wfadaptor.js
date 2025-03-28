@@ -117,6 +117,46 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
               }
             })
           );
+        } else if (manifestation.elements[element].illustrator.svg && (typeof manifestation.elements[element].illustrator.svg === 'object' || manifestation.elements[element].illustrator.svg instanceof Object)) {
+          if (manifestation.elements[element].illustrator.svg.start) {
+            deferreds.push(
+              $.ajax({
+                type: "GET",
+                dataType: "xml",
+                url: manifestation.elements[element].illustrator.svg.start,
+                context: element,
+                success: function(res){
+                  manifestation.elements[this].illustrator.svg.start = $(res.documentElement);
+                }
+              })
+            );
+          }
+          if (manifestation.elements[element].illustrator.svg.middle) {
+            deferreds.push(
+              $.ajax({
+                type: "GET",
+                dataType: "xml",
+                url: manifestation.elements[element].illustrator.svg.middle,
+                context: element,
+                success: function(res){
+                  manifestation.elements[this].illustrator.svg.middle = $(res.documentElement);
+                }
+              })
+            );
+          }
+          if (manifestation.elements[element].illustrator.svg.end) {
+            deferreds.push(
+              $.ajax({
+                type: "GET",
+                dataType: "xml",
+                url: manifestation.elements[element].illustrator.svg.end,
+                context: element,
+                success: function(res){
+                  manifestation.elements[this].illustrator.svg.end = $(res.documentElement);
+                }
+              })
+            );
+          }
         }
         illustrator.elements[element] = manifestation.elements[element].illustrator;
         illustrator.elements[element].type = manifestation.elements[element].type || 'abstract';
