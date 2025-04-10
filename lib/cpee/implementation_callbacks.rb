@@ -108,6 +108,13 @@ module CPEE
     end #}}}
 
     class ExCallback < Riddl::Implementation #{{{
+      def cleanup_encoding(val)
+        enc = CharlockHolmes::EncodingDetector.detect(val)
+        if enc[:type] == :text && enc[:confidence] > 40
+          val.force_encoding(enc[:ruby_encoding])
+        end
+        val
+      end
       def response
         id = @a[0]
         opts = @a[1]
@@ -125,10 +132,10 @@ module CPEE
               if e.class == Riddl::Parameter::Simple
                 [:simple,e.value]
               elsif e.class == Riddl::Parameter::Complex && e.value.size <= 512000
-                [:complex,e.mimetype,e.value.read]
+                [:complex,e.mimetype,cleanup_encoding(e.value.read)]
               else
-                # [:complex,'cpee-external-' + e.mimetype,e.value.read]
-                [:complex, e.mimetype,e.value.read]
+                # [:complex,'cpee-external-' + e.mimetype,cleanup_encoding(e.value.read)]
+                [:complex, e.mimetype,cleanup_encoding(e.value.read)]
               end
             ]
           }

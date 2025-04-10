@@ -55,7 +55,6 @@ module CPEE
         end
         template = ERB.new(File.read(ExecutionHandler::Ruby::BACKEND_TEMPLATE), trim_mode: '-')
         res = template.result_with_hash(dsl: dsl, dataelements: dataelements, endpoints: endpoints, positions: positions)
-        pp dataelements
         File.write(File.join(opts[:instances],id.to_s,ExecutionHandler::Ruby::BACKEND_INSTANCE),res)
       end
 
