@@ -12,6 +12,9 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
+require_relative 'attributes_helper'
+require_relative 'message'
+
 module CPEE
 
   module Persistence
