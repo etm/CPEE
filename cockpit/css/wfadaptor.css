@@ -102,6 +102,15 @@ svg rect.tile {
   fill-opacity: 0.3;
   display: none;
 }
+svg .standline {
+  stroke: var(--wfadaptor-base);
+  stroke-width:1.6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray:none;
+}
 svg .stand {
   fill: var(--wfadaptor-background);
   fill-opacity:1;

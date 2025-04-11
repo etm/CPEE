@@ -222,6 +222,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       '  <marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
       '    <path d="m 2 2 l 6 3 l -6 3 z"/>' +
       '  </marker>' +
+      '  <clipPath id="squareclip">' +
+      '    <rect x="-1" y="-1" width="32" height="32"/>' +
+      '  </clipPath>' +
       '</defs>'));
     self.svg.defs = {};
     self.svg.defs['unknown'] = $X('<g xmlns="http://www.w3.org/2000/svg" class="unknown">' +
@@ -230,6 +233,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       '</g>');
     for(element in self.elements)
       if(self.elements[element].svg) {
+        console.log(self.elements[element].svg);
         var sym = $X('<g xmlns="http://www.w3.org/2000/svg"/>').append(self.elements[element].svg.clone().children()); // append all children to symbol
         $.each(self.elements[element].svg.attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
         self.svg.defs[element] = sym;
@@ -422,7 +426,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:{},final:false,wide:false});
     illustrator.set_svg(graph);
     // set labels
     self.set_labels(graph);
@@ -474,7 +478,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:{}});
     illustrator.set_svg(graph);
     // set labels
     self.set_labels(graph);
@@ -485,7 +489,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(update_illustrator){
       labels = [];
       illustrator.clear();
-      var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+      var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:{}});
       illustrator.set_svg(graph);
       self.set_labels(graph);
     }
@@ -564,7 +568,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
   // Helper Functions {{{
   var parse = function(root, parent_pos)  { // private {{{
-    var pos = jQuery.extend(true, {}, parent_pos);
+    var pos = $.extend(true, {}, parent_pos);
     var max = {'row': 0,'col': 0};
     var prev = [parent_pos]; // connects parent with child(s), depending on the expansion
     var endnodes = [];
@@ -611,7 +615,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'complex') {
         if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg) pos.row--;
         // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
-        block = parse(context, jQuery.extend(true, {}, pos));
+        block = parse(context, $.extend(true, {}, pos));
         group.append(block.svg);
         block.svg.attr('id', 'group-' + $(context).attr('svg-id'));
         if(illustrator.elements[sname].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive
@@ -628,11 +632,11 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       var g;
       set_details(tname,sname,pos,context);
 
-      var origpos = jQuery.extend(true, {}, pos);
+      var origpos = $.extend(true, {}, pos);
       [g, endnodes] = draw_position(tname,origpos,prev,block,group,endnodes,context);
 
       // Prepare next iteration {{{
-      if(root_expansion == 'vertical') { prev = jQuery.extend(true, {}, endnodes); pos.row = block.max.row;} // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
+      if(root_expansion == 'vertical') { prev = $.extend(true, {}, endnodes); pos.row = block.max.row;} // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
       if(root_expansion == 'horizontal') pos.col = block.max.col;
       if(max.row < block.max.row) max.row = block.max.row;
       if(max.col < block.max.col) max.col = block.max.col;
@@ -656,7 +660,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
           [undefined, endnodes] = draw_position(ctname,pos,prev,block,group,[],context,{svg: g, pos: origpos});
         }
         set_details(ctname,csname,pos,context,true);
-        prev = jQuery.extend(true, {}, endnodes);
+        prev = $.extend(true, {}, endnodes);
       }
     });
 
@@ -751,7 +755,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     if(illustrator.elements[sname] != undefined && illustrator.elements[sname].endnodes != 'this') {
       for(i in block.endnodes) { endnodes.push(block.endnodes[i]); } // collects all endpoints from different childs e.g. alternatives from choose
-    } else { endnodes = [jQuery.extend(true, {}, pos)]; } // sets this element as only endpoint (aggregate)
+    } else { endnodes = [$.extend(true, {}, pos)]; } // sets this element as only endpoint (aggregate)
     if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
       illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos, null, null, true);
     } else {
@@ -759,7 +763,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         for (node in prev) {
           if (!prev[node].final) {
             if (prev[node].wide) {
-              var pn = jQuery.extend(true, {}, prev[node]);
+              var pn = $.extend(true, {}, prev[node]);
               if (pos.col > prev[node].col) {
                 pn.col = pos.col;
               }
