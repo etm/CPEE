@@ -6,6 +6,7 @@ require 'fileutils'
 require 'webrick'
 require 'typhoeus'
 require 'xml/smart'
+require 'redis'
 require 'zip'
 require 'pp'
 
@@ -55,10 +56,12 @@ ARGV.options { |opt|
   opt.on(wrap("[ui]                   starts a simple static web server with the ui on http://localhost:8080. Use [cpui DIR] if you want stuff in apache or nginx."))
 	opt.on("")
   opt.on(wrap("[convert]              converts all testsets in the current directory to the newest format"))
+	opt.on("")
+  opt.on(wrap("[vacuum]               clean a redis.rdb in the current directory"))
   opt.parse!
 }
 if (ARGV.length == 0) ||
-   (ARGV.length == 1  && !(%w(ui convert).include?(ARGV[0]))) ||
+   (ARGV.length == 1  && !(%w(ui convert vacuum).include?(ARGV[0]))) ||
    (ARGV.length == 2  && !(%w(abandon abandon! stopping start delete! cpui new).include?(ARGV[0]))) ||
    (ARGV.length == 3  && !(%w(archive a_by_name).include?(ARGV[0]))) ||
    (ARGV.length >  3)
@@ -423,5 +426,18 @@ elsif command == 'new'
     end
   else
     puts 'Directory already exists.'
+  end
+elsif command == 'vacuum'
+  begin
+    redis = Redis.new(path: 'redis.sock', db: 0, id: 'vacuum')
+    instances = redis.zrange('instances', 0, -1)
+    redis.keys('*').each do |key|
+      k = key.match(/instance:(\d+)/)
+      if k && ! instances.include?(k[1])
+        redis.del key
+      end
+    end
+  rescue => e
+    puts 'no redis.sock or no redis db 0 found ...'
   end
 end

@@ -17,6 +17,9 @@ module CPEE
   module Message
     @@who = 'cpee'
     @@type = 'instance'
+    @@tworkers = 1
+    @@last = -1
+
     def self::who #{{{
       @@who
     end #}}}
