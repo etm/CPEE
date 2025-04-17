@@ -297,13 +297,19 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
     if options['CPEE_EVENT']
       @controller.notify("task/#{options['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
-    else
-      @handler_returnValue = recv
-      @handler_returnOptions = options
     end
     if options['CPEE_STATUS']
       @controller.notify("activity/status", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_STATUS'])
     end
+
+    if options['CPEE_STATUS'] || options['CPEE_EVENT'] || options['CPEE_INSTANTIATION']
+      @handler_returnValue = nil
+      @handler_returnOptions = nil
+    else
+      @handler_returnValue = recv
+      @handler_returnOptions = options
+    end
+
     if options['CPEE_UPDATE']
       @handler_continue.continue WEEL::Signal::UpdateAgain
     else
