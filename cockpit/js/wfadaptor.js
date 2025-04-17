@@ -14,6 +14,8 @@
   <http://www.gnu.org/licenses/>.
 */
 
+var high;
+
 // TODO: changes in svg-script:
 // 1) drawing functions
 // 2) creation of svg-container (Bug: arrows on lines)
@@ -233,7 +235,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       '</g>');
     for(element in self.elements)
       if(self.elements[element].svg) {
-        console.log(self.elements[element].svg);
         var sym = $X('<g xmlns="http://www.w3.org/2000/svg"/>').append(self.elements[element].svg.clone().children()); // append all children to symbol
         $.each(self.elements[element].svg.attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
         self.svg.defs[element] = sym;
@@ -245,6 +246,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
+    console.log(graph);
     self.svg.container.attr('height',   (graph.max.row) * self.height + self.height_shift);
     self.svg.container.attr('width',    (graph.max.col+0.55) * self.width );
     self.svg.container.append(graph.svg);
@@ -274,7 +276,16 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return g;
   } // }}}
 
-  var draw_symbol = this.draw.draw_symbol = function (sname, id, title, row, col, group, addition) { // {{{
+  var get_width = this.draw.get_width = function(g) { //{{{
+    let t = g.clone();
+    self.svg.container.append(t);
+    let bb = t[0].getBBox();
+    let w = bb.width - bb.x;
+    t.remove();
+    return w;
+  } //}}}
+
+  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, row, col, group, addition) { // {{{
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
     let center_x = (self.width - self.default_width) / 2;
     let center_y = (self.height - self.default_height) / 2;
@@ -426,9 +437,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:{},final:false,wide:false});
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:[],final:false,wide:false});
     illustrator.set_svg(graph);
-    // set labels
     self.set_labels(graph);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
@@ -478,9 +488,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:{}});
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:[]});
     illustrator.set_svg(graph);
-    // set labels
     self.set_labels(graph);
     doit(self);
   }
@@ -489,7 +498,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(update_illustrator){
       labels = [];
       illustrator.clear();
-      var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:{}});
+      var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:[]});
       illustrator.set_svg(graph);
       self.set_labels(graph);
     }
@@ -591,7 +600,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         // javascript object spread syntax is my new weird crush - the JS designers must be serious people
         labels.push({...{row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)},...illustrator.draw.get_y(pos.row)});
       }
-      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.col, group);
+      let g = illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.col, group);
     } // }}}
 
     $(root).children().filter(function(){ return this.localName[0] != '_'; }).each(function() {
@@ -714,6 +723,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       $(context).attr('svg-subtype',sname);
       if((illustrator.elements[sname] && illustrator.elements[sname].svg) || sname == 'unknown') {
         var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+        let w = illustrator.draw.get_width(g);
+        pos.dim.push(w);
+        high = g;
+
+        console.log('---');
+        console.log(pos);
+        console.log(prev);
+        console.log(block);
+
         if (illustrator.elements[sname].info) {
           var info = illustrator.elements[sname].info(context);
           _.each(info,function(val,key) {
