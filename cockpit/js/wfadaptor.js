@@ -199,7 +199,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
 function WfIllustrator(wf_adaptor) { // View  {{{
   // Variable {{{
     // public
-    this.endclipshift = 16;
+    this.endclipshift = 17;
     this.height = 40;
     this.width = 40;
     this.default_width = 40;
@@ -226,7 +226,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       '    <path d="m 2 2 l 6 3 l -6 3 z"/>' +
       '  </marker>' +
       '  <clipPath id="startclip">' +
-      '    <rect x="-1" y="-1" width="32" height="32"/>' +
+      '    <rect x="-1" y="-1" width="29" height="32"/>' +
       '  </clipPath>' +
       '  <clipPath id="endclip">' +
       '    <rect x="20" y="-1" width="' + self.endclipshift + '" height="35"/>' +
@@ -373,8 +373,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     sym.prepend(tit);
     let lab = $('.label',sym);
     if (lab.length > 0) {
-      let end = $('.end',sym);
-      let mid = $('.middle',sym);
+      let sta = $('.part-start',sym);
+      let mid = $('.part-middle',sym);
+      let end = $('.part-end',sym);
+      let nor = $('.part-normal',sym);
       if (title && title != '') {
         lab.text(title);
         let width = this.get_width(lab);
@@ -389,11 +391,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             end.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
           }
         }
+        if (nor.length > 0) { nor.remove(); }
       } else {
+        if (sta.length > 0) { sta.remove(); }
         if (mid.length > 0) { mid.remove(); }
-        if (end.length > 0) {
-          end.attr('transform','translate(0,0)');
-        }
+        if (end.length > 0) { end.remove(); }
       }
     }
 

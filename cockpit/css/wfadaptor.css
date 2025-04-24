@@ -236,10 +236,6 @@ svg.labelsrow text.label:hover, svg.labelsrow text.label.hover {
 svg text.label.selected {
   fill: var(--wfadaptor-selected);
 }
-svg .selected text.label {
-  color: var(--wfadaptor-selected);
-  fill: var(--wfadaptor-selected);
-}
 svg .selected .cfill {
   fill: var(--wfadaptor-selected);
   fill-opacity:1;
