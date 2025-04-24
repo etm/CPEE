@@ -8,9 +8,10 @@
       <rect x="1" y="1" width="28" height="28" class="hfill rfill standwithout"/>
       <line x1="1" y1="1" x2="28" y2="1" class="standline cline" />
       <line x1="1" y1="29" x2="29" y2="29" class="standline cline" />
+      <text transform="translate(0,21)" class="label"></text>
     </g>
   </g>
-  <g class="end" transform="translate(37,0)" clip-path="url(#endclip)">
+  <g class="end" clip-path="url(#endclip)">
     <rect x="1" y="1" width="28" height="28" rx="4" class="hfill rfill cline stand"/>
     <rect x="23" y="21" width="12" height="12" rx="2" class="cline rfill stand"/>
     <text transform="translate(29,30.75)" class="small">s</text>
