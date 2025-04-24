@@ -65,7 +65,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
 
   this.update = function(doit){ doit(self); };
 
-  $.getScript(theme_base, function() {
+  $.getScript(theme_base, function() { //{{{
     manifestation = new WFAdaptorManifestation(self);
     illustrator.compact = manifestation.compact == true ? true : false;
     illustrator.striped = manifestation.striped == true ? true : false;
@@ -191,7 +191,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     $.when.apply($, deferreds).then(function(x) {
       doit(self);
     });
-  });
+  }); //}}}
 } // }}}
 
 // WfIllustrator:
@@ -224,8 +224,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       '  <marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
       '    <path d="m 2 2 l 6 3 l -6 3 z"/>' +
       '  </marker>' +
-      '  <clipPath id="squareclip">' +
+      '  <clipPath id="startclip">' +
       '    <rect x="-1" y="-1" width="32" height="32"/>' +
+      '  </clipPath>' +
+      '  <clipPath id="endclip">' +
+      '    <rect x="20" y="-1" width="16" height="35"/>' +
       '  </clipPath>' +
       '</defs>'));
     self.svg.defs = {};
@@ -246,10 +249,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
-    console.log(graph);
-    self.svg.container.attr('height',   (graph.max.row) * self.height + self.height_shift);
-    self.svg.container.attr('width',    (graph.max.col+0.55) * self.width );
     self.svg.container.append(graph.svg);
+    let bb = graph.svg[0].getBBox();
+    self.svg.container.attr('height', bb.y + bb.height + 2); // +2 to cancel out bluring issues
+    self.svg.container.attr('width',  bb.x + bb.width + 2);  // +2 to cancel out bluring issues
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[element-id = \'' + svg_id + '\'] g.activities', self.svg.container);
@@ -284,6 +287,84 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     t.remove();
     return w;
   } //}}}
+  var get_height = this.draw.get_height = function(g) { //{{{
+    let t = g.clone();
+    self.svg.container.append(t);
+    let bb = t[0].getBBox();
+    let h = bb.height - bb.y;
+    t.remove();
+    return h;
+  } //}}}
+  var get_pos = this.draw.get_pos = function(g,path) { //{{{
+    let t = g.clone();
+    self.svg.container.append(t);
+
+      function getBBox(element, withoutTransforms, toElement) {
+
+
+      var svg = element.ownerSVGElement;
+
+      if (!svg) {
+        return { x: 0, y: 0, cx: 0, cy: 0, width: 0, height: 0 };
+      }
+
+      var r = element.getBBox();
+
+      if (withoutTransforms) {
+        return {
+          x: r.x,
+          y: r.y,
+          width: r.width,
+          height: r.height,
+          cx: r.x + r.width / 2,
+          cy: r.y + r.height / 2
+        };
+      }
+
+      var p = svg.createSVGPoint();
+
+      var matrix = (toElement || svg).getScreenCTM().inverse().multiply(element.getScreenCTM());
+
+      p.x = r.x;
+      p.y = r.y;
+      var a = p.matrixTransform(matrix);
+
+      p.x = r.x + r.width;
+      p.y = r.y;
+      var b = p.matrixTransform(matrix);
+
+      p.x = r.x + r.width;
+      p.y = r.y + r.height;
+      var c = p.matrixTransform(matrix);
+
+      p.x = r.x;
+      p.y = r.y + r.height;
+      var d = p.matrixTransform(matrix);
+
+      var minX = Math.min(a.x, b.x, c.x, d.x);
+      var maxX = Math.max(a.x, b.x, c.x, d.x);
+      var minY = Math.min(a.y, b.y, c.y, d.y);
+      var maxY = Math.max(a.y, b.y, c.y, d.y);
+
+      var width = maxX - minX;
+      var height = maxY - minY;
+
+      return {
+        x: minX,
+        y: minY,
+        width: width,
+        height: height,
+        cx: minX + width / 2,
+        cy: minY + height / 2
+      };
+
+
+
+    console.log(path);
+    let bb = $(path,t)[0].getBBox();
+    t.remove();
+    return bb;
+  } //}}}
 
   var draw_symbol = this.draw.draw_symbol = function(sname, id, title, row, col, group, addition) { // {{{
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
@@ -308,6 +389,26 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     var tit = $X('<title xmlns="http://www.w3.org/2000/svg"></title>');
         tit.text(title);
     sym.prepend(tit);
+    let lab = $('.label',sym);
+    if (lab.length > 0) {
+      lab.text(title);
+      let width = this.get_width(lab);
+      let mid = $('.middle',sym);
+      let end = $('.end',sym);
+      if (mid.length > 0) {
+        let pos = this.get_pos(sym,'.middle');
+        mid.attr('clip-path','url(#ele-' + id + ')');
+        let clip = $X('<clipPath id="ele-' + id + '" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="-1" width="' + width + '" height="' +  (pos.height + 4) + '"></rect>' +
+        '</clipPath>');
+        $('defs',self.svg.container).append(clip);
+        if (end.length > 0) {
+          console.log(pos);
+          end.attr('transform','translate(' + (pos.x + pos.width) + ',0)');
+        }
+      }
+    }
+
     sym.attr('class','activities');
     $(g[0].childNodes[0]).append(sym);
 
@@ -727,10 +828,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         pos.dim.push(w);
         high = g;
 
-        console.log('---');
-        console.log(pos);
-        console.log(prev);
-        console.log(block);
+        // console.log('---');
+        // console.log(pos);
+        // console.log(prev);
+        // console.log(block);
 
         if (illustrator.elements[sname].info) {
           var info = illustrator.elements[sname].info(context);
