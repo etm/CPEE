@@ -246,6 +246,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   var clear = this.clear = function() { // {{{
     $('> :not(defs)', self.svg.container).each(function() {$(this).remove()});
+    $('> defs > [belongs-to=element]', self.svg.container).each(function() {$(this).remove()});
   } // }}}
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
@@ -383,7 +384,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         if (mid.length > 0) {
           let pos = get_pos(mid);
           mid.attr('clip-path','url(#ele-' + id + ')');
-          let clip = $X('<clipPath id="ele-' + id + '" xmlns="http://www.w3.org/2000/svg">' +
+          let clip = $X('<clipPath belongs-to="element" id="ele-' + id + '" xmlns="http://www.w3.org/2000/svg">' +
             '<rect x="0" y="-1" width="' + width + '" height="' +  (pos.height + 4) + '"></rect>' +
           '</clipPath>');
           $('defs',self.svg.container).append(clip);

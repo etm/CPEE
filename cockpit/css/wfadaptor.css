@@ -424,10 +424,13 @@ svg text.smaller {
   fill: var(--wfadaptor-base);
 }
 
+svg g.element[element-id].hover {
+  cursor: pointer;
+}
+
 svg g.element[element-id].hover .hfill {
   fill: var(--wfadaptor-selected);
   fill-opacity:1;
-  cursor: pointer;
 }
 svg g.element[element-id].hover .hline {
   fill: var(--wfadaptor-selected);
@@ -438,7 +441,6 @@ svg g.element[element-id].hover .hline {
   stroke-miterlimit:4;
   stroke-opacity:1;
   stroke-dasharray:none;
-  cursor: pointer;
 }
 svg g.element[element-id].hover .htext {
   fill: var(--wfadaptor-selected);
@@ -450,7 +452,6 @@ svg g.element[element-id].hover .htext {
   stroke-miterlimit:4;
   stroke-opacity:1;
   stroke-dasharray:none;
-  cursor: pointer;
 }
 svg g.element[element-id].hover > text.label {
   color: var(--wfadaptor-selected);
