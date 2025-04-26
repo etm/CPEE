@@ -746,7 +746,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (illustrator.elements[sname].closing_symbol) {
         var ctname = illustrator.elements[sname].closing_symbol;
         var csname = sym_name(ctname,context);
-        set_details(ctname,csname,pos,context,true);
         pos.row++;
         max.row++;
         block.max.row = pos.row;
@@ -758,7 +757,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
           }
           draw_position(ctname,pos,block.endnodes,block,group,[],context,{svg: g, pos: origpos});
           pos.col--;
+          set_details(ctname,csname,pos,context,true);
         } else {
+          set_details(ctname,csname,pos,context,true);
           [undefined, endnodes] = draw_position(ctname,pos,prev,block,group,[],context,{svg: g, pos: origpos});
         }
         prev = $.extend(true, {}, endnodes);
