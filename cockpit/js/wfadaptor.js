@@ -311,7 +311,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     var p = svg.createSVGPoint();
 
-    var matrix = svg.getScreenCTM().inverse().multiply(element[0].getCTM());
+    var matrix = svg.getScreenCTM().inverse().multiply(element[0].getScreenCTM());
 
     p.x = r.x;
     p.y = r.y;
@@ -385,7 +385,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
           let pos = get_pos(mid);
           mid.attr('clip-path','url(#ele-' + id + ')');
           let clip = $X('<clipPath belongs-to="element" id="ele-' + id + '" xmlns="http://www.w3.org/2000/svg">' +
-            '<rect x="0" y="-1" width="' + width + '" height="' +  (pos.height + 4) + '"></rect>' +
+            '<rect x="0" y="-1" width="' + width + '" height="' +  (pos.y + pos.height + 2) + '"></rect>' +
           '</clipPath>');
           $('defs',self.svg.container).append(clip);
           if (end.length > 0) {
@@ -406,7 +406,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     // Binding events for symbol
     bind_event(g,sname,true);
 
-    if(group) {group.append(g);}
+    if (group) {group.append(g);}
     else {self.svg.container.children('g:first').append(g);}
     return g;
   } // }}}
@@ -746,6 +746,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (illustrator.elements[sname].closing_symbol) {
         var ctname = illustrator.elements[sname].closing_symbol;
         var csname = sym_name(ctname,context);
+        set_details(ctname,csname,pos,context,true);
         pos.row++;
         max.row++;
         block.max.row = pos.row;
@@ -760,7 +761,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         } else {
           [undefined, endnodes] = draw_position(ctname,pos,prev,block,group,[],context,{svg: g, pos: origpos});
         }
-        set_details(ctname,csname,pos,context,true);
         prev = $.extend(true, {}, endnodes);
       }
     });

@@ -11,11 +11,11 @@
     <g class="part-end" clip-path="url(#endclip)">
       <rect x="1" y="1" width="28" height="28" rx="4" class="hfill rfill cline stand"/>
     </g>
-    <g class="part-middle" transform="translate(28,0)">
+    <g class="part-middle" transform="translate(27,0)">
       <rect x="0" y="1" width="120" height="28" class="hfill rfill standwithout"/>
       <line x1="0" y1="1" x2="120" y2="1" class="standline cline" />
       <line x1="0" y1="29" x2="121" y2="29" class="standline cline" />
-      <text style="margin-left:1em;" transform="translate(0,20)" class="label"></text>
+      <text transform="translate(0,20)" class="label"></text>
     </g>
   </g>
 </svg>
