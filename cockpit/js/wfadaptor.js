@@ -248,6 +248,12 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     $('> :not(defs)', self.svg.container).each(function() {$(this).remove()});
     $('> defs > [belongs-to=element]', self.svg.container).each(function() {$(this).remove()});
   } // }}}
+  this.set_svg_direct = function(svg) { // {{{
+    self.svg.container.append(svg);
+    let bb = svg[0].getBBox();
+    self.svg.container.attr('height', bb.y + bb.height + 2); // +2 to cancel out bluring issues
+    self.svg.container.attr('width',  bb.x + bb.width + 2);  // +2 to cancel out bluring issues
+  } // }}}
   this.set_svg = function(graph) { // {{{
     if(graph.max.row < 1) graph.max.row = 1;
     if(graph.max.col < 1) graph.max.col = 1;
@@ -349,7 +355,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     };
   } //}}}
 
-  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, row, col, group, addition) { // {{{
+  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, row, col, dim, group, addition) { // {{{
+    if (!(row in dim)) { dim[row] = [] }
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
     let center_x = (self.width - self.default_width) / 2;
     let center_y = (self.height - self.default_height) / 2;
@@ -390,10 +397,16 @@ function WfIllustrator(wf_adaptor) { // View  {{{
           $('defs',self.svg.container).append(clip);
           if (end.length > 0) {
             end.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
+            dim[row][col] = pos.x + width - self.endclipshift - 4 + this.get_width(end);
+          } else {
+            dim[row][col] = self.width + width;
           }
+        } else {
+          dim[row][col] = self.width;
         }
         if (nor.length > 0) { nor.remove(); }
       } else {
+        dim[row][col] = self.width;
         if (sta.length > 0) { sta.remove(); }
         if (mid.length > 0) { mid.remove(); }
         if (end.length > 0) { end.remove(); }
@@ -692,7 +705,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         // javascript object spread syntax is my new weird crush - the JS designers must be serious people
         labels.push({...{row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)},...illustrator.draw.get_y(pos.row)});
       }
-      let g = illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.col, group);
+      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.col, pos.dim, group);
     } // }}}
 
     $(root).children().filter(function(){ return this.localName[0] != '_'; }).each(function() {
@@ -764,6 +777,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         }
         prev = $.extend(true, {}, endnodes);
       }
+      illustrator.set_svg_direct(group);
+      debugger;
     });
 
     if($(root).children().filter(function(){ return this.attributes['svg-id'] != undefined; }).length == 0) { // empty complex found
@@ -810,19 +825,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     var sname = sym_name(tname,context);
     // Draw Symbol {{{
     if (second) {
-      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pos.row, pos.col, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pos.row, pos.col, pos.dim, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
       $(context).attr('svg-type',tname);
       $(context).attr('svg-subtype',sname);
       if((illustrator.elements[sname] && illustrator.elements[sname].svg) || sname == 'unknown') {
-        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pos.row, pos.col, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
-        let w = illustrator.draw.get_width(g);
-        pos.dim.push(w);
+        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pos.row, pos.col, pos.dim, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
 
-        // console.log('---');
-        // console.log(pos);
-        // console.log(prev);
-        // console.log(block);
+        console.log('---');
+        console.log(pos.dim);
 
         if (illustrator.elements[sname].info) {
           var info = illustrator.elements[sname].info(context);
