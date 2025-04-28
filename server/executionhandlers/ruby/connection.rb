@@ -302,7 +302,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       @controller.notify("activity/status", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_STATUS'])
     end
 
-    if options['CPEE_STATUS'] || options['CPEE_EVENT'] || options['CPEE_INSTANTIATION']
+    if options['CPEE_STATUS'] || options['CPEE_EVENT']
       @handler_returnValue = nil
       @handler_returnOptions = nil
     else
