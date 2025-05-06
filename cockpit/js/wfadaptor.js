@@ -542,7 +542,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:[],final:false,wide:false});
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false}, []);
     illustrator.set_svg(graph);
     self.set_labels(graph);
   } // }}}
@@ -603,7 +603,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(update_illustrator){
       labels = [];
       illustrator.clear();
-      var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:[]});
+      var graph = parse(description.children('description').get(0), {'row':0,'col':0}, []);
       illustrator.set_svg(graph);
       self.set_labels(graph);
     }
@@ -681,7 +681,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
   // }}}
   // Helper Functions {{{
-  var parse = function(root, parent_pos)  { // private {{{
+  var parse = function(root, parent_pos, dim)  { // private {{{
     var pos = $.extend(true, {}, parent_pos);
     var max = {'row': 0,'col': 0};
     var prev = [parent_pos]; // connects parent with child(s), depending on the expansion
@@ -705,7 +705,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         // javascript object spread syntax is my new weird crush - the JS designers must be serious people
         labels.push({...{row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)},...illustrator.draw.get_y(pos.row)});
       }
-      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.col, pos.dim, group);
+      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.col, dim, group);
     } // }}}
 
     $(root).children().filter(function(){ return this.localName[0] != '_'; }).each(function() {
@@ -729,7 +729,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'complex') {
         if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg) pos.row--;
         // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
-        block = parse(context, $.extend(true, {}, pos));
+        console.log('----> down', dim);
+        block = parse(context, $.extend(true, {}, pos), dim);
+        console.log('<---- up',dim);
         group.append(block.svg);
         block.svg.attr('id', 'group-' + $(context).attr('svg-id'));
         if(illustrator.elements[sname].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive
@@ -747,7 +749,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       set_details(tname,sname,pos,context);
 
       var origpos = $.extend(true, {}, pos);
-      [g, endnodes] = draw_position(tname,origpos,prev,block,group,endnodes,context);
+
+      [g, endnodes] = draw_position(tname,origpos,prev,block,group,dim,endnodes,context);
 
       // Prepare next iteration {{{
       if(root_expansion == 'vertical') { prev = $.extend(true, {}, endnodes); pos.row = block.max.row;} // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
@@ -768,16 +771,19 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
             max.col++;
             block.max.col = pos.col;
           }
-          draw_position(ctname,pos,block.endnodes,block,group,[],context,{svg: g, pos: origpos});
+          draw_position(ctname,pos,block.endnodes,block,group,dim,[],context,{svg: g, pos: origpos});
           pos.col--;
           set_details(ctname,csname,pos,context,true);
         } else {
           set_details(ctname,csname,pos,context,true);
-          [undefined, endnodes] = draw_position(ctname,pos,prev,block,group,[],context,{svg: g, pos: origpos});
+          [undefined, endnodes] = draw_position(ctname,pos,prev,block,group,dim,[],context,{svg: g, pos: origpos});
         }
         prev = $.extend(true, {}, endnodes);
       }
+
+      console.log(dim);
       illustrator.set_svg_direct(group);
+      console.log('+++++');
       debugger;
     });
 
@@ -790,7 +796,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(root.tagName == 'description' && illustrator.elements[root.tagName].closing_symbol) {
       pos.row++;
       max.row = pos.row;
-      draw_position(illustrator.elements['start'].closing_symbol,pos,prev,block,group,[],this,{svg: group, pos: pos});
+      draw_position(illustrator.elements['start'].closing_symbol,pos,prev,block,group,dim,[],this,{svg: group, pos: pos});
     }
 
     return {'endnodes': endnodes, 'max':max, 'svg':group};
@@ -821,19 +827,19 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       labels.push({...{row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab},...illustrator.draw.get_y(pos.row)});
     }
   } //}}}
-  var draw_position = function(tname,pos,prev,block,group,endnodes,context,second) { // private {{{
+  var draw_position = function(tname,pos,prev,block,group,dim,endnodes,context,second) { // private {{{
     var sname = sym_name(tname,context);
     // Draw Symbol {{{
     if (second) {
-      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pos.row, pos.col, pos.dim, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pos.row, pos.col, dim, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
       $(context).attr('svg-type',tname);
       $(context).attr('svg-subtype',sname);
       if((illustrator.elements[sname] && illustrator.elements[sname].svg) || sname == 'unknown') {
-        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pos.row, pos.col, pos.dim, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pos.row, pos.col, dim, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
 
         console.log('---');
-        console.log(pos.dim);
+        console.log(dim);
 
         if (illustrator.elements[sname].info) {
           var info = illustrator.elements[sname].info(context);
