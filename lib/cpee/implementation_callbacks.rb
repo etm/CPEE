@@ -13,6 +13,7 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'json'
+require 'charlock_holmes'
 require_relative 'fail'
 
 module CPEE
