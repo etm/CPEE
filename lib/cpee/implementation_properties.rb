@@ -695,7 +695,7 @@ module CPEE
 
         ### endpoints extraction
         addit = if tendptype == 'rest' && !tdata.empty?
-          srv = Riddl::Client.interface(tendp,opts[:transformation_service])
+          srv = Riddl::Client.new(tendp)
           status, res = srv.post [
             desc.nil? ? Riddl::Parameter::Complex.new("description","text/plain",descxml) : Riddl::Parameter::Complex.new("description","text/xml",descxml),
             Riddl::Parameter::Simple.new("type","endpoints")
@@ -723,7 +723,7 @@ module CPEE
         addit = if tdesctype == 'copy' || tdesc.empty?
           desc || ''
         elsif tdesctype == 'rest' && !tdesc.empty?
-          srv = Riddl::Client.interface(tdesc,opts[:transformation_service])
+          srv = Riddl::Client.new(tdesc)
           status, res = srv.post [
             desc.nil? ? Riddl::Parameter::Complex.new("description","text/plain",descxml) : Riddl::Parameter::Complex.new("description","text/xml",descxml),
             Riddl::Parameter::Simple.new("type","description")
@@ -748,7 +748,7 @@ module CPEE
 
         ### dataelements extraction
         addit = if tdatatype == 'rest' && !tdata.empty?
-          srv = Riddl::Client.interface(tdata,opts[:transformation_service])
+          srv = Riddl::Client.new(tdata)
           status, res = srv.post [
             desc.nil? ? Riddl::Parameter::Complex.new("description","text/plain",descxml) : Riddl::Parameter::Complex.new("description","text/xml",descxml),
             Riddl::Parameter::Simple.new("type","dataelements")

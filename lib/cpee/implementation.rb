@@ -62,7 +62,6 @@ module CPEE
     opts[:topics]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','topics.xml'))
     opts[:properties_init]            ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.init'))
     opts[:properties_empty]           ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.empty'))
-    opts[:transformation_service]     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','transformation.xml'))
     opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
     opts[:notifications_init]         ||= File.expand_path(File.join(__dir__,'..','..','server','resources','notifications'))
     opts[:states]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','states.xml'))
