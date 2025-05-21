@@ -19,6 +19,7 @@ body {
   grid-gap: 0;
   width: 100%;
 }
+
 #graphcanvas {
   grid-column: 1;
 }
@@ -27,6 +28,8 @@ body {
   display: flex;
   flex-direction: row;
 }
+
+
 
 #graphgrid.striped .graphlast.even {
   background-color: #e9e9e9;
@@ -183,11 +186,39 @@ span.vote {
   color: #73d216;
 }
 
+#modelling {
+  flex: 1 1 auto;
+  overflow: scroll;
+}
+
+#status{
+  padding: 0.2em 0.5em;
+  border-top: 0.1em solid var(--x-ui-border-color);
+  background-color: var(--x-tab-inactive-color);
+  min-height: 1.4em;
+}
+
+#prompt {
+  padding: 0.2em 0.5em;
+  outline: none;
+  max-height: 4em;
+  overflow-y: scroll;
+}
+#prompt:empty:before {
+  font-family: sans-serif;
+  color: #a1a1a1;
+  white-space: normal;
+  content: attr(placeholder);
+  display: block;
+}
+
 #graphcolumn {
   margin: 0;
   padding: 0;
   border-right: 1px solid var(--x-ui-border-color);
   min-width: 9em;
+  display: flex;
+  flex-direction: column;
 }
 #detailcolumn {
   padding-left: 1.5em;

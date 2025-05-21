@@ -55,9 +55,11 @@
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
     <script type="text/javascript" src="js/resources.js"></script>
-    <script type="text/javascript" src="js/edit.js"></script>
     <script type="text/javascript" src="js/modifiers.js"></script>
     <script type="text/javascript" src="themes/base.js"></script>
+
+    <script type="text/javascript" src="js/llm.js"></script>
+
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="css/resources-label.css" type="text/css"/>
     <link rel="stylesheet" href="css/resources-svg.css" type="text/css" data-include-export="true"/>
@@ -136,7 +138,7 @@
     <ui-tabbed id="instance">
       <ui-tabbar>
         <ui-tab class="switch"                                                ></ui-tab>
-        <ui-tab class=""                data-tab="new"       id="tabnew"      >Config</ui-tab>
+        <ui-tab class=""                data-tab="new"       id="tabnew"      >New</ui-tab>
         <ui-tab class="inactive hidden" data-tab="instance"  id="tabinstance" >Instance</ui-tab>
         <ui-tab class="inactive hidden" data-tab="execution" id="tabexecution">Execution</ui-tab>
         <ui-behind                                                            ><a style='display:none' target='_blank' id='current-instance'></a><a style='display:none' target='_blank' id='current-instance-properties'>P</a><a style='display:none' target='_blank' id='current-instance-subscriptions'>S</a><a style='display:none' target='_blank' id='current-instance-callbacks'>C</a></ui-behind>
@@ -148,14 +150,17 @@
           <tr>
             <td>Resources:</td>
             <td><input name="res-url" type="text" value=""/></td>
+            <td></td>
           </tr>
           <tr>
             <td>Engine:</td>
             <td><input name="base-url" type="text" value=""/></td>
+            <td><button name="base">create new instance</button></td>
           </tr>
           <tr>
             <td>Instance:</td>
             <td><input name="instance-url" type="text" value=""/></td>
+            <td><button name="instance">monitor instance</button></td>
           </tr>
           </table>
         </ui-area> <!--}}}-->
@@ -166,8 +171,7 @@
                 <form id='fuckchrome'>
                   <input type='file' name='testsetfile' id='testsetfile'/>
                 </form>
-                <button title='save a testset includes various settings, subscriptions and a model' name="save" disabled=""><div>save</div><div class="hidden" id='lastsavedline'>(last: <span id="lastsaved"></span>)</div></button>
-                <button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load testset</button>
+                <button title='a template includes various settings, subscriptions or a (partial) model' name="loadtestset">load template</button><button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load testset</button>
               </div>
               <div>
                 <input type='file' name='modelfile' id='modelfile'/>
@@ -265,6 +269,8 @@
               <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
             </div>
           </div>
+          <div id='status'></div>
+          <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here... CTRL-ENTER to submit ..." placeholder="Please enter your modelling instructions here... CTRL-ENTER to submit ..."></div>
         </ui-area>
         <ui-resizehandle data-belongs-to-tab="details" data-label="drag to resize"></ui-resizehandle>
         <ui-area data-belongs-to-tab="details" id="detailcolumn">

@@ -233,7 +233,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       '</g>');
     for(element in self.elements)
       if(self.elements[element].svg) {
-        console.log(self.elements[element].svg);
         var sym = $X('<g xmlns="http://www.w3.org/2000/svg"/>').append(self.elements[element].svg.clone().children()); // append all children to symbol
         $.each(self.elements[element].svg.attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
         self.svg.defs[element] = sym;
