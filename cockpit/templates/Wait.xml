@@ -125,11 +125,4 @@ data.teams = result.find("/o:organisation/o:subjects/o:subject[o:relation/@role=
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <subscriptions xmlns="http://riddl.org/ns/common-patterns/notifications-producer/2.0">
-    <subscription id="_instantiation_9c70f0aec95a9c021bb58785ecd8b674" url="http://localhost:9296/callback/_instantiation_9c70f0aec95a9c021bb58785ecd8b674">
-      <topic id="state">
-        <event>change</event>
-      </topic>
-    </subscription>
-  </subscriptions>
 </testset>
