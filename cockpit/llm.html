@@ -270,7 +270,10 @@
             </div>
           </div>
           <div id='status'></div>
-          <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here... CTRL-ENTER to submit ..." placeholder="Please enter your modelling instructions here... CTRL-ENTER to submit ..."></div>
+          <div id='prompt_container'>
+            <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here... CTRL-ENTER or press '➤' to submit ..." placeholder="Please enter your modelling instructions here... CTRL-ENTER to submit ..."></div>
+            <div id='prompt_submit_container'><button id='prompt_submit_button'>➤</button></div>
+          </div>
         </ui-area>
         <ui-resizehandle data-belongs-to-tab="details" data-label="drag to resize"></ui-resizehandle>
         <ui-area data-belongs-to-tab="details" id="detailcolumn">
