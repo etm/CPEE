@@ -19,7 +19,6 @@ body {
   grid-gap: 0;
   width: 100%;
 }
-
 #graphcanvas {
   grid-column: 1;
 }
@@ -28,9 +27,6 @@ body {
   display: flex;
   flex-direction: row;
 }
-
-
-
 #graphgrid.striped .graphlast.even {
   background-color: #e9e9e9;
 }
@@ -191,22 +187,26 @@ span.vote {
   overflow: scroll;
 }
 
-#status{
+#status {
   padding: 0.2em 0.5em;
   border-top: 0.1em solid var(--x-ui-border-color);
   background-color: var(--x-tab-inactive-color);
   min-height: 1.4em;
+  overflow:hidden;
+}
+#status.error {
+  background-color: var(--wfadaptor-selected);
 }
 
 #prompt {
   padding: 0.2em 0.5em;
   outline: none;
-  max-height: 4em;
+  max-height: 2.66em;
+  min-height: 2.66em;
   overflow-y: scroll;
 }
 #prompt:empty:before {
   font-family: sans-serif;
-  color: #a1a1a1;
   white-space: normal;
   content: attr(placeholder);
   display: block;

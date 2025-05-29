@@ -836,6 +836,7 @@ function monitor_graph_change(force) { //{{{
     type: "GET",
     url: url + "/properties/dslx/",
     success: function(dslx){
+      save['dslx'] = $(dslx.documentElement).serializePrettyXML();
       if (force || !save['graph'] || (save['graph'] && save['graph'].serializePrettyXML() != $(dslx.documentElement).serializePrettyXML())) {
         $.ajax({
           type: "GET",
