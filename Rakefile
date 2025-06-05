@@ -25,6 +25,13 @@ task :install => :gem do |r|
   `gem install pkg/cpee.gem`
 end
 
+# task :release => :gem do |r|
+#   GIT_COMMITTER_DATE="$(git show develop --format=%aD | head -1)" \
+#   git tag -a "v1.7.0" develop -m "tag v1.7.0" \
+#   && git push --tags origin develop \
+#   && git --no-pager tag --list --format='%(refname)   %(taggerdate)'
+# end
+
 desc "Clean instances"
 task :clean do
   Dir.glob("server/instances/*").collect{ |i| i if i =~ /\/\d+$/ }.compact.each do |i|

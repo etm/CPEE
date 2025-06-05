@@ -519,7 +519,9 @@
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when test="substring(text(),1,1) = '!'">
-            <xsl:value-of select="substring(text(),2)"/>
+            <xsl:text>🠊("</xsl:text>
+            <xsl:value-of select="str:replace(str:replace(substring(text(),2),'\','\\'),'&quot;','\&quot;')"/>
+            <xsl:text>")</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>"</xsl:text>
@@ -548,7 +550,9 @@
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when test="substring(text(),1,1) = '!'">
-            <xsl:value-of select="substring(text(),2)"/>
+            <xsl:text>🠊("</xsl:text>
+            <xsl:value-of select="str:replace(str:replace(substring(text(),2),'\','\\'),'&quot;','\&quot;')"/>
+            <xsl:text>")</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>"</xsl:text>
@@ -577,7 +581,9 @@
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when test="substring(text(),1,1) = '!'">
-            <xsl:value-of select="substring(text(),2)"/>
+            <xsl:text>🠊("</xsl:text>
+            <xsl:value-of select="str:replace(str:replace(substring(text(),2),'\','\\'),'&quot;','\&quot;')"/>
+            <xsl:text>")</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>"</xsl:text>
