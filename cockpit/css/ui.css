@@ -187,55 +187,6 @@ span.vote {
   overflow: scroll;
 }
 
-#status {
-  padding: 0.2em 0.5em;
-  border-top: 0.1em solid var(--x-ui-border-color);
-  background-color: var(--x-tab-inactive-color);
-  min-height: 1.4em;
-  overflow:hidden;
-}
-#status.error {
-  background-color: var(--wfadaptor-selected);
-}
-#status.success {
-  background-color: var(--wfadaptor-exec-vote);
-}
-
-#prompt_container {
-  padding: 0.2em 0.5em;
-  outline: none;
-  max-height: 2.66em;
-  min-height: 2.66em;
-  display: flex;
-  flex-wrap: nowrap;
-}
-#prompt {
-  flex: 1 1 auto;
-  outline: none;
-  max-height: 2.66em;
-  min-height: 2.66em;
-  overflow-y: scroll;
-}
-#prompt:empty:before {
-  font-family: sans-serif;
-  white-space: normal;
-  content: attr(placeholder);
-  display: block;
-}
-#prompt_submit_container {
-  flex: 0 0 auto;
-  box-sizing: border-box;
-  padding: 0.2em 0em 0.2em 0.5em;
-  outline: none;
-  max-height: 2.66em;
-  min-height: 2.66em;
-  max-width: 3em;
-  min-width: 3em;
-}
-#prompt_submit_button {
-  width: 100%;
-  height: 100%;
-}
 
 #graphcolumn {
   margin: 0;

@@ -59,6 +59,7 @@
     <script type="text/javascript" src="themes/base.js"></script>
 
     <script type="text/javascript" src="js/llm.js"></script>
+    <link   rel="stylesheet"      href="css/llm.css" type="text/css"/>
 
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="css/resources-label.css" type="text/css"/>
@@ -270,9 +271,9 @@
             </div>
           </div>
           <div id='status'></div>
-          <div id='prompt_container'>
+          <div id='prompt_container' class="max">
             <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here... CTRL-ENTER or press '➤' to submit ..." placeholder="Please enter your modelling instructions here... CTRL-ENTER or press '➤' to submit ..."></div>
-            <div id='prompt_submit_container'><button id='prompt_submit_button'>➤</button></div>
+            <div id='prompt_submit_container' class="single"><button id='prompt_submit_button' class="llm_button">➤</button></div>
           </div>
         </ui-area>
         <ui-resizehandle data-belongs-to-tab="details" data-label="drag to resize"></ui-resizehandle>
