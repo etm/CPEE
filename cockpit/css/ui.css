@@ -187,7 +187,6 @@ span.vote {
   overflow: scroll;
 }
 
-
 #graphcolumn {
   margin: 0;
   padding: 0;
@@ -195,6 +194,7 @@ span.vote {
   min-width: 9em;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 #detailcolumn {
   padding-left: 1.5em;
