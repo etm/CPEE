@@ -84,11 +84,11 @@ module CPEE
           end
           on resource 'dslx' do
             run CPEE::Properties::GetComplex, 'dslx', 'text/xml', id, opts if get
-            run CPEE::Properties::PutDescription, id, opts if put 'description'
+            run CPEE::Properties::PutDescription, id, opts, true if put 'description'
           end
           on resource 'description' do
             run CPEE::Properties::GetComplex, 'description', 'text/xml', id, opts if get
-            run CPEE::Properties::PutDescription, id, opts if put 'description'
+            run CPEE::Properties::PutDescription, id, opts, false if put 'description'
           end
           on resource 'transformation' do
             run CPEE::Properties::GetTransformation, id, opts if get
