@@ -84,6 +84,7 @@ module CPEE
           end
           on resource 'dslx' do
             run CPEE::Properties::GetComplex, 'dslx', 'text/xml', id, opts if get
+            run CPEE::Properties::PutDescription, id, opts if put 'description'
           end
           on resource 'description' do
             run CPEE::Properties::GetComplex, 'description', 'text/xml', id, opts if get
@@ -694,7 +695,7 @@ module CPEE
         ep = {}
 
         ### endpoints extraction
-        addit = if tendptype == 'rest' && !tdata.empty?
+        addit = if tendptype == 'rest' && !tendp.empty?
           srv = Riddl::Client.new(tendp)
           status, res = srv.post [
             desc.nil? ? Riddl::Parameter::Complex.new("description","text/plain",descxml) : Riddl::Parameter::Complex.new("description","text/xml",descxml),
@@ -705,7 +706,7 @@ module CPEE
           else
             raise 'Could not extract endpoints'
           end
-        elsif tendptype == 'xslt' && !tdata.empty?
+        elsif tendptype == 'xslt' && !tendp.empty?
           trans = XML::Smart::open_unprotected(tendp.text)
           desc.transform_with(trans)
         elsif tendptype == 'clean'
@@ -775,19 +776,33 @@ module CPEE
         [dslx, dsl, de, ep]
       end #}}}
 
-      def self::set(id,opts,xml)
-        dslx, dsl, de, ep = PutDescription::transform(
-          xml,
-          CPEE::Persistence::extract_item(id,opts,'transformation/description'),
-          CPEE::Persistence::extract_item(id,opts,'transformation/description/@type'),
-          CPEE::Persistence::extract_item(id,opts,'transformation/dataelements'),
-          CPEE::Persistence::extract_item(id,opts,'transformation/dataelements/@type'),
-          CPEE::Persistence::extract_item(id,opts,'transformation/endpoints'),
-          CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type'),
-          CPEE::Persistence::extract_item(id,opts,'executionhandler'),
-          id,
-          opts
-        )
+      def self::set(id,opts,xml,copy=false)
+        dslx, dsl, de, ep = if copy
+          PutDescription::transform(
+            xml,
+            '',
+            'copy',
+            '',
+            'none',
+            '',
+            'none'
+            id,
+            opts
+          )
+        else
+          PutDescription::transform(
+            xml,
+            CPEE::Persistence::extract_item(id,opts,'transformation/description'),
+            CPEE::Persistence::extract_item(id,opts,'transformation/description/@type'),
+            CPEE::Persistence::extract_item(id,opts,'transformation/dataelements'),
+            CPEE::Persistence::extract_item(id,opts,'transformation/dataelements/@type'),
+            CPEE::Persistence::extract_item(id,opts,'transformation/endpoints'),
+            CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type'),
+            CPEE::Persistence::extract_item(id,opts,'executionhandler'),
+            id,
+            opts
+          )
+        end
         CPEE::Persistence::set_item(id,opts,'description',
           :description => xml,
           :dslx => dslx,
@@ -797,18 +812,19 @@ module CPEE
           :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
         )
         PatchItems::set_hash('dataelements',id,opts,de) unless de.empty?
-        PatchItems::set_hash('dataelements',id,opts,ep) unless ep.empty?
+        PatchItems::set_hash('endpoints',id,opts,ep) unless ep.empty?
       end
 
       def response
         id = @a[0]
         opts = @a[1]
+        copy = @a[2]
         if opts[:statemachine].readonly? id
           @status = 422 # semantic error
         else
           begin
             # force-encoding because johannes managed to sneak in ascii special characters. why the browser is not sanitizing it is beyond me.
-            PutDescription::set(id,opts,@p[0].value.read.force_encoding('UTF-8'))
+            PutDescription::set(id,opts,@p[0].value.read.force_encoding('UTF-8'),copy)
           rescue => e
             puts e.message
             puts e.backtrace

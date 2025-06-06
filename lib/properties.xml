@@ -221,6 +221,7 @@
     </resource> <!--}}}-->
     <resource relative="dslx"> <!--{{{-->
       <get out="dslx"/>
+      <put in="dslx"/>
     </resource> <!--}}}-->
     <resource relative="description"> <!--{{{-->
       <get out="description"/>
