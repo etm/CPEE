@@ -1,22 +1,8 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements>
-    <res>{"CPEE-INSTANCE":"51480","CPEE-INSTANCE-URL":"https://cpee.org/flow/engine/51480","CPEE-INSTANCE-UUID":"61291a99-86a7-4396-8e0c-456728c60d09","CPEE-STATE":"finished","b":4,"end":1741703309.6717181,"start":1741703308.456953,"teams":["Eugen Rigger","Celine Mader","Nataliia Klievtsova","Juergen Mangler","David Williamson","Alan Joannidi","Dariusz Opoka","David Ellis","Martin Hintzen","Mark Mattimoe","Ekaterina Zhuravleva","Joanne Mailen","Andreas Schmid","Iain Wilkie","Luke Chan","Eliot Horsman","MEHDI FARIK","Nic Winter","Salim Akram","ROMAIN VIRY","CORINNE DELOR","YANN LISSILLOUR","Julian Chatwin","Gregor Mayr","Andreas Fussenegger","Alexandru Zloteanu","Clemens Neuner","Birthe Bittner","Jan Schrottenholzer","Michael Schoech","J&#xF6;rg Linden","Peter John Keill","Tobias Jonk","Ralf Mueller","Peter Kovacs","Sara Mota","Ulrich Juergenschellert","Yi Ju","Sven Scharfe","Armando Hoedl","Fabienne Meier","Olaf Zalewski","Stefan Bildstein","Sebastian Schade","Tomi Walter","Pascal Wolf","Thibaut Escourrou","Peter Jezsoviczki","Felix Breuss","Thomas Kladensky","Hossam Haridy","Christoph Stadler","Jens Beecken","Bernhard Klocker"]}</res>
-    <start>1741706229.7376199</start>
-    <substart>0.8481366634368896</substart>
-    <subend>2.062901735305786</subend>
-    <duration>69.02397441864014</duration>
-    <teams>{"CPEE-INSTANCE":"51480","CPEE-INSTANCE-URL":"https://cpee.org/flow/engine/51480","CPEE-INSTANCE-UUID":"61291a99-86a7-4396-8e0c-456728c60d09","CPEE-STATE":"finished","b":4,"end":1741703309.6717181,"start":1741703308.456953,"teams":["Eugen Rigger","Celine Mader","Nataliia Klievtsova","Juergen Mangler","David Williamson","Alan Joannidi","Dariusz Opoka","David Ellis","Martin Hintzen","Mark Mattimoe","Ekaterina Zhuravleva","Joanne Mailen","Andreas Schmid","Iain Wilkie","Luke Chan","Eliot Horsman","MEHDI FARIK","Nic Winter","Salim Akram","ROMAIN VIRY","CORINNE DELOR","YANN LISSILLOUR","Julian Chatwin","Gregor Mayr","Andreas Fussenegger","Alexandru Zloteanu","Clemens Neuner","Birthe Bittner","Jan Schrottenholzer","Michael Schoech","J&#xF6;rg Linden","Peter John Keill","Tobias Jonk","Ralf Mueller","Peter Kovacs","Sara Mota","Ulrich Juergenschellert","Yi Ju","Sven Scharfe","Armando Hoedl","Fabienne Meier","Olaf Zalewski","Stefan Bildstein","Sebastian Schade","Tomi Walter","Pascal Wolf","Thibaut Escourrou","Peter Jezsoviczki","Felix Breuss","Thomas Kladensky","Hossam Haridy","Christoph Stadler","Jens Beecken","Bernhard Klocker"]}</teams>
-  </dataelements>
-  <endpoints>
-    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
-    <user>https-post://cpee.org/services/timeout-user.php</user>
-    <auto>https-post://cpee.org/services/timeout-auto.php</auto>
-    <timeout>https://cpee.org/services/timeout.php</timeout>
-    <send>https-post://cpee.org/ing/correlators/message/send/</send>
-    <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
-  </endpoints>
+  <dataelements/>
+  <endpoints/>
   <attributes>
     <guarded>none</guarded>
     <modeltype>CPEE</modeltype>
