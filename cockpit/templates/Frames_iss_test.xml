@@ -114,14 +114,14 @@
         <parameters>
           <label>Show Header</label>
           <arguments>
-            <type/>
+            <type>set</type>
             <lx>0</lx>
             <ly>0</ly>
             <x_amount>5</x_amount>
             <y_amount>1</y_amount>
             <button/>
             <style/>
-            <urls>                      de-at            https://cpee.org/form/tum-header.html                  </urls>
+            <urls>https://cpee.org/form/tum-header.html</urls>
             <default/>
           </arguments>
         </parameters>
