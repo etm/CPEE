@@ -11,6 +11,7 @@
     <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
     <user>https-post://cpee.org/services/timeout-user.php</user>
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
+    <nextisspasses>https://api.n2yo.com/rest/v1/satellite/visualpasses/25544/48.262839/11.666853/0/14/300/&amp;apiKey=DAS8T3-4QLELW-CG9L63-5I0H</nextisspasses>
   </endpoints>
   <attributes>
     <guarded>none</guarded>
@@ -110,51 +111,6 @@
         </documentation>
       </call>
       <stop id="a9"/>
-      <call id="a6" endpoint="frames_display">
-        <parameters>
-          <label>Show Header</label>
-          <arguments>
-            <type>set</type>
-            <lx>0</lx>
-            <ly>0</ly>
-            <x_amount>5</x_amount>
-            <y_amount>1</y_amount>
-            <button/>
-            <style/>
-            <urls>https://cpee.org/form/tum-header.html</urls>
-            <default/>
-          </arguments>
-        </parameters>
-        <annotations>
-          <_generic/>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_shifting>
-            <_shifting_type>Duration</_shifting_type>
-          </_shifting>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-        </documentation>
-      </call>
-      <stop id="a10"/>
       <call id="a5" endpoint="frames_display">
         <parameters>
           <label>Display Graph</label>
@@ -201,6 +157,58 @@
         </documentation>
       </call>
       <stop id="a11"/>
+      <loop mode="pre_test" condition="">
+        <call id="a13" endpoint="nextisspasses">
+          <parameters>
+            <label>API Call Next ISS Passes</label>
+            <method>:get</method>
+            <arguments/>
+          </parameters>
+          <code>
+            <prepare/>
+            <finalize output="result">data.nextIssPasses = resultdata.nextFlybyStart = (result['info']['passescount'] &gt; 0) ? result['passes'][0]['startUTC'] : nil</finalize>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+        <stop id="a14"/>
+        <_probability>
+          <_probability_min/>
+          <_probability_max/>
+          <_probability_avg/>
+        </_probability>
+      </loop>
       <loop mode="post_test" condition="true">
         <_probability>
           <_probability_min/>
@@ -218,7 +226,7 @@
               <y_amount>1</y_amount>
               <button>iss test</button>
               <style/>
-              <urls>de-at https://lehre.bpm.in.tum.de/~ge25fel/emoji.html                     </urls>
+              <urls>https://lehre.bpm.in.tum.de/~ge25fel/emoji.html                     </urls>
               <default/>
             </arguments>
           </parameters>
