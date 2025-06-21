@@ -114,7 +114,7 @@
         <parameters>
           <label>Show Header</label>
           <arguments>
-            <type>set</type>
+            <type/>
             <lx>0</lx>
             <ly>0</ly>
             <x_amount>5</x_amount>
