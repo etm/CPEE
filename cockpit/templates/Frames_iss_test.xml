@@ -121,28 +121,27 @@
             <y_amount>1</y_amount>
             <button/>
             <style/>
-            <urls>
-              <urls_item>
-                <lang>de-at</lang>
-                <url>https://cpee.org/form/tum-header.html</url>
-              </urls_item>
-            </urls>
+            <urls>                      de-at            https://cpee.org/form/tum-header.html                  </urls>
             <default/>
           </arguments>
         </parameters>
         <annotations>
+          <_generic/>
           <_timing>
             <_timing_weight/>
             <_timing_avg/>
-            <_context_data_analysis>
-              <probes/>
-              <ips/>
-            </_context_data_analysis>
-            <report>
-              <url/>
-            </report>
             <explanations/>
           </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
           <_notes>
             <_notes_general/>
           </_notes>
