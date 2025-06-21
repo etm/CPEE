@@ -12,17 +12,17 @@
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
   </endpoints>
   <attributes>
-    <info>Frames_iss</info>
+    <info>Frames_iss1</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <modeltype>CPEE</modeltype>
     <guarded>none</guarded>
     <guarded_id/>
-    <model_uuid>0b38347e-7831-4416-97da-8e3a87af6528</model_uuid>
+    <model_uuid>26eaa230-20db-4bc3-b85c-212d9d9bdb76</model_uuid>
     <model_version/>
-    <theme>model</theme>
+    <theme>extended</theme>
     <design_dir>Templates.dir/</design_dir>
-    <design_stage>draft</design_stage>
+    <design_stage>development</design_stage>
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
