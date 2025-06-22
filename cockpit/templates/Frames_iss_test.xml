@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements/>
+  <dataelements>
+    <nextIssPasses>{"info":{"satid":25544,"satname":"SPACE STATION","transactionscount":3,"passescount":25},"passes":[{"startAz":194.79,"startAzCompass":"S","startEl":9.2,"startUTC":1750643005,"maxAz":136.41,"maxAzCompass":"SE","maxEl":13.91,"maxUTC":1750643280,"endAz":77.28,"endAzCompass":"E","endEl":0.35,"endUTC":1750643555,"mag":0,"duration":395,"startVisibility":1750643160},{"startAz":228.5,"startAzCompass":"SW","startEl":7.42,"startUTC":1750732225,"maxAz":148.66,"maxAzCompass":"SE","maxEl":45.74,"maxUTC":1750732545,"endAz":68.99,"endAzCompass":"ENE","endEl":0.49,"endUTC":1750732860,"mag":-1.7,"duration":535,"startVisibility":1750732325},{"startAz":217.47,"startAzCompass":"SW","startEl":16.56,"startUTC":1750815725,"maxAz":144.17,"maxAzCompass":"SE","maxEl":30.14,"maxUTC":1750816035,"endAz":70.87,"endAzCompass":"ENE","endEl":0.57,"endUTC":1750816340,"mag":-1.1,"duration":425,"startVisibility":1750815915},{"startAz":205.36,"startAzCompass":"SSW","startEl":19.18,"startUTC":1750899235,"maxAz":140.54,"maxAzCompass":"SE","maxEl":19.94,"maxUTC":1750899525,"endAz":73.69,"endAzCompass":"ENE","endEl":0.37,"endUTC":1750899820,"mag":-0.4,"duration":325,"startVisibility":1750899495},{"startAz":246.65,"startAzCompass":"WSW","startEl":6.18,"startUTC":1750904985,"maxAz":274.39,"maxAzCompass":"W","maxEl":88.47,"maxUTC":1750905310,"endAz":68.43,"endAzCompass":"ENE","endEl":0.6,"endUTC":1750905630,"mag":-2.4,"duration":560,"startVisibility":1750905070},{"startAz":237.06,"startAzCompass":"SW","startEl":16.51,"startUTC":1750988470,"maxAz":150.52,"maxAzCompass":"SSE","maxEl":64.41,"maxUTC":1750988795,"endAz":68.28,"endAzCompass":"ENE","endEl":0.34,"endUTC":1750989115,"mag":-2.2,"duration":470,"startVisibility":1750988645},{"startAz":226.69,"startAzCompass":"SW","startEl":32.54,"startUTC":1751071960,"maxAz":146.06,"maxAzCompass":"SE","maxEl":42.58,"maxUTC":1751072280,"endAz":69.28,"endAzCompass":"ENE","endEl":0.6,"endUTC":1751072590,"mag":-1.6,"duration":370,"startVisibility":1751072220},{"startAz":262.16,"startAzCompass":"W","startEl":2.63,"startUTC":1751077755,"maxAz":346.24,"maxAzCompass":"N","maxEl":56.28,"maxUTC":1751078080,"endAz":71.39,"endAzCompass":"ENE","endEl":0.44,"endUTC":1751078400,"mag":-2,"duration":605,"startVisibility":1751077795},{"startAz":254.08,"startAzCompass":"WSW","startEl":11.06,"startUTC":1751161235,"maxAz":337.38,"maxAzCompass":"NNW","maxEl":70.83,"maxUTC":1751161555,"endAz":69.31,"endAzCompass":"ENE","endEl":0.58,"endUTC":1751161875,"mag":-2.3,"duration":510,"startVisibility":1751161365},{"startAz":245.04,"startAzCompass":"WSW","startEl":26.47,"startUTC":1751244710,"maxAz":134.06,"maxAzCompass":"SE","maxEl":85.89,"maxUTC":1751245035,"endAz":68.34,"endAzCompass":"ENE","endEl":0.39,"endUTC":1751245355,"mag":-2.4,"duration":425,"startVisibility":1751244930},{"startAz":274.85,"startAzCompass":"W","startEl":0.28,"startUTC":1751250530,"maxAz":357.16,"maxAzCompass":"N","maxEl":45.16,"maxUTC":1751250850,"endAz":77.83,"endAzCompass":"E","endEl":0.53,"endUTC":1751251165,"mag":-1.7,"duration":635,"startVisibility":1751250530},{"startAz":235.26,"startAzCompass":"SW","startEl":57,"startUTC":1751328190,"maxAz":154.51,"maxAzCompass":"SSE","maxEl":59.96,"maxUTC":1751328510,"endAz":68.39,"endAzCompass":"ENE","endEl":0.46,"endUTC":1751328830,"mag":-2.1,"duration":335,"startVisibility":1751328495},{"startAz":268.32,"startAzCompass":"W","startEl":4.74,"startUTC":1751334000,"maxAz":350.56,"maxAzCompass":"N","maxEl":49.34,"maxUTC":1751334320,"endAz":73.9,"endAzCompass":"ENE","endEl":0.36,"endUTC":1751334640,"mag":-1.8,"duration":575,"startVisibility":1751334065},{"startAz":260.85,"startAzCompass":"W","startEl":13.22,"startUTC":1751417470,"maxAz":343.38,"maxAzCompass":"NNW","maxEl":58.3,"maxUTC":1751417790,"endAz":70.91,"endAzCompass":"ENE","endEl":0.51,"endUTC":1751418110,"mag":-2,"duration":490,"startVisibility":1751417620},{"startAz":283.87,"startAzCompass":"W","startEl":0.01,"startUTC":1751423290,"maxAz":6.74,"maxAzCompass":"N","maxEl":46.58,"maxUTC":1751423615,"endAz":87.87,"endAzCompass":"E","endEl":0.53,"endUTC":1751423930,"mag":-1.7,"duration":640,"startVisibility":1751423290},{"startAz":252.47,"startAzCompass":"WSW","startEl":29.12,"startUTC":1751500940,"maxAz":347.86,"maxAzCompass":"N","maxEl":74.35,"maxUTC":1751501265,"endAz":69.09,"endAzCompass":"ENE","endEl":0.36,"endUTC":1751501585,"mag":-2.3,"duration":415,"startVisibility":1751501170},{"startAz":279.27,"startAzCompass":"W","startEl":0.06,"startUTC":1751506760,"maxAz":3.03,"maxAzCompass":"N","maxEl":44.39,"maxUTC":1751507085,"endAz":81.97,"endAzCompass":"E","endEl":0.4,"endUTC":1751507400,"mag":-1.7,"duration":640,"startVisibility":1751506760},{"startAz":243.28,"startAzCompass":"WSW","startEl":64.65,"startUTC":1751584410,"maxAz":158.47,"maxAzCompass":"SSE","maxEl":81.24,"maxUTC":1751584735,"endAz":68.27,"endAzCompass":"ENE","endEl":0.5,"endUTC":1751585055,"mag":-2.4,"duration":345,"startVisibility":1751584710},{"startAz":273.69,"startAzCompass":"W","startEl":3.58,"startUTC":1751590230,"maxAz":355.66,"maxAzCompass":"N","maxEl":45.62,"maxUTC":1751590550,"endAz":76.97,"endAzCompass":"E","endEl":0.56,"endUTC":1751590865,"mag":-1.7,"duration":585,"startVisibility":1751590280},{"startAz":289.53,"startAzCompass":"WNW","startEl":0.01,"startUTC":1751596045,"maxAz":12.11,"maxAzCompass":"N","maxEl":61.83,"maxUTC":1751596370,"endAz":101.25,"endAzCompass":"E","endEl":0.49,"endUTC":1751596690,"mag":-2.1,"duration":645,"startVisibility":1751596045},{"startAz":266.96,"startAzCompass":"W","startEl":8.1,"startUTC":1751673695,"maxAz":348.68,"maxAzCompass":"N","maxEl":50.57,"maxUTC":1751674015,"endAz":73.23,"endAzCompass":"ENE","endEl":0.41,"endUTC":1751674335,"mag":-1.9,"duration":535,"startVisibility":1751673800},{"startAz":286.86,"startAzCompass":"WNW","startEl":0.06,"startUTC":1751679515,"maxAz":11.03,"maxAzCompass":"N","maxEl":51.17,"maxUTC":1751679840,"endAz":93.43,"endAzCompass":"E","endEl":0.58,"endUTC":1751680155,"mag":-1.9,"duration":640,"startVisibility":1751679515},{"startAz":259.28,"startAzCompass":"W","startEl":8.17,"startUTC":1751757160,"maxAz":340.34,"maxAzCompass":"NNW","maxEl":60.69,"maxUTC":1751757480,"endAz":70.44,"endAzCompass":"ENE","endEl":0.58,"endUTC":1751757800,"mag":-2.1,"duration":535,"startVisibility":1751757265},{"startAz":283.21,"startAzCompass":"W","startEl":0.27,"startUTC":1751762985,"maxAz":5.46,"maxAzCompass":"N","maxEl":45.85,"maxUTC":1751763305,"endAz":86.63,"endAzCompass":"E","endEl":0.52,"endUTC":1751763620,"mag":-1.7,"duration":635,"startVisibility":1751762985},{"startAz":291.75,"startAzCompass":"WNW","startEl":0.25,"startUTC":1751768795,"maxAz":195.58,"maxAzCompass":"SSW","maxEl":79.06,"maxUTC":1751769120,"endAz":117.49,"endAzCompass":"ESE","endEl":0.58,"endUTC":1751769435,"mag":-2.3,"duration":640,"startVisibility":1751768795}]}</nextIssPasses>
+    <nextFlybyStart>1750643005</nextFlybyStart>
+    <nextFlybyEnd>1750643555</nextFlybyEnd>
+  </dataelements>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
     <subprocess>https://cpee.org/flow/start/url/</subprocess>
@@ -12,6 +16,7 @@
     <user>https-post://cpee.org/services/timeout-user.php</user>
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
     <nextisspasses>https://api.n2yo.com/rest/v1/satellite/visualpasses/25544/48.262839/11.666853/0/14/300/&amp;apiKey=DAS8T3-4QLELW-CG9L63-5I0H</nextisspasses>
+    <mobilePage>https://lehre.bpm.in.tum.de/~ge25fel/iss/control/mobile_control.html</mobilePage>
   </endpoints>
   <attributes>
     <guarded>none</guarded>
@@ -158,6 +163,11 @@
       </call>
       <stop id="a11"/>
       <loop mode="pre_test" condition="">
+        <_probability>
+          <_probability_min>1</_probability_min>
+          <_probability_max>1</_probability_max>
+          <_probability_avg>1</_probability_avg>
+        </_probability>
         <call id="a13" endpoint="nextisspasses">
           <parameters>
             <label>API Call Next ISS Passes</label>
@@ -166,7 +176,9 @@
           </parameters>
           <code>
             <prepare/>
-            <finalize output="result">data.nextIssPasses = resultdata.nextFlybyStart = (result['info']['passescount'] &gt; 0) ? result['passes'][0]['startUTC'] : nil</finalize>
+            <finalize output="result">data.nextIssPasses = result
+data.nextFlybyStart = (result['info']['passescount'] &gt; 0) ? result['passes'][0]['startUTC'] : null;
+data.nextFlybyEnd = (result['info']['passescount'] &gt; 0) ? result['passes'][0]['endUTC'] : null;</finalize>
             <update output="result"/>
             <rescue output="result"/>
           </code>
@@ -203,12 +215,70 @@
           </documentation>
         </call>
         <stop id="a14"/>
-        <_probability>
-          <_probability_min/>
-          <_probability_max/>
-          <_probability_avg/>
-        </_probability>
       </loop>
+      <stop id="a15"/>
+      <loop mode="pre_test" condition="true">
+        <_probability>
+          <_probability_min>1</_probability_min>
+          <_probability_max>1</_probability_max>
+          <_probability_avg>1</_probability_avg>
+        </_probability>
+        <call id="a6" endpoint="frames_display">
+          <parameters>
+            <label>Display Mobile Page</label>
+            <arguments>
+              <type>set</type>
+              <lx>0</lx>
+              <ly>1</ly>
+              <x_amount>1</x_amount>
+              <y_amount>1</y_amount>
+              <button/>
+              <style/>
+              <urls>https://lehre.bpm.in.tum.de/~ge25fel/iss/control/mobile_control.html</urls>
+              <default/>
+            </arguments>
+          </parameters>
+          <code>
+            <prepare/>
+            <finalize output="result"/>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+        <stop id="a16"/>
+      </loop>
+      <stop id="a10"/>
       <loop mode="post_test" condition="true">
         <_probability>
           <_probability_min/>
@@ -224,7 +294,7 @@
               <ly>1</ly>
               <x_amount>1</x_amount>
               <y_amount>1</y_amount>
-              <button>iss test</button>
+              <button/>
               <style/>
               <urls>https://lehre.bpm.in.tum.de/~ge25fel/emoji.html                     </urls>
               <default/>
