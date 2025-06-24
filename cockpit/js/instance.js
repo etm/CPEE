@@ -17,6 +17,7 @@ var save = {};
     save['endpoints'] = undefined;
     save['dataelements'] = undefined;
     save['attributes'] = undefined;
+    save['attributes_raw'] = {};
 var node_state = {};
 
 function global_init() {
@@ -513,6 +514,9 @@ function monitor_instance_values(type,vals) {// {{{
             }
           });
         } else if(type == "attributes") {
+          $(" > attributes > *",res).each((k,v)=>{
+            save['attributes_raw'][v.nodeName] = v.textContent;
+          });
           if ($(" > attributes > resources",res).length > 0) {
             save['resources'] = $(" > attributes > resources",res).text();
           } else {
