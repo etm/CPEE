@@ -84,7 +84,7 @@ module CPEE
           end
           on resource 'dslx' do
             run CPEE::Properties::GetComplex, 'dslx', 'text/xml', id, opts if get
-            run CPEE::Properties::PutDescription, id, opts, true if put 'description'
+            run CPEE::Properties::PutDescription, id, opts, true if put 'dslx'
           end
           on resource 'description' do
             run CPEE::Properties::GetComplex, 'description', 'text/xml', id, opts if get
@@ -785,7 +785,8 @@ module CPEE
             '',
             'none',
             '',
-            'none'
+            'none',
+            CPEE::Persistence::extract_item(id,opts,'executionhandler'),
             id,
             opts
           )
