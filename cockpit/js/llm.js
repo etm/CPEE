@@ -47,7 +47,7 @@ function call_llm_service(status_id,prompt_id,llm_id) {
       last_model_before_generation = save['dslx'];
       console.log(data);
       last_generated_model = data.output_cpee;
-      set_cpee_model(data.output_cpee);
+      set_cpee_model(data.output_cpee,["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee]);
       set_success(status_id,data.status);
     },
     error:  function(xhr, status, data) {
@@ -99,13 +99,23 @@ function call_llm_text_service(status_id,prompt_id,llm_id,action) {
   });
 }
 
-function set_cpee_model(cpee_xml) {
+function set_cpee_model(cpee_xml,expositions=[]) {
+
+  const form_data = new FormData();
+  const blob = new Blob([cpee_xml], { type: "text/xml" });
+  form_data.append("dslx", blob);
+
+  for (const x of expositions) {
+    const blobi = new Blob([x], { type: "text/plain" });
+    form_data.append("exposition", blobi);
+  }
+
   $.ajax({
     type: "PUT",
     url: url + "/properties/dslx/",
-    contentType: 'text/xml',
-    headers: { 'Content-ID': 'dslx' },
-    data: cpee_xml
+    contentType: false,
+    processData: false,
+    data: form_data
   });
 }
 
