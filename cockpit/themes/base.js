@@ -1249,7 +1249,7 @@ function WFAdaptorManifestationBase(adaptor) {
         var regassi =      /data\.([a-zA-Z_]+)\s*(=[^=]|\+\=|\-\=|\*\=|\/\=|<<|>>)/g; // we do not have to check for &gt;/&lt; version of stuff as only conditions are in attributes, and conditions can not contain assignments
         var reg_not_assi = /data\.([a-zA-Z_]+)\s*/g;
 
-        $('call, loop[condition], alternative[condition]',node).each(function(i,n) {
+        $('call, manipulate, loop[condition], alternative[condition]',node).each(function(i,n) {
           let item = '';
           if (n.hasAttribute('condition')) {
             item = n.getAttribute('condition');
@@ -1257,12 +1257,17 @@ function WFAdaptorManifestationBase(adaptor) {
             $('call > code > prepare',n).each(function(j,m){
               item += m.textContent + '\n';
             });
+            if (n.nodeName == 'manipulate') { // css selector can not directly access manipulate
+              item += n.textContent + '\n';
+            }
             $('call > parameters > arguments > *, call > code > finalize, call > code > update, call > code > rescue',n).each(function(j,m){
+              console.log('aaa');
               let x = m.textContent;
               if (m.parentNode.nodeName == 'arguments' && x.charAt(0) != '!' ) { return }
               item += x + '\n';
             });
           }
+          console.log(item);
           if (item == '') { return; }
 
           let indices = [];
