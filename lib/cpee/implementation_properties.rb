@@ -776,7 +776,7 @@ module CPEE
         [dslx, dsl, de, ep]
       end #}}}
 
-      def self::set(id,opts,xml,copy=false)
+      def self::set(id,opts,xml,exposition,copy=false)
         dslx, dsl, de, ep = if copy
           PutDescription::transform(
             xml,
@@ -804,16 +804,25 @@ module CPEE
             opts
           )
         end
+        attrs = CPEE::Persistence::extract_list(id,opts,'attributes').to_h
         CPEE::Persistence::set_item(id,opts,'description',
           :description => xml,
           :dslx => dslx,
           :dsl => dsl,
           :dataelements => CPEE::Persistence::extract_list(id,opts,'dataelements').to_h,
           :endpoints => CPEE::Persistence::extract_list(id,opts,'endpoints').to_h,
-          :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+          :attributes => attrs
         )
         PatchItems::set_hash('dataelements',id,opts,de) unless de.empty?
         PatchItems::set_hash('endpoints',id,opts,ep) unless ep.empty?
+        exposition_transaction = Digest::SHA1.hexdigest(dslx)
+        exposition.each do |exp|
+          content = {
+            :transaction => exposition_transaction,
+            :attributes => attrs
+          }
+          CPEE::Message::send(:event,'description/exposition',File.join(opts[:url],'/'),id,attrs['uuid'],attrs['info'],content,opts[:redis])
+        end
       end
 
       def response
