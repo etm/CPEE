@@ -1,0 +1,252 @@
+<!--
+  This file is part of CPEE.
+
+  CPEE is free software: you can redistribute it and/or modify it under the terms
+  of the GNU General Public License as published by the Free Software Foundation,
+  either version 3 of the License, or (at your option) any later version.
+
+  CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along with
+  CPEE (file COPYING in the main directory).  If not, see
+  <http://www.gnu.org/licenses/>.
+-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>CPEE Cockpit</title>
+
+    <!-- libs, do not modify. When local than load local libs. -->
+    <script type="text/javascript" src="/js_libs/jquery.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.browser.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.svg.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.svgdom.min.js"></script>
+    <script type="text/javascript" src="/js_libs/vkbeautify.js"></script>
+    <script type="text/javascript" src="/js_libs/util.js"></script>
+    <script type="text/javascript" src="/js_libs/printf.js"></script>
+    <script type="text/javascript" src="/js_libs/strftime.min.js"></script>
+    <script type="text/javascript" src="/js_libs/parsequery.js"></script>
+    <script type="text/javascript" src="/js_libs/underscore.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.caret.min.js"></script>
+    <script type="text/javascript" src="/js_libs/jquery.cookie.js"></script>
+
+    <script type="text/javascript" src="/js_libs/relaxngui.js"></script>
+
+    <script type="text/javascript" src="/js_libs/uidash.js"></script>
+    <script type="text/javascript" src="/js_libs/custommenu.js"></script>
+
+    <link   rel="stylesheet"      href="/js_libs/custommenu.css" type="text/css"/>
+    <link   rel="stylesheet"      href="/js_libs/uidash.css" type="text/css"/>
+
+    <link   rel="stylesheet"      href="/js_libs/relaxngui.css" type="text/css"/>
+
+    <!-- modelling ui -->
+    <script type="text/javascript" src="js/wfadaptor.js"></script>
+    <link rel="stylesheet" href="css/wfadaptor.css" type="text/css" data-include-export="true"/>
+
+    <!-- custom stuff, play arround  -->
+    <script type="text/javascript" src="js/ui.js"></script>
+    <script type="text/javascript" src="js/instance.js"></script>
+    <script type="text/javascript" src="js/details.js"></script>
+    <script type="text/javascript" src="js/parameters.js"></script>
+    <script type="text/javascript" src="js/resources.js"></script>
+    <script type="text/javascript" src="js/modifiers.js"></script>
+    <script type="text/javascript" src="themes/base.js"></script>
+
+    <script type="text/javascript" src="js/llm.js"></script>
+    <link   rel="stylesheet"      href="css/llm.css" type="text/css"/>
+
+    <link rel="stylesheet" href="css/ui.css" type="text/css"/>
+    <link rel="stylesheet" href="css/resources-label.css" type="text/css"/>
+    <link rel="stylesheet" href="css/resources-svg.css" type="text/css" data-include-export="true"/>
+    <link rel="stylesheet" href="/global_ui/uicpee.css" type="text/css"/>
+    <style>
+      /* has to be fucking inline, because firefox and chrome disagree how to handle filter urls */
+      /* shit balls, no elegance is left in this world */
+    </style>
+  </head>
+  <body data-base-port="8298" data-res-port="9303" data-theme-base="themes" is="x-ui-">
+     <div id='disclaimer' class='hidden'> <!--{{{-->
+       <h1>Disclaimer</h1>
+
+       <p>
+         We use reasonable care in creating and presenting the functionality
+         found in this demonstrator. It is provided purely for demonstration purposes
+         and you should seek further guidance and make independent enquiries
+         before relying upon it.
+       </p>
+
+       <p>
+         All functionality included in this demonstrator is subject to change
+         without notice. We make no representation or warranty whatsoever
+         regarding the completeness, accuracy, adequacy, suitability or
+         operation of this demonstrator, or of the results it produces.
+       </p>
+
+       <p>
+         We assume no responsibility for process instances created with this
+         demonstrator and disclaim all liability arising from negligence or
+         otherwise in respect of such process instances. We will not be liable
+         for any damages (including, without limitation, damages for any
+         consequential loss or loss of business opportunities or projects, or
+         loss of profits) howsoever arising from use of or inability to use
+         this demonstrator, or from any action or omission taken as a result of
+         using this demonstrator.
+       </p>
+
+       <p>
+         This demonstrator is hosted in Austria. All liability is excluded to the extent
+         permitted by law including any implied terms. Any interpretation of its
+         content, claims or disputes (of whatever nature and not limited to contractual
+         issues) shall be subject to the exclusive jurisdiction of the Austrian Courts
+         under Austrian law.
+       </p>
+
+       <p>
+         All actions performed while using this demonstrator will be logged, including
+         the IP address of the user.
+       </p>
+
+       <p>
+         <input id='iagree' type='checkbox'/><label for='iagree'><strong>OK, I Agree with this terms. I will be a happy person, and do no evil.</strong></label>
+       </p>
+       <p>
+        <button id='icontinue' disabled='disabled'>Continue</button>
+       </p>
+    </div> <!--}}}-->
+
+    <div class='hidden' id='relaxngworker'></div>
+
+    <div class='menu' id='templates'></div>
+    <div class='menu' id='modeltypes'></div>
+
+    <template id="label">
+      <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" style="position: absolute; top: 0; left: 0;" class="displaylabel">
+        <g transform="translate(1 %%1) rotate(-%%2)">
+          <rect class="displaylabel" width="200" height="14" x="8" y="0" rx="5" ry="5"/>
+          <path class="displaylabel" d="M10,13 0,13 8,8"/>
+          <path class="displaylabelinner" d="M10,11.5 8.5,11.5 8.5,9.5 10,9.5"/>
+          <text class="label" x="18" y="10">aaaa</text>
+        </g>
+      </svg>
+    </template>
+
+    <ui-tabbed id="instance">
+      <ui-tabbar>
+        <ui-tab class="switch"                                                ></ui-tab>
+        <ui-tab class=""                data-tab="new"       id="tabnew"      >New</ui-tab>
+        <ui-tab class="inactive hidden" data-tab="instance"  id="tabinstance" >Instance</ui-tab>
+        <ui-behind                                                            ><a style='display:none' target='_blank' id='current-instance'></a><a style='display:none' target='_blank' id='current-instance-properties'>P</a><a style='display:none' target='_blank' id='current-instance-subscriptions'>S</a><a style='display:none' target='_blank' id='current-instance-callbacks'>C</a></ui-behind>
+        <ui-last                                                              ><a class="logo" href=".."></a></ui-last>
+      </ui-tabbar>
+      <ui-content>
+        <ui-area data-belongs-to-tab="new" id="areanew"> <!--{{{-->
+          <table class='x-ui-layout'>
+          <tr>
+            <td>Resources:</td>
+            <td><input name="res-url" type="text" value=""/></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Engine:</td>
+            <td><input name="base-url" type="text" value=""/></td>
+            <td><button name="base">create new instance</button></td>
+          </tr>
+          <tr>
+            <td>Instance:</td>
+            <td><input name="instance-url" type="text" value=""/></td>
+            <td><button name="instance">monitor instance</button></td>
+          </tr>
+          </table>
+        </ui-area> <!--}}}-->
+        <ui-area data-belongs-to-tab="instance" id="areainstance" class="inactive"> <!--{{{-->
+          <div>
+            <div class='section'>
+              <div>
+                <form id='fuckchrome'>
+                  <input type='file' name='testsetfile' id='testsetfile'/>
+                </form>
+                <button title='a template includes various settings, subscriptions or a (partial) model' name="loadtestset">load template</button><button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load testset</button>
+              </div>
+              <div>
+                <input type='file' name='modelfile' id='modelfile'/>
+                <button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">load model</button>
+              </div>
+            </div><div class='section'>
+              <a id="savetestsetfile" href="" download=""></a>
+              <a id="savesvgfile" href="" download=""></a>
+              <button title='a testset includes various settings, subscriptions and a model' name="savetestsetfile">save testset</button>
+              <button title='a testset includes various settings, subscriptions and a model' name="savesvgfile">save svg graph</button>
+            </div><div class='section' id='modifiers'>
+              <template id="item">
+                <div>
+                  <div class='title'><strong></strong></div>
+                  <div class='select'><select></select></div>
+                  <div class='additional'></div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </ui-area> <!--}}}-->
+      </ui-content>
+    </ui-tabbed>
+
+    <ui-resizehandle class="hidden">drag to resize</ui-resizehandle>
+
+    <ui-rest id="main" class="hidden">
+      <ui-tabbar>
+        <ui-before                                                 ></ui-before>
+        <ui-tab class=""         data-tab="details" id="tabdetails">Graph</ui-tab>
+        <ui-tab class="inactive" data-tab="log"     id="tablog"    >Log</ui-tab>
+        <ui-behind                                                 ><a style='display:none' target='_blank' id='current-index'>E</a><a style='display:none' target='_blank' id='current-track'>T</a><a style='display:none' target='_blank' id='current-graph'>G</a></ui-behind>
+      </ui-tabbar>
+      <ui-content>
+        <ui-area data-belongs-to-tab="details" id='graphcolumn' oncontextmenu='return false'>
+          <div id='prompt_container' class="stand_alone">
+            <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here... CTRL-ENTER or press '➤' to submit ..." placeholder="Please enter your modelling instructions here... CTRL-ENTER or press '➤' to submit ..."></div>
+          </div>
+          <div id='status'></div>
+          <div id='llm_params' class="multi">
+            <label id="llmlabel" for="llms">Choose your LLM:</label>
+            <select name="llms" id="llms">
+              <option value="gemini-2.0-flash" selected>gemini 2 Flash</option>
+              <option value="gemini-2.5-flash-preview-05-20">gemini 2.5 Flash</option>
+              <option value="gemini-2.5-pro-preview-05-06">gemini 2.5 Pro</option>
+              <option value="gpt-4">gpt 4</option>
+              <option value="gpt-4o">gpt 4o</option>
+              <option value="gpt-4o-mini">gpt 4o mini</option>
+            </select>
+            <a id="savetext" href="" download=""></a>
+            <button id='generate_text_button' class='llm_button'>Show as Text</button>
+            <button id='generate_itext_button' class='llm_button'>Save as Text</button>
+          </div>
+          <div><input id="loadtxt" accept=".txt" type="file"/></div>
+          <div id='prompt_submit_container' class="multi">
+            <button id='prompt_undo_button' class='llm_button'>undo</button>
+            <button id='prompt_attach_button' class='llm_button' >&#128206;</button>
+            <button id='prompt_submit_button' class='llm_button'>➤</button>
+          </div>
+        </ui-area>
+        <ui-resizehandle data-belongs-to-tab="details" data-label="drag to resize"></ui-resizehandle>
+        <ui-area data-belongs-to-tab="details" id="detailcolumn">
+          <div id="modelling">
+            <div id='graphgrid'>
+              <div class="resource-label" style="display: none"></div>
+              <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>
+            </div>
+          </div>
+        </ui-area>
+        <ui-area data-belongs-to-tab="log" id="arealog" class="inactive"> <!--{{{-->
+          <div>Persistent Log: <a style='display:none' target='_blank' id='current-log'></a> [<a style='display:none' target='_blank' id='shifted-log'>S</a>]</div>
+          <table id="dat_log" class="x-ui-layout"></table>
+        </ui-area> <!--}}}-->
+      </ui-content>
+    </ui-rest>
+
+  </body>
+</html>

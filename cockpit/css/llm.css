@@ -47,9 +47,12 @@
 #llm_params {
   flex: 0 0 auto;
   box-sizing: border-box;
-  padding: 0.2em 0em 0.2em 0.5em;
   outline: none;
   min-height: 2.66em;
+}
+
+#llmlabel {
+  width: 20%;
 }
 
 .single {
