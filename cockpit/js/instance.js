@@ -388,6 +388,8 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       $("#current-graph").attr('href','graph.html?monitor=' + url);
       $("#current-track").show();
       $("#current-track").attr('href','track.html?monitor=' + url);
+      $("#current-index").show();
+      $("#current-index").attr('href','index.html?monitor=' + url);
       var q = $.parseQuerySimple();
       history.replaceState({}, '', '?' + (graph_position ? "position=" + graph_position + "&" : "") + (graph_highlight ? "highlight=" + graph_highlight + "&" : "") + (graph_theme ? "theme=" + graph_theme + "&" : "") + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
