@@ -776,7 +776,7 @@ module CPEE
         [dslx, dsl, de, ep]
       end #}}}
 
-      def self::set(id,opts,xml,exposition,copy=false)
+      def self::set(id,opts,xml,exposition=[],copy=false)
         dslx, dsl, de, ep = if copy
           PutDescription::transform(
             xml,
@@ -805,9 +805,11 @@ module CPEE
           )
         end
         attrs = CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+        change_uuid = Digest::SHA1.hexdigest(dslx)
         CPEE::Persistence::set_item(id,opts,'description',
           :description => xml,
           :dslx => dslx,
+          :change_uuid => change_uuid,
           :dsl => dsl,
           :dataelements => CPEE::Persistence::extract_list(id,opts,'dataelements').to_h,
           :endpoints => CPEE::Persistence::extract_list(id,opts,'endpoints').to_h,
@@ -815,10 +817,10 @@ module CPEE
         )
         PatchItems::set_hash('dataelements',id,opts,de) unless de.empty?
         PatchItems::set_hash('endpoints',id,opts,ep) unless ep.empty?
-        exposition_transaction = Digest::SHA1.hexdigest(dslx)
         exposition.each do |exp|
           content = {
-            :transaction => exposition_transaction,
+            :change_uuid => change_uuid,
+            :exposition => exp.value.read,
             :attributes => attrs
           }
           CPEE::Message::send(:event,'description/exposition',File.join(opts[:url],'/'),id,attrs['uuid'],attrs['info'],content,opts[:redis])
@@ -834,7 +836,7 @@ module CPEE
         else
           begin
             # force-encoding because johannes managed to sneak in ascii special characters. why the browser is not sanitizing it is beyond me.
-            PutDescription::set(id,opts,@p[0].value.read.force_encoding('UTF-8'),copy)
+            PutDescription::set(id,opts,@p[0].value.read.force_encoding('UTF-8'),@p[1..-1],copy)
           rescue => e
             puts e.message
             puts e.backtrace
