@@ -65,7 +65,9 @@ ui-tabbed ui-tabbar ui-behind button {
 #current-graph[href]:before {
   content: "|";
 }
-
+#current-index[href]:after {
+  content: "|";
+}
 #parameters ui-content { height: 8.5em; min-height: 2.7em; }
 
 #areadataelements, #areaendpoints, #areaattributes {
