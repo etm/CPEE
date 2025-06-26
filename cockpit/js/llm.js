@@ -23,11 +23,9 @@ function call_llm_service(status_id,prompt_id,llm_id) {
   let input = $(`#${prompt_id}`);
   let text = input[0].innerText;
   let myllm = $(`#${llm_id}`).find(":selected").val();
-  console.log(myllm);
   if (myllm === undefined){
     myllm = "gemini-2.0-flash";
   }
-  console.log(myllm);
   const formData = new FormData();
   const blob1 = new Blob([save['dslx']], { type: "text/xml" });
   formData.append("rpst_xml", blob1);
@@ -45,7 +43,6 @@ function call_llm_service(status_id,prompt_id,llm_id) {
     method: 'POST',
     success: function(data){
       last_model_before_generation = save['dslx'];
-      console.log(data);
       last_generated_model = data.output_cpee;
       set_cpee_model(data.output_cpee,["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee]);
       set_success(status_id,data.status);
@@ -68,7 +65,6 @@ function call_llm_text_service(status_id,prompt_id,llm_id,action) {
   const first = new Blob([save['dslx']], { type: "text/xml" });
   formData.append("rpst_xml", first);
   const second = myllm;
-  console.log(second);
   formData.append("llm", second);
 
   jQuery.ajax({
@@ -79,7 +75,6 @@ function call_llm_text_service(status_id,prompt_id,llm_id,action) {
     processData: false,
     method: 'POST',
     success: function(data){
-      console.log(data["output_text"]);
       if (action=="show"){
         add_prompt(prompt_id,data["output_text"]);
       } else if (action=="file") {
@@ -139,7 +134,7 @@ function load_last_model_before_generation() {
 
 function load_file_content(files) {
   if (typeof window.FileReader !== 'function') {
-    alert('FileReader not yet supportet');
+    console.log('FileReader not yet supported');
     return;
   }
   var reader = new FileReader();
@@ -165,12 +160,10 @@ $(document).ready(function() {
   });
   $(document).on('click','#generate_itext_button',function(e){
     clean_llm_ui('status');
-    //console.log(data);
     call_llm_text_service('status','prompt','llms','file');
   });
   $(document).on('click','#generate_text_button',function(e){
     clean_llm_ui('status');
-    //console.log(data);
     call_llm_text_service('status','prompt','llms','show');
   });
   $(document).on('click','#prompt_undo_button',function(e){

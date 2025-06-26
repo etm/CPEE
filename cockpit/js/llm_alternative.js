@@ -57,7 +57,7 @@ function call_llm_service(status_id,prompt_id) {
 
 function load_file_content(files) {
   if (typeof window.FileReader !== 'function') {
-    alert('FileReader not yet supportet');
+    console.log('FileReader not yet supported');
     return;
   }
   var reader = new FileReader();
@@ -82,23 +82,6 @@ $(document).ready(function() {
     clean_llm_ui('status');
     call_llm_service('status','prompt');
   });
-  /*$('#prompt').on('input',function(e) {
-    console.log("beforeinput");
-    console.log(e);
-    if(e.originalEvent.inputType === "insertFromDrop") {
-      e.preventDefault();
-      e.stopPropagation();
-      load_file_content(e.originalEvent.dataTransfer.files);
-    }
-  });*/
-  /*$('#prompt').on('dragover',function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-  });
-  $('#prompt').on('dragenter',function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-  });*/
   $('#prompt').on('drop',function(e) {
     e.preventDefault();
     e.stopPropagation();
