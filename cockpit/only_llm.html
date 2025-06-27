@@ -196,8 +196,6 @@
       </ui-content>
     </ui-tabbed>
 
-    <ui-resizehandle class="hidden">drag to resize</ui-resizehandle>
-
     <ui-rest id="main" class="hidden">
       <ui-tabbar>
         <ui-before                                                 ></ui-before>
@@ -212,7 +210,7 @@
           </div>
           <div id='status'></div>
           <div id='llm_params' class="multi">
-            <label id="llmlabel" for="llms">Choose your LLM:</label>
+            <label id="llmlabel" for="llms">Choose LLM:</label>
             <select name="llms" id="llms">
               <option value="gemini-2.0-flash" selected>gemini 2 Flash</option>
               <option value="gemini-2.5-flash-preview-05-20">gemini 2.5 Flash</option>
@@ -222,14 +220,14 @@
               <option value="gpt-4o-mini">gpt 4o mini</option>
             </select>
             <a id="savetext" href="" download=""></a>
-            <button id='generate_text_button' class='llm_button'>Show as Text</button>
-            <button id='generate_itext_button' class='llm_button'>Save as Text</button>
+            <button id='generate_text_button' class='llm_button' title='show text generated from model in text area'>Show as Text</button>
+            <button id='generate_itext_button' class='llm_button' title='save text generated from model to file'>Save as Text</button>
           </div>
           <div><input id="loadtxt" accept=".txt" type="file"/></div>
           <div id='prompt_submit_container' class="multi">
-            <button id='prompt_undo_button' class='llm_button'>undo</button>
-            <button id='prompt_attach_button' class='llm_button' >&#128206;</button>
-            <button id='prompt_submit_button' class='llm_button'>➤</button>
+            <button id='prompt_undo_button' class='llm_button' title='undo (reset to state before your last submit)'>&#10554;</button>
+            <button id='prompt_attach_button' class='llm_button' title='load text from (txt) file'>&#128206;</button>
+            <button id='prompt_submit_button' class='llm_button' title='submit'>&#x27A4;</button>
           </div>
         </ui-area>
         <ui-resizehandle data-belongs-to-tab="details" data-label="drag to resize"></ui-resizehandle>
