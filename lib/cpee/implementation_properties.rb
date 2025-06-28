@@ -148,7 +148,9 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         if opts[:statemachine].readonly? id
-          @status = 400
+          @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           doc = XML::Smart::string(@p[0].value.read)
           doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
@@ -225,7 +227,9 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         if opts[:statemachine].readonly? id
-          @status = 400
+          @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           doc = XML::Smart::string(@p[0].value.read)
           doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
@@ -311,7 +315,9 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         if opts[:statemachine].readonly? id
-          @status = 422 # semantic error
+          @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           PutStatus::set id, opts, @p[0].value.read
         end
@@ -361,6 +367,8 @@ module CPEE
         opts = @a[1]
         if opts[:statemachine].readonly? id
           @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           PutExecutionHandler::set(id,opts,@p[0].value)
         end
@@ -397,6 +405,8 @@ module CPEE
         opts = @a[2]
         if opts[:statemachine].readonly? id
           @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           begin
             PatchItems::set(item,id,opts,@p[0].value.read)
@@ -426,6 +436,8 @@ module CPEE
         opts = @a[2]
         if opts[:statemachine].readonly? id
           @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           begin
             PutItems::set(item,id,opts,@p[0].value.read)
@@ -443,6 +455,8 @@ module CPEE
         opts = @a[2]
         if opts[:statemachine].readonly? id
           @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           begin
             doc = XML::Smart::string(@p[0].value.read)
@@ -496,6 +510,8 @@ module CPEE
         val = { @r.last => nil }
         if opts[:statemachine].readonly? id
           @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           if CPEE::Persistence::extract_item(id,opts,@r.join('/'))
             CPEE::Persistence::set_list(id,opts,item,val,val.keys)
@@ -555,6 +571,8 @@ module CPEE
         opts = @a[1]
         if opts[:statemachine].readonly? id
           @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           begin
             PatchPositions::set(id,opts,@p[0].value.read)
@@ -592,6 +610,8 @@ module CPEE
         opts = @a[1]
         if opts[:statemachine].readonly? id
           @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           begin
             PutPositions::set(id,opts,@p[0].value.read)
@@ -608,6 +628,8 @@ module CPEE
         opts = @a[1]
         if opts[:statemachine].readonly? id
           @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           begin
             doc = XML::Smart::string(@p[0].value.read)
@@ -832,7 +854,9 @@ module CPEE
         opts = @a[1]
         copy = @a[2]
         if opts[:statemachine].readonly? id
-          @status = 422 # semantic error
+          @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           begin
             # force-encoding because johannes managed to sneak in ascii special characters. why the browser is not sanitizing it is beyond me.
@@ -880,7 +904,9 @@ module CPEE
         id = @a[0]
         opts = @a[1]
         if opts[:statemachine].readonly? id
-          @status = 422 # semantic error
+          @status = 423
+        elsif opts[:statemachine].final? id
+          @status = 410
         else
           PutTransformation::set(id,opts,@p[0].value.read)
         end

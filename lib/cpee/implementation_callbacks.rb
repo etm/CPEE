@@ -79,30 +79,34 @@ module CPEE
         opts = @a[1]
         callback = @r[-1]
 
-        if CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'callback'
-          CPEE::Message::send(
-            :'callback-end',
-            callback,
-            opts[:url],
-            id,
-            {},
-            {},
-            {},
-            opts[:redis]
-          )
-        elsif CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'vote'
-          CPEE::Message::send(
-            :'vote-response',
-            callback,
-            opts[:url],
-            id,
-            {},
-            {},
-            'true',
-            opts[:redis]
-          )
+        if opts[:statemachine].final? id
+          @status = 410
         else
-          @status = 404
+          if CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'callback'
+            CPEE::Message::send(
+              :'callback-end',
+              callback,
+              opts[:url],
+              id,
+              {},
+              {},
+              {},
+              opts[:redis]
+            )
+          elsif CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'vote'
+            CPEE::Message::send(
+              :'vote-response',
+              callback,
+              opts[:url],
+              id,
+              {},
+              {},
+              'true',
+              opts[:redis]
+            )
+          else
+            @status = 404
+          end
         end
         nil
       end
@@ -121,54 +125,58 @@ module CPEE
         opts = @a[1]
         callback = @r[-1]
 
-        if CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'callback'
-          ret = {}
-          ret['values'] = @p.map{ |e|
-            # bei complex wenn kleiner 500KiB statt e.value.path e.value.read
-            # bei complex wenn groesser 500KiB das file ueber nginx in einem verzeichnis verfuegbar machen, mimetype auf cpee/externallink
-            #   aendert, link auf den server in den content. Der eval macht das dann direkt.
-            # Alt: [e.name, e.class == Riddl::Parameter::Simple ? [:simple,e.value] : [:complex,e.mimetype,e.value.path] ]
-            [
-              e.name,
-              if e.class == Riddl::Parameter::Simple
-                [:simple,e.value]
-              elsif e.class == Riddl::Parameter::Complex && e.value.size <= 512000
-                [:complex,e.mimetype,cleanup_encoding(e.value.read)]
-              else
-                # [:complex,'cpee-external-' + e.mimetype,cleanup_encoding(e.value.read)]
-                [:complex, e.mimetype,cleanup_encoding(e.value.read)]
-              end
-            ]
-          }
-          ret['headers'] =  @h
+        if opts[:statemachine].final? id
+          @status = 410
+        else
+          if CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'callback'
+            ret = {}
+            ret['values'] = @p.map{ |e|
+              # bei complex wenn kleiner 500KiB statt e.value.path e.value.read
+              # bei complex wenn groesser 500KiB das file ueber nginx in einem verzeichnis verfuegbar machen, mimetype auf cpee/externallink
+              #   aendert, link auf den server in den content. Der eval macht das dann direkt.
+              # Alt: [e.name, e.class == Riddl::Parameter::Simple ? [:simple,e.value] : [:complex,e.mimetype,e.value.path] ]
+              [
+                e.name,
+                if e.class == Riddl::Parameter::Simple
+                  [:simple,e.value]
+                elsif e.class == Riddl::Parameter::Complex && e.value.size <= 512000
+                  [:complex,e.mimetype,cleanup_encoding(e.value.read)]
+                else
+                  # [:complex,'cpee-external-' + e.mimetype,cleanup_encoding(e.value.read)]
+                  [:complex, e.mimetype,cleanup_encoding(e.value.read)]
+                end
+              ]
+            }
+            ret['headers'] =  @h
 
-          CPEE::Message::send(
-            :'callback-response',
-            callback,
-            opts[:url],
-            id,
-            {},
-            {},
-            ret,
-            opts[:redis]
-          )
-        elsif CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'vote'
-          if @p.length == 1 && @p[0].name == 'continue' && @p[0].class == Riddl::Parameter::Simple
             CPEE::Message::send(
-              :'vote-response',
+              :'callback-response',
               callback,
               opts[:url],
               id,
               {},
               {},
-              @p[0].value,
+              ret,
               opts[:redis]
             )
+          elsif CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'vote'
+            if @p.length == 1 && @p[0].name == 'continue' && @p[0].class == Riddl::Parameter::Simple
+              CPEE::Message::send(
+                :'vote-response',
+                callback,
+                opts[:url],
+                id,
+                {},
+                {},
+                @p[0].value,
+                opts[:redis]
+              )
+            else
+              @status = 400
+            end
           else
-            @status = 400
+            @status = 503
           end
-        else
-          @status = 503
         end
         nil
       end
