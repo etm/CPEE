@@ -45,7 +45,7 @@ Daemonite.new do |opts|
       on.pmessage do |pat, what, message|
         index = message.index(' ')
         mess = message[index+1..-1]
-        instance = message[0...index]
+        instance, uuid = message[0...index].split(',')
         type, worker, event = what.split(':',3)
         topic = ::File::dirname(event)
         name = ::File::basename(event)
@@ -60,6 +60,8 @@ Daemonite.new do |opts|
               # sadly typhoes does not support ractors
               Thread.new do
                 Riddl::Client.new(url).post [
+                  Riddl::Header.new("CPEE-INSTANCE",instance),
+                  Riddl::Header.new("CPEE-INSTANCE-UUID",uuid),
                   Riddl::Parameter::Simple::new('type',type),
                   Riddl::Parameter::Simple::new('topic',topic),
                   Riddl::Parameter::Simple::new('event',name),
