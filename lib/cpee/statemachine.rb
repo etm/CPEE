@@ -14,6 +14,12 @@
 
 module CPEE
 
+  class DummyStateMachine
+    def setable?(id,nval); true end
+    def readonly?(id); true end
+    def final?(id); true end
+  end
+
   class StateMachine
     def initialize(file,&state)
       @states = XML::Smart.open_unprotected(file)
