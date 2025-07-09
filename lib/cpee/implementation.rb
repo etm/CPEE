@@ -29,29 +29,29 @@ module CPEE
 
   SERVER = File.expand_path(File.join(__dir__,'..','cpee.xml'))
   PROPERTIES_PATHS_FULL = %w{
-    /p:properties/p:executionhandler
-    /p:properties/p:positions/p:*
-    /p:properties/p:positions/p:*/@*
-    /p:properties/p:dataelements/p:*
-    /p:properties/p:endpoints/p:*
-    /p:properties/p:attributes/p:*
-    /p:properties/p:transformation/p:*
-    /p:properties/p:transformation/p:*/@*
-    /p:properties/p:description
-    /p:properties/p:dslx
-    /p:properties/p:dsl
-    /p:properties/p:status/p:id
-    /p:properties/p:status/p:message
-    /p:properties/p:state/@changed
-    /p:properties/p:state
+    /p:*/p:executionhandler
+    /p:*/p:positions/p:*
+    /p:*/p:positions/p:*/@*
+    /p:*/p:attributes/p:*
+    /p:*/p:dataelements/p:*
+    /p:*/p:endpoints/p:*
+    /p:*/p:transformation/p:*
+    /p:*/p:transformation/p:*/@*
+    /p:*/p:description
+    /p:*/p:dslx
+    /p:*/p:dsl
+    /p:*/p:status/p:id
+    /p:*/p:status/p:message
+    /p:*/p:state/@changed
+    /p:*/p:state
   }
   PROPERTIES_PATHS_INDEX_UNORDERED = %w{
-    /p:properties/p:positions/p:*
+    /p:*/p:positions/p:*
   }
   PROPERTIES_PATHS_INDEX_ORDERED = %w{
-    /p:properties/p:attributes/p:*
-    /p:properties/p:dataelements/p:*
-    /p:properties/p:endpoints/p:*
+    /p:*/p:dataelements/p:*
+    /p:*/p:endpoints/p:*
+    /p:*/p:attributes/p:*
   }
   def self::implementation(opts)
     opts[:see_instances]              ||= opts[:see_instances].nil? ? false : opts[:see_instances]
@@ -318,7 +318,9 @@ module CPEE
       doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
       doc.register_namespace 'sub', 'http://riddl.org/ns/common-patterns/notifications-producer/2.0'
 
-      id, uuid = NewInstance::create(opts,redis,doc.find('string(/*/p:attributes/p:info)'))
+      name = doc.find('string(/*/p:attributes/p:info)')
+
+      id, uuid = NewInstance::create(opts,redis,name,doc)
 
       subscriptions = []
       (doc.find('/*/sub:subscriptions/sub:subscription') rescue []).each do |s|
@@ -343,7 +345,13 @@ module CPEE
         CPEE::Persistence::set_handler(id,opts,*sub)
       end
 
-      CPEE::Properties::Put::change_first(id,opts,doc)
+      content = {
+        :state => 'ready',
+        :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+      }
+      CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,uuid,name,content,redis)
+
+      CPEE::Properties::Put::change_first(id,opts,doc) # change again, for proper event sending
       CPEE::Properties::PutState::run(id,opts,'running') if doc.find('string(/*/p:state)') == 'running'
 
       @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
@@ -357,15 +365,15 @@ module CPEE
   class NewInstance < Riddl::Implementation #{{{
     def self::path(e)
       ret = []
-      until e.qname.name == 'properties'
+      until e.parent.is_a? XML::Smart::Dom
         ret << (e.class == XML::Smart::Dom::Attribute ? '@' : '') + e.qname.name
         e = e.parent
       end
       File.join(*ret.reverse)
     end
 
-    def self::create(opts,redis,name)
-      doc = XML::Smart::open_unprotected(opts[:properties_init])
+    def self::create(opts,redis,name,doc=nil)
+      doc = XML::Smart::open_unprotected(opts[:properties_init]) if doc.nil?
       doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
       id       = CPEE::Persistence::new_object(opts)
       uuid     = SecureRandom.uuid
@@ -373,11 +381,12 @@ module CPEE
       redis.multi do |multi|
         multi.zadd('instances',id,id)
         doc.root.find(PROPERTIES_PATHS_FULL.join(' | ')).each do |e|
+          p = NewInstance::path(e)
           if e.class == XML::Smart::Dom::Element && e.element_only?
             val = e.find('*').map { |f| f.dump }.join
-            multi.set(File.join(instance, NewInstance::path(e)), val)
+            multi.set(File.join(instance, p), val)
           else
-            multi.set(File.join(instance, NewInstance::path(e)), e.text)
+            multi.set(File.join(instance, p), e.text)
           end
         end
         doc.root.find(PROPERTIES_PATHS_INDEX_UNORDERED.join(' | ')).each do |e|
@@ -408,13 +417,8 @@ module CPEE
         multi.zadd(File.join(instance, 'attributes'), -1, 'info')
         multi.set(File.join(instance, 'state', '@changed'), Time.now.xmlschema(3))
       end
-      content = {
-        :state => 'ready',
-        :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
-      }
-      CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,uuid,name,content,redis)
 
-      return id, uuid
+      [id, uuid]
     end
 
     def response
@@ -423,6 +427,11 @@ module CPEE
       name  = @p[0].value
 
       id, uuid = NewInstance::create(opts,redis,name)
+      content = {
+        :state => 'ready',
+        :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+      }
+      CPEE::Message::send(:event,'state/change',File.join(opts[:url],'/'),id,uuid,name,content,redis)
 
       @headers << Riddl::Header.new("CPEE-INSTANCE", id.to_s)
       @headers << Riddl::Header.new("CPEE-INSTANCE-URL", File.join(opts[:url].to_s,id.to_s,'/'))
