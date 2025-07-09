@@ -49,9 +49,9 @@ module CPEE
     /p:properties/p:positions/p:*
   }
   PROPERTIES_PATHS_INDEX_ORDERED = %w{
+    /p:properties/p:attributes/p:*
     /p:properties/p:dataelements/p:*
     /p:properties/p:endpoints/p:*
-    /p:properties/p:attributes/p:*
   }
   def self::implementation(opts)
     opts[:see_instances]              ||= opts[:see_instances].nil? ? false : opts[:see_instances]
