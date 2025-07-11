@@ -600,7 +600,7 @@ function WFAdaptorManifestationBase(adaptor) {
   this.elements.choose = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
-      'label': function(node){ return [ { column: 'Label', value: $(node).attr('mode') == 'exclusive' ? 'exclusive' : 'inclusive' } ]; },
+      'label': function(node){ return [ { column: 'Label', value: $(node).attr('label') } ]; },
       'endnodes': 'aggregate',
       'closeblock': false,
       'closing_symbol': 'choose_finish',
