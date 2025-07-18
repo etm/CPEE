@@ -443,7 +443,41 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         'height="' + ((p2.row+1)-p1.row)*self.height +'" ' +
         'class="tile" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
-  var draw_connection = this.draw.draw_connection = function(group, start, end, max_line, num_lines, arrow) { // {{{
+  var draw_connection = this.draw.draw_connection = function(group, start, end, max_line, num_lines, arrow, dim) { // {{{
+    let cstart = 0;
+    let cend = 0;
+
+    for (let j=0; j <= start.col; j++) {
+      let max = 0;
+      for (let i = end.row; i >= start.row; i--) {
+        if (!dim[i]) { dim[i] = [] }
+        if (!dim[i][j]) { dim[i][j] = 40 }
+        if (max < dim[i][j] ) { max = 40 }
+        // if (max < dim[i][j] ) { max = dim[i][j] }
+      }
+      for (let i = end.row; i >= start.row; i--) {
+        dim[i][j] = max;
+      }
+    }
+    for (let j=0; j <= start.col; j++) {
+      if (j == end.col) {
+        cstart += dim[start.row][j] / 2;
+      } else {
+        cstart += dim[start.row][j];
+      }
+    }
+    for (let j=0; j <= end.col; j++) {
+      if (j == end.col) {
+        cend += dim[end.row][j] / 2;
+      } else {
+        cend += dim[end.row][j];
+      }
+    }
+    console.log(cstart,cend,start,end,dim);
+
+    cstart = start['col']*self.width;
+    cend = end['col']*self.width;
+
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
     var line;
     if (arrow)
@@ -451,52 +485,54 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     else
       line = $X('<path xmlns="http://www.w3.org/2000/svg" class="ourline"/>');
     if (end['row']-start['row'] == 0 || end['col']-start['col'] == 0) { // straight line
-      line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                                    String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+      line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
+                            String(cend) +   "," + String(end['row']*self.height-15)
       );
     } else if (end['row']-start['row'] > 0) { // downwards
       if (end['col']-start['col'] > 0) {// left - right
         if (self.compact) {
-          line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                                String(start['col']*self.width+14) + "," + String((end['row']-1)*self.height) +" "+ // first turn of hotizontal-line going away from node
-                                String(end['col']*self.width) + "," + String((end['row']-1)*self.height) +" "+
-                                String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+          line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
+                                String(cstart+14) + "," + String((end['row']-1)*self.height) +" "+ // first turn of hotizontal-line going away from node
+                                String(cend) + "," + String((end['row']-1)*self.height) +" "+
+                                String(cend) + "," + String(end['row']*self.height-15)
           );
         } else {
-          line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                                String(end['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                                String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+          line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
+                                String(cend) + "," + String(start['row']*self.height-15) +" "+
+                                String(cend) + "," + String(end['row']*self.height-15)
           );
         }
       } else { // right - left
-        line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                              String(start['col']*self.width) + "," + String(end['row']*self.height-35) +" "+
-                              String(end['col']*self.width+14) + "," + String(end['row']*self.height-35) +" "+ // last turn of horizontal-line going into the node
-                              String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+        line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
+                              String(cstart) + "," + String(end['row']*self.height-35) +" "+
+                              String(cend+14) + "," + String(end['row']*self.height-35) +" "+ // last turn of horizontal-line going into the node
+                              String(cend) + "," + String(end['row']*self.height-15)
         );
       }
     } else if(end['row']-start['row'] < 0) { // upwards
-      if(num_lines > 1) {// ??? no idea
-        line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                              String(start['col']*self.width) + "," + String((max_line-1)*self.height+5) +" "+
-                              String(end['col']*self.width+20) + "," + String((max_line-1)*self.height+5) +" "+
-                              String(end['col']*self.width+20) + "," + String(end['row']*self.height+25)+" "+
-                              String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+      if (num_lines > 1) { // ??? no idea
+        line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
+                              String(cstart) + "," + String((max_line-1)*self.height+5) +" "+
+                              String(cend+20) + "," + String((max_line-1)*self.height+5) +" "+
+                              String(cend+20) + "," + String(end['row']*self.height+25)+" "+
+                              String(cend) + "," + String(end['row']*self.height-15)
         );
       } else {
-        line.attr("d", "M " + String(start['col']*self.width) + "," + String(start['row']*self.height-15) +" "+
-                              String(end['col']*self.width+15) + "," + String(start['row']*self.height-15) +" "+
-                              String(end['col']*self.width+15) + "," + String(end['row']*self.height+15)+" "+
-                              String(end['col']*self.width) + "," + String(end['row']*self.height-15)
+        line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
+                              String(cend+15) + "," + String(start['row']*self.height-15) +" "+
+                              String(cend+15) + "," + String(end['row']*self.height+15)+" "+
+                              String(cend) + "," + String(end['row']*self.height-15)
         );
       }
     }
     self.svg.container.append(line);
   } //  }}}
   // }}}
+
   // Initialize {{{
-    adaptor = wf_adaptor;
+  adaptor = wf_adaptor;
   // }}}
+
 } // }}}
 
 // WfDescription:
@@ -682,7 +718,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
   // Helper Functions {{{
   var parse = function(root, parent_pos, dim)  { // private {{{
-    var pos = $.extend(true, {}, parent_pos);
+    var pos = JSON.parse(JSON.stringify(parent_pos));
     var max = {'row': 0,'col': 0};
     var prev = [parent_pos]; // connects parent with child(s), depending on the expansion
     var endnodes = [];
@@ -729,9 +765,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(illustrator.elements[tname] != undefined && illustrator.elements[tname].type == 'complex') {
         if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg) pos.row--;
         // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
-        console.log('----> down', dim);
-        block = parse(context, $.extend(true, {}, pos), dim);
-        console.log('<---- up',dim);
+        console.log('----> down');
+        block = parse(context, JSON.parse(JSON.stringify(pos)), dim);
+        console.log('<---- up');
         group.append(block.svg);
         block.svg.attr('id', 'group-' + $(context).attr('svg-id'));
         if(illustrator.elements[sname].endnodes == 'aggregate') endnodes = []; // resets endpoints e.g. potential preceding primitive
@@ -748,12 +784,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       var g;
       set_details(tname,sname,pos,context);
 
-      var origpos = $.extend(true, {}, pos);
+      var origpos = JSON.parse(JSON.stringify(pos));
 
       [g, endnodes] = draw_position(tname,origpos,prev,block,group,dim,endnodes,context);
 
       // Prepare next iteration {{{
-      if(root_expansion == 'vertical') { prev = $.extend(true, {}, endnodes); pos.row = block.max.row;} // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
+      if(root_expansion == 'vertical') { prev = JSON.parse(JSON.stringify(endnodes)); pos.row = block.max.row;} // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
       if(root_expansion == 'horizontal') pos.col = block.max.col;
       if(max.row < block.max.row) max.row = block.max.row;
       if(max.col < block.max.col) max.col = block.max.col;
@@ -778,13 +814,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
           set_details(ctname,csname,pos,context,true);
           [undefined, endnodes] = draw_position(ctname,pos,prev,block,group,dim,[],context,{svg: g, pos: origpos});
         }
-        prev = $.extend(true, {}, endnodes);
+        prev = JSON.parse(JSON.stringify(endnodes));
       }
-
-      console.log(dim);
-      illustrator.set_svg_direct(group);
-      console.log('+++++');
-      debugger;
     });
 
     if($(root).children().filter(function(){ return this.attributes['svg-id'] != undefined; }).length == 0) { // empty complex found
@@ -838,9 +869,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if((illustrator.elements[sname] && illustrator.elements[sname].svg) || sname == 'unknown') {
         var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pos.row, pos.col, dim, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
 
-        console.log('---');
-        console.log(dim);
-
         if (illustrator.elements[sname].info) {
           var info = illustrator.elements[sname].info(context);
           _.each(info,function(val,key) {
@@ -848,7 +876,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
           });
         }
       } else { console.log("no icon "+ sname);}
-      if(illustrator.elements[sname] && illustrator.elements[sname].border) {
+      if (illustrator.elements[sname] && illustrator.elements[sname].border) {
         var wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
         if (illustrator.elements[sname].closing_symbol) {
           illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg);
@@ -856,7 +884,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
           illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg);
         }
       }
-      if(illustrator.elements[sname] && illustrator.elements[sname].type == 'complex') {
+      if (illustrator.elements[sname] && illustrator.elements[sname].type == 'complex') {
         var wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
         if (illustrator.elements[sname].closing_symbol) {
           illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg);
@@ -870,44 +898,56 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(illustrator.elements[sname] != undefined && illustrator.elements[sname].closeblock == true) { // Close Block if element e.g. loop
       if (second) {
         if (second.pos.row+1 < pos.row) { // when no content, dont paint the up arrow
-          illustrator.draw.draw_connection(group, pos, second.pos, block.max.row+1, 1, true);
+          console.log(1);
+          illustrator.draw.draw_connection(group, pos, second.pos, block.max.row+1, 1, true, dim);
         }
       } else {
-        for(node in block.endnodes) {
-          if (!block.endnodes[node].final) {
-            illustrator.draw.draw_connection(group, block.endnodes[node], pos, block.max.row+1, block.endnodes.length, true);
+        for (let node=0; node < block.endnodes.length; node++) {
+          if (block.endnodes[node] && !block.endnodes[node].final) {
+            console.log('1a');
+            illustrator.draw.draw_connection(group, block.endnodes[node], pos, block.max.row+1, block.endnodes.length, true, dim);
           }
         }
       }
     }
     if(illustrator.elements[sname] != undefined && illustrator.elements[sname].endnodes != 'this') {
       for(i in block.endnodes) { endnodes.push(block.endnodes[i]); } // collects all endpoints from different childs e.g. alternatives from choose
-    } else { endnodes = [$.extend(true, {}, pos)]; } // sets this element as only endpoint (aggregate)
+    } else { endnodes = [JSON.parse(JSON.stringify(pos))]; } // sets this element as only endpoint (aggregate)
     if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
-      illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos, null, null, true);
+      console.log(2);
+      illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos, null, null, true, dim);
     } else {
       if (illustrator.elements[sname].noarrow == undefined || illustrator.elements[sname].noarrow == false) {
-        for (node in prev) {
-          if (!prev[node].final) {
+        for (let node=0; node < prev.length; node++) {
+          if (prev[node] && !prev[node].final) {
             if (prev[node].wide) {
-              var pn = $.extend(true, {}, prev[node]);
+              var pn = JSON.parse(JSON.stringify(prev[node]));
               if (pos.col > prev[node].col) {
                 pn.col = pos.col;
               }
-              illustrator.draw.draw_connection(group, pn, pos, null, null, true);
+              console.log(3);
+              illustrator.draw.draw_connection(group, pn, pos, null, null, true, dim);
             } else {
-              illustrator.draw.draw_connection(group, prev[node], pos, null, null, true);
+              console.log(4);
+              illustrator.draw.draw_connection(group, prev[node], pos, null, null, true, dim);
             }
           }
         }
       } else {
-        for(node in prev) {
-          if (!prev[node].final)
-            illustrator.draw.draw_connection(group, prev[node], pos, null, null, false);
+        for (let node=0; node < prev.length; node++) {
+          if (prev[node] && !prev[node].final) {
+            console.log(5);
+            illustrator.draw.draw_connection(group, prev[node], pos, null, null, false, dim);
+          }
         }
       }
     }
     // }}}
+
+    illustrator.set_svg_direct(group);
+    console.log('+++++');
+    debugger;
+
     return [g, endnodes];
   } // }}}
   //  }}}
