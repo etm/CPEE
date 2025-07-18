@@ -593,7 +593,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,dim:[]});
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0}, []);
     illustrator.set_svg(graph);
     self.set_labels(graph);
     doit(self);
