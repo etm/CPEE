@@ -275,13 +275,24 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   // }}}
   // Helper Functions {{{
-  var get_y = this.draw.get_y = function (row) { // {{{
+  var get_y = this.draw.get_y = function(row) { // {{{
     return { y: row * self.height - self.height, height_shift: self.height_shift};
   } // }}}
 
-  var draw_stripe = this.draw.draw_stripe = function (row, maxcol) { // {{{
+  var draw_stripe = this.draw.draw_stripe = function (row, maxcol, dim) { // {{{
     if (maxcol < 1) maxcol = 1;
-    var g = $X('<rect element-row="' + row + '" class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + (self.width * maxcol + self.width - self.width_shift) + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
+
+    let cwidth = 0;
+    for (let j=0; j < maxcol; j++) {
+      if (dim[j]) {
+        cwidth += dim[j];
+      } else {
+        cwidth += self.width;
+      }
+    }
+    cwidth = cwidth + self.width - self.width_shift;
+
+    var g = $X('<rect element-row="' + row + '" class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + cwidth + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
     self.svg.container.prepend(g);
     return g;
   } // }}}
@@ -561,10 +572,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var labels = [];
 
   // Set Labels //{{{
-  this.set_labels = function(graph) {
+  this.set_labels = function(graph,dim) {
     if (illustrator.striped == true && illustrator.compact == false) {
       for (var i=0; i < graph.max.row; i++) {
-        illustrator.draw.draw_stripe(i,graph.max.col);
+        illustrator.draw.draw_stripe(i,graph.max.col,dim[i]);
       }
     }
     if (illustrator.compact == false) {
@@ -588,9 +599,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false}, {'row':0,'col':0,final:false,wide:false}, []);
+    let dim = [];
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false}, {'row':0,'col':0,final:false,wide:false}, dim);
+    self.set_labels(graph,dim);
     illustrator.set_svg(graph);
-    self.set_labels(graph);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
     var serxml = $(description.get(0).documentElement).clone(true);
@@ -639,9 +651,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0}, {'row':0,'col':0}, []);
+    let dim = [];
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0}, {'row':0,'col':0}, dim);
     illustrator.set_svg(graph);
-    self.set_labels(graph);
+    self.set_labels(graph,dim);
     doit(self);
   }
   var update = this.update = function(svgid) { // {{{
@@ -649,9 +662,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(update_illustrator){
       labels = [];
       illustrator.clear();
-      var graph = parse(description.children('description').get(0), {'row':0,'col':0}, {'row':0,'col':0}, []);
+      let dim = [];
+      var graph = parse(description.children('description').get(0), {'row':0,'col':0}, {'row':0,'col':0}, dim);
       illustrator.set_svg(graph);
-      self.set_labels(graph);
+      self.set_labels(graph,dim);
     }
 
     var newn = $('*[new=true]',description);
