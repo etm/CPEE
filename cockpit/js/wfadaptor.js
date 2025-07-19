@@ -252,16 +252,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg_direct = function(svg) { // {{{
     self.svg.container.append(svg);
     let bb = svg[0].getBBox();
-    self.svg.container.attr('height', bb.y + bb.height + 2); // +2 to cancel out bluring issues
-    self.svg.container.attr('width',  bb.x + bb.width + 2);  // +2 to cancel out bluring issues
+    self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom
+    self.svg.container.attr('width',  bb.x + bb.width);  //
   } // }}}
   this.set_svg = function(graph) { // {{{
-    if(graph.max.row < 1) graph.max.row = 1;
-    if(graph.max.col < 1) graph.max.col = 1;
     self.svg.container.append(graph.svg);
     let bb = graph.svg[0].getBBox();
-    self.svg.container.attr('height', bb.y + bb.height + 2); // +2 to cancel out bluring issues
-    self.svg.container.attr('width',  bb.x + bb.width + 2);  // +2 to cancel out bluring issues
+    self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom
+    self.svg.container.attr('width',  bb.x + bb.width);  //
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[element-id = \'' + svg_id + '\'] g.activities', self.svg.container);
@@ -730,7 +728,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
   // Helper Functions {{{
   var update_dim = function(a,b,dim) { //{{{
-    for (let j=a.col; j <= b.col; j++) {
+    for (let j=0; j <= Math.max(a.col,b.col); j++) {
       let max = 0;
       for (let i = b.row; i >= a.row; i--) {
         if (!dim[i]) { dim[i] = [] }
@@ -742,7 +740,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       }
     }
   } //}}}
-
   var parse = function(root, grandparent_pos, parent_pos, dim)  { // private {{{
     var pos = JSON.parse(JSON.stringify(parent_pos));
     var max = {'row': 0,'col': 0};
