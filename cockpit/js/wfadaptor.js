@@ -450,6 +450,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     if (group) {group.append(g);}
     else {self.svg.container.children('g:first').append(g);}
+
+    self.set_svg_direct(group);
+    console.log('+++++');
+    debugger;
+
     return g;
   } // }}}
   var bind_event = this.draw.bind_event = function(sym,tname,context) { //{{{
@@ -600,7 +605,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     illustrator.clear();
     let dim = [];
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false}, {'row':0,'col':0,final:false,wide:false}, dim);
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false}, dim);
     self.set_labels(graph,dim);
     illustrator.set_svg(graph);
   } // }}}
@@ -652,7 +657,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     illustrator.clear();
     let dim = [];
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0}, {'row':0,'col':0}, dim);
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0}, dim);
     illustrator.set_svg(graph);
     self.set_labels(graph,dim);
     doit(self);
@@ -663,7 +668,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       labels = [];
       illustrator.clear();
       let dim = [];
-      var graph = parse(description.children('description').get(0), {'row':0,'col':0}, {'row':0,'col':0}, dim);
+      var graph = parse(description.children('description').get(0), {'row':0,'col':0}, dim);
       illustrator.set_svg(graph);
       self.set_labels(graph,dim);
     }
@@ -742,19 +747,19 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
   // Helper Functions {{{
   var update_dim = function(a,b,dim) { //{{{
-    for (let j=0; j <= Math.max(a.col,b.col); j++) {
+    for (let j=Math.min(a.col,b.col); j <= Math.max(a.col,b.col); j++) {
       let max = 0;
-      for (let i = b.row; i >= a.row; i--) {
-        if (!dim[i]) { dim[i] = [] }
-        if (!dim[i][j]) { dim[i][j] = illustrator.width }
-        if (max < dim[i][j] ) { max = dim[i][j] }
-      }
-      for (let i = b.row; i >= a.row; i--) {
-        dim[i][j] = max;
-      }
+      // for (let i = b.row; i >= a.row; i--) {
+      //   if (!dim[i]) { dim[i] = [] }
+      //   if (!dim[i][j]) { dim[i][j] = illustrator.width }
+      //   if (max < dim[i][j] ) { max = dim[i][j] }
+      // }
+      // for (let i = b.row; i >= a.row; i--) {
+      //   dim[i][j] = max;
+      // }
     }
   } //}}}
-  var parse = function(root, grandparent_pos, parent_pos, dim)  { // private {{{
+  var parse = function(root, parent_pos, dim)  { // private {{{
     var pos = JSON.parse(JSON.stringify(parent_pos));
     var max = {'row': 0,'col': 0};
     var prev = [parent_pos]; // connects parent with child(s), depending on the expansion
@@ -805,7 +810,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
         console.log('----> down', parent_pos.row, pos.row, parent_pos.col, pos.col, dim);
         update_dim(parent_pos,pos,dim);
-        block = parse(context, parent_pos, JSON.parse(JSON.stringify(pos)), dim);
+        block = parse(context, JSON.parse(JSON.stringify(pos)), dim);
         update_dim(parent_pos,block.max,dim);
         console.log('<---- up', parent_pos.row, block.max.row, parent_pos.col, block.max.col, dim);
 
@@ -827,7 +832,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
       var origpos = JSON.parse(JSON.stringify(pos));
 
-      [g, endnodes] = draw_position(tname,grandparent_pos,origpos,prev,block,group,dim,endnodes,context);
+      [g, endnodes] = draw_position(tname,parent_pos,origpos,prev,block,group,dim,endnodes,context);
 
       // Prepare next iteration {{{
       if(root_expansion == 'vertical') { prev = JSON.parse(JSON.stringify(endnodes)); pos.row = block.max.row;} // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
@@ -848,12 +853,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
             max.col++;
             block.max.col = pos.col;
           }
-          draw_position(ctname,grandparent_pos,pos,block.endnodes,block,group,dim,[],context,{svg: g, pos: origpos});
+          draw_position(ctname,parent_pos,pos,block.endnodes,block,group,dim,[],context,{svg: g, pos: origpos});
           pos.col--;
           set_details(ctname,csname,pos,context,true);
         } else {
           set_details(ctname,csname,pos,context,true);
-          [undefined, endnodes] = draw_position(ctname,grandparent_pos,pos,prev,block,group,dim,[],context,{svg: g, pos: origpos});
+          [undefined, endnodes] = draw_position(ctname,parent_pos,pos,prev,block,group,dim,[],context,{svg: g, pos: origpos});
         }
         prev = JSON.parse(JSON.stringify(endnodes));
       }
@@ -868,7 +873,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(root.tagName == 'description' && illustrator.elements[root.tagName].closing_symbol) {
       pos.row++;
       max.row = pos.row;
-      draw_position(illustrator.elements['start'].closing_symbol,grandparent_pos,pos,prev,block,group,dim,[],this,{svg: group, pos: pos});
+      draw_position(illustrator.elements['start'].closing_symbol,parent_pos,pos,prev,block,group,dim,[],this,{svg: group, pos: pos});
     }
 
     return {'endnodes': endnodes, 'max':max, 'svg':group};
@@ -988,9 +993,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       }
     }
     // }}}
-
-    illustrator.set_svg_direct(group);
-    console.log('+++++');
 
     return [g, endnodes];
   } // }}}
