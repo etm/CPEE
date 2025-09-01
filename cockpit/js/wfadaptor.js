@@ -482,8 +482,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         'class="tile" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_connection = this.draw.draw_connection = function(group, start, end, parent_row, max_row, num_lines, arrow, dim) { // {{{
-    let cstart = get_draw_pos(start.row,end.row,start.col,dim);
-    let cend = get_draw_pos(start.row,max_row > end.row ? max_row : end.row,end.col,dim);
+    let sr = Math.min(start.row,end.row);
+    let er = Math.max(start.row,end.row,max_row);
+    let cstart = get_draw_pos(sr,er,start.col,dim);
+    let cend = get_draw_pos(sr,er,end.col,dim);
 
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
     var line;
@@ -586,7 +588,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     illustrator.clear();
     let dim = [];
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false}, dim);
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false}, null, dim);
     self.set_labels(graph,dim);
     illustrator.set_svg(graph);
   } // }}}
@@ -638,7 +640,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     illustrator.clear();
     let dim = [];
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0}, dim);
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0}, null, dim);
     illustrator.set_svg(graph);
     self.set_labels(graph,dim);
     doit(self);
@@ -649,7 +651,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       labels = [];
       illustrator.clear();
       let dim = [];
-      var graph = parse(description.children('description').get(0), {'row':0,'col':0}, dim);
+      var graph = parse(description.children('description').get(0), {'row':0,'col':0}, null, dim);
       illustrator.set_svg(graph);
       self.set_labels(graph,dim);
     }
@@ -727,7 +729,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
   // }}}
   // Helper Functions {{{
-  var parse = function(root, parent_pos, dim)  { // private {{{
+  var parse = function(root, parent_pos, grandparent_pos, dim)  { // private {{{
     var pos = JSON.parse(JSON.stringify(parent_pos));
     var max = {'row': 0,'col': 0};
     var prev = [parent_pos]; // connects parent with child(s), depending on the expansion
@@ -737,6 +739,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     var block =  {'max':{}}; // e.g. {'max':{'row':0,'col':0}, 'endpoints':[]};
 
     var group = $X('<g class="group" xmlns="http://www.w3.org/2000/svg"/>');
+
+    if (grandparent_pos == null) { grandparent_pos = parent_pos; }
 
     if(root_expansion == 'horizontal') pos.row++;
     if(illustrator.elements[root.tagName].col_shift(root) == true && root_expansion != 'horizontal') pos.col++;
@@ -776,9 +780,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg) pos.row--;
         // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
 
-        console.log('----> down', parent_pos.row, pos.row, parent_pos.col, pos.col, dim);
-        block = parse(context, JSON.parse(JSON.stringify(pos)), dim);
-        console.log('<---- up', parent_pos.row, block.max.row, parent_pos.col, block.max.col, dim);
+        console.log('----> down', tname, parent_pos.row, pos.row, parent_pos.col, pos.col, dim);
+        block = parse(context, JSON.parse(JSON.stringify(pos)), parent_pos, dim);
+        console.log('<---- up', tname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, dim);
 
         group.append(block.svg);
         block.svg.attr('id', 'group-' + $(context).attr('svg-id'));
@@ -872,7 +876,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   } //}}}
   var draw_position = function(tname,parent_pos,pos,prev,block,group,dim,endnodes,context,second) { // private {{{
     var sname = sym_name(tname,context);
+    console.log(parent_pos);
     // Draw Symbol {{{
+    console.log('----- pos ' + sname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, block, dim);
     if (second) {
       illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, dim, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
@@ -906,7 +912,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       }
     }
 
-    console.log('----- pos', parent_pos.row, block.max.row, parent_pos.col, block.max.col, dim);
 
     // }}}
     // Calculate Connection {{{
@@ -959,8 +964,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     // }}}
 
-    // self.set_svg_direct(group);
-    //debugger;
+    // illustrator.set_svg_direct(group);
+    // debugger;
 
     return [g, endnodes];
   } // }}}
