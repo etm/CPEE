@@ -306,7 +306,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return Math.max(...starta.filter(Number));
   } //}}}
 
-
   var get_y = this.draw.get_y = function(row) { // {{{
     return { y: row * self.height - self.height, height_shift: self.height_shift};
   } // }}}
@@ -315,14 +314,30 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     if (maxcol < 1) maxcol = 1;
 
     let cwidth = 0;
-    for (let j=0; j < maxcol; j++) {
-      if (dim[j]) {
-        cwidth += dim[j];
-      } else {
-        cwidth += self.width;
+    for (let i=0; i < dim.length; i++) {
+      let lwidth = 0;
+      for (let j=0; j <= maxcol; j++) {
+        if (typeof dim[i] !== 'undefined' && typeof dim[i][j] !== 'undefined') {
+          lwidth += dim[i][j];
+        } else {
+          // go up the column and find the next valid value
+          let x = i;
+          let found = false;
+          while (x > 0 && !found) {
+            x -= 1;
+            if (typeof dim[x] !== 'undefined' && typeof dim[x][j] !== 'undefined') {
+              lwidth += dim[x][j];
+              found = true;
+            }
+          }
+          if (!found) {
+            lwidth[i] += self.width;
+          }
+        }
       }
+      if (cwidth < lwidth) { cwidth = lwidth; }
     }
-    cwidth = cwidth + self.width - self.width_shift;
+    cwidth = cwidth + 2 * self.width - self.width_shift;
 
     var g = $X('<rect element-row="' + row + '" class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + cwidth + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
     self.svg.container.prepend(g);
@@ -496,7 +511,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   var draw_tile = this.draw.draw_tile = function(id, p1, p2, group, dim) { // {{{
     let bstart = get_draw_pos(p1.row,p2.row,p1.col,dim);
-    let bend = get_draw_pos(p1.row,p2.row,p2.col+1,dim);
+    let bend = get_draw_pos(p1.row,p2.row,p2.col,dim);
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift) + '" ' +
         'y="' + ((p1.row-1)*self.height+self.height_shift/2) + '" ' +
         'width="' + (bend-bstart) + '" ' +
@@ -585,7 +600,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   this.set_labels = function(graph,dim) {
     if (illustrator.striped == true && illustrator.compact == false) {
       for (var i=0; i < graph.max.row; i++) {
-        illustrator.draw.draw_stripe(i,graph.max.col,dim[i]);
+        illustrator.draw.draw_stripe(i,graph.max.col,dim);
       }
     }
     if (illustrator.compact == false) {
@@ -611,8 +626,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     illustrator.clear();
     let dim = [];
     var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false}, null, dim);
-    self.set_labels(graph,dim);
     illustrator.set_svg(graph);
+    self.set_labels(graph,dim);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
     var serxml = $(description.get(0).documentElement).clone(true);
