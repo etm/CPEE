@@ -397,8 +397,13 @@ svg text.label {
   color: var(--wfadaptor-base);
   fill: var(--wfadaptor-base);
   fill-opacity:1;
-  stroke:none;
+  stroke: var(--wfadaptor-background);
+  stroke-width: 3px;
+  paint-order: stroke markers fill;
   font-family:Arial;
+}
+svg text.label.rotate {
+  // transform: translateY(10px) rotate(-40deg);
 }
 
 svg text.smaller {

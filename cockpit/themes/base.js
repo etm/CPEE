@@ -1261,13 +1261,11 @@ function WFAdaptorManifestationBase(adaptor) {
               item += n.textContent + '\n';
             }
             $('call > parameters > arguments > *, call > code > finalize, call > code > update, call > code > rescue',n).each(function(j,m){
-              console.log('aaa');
               let x = m.textContent;
               if (m.parentNode.nodeName == 'arguments' && x.charAt(0) != '!' ) { return }
               item += x + '\n';
             });
           }
-          console.log(item);
           if (item == '') { return; }
 
           let indices = [];
@@ -1423,13 +1421,13 @@ function WFAdaptorManifestationBase(adaptor) {
   this.elements.choose_inclusive_finish = { /*{{{*/
     'parent': 'choose_finish',
     'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/choose_inclusive_finish.svg'
     }//}}}
   };  /*}}}*/
   this.elements.choose_exclusive_finish = { /*{{{*/
     'parent': 'choose_finish',
     'illustrator': {//{{{
-      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive.svg'
+      'svg': self.adaptor.theme_dir + 'symbols/choose_exclusive_finish.svg'
     },//}}}
   };  /*}}}*/
   this.elements.loop_head_finish = { /*{{{*/
@@ -1505,13 +1503,6 @@ function WFAdaptorManifestationBase(adaptor) {
       'wide': true,
       'closing_symbol': 'event_end',
       'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_event.svg'
-    }//}}}
-  };  /*}}}*/
-  this.elements.parallel_branch_compact = { /*{{{*/
-    'parent': 'parallel_branch',
-    'illustrator': {//{{{
-      'endnodes': 'this',
-      'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_compact.svg'
     }//}}}
   };  /*}}}*/
   this.elements.scripts = { /*{{{*/
