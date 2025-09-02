@@ -403,7 +403,7 @@ svg text.label {
   font-family:Arial;
 }
 svg text.label.rotate {
-  // transform: translateY(10px) rotate(-40deg);
+  transform: translateY(10px) rotate(-30deg);
 }
 
 svg text.smaller {
