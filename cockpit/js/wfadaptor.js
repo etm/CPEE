@@ -500,9 +500,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         'height="' + ((p2.row+1)-p1.row)*self.height +'" ' +
         'class="tile" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
-  var draw_connection = this.draw.draw_connection = function(group, start, end, parent_row, max_row, num_lines, arrow, dim) { // {{{
-    let sr = Math.min(parent_row,end.row);
-    let er = Math.max(parent_row,end.row,max_row);
+  var draw_connection = this.draw.draw_connection = function(group, start, end, max_row, num_lines, arrow, dim) { // {{{
+    let sr = Math.min(start.row,end.row);
+    let er = Math.max(start.row,end.row,max_row);
     let cstart = get_draw_pos(sr,er,start.col,dim);
     let cend = get_draw_pos(sr,er,end.col,dim);
 
@@ -807,7 +807,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         dim[pos.row][pos.col] = illustrator.width; // we assume that gateways are always compact, thus self.width
         // but fuuuuu, we calculate the gateways only later, so we couldnt even have them bigger for now
 
-        console.log('----> down', tname, parent_pos.row, pos.row, parent_pos.col, pos.col, dim);
+        // console.log('----> down', tname, parent_pos.row, pos.row, parent_pos.col, pos.col, dim);
 
         let tblock = parse(context, JSON.parse(JSON.stringify(pos)), parent_pos, dim);
         // merge block and tblock, enforce the max, as the second branch could have fewer nodes than the first
@@ -824,7 +824,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         block.endnodes = tblock.endnodes;
         block.svg = tblock.svg;
 
-        console.log('<---- up', tname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, dim);
+        // console.log('<---- up', tname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, dim);
 
         group.append(block.svg);
         block.svg.attr('id', 'group-' + $(context).attr('svg-id'));
@@ -918,20 +918,20 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   } //}}}
   var draw_position = function(tname,parent_pos,pos,prev,block,group,dim,endnodes,context,second) { // private {{{
     var sname = sym_name(tname,context);
-    console.log('----- pos ' + sname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, block, dim);
+    // console.log('----- pos ' + sname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, block, dim);
     // Calculate Connection {{{
     let connection_case = 0;
     if(illustrator.elements[sname] != undefined && illustrator.elements[sname].closeblock == true) { // Close Block if element e.g. loop
       if (second) {
         if (second.pos.row+1 < pos.row) { // when no content, dont paint the up arrow
           connection_case = 1;
-          illustrator.draw.draw_connection(group, pos, second.pos, pos.row, block.max.row, 1, true, dim);
+          illustrator.draw.draw_connection(group, pos, second.pos, block.max.row, 1, true, dim);
         }
       } else {
         for (let node=0; node < block.endnodes.length; node++) {
           if (block.endnodes[node] && !block.endnodes[node].final) {
             connection_case = 2;
-            illustrator.draw.draw_connection(group, block.endnodes[node], pos, block.endnodes[node].row, block.max.row, block.endnodes.length, true, dim);
+            illustrator.draw.draw_connection(group, block.endnodes[node], pos, block.max.row, block.endnodes.length, true, dim);
           }
         }
       }
@@ -941,7 +941,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     } else { endnodes = [JSON.parse(JSON.stringify(pos))]; } // sets this element as only endpoint (aggregate)
     if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
       connection_case = 3;
-      illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos, 1, block.max.row, null, true, dim);
+      illustrator.draw.draw_connection(group, { row: 1, col: 1 }, pos, block.max.row, null, true, dim);
     } else {
       if (illustrator.elements[sname].noarrow == undefined || illustrator.elements[sname].noarrow == false) {
         for (let node=0; node < prev.length; node++) {
@@ -952,13 +952,13 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
                 pn.col = pos.col;
               }
               connection_case = 4;
-              illustrator.draw.draw_connection(group, pn, pos, pn.row, block.max.row, null, true, dim);
+              illustrator.draw.draw_connection(group, pn, pos, block.max.row, null, true, dim);
             } else {
               connection_case = 5;
               if (prev.length == 1) {
-                illustrator.draw.draw_connection(group, prev[node], pos, parent_pos.row, block.max.row, null, true, dim);
+                illustrator.draw.draw_connection(group, prev[node], pos, block.max.row, null, true, dim);
               } else {
-                illustrator.draw.draw_connection(group, prev[node], pos, prev[node].row, block.max.row, null, true, dim);
+                illustrator.draw.draw_connection(group, prev[node], pos, block.max.row, null, true, dim);
               }
             }
           }
@@ -967,7 +967,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         for (let node=0; node < prev.length; node++) {
           if (prev[node] && !prev[node].final) {
             connection_case = 6;
-            illustrator.draw.draw_connection(group, prev[node], pos, prev[node].row, block.max.row, null, false, dim);
+            illustrator.draw.draw_connection(group, prev[node], pos, block.max.row, null, false, dim);
           }
         }
       }
@@ -975,15 +975,13 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     // }}}
 
     // Draw Symbol {{{
-    let pprow = parent_pos.row ;
-    // if (connection_case != 6) { pprow -= 1; }
     if (second) {
-      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pprow, block.max.row, pos.row, pos.col, dim, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, dim, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
       $(context).attr('svg-type',tname);
       $(context).attr('svg-subtype',sname);
       if((illustrator.elements[sname] && illustrator.elements[sname].svg) || sname == 'unknown') {
-        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), pprow, block.max.row, pos.row, pos.col, dim, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, dim, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
 
         if (illustrator.elements[sname].info) {
           var info = illustrator.elements[sname].info(context);
