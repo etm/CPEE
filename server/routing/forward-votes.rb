@@ -66,7 +66,7 @@ Daemonite.new do |opts|
     opts[:pubsubredis].psubscribe('vote:*') do |on|
       on.pmessage do |pat, what, message|
         index = message.index(' ')
-        instance = message[0...index]
+        instance, uuid = message[0...index].split(',')
         mess = message[index+1..-1]
 
         type, worker, event = what.split(':',3)

@@ -467,7 +467,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end #}}}
   def join_branches(id, branches = []) # factual, so for inclusive or [[a],[b],[c,d,e]] {{{
     payload = { :instance_uuid => @controller.uuid, :ecid => id.to_s }
-    payload[:branches] = branches.length if branches.length > 0
+    payload[:branches] = branches if branches.length > 0
+    payload[:branches_length] = branches.length if branches.length > 0
     @controller.notify("gateway/join", payload )
   end #}}}
 end

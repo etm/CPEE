@@ -77,7 +77,7 @@ module CPEE
       payload[@@type + '-name'] = instance_name if instance_name
 
       backend.publish(type.to_s + ':' + target + ':' + event.to_s,
-        instance.to_s + ' ' +
+        instance.to_s + ',' + instance_uuid.to_s + ' ' +
         JSON::generate(payload)
       )
     end

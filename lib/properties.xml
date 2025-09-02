@@ -130,9 +130,15 @@
   </message> <!--}}}-->
   <message name="dslx"> <!--{{{-->
     <parameter name="dslx" mimetype="*/xml"/>
+    <zeroOrMore>
+      <parameter name="exposition" mimetype="*"/>
+    </zeroOrMore>
   </message> <!--}}}-->
   <message name="description"> <!--{{{-->
     <parameter name="description" mimetype="*"/>
+    <zeroOrMore>
+      <parameter name="exposition" mimetype="*"/>
+    </zeroOrMore>
   </message> <!--}}}-->
 
   <message name="transformation"> <!--{{{-->
@@ -221,6 +227,7 @@
     </resource> <!--}}}-->
     <resource relative="dslx"> <!--{{{-->
       <get out="dslx"/>
+      <put in="dslx"/>
     </resource> <!--}}}-->
     <resource relative="description"> <!--{{{-->
       <get out="description"/>

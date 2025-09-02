@@ -8,8 +8,8 @@
   <attributes>
     <info>Worklist</info>
     <modeltype>CPEE</modeltype>
-    <organisation1>http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
     <theme>extended</theme>
+    <organisation1>http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <design_stage>development</design_stage>
@@ -25,6 +25,7 @@
             <form>https://cpee.org/~demo/form/form-f.html</form>
             <role>Assistant</role>
             <priority>42</priority>
+            <handling>single</handling>
             <restrictions/>
             <data>
               <schaden>10000</schaden>

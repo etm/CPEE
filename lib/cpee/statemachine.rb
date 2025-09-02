@@ -14,11 +14,18 @@
 
 module CPEE
 
+  class DummyStateMachine
+    def setable?(id,nval); true end
+    def readonly?(id); true end
+    def final?(id); true end
+  end
+
   class StateMachine
-    def initialize(file,readonly,&state)
+    def initialize(file,&state)
       @states = XML::Smart.open_unprotected(file)
       @state = state
-      @readonly = readonly
+      @readonly = @states.find("/states/observable/*[*]").map { |e| e.qname.name }
+      @final = @states.find("/states/observable/*[not(*)]").map { |e| e.qname.name }
     end
 
     def setable?(id,nval)
@@ -28,6 +35,10 @@ module CPEE
 
     def readonly?(id)
       @readonly.include? @state.call(id)
+    end
+
+    def final?(id)
+      @final.include? @state.call(id)
     end
   end
 

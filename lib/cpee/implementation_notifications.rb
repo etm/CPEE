@@ -126,19 +126,22 @@ module CPEE
       def response
         id = @a[0]
         opts = @a[1]
+        if opts[:statemachine].final? id
+          @status = 410
+        else
+          key = @p[0].name == 'id' ? @p.shift.value : Digest::MD5.hexdigest(Kernel::rand().to_s)
+          url = @p[0].name == 'url' ? @p.shift.value : nil
+          values = []
+          while @p.length > 0
+            topic = @p.shift.value
+            base = @p.shift
+            type = base.name
+            values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+          end
+          @header = CPEE::Persistence::set_handler(id,opts,key,url,values)
 
-        key = @p[0].name == 'id' ? @p.shift.value : Digest::MD5.hexdigest(Kernel::rand().to_s)
-        url = @p[0].name == 'url' ? @p.shift.value : nil
-        values = []
-        while @p.length > 0
-          topic = @p.shift.value
-          base = @p.shift
-          type = base.name
-          values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+          Riddl::Parameter::Simple.new('key',key)
         end
-        @header = CPEE::Persistence::set_handler(id,opts,key,url,values)
-
-        Riddl::Parameter::Simple.new('key',key)
       end
     end #}}}
 
@@ -148,18 +151,22 @@ module CPEE
         opts = @a[1]
         key = @r.last
 
-        if CPEE::Persistence::exists_handler?(id,opts,key)
-          url = @p[0].name == 'url' ? @p.shift.value : nil
-          values = []
-          while @p.length > 0
-            topic = @p.shift.value
-            base = @p.shift
-            type = base.name
-            values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
-          end
-          @header = CPEE::Persistence::set_handler(id,opts,key,url,values,true)
+        if opts[:statemachine].final? id
+          @status = 410
         else
-          @status = 404
+          if CPEE::Persistence::exists_handler?(id,opts,key)
+            url = @p[0].name == 'url' ? @p.shift.value : nil
+            values = []
+            while @p.length > 0
+              topic = @p.shift.value
+              base = @p.shift
+              type = base.name
+              values += base.value.split(',').map { |i| File.join(topic,type[0..-2],i) }
+            end
+            @header = CPEE::Persistence::set_handler(id,opts,key,url,values,true)
+          else
+            @status = 404
+          end
         end
       end
     end #}}}
@@ -174,10 +181,14 @@ module CPEE
         opts = @a[1]
         key = @r.last
 
-        if CPEE::Persistence::exists_handler?(id,opts,key)
-          DeleteSubscription::set(id,opts,key)
+        if opts[:statemachine].final? id
+          @status = 410
         else
-          @status = 404
+          if CPEE::Persistence::exists_handler?(id,opts,key)
+            DeleteSubscription::set(id,opts,key)
+          else
+            @status = 404
+          end
         end
         nil
       end

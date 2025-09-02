@@ -55,9 +55,12 @@
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
     <script type="text/javascript" src="js/resources.js"></script>
-    <script type="text/javascript" src="js/edit.js"></script>
     <script type="text/javascript" src="js/modifiers.js"></script>
     <script type="text/javascript" src="themes/base.js"></script>
+
+    <script type="text/javascript" src="js/llm.js"></script>
+    <link   rel="stylesheet"      href="css/llm.css" type="text/css"/>
+
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="css/resources-label.css" type="text/css"/>
     <link rel="stylesheet" href="css/resources-svg.css" type="text/css" data-include-export="true"/>
@@ -136,9 +139,8 @@
     <ui-tabbed id="instance">
       <ui-tabbar>
         <ui-tab class="switch"                                                ></ui-tab>
-        <ui-tab class=""                data-tab="new"       id="tabnew"      >Config</ui-tab>
+        <ui-tab class=""                data-tab="new"       id="tabnew"      >New</ui-tab>
         <ui-tab class="inactive hidden" data-tab="instance"  id="tabinstance" >Instance</ui-tab>
-        <ui-tab class="inactive hidden" data-tab="execution" id="tabexecution">Execution</ui-tab>
         <ui-behind                                                            ><a style='display:none' target='_blank' id='current-instance'></a><a style='display:none' target='_blank' id='current-instance-properties'>P</a><a style='display:none' target='_blank' id='current-instance-subscriptions'>S</a><a style='display:none' target='_blank' id='current-instance-callbacks'>C</a></ui-behind>
         <ui-last                                                              ><a class="logo" href=".."></a></ui-last>
       </ui-tabbar>
@@ -148,14 +150,17 @@
           <tr>
             <td>Resources:</td>
             <td><input name="res-url" type="text" value=""/></td>
+            <td></td>
           </tr>
           <tr>
             <td>Engine:</td>
             <td><input name="base-url" type="text" value=""/></td>
+            <td><button name="base">create new instance</button></td>
           </tr>
           <tr>
             <td>Instance:</td>
             <td><input name="instance-url" type="text" value=""/></td>
+            <td><button name="instance">monitor instance</button></td>
           </tr>
           </table>
         </ui-area> <!--}}}-->
@@ -166,8 +171,7 @@
                 <form id='fuckchrome'>
                   <input type='file' name='testsetfile' id='testsetfile'/>
                 </form>
-                <button title='save a testset includes various settings, subscriptions and a model' name="save" disabled=""><div>save</div><div class="hidden" id='lastsavedline'>(last: <span id="lastsaved"></span>)</div></button>
-                <button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load testset</button>
+                <button title='a template includes various settings, subscriptions or a (partial) model' name="loadtestset">load template</button><button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load testset</button>
               </div>
               <div>
                 <input type='file' name='modelfile' id='modelfile'/>
@@ -189,77 +193,45 @@
             </div>
           </div>
         </ui-area> <!--}}}-->
-        <ui-area data-belongs-to-tab="execution" id="areaexecution" class='inactive'> <!--{{{-->
-          <table class='x-ui-compact'>
-            <tbody class='debug'>
-              <tr>
-                <td>Debugging:</td>
-                <td><input type="checkbox" name="votecontinue"/></td>
-              </tr>
-            </tbody>
-            <tbody class='exe'>
-              <tr>
-                <td>State:</td>
-                <td id='state'>
-                  <span id="state_text"></span>
-                  <span id="state_any" style='display:none'>
-                    <span> ⇒ </span>
-                    <button name="state_start" title='start' style='display:none'>Start</button>
-                    <button name="state_stop" title='stop' style='display:none'>Stop</button>
-                    <span id="state_extended" style='display:none'>
-                      <span> / </span>
-                      <button name="state_abandon" title='abandon' style='display:none'>Abandon</button>
-                    </span>
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td>Continue:</td>
-                <td id='votes'></td>
-              </tr>
-            </tbody>
-          </table>
-        </ui-area> <!--}}}-->
       </ui-content>
     </ui-tabbed>
-
-    <ui-tabbed class="hidden" id='parameters'>
-      <ui-tabbar>
-        <ui-tab class="switch"                                               ></ui-tab>
-        <ui-tab class=""         data-tab="dataelements" id="tabdataelements">Data Object</ui-tab>
-        <ui-tab class=""         data-tab="dataelements" id="tabdataelements">Data Objects</ui-tab>
-        <ui-tab class="inactive" data-tab="endpoints"    id="tabendpoints"   >Endpoints</ui-tab>
-        <ui-tab class="inactive" data-tab="attributes"   id="tabattributes"  >Attributes</ui-tab>
-        <ui-behind                                                           ></ui-behind>
-      </ui-tabbar>
-      <ui-content>
-        <ui-area data-belongs-to-tab="dataelements" id="areadataelements"> <!--{{{-->
-          <button title='add entry'><span>New</span></button>
-          <div id="dat_dataelements"></div>
-        </ui-area> <!--}}}-->
-        <ui-area data-belongs-to-tab="endpoints" id="areaendpoints" class="inactive"> <!--{{{-->
-          <button title='add entry'><span>New</span></button>
-          <div id="dat_endpoints"></div>
-        </ui-area> <!--}}}-->
-        <ui-area data-belongs-to-tab="attributes" id="areaattributes" class="inactive"> <!--{{{-->
-          <button title='add entry'><span>New</span></button>
-          <div id="dat_attributes"></div>
-        </ui-area> <!--}}}-->
-      </ui-content>
-    </ui-tabbed>
-
-    <ui-resizehandle class="hidden">drag to resize</ui-resizehandle>
 
     <ui-rest id="main" class="hidden">
       <ui-tabbar>
         <ui-before                                                 ></ui-before>
         <ui-tab class=""         data-tab="details" id="tabdetails">Graph</ui-tab>
-        <ui-tab class="inactive" data-tab="dsl"     id="tabdsl"    >Description</ui-tab>
         <ui-tab class="inactive" data-tab="log"     id="tablog"    >Log</ui-tab>
-        <ui-behind                                                 ><a style='display:none' target='_blank' id='current-track'>T</a><a style='display:none' target='_blank' id='current-graph'>G</a></ui-behind>
+        <ui-behind                                                 ><a style='display:none' target='_blank' id='current-index'>E</a><a style='display:none' target='_blank' id='current-track'>T</a><a style='display:none' target='_blank' id='current-graph'>G</a></ui-behind>
       </ui-tabbar>
       <ui-content>
         <ui-area data-belongs-to-tab="details" id='graphcolumn' oncontextmenu='return false'>
+          <div id='prompt_container' class="stand_alone">
+            <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here... CTRL-ENTER or press '➤' to submit ..." placeholder="Please enter your modelling instructions here... CTRL-ENTER or press '➤' to submit ..."></div>
+          </div>
+          <div id='status'></div>
+          <div id='llm_params' class="multi">
+            <label id="llmlabel" for="llms">Choose LLM:</label>
+            <select name="llms" id="llms">
+              <option value="gemini-2.0-flash" selected>gemini 2 Flash</option>
+              <option value="gemini-2.5-flash-preview-05-20">gemini 2.5 Flash</option>
+              <option value="gemini-2.5-pro-preview-05-06">gemini 2.5 Pro</option>
+              <option value="gpt-4">gpt 4</option>
+              <option value="gpt-4o">gpt 4o</option>
+              <option value="gpt-4o-mini">gpt 4o mini</option>
+            </select>
+            <a id="savetext" href="" download=""></a>
+            <button id='generate_text_button' class='llm_button' title='show text generated from model in text area'>Show as Text</button>
+            <button id='generate_itext_button' class='llm_button' title='save text generated from model to file'>Save as Text</button>
+          </div>
+          <div><input id="loadtxt" accept=".txt" type="file"/></div>
+          <div id='prompt_submit_container' class="multi">
+            <button id='prompt_undo_button' class='llm_button' title='undo (reset to state before your last submit)'>&#10554;</button>
+            <button id='prompt_attach_button' class='llm_button' title='load text from (txt) file'>&#128206;</button>
+            <button id='prompt_submit_button' class='llm_button' title='submit'>&#x27A4;</button>
+          </div>
+        </ui-area>
+        <ui-resizehandle data-belongs-to-tab="details" data-label="drag to resize"></ui-resizehandle>
+        <ui-area data-belongs-to-tab="details" id="detailcolumn">
           <div id="modelling">
             <div id='graphgrid'>
               <div class="resource-label" style="display: none"></div>
@@ -267,11 +239,6 @@
             </div>
           </div>
         </ui-area>
-        <ui-resizehandle data-belongs-to-tab="details" data-label="drag to resize"></ui-resizehandle>
-        <ui-area data-belongs-to-tab="details" id="detailcolumn">
-          <div id="dat_details" class='x-ui-layout'></div>
-        </ui-area>
-        <ui-area data-belongs-to-tab="dsl" id="areadsl" class="inactive"></ui-area>
         <ui-area data-belongs-to-tab="log" id="arealog" class="inactive"> <!--{{{-->
           <div>Persistent Log: <a style='display:none' target='_blank' id='current-log'></a> [<a style='display:none' target='_blank' id='shifted-log'>S</a>]</div>
           <table id="dat_log" class="x-ui-layout"></table>

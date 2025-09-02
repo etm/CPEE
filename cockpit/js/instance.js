@@ -17,6 +17,7 @@ var save = {};
     save['endpoints'] = undefined;
     save['dataelements'] = undefined;
     save['attributes'] = undefined;
+    save['attributes_raw'] = {};
 var node_state = {};
 
 function global_init() {
@@ -387,6 +388,8 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       $("#current-graph").attr('href','graph.html?monitor=' + url);
       $("#current-track").show();
       $("#current-track").attr('href','track.html?monitor=' + url);
+      $("#current-index").show();
+      $("#current-index").attr('href','index.html?monitor=' + url);
       var q = $.parseQuerySimple();
       history.replaceState({}, '', '?' + (graph_position ? "position=" + graph_position + "&" : "") + (graph_highlight ? "highlight=" + graph_highlight + "&" : "") + (graph_theme ? "theme=" + graph_theme + "&" : "") + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
@@ -513,6 +516,9 @@ function monitor_instance_values(type,vals) {// {{{
             }
           });
         } else if(type == "attributes") {
+          $(" > attributes > *",res).each((k,v)=>{
+            save['attributes_raw'][v.nodeName] = v.textContent;
+          });
           if ($(" > attributes > resources",res).length > 0) {
             save['resources'] = $(" > attributes > resources",res).text();
           } else {
@@ -836,6 +842,7 @@ function monitor_graph_change(force) { //{{{
     type: "GET",
     url: url + "/properties/dslx/",
     success: function(dslx){
+      save['dslx'] = $(dslx.documentElement).serializePrettyXML();
       if (force || !save['graph'] || (save['graph'] && save['graph'].serializePrettyXML() != $(dslx.documentElement).serializePrettyXML())) {
         $.ajax({
           type: "GET",

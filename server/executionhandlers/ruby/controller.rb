@@ -63,7 +63,7 @@ class Controller
             if @callback_keys.has_key?(identifier)
               index = message.index(' ')
               mess = message[index+1..-1]
-              instance = message[0...index]
+              instance, uuid = message[0...index].split(',')
               m = JSON.parse(mess)
               resp = []
               m['content']['values'].each do |e|

@@ -36,38 +36,38 @@ $(document).ready(function() {
       success: function(res){
         var res_def = config_defaults();
         if (res['log-url']) { // just leave it out when it is not configured
-          $("body").attr('current-logs',res['log-url']);
+          $("body").attr('current-logs',res['log-url'].replace("%host",window.location.host));
         }
         if (res['res-url']) {
-          $("body").attr('current-resources',res['res-url']);
+          $("body").attr('current-resources',res['res-url'].replace("%host",window.location.host));
         } else {
-          $("body").attr('current-resources',res_def['res-url']);
+          $("body").attr('current-resources',res_def['res-url'].replace("%host",window.location.host));
         }
         if (res['base-url']) {
-          $("body").attr('current-base',res['base-url']);
+          $("body").attr('current-base',res['base-url'].replace("%host",window.location.host));
         } else {
-          $("body").attr('current-base',res_def['base-url']);
+          $("body").attr('current-base',res_def['base-url'].replace("%host",window.location.host));
         }
         if (res['save-url']) {
-          $("body").attr('current-save',res['save-url']);
+          $("body").attr('current-save',res['save-url'].replace("%host",window.location.host));
         } else {
-          $("body").attr('current-save',res_def['save-url']);
+          $("body").attr('current-save',res_def['save-url'].replace("%host",window.location.host));
         }
         if (res['templates-url']) {
-          $("body").attr('current-templates',res['templates-url']);
+          $("body").attr('current-templates',res['templates-url'].replace("%host",window.location.host));
         } else {
-          $("body").attr('current-templates',res_def['templates-url']);
+          $("body").attr('current-templates',res_def['templates-url'].replace("%host",window.location.host));
         }
-        $("input[name=res-url]").val($("body").attr('current-resources'));
-        $("input[name=base-url]").val($("body").attr('current-base'));
+        $("input[name=res-url]").val($("body").attr('current-resources').replace("%host",window.location.host));
+        $("input[name=base-url]").val($("body").attr('current-base').replace("%host",window.location.host));
         cockpit();
       },
       error: function(){
         var res = config_defaults();
-        $("body").attr('current-resources',res['res-url']);
-        $("body").attr('current-base',res['base-url']);
-        $("body").attr('current-save',res['save-url']);
-        $("body").attr('current-templates',res['templates-url']);
+        $("body").attr('current-resources',res['res-url'].replace("%host",window.location.host));
+        $("body").attr('current-base',res['base-url'].replace("%host",window.location.host));
+        $("body").attr('current-save',res['save-url'].replace("%host",window.location.host));
+        $("body").attr('current-templates',res['templates-url'].replace("%host",window.location.host));
         $("input[name=res-url]").val($("body").attr('current-resources'));
         $("input[name=base-url]").val($("body").attr('current-base'));
         cockpit();
