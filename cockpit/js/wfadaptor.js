@@ -572,7 +572,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       }
     } else if(end['row']-start['row'] < 0) { // upwards
       line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
-                            String(cend+15) + "," + String(start['row']*self.height-15) +" "+
+                            String(cstart) + "," + String(start['row']*self.height+3) +" "+
+                            String(cend+15) + "," + String(start['row']*self.height+3) +" "+
                             String(cend+15) + "," + String(end['row']*self.height+15)+" "+
                             String(cend) + "," + String(end['row']*self.height-15)
       );
@@ -814,6 +815,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         }
         if (!illustrator.compact) {
           if (block.max.row) {
+            if (!dim[pos.row]) { dim[pos.row] = []; }
+            dim[pos.row][pos.col] = illustrator.width;
             pos.row = block.max.row + 1;
           }
         }
