@@ -68,6 +68,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   $.getScript(theme_base, function() { //{{{
     manifestation = new WFAdaptorManifestation(self);
     illustrator.compact = manifestation.compact == true ? true : false;
+    illustrator.labels = manifestation.labels == true ? true : false;
     illustrator.striped = manifestation.striped == true ? true : false;
     description.source = manifestation.source;
     var deferreds = [];
@@ -211,6 +212,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.svg = {};
     this.draw = {};
     this.compact = true;
+    this.labels = true;
     this.striped = true;
     // private
     var self = this;
@@ -781,11 +783,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       var sname = sym_name(tname,context);
       pos.final = illustrator.elements[sname].final ? true : false;
       pos.wide = illustrator.elements[sname].wide ? true : false;
+      pos.noindent = illustrator.elements[sname].noindent ? true : false;
 
       // Calculate next position {{{
       if(root_expansion == 'vertical')  pos.row++;
       if(root_expansion == 'horizontal')  {
-        pos.col++;
+        // for noindent themes do not indent the first column
+        if (!pos.noindent || (pos.noindent && endnodes.length > 1)) {
+          pos.col++;
+        }
         if (!illustrator.compact) {
           if (block.max.row) {
             pos.row = block.max.row + 1;
@@ -799,6 +805,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
         if (!dim[pos.row]) { dim[pos.row] = []; }
         dim[pos.row][pos.col] = illustrator.width; // we assume that gateways are always compact, thus self.width
+        // but fuuuuu, we calculate the gateways only later, so we couldnt even have them bigger for now
 
         console.log('----> down', tname, parent_pos.row, pos.row, parent_pos.col, pos.col, dim);
 
