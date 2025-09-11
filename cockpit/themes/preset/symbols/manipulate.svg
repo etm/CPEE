@@ -12,9 +12,9 @@
       <rect x="1" y="1" width="28" height="28" rx="4" class="hfill rfill cline stand"/>
     </g>
     <g class="part-middle" transform="translate(27,0)">
-      <rect x="0" y="1" width="120" height="28" class="hfill rfill standwithout"/>
-      <line x1="0" y1="1" x2="120" y2="1" class="standline cline" />
-      <line x1="0" y1="29" x2="121" y2="29" class="standline cline" />
+      <rect x="0" y="1" width="220" height="28" class="hfill rfill standwithout"/>
+      <line x1="0" y1="1" x2="220" y2="1" class="standline cline" />
+      <line x1="0" y1="29" x2="221" y2="29" class="standline cline" />
       <text transform="translate(0,20)" class="label"></text>
     </g>
   </g>

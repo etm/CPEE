@@ -572,6 +572,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         );
       }
     } else if(end['row']-start['row'] < 0) { // upwards
+      cstart = cend + self.width;
       line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
                             String(cstart) + "," + String(start['row']*self.height+3) +" "+
                             String(cend+15) + "," + String(start['row']*self.height+3) +" "+
