@@ -211,6 +211,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.elements = {}; // the svgs
     this.svg = {};
     this.draw = {};
+    this.dim = {};
+    this.dim.props = [];
     this.compact = true;
     this.rotated_labels = true;
     this.striped = true;
@@ -250,6 +252,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   var clear = this.clear = function() { // {{{
     $('> :not(defs)', self.svg.container).each(function() {$(this).remove()});
     $('> defs > [belongs-to=element]', self.svg.container).each(function() {$(this).remove()});
+    self.dim.props = [];
   } // }}}
   this.set_svg_direct = function(svg) { // {{{
     self.svg.container.append(svg);
@@ -277,19 +280,29 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   // }}}
   // Helper Functions {{{
-  var set_x = this.draw.set_x = function(dim,row,col,tdim) {
-    if (!dim[row]) { dim[row] = []; }
-    dim[row][col] = tdim;
-  }
-  var get_x = function(a,col,dim,boundary=0) { //{{{
+  var set_x = this.dim.set_x = function(row,col,twidth) { //{{{
+    if (!self.dim.props[row]) { self.dim.props[row] = []; }
+    self.dim.props[row][col] = {};
+    self.dim.props[row][col].width = twidth;
+  } //}}}
+  var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth) { //{{{
+    if (!self.dim.props[row]) { self.dim.props[row] = []; }
+    if (!self.dim.props[row][col] || self.dim.props[row][col].width < twidth) {
+      self.dim.props[row][col] = {};
+      self.dim.props[row][col].x = tx;
+      self.dim.props[row][col].width = twidth;
+    }
+  }   //}}}
+
+  var get_x = this.dim.get_x = function(a,col,boundary=0) { //{{{
     if (a<0) { a = 0 };
 
     let starta = [];
-    for (let i=a; i <= dim.length; i++) {
+    for (let i=a; i <= self.dim.props.length; i++) {
       starta[i] = 0;
       for (let j=0; j < col; j++) {
-        if (typeof dim[i] !== 'undefined' && typeof dim[i][j] !== 'undefined') {
-          starta[i] += dim[i][j];
+        if (typeof self.dim.props[i] !== 'undefined' && typeof self.dim.props[i][j] !== 'undefined') {
+          starta[i] += self.dim.props[i][j].width;
         } else {
           // go up the column and find the next valid value
           let x = i;
@@ -297,9 +310,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
           let lmax = 0;
           while (x > boundary && found != 'yes') {
             x -= 1;
-            if (typeof dim[x] !== 'undefined' && typeof dim[x][j] !== 'undefined' && found == 'no') {
-              if (lmax < dim[x][j]) {
-                lmax = dim[x][j];
+            if (typeof self.dim.props[x] !== 'undefined' && typeof self.dim.props[x][j] !== 'undefined' && found == 'no') {
+              if (lmax < self.dim.props[x][j].width) {
+                lmax = self.dim.props[x][j].width;
               }
               found = 'yes';
             }
@@ -316,21 +329,21 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     return Math.max(...starta.filter(Number),self.width);
   } //}}}
-  var get_x_width = function(dim,maxcol) { //{{{
+  var get_x_width = this.dim.get_x_width = function(maxcol) { //{{{
     let cwidth = 0;
-    for (let i=0; i < dim.length; i++) {
+    for (let i=0; i < self.dim.props.length; i++) {
       let lwidth = 0;
       for (let j=0; j <= maxcol; j++) {
-        if (typeof dim[i] !== 'undefined' && typeof dim[i][j] !== 'undefined') {
-          lwidth += dim[i][j];
+        if (typeof self.dim.props[i] !== 'undefined' && typeof self.dim.props[i][j] !== 'undefined') {
+          lwidth += self.dim.props[i][j].width;
         } else {
           // go up the column and find the next valid value
           let x = i;
           let found = false;
           while (x > 0 && !found) {
             x -= 1;
-            if (typeof dim[x] !== 'undefined' && typeof dim[x][j] !== 'undefined') {
-              lwidth += dim[x][j];
+            if (typeof self.dim.props[x] !== 'undefined' && typeof self.dim.props[x][j] !== 'undefined') {
+              lwidth += self.dim.props[x][j].width;
               found = true;
             }
           }
@@ -423,23 +436,22 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     }
   } //}}}
 
-  var draw_stripe = this.draw.draw_stripe = function (row, maxcol, dim) { // {{{
+  var draw_stripe = this.draw.draw_stripe = function (row, maxcol) { // {{{
     if (maxcol < 1) maxcol = 1;
 
-    let cwidth = get_x_width(dim,maxcol);
+    let cwidth = get_x_width(maxcol);
     cwidth = cwidth + 2 * self.width - self.width_shift;
 
     var g = $X('<rect element-row="' + row + '" class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + cwidth + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
     self.svg.container.prepend(g);
     return g;
   } // }}}
-  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, parent_row, max_row, row, col, dim, group, addition) { // {{{
-    if (!(row in dim)) { dim[row] = [] }
+  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, parent_row, max_row, row, col, group, addition) { // {{{
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
     let center_x = (self.width - self.default_width) / 2;
     let center_y = (self.height - self.default_height) / 2;
 
-    let sstart = get_x(parent_row,col,dim,parent_row);
+    let sstart = get_x(parent_row,col,parent_row);
     let stop = 0;
 
     sstart = sstart            + center_x - self.width_shift;
@@ -483,8 +495,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             $('defs',self.svg.container).append(clip);
 
             end.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
-            let tdim = pos.x + width - self.endclipshift - 4 + this.get_width(end) + self.width_shift_label;
-            if (!dim[row][col] || dim[row][col] < tdim) { dim[row][col] = tdim; }
+            set_x_cond(row,col,pos.x + width - self.endclipshift - 4 + this.get_width(end) + self.width_shift_label);
           } else {
             let tdim = 0;
             if (self.rotated_labels) {
@@ -493,16 +504,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             } else {
               tdim = self.width + width + self.width_shift_label;
             }
-            if (!dim[row][col] || dim[row][col] < tdim) { dim[row][col] = tdim; }
+            set_x_cond(row,col,sstart,tdim);
           }
         } else {
-          let tdim = self.width;
-          if (!dim[row][col] || dim[row][col] < tdim) { dim[row][col] = tdim; }
+          set_x_cond(row,col,sstart,self.width);
         }
         if (nor.length > 0) { nor.remove(); }
       } else {
-        let tdim = self.width;
-        if (!dim[row][col] || dim[row][col] < tdim) { dim[row][col] = tdim; }
+        set_x_cond(row,col,sstart,self.width);
         if (sta.length > 0) { sta.remove(); }
         if (mid.length > 0) { mid.remove(); }
         if (end.length > 0) { end.remove(); }
@@ -511,8 +520,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       $('.part-start',sym).remove();
       $('.part-middle',sym).remove();
       $('.part-end',sym).remove();
-      let tdim = self.width;
-      if (!dim[row][col] || dim[row][col] < tdim) { dim[row][col] = tdim; }
+      set_x_cond(row,col,sstart,self.width);
     }
 
     sym.attr('class','activities');
@@ -526,27 +534,27 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     return g;
   } // }}}
-  var draw_border = this.draw.draw_border = function(id, p1, p2, group, dim) { // {{{
-    let bstart = get_x(p1.row,p1.col,dim);
+  var draw_border = this.draw.draw_border = function(id, p1, p2, group) { // {{{
+    let bstart = get_x(p1.row,p1.col);
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart-0.50) + '" ' +
         'y="' + (p1.row-0.80)*self.height + '" ' +
         'width="' + ((p2.col+1.00)-p1.col)*self.width + '" ' +
         'height="' + ((p2.row+1.00)-p1.row)*self.height +'" ' +
         'class="block" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
-  var draw_tile = this.draw.draw_tile = function(id, p1, p2, group, dim) { // {{{
-    let bstart = get_x(p1.row,p1.col,dim);
-    let bend = get_x(p1.row,p2.col,dim);
+  var draw_tile = this.draw.draw_tile = function(id, p1, p2, group) { // {{{
+    let bstart = get_x(p1.row,p1.col);
+    let bend = get_x(p1.row,p2.col);
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift) + '" ' +
         'y="' + ((p1.row-1)*self.height+self.height_shift/2) + '" ' +
         'width="' + (bend-bstart) + '" ' +
         'height="' + ((p2.row+1)-p1.row)*self.height +'" ' +
         'class="tile" rx="12" ry="12" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
-  var draw_connection = this.draw.draw_connection = function(group, start, end, context_row, arrow, dim) { // {{{
+  var draw_connection = this.draw.draw_connection = function(group, start, end, context_row, arrow) { // {{{
     let sr = Math.min(start.row,end.row);
-    let cstart = get_x(sr,start.col,dim,context_row);
-    let cend = get_x(sr,end.col,dim,context_row);
+    let cstart = get_x(sr,start.col,context_row);
+    let cend = get_x(sr,end.col,context_row);
 
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
     var line;
@@ -614,17 +622,13 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var labels = [];
 
   // Set Labels //{{{
-  this.set_labels = function(graph,dim) {
+  this.set_labels = function(graph) {
     if (illustrator.striped == true && illustrator.compact == false) {
       for (var i=0; i < graph.max.row; i++) {
-        illustrator.draw.draw_stripe(i,graph.max.col,dim);
+        illustrator.draw.draw_stripe(i,graph.max.col);
       }
     }
-    if (illustrator.compact == false) {
-      adaptor.draw_labels(graph.max,labels,{ 'height': illustrator.height, 'height_shift': illustrator.height_shift },illustrator.striped == true ? true : false);
-    } else {
-      adaptor.draw_labels(graph.max,[],{ 'height': illustrator.height, 'height_shift': illustrator.height_shift },false);
-    }
+    adaptor.draw_labels(graph.max,labels,{ 'height': illustrator.height, 'height_shift': illustrator.height_shift },illustrator.striped == true ? true : false);
   } //}}}
 
   // Generic Functions {{{
@@ -641,10 +645,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    let dim = [];
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false}, dim);
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
     illustrator.set_svg(graph);
-    self.set_labels(graph,dim);
+    self.set_labels(graph);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
     var serxml = $(description.get(0).documentElement).clone(true);
@@ -693,10 +696,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     id_counter = {};
     labels = [];
     illustrator.clear();
-    let dim = [];
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0}, dim);
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0});
     illustrator.set_svg(graph);
-    self.set_labels(graph,dim);
+    self.set_labels(graph);
     doit(self);
   }
   var update = this.update = function(svgid) { // {{{
@@ -704,10 +706,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(update_illustrator){
       labels = [];
       illustrator.clear();
-      let dim = [];
-      var graph = parse(description.children('description').get(0), {'row':0,'col':0}, dim);
+      var graph = parse(description.children('description').get(0), {'row':0,'col':0});
       illustrator.set_svg(graph);
-      self.set_labels(graph,dim);
+      self.set_labels(graph);
     }
 
     var newn = $('*[new=true]',description);
@@ -783,7 +784,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
   // }}}
   // Helper Functions {{{
-  var parse = function(root, parent_pos, dim)  { // private {{{
+  var parse = function(root, parent_pos)  { // private {{{
     var pos = JSON.parse(JSON.stringify(parent_pos));
     var max = {'row': 0,'col': 0};
     var prev = [parent_pos]; // connects parent with child(s), depending on the expansion
@@ -805,7 +806,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         // javascript object spread syntax is my new weird crush - the JS designers must be serious people
         labels.push({...{row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)},...illustrator.draw.get_y(pos.row)});
       }
-      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.row, pos.row, pos.col, dim, block.svg);
+      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.row, pos.row, pos.col, block.svg);
     } // }}}
 
     $(root).children().filter(function(){ return this.localName[0] != '_'; }).each(function() {
@@ -821,12 +822,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(root_expansion == 'horizontal')  {
         // for noindent themes do not indent the first column
         if (!pos.noindent || (pos.noindent && endnodes.length > 1)) {
-          illustrator.draw.set_x(dim,pos.row,pos.col,illustrator.width);
+          illustrator.dim.set_x(pos.row,pos.col,illustrator.width);
           pos.col++;
         }
         if (!illustrator.compact) {
           if (block.max.row) {
-            illustrator.draw.set_x(dim,pos.row,pos.col,illustrator.width);
+            illustrator.dim.set_x(pos.row,pos.col,illustrator.width);
             pos.row = block.max.row + 1;
           }
         }
@@ -836,19 +837,19 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg) pos.row--;
         // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
 
-        illustrator.draw.set_x(dim,pos.row,pos.col,illustrator.width);
+        illustrator.dim.set_x(pos.row,pos.col,illustrator.width);
         // but fuuuuu, we calculate the gateways only later, so we couldnt even have them bigger for now
 
-        // console.log('----> down', tname, parent_pos.row, pos.row, parent_pos.col, pos.col, dim);
+        // console.log('----> down', tname, parent_pos.row, pos.row, parent_pos.col, pos.col, illustrator.dim.props);
 
-        let tblock = parse(context, JSON.parse(JSON.stringify(pos)), dim);
+        let tblock = parse(context, JSON.parse(JSON.stringify(pos)));
 
         // merge block and tblock, enforce the max, as the second branch could have fewer nodes than the first
         block.max.row = Math.max(block.max.row,tblock.max.row);
         block.max.col = Math.max(block.max.col,tblock.max.col);
         block.endnodes = tblock.endnodes;
 
-        // console.log('<---- up', tname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, dim);
+        // console.log('<---- up', tname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, illustrator.dim.props);
 
         block.svg.append(tblock.svg);
         block.svg.attr('id', 'group-' + $(context).attr('svg-id'));
@@ -865,7 +866,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       var g;
       set_details(tname,sname,pos,context);
       var origpos = JSON.parse(JSON.stringify(pos));
-      [g, endnodes] = draw_position(tname,parent_pos,origpos,prev,block,dim,endnodes,context);
+      [g, endnodes] = draw_position(tname,parent_pos,origpos,prev,block,endnodes,context);
 
       // Prepare next iteration {{{
       if(root_expansion == 'vertical') { prev = JSON.parse(JSON.stringify(endnodes)); pos.row = block.max.row;} // covers e.g. input's for alternative, parallel_branch, ... everything with horizontal expansion
@@ -886,12 +887,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
             max.col++;
             block.max.col = pos.col;
           }
-          draw_position(ctname,parent_pos,pos,block.endnodes,block,dim,[],context,{svg: g, pos: origpos});
+          draw_position(ctname,parent_pos,pos,block.endnodes,block,[],context,{svg: g, pos: origpos});
           pos.col--;
           set_details(ctname,csname,pos,context,true);
         } else {
           set_details(ctname,csname,pos,context,true);
-          [undefined, endnodes] = draw_position(ctname,parent_pos,pos,prev,block,dim,[],context,{svg: g, pos: origpos});
+          [undefined, endnodes] = draw_position(ctname,parent_pos,pos,prev,block,[],context,{svg: g, pos: origpos});
         }
         prev = JSON.parse(JSON.stringify(endnodes));
       }
@@ -906,7 +907,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(root.tagName == 'description' && illustrator.elements[root.tagName].closing_symbol) {
       pos.row++;
       max.row = pos.row;
-      draw_position(illustrator.elements['start'].closing_symbol,parent_pos,pos,prev,block,dim,[],this,{svg: block.svg, pos: pos});
+      draw_position(illustrator.elements['start'].closing_symbol,parent_pos,pos,prev,block,[],this,{svg: block.svg, pos: pos});
     }
 
     return {'endnodes': endnodes, 'max':max, 'svg': block.svg};
@@ -937,19 +938,19 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       labels.push({...{row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab},...illustrator.draw.get_y(pos.row)});
     }
   } //}}}
-  var draw_position = function(tname,parent_pos,pos,prev,block,dim,endnodes,context,second) { // private {{{
+  var draw_position = function(tname,parent_pos,pos,prev,block,endnodes,context,second) { // private {{{
     var sname = sym_name(tname,context);
-    // console.log('----- pos ' + sname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, block, dim);
+    // console.log('----- pos ' + sname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, block, illustrator.dim.props);
 
     // Draw Symbol {{{
     if (second) {
       console.log('x');
-      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, dim, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
       $(context).attr('svg-type',tname);
       $(context).attr('svg-subtype',sname);
       if((illustrator.elements[sname] && illustrator.elements[sname].svg) || sname == 'unknown') {
-        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, dim, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
 
         if (illustrator.elements[sname].info) {
           var info = illustrator.elements[sname].info(context);
@@ -961,17 +962,17 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (illustrator.elements[sname] && illustrator.elements[sname].border) {
         var wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
         if (illustrator.elements[sname].closing_symbol) {
-          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg, dim);
+          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg);
         } else {
-          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg, dim);
+          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg);
         }
       }
       if (illustrator.elements[sname] && illustrator.elements[sname].type == 'complex') {
         var wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
         if (illustrator.elements[sname].closing_symbol) {
-          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg, dim);
+          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg);
         } else {
-          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg, dim);
+          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg);
         }
       }
     }
@@ -983,15 +984,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (second) {
         if (second.pos.row+1 < pos.row) { // when no content, dont paint the up arrow
           connection_case = 1;
-          console.log('++ case 1',prev[node].row,pos.row,dim);
-          illustrator.draw.draw_connection(block.svg, pos, second.pos, 0, true, dim);
+          console.log('++ case 1',prev[node].row,pos.row,illustrator.dim.props);
+          illustrator.draw.draw_connection(block.svg, pos, second.pos, 0, true);
         }
       } else {
         for (let node=0; node < block.endnodes.length; node++) {
           if (block.endnodes[node] && !block.endnodes[node].final) {
             connection_case = 2;
-            console.log('++ case 2',prev[node].row,pos.row,dim);
-            illustrator.draw.draw_connection(block.svg, block.endnodes[node], pos, 0, true, dim);
+            console.log('++ case 2',prev[node].row,pos.row,illustrator.dim.props);
+            illustrator.draw.draw_connection(block.svg, block.endnodes[node], pos, 0, true);
           }
         }
       }
@@ -1001,7 +1002,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     } else { endnodes = [JSON.parse(JSON.stringify(pos))]; } // sets this element as only endpoint (aggregate)
     if(prev[0].row == 0 || prev[0].col == 0) { // this enforces the connection from description to the first element
       connection_case = 3;
-      illustrator.draw.draw_connection(block.svg, { row: 1, col: 1 }, pos, 0, true, dim);
+      illustrator.draw.draw_connection(block.svg, { row: 1, col: 1 }, pos, 0, true);
     } else {
       if (illustrator.elements[sname].noarrow == undefined || illustrator.elements[sname].noarrow == false) {
         for (let node=0; node < prev.length; node++) {
@@ -1012,16 +1013,16 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
                 pn.col = pos.col;
               }
               connection_case = 4;
-              console.log('++ case 4',prev[node].row,pos.row,dim);
-              illustrator.draw.draw_connection(block.svg, pn, pos, 0, true, dim);
+              console.log('++ case 4',prev[node].row,pos.row,illustrator.dim.props);
+              illustrator.draw.draw_connection(block.svg, pn, pos, 0, true);
             } else {
               connection_case = 5;
               if (prev.length == 1) {
-                console.log('++ case 5a',parent_pos.row, '---', prev[node].row,pos.row,dim);
-                illustrator.draw.draw_connection(block.svg, prev[node], pos, 0, true, dim);
+                console.log('++ case 5a',parent_pos.row, '---', prev[node].row,pos.row,illustrator.dim.props);
+                illustrator.draw.draw_connection(block.svg, prev[node], pos, 0, true);
               } else {
-                console.log('++ case 5b',prev[node].row,pos.row,dim);
-                illustrator.draw.draw_connection(block.svg, prev[node], pos, 0, true, dim);
+                console.log('++ case 5b',prev[node].row,pos.row,illustrator.dim.props);
+                illustrator.draw.draw_connection(block.svg, prev[node], pos, 0, true);
               }
             }
           }
@@ -1030,8 +1031,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         for (let node=0; node < prev.length; node++) {
           if (prev[node] && !prev[node].final) {
             connection_case = 6;
-            console.log('++ case 6',prev[node].row,pos.row,dim);
-            illustrator.draw.draw_connection(block.svg, prev[node], pos, prev[node].row, false, dim);
+            console.log('++ case 6',prev[node].row,pos.row,illustrator.dim.props);
+            illustrator.draw.draw_connection(block.svg, prev[node], pos, prev[node].row, false);
           }
         }
       }
