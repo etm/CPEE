@@ -280,9 +280,40 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   // }}}
   // Helper Functions {{{
+  var debug_dim = this.dim.debug = function() { //{{{
+    line = '\n';
+    for (let i=1; i < self.dim.props.length; i++) {
+      line += $.sprintf('%02d',i) + ': ';
+      if (self.dim.props[i]) {
+        for (let j=1; j < self.dim.props[i].length; j++) {
+          line += ' [ ';
+          if (self.dim.props[i] && self.dim.props[i][j] && self.dim.props[i][j].x) { line += $.sprintf('%3d',self.dim.props[i][j].x); } else { line += '   '; }
+          line += ', ';
+          if (self.dim.props[i] && self.dim.props[i][j] && self.dim.props[i][j].width) { line += $.sprintf('%3d',self.dim.props[i][j].width); } else { line += '   '; }
+          line += ' ] ';
+        }
+      }
+      line += "\n";
+    }
+    return line;
+  } //}}}
+
+  // j set_x
   var set_x = this.dim.set_x = function(row,col,twidth) { //{{{
     if (!self.dim.props[row]) { self.dim.props[row] = []; }
     self.dim.props[row][col] = {};
+    console.log(row,col,debug_dim());
+    if (self.dim.props[row-1] && self.dim.props[row-1][col] && self.dim.props[row-1][col].x) {
+      self.dim.props[row][col].x = self.dim.props[row-1][col].x;
+    } else if (self.dim.props[row] && self.dim.props[row][col-1] && self.dim.props[row][col-1].x) {
+      let mlen = 0;
+      for (let i=row; i<self.dim.props.length; i++) {
+        if (self.dim.props[i][col-1] && mlen < self.dim.props[i][col-1].x + self.dim.props[i][col-1].width) {
+          mlen = self.dim.props[i][col-1].x + self.dim.props[i][col-1].width;
+        }
+      }
+      self.dim.props[row][col].x = mlen;
+    }
     self.dim.props[row][col].width = twidth;
   } //}}}
   var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth) { //{{{
@@ -292,7 +323,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       self.dim.props[row][col].x = tx;
       self.dim.props[row][col].width = twidth;
     }
-  }   //}}}
+  } //}}}
 
   var get_x = this.dim.get_x = function(a,col,boundary=0) { //{{{
     if (a<0) { a = 0 };
@@ -325,8 +356,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         }
       }
     }
-    console.log(a,col,starta);
-
     return Math.max(...starta.filter(Number),self.width);
   } //}}}
   var get_x_width = this.dim.get_x_width = function(maxcol) { //{{{
@@ -495,7 +524,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             $('defs',self.svg.container).append(clip);
 
             end.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
-            set_x_cond(row,col,pos.x + width - self.endclipshift - 4 + this.get_width(end) + self.width_shift_label);
+            set_x_cond(row,col,sstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + self.width_shift_label);
           } else {
             let tdim = 0;
             if (self.rotated_labels) {
@@ -840,7 +869,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         illustrator.dim.set_x(pos.row,pos.col,illustrator.width);
         // but fuuuuu, we calculate the gateways only later, so we couldnt even have them bigger for now
 
-        // console.log('----> down', tname, parent_pos.row, pos.row, parent_pos.col, pos.col, illustrator.dim.props);
+        // console.log('----> down', tname, parent_pos.row, pos.row, parent_pos.col, pos.col, illustrator.dim.debug());
 
         let tblock = parse(context, JSON.parse(JSON.stringify(pos)));
 
@@ -849,7 +878,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         block.max.col = Math.max(block.max.col,tblock.max.col);
         block.endnodes = tblock.endnodes;
 
-        // console.log('<---- up', tname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, illustrator.dim.props);
+        // console.log('<---- up', tname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, illustrator.dim.debug());
 
         block.svg.append(tblock.svg);
         block.svg.attr('id', 'group-' + $(context).attr('svg-id'));
@@ -940,11 +969,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   } //}}}
   var draw_position = function(tname,parent_pos,pos,prev,block,endnodes,context,second) { // private {{{
     var sname = sym_name(tname,context);
-    // console.log('----- pos ' + sname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, block, illustrator.dim.props);
+    // console.log('----- pos ' + sname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, block, illustrator.dim.debug());
 
     // Draw Symbol {{{
     if (second) {
-      console.log('x');
       illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
       $(context).attr('svg-type',tname);
@@ -984,14 +1012,14 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (second) {
         if (second.pos.row+1 < pos.row) { // when no content, dont paint the up arrow
           connection_case = 1;
-          console.log('++ case 1',prev[node].row,pos.row,illustrator.dim.props);
+          console.log('++ case 1',prev[node].row,pos.row,illustrator.dim.debug());
           illustrator.draw.draw_connection(block.svg, pos, second.pos, 0, true);
         }
       } else {
         for (let node=0; node < block.endnodes.length; node++) {
           if (block.endnodes[node] && !block.endnodes[node].final) {
             connection_case = 2;
-            console.log('++ case 2',prev[node].row,pos.row,illustrator.dim.props);
+            console.log('++ case 2',prev[node].row,pos.row,illustrator.dim.debug());
             illustrator.draw.draw_connection(block.svg, block.endnodes[node], pos, 0, true);
           }
         }
@@ -1013,15 +1041,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
                 pn.col = pos.col;
               }
               connection_case = 4;
-              console.log('++ case 4',prev[node].row,pos.row,illustrator.dim.props);
+              console.log('++ case 4',prev[node].row,pos.row,illustrator.dim.debug());
               illustrator.draw.draw_connection(block.svg, pn, pos, 0, true);
             } else {
               connection_case = 5;
               if (prev.length == 1) {
-                console.log('++ case 5a',parent_pos.row, '---', prev[node].row,pos.row,illustrator.dim.props);
+                console.log('++ case 5a',parent_pos.row, '---', prev[node].row,pos.row,illustrator.dim.debug());
                 illustrator.draw.draw_connection(block.svg, prev[node], pos, 0, true);
               } else {
-                console.log('++ case 5b',prev[node].row,pos.row,illustrator.dim.props);
+                console.log('++ case 5b',prev[node].row,pos.row,illustrator.dim.debug());
                 illustrator.draw.draw_connection(block.svg, prev[node], pos, 0, true);
               }
             }
@@ -1031,7 +1059,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         for (let node=0; node < prev.length; node++) {
           if (prev[node] && !prev[node].final) {
             connection_case = 6;
-            console.log('++ case 6',prev[node].row,pos.row,illustrator.dim.props);
+            console.log('++ case 6',prev[node].row,pos.row,illustrator.dim.debug());
             illustrator.draw.draw_connection(block.svg, prev[node], pos, prev[node].row, false);
           }
         }
