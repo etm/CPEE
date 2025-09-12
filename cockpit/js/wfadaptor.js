@@ -313,13 +313,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return Math.max(...starta.filter(Number),self.width);
   } //}}}
 
-  var get_y = this.draw.get_y = function(row) { // {{{
-    return { y: row * self.height - self.height, height_shift: self.height_shift};
-  } // }}}
-
-  var draw_stripe = this.draw.draw_stripe = function (row, maxcol, dim) { // {{{
-    if (maxcol < 1) maxcol = 1;
-
+  var get_line_width = function(dim,maxcol) {
     let cwidth = 0;
     for (let i=0; i < dim.length; i++) {
       let lwidth = 0;
@@ -344,6 +338,17 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       }
       if (cwidth < lwidth) { cwidth = lwidth; }
     }
+    return cwidth;
+  }
+
+  var get_y = this.draw.get_y = function(row) { // {{{
+    return { y: row * self.height - self.height, height_shift: self.height_shift};
+  } // }}}
+
+  var draw_stripe = this.draw.draw_stripe = function (row, maxcol, dim) { // {{{
+    if (maxcol < 1) maxcol = 1;
+
+    let cwidth = get_line_width(dim,maxcol);
     cwidth = cwidth + 2 * self.width - self.width_shift;
 
     var g = $X('<rect element-row="' + row + '" class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + cwidth + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
