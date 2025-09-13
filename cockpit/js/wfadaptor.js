@@ -207,7 +207,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.default_height = 40;
     this.height_shift = this.height * 0.26;
     this.width_shift = this.width * 0.39;
-    this.width_shift_label = 13;
+    this.width_shift_label = 7;
     this.group_extend = 1;
     this.elements = {}; // the svgs
     this.svg = {};
@@ -228,7 +228,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg_container = function(con) { // {{{
     self.svg.container = con;
     self.svg.container.append($X('<defs xmlns="http://www.w3.org/2000/svg">' +
-      '  <marker id="arrow" viewBox="0 0 10 10" refX="33" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="4.5" makerHeight="4.5">' +
+      '  <marker id="arrow" viewBox="0 0 10 10" refX="28.5" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="14" markerHeight="3.5">' +
       '    <path d="m 2 2 l 6 3 l -6 3 z"/>' +
       '  </marker>' +
       '  <clipPath id="startclip">' +
@@ -601,17 +601,17 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let bend = get_x_plus(p1.row,p2.row,p2.col,'border to');
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift - self.group_extend) + '" ' +
         'y="' + ((p1.row-1)*self.height+self.height_shift/2-self.group_extend) + '" ' +
-        'width="' + (bend-bstart-self.width_shift_label/2+2*self.group_extend) + '" ' +
+        'width="' + (bend-bstart+2*self.group_extend) + '" ' +
         'height="' + (((p2.row+1)-p1.row)*self.height+2*self.group_extend) + '" ' +
-        'class="block" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
+        'class="block" rx="12" ry="12" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_tile = this.draw.draw_tile = function(id, p1, p2, group) { // {{{
     let bstart = get_x(p1.row,p1.col,'tile from');
     let bend = get_x_plus(p1.row,p2.row,p2.col,'tile to');
-    group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift) + '" ' +
-        'y="' + ((p1.row-1)*self.height+self.height_shift/2) + '" ' +
-        'width="' + (bend-bstart-self.width_shift_label/2) + '" ' +
-        'height="' + ((p2.row+1)-p1.row)*self.height +'" ' +
+    group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift - self.group_extend) + '" ' +
+        'y="' + ((p1.row-1)*self.height+self.height_shift/2-self.group_extend) + '" ' +
+        'width="' + (bend-bstart+2*self.group_extend) + '" ' +
+        'height="' + (((p2.row+1)-p1.row)*self.height+2*self.group_extend) + '" ' +
         'class="tile" rx="12" ry="12" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_connection = this.draw.draw_connection = function(group, start, end, context_row, arrow) { // {{{
@@ -653,8 +653,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     } else if(end['row']-start['row'] < 0) { // upwards
       cstart = cend + self.width;
       line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
-                            String(cstart) + "," + String(start['row']*self.height+3) +" "+
-                            String(cend+15) + "," + String(start['row']*self.height+3) +" "+
+                            String(cstart) + "," + String(start['row']*self.height+5) +" "+
+                            String(cend+15) + "," + String(start['row']*self.height+5) +" "+
                             String(cend+15) + "," + String(end['row']*self.height+15)+" "+
                             String(cend) + "," + String(end['row']*self.height-15)
       );
