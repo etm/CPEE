@@ -302,17 +302,32 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   var set_x = this.dim.set_x = function(row,col,twidth) { //{{{
     if (!self.dim.props[row]) { self.dim.props[row] = []; }
     self.dim.props[row][col] = {};
-    console.log(row,col,debug_dim());
-    if (self.dim.props[row-1] && self.dim.props[row-1][col] && self.dim.props[row-1][col].x) {
+    if (self.dim.props[row-1] && self.dim.props[row-1][col] && self.dim.props[row-1][col].x) { // previous row
       self.dim.props[row][col].x = self.dim.props[row-1][col].x;
-    } else if (self.dim.props[row] && self.dim.props[row][col-1] && self.dim.props[row][col-1].x) {
-      let mlen = 0;
+    } else if (self.dim.props[row] && self.dim.props[row][col-1] && self.dim.props[row][col-1].x) { // previous column
+      let mx = 0;
       for (let i=row; i<self.dim.props.length; i++) {
-        if (self.dim.props[i][col-1] && mlen < self.dim.props[i][col-1].x + self.dim.props[i][col-1].width) {
-          mlen = self.dim.props[i][col-1].x + self.dim.props[i][col-1].width;
+        if (self.dim.props[i][col-1] && mx < self.dim.props[i][col-1].x + self.dim.props[i][col-1].width) {
+          mx = self.dim.props[i][col-1].x + self.dim.props[i][col-1].width;
         }
       }
-      self.dim.props[row][col].x = mlen;
+      self.dim.props[row][col].x = mx;
+    } else if (self.dim.props.length > row + 1) { // go downwards
+      let mx = 0;
+      for (let i=row; i<self.dim.props.length; i++) {
+        if (self.dim.props[i] && self.dim.props[i][col] && mx < self.dim.props[i][col].x) {
+          mx = self.dim.props[i][col].x;
+        }
+      }
+      self.dim.props[row][col].x = mx;
+    } else { // go upwards
+      let mx = 0;
+      for (let i=row; i>0; i--) {
+        if (self.dim.props[i] && self.dim.props[i][col] && mx < self.dim.props[i][col].x) {
+          mx = self.dim.props[i][col].x;
+        }
+      }
+      self.dim.props[row][col].x = mx;
     }
     self.dim.props[row][col].width = twidth;
   } //}}}
@@ -325,38 +340,35 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     }
   } //}}}
 
-  var get_x = this.dim.get_x = function(a,col,boundary=0) { //{{{
-    if (a<0) { a = 0 };
+  var get_x = this.dim.get_x = function(row,col,boundary=0,deb='') { //{{{
+    if (row<0) { row = 0 };
 
-    let starta = [];
-    for (let i=a; i <= self.dim.props.length; i++) {
-      starta[i] = 0;
-      for (let j=0; j < col; j++) {
-        if (typeof self.dim.props[i] !== 'undefined' && typeof self.dim.props[i][j] !== 'undefined') {
-          starta[i] += self.dim.props[i][j].width;
-        } else {
-          // go up the column and find the next valid value
-          let x = i;
-          let found = 'no';
-          let lmax = 0;
-          while (x > boundary && found != 'yes') {
-            x -= 1;
-            if (typeof self.dim.props[x] !== 'undefined' && typeof self.dim.props[x][j] !== 'undefined' && found == 'no') {
-              if (lmax < self.dim.props[x][j].width) {
-                lmax = self.dim.props[x][j].width;
-              }
-              found = 'yes';
-            }
-          }
-          if (found == 'yes') {
-            starta[i] += lmax;
-          } else {
-            starta[i] += self.width;
-          }
+    let mlen = 0;
+    if (self.dim.props[row] && self.dim.props[row][col] && self.dim.props[row][col].x) { // this column
+      mlen = self.dim.props[row][col].x;
+    } else if (self.dim.props[row-1] && self.dim.props[row-1][col] && self.dim.props[row-1][col].x) { // column before
+      mlen = self.dim.props[row-1][col].x;
+    } else if (self.dim.props[row] && self.dim.props[row][col-1] && self.dim.props[row][col-1].x) { // row before
+      for (let i=row; i<self.dim.props.length; i++) {
+        if (self.dim.props[i][col-1] && mlen < self.dim.props[i][col-1].x + self.dim.props[i][col-1].width) {
+          mlen = self.dim.props[i][col-1].x + self.dim.props[i][col-1].width;
         }
       }
+    } else if (self.dim.props[row-1] && self.dim.props[row-1][col-1] && self.dim.props[row-1][col-1].x) { // diagonal left above
+      mlen = self.dim.props[row-1][col-1].x;
+    } else { // same column below
+      for (let i=row; i<self.dim.props.length; i++) {
+        if (self.dim.props[i] && self.dim.props[i][col] && mlen < self.dim.props[i][col].x + self.dim.props[i][col].width) {
+          mlen = self.dim.props[i][col].x;
+        }
+      }
+      // found nothing in the rows below
+      if (mlen == 0) {
+        mlen = self.width;
+      }
     }
-    return Math.max(...starta.filter(Number),self.width);
+    console.log(deb,row,col,'--> ' + mlen,debug_dim());
+    return mlen;
   } //}}}
   var get_x_width = this.dim.get_x_width = function(maxcol) { //{{{
     let cwidth = 0;
@@ -480,11 +492,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let center_x = (self.width - self.default_width) / 2;
     let center_y = (self.height - self.default_height) / 2;
 
-    let sstart = get_x(parent_row,col,parent_row);
-    let stop = 0;
+    let dstart = get_x(parent_row,col,0,'symbol ' + sname);
 
-    sstart = sstart            + center_x - self.width_shift;
-    stop   = row * self.height + center_y - (self.height-self.height_shift);
+    let sstart = dstart            + center_x - self.width_shift;
+    let stop   = row * self.height + center_y - (self.height-self.height_shift);
 
     if (addition) {
       var g = $X('<g class="element" element-row="' + (row-1) + '" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
@@ -524,7 +535,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             $('defs',self.svg.container).append(clip);
 
             end.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
-            set_x_cond(row,col,sstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + self.width_shift_label);
+            set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + self.width_shift_label);
           } else {
             let tdim = 0;
             if (self.rotated_labels) {
@@ -533,14 +544,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             } else {
               tdim = self.width + width + self.width_shift_label;
             }
-            set_x_cond(row,col,sstart,tdim);
+            set_x_cond(row,col,dstart,tdim);
           }
         } else {
-          set_x_cond(row,col,sstart,self.width);
+          set_x_cond(row,col,dstart,self.width);
         }
         if (nor.length > 0) { nor.remove(); }
       } else {
-        set_x_cond(row,col,sstart,self.width);
+        set_x_cond(row,col,dstart,self.width);
         if (sta.length > 0) { sta.remove(); }
         if (mid.length > 0) { mid.remove(); }
         if (end.length > 0) { end.remove(); }
@@ -549,7 +560,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       $('.part-start',sym).remove();
       $('.part-middle',sym).remove();
       $('.part-end',sym).remove();
-      set_x_cond(row,col,sstart,self.width);
+      set_x_cond(row,col,dstart,self.width);
     }
 
     sym.attr('class','activities');
@@ -564,7 +575,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return g;
   } // }}}
   var draw_border = this.draw.draw_border = function(id, p1, p2, group) { // {{{
-    let bstart = get_x(p1.row,p1.col);
+    let bstart = get_x(p1.row,p1.col,0,'border');
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart-0.50) + '" ' +
         'y="' + (p1.row-0.80)*self.height + '" ' +
         'width="' + ((p2.col+1.00)-p1.col)*self.width + '" ' +
@@ -572,8 +583,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         'class="block" rx="15" ry="15" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_tile = this.draw.draw_tile = function(id, p1, p2, group) { // {{{
-    let bstart = get_x(p1.row,p1.col);
-    let bend = get_x(p1.row,p2.col);
+    let bstart = get_x(p1.row,p1.col,0,'tile from');
+    let bend = get_x(p1.row,p2.col,0,'tile to');
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift) + '" ' +
         'y="' + ((p1.row-1)*self.height+self.height_shift/2) + '" ' +
         'width="' + (bend-bstart) + '" ' +
@@ -582,8 +593,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   var draw_connection = this.draw.draw_connection = function(group, start, end, context_row, arrow) { // {{{
     let sr = Math.min(start.row,end.row);
-    let cstart = get_x(sr,start.col,context_row);
-    let cend = get_x(sr,end.col,context_row);
+    let cstart = get_x(sr,start.col,context_row,'conn from');
+    let cend = get_x(sr,end.col,context_row,'conn to');
 
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
     var line;
