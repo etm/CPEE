@@ -1108,8 +1108,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     // }}}
 
-    illustrator.set_svg_direct(block.svg);
-    debugger;
+    ///////// show graph step by step
+    // illustrator.set_svg_direct(block.svg);
+    // debugger;
 
     return [g, endnodes];
   } // }}}
