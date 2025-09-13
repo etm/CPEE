@@ -301,7 +301,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // j set_x
   var set_x = this.dim.set_x = function(row,col,twidth) { //{{{
     if (!self.dim.props[row]) { self.dim.props[row] = []; }
-    self.dim.props[row][col] = {};
+    if (!self.dim.props[row][col]) { self.dim.props[row][col] = {}; }
+
     if (self.dim.props[row-1] && self.dim.props[row-1][col] && self.dim.props[row-1][col].x) { // previous row
       self.dim.props[row][col].x = self.dim.props[row-1][col].x;
     } else if (self.dim.props[row] && self.dim.props[row][col-1] && self.dim.props[row][col-1].x) { // previous column
@@ -329,7 +330,13 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       }
       self.dim.props[row][col].x = mx;
     }
-    self.dim.props[row][col].width = twidth;
+    if (self.dim.props[row][col].width) {
+      if (twidth > self.dim.props[row][col].width) {
+        self.dim.props[row][col].width = twidth;
+      }
+    } else {
+      self.dim.props[row][col].width = twidth;
+    }
   } //}}}
   var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth) { //{{{
     if (!self.dim.props[row]) { self.dim.props[row] = []; }
@@ -367,7 +374,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         mlen = self.width;
       }
     }
-    console.log(deb,row,col,'--> ' + mlen,debug_dim());
+    // console.log(deb,row,col,'--> ' + mlen,debug_dim());
     return mlen;
   } //}}}
   var get_x_width = this.dim.get_x_width = function(maxcol) { //{{{
@@ -972,10 +979,17 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     if (illustrator.elements[sname].label) {
       var lab = illustrator.elements[sname].label(context);
-      if (lab && lab[0] && lab[0].value && lab[0].column == 'Label' && lab[0].value != '') {
-        $(context).attr('svg-label', lab[0].value);
+      if (lab) {
+        for (let i=0; i<lab.length; i++) {
+          if (lab[i] && lab[i].value && lab[i].column == 'Label' && lab[i].value != '') {
+            $(context).attr('svg-label', lab[0].value);
+            if (illustrator.compact) {
+              lab.splice(i,1);
+            }
+          }
+        }
+        labels.push({...{row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab},...illustrator.draw.get_y(pos.row)});
       }
-      labels.push({...{row: pos.row, element_id: $(context).attr('svg-id'), tname: tname, label: lab},...illustrator.draw.get_y(pos.row)});
     }
   } //}}}
   var draw_position = function(tname,parent_pos,pos,prev,block,endnodes,context,second) { // private {{{
@@ -1023,14 +1037,14 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if (second) {
         if (second.pos.row+1 < pos.row) { // when no content, dont paint the up arrow
           connection_case = 1;
-          console.log('++ case 1',prev[node].row,pos.row,illustrator.dim.debug());
+          // console.log('++ case 1',prev[node].row,pos.row,illustrator.dim.debug());
           illustrator.draw.draw_connection(block.svg, pos, second.pos, 0, true);
         }
       } else {
         for (let node=0; node < block.endnodes.length; node++) {
           if (block.endnodes[node] && !block.endnodes[node].final) {
             connection_case = 2;
-            console.log('++ case 2',prev[node].row,pos.row,illustrator.dim.debug());
+            // console.log('++ case 2',prev[node].row,pos.row,illustrator.dim.debug());
             illustrator.draw.draw_connection(block.svg, block.endnodes[node], pos, 0, true);
           }
         }
@@ -1052,15 +1066,15 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
                 pn.col = pos.col;
               }
               connection_case = 4;
-              console.log('++ case 4',prev[node].row,pos.row,illustrator.dim.debug());
+              // console.log('++ case 4',prev[node].row,pos.row,illustrator.dim.debug());
               illustrator.draw.draw_connection(block.svg, pn, pos, 0, true);
             } else {
               connection_case = 5;
               if (prev.length == 1) {
-                console.log('++ case 5a',parent_pos.row, '---', prev[node].row,pos.row,illustrator.dim.debug());
+                // console.log('++ case 5a',parent_pos.row, '---', prev[node].row,pos.row,illustrator.dim.debug());
                 illustrator.draw.draw_connection(block.svg, prev[node], pos, 0, true);
               } else {
-                console.log('++ case 5b',prev[node].row,pos.row,illustrator.dim.debug());
+                // console.log('++ case 5b',prev[node].row,pos.row,illustrator.dim.debug());
                 illustrator.draw.draw_connection(block.svg, prev[node], pos, 0, true);
               }
             }
@@ -1070,7 +1084,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         for (let node=0; node < prev.length; node++) {
           if (prev[node] && !prev[node].final) {
             connection_case = 6;
-            console.log('++ case 6',prev[node].row,pos.row,illustrator.dim.debug());
+            // console.log('++ case 6',prev[node].row,pos.row,illustrator.dim.debug());
             illustrator.draw.draw_connection(block.svg, prev[node], pos, prev[node].row, false);
           }
         }
@@ -1078,8 +1092,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     // }}}
 
-    illustrator.set_svg_direct(block.svg);
-    debugger;
+    // illustrator.set_svg_direct(block.svg);
+    // debugger;
 
     return [g, endnodes];
   } // }}}
