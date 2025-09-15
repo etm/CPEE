@@ -299,7 +299,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return line;
   } //}}}
 
-  // j set_x
   var set_x = this.dim.set_x = function(row,col,twidth) { //{{{
     if (!self.dim.props[row]) { self.dim.props[row] = []; }
     if (!self.dim.props[row][col]) { self.dim.props[row][col] = {}; }
@@ -340,7 +339,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     } else {
       self.dim.props[row][col].width = twidth;
     }
-    // console.log(row,col,debug_dim());
+    // console.log('set_x ',row,col,debug_dim());
   } //}}}
   var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth) { //{{{
     if (!self.dim.props[row]) { self.dim.props[row] = []; }
@@ -357,6 +356,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let mlen = 0;
     if (self.dim.props[row] && self.dim.props[row][col] && self.dim.props[row][col].x) { // this column
       mlen = self.dim.props[row][col].x;
+    } else if (self.dim.props[row] && !self.dim.props[row][col] && self.dim.props.length > row && self.dim.props[row+1] && self.dim.props[row+1][col] && self.dim.props[row+1][col].x ) { // row before
+      mlen = self.dim.props[row+1][col].x;
     } else if (self.dim.props[row-1] && self.dim.props[row-1][col] && self.dim.props[row-1][col].x) { // row before
       mlen = self.dim.props[row-1][col].x;
     } else if (self.dim.props[row] && self.dim.props[row][col-1] && self.dim.props[row][col-1].x) { // column before
@@ -365,6 +366,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
           mlen = self.dim.props[i][col-1].x + self.dim.props[i][col-1].width;
         }
       }
+    } else if (self.dim.props[row+1] && self.dim.props[row+1][col] && self.dim.props[row+1][col].x) { // directly below
+      mlen = self.dim.props[row+1][col].x;
     } else if (self.dim.props[row-1] && self.dim.props[row-1][col-1] && self.dim.props[row-1][col-1].x) { // diagonal left above
       mlen = self.dim.props[row-1][col-1].x;
     } else { // same column below
@@ -390,6 +393,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         mlen = self.dim.props[i][col].x + self.dim.props[i][col].width;
       }
     }
+    // console.log(deb,rowf,rowt,col,'--> ' + mlen,debug_dim());
     return mlen;
   } //}}}
   var get_x_width = this.dim.get_x_width = function(maxcol) { //{{{
@@ -611,7 +615,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift - self.group_extend) + '" ' +
         'y="' + ((p1.row-1)*self.height+self.height_shift/2-self.group_extend) + '" ' +
         'width="' + (bend-bstart+2*self.group_extend) + '" ' +
-        'height="' + (((p2.row+1)-p1.row)*self.height+2*self.group_extend) + '" ' +
+        'height="' + (((p2.row+1)-p1.row)*self.height+5*self.group_extend) + '" ' +
         'class="tile" rx="12" ry="12" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_connection = this.draw.draw_connection = function(group, start, end, context_row, arrow) { // {{{
@@ -645,16 +649,15 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         }
       } else { // right - left
         line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
-                              String(cstart) + "," + String(end['row']*self.height-35) +" "+
-                              String(cend+14) + "," + String(end['row']*self.height-35) +" "+ // last turn of horizontal-line going into the node
+                              String(cstart) + "," + String(end['row']*self.height-32) +" "+
+                              String(cend+14) + "," + String(end['row']*self.height-32) +" "+ // last turn of horizontal-line going into the node
                               String(cend) + "," + String(end['row']*self.height-15)
         );
       }
     } else if(end['row']-start['row'] < 0) { // upwards
-      cstart = cend + self.width;
       line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
-                            String(cstart) + "," + String(start['row']*self.height+5) +" "+
-                            String(cend+15) + "," + String(start['row']*self.height+5) +" "+
+                            String(cstart) + "," + String(start['row']*self.height+4) +" "+
+                            String(cend+15) + "," + String(start['row']*self.height+4) +" "+
                             String(cend+15) + "," + String(end['row']*self.height+15)+" "+
                             String(cend) + "," + String(end['row']*self.height-15)
       );
