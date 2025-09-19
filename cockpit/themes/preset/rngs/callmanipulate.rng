@@ -11,6 +11,19 @@
     <element name="label" rngui:label="Label">
       <data type="string" rngui:label="Short description of the task"/>
     </element>
+    <element name="color" rngui:label="Task Color">
+      <choice rngui:type='color'>
+        <value>#ffffff</value>
+        <value>#99c1f1</value>
+        <value>#8ff0a4</value>
+        <value>#f9f06b</value>
+        <value>#ffbe6f</value>
+        <value>#f66151</value>
+        <value>#dc8add</value>
+        <value>#cdab8f</value>
+        <value>#77767b</value>
+      </choice>
+    </element>
     <element name="method" rngui:label="Method">
       <choice>
         <value>:post</value>
@@ -29,7 +42,13 @@
       </zeroOrMore>
     </element>
   </element>
-  <element name="code" rngui:header="Output Handling">
+  <element name="code" rngui:header="Data Handling">
+    <element name="signal_receive" rngui:label="Signal after receiving data">
+      <data type="boolean" rngui:label="A signal is sent every time the activity receives data from its endpoint"/>
+    </element>
+    <element name="signal_change" rngui:label="Signal after changing data">
+      <data type="boolean" rngui:label="A signal is sent every time the activity changes a data object"/>
+    </element>
     <element name="prepare" rngui:header="Prepare" rngui:label="Code" rngui:fold="closed_conditional">
       <text rngui:label="Script that is executed, before a service call"/>
     </element>
