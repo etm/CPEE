@@ -453,7 +453,7 @@
   </xsl:template>
   <xsl:template match="d:parameters">
     <xsl:apply-templates select="d:label" mode="parameter"/>
-    <xsl:apply-templates select="d:*[not(name()='label')]" mode="parameter"/>
+    <xsl:apply-templates select="d:*[not(name()='label') and not(name()='color')]" mode="parameter"/>
     <xsl:if test="count(*) &gt; 0">, </xsl:if>
     <xsl:apply-templates select="../d:annotations" mode="annotations"/>
   </xsl:template>
