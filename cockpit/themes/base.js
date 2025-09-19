@@ -1267,7 +1267,6 @@ function WFAdaptorManifestationBase(adaptor) {
               item += x + '\n';
             });
           }
-          console.log(item);
           if (item == '') { return; }
 
           let indices = [];
