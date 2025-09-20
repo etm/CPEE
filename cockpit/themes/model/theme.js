@@ -40,7 +40,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       }
 
       if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
-        var icon =  self.elements[xml_node.get(0).tagName].illustrator.svg.clone();
+        var icon = contextMenuHandling_clean_icon(self.elements[xml_node.get(0).tagName].illustrator.svg);
         icon.find('.rfill').addClass('menu');
         icon.find('.hfill').addClass('menu');
         menu['Delete'] = [{
@@ -58,7 +58,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         var nodes = localStorage.getItem('marked');
         nodes = JSON.parse(nodes);
         if (nodes && nodes.length > 0) {
-          var icond =  self.resources['delete'].clone();
+          var icond = contextMenuHandling_clean_icon(self.resources['delete']);
           icond.children('.standfat').addClass('menu');
           menu['Delete'].push({
             'label': 'Remove Marked Elements',
@@ -90,7 +90,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         }
       }
       if($('> code', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
-        var icon =  self.elements.callmanipulate.illustrator.svg.clone();
+        var icon = contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg);
         icon.children('.rfill:last').addClass('menu');
         menu['Delete'].push({
           'label': 'Remove Output Transformation',
@@ -132,7 +132,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
           return [
            {'label': 'Output Transformation',
             'function_call': self.adaptor.description.insert_last_into,
-            'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+            'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
             'type': undefined,
             'params': [self.adaptor.description.elements.scripts, node]}
           ];
@@ -172,42 +172,42 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         var childs = [
           {'label': 'Task with Output Transformation',
            'function_call': func,
-           'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
            'type': 'callmanipulate',
            'params': [self.adaptor.description.elements.callmanipulate, node]},
           {'label': 'Task',
            'function_call': func,
-           'menu_icon': self.elements.call.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.call.illustrator.svg),
            'type': 'call',
            'params': [self.adaptor.description.elements.call, node]},
           {'label': 'Script',
            'function_call': func,
-           'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.manipulate.illustrator.svg),
            'type': 'manipulate',
            'params': [self.adaptor.description.elements.manipulate, node]},
           {'label': 'Parallel',
            'function_call': func,
-           'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel.illustrator.svg),
            'type': 'parallel',
            'params': [self.adaptor.description.elements.parallel, node]},
           {'label': 'Decision',
            'function_call': func,
-           'menu_icon': self.elements.choose.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.choose.illustrator.svg),
            'type': 'choose',
            'params': [self.adaptor.description.elements.choose, node]},
           {'label': 'Loop',
            'function_call': func,
-           'menu_icon': self.elements.loop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.loop.illustrator.svg),
            'type': 'loop',
            'params': [self.adaptor.description.elements.loop, node]},
           {'label': 'Terminate',
            'function_call': func,
-           'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.terminate.illustrator.svg),
            'type': 'terminate',
            'params': [self.adaptor.description.elements.terminate, node]},
           {'label': 'Stop',
            'function_call': func,
-           'menu_icon': self.elements.stop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.stop.illustrator.svg),
            'type': 'stop',
            'params': [self.adaptor.description.elements.stop, node]}
         ];
@@ -215,7 +215,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
           childs.push({
              'label': 'Critical',
              'function_call': func,
-             'menu_icon': self.elements.critical.illustrator.svg.clone(),
+             'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
              'type': 'critical',
              'params': [self.adaptor.description.elements.critical, node]
           });
@@ -257,49 +257,49 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         if(node.parents('parallel').length > node.parents('parallel_branch').length && node.get(0).tagName == 'alternative') {
           return [{'label': 'Parallel Branch',
            'function_call': func,
-           'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel_branch.illustrator.svg),
            'type': 'parallel_branch',
            'params': [self.adaptor.description.elements.parallel_branch, node]}];
         }
         var childs = [
           {'label': 'Task with Output Transformation',
            'function_call': func,
-           'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
            'type': 'callmanipulate',
            'params': [self.adaptor.description.elements.callmanipulate, node]},
           {'label': 'Task',
            'function_call': func,
-           'menu_icon': self.elements.call.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.call.illustrator.svg),
            'type': 'call',
            'params': [self.adaptor.description.elements.call, node]},
           {'label': 'Script',
            'function_call': func,
-           'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.manipulate.illustrator.svg),
            'type': 'manipulate',
            'params': [self.adaptor.description.elements.manipulate, node]},
           {'label': 'Parallel',
            'function_call': func,
-           'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel.illustrator.svg),
            'type': 'parallel',
            'params': [self.adaptor.description.elements.parallel, node]},
           {'label': 'Decision',
            'function_call': func,
-           'menu_icon': self.elements.choose.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.choose.illustrator.svg),
            'type': 'choose',
            'params': [self.adaptor.description.elements.choose, node]},
           {'label': 'Loop',
            'function_call': func,
-           'menu_icon': self.elements.loop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.loop.illustrator.svg),
            'type': 'loop',
            'params': [self.adaptor.description.elements.loop, node]},
           {'label': 'Terminate',
            'function_call': func,
-           'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.terminate.illustrator.svg),
            'type': 'terminate',
            'params': [self.adaptor.description.elements.terminate, node]},
           {'label': 'Stop',
            'function_call': func,
-           'menu_icon': self.elements.stop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.stop.illustrator.svg),
            'type': 'stop',
            'params': [self.adaptor.description.elements.stop, node]}
         ];
@@ -307,7 +307,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
           childs.push({
              'label': 'Critical',
              'function_call': func,
-             'menu_icon': self.elements.critical.illustrator.svg.clone(),
+             'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
              'type': 'critical',
              'params': [self.adaptor.description.elements.critical, node]
           });
@@ -350,37 +350,37 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         var childs = [
           {'label': 'Task with Output Transformation',
            'function_call': func,
-           'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
            'type': 'callmanipulate',
            'params': [self.adaptor.description.elements.callmanipulate, node]},
           {'label': 'Task',
            'function_call': func,
-           'menu_icon': self.elements.call.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.call.illustrator.svg),
            'type': 'call',
            'params': [self.adaptor.description.elements.call, node]},
           {'label': 'Script',
            'function_call': func,
-           'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.manipulate.illustrator.svg),
            'type': 'manipulate',
            'params': [self.adaptor.description.elements.manipulate, node]},
           {'label': 'Decision',
            'function_call': func,
-           'menu_icon': self.elements.choose.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.choose.illustrator.svg),
            'type': 'choose',
            'params': [self.adaptor.description.elements.choose, node]},
           {'label': 'Loop',
            'function_call': func,
-           'menu_icon': self.elements.loop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.loop.illustrator.svg),
            'type': 'loop',
            'params': [self.adaptor.description.elements.loop, node]},
           {'label': 'Terminate',
            'function_call': func,
-           'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.terminate.illustrator.svg),
            'type': 'terminate',
            'params': [self.adaptor.description.elements.terminate, node]},
           {'label': 'Stop',
            'function_call': func,
-           'menu_icon': self.elements.stop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.stop.illustrator.svg),
            'type': 'stop',
            'params': [self.adaptor.description.elements.stop, node]}
         ];
@@ -388,7 +388,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
           childs.push({
              'label': 'Critical',
              'function_call': func,
-             'menu_icon': self.elements.critical.illustrator.svg.clone(),
+             'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
              'type': 'critical',
              'params': [self.adaptor.description.elements.critical, node]
           });
@@ -396,14 +396,14 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         if(node.parent('parallel').length > node.parent('parallel_branch').length) {
           childs.push({'label': 'Parallel Branch',
                        'function_call': func,
-                       'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+                       'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel_branch.illustrator.svg),
                        'type': 'parallel_branch',
                        'params': [self.adaptor.description.elements.parallel_branch, node]}
                       );
         } else {
           childs.push({'label': 'Parallel',
                        'function_call': func,
-                       'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+                       'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel.illustrator.svg),
                        'type': 'parallel',
                        'params': [self.adaptor.description.elements.parallel, node]}
                       );
@@ -453,7 +453,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         var childs =  [
           {'label': 'Parallel Branch',
            'function_call': func,
-           'menu_icon': self.elements.parallel_branch.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel_branch.illustrator.svg),
            'type': 'parallel_branch',
            'params': [self.adaptor.description.elements.parallel_branch, node]},
         ];
@@ -466,39 +466,39 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         var childs =  [
           {'label': 'Task with Output Transformation',
            'function_call': func,
-           'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
            'type': 'callmanipulate',
            'params': [self.adaptor.description.elements.callmanipulate, node]},
           {'label': 'Task',
            'function_call': func,
-           'menu_icon': self.elements.call.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.call.illustrator.svg),
            'type': 'call',
            'params': [self.adaptor.description.elements.call, node]},
           {'label': 'Script',
            'function_call': func,
-           'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.manipulate.illustrator.svg),
            'type': 'manipulate',
            'params': [self.adaptor.description.elements.manipulate, node]},
           {'label': 'Decision',
            'function_call': func,
-           'menu_icon': self.elements.choose.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.choose.illustrator.svg),
            'type': 'choose',
            'params': [self.adaptor.description.elements.choose, node]},
           {'label': 'Loop',
            'function_call': func,
-           'menu_icon': self.elements.loop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.loop.illustrator.svg),
            'type': 'loop',
            'params': [self.adaptor.description.elements.loop, node]},
           {'label': 'Stop',
            'function_call': func,
-           'menu_icon': self.elements.stop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.stop.illustrator.svg),
            'type': 'stop',
            'params': [self.adaptor.description.elements.stop, node]}
         ];
         if(node.get(0).tagName != 'parallel')
           childs.push({'label': 'Parallel',
              'function_call': self.adaptor.description.insert_last_into,
-             'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+             'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel.illustrator.svg),
              'type': 'parallel',
              'params': [self.adaptor.description.elements.parallel, node]});
         return childs;
@@ -544,54 +544,54 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         var childs = [
           {'label': 'Task with Output Transformation',
            'function_call': func,
-           'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
            'type': 'callmanipulate',
            'params': [self.adaptor.description.elements.callmanipulate, node]},
           {'label': 'Task',
            'function_call': func,
-           'menu_icon': self.elements.call.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.call.illustrator.svg),
            'type': 'call',
            'params': [self.adaptor.description.elements.call, node]},
           {'label': 'Script',
            'function_call': func,
-           'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.manipulate.illustrator.svg),
            'type': 'manipulate',
            'params': [self.adaptor.description.elements.manipulate, node]},
           {'label': 'Parallel',
            'function_call': func,
-           'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel.illustrator.svg),
            'type': 'parallel',
            'params': [self.adaptor.description.elements.parallel, node]},
           {'label': 'Decision',
            'function_call': func,
-           'menu_icon': self.elements.choose.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.choose.illustrator.svg),
            'type': 'choose',
            'params': [self.adaptor.description.elements.choose, node]},
           {'label': 'Loop',
            'function_call': func,
-           'menu_icon': self.elements.loop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.loop.illustrator.svg),
            'type': 'loop',
            'params': [self.adaptor.description.elements.loop, node]},
           {'label': 'Terminate',
            'function_call': func,
-           'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.terminate.illustrator.svg),
            'type': 'terminate',
            'params': [self.adaptor.description.elements.terminate, node]},
           {'label': 'Stop',
            'function_call': func,
-           'menu_icon': self.elements.stop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.stop.illustrator.svg),
            'type': 'stop',
            'params': [self.adaptor.description.elements.stop, node]},
           {'label': 'Critical',
            'function_call': func,
-           'menu_icon': self.elements.critical.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
            'type': 'critical',
            'params': [self.adaptor.description.elements.critical, node]}
         ];
         if(node.parents('choose').length > node.parents('alternative, otherwise').length && node.get(0).tagName == 'parallel_branch') {
           return [{'label': 'Alternative',
            'function_call': func,
-           'menu_icon': self.elements.alternative.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.alternative.illustrator.svg),
            'type': 'alternative',
            'params': [self.adaptor.description.elements.alternative, node]}];
         }
@@ -629,42 +629,42 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         var childs = [
           {'label': 'Task with Output Transformation',
            'function_call': func,
-           'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
            'type': 'callmanipulate',
            'params': [self.adaptor.description.elements.callmanipulate, node]},
           {'label': 'Task',
            'function_call': func,
-           'menu_icon': self.elements.call.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.call.illustrator.svg),
            'type': 'call',
            'params': [self.adaptor.description.elements.call, node]},
           {'label': 'Script',
            'function_call': func,
-           'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.manipulate.illustrator.svg),
            'type': 'manipulate',
            'params': [self.adaptor.description.elements.manipulate, node]},
           {'label': 'Parallel',
            'function_call': func,
-           'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel.illustrator.svg),
            'type': 'parallel',
            'params': [self.adaptor.description.elements.parallel, node]},
           {'label': 'Decision',
            'function_call': func,
-           'menu_icon': self.elements.choose.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.choose.illustrator.svg),
            'type': 'choose',
            'params': [self.adaptor.description.elements.choose, node]},
           {'label': 'Loop',
            'function_call': func,
-           'menu_icon': self.elements.loop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.loop.illustrator.svg),
            'type': 'loop',
            'params': [self.adaptor.description.elements.loop, node]},
           {'label': 'Terminate',
            'function_call': func,
-           'menu_icon': self.elements.terminate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.terminate.illustrator.svg),
            'type': 'terminate',
            'params': [self.adaptor.description.elements.terminate, node]},
           {'label': 'Stop',
            'function_call': func,
-           'menu_icon': self.elements.stop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.stop.illustrator.svg),
            'type': 'stop',
            'params': [self.adaptor.description.elements.stop, node]}
         ];
@@ -672,7 +672,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
           childs.push({
              'label': 'Critical',
              'function_call': func,
-             'menu_icon': self.elements.critical.illustrator.svg.clone(),
+             'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
              'type': 'critical',
              'params': [self.adaptor.description.elements.critical, node]
           });
@@ -712,37 +712,37 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         var childs = [
           {'label': 'Task with Output Transformation',
            'function_call': func,
-           'menu_icon': self.elements.callmanipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
            'type': 'callmanipulate',
            'params': [self.adaptor.description.elements.callmanipulate, node]},
           {'label': 'Task',
            'function_call': func,
-           'menu_icon': self.elements.call.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.call.illustrator.svg),
            'type': 'call',
            'params': [self.adaptor.description.elements.call, node]},
           {'label': 'Script',
            'function_call': func,
-           'menu_icon': self.elements.manipulate.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.manipulate.illustrator.svg),
            'type': 'manipulate',
            'params': [self.adaptor.description.elements.manipulate, node]},
           {'label': 'Parallel',
            'function_call': func,
-           'menu_icon': self.elements.parallel.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel.illustrator.svg),
            'type': 'parallel',
            'params': [self.adaptor.description.elements.parallel, node]},
           {'label': 'Decision',
            'function_call': func,
-           'menu_icon': self.elements.choose.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.choose.illustrator.svg),
            'type': 'choose',
            'params': [self.adaptor.description.elements.choose, node]},
           {'label': 'Loop',
            'function_call': func,
-           'menu_icon': self.elements.loop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.loop.illustrator.svg),
            'type': 'loop',
            'params': [self.adaptor.description.elements.loop, node]},
           {'label': 'Stop',
            'function_call': func,
-           'menu_icon': self.elements.stop.illustrator.svg.clone(),
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.stop.illustrator.svg),
            'type': 'stop',
            'params': [self.adaptor.description.elements.stop, node]}
         ];
@@ -750,7 +750,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
           childs.push({
              'label': 'Critical',
              'function_call': func,
-             'menu_icon': self.elements.critical.illustrator.svg.clone(),
+             'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
              'type': 'critical',
              'params': [self.adaptor.description.elements.critical, node]
           });
