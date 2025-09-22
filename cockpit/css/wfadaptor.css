@@ -397,6 +397,9 @@ svg text.label {
   color: var(--wfadaptor-base);
   fill: var(--wfadaptor-base);
   fill-opacity:1;
+}
+
+svg text.label.standalone {
   stroke: var(--wfadaptor-background);
   stroke-width: 3px;
   stroke-linecap:round;
