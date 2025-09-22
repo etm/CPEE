@@ -564,9 +564,9 @@ function monitor_instance_values(type,vals) {// {{{
 function adaptor_update() { //{{{
   $('g.element[element-endpoint]').each(function(k,ele){
     if (save['endpoints_cache'][$(ele).attr('element-endpoint')] && save['endpoints_cache'][$(ele).attr('element-endpoint')]) {
-      var c = $(ele).find('g.replace');
       var symbol = save['endpoints_cache'][$(ele).attr('element-endpoint')].symbol;
       if (symbol) {
+        let c = $(ele).find('g.replace g.part-start');
         c.replaceWith($(symbol.documentElement).clone());
       }
     }
