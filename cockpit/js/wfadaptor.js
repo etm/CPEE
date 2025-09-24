@@ -513,7 +513,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.svg.container.prepend(g);
     return g;
   } // }}}
-  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, parent_row, max_row, row, col, group, addition) { // {{{
+  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, parent_row, max_row, row, col, group, addition, context) { // {{{
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
     let center_x = (self.width - self.default_width) / 2;
     let center_y = (self.height - self.default_height) / 2;
@@ -538,6 +538,15 @@ function WfIllustrator(wf_adaptor) { // View  {{{
                     '</g>' +
                  '</g>');
     }
+
+    // add the element-endpoint to each symbol
+    if (self.elements[sname].info && context) {
+      var info = self.elements[sname].info(context);
+      _.each(info,function(val,key) {
+        g.attr(key, val);
+      });
+    }
+
     var sym = self.svg.defs[sname].clone();
     var tit = $X('<title xmlns="http://www.w3.org/2000/svg"></title>');
         tit.text(title);
@@ -1022,14 +1031,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       $(context).attr('svg-type',tname);
       $(context).attr('svg-subtype',sname);
       if((illustrator.elements[sname] && illustrator.elements[sname].svg) || sname == 'unknown') {
-        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, block.svg).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
-
-        if (illustrator.elements[sname].info) {
-          var info = illustrator.elements[sname].info(context);
-          _.each(info,function(val,key) {
-            g.attr(key, val);
-          });
-        }
+        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, block.svg, false, context).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
       } else { console.log("no icon "+ sname);}
       if (illustrator.elements[sname] && illustrator.elements[sname].border) {
         var wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;

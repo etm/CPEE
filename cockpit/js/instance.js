@@ -581,10 +581,9 @@ function adaptor_init(url,theme,dslx) { //{{{
     suspended_redrawing = true;
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
-      manifestation.endpoints = save.endpoints_list;
+      // illustrator.geendpoints = save.endpoints_list;
       graphrealization.draw_labels = function(max,labels,dimensions,striped) {
         // highlight
-
         if (graph_highlight) {
           graph_highlight_tasks.forEach((ele) => {
             let er = $('g[element-id=' + ele + ']').attr('element-row');
