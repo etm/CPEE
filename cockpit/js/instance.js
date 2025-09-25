@@ -475,6 +475,7 @@ function monitor_instance_values(type,vals) {// {{{
     });
     save[type].content(de);
   } else {
+    console.log('rrrr2');
     let url = $('body').attr('current-instance');
     return $.ajax({
       type: "GET",
@@ -495,7 +496,6 @@ function monitor_instance_values(type,vals) {// {{{
                   save['endpoints_cache'] = tmp;
                   // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
                   $('#dat_details').empty();
-                  adaptor_update();
                 });
               }
             });
@@ -509,7 +509,6 @@ function monitor_instance_values(type,vals) {// {{{
                     save['endpoints_cache'] = tmp;
                     // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
                     $('#dat_details').empty();
-                    adaptor_update();
                   });
                 }
               });
@@ -561,17 +560,6 @@ function monitor_instance_values(type,vals) {// {{{
   }
 } // }}}
 
-function adaptor_update() { //{{{
-  $('g.element[element-endpoint]').each(function(k,ele){
-    if (save['endpoints_cache'][$(ele).attr('element-endpoint')] && save['endpoints_cache'][$(ele).attr('element-endpoint')]) {
-      var symbol = save['endpoints_cache'][$(ele).attr('element-endpoint')].symbol;
-      if (symbol) {
-        let c = $(ele).find('g.replace g.part-start');
-        c.replaceWith($(symbol.documentElement).clone());
-      }
-    }
-  });
-} //}}}
 function adaptor_init(url,theme,dslx) { //{{{
   // while inside and svgs are reloaded, do nothing here
   if (suspended_redrawing) { return; }
@@ -581,8 +569,15 @@ function adaptor_init(url,theme,dslx) { //{{{
     suspended_redrawing = true;
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
-      // illustrator.geendpoints = save.endpoints_list;
-      graphrealization.draw_labels = function(max,labels,dimensions,striped) {
+      console.log('rrrr1');
+      graphrealization.illustrator.get_symbol = (target) => {
+        if (save['endpoints_cache'][target]) {
+          return save['endpoints_cache'][target].symbol;
+        } else {
+          return undefined;
+        }
+      }
+      graphrealization.draw_labels = (max,labels,dimensions,striped) => {
         // highlight
         if (graph_highlight) {
           graph_highlight_tasks.forEach((ele) => {
@@ -809,14 +804,12 @@ function adaptor_init(url,theme,dslx) { //{{{
             error: report_failure
           });
         }
-        adaptor_update();
         manifestation.events.click(svgid);
         format_instance_pos();
         if (manifestation.selected() == "unknown") { // nothing selected
           $('#dat_details').empty();
         }
       };
-      adaptor_update();
 
       monitor_instance_pos();
       $('#dat_details').empty();
@@ -828,7 +821,6 @@ function adaptor_init(url,theme,dslx) { //{{{
     save['graph_adaptor'].update(function(graphrealization){
       var svgid = manifestation.selected();
       graphrealization.set_description($(dslx));
-      adaptor_update();
       manifestation.events.click(svgid);
       format_instance_pos();
     });

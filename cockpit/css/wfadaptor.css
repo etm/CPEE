@@ -301,7 +301,7 @@ svg text.normal {
   fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
-  font-family:Arial;
+  font-family: adawaita-sans;
 }
 svg text.inverted {
   font-size:20px;
@@ -317,7 +317,7 @@ svg text.inverted {
   fill: var(--wfadaptor-background);
   fill-opacity:1;
   stroke:none;
-  font-family:Arial;
+  font-family: adawaita-sans;
 }
 
 svg text.super {
@@ -334,7 +334,7 @@ svg text.super {
   fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
-  font-family:Arial;
+  font-family: adawaita-sans;
 }
 svg tspan.active {
   fill: var(--wfadaptor-exec-active-text);
@@ -365,7 +365,7 @@ svg text.normallarge {
   fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
-  font-family:Arial;
+  font-family: adawaita-sans;
 }
 
 svg text.small {
@@ -382,7 +382,7 @@ svg text.small {
   fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
-  font-family:Arial;
+  font-family: adawaita-sans;
 }
 
 svg text.label {
@@ -405,7 +405,7 @@ svg text.label.standalone {
   stroke-linecap:round;
   stroke-linejoin:round;
   paint-order: stroke markers fill;
-  font-family:Arial;
+  font-family: adawaita-sans;
 }
 svg text.label.rotate {
   transform: translateY(10px) rotate(-30deg);
@@ -425,7 +425,7 @@ svg text.smaller {
   fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
-  font-family:Arial;
+  font-family: adawaita-sans;
 }
 
 #arrow {

@@ -221,7 +221,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     var self = this;
     var adaptor = null;
   // }}}
-  // Generic Functions {{{
+  // Internal Functions
   this.set_label_container = function(con) { // {{{
     self.svg.label_container = con;
   } // }}}
@@ -250,11 +250,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         self.svg.defs[element] = sym;
       }
   } // }}}
-  var clear = this.clear = function() { // {{{
-    $('> :not(defs)', self.svg.container).each(function() {$(this).remove()});
-    $('> defs > [belongs-to=element]', self.svg.container).each(function() {$(this).remove()});
-    self.dim.props = [];
-  } // }}}
   this.set_svg_direct = function(svg) { // {{{
     self.svg.container.append(svg);
     let bb = svg[0].getBBox();
@@ -279,7 +274,16 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.get_labels = function() { // {{{
     return $('[element-id]', self.svg.label_container);
   } // }}}
-  // }}}
+
+  // External Functions
+  var clear = this.clear = function() { // {{{
+    $('> :not(defs)', self.svg.container).each(function() {$(this).remove()});
+    $('> defs > [belongs-to=element]', self.svg.container).each(function() {$(this).remove()});
+    self.dim.props = [];
+  } // }}}
+  var get_symbol = this.get_symbol = function() { // {{{
+  } // }}}
+
   // Helper Functions {{{
   var debug_dim = this.dim.debug = function() { //{{{
     line = '\n';
@@ -513,7 +517,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.svg.container.prepend(g);
     return g;
   } // }}}
-  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, parent_row, max_row, row, col, group, addition, context) { // {{{
+  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, parent_row, max_row, row, col, group, addition, info) { // {{{
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
     let center_x = (self.width - self.default_width) / 2;
     let center_y = (self.height - self.default_height) / 2;
@@ -528,6 +532,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
                     '<g transform="translate(' + String(sstart) + ',' + String(stop) + ')"></g>' +
                  '</g>');
     } else {
+      // TODO change to better respresent exec
       var g = $X('<g class="element" element-row="' + (row-1) + '" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
                     '<g transform="translate(' + String(sstart) + ',' + String(stop) + ')">' +
                       '<text class="super" transform="translate(' + (self.default_width-10) + ',8.4)">' +
@@ -539,15 +544,46 @@ function WfIllustrator(wf_adaptor) { // View  {{{
                  '</g>');
     }
 
-    // add the element-endpoint to each symbol
-    if (self.elements[sname].info && context) {
-      var info = self.elements[sname].info(context);
-      _.each(info,function(val,key) {
-        g.attr(key, val);
-      });
-    }
+    // add the element-endpoint and other stuff to each symbol (from theme info function)
+    _.each(info,function(val,key) {
+      g.attr(key, val);
+    });
 
     var sym = self.svg.defs[sname].clone();
+
+    if (g.attr('element-endpoint')) {
+      let tsym = self.get_symbol(g.attr('element-endpoint'));
+      if (tsym) {
+        let found = false;
+        if ($('.part-end',tsym).length > 0) {
+          $('.part-end',sym).remove();
+          sym.prepend($('.part-end',tsym).clone());
+          found = true;
+        }
+        if ($('.part-middle',tsym).length > 0) {
+          $('.part-middle',sym).remove();
+          sym.prepend($('.part-middle',tsym).clone());
+          found = true;
+        }
+        if ($('.part-start',tsym).length > 0) {
+          $('.part-start',sym).remove();
+          sym.prepend($('.part-start',tsym).clone());
+          found = true;
+        }
+        if ($('.part-normal',tsym).length > 0) {
+          $('.part-normal',sym).remove();
+          sym.prepend($('.part-normal',tsym).clone());
+          found = true;
+        }
+        if (!found) {
+          $('.part-normal',sym).remove();
+          let ts = $X('<g class="part-normal" xmlns="http://www.w3.org/2000/svg"></g>');
+              ts.append($(tsym.documentElement.children).clone());
+          sym.prepend(ts);
+        }
+      }
+    }
+
     var tit = $X('<title xmlns="http://www.w3.org/2000/svg"></title>');
         tit.text(title);
     sym.prepend(tit);
@@ -556,6 +592,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       let sta = $('.part-start',sym);
       let mid = $('.part-middle',sym);
       let end = $('.part-end',sym);
+      let xtr = $('.part-extra',sym);
       let nor = $('.part-normal',sym);
       if (title && title != '') {
         lab.text(title);
@@ -570,6 +607,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             $('defs',self.svg.container).append(clip);
 
             end.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
+            if (xtr.length > 0) {
+              xtr.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
+            }
             set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + self.width_shift_label);
           } else {
             let tdim = 0;
@@ -881,7 +921,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         // javascript object spread syntax is my new weird crush - the JS designers must be serious people
         labels.push({...{row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)},...illustrator.draw.get_y(pos.row)});
       }
-      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.row, pos.row, pos.col, block.svg);
+      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.row, pos.row, pos.col, block.svg, false, []);
     } // }}}
 
     $(root).children().filter(function(){ return this.localName[0] != '_'; }).each(function() {
@@ -1026,12 +1066,16 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
     // Draw Symbol {{{
     if (second) {
-      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true, []).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
       $(context).attr('svg-type',tname);
       $(context).attr('svg-subtype',sname);
       if((illustrator.elements[sname] && illustrator.elements[sname].svg) || sname == 'unknown') {
-        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, block.svg, false, context).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+        let info = [];
+        if (illustrator.elements[sname].info && context) {
+          info = illustrator.elements[sname].info(context);
+        }
+        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, block.svg, false, info).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
       } else { console.log("no icon "+ sname);}
       if (illustrator.elements[sname] && illustrator.elements[sname].border) {
         var wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;

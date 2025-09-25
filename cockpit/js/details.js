@@ -106,7 +106,6 @@ function do_main_work(svgid) { //{{{
         },
         data: desc.get_description()
       });
-      adaptor_update();
       format_instance_pos();
 
       document.dispatchEvent(graph_changed);
