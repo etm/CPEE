@@ -6,5 +6,6 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     delete(this.elements.choose.illustrator.closing_symbol);
     this.elements.alternative.illustrator.noindent = true;
     this.elements.parallel_branch.illustrator.noindent = true;
+    this.elements.loop_finish.illustrator.rotatelabels = false;
   }
 }

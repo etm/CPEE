@@ -652,7 +652,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + 2 * self.width_shift_label);
           } else {
             let tdim = 0;
-            if (self.rotated_labels) {
+            console.log(self.elements[sname]);
+            if (self.rotated_labels && self.elements[sname].rotatelabels != false) {
               lab.addClass('rotate');
               tdim = self.width;
             } else {
