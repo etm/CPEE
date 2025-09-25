@@ -555,8 +555,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       let tsym = self.get_symbol(g.attr('element-endpoint'));
       if (tsym) {
         let found = false;
+        $('.part-end',sym).remove();
         if ($('.part-end',tsym).length > 0) {
-          $('.part-end',sym).remove();
           sym.prepend($('.part-end',tsym).clone());
           found = true;
         }
@@ -595,7 +595,46 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       let xtr = $('.part-extra',sym);
       let nor = $('.part-normal',sym);
       if (title && title != '') {
-        lab.text(title);
+        if (title.length < 22) {
+          lab.text(title);
+        } else {
+          if (title.length > 60) { title = title.substr(0,60) + '\u2026'; }
+          if (title.includes(' ')) {
+            let len = title.length;
+            let pos = -2;
+            let seps = []
+            while (pos != -1) {
+              pos = title.indexOf(' ',pos+1);
+              if (pos > -1) seps.push(pos);
+            }
+            let closest = title.length;
+            let it = 0;
+            seps.forEach((ele) => {
+              let min = Math.abs(title.length/2 - ele);
+              if (min < closest) { closest = min; it = ele; }
+            });
+            let l1 = title.substr(0,it);
+            let l2 = title.substr(it+1);
+            if (l1.length > 30) {
+              console.log('a1');
+              title = title.substr(0,30) + '\u2026';
+              lab.text(title);
+            } else {
+              console.log('a2');
+              if (l2.length > 30) { l2 = l2.substr(0,30) + '\u2026'; }
+              let a1 = $X('<tspan x="0" dy="-8" xmlns="http://www.w3.org/2000/svg"></tspan>');
+                  a1.text(l1);
+              let a2 = $X('<tspan x="0" dy="12" xmlns="http://www.w3.org/2000/svg"></tspan>');
+                  a2.text(l2);
+              lab.append(a1);
+              lab.append(a2);
+              console.log(lab.serializePrettyXML());
+            }
+          } else {
+            if (title.length > 30) { title = title.substr(0,30) + '\u2026'; }
+            lab.text(title);
+          }
+        }
         let width = this.get_width(lab);
         if (mid.length > 0) {
           if (end.length > 0) {
@@ -610,7 +649,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             if (xtr.length > 0) {
               xtr.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
             }
-            set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + self.width_shift_label);
+            set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + 2 * self.width_shift_label);
           } else {
             let tdim = 0;
             if (self.rotated_labels) {

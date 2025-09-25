@@ -398,6 +398,9 @@ svg text.label {
   fill: var(--wfadaptor-base);
   fill-opacity:1;
 }
+svg text.label tspan {
+  font-size:12px;
+}
 
 svg text.label.standalone {
   stroke: var(--wfadaptor-background);

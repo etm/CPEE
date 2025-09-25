@@ -339,9 +339,9 @@ async function sse() { //{{{
       // setTimeout(sse,10000);
     };
   }
+  await monitor_instance_values("endpoints"); // we cant render before we know specialized endpoint symbols
   await monitor_instance_values("attributes"); // attributes first, to catch the <resources> attribute which overrides current-resources
   monitor_instance_values("dataelements");
-  monitor_instance_values("endpoints");
   monitor_instance_dsl();
   monitor_instance_state();
 } //}}}
@@ -475,7 +475,6 @@ function monitor_instance_values(type,vals) {// {{{
     });
     save[type].content(de);
   } else {
-    console.log('rrrr2');
     let url = $('body').attr('current-instance');
     return $.ajax({
       type: "GET",
@@ -485,35 +484,45 @@ function monitor_instance_values(type,vals) {// {{{
         if (type == "endpoints") {
           save['endpoints_list'] = {};
           var tmp = {};
+          let deferreds = [];
           $(res).find(" > endpoints > *").each(function(k,v) {
             save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
             let rep = $('body').attr('current-resources');
+            let def = new $.Deferred();
+            deferreds.push(def);
             $.ajax({
               url: rep + 'endpoints/' + encodeURIComponent($(v).text()),
-              success: function() {
+              success: () => {
                 tmp[v.tagName] = {};
                 $.when.apply($, get_resource(rep,v.tagName,$(v).text(),tmp)).then(function(x) {
                   save['endpoints_cache'] = tmp;
+                  def.resolve();
                   // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
                   $('#dat_details').empty();
                 });
-              }
+              },
+              error: () => { def.resolve() }
             });
             if (save['resources']) {
               let rep = save['resources'];
+              let defr = new $.Deferred();
+              deferreds.push(defr);
               $.ajax({
                 url: rep + 'endpoints/' + encodeURIComponent(encodeURIComponent($(v).text())),
-                success: function() {
+                success: () => {
                   tmp[v.tagName] = {};
                   $.when.apply($, get_resource(rep,v.tagName,encodeURIComponent($(v).text()),tmp)).then(function(x) {
                     save['endpoints_cache'] = tmp;
+                    def.resolve();
                     // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
                     $('#dat_details').empty();
                   });
-                }
+                },
+                error: () => { def.resolve() }
               });
             }
           });
+          $.when.apply($, deferreds).done();
         } else if(type == "attributes") {
           $(" > attributes > *",res).each((k,v)=>{
             save['attributes_raw'][v.nodeName] = v.textContent;
@@ -569,7 +578,6 @@ function adaptor_init(url,theme,dslx) { //{{{
     suspended_redrawing = true;
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
-      console.log('rrrr1');
       graphrealization.illustrator.get_symbol = (target) => {
         if (save['endpoints_cache'][target]) {
           return save['endpoints_cache'][target].symbol;
