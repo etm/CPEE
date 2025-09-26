@@ -744,9 +744,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         );
       }
     } else if(end['row']-start['row'] < 0) { // upwards
+      console.log(self.dim);
+
       line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
-                            String(cstart) + "," + String(start['row']*self.height+4) +" "+
-                            String(cend+15) + "," + String(start['row']*self.height+4) +" "+
+                            String(cstart) + "," + String((self.dim.props.length-1)*self.height+4) +" "+
+                            String(cend+15) + "," + String((self.dim.props.length-1)*self.height+4) +" "+
                             String(cend+15) + "," + String(end['row']*self.height+15)+" "+
                             String(cend) + "," + String(end['row']*self.height-15)
       );
