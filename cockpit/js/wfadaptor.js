@@ -1103,8 +1103,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
     // Draw Symbol {{{
     if (second) {
-      let wide = (illustrator.elements[sname].wide == true) ? pos.row : block.max.row;
-      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), illustrator.elements[sname].wide == true ?  pos.row : parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true, []).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+      // wide is only for the special case of variable parallel, only event_end has it, all others should reference the first row
+      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), illustrator.elements[sname].wide == true ?  parent_pos.row+1 : parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true, []).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
       $(context).attr('svg-type',tname);
       $(context).attr('svg-subtype',sname);
@@ -1196,8 +1196,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     // }}}
 
     ///////// show graph step by step
-    illustrator.set_svg_direct(block.svg);
-    debugger;
+    // illustrator.set_svg_direct(block.svg);
+    // debugger;
 
     return [g, endnodes];
   } // }}}
