@@ -352,6 +352,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       self.dim.props[row][col].x = tx;
       self.dim.props[row][col].width = twidth;
     }
+    // console.log('set_x_cond',row,col,debug_dim());
   } //}}}
 
   var get_x = this.dim.get_x = function(row,col,deb='') { //{{{
@@ -360,7 +361,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let mlen = 0;
     if (self.dim.props[row] && self.dim.props[row][col] && self.dim.props[row][col].x) { // this column
       mlen = self.dim.props[row][col].x;
-    } else if (self.dim.props[row] && !self.dim.props[row][col] && self.dim.props.length > row && self.dim.props[row+1] && self.dim.props[row+1][col] && self.dim.props[row+1][col].x ) { // row before
+    } else if (self.dim.props[row] && !self.dim.props[row][col] && self.dim.props.length > row && self.dim.props[row+1] && self.dim.props[row+1][col] && self.dim.props[row+1][col].x ) { // row after
       mlen = self.dim.props[row+1][col].x;
     } else if (self.dim.props[row-1] && self.dim.props[row-1][col] && self.dim.props[row-1][col].x) { // row before
       mlen = self.dim.props[row-1][col].x;
@@ -373,7 +374,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     } else if (self.dim.props[row+1] && self.dim.props[row+1][col] && self.dim.props[row+1][col].x) { // directly below
       mlen = self.dim.props[row+1][col].x;
     } else if (self.dim.props[row-1] && self.dim.props[row-1][col-1] && self.dim.props[row-1][col-1].x) { // diagonal left above
-      mlen = self.dim.props[row-1][col-1].x;
+      mlen = self.dim.props[row-1][col-1].x + self.dim.props[row-1][col-1].width;
     } else { // same column below
       for (let i=row; i<self.dim.props.length; i++) {
         if (self.dim.props[i] && self.dim.props[i][col] && mlen < self.dim.props[i][col].x + self.dim.props[i][col].width) {
@@ -616,11 +617,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             let l1 = title.substr(0,it);
             let l2 = title.substr(it+1);
             if (l1.length > 30) {
-              console.log('a1');
               title = title.substr(0,30) + '\u2026';
               lab.text(title);
             } else {
-              console.log('a2');
               if (l2.length > 30) { l2 = l2.substr(0,30) + '\u2026'; }
               let a1 = $X('<tspan x="0" dy="-8" xmlns="http://www.w3.org/2000/svg"></tspan>');
                   a1.text(l1);
@@ -628,7 +627,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
                   a2.text(l2);
               lab.append(a1);
               lab.append(a2);
-              console.log(lab.serializePrettyXML());
             }
           } else {
             if (title.length > 30) { title = title.substr(0,30) + '\u2026'; }
@@ -652,7 +650,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + 2 * self.width_shift_label);
           } else {
             let tdim = 0;
-            console.log(self.elements[sname]);
             if (self.rotated_labels && self.elements[sname].rotatelabels != false) {
               lab.addClass('rotate');
               tdim = self.width;
@@ -744,8 +741,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         );
       }
     } else if(end['row']-start['row'] < 0) { // upwards
-      console.log(self.dim);
-
       line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
                             String(cstart) + "," + String((self.dim.props.length-1)*self.height+4) +" "+
                             String(cend+15) + "," + String((self.dim.props.length-1)*self.height+4) +" "+
@@ -1108,7 +1103,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
 
     // Draw Symbol {{{
     if (second) {
-      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true, []).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+      let wide = (illustrator.elements[sname].wide == true) ? pos.row : block.max.row;
+      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), illustrator.elements[sname].wide == true ?  pos.row : parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true, []).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
       $(context).attr('svg-type',tname);
       $(context).attr('svg-subtype',sname);
@@ -1120,7 +1116,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, block.svg, false, info).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
       } else { console.log("no icon "+ sname);}
       if (illustrator.elements[sname] && illustrator.elements[sname].border) {
-        var wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
+        let wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
         if (illustrator.elements[sname].closing_symbol) {
           illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg);
         } else {
@@ -1128,7 +1124,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         }
       }
       if (illustrator.elements[sname] && illustrator.elements[sname].type == 'complex') {
-        var wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
+        let wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
         if (illustrator.elements[sname].closing_symbol) {
           illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg);
         } else {
@@ -1200,8 +1196,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     // }}}
 
     ///////// show graph step by step
-    // illustrator.set_svg_direct(block.svg);
-    // debugger;
+    illustrator.set_svg_direct(block.svg);
+    debugger;
 
     return [g, endnodes];
   } // }}}

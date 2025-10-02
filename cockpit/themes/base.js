@@ -486,6 +486,25 @@ function WFAdaptorManifestationBase(adaptor) {
       'mouseout': self.events.mouseout
     }//}}}
   }; /*}}}*/
+  this.elements.wait_for_signal = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/wait_for_signal.svg'
+    },//}}}
+    'description': self.adaptor.theme_dir + 'rngs/wait_for_signal.rng',
+    'permissible_children': function(node,mode) { //{{{
+      return [];
+    }, //}}}
+    'adaptor': {//{{{
+      'mousedown': function (node,e) { self.events.mousedown(node,e,false,true); },
+      'touchstart': function (node,e) { self.events.touchstart(node,e,false,true); },
+      'touchend': self.events.touchend,
+      'click': self.events.click,
+      'mouseover': self.events.mouseover,
+      'mouseout': self.events.mouseout
+    }//}}}
+  }; /*}}}*/
   this.elements.terminate = { /*{{{*/
     'type': 'primitive',
     'illustrator': {//{{{
@@ -519,6 +538,7 @@ function WFAdaptorManifestationBase(adaptor) {
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
+      'wide': true,
       'svg': self.adaptor.theme_dir + 'symbols/event_end.svg'
     }, //}}}
     'adaptor': {//{{{
@@ -730,14 +750,19 @@ function WFAdaptorManifestationBase(adaptor) {
          'type': 'stop',
          'params': [self.adaptor.description.elements.stop, node]}
       ];
-      if(node.parent('parallel_branch').length > 0) {
-        childs.push({
-           'label': 'Critical',
+      if(node.parents('parallel_branch').length > 0) {
+        childs.push(
+          {'label': 'Critical',
            'function_call': func,
            'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
            'type': 'critical',
-           'params': [self.adaptor.description.elements.critical, node]
-        });
+           'params': [self.adaptor.description.elements.critical, node]},
+          {'label': 'Wait for Signal',
+           'function_call': func,
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.wait_for_signal.illustrator.svg),
+           'type': 'wait_for_signal',
+           'params': [self.adaptor.description.elements.wait_for_signal, node]}
+        );
       }
       return childs;
     }, //}}}
@@ -822,14 +847,19 @@ function WFAdaptorManifestationBase(adaptor) {
          'type': 'stop',
          'params': [self.adaptor.description.elements.stop, node]}
       ];
-      if(node.parent('parallel_branch').length > 0) {
-        childs.push({
-           'label': 'Critical',
+      if(node.parents('parallel_branch').length > 0) {
+        childs.push(
+          {'label': 'Critical',
            'function_call': func,
            'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
            'type': 'critical',
-           'params': [self.adaptor.description.elements.critical, node]
-        });
+           'params': [self.adaptor.description.elements.critical, node]},
+          {'label': 'Wait for Signal',
+           'function_call': func,
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.wait_for_signal.illustrator.svg),
+           'type': 'wait_for_signal',
+           'params': [self.adaptor.description.elements.wait_for_signal, node]}
+        );
       }
       return childs;
     }, //}}}
@@ -903,16 +933,21 @@ function WFAdaptorManifestationBase(adaptor) {
          'type': 'stop',
          'params': [self.adaptor.description.elements.stop, node]}
       ];
-      if(node.parent('parallel_branch').length > 0) {
-        childs.push({
-           'label': 'Critical',
+      if(node.parents('parallel_branch').length > 0) {
+        childs.push(
+          {'label': 'Critical',
            'function_call': func,
            'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
            'type': 'critical',
-           'params': [self.adaptor.description.elements.critical, node]
-        });
+           'params': [self.adaptor.description.elements.critical, node]},
+          {'label': 'Wait for Signal',
+           'function_call': func,
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.wait_for_signal.illustrator.svg),
+           'type': 'wait_for_signal',
+           'params': [self.adaptor.description.elements.wait_for_signal, node]}
+        );
       }
-      if(node.parent('parallel').length > node.parent('parallel_branch').length) {
+      if(node.parents('parallel').length > node.parents('parallel_branch').length) {
         childs.push({'label': 'Parallel Branch',
                      'function_call': func,
                      'menu_icon': contextMenuHandling_clean_icon(self.elements.parallel_branch.illustrator.svg),
@@ -1105,7 +1140,12 @@ function WFAdaptorManifestationBase(adaptor) {
          'function_call': func,
          'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
          'type': 'critical',
-         'params': [self.adaptor.description.elements.critical, node]}
+         'params': [self.adaptor.description.elements.critical, node]},
+        {'label': 'Wait for Signal',
+         'function_call': func,
+         'menu_icon': contextMenuHandling_clean_icon(self.elements.wait_for_signal.illustrator.svg),
+         'type': 'wait_for_signal',
+         'params': [self.adaptor.description.elements.wait_for_signal, node]}
       ];
       if(node.parents('choose').length > node.parents('alternative, otherwise').length && node.get(0).tagName == 'parallel_branch') {
         return [{'label': 'Alternative',
@@ -1187,14 +1227,19 @@ function WFAdaptorManifestationBase(adaptor) {
          'type': 'stop',
          'params': [self.adaptor.description.elements.stop, node]}
       ];
-      if(node.parent('parallel_branch').length > 0) {
-        childs.push({
-           'label': 'Critical',
+      if(node.parents('parallel_branch').length > 0) {
+        childs.push(
+          {'label': 'Critical',
            'function_call': func,
            'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
            'type': 'critical',
-           'params': [self.adaptor.description.elements.critical, node]
-        });
+           'params': [self.adaptor.description.elements.critical, node]},
+          {'label': 'Wait for Signal',
+           'function_call': func,
+           'menu_icon': contextMenuHandling_clean_icon(self.elements.wait_for_signal.illustrator.svg),
+           'type': 'wait_for_signal',
+           'params': [self.adaptor.description.elements.wait_for_signal, node]}
+        );
       }
       return childs;
     }, //}}}
@@ -1342,15 +1387,6 @@ function WFAdaptorManifestationBase(adaptor) {
          'type': 'stop',
          'params': [self.adaptor.description.elements.stop, node]}
       ];
-      if(node.parent('parallel_branch').length > 0) {
-        childs.push({
-           'label': 'Critical',
-           'function_call': func,
-           'menu_icon': contextMenuHandling_clean_icon(self.elements.critical.illustrator.svg),
-           'type': 'critical',
-           'params': [self.adaptor.description.elements.critical, node]
-        });
-      }
       return childs;
     }, //}}}
     'adaptor': {//{{{

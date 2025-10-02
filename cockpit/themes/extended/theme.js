@@ -36,6 +36,9 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     this.elements.stop.illustrator.label = function(node) { //{{{
       return [ { column: 'ID', value: $(node).attr('id') } ];
     }; //}}}
+    this.elements.wait_for_signal.illustrator.label = function(node) { //{{{
+      return [ { column: 'ID', value: $(node).attr('id') } ];
+    }; //}}}
     this.elements.loop_finish.illustrator.label = function(node) { //{{{
       var avg = $('> _probability_avg',$(node).children('_probability')).text();
       var lab = $(node).attr('condition');

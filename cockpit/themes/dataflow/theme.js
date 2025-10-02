@@ -34,7 +34,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       });
       return dict;
     } //}}}
-    var dataflowMerge = function(dict,merge) {
+    var dataflowMerge = function(dict,merge) { //{{{
       Object.keys(merge).forEach((key) => {
         if (dict[key] == 'Read' && (merge[key] == 'Assign' || merge[key] == 'AssignRead')) {
           dict[key] = 'ReadAssign';
@@ -48,7 +48,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         }
       });
       return dict;
-    }
+    } //}}}
 
     this.elements.call.illustrator.label = function(node) { //{{{
       var rep = $('body').attr('current-resources');
@@ -94,6 +94,9 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       return ret;
     }; //}}}
     this.elements.stop.illustrator.label = function(node) { //{{{
+      return [ { column: 'ID', value: $(node).attr('id') } ];
+    }; //}}}
+    this.elements.wait_for_signal.illustrator.label = function(node) { //{{{
       return [ { column: 'ID', value: $(node).attr('id') } ];
     }; //}}}
     this.elements.loop_finish.illustrator.label = function(node) { //{{{

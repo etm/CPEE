@@ -1,0 +1,8 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="wait_for_signal" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+  <attribute name="id" rngui:label="ID" rngui:default="javascript:get_free_id()">
+    <data type="string" rngui:readonly="true"/>
+  </attribute>
+  <element name="label" rngui:label="Label">
+    <data type="string" rngui:label="What do we wait for? (data changes in a parallel task)"/>
+  </element>
+</element>
