@@ -52,6 +52,9 @@
       <xsl:text>, parameters: { </xsl:text>
       <xsl:apply-templates select="d:parameters"/>
       <xsl:text> }</xsl:text>
+      <xsl:if test="d:code/d:signal[text()='on']">
+        <xsl:text>, signal: true</xsl:text>
+      </xsl:if>
       <xsl:if test="(d:finalize or d:code/d:finalize) and (d:finalize/text() or d:code/d:finalize/text())">
         <xsl:text>, finalize: &lt;&lt;-END</xsl:text>
       </xsl:if>
@@ -117,6 +120,17 @@
         </xsl:with-param>
       </xsl:call-template>
       <xsl:text>stop :</xsl:text>
+      <xsl:value-of select="@id"/>
+      <xsl:call-template name="print-newline"/>
+    </xsl:if>
+    <xsl:if test="name()='wait_for_signal'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>wait_for_signal :</xsl:text>
       <xsl:value-of select="@id"/>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
