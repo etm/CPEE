@@ -13,6 +13,10 @@ $(document).ready(function() {
       e.preventDefault()
     }
   });
+  $(document).on('change','#dat_details input',function(e){
+    clearTimeout(timer);
+    setTimeout(do_main_save, 1);
+  });
   $(document).on('relaxngui_remove', '#dat_details', function(e){
     clearTimeout(timer);
     do_main_save();

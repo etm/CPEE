@@ -391,7 +391,11 @@ function WFAdaptorManifestationBase(adaptor) {
           }
         } else {
           if ($('> code', node).length > 0) {
-            return 'callmanipulate';
+            if ($('> code > signal', node).length > 0 && $('> code > signal', node).text() == 'on') {
+              return 'callmanipulate_signal';
+            } else {
+              return 'callmanipulate';
+            }
           } else {
             return 'call';
           }
@@ -489,6 +493,10 @@ function WFAdaptorManifestationBase(adaptor) {
   this.elements.wait_for_signal = { /*{{{*/
     'type': 'primitive',
     'illustrator': {//{{{
+      'label': function(node){
+        var ret = [ { column: 'Label', value: $('> label',$(node)).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
+        return ret;
+      },
       'endnodes': 'this',
       'svg': self.adaptor.theme_dir + 'symbols/wait_for_signal.svg'
     },//}}}
@@ -1428,6 +1436,13 @@ function WFAdaptorManifestationBase(adaptor) {
     'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate_sensor.svg'
+    }//}}}
+  }; /*}}}*/
+  this.elements.callmanipulate_signal = { /*{{{*/
+    'parent': 'call',
+    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callmanipulate_signal.svg'
     }//}}}
   }; /*}}}*/
   this.elements.loop_head = { /*{{{*/

@@ -43,10 +43,7 @@
     </element>
   </element>
   <element name="code" rngui:header="Data Handling">
-    <element name="signal_receive" rngui:label="Signal after receiving data">
-      <data type="boolean" rngui:label="A signal is sent every time the activity receives data from its endpoint"/>
-    </element>
-    <element name="signal_change" rngui:label="Signal after changing data">
+    <element name="signal" rngui:label="Signal after data manipulation (finalize/update)">
       <data type="boolean" rngui:label="A signal is sent every time the activity changes a data object"/>
     </element>
     <element name="prepare" rngui:header="Prepare" rngui:label="Code" rngui:fold="closed_conditional">
