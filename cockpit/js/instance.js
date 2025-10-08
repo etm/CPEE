@@ -936,6 +936,7 @@ function monitor_instance_pos_change(content) {// {{{
   if (content['at']) {
     $.each(content['at'],function(a,b){
       format_visual_add(b.position,"passive",false);
+      console.log('rrrrrr add', b.position);
     });
   }
   if (content['after']) {
@@ -946,6 +947,7 @@ function monitor_instance_pos_change(content) {// {{{
   if (content['unmark']) {
     $.each(content['unmark'],function(a,b){
       format_visual_remove(b.position,"passive",false)
+      console.log('rrrrrr remove', b.position);
     });
   }
   if (!content['at'] && !content['unmark'] && !content['after'] && !content['wait']) {

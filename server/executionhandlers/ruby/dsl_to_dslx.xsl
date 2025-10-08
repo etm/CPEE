@@ -132,6 +132,9 @@
       </xsl:call-template>
       <xsl:text>wait_for_signal :</xsl:text>
       <xsl:value-of select="@id"/>
+      <xsl:text>, "</xsl:text>
+      <xsl:value-of select="str:replace(str:replace(d:label/text(),'\','\\'),'&quot;','\&quot;')"/>
+      <xsl:text>"</xsl:text>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='escape'">

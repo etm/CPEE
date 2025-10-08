@@ -55,6 +55,10 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     controller = arguments[0]
     controller.notify("position/change", ipc)
   end # }}}
+  def self::inform_activity_minimal(arguments,what,uuid,label,position) # {{{
+    controller = arguments[0]
+    controller.notify("activity/#{what}", :ecid => Thread.current.__id__, :'activity-uuid' => uuid, :label => label, :activity => position)
+  end # }}}
 
   def initialize(arguments,position=nil,continue=nil) # {{{
     @controller = arguments[0]
