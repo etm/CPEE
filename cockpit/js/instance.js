@@ -1507,24 +1507,32 @@ function format_visual_set(what) {//{{{
 
     scroll_into_view(what);
 
-    if (actives > 0 && votes > 0)
+    if (actives > 0 && votes > 0) {
       $('g[element-id="' + what + '"] .super .colon').each(function(a,b){
         b.setAttribute('class','colon necessary');
       });
-    else
+    } else {
       $('g[element-id="' + what + '"] .super .colon').each(function(a,b){
         b.setAttribute('class','colon');
       });
-    if (actives > 0)
+    }
+    if (actives > 0) {
       $('g[element-id="' + what + '"] .super .active').each(function(a,b){
         b.setAttribute('class','active necessary');
         var txt = b.childNodes[0];
         txt.nodeValue = actives;
       });
-    else
+      $('g[element-id="' + what + '"] .super .exec').each(function(a,b){
+        b.setAttribute('class','exec necessary');
+      });
+    } else {
       $('g[element-id="' + what + '"] .super .active').each(function(a,b){
         b.setAttribute('class','active');
       });
+      $('g[element-id="' + what + '"] .super .exec').each(function(a,b){
+        b.setAttribute('class','exec');
+      });
+    }
     if (votes > 0)
       $('g[element-id="' + what + '"] .super .vote').each(function(a,b){
         b.setAttribute('class','vote necessary');

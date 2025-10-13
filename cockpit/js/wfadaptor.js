@@ -528,22 +528,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let sstart = dstart            + center_x - self.width_shift;
     let stop   = row * self.height + center_y - (self.height-self.height_shift);
 
-    if (addition) {
-      var g = $X('<g class="element" element-row="' + (row-1) + '" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
-                    '<g transform="translate(' + String(sstart) + ',' + String(stop) + ')"></g>' +
-                 '</g>');
-    } else {
-      // TODO change to better respresent exec
-      var g = $X('<g class="element" element-row="' + (row-1) + '" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
-                    '<g transform="translate(' + String(sstart) + ',' + String(stop) + ')">' +
-                      '<text class="super" transform="translate(' + (self.default_width-10) + ',8.4)">' +
-                        '<tspan class="active">0</tspan>' +
-                        '<tspan class="colon">,</tspan>' +
-                        '<tspan class="vote">0</tspan>' +
-                      '</text>' +
-                    '</g>' +
-                 '</g>');
-    }
+    var g = $X('<g class="element" element-row="' + (row-1) + '" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
+                  '<g transform="translate(' + String(sstart) + ',' + String(stop) + ')"></g>' +
+               '</g>');
 
     // add the element-endpoint and other stuff to each symbol (from theme info function)
     _.each(info,function(val,key) {
@@ -639,7 +626,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             let pos = get_dim(mid);
             mid.attr('clip-path','url(#ele-' + id + ')');
             let clip = $X('<clipPath belongs-to="element" id="ele-' + id + '" xmlns="http://www.w3.org/2000/svg">' +
-              '<rect x="0" y="-1" width="' + width + '" height="' +  (pos.y + pos.height + 2) + '"></rect>' +
+              '<rect x="0" y="-1" width="' + width + '" height="' +  (pos.y + pos.height + 4) + '"></rect>' +
             '</clipPath>');
             $('defs',self.svg.container).append(clip);
 
@@ -677,6 +664,17 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     sym.attr('class','activities');
     $(g[0].childNodes[0]).append(sym);
+    if (!addition) {
+      // TODO change to better respresent exec
+      $(g[0].childNodes[0]).append(
+        $X('<text class="super" transform="translate(20,-2)" xmlns="http://www.w3.org/2000/svg">' +
+            '<tspan class="exec">▶</tspan>' +
+            '<tspan class="active">0</tspan>' +
+            '<tspan class="colon">,</tspan>' +
+            '<tspan class="vote">0</tspan>' +
+          '</text>')
+      );
+    }
 
     // Binding events for symbol
     bind_event(g,sname,true);

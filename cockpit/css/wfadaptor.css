@@ -26,6 +26,7 @@
   --wfadaptor-label: #d4d4d4;
   --wfadaptor-mark: #d4d4d4;
   --wfadaptor-selected: #f57900;
+  --wfadaptor-hover: #f57900;
   --wfadaptor-stripe: #e9e9e9;
   --wfadaptor-background: #ffffff;
   --wfadaptor-menu: #ef2929;
@@ -42,12 +43,6 @@ svg rect.group {
   fill: var(--wfadaptor-highlight);
   fill-opacity: 0.2;
 }
-
-svg g.passive .rfill {
-  fill: var(--wfadaptor-exec-passive);
-  fill-opacity:1;
-}
-
 svg rect.stripe.even {
   fill: var(--wfadaptor-background);
 }
@@ -55,31 +50,47 @@ svg rect.stripe.odd {
   fill: var(--wfadaptor-stripe);
 }
 
-svg g.active .rfill {
-  fill: var(--wfadaptor-exec-active);
-  fill-opacity:1;
-}
-svg g.vote .rfill {
-  fill: var(--wfadaptor-exec-vote);
-  fill-opacity:1;
-}
-svg g.passive .rline {
+svg g.passive .execstyle {
   stroke: var(--wfadaptor-exec-passive);
+  stroke-width: 4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
-svg g.active .rline {
+svg g.active .execstyle {
   stroke: var(--wfadaptor-exec-active);
+  stroke-width: 4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
-svg g.vote .rline {
+svg g.vote .execstyle {
   stroke: var(--wfadaptor-exec-vote);
+  stroke-width: 4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 
-svg .rfill.menu {
-  fill: var(--wfadaptor-menu);
-  fill-opacity:1;
+svg g.passive .execstylethin {
+  stroke: var(--wfadaptor-exec-passive);
+  stroke-width: 2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
-svg .hfill.menu {
-  fill: var(--wfadaptor-menu);
-  fill-opacity:1;
+svg g.active .execstylethin {
+  stroke: var(--wfadaptor-exec-active);/
+  stroke-width: 2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+svg g.vote .execstylethin {
+  stroke: var(--wfadaptor-exec-vote);
+  stroke-width: 2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+svg .menu {
+  fill: var(--wfadaptor-menu) !important;
+  fill-opacity:1 !important;
 }
 
 svg line.ourline, svg path.ourline {
@@ -126,7 +137,7 @@ svg .standthin {
   fill: var(--wfadaptor-background);
   fill-opacity:1;
   stroke: var(--wfadaptor-base);
-  stroke-width:1.0;
+  stroke-width: 1.0 !important;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-miterlimit:4;
@@ -207,18 +218,8 @@ svg .marked text.label {
   color: var(--wfadaptor-label);
   fill: var(--wfadaptor-label);
 }
-svg .marked .cfill {
-  fill: var(--wfadaptor-mark);
-  fill-opacity:1;
-  stroke: var(--wfadaptor-mark);
-  stroke-width:0.2;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  stroke-miterlimit:4;
-  stroke-opacity:1;
-  stroke-dasharray:none;
-}
-svg .marked .cline {
+
+svg .marked .markstyle {
   stroke: var(--wfadaptor-mark);
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -236,18 +237,7 @@ svg.labelsrow text.label:hover, svg.labelsrow text.label.hover {
 svg text.label.selected {
   fill: var(--wfadaptor-selected);
 }
-svg .selected .cfill {
-  fill: var(--wfadaptor-selected);
-  fill-opacity:1;
-  stroke: var(--wfadaptor-selected);
-  stroke-width:0.2;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  stroke-miterlimit:4;
-  stroke-opacity:1;
-  stroke-dasharray:none;
-}
-svg .selected .cline {
+svg .selected .markstyle {
   stroke: var(--wfadaptor-selected);
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -336,13 +326,38 @@ svg text.super {
   stroke:none;
   font-family: adawaita-sans;
 }
+svg tspan.exec {
+  fill: var(--wfadaptor-exec-active-text);
+  display: none;
+
+  stroke: var(--wfadaptor-background);
+  stroke-width: 3px;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  paint-order: stroke markers fill;
+  font-family: adawaita-sans;
+}
 svg tspan.active {
   fill: var(--wfadaptor-exec-active-text);
   display: none;
+
+  stroke: var(--wfadaptor-background);
+  stroke-width: 3px;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  paint-order: stroke markers fill;
+  font-family: adawaita-sans;
 }
 svg tspan.vote {
   fill: var(--wfadaptor-exec-vote-text);
   display: none;
+
+  stroke: var(--wfadaptor-background);
+  stroke-width: 3px;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  paint-order: stroke markers fill;
+  font-family: adawaita-sans;
 }
 svg tspan.colon {
   display: none;
@@ -441,51 +456,15 @@ svg g.element[element-id].hover {
   cursor: pointer;
 }
 
-svg g.element[element-id].hover .hfill {
-  fill: var(--wfadaptor-selected);
-  fill-opacity:1;
+svg g.element[element-id].hover .hoverstyle {
+  stroke: var(--wfadaptor-hover);
+  stroke-width: 3;
 }
-svg g.element[element-id].hover .hline {
-  fill: var(--wfadaptor-selected);
-  fill-opacity:1;
-  stroke: var(--wfadaptor-selected);
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  stroke-miterlimit:4;
-  stroke-opacity:1;
-  stroke-dasharray:none;
-}
-svg g.element[element-id].hover .htext {
-  fill: var(--wfadaptor-selected);
-  fill-opacity:1;
-  stroke: var(--wfadaptor-selected);
-  stroke-width:0.2;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  stroke-miterlimit:4;
-  stroke-opacity:1;
-  stroke-dasharray:none;
+svg g.element[element-id].hover .hoverstylethin {
+  stroke: var(--wfadaptor-hover);
+  stroke-width: 2;
 }
 svg g.element[element-id].hover > text.label {
   color: var(--wfadaptor-selected);
   fill: var(--wfadaptor-selected);
-}
-svg g.element[element-id].hover .cfill {
-  fill: var(--wfadaptor-base);
-  fill-opacity:1;
-  stroke: var(--wfadaptor-base);
-  stroke-width:0.2;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  stroke-miterlimit:4;
-  stroke-opacity:1;
-  stroke-dasharray:none;
-}
-svg g.element[element-id].hover .cline {
-  stroke: var(--wfadaptor-base);
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  stroke-miterlimit:4;
-  stroke-opacity:1;
-  stroke-dasharray:none;
 }
