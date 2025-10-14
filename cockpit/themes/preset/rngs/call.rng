@@ -14,14 +14,14 @@
     <element name="color" rngui:label="Task Color">
       <choice rngui:type='color'>
         <value>#ffffff</value>
-        <value>#99c1f1</value>
-        <value>#8ff0a4</value>
-        <value>#f9f06b</value>
-        <value>#ffbe6f</value>
-        <value>#f66151</value>
-        <value>#dc8add</value>
-        <value>#cdab8f</value>
-        <value>#77767b</value>
+        <value>#d4e1f1</value>
+        <value>#d8f0dd</value>
+        <value>#ffffcc</value>
+        <value>#f2d8b8</value>
+        <value>#eeb3ac</value>
+        <value>#e4c3e4</value>
+        <value>#ded0c5</value>
+        <value>#bcbbbd</value>
       </choice>
     </element>
     <element name="method" rngui:label="Method">

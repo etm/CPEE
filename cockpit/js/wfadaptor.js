@@ -217,6 +217,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.compact = true;
     this.rotated_labels = true;
     this.striped = true;
+    this.global_style = {};
     // private
     var self = this;
     var adaptor = null;
@@ -518,7 +519,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.svg.container.prepend(g);
     return g;
   } // }}}
-  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, parent_row, max_row, row, col, group, addition, info) { // {{{
+  var draw_symbol = this.draw.draw_symbol = function(sname, id, title, parent_row, max_row, row, col, group, addition, info, style) { // {{{
     if(self.elements[sname] == undefined || self.elements[sname].svg == undefined) sname = 'unknown';
     let center_x = (self.width - self.default_width) / 2;
     let center_y = (self.height - self.default_height) / 2;
@@ -663,6 +664,13 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     }
 
     sym.attr('class','activities');
+    let sty = { ...self.global_style, ...style };
+    for (const s in sty) {
+      $('.colorstyle', sym).each((_,ele) => {
+        $(ele).css(s,sty[s]);
+      });
+    }
+
     $(g[0].childNodes[0]).append(sym);
     if (!addition) {
       // TODO change to better respresent exec
@@ -956,7 +964,8 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         // javascript object spread syntax is my new weird crush - the JS designers must be serious people
         labels.push({...{row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)},...illustrator.draw.get_y(pos.row)});
       }
-      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.row, pos.row, pos.col, block.svg, false, []);
+      illustrator.global_style = (illustrator.elements[sname].style && root) ? illustrator.elements[sname].style(root) : {};
+      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.row, pos.row, pos.col, block.svg, false, [], {})
     } // }}}
 
     $(root).children().filter(function(){ return this.localName[0] != '_'; }).each(function() {
@@ -1100,9 +1109,13 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     // console.log('----- pos ' + sname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, block, illustrator.dim.debug());
 
     // Draw Symbol {{{
+    let style = {};
+    if (illustrator.elements[sname].style && context) {
+      style = illustrator.elements[sname].style(context);
+    }
     if (second) {
       // wide is only for the special case of variable parallel, only event_end has it, all others should reference the first row
-      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), illustrator.elements[sname].wide == true ?  parent_pos.row+1 : parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true, []).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), illustrator.elements[sname].wide == true ?  parent_pos.row+1 : parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true, [], style).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
       $(context).attr('svg-type',tname);
       $(context).attr('svg-subtype',sname);
@@ -1111,7 +1124,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         if (illustrator.elements[sname].info && context) {
           info = illustrator.elements[sname].info(context);
         }
-        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, block.svg, false, info).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+        var g = illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), parent_pos.row, block.max.row, pos.row, pos.col, block.svg, false, info, style).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
       } else { console.log("no icon "+ sname);}
       if (illustrator.elements[sname] && illustrator.elements[sname].border) {
         let wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;

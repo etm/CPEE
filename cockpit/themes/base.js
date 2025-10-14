@@ -381,7 +381,17 @@ function WFAdaptorManifestationBase(adaptor) {
         var ret = [ { column: 'Label', value: $('> label',$(node).children('parameters')).text().replace(/^['"]/,'').replace(/['"]$/,'') } ];
         return ret;
       },
-      'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
+      'style': function(node){
+        let sty = {};
+        let col = $('> parameters > color', node);
+        if (col.length > 0 && col.text() != '') {
+          sty['fill'] = col.text();
+        }
+        return sty;
+      },
+      'info': function(node){
+        return { 'element-endpoint': $(node).attr('endpoint') };
+      },
       'resolve_symbol': function(node) {
         if ($('> annotations > _context_data_analysis > probes > probe', node).length > 0) {
           if ($('> code', node).length > 0) {
@@ -1297,6 +1307,14 @@ function WFAdaptorManifestationBase(adaptor) {
     'type': 'description',
     'illustrator': {//{{{
       'endnodes': 'passthrough',
+      'style': function(node) {
+        let sty = {};
+        let col = $(node).attr('color');
+        if (col && col != '') {
+          sty['fill'] = col;
+        }
+        return sty;
+      },
       'closeblock': false,
       'balance': true,
       'expansion': function(node) {
@@ -1427,7 +1445,17 @@ function WFAdaptorManifestationBase(adaptor) {
     'parent': 'call',
     'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
-      'info': function(node){ return { 'element-endpoint': $(node).attr('endpoint') }; },
+      'style': function(node){
+        let sty = {};
+        let col = $('> parameters > color', node);
+        if (col.length > 0 && col.text() != '') {
+          sty['fill'] = col.text();
+        }
+        return sty;
+      },
+      'info': function(node){
+        return { 'element-endpoint': $(node).attr('endpoint') };
+      },
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate.svg'
     }//}}}
   }; /*}}}*/

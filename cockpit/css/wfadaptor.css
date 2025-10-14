@@ -76,7 +76,7 @@ svg g.passive .execstylethin {
   stroke-linejoin:round;
 }
 svg g.active .execstylethin {
-  stroke: var(--wfadaptor-exec-active);/
+  stroke: var(--wfadaptor-exec-active);
   stroke-width: 2;
   stroke-linecap:round;
   stroke-linejoin:round;
