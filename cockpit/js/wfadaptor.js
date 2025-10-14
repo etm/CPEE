@@ -710,9 +710,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
     var line;
     if (arrow)
-      line = $X('<path xmlns="http://www.w3.org/2000/svg" class="ourline" marker-end="url(#arrow)"/>');
+      line = $X('<path xmlns="http://www.w3.org/2000/svg" class="edge" marker-end="url(#arrow)"/>');
     else
-      line = $X('<path xmlns="http://www.w3.org/2000/svg" class="ourline"/>');
+      line = $X('<path xmlns="http://www.w3.org/2000/svg" class="edge"/>');
     if (end['row']-start['row'] == 0 || end['col']-start['col'] == 0) { // straight line
       line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
                             String(cend) +   "," + String(end['row']*self.height-15)

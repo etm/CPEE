@@ -93,7 +93,7 @@ svg .menu {
   fill-opacity:1 !important;
 }
 
-svg line.ourline, svg path.ourline {
+svg line.edge, svg path.edge {
   stroke-opacity:1;
   stroke: var(--wfadaptor-base);
   stroke-width: 2;
