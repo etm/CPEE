@@ -262,6 +262,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let bb = graph.svg[0].getBBox();
     self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom
     self.svg.container.attr('width',  bb.x + bb.width + self.width_shift);  // small border on the right
+    self.svg.container.attr('data-pos-matrix', JSON.stringify(self.dim.props));
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[element-id = \'' + svg_id + '\'] g.activities', self.svg.container);
