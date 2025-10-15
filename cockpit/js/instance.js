@@ -110,6 +110,13 @@ function cockpit() { //{{{
   $("input[name=testsetfile]").change(load_testsetfile_after);
   $("input[name=modelfile]").change(load_modelfile_after);
   $("#modifiers").on('change','div.select select',function(e){ modifiers_update(e); });
+  $("#modelling").on('click',function(e){
+    $('#graphgrid .selected').removeClass('selected');
+    save['graph_adaptor'].illustrator.get_elements().removeClass('marked');
+    localStorage.removeItem('marked');
+    localStorage.removeItem('marked_from');
+    $('#dat_details').empty();
+  });
 
   $.ajax({
     url: $('body').attr('current-templates'),
@@ -697,7 +704,7 @@ function adaptor_init(url,theme,dslx) { //{{{
                   tsvg.text(col.value);
                   tsvg.mouseover(function(ev){ manifestation.events.mouseover($(ev.currentTarget).attr('element-id')); });
                   tsvg.mouseout(function(ev){ manifestation.events.mouseout($(ev.currentTarget).attr('element-id')); });
-                  tsvg.click(function(ev){ manifestation.events.click($(ev.currentTarget).attr('element-id')); });
+                  tsvg.click(function(ev){ manifestation.events.click($(ev.currentTarget).attr('element-id'),ev); });
                   tcolumnsvgs[col.column][val.row] = tsvg;
                 }
 
