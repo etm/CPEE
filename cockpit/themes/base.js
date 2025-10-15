@@ -395,7 +395,11 @@ function WFAdaptorManifestationBase(adaptor) {
       'resolve_symbol': function(node) {
         if ($('> annotations > _context_data_analysis > probes > probe', node).length > 0) {
           if ($('> code', node).length > 0) {
-            return 'callmanipulate_sensor';
+            if ($('> code > signal', node).length > 0 && $('> code > signal', node).text() == 'on') {
+              return 'callmanipulate_sensor_signal';
+            } else {
+              return 'callmanipulate_sensor';
+            }
           } else {
             return 'call_sensor';
           }
@@ -1479,6 +1483,13 @@ function WFAdaptorManifestationBase(adaptor) {
     'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
     'illustrator': {//{{{
       'svg': self.adaptor.theme_dir + 'symbols/callmanipulate_signal.svg'
+    }//}}}
+  }; /*}}}*/
+  this.elements.callmanipulate_sensor_signal = { /*{{{*/
+    'parent': 'call',
+    'description': self.adaptor.theme_dir + 'rngs/callmanipulate.rng',
+    'illustrator': {//{{{
+      'svg': self.adaptor.theme_dir + 'symbols/callmanipulate_sensor_signal.svg'
     }//}}}
   }; /*}}}*/
   this.elements.loop_head = { /*{{{*/

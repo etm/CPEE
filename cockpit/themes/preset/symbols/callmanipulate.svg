@@ -12,8 +12,8 @@
   </g>
   <g class="part-middle" transform="translate(27,0)">
     <rect x="0" y="1" width="220" height="28" class="standwithout colorstyle"/>
-    <line x1="0" y1="1" x2="220" y2="1" class="standline markstyle hoverstyle execstyle" />
-    <line x1="0" y1="29" x2="220" y2="29" class="standline markstyle hoverstyle execstyle" />
+    <line x1="0" y1="1" x2="220" y2="1" class="standline markstyle hoverstyle execstyle"/>
+    <line x1="0" y1="29" x2="220" y2="29" class="standline markstyle hoverstyle execstyle"/>
     <text transform="translate(0,20)" class="label"></text>
   </g>
   <g class="part-extra" transform="">
