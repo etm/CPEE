@@ -439,6 +439,14 @@ function WFAdaptorManifestationBase(adaptor) {
     'type': 'primitive',
     'illustrator': {//{{{
       'endnodes': 'this',
+      'style': function(node) {
+        let sty = {};
+        let col = $(node).attr('color');
+        if (col && col != '') {
+          sty['fill'] = col;
+        }
+        return sty;
+      },
       'label': function(node){
         var lab = $(node).attr('label');
         if (lab) {
