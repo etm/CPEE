@@ -33,7 +33,7 @@ body {
 
 #instance ui-content { height: 6em; }
 
-#areanew td:nth-child(2)       { padding-top: 0.4em; padding-bottom: 0.4em; }
+#areanew td:nth-child(2)       { padding-top: 0.2em; padding-bottom: 0.2em; }
 #areanew td:nth-child(1)       { width: 7em; padding-right: 1em; }
 #areanew td:nth-child(3)       { width: 16em; padding-left: 1em; }
 #areanew input                 {
@@ -46,8 +46,8 @@ body {
   -webkit-box-sizing: border-box;
 }
 
-#areanew button[name=base]     { width: 100%; padding: 0.5em 1em; margin-bottom: 0.1em; }
-#areanew button[name=instance] { width: 100%; padding: 0.5em 1em; }
+#areanew button[name=base]     { width: 100%; padding: 0.3em 1em; margin-bottom: 0.1em; }
+#areanew button[name=instance] { width: 100%; padding: 0.3em 1em; }
 
 ui-tabbed ui-tabbar ui-behind button {
   margin-left: 0.5em;
@@ -124,7 +124,7 @@ ui-tabbed ui-tabbar ui-behind button {
 #areaexecution table.x-ui-compact tbody.exe tr:first-child td { padding-top: 0.5em; }
 #areaexecution table.x-ui-compact tbody.exe { border-top: 1px solid var(--x-ui-border-color); }
 
-#areaexecution table.x-ui-compact tbody.exe td { height: 2.2em; }
+#areaexecution table.x-ui-compact tbody.exe td { height: 2em; }
 
 #arealog > div {  padding-left: 1em; padding-top: 1em; }
 
