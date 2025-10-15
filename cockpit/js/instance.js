@@ -110,12 +110,13 @@ function cockpit() { //{{{
   $("input[name=testsetfile]").change(load_testsetfile_after);
   $("input[name=modelfile]").change(load_modelfile_after);
   $("#modifiers").on('change','div.select select',function(e){ modifiers_update(e); });
-  $("#modelling").on('click',function(e){
+  $("#modelling").click(function(e){
     $('#graphgrid .selected').removeClass('selected');
     save['graph_adaptor'].illustrator.get_elements().removeClass('marked');
     localStorage.removeItem('marked');
     localStorage.removeItem('marked_from');
     $('#dat_details').empty();
+    e.stopImmediatePropagation();
   });
 
   $.ajax({

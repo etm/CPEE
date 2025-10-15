@@ -343,7 +343,7 @@ function WFAdaptorManifestationBase(adaptor) {
 
       self.update_details(svgid);
     }
-    e.stopPropagation();
+    if (e) { e.stopImmediatePropagation(); }
   } // }}}
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
