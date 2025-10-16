@@ -277,38 +277,6 @@ svg .standwithout {
 svg .standtrans {
   fill: var(--wfadaptor-background);
 }
-svg text.normal {
-  font-size:20px;
-  font-style:normal;
-  font-variant:normal;
-  font-weight:bold;
-  font-stretch:normal;
-  text-align:center;
-  line-height:125%;
-  writing-mode:horizontal-tb;
-  text-anchor:middle;
-  color: var(--wfadaptor-base);
-  fill: var(--wfadaptor-base);
-  fill-opacity:1;
-  stroke:none;
-  font-family: adawaita-sans;
-}
-svg text.inverted {
-  font-size:20px;
-  font-style:normal;
-  font-variant:normal;
-  font-weight:bold;
-  font-stretch:normal;
-  text-align:center;
-  line-height:125%;
-  writing-mode:horizontal-tb;
-  text-anchor:middle;
-  color: var(--wfadaptor-background);
-  fill: var(--wfadaptor-background);
-  fill-opacity:1;
-  stroke:none;
-  font-family: adawaita-sans;
-}
 
 svg text.super {
   font-size:11px;
@@ -366,40 +334,6 @@ svg tspan.necessary {
   display: inline;
 }
 
-svg text.normallarge {
-  font-size:25px;
-  font-style:normal;
-  font-variant:normal;
-  font-weight:bold;
-  font-stretch:normal;
-  text-align:center;
-  line-height:125%;
-  writing-mode:horizontal-tb;
-  text-anchor:middle;
-  color: var(--wfadaptor-base);
-  fill: var(--wfadaptor-base);
-  fill-opacity:1;
-  stroke:none;
-  font-family: adawaita-sans;
-}
-
-svg text.small {
-  font-size:14px;
-  font-style:normal;
-  font-variant:normal;
-  font-weight:bold;
-  font-stretch:normal;
-  text-align:center;
-  line-height:125%;
-  writing-mode:horizontal-tb;
-  text-anchor:middle;
-  color: var(--wfadaptor-base);
-  fill: var(--wfadaptor-base);
-  fill-opacity:1;
-  stroke:none;
-  font-family: adawaita-sans;
-}
-
 svg text.label {
   font-size:14px;
   font-style:normal;
@@ -427,23 +361,6 @@ svg text.label.standalone {
 }
 svg text.label.rotate {
   transform: translateY(10px) rotate(-30deg);
-}
-
-svg text.smaller {
-  font-size:12px;
-  font-style:normal;
-  font-variant:normal;
-  font-weight:bold;
-  font-stretch:normal;
-  text-align:center;
-  line-height:125%;
-  writing-mode:horizontal-tb;
-  text-anchor:middle;
-  color: var(--wfadaptor-base);
-  fill: var(--wfadaptor-base);
-  fill-opacity:1;
-  stroke:none;
-  font-family: adawaita-sans;
 }
 
 #arrow {
