@@ -64,6 +64,13 @@ function do_main_work(svgid) { //{{{
   }
   nnew.attr('svg-id',svgid);
 
+  // copy all elements from different namespaces
+  [...node[0].attributes].forEach(attr =>{
+    if (attr && attr.namespaceURI != 'http://cpee.org/ns/description/1.0') {
+      nnew[0].setAttributeNS(attr.namespaceURI,attr.nodeName,attr.nodeValue);
+    }
+  });
+
   if ($('*[svg-id]',node).length > 0) {
     nnew.append(node.children().filter(function(){ return this.attributes['svg-id'] != undefined; }));
   }
