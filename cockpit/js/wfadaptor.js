@@ -169,7 +169,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
           manifestation.elements[element].description = [ manifestation.elements[element].description ];
         }
         if ($.isArray(manifestation.elements[element].description)) {
-          _.each(manifestation.elements[element].description,function(val,ind){
+          manifestation.elements[element].description.forEach(function(val,ind){
             deferreds.push(
               $.ajax({
                 type: "GET",
@@ -535,9 +535,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
                '</g>');
 
     // add the element-endpoint and other stuff to each symbol (from theme info function)
-    _.each(info,function(val,key) {
-      g.attr(key, val);
-    });
+    for (const key in info) {
+      g.attr(key, info[key]);
+    }
 
     var sym = self.svg.defs[sname].clone();
 
@@ -966,7 +966,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         labels.push({...{row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)},...illustrator.draw.get_y(pos.row)});
       }
       illustrator.global_style = (illustrator.elements[sname].style && root) ? illustrator.elements[sname].style(root) : {};
-      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.row, pos.row, pos.col, block.svg, false, [], {})
+      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.row, pos.row, pos.col, block.svg, false, {}, {})
     } // }}}
 
     $(root).children().filter(function(){ return this.localName[0] != '_'; }).each(function() {
@@ -1116,12 +1116,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     if (second) {
       // wide is only for the special case of variable parallel, only event_end has it, all others should reference the first row
-      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), illustrator.elements[sname].wide == true ?  parent_pos.row+1 : parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true, [], style).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
+      illustrator.draw.draw_symbol(sname, $(context).attr('svg-id'), $(context).attr('svg-label'), illustrator.elements[sname].wide == true ?  parent_pos.row+1 : parent_pos.row, block.max.row, pos.row, pos.col, second.svg, true, {}, style).addClass(illustrator.elements[sname] ? illustrator.elements[sname].type : 'primitive unknown');
     } else {
       $(context).attr('svg-type',tname);
       $(context).attr('svg-subtype',sname);
       if((illustrator.elements[sname] && illustrator.elements[sname].svg) || sname == 'unknown') {
-        let info = [];
+        let info = {};
         if (illustrator.elements[sname].info && context) {
           info = illustrator.elements[sname].info(context);
         }
