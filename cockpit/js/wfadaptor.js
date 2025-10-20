@@ -213,7 +213,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.svg = {};
     this.draw = {};
     this.dim = {};
-    this.dim.props = [];
+    this.dim.symbols = [];
+    this.dim.connections = [];
     this.compact = true;
     this.rotated_labels = true;
     this.striped = true;
@@ -262,7 +263,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let bb = graph.svg[0].getBBox();
     self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom
     self.svg.container.attr('width',  bb.x + bb.width + self.width_shift);  // small border on the right
-    self.svg.container.attr('data-pos-matrix', JSON.stringify(self.dim.props));
+    self.svg.container.attr('data-pos-matrix', JSON.stringify(self.dim.symbols));
+    self.svg.container.attr('data-con-list', JSON.stringify(self.dim.connections));
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[element-id = \'' + svg_id + '\'] g.activities', self.svg.container);
@@ -281,7 +283,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   var clear = this.clear = function() { // {{{
     $('> :not(defs)', self.svg.container).each(function() {$(this).remove()});
     $('> defs > [belongs-to=element]', self.svg.container).each(function() {$(this).remove()});
-    self.dim.props = [];
+    self.dim.symbols = [];
   } // }}}
   var get_symbol = this.get_symbol = function() { // {{{
   } // }}}
@@ -289,14 +291,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   // Helper Functions {{{
   var debug_dim = this.dim.debug = function() { //{{{
     line = '\n';
-    for (let i=1; i < self.dim.props.length; i++) {
+    for (let i=1; i < self.dim.symbols.length; i++) {
       line += $.sprintf('%02d',i) + ': ';
-      if (self.dim.props[i]) {
-        for (let j=1; j < self.dim.props[i].length; j++) {
+      if (self.dim.symbols[i]) {
+        for (let j=1; j < self.dim.symbols[i].length; j++) {
           line += ' [ ';
-          if (self.dim.props[i] && self.dim.props[i][j] && self.dim.props[i][j].x) { line += $.sprintf('%3d',self.dim.props[i][j].x); } else { line += '   '; }
+          if (self.dim.symbols[i] && self.dim.symbols[i][j] && self.dim.symbols[i][j].x) { line += $.sprintf('%3d',self.dim.symbols[i][j].x); } else { line += '   '; }
           line += ', ';
-          if (self.dim.props[i] && self.dim.props[i][j] && self.dim.props[i][j].width) { line += $.sprintf('%3d',self.dim.props[i][j].width); } else { line += '   '; }
+          if (self.dim.symbols[i] && self.dim.symbols[i][j] && self.dim.symbols[i][j].width) { line += $.sprintf('%3d',self.dim.symbols[i][j].width); } else { line += '   '; }
           line += ' ] ';
         }
       }
@@ -305,54 +307,56 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return line;
   } //}}}
 
-  var set_x = this.dim.set_x = function(row,col,twidth) { //{{{
-    if (!self.dim.props[row]) { self.dim.props[row] = []; }
-    if (!self.dim.props[row][col]) { self.dim.props[row][col] = {}; }
+  var set_x = this.dim.set_x = function(row,col,twidth,sname) { //{{{
+    if (!self.dim.symbols[row]) { self.dim.symbols[row] = []; }
+    if (!self.dim.symbols[row][col]) { self.dim.symbols[row][col] = {}; }
 
-    if (self.dim.props[row-1] && self.dim.props[row-1][col] && self.dim.props[row-1][col].x) { // row before
-      self.dim.props[row][col].x = self.dim.props[row-1][col].x;
-    } else if (self.dim.props[row] && self.dim.props[row][col-1] && self.dim.props[row][col-1].x) { // column before
+    if (self.dim.symbols[row-1] && self.dim.symbols[row-1][col] && self.dim.symbols[row-1][col].x) { // row before
+      self.dim.symbols[row][col].x = self.dim.symbols[row-1][col].x;
+    } else if (self.dim.symbols[row] && self.dim.symbols[row][col-1] && self.dim.symbols[row][col-1].x) { // column before
       let mx = 0;
-      for (let i=row; i<self.dim.props.length; i++) {
-        if (self.dim.props[i][col-1] && mx < self.dim.props[i][col-1].x + self.dim.props[i][col-1].width) {
-          mx = self.dim.props[i][col-1].x + self.dim.props[i][col-1].width;
+      for (let i=row; i<self.dim.symbols.length; i++) {
+        if (self.dim.symbols[i][col-1] && mx < self.dim.symbols[i][col-1].x + self.dim.symbols[i][col-1].width) {
+          mx = self.dim.symbols[i][col-1].x + self.dim.symbols[i][col-1].width;
         }
       }
-      self.dim.props[row][col].x = mx;
-    } else if (self.dim.props[row-1] && self.dim.props[row-1][col-1] && self.dim.props[row-1][col-1].x) { // diagonal left above
-      self.dim.props[row][col].x = self.dim.props[row-1][col-1].x + self.dim.props[row-1][col-1].width;
-    } else if (self.dim.props.length > row + 1) { // same column below
+      self.dim.symbols[row][col].x = mx;
+    } else if (self.dim.symbols[row-1] && self.dim.symbols[row-1][col-1] && self.dim.symbols[row-1][col-1].x) { // diagonal left above
+      self.dim.symbols[row][col].x = self.dim.symbols[row-1][col-1].x + self.dim.symbols[row-1][col-1].width;
+    } else if (self.dim.symbols.length > row + 1) { // same column below
       let mx = 0;
-      for (let i=row; i<self.dim.props.length; i++) {
-        if (self.dim.props[i] && self.dim.props[i][col] && mx < self.dim.props[i][col].x) {
-          mx = self.dim.props[i][col].x;
+      for (let i=row; i<self.dim.symbols.length; i++) {
+        if (self.dim.symbols[i] && self.dim.symbols[i][col] && mx < self.dim.symbols[i][col].x) {
+          mx = self.dim.symbols[i][col].x;
         }
       }
-      self.dim.props[row][col].x = mx;
+      self.dim.symbols[row][col].x = mx;
     } else { // same column above
       let mx = 0;
       for (let i=row; i>0; i--) {
-        if (self.dim.props[i] && self.dim.props[i][col] && mx < self.dim.props[i][col].x) {
-          mx = self.dim.props[i][col].x;
+        if (self.dim.symbols[i] && self.dim.symbols[i][col] && mx < self.dim.symbols[i][col].x) {
+          mx = self.dim.symbols[i][col].x;
         }
       }
-      self.dim.props[row][col].x = mx;
+      self.dim.symbols[row][col].x = mx;
     }
-    if (self.dim.props[row][col].width) {
-      if (twidth > self.dim.props[row][col].width) {
-        self.dim.props[row][col].width = twidth;
+    if (self.dim.symbols[row][col].width) {
+      if (twidth > self.dim.symbols[row][col].width) {
+        self.dim.symbols[row][col].width = twidth;
       }
     } else {
-      self.dim.props[row][col].width = twidth;
+      self.dim.symbols[row][col].width = twidth;
     }
+    self.dim.symbols[row][col].type = sname;
     // console.log('set_x ',row,col,debug_dim());
   } //}}}
-  var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth) { //{{{
-    if (!self.dim.props[row]) { self.dim.props[row] = []; }
-    if (!self.dim.props[row][col] || self.dim.props[row][col].width < twidth) {
-      self.dim.props[row][col] = {};
-      self.dim.props[row][col].x = tx;
-      self.dim.props[row][col].width = twidth;
+  var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth,sname) { //{{{
+    if (!self.dim.symbols[row]) { self.dim.symbols[row] = []; }
+    if (!self.dim.symbols[row][col] || self.dim.symbols[row][col].width < twidth) {
+      self.dim.symbols[row][col] = {};
+      self.dim.symbols[row][col].x = tx;
+      self.dim.symbols[row][col].width = twidth;
+      self.dim.symbols[row][col].type = sname;
     }
     // console.log('set_x_cond',row,col,debug_dim());
   } //}}}
@@ -361,26 +365,26 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     if (row<0) { row = 0 };
 
     let mlen = 0;
-    if (self.dim.props[row] && self.dim.props[row][col] && self.dim.props[row][col].x) { // this column
-      mlen = self.dim.props[row][col].x;
-    } else if (self.dim.props[row] && !self.dim.props[row][col] && self.dim.props.length > row && self.dim.props[row+1] && self.dim.props[row+1][col] && self.dim.props[row+1][col].x ) { // row after
-      mlen = self.dim.props[row+1][col].x;
-    } else if (self.dim.props[row-1] && self.dim.props[row-1][col] && self.dim.props[row-1][col].x) { // row before
-      mlen = self.dim.props[row-1][col].x;
-    } else if (self.dim.props[row] && self.dim.props[row][col-1] && self.dim.props[row][col-1].x) { // column before
-      for (let i=row; i<self.dim.props.length; i++) {
-        if (self.dim.props[i][col-1] && mlen < self.dim.props[i][col-1].x + self.dim.props[i][col-1].width) {
-          mlen = self.dim.props[i][col-1].x + self.dim.props[i][col-1].width;
+    if (self.dim.symbols[row] && self.dim.symbols[row][col] && self.dim.symbols[row][col].x) { // this column
+      mlen = self.dim.symbols[row][col].x;
+    } else if (self.dim.symbols[row] && !self.dim.symbols[row][col] && self.dim.symbols.length > row && self.dim.symbols[row+1] && self.dim.symbols[row+1][col] && self.dim.symbols[row+1][col].x ) { // row after
+      mlen = self.dim.symbols[row+1][col].x;
+    } else if (self.dim.symbols[row-1] && self.dim.symbols[row-1][col] && self.dim.symbols[row-1][col].x) { // row before
+      mlen = self.dim.symbols[row-1][col].x;
+    } else if (self.dim.symbols[row] && self.dim.symbols[row][col-1] && self.dim.symbols[row][col-1].x) { // column before
+      for (let i=row; i<self.dim.symbols.length; i++) {
+        if (self.dim.symbols[i][col-1] && mlen < self.dim.symbols[i][col-1].x + self.dim.symbols[i][col-1].width) {
+          mlen = self.dim.symbols[i][col-1].x + self.dim.symbols[i][col-1].width;
         }
       }
-    } else if (self.dim.props[row+1] && self.dim.props[row+1][col] && self.dim.props[row+1][col].x) { // directly below
-      mlen = self.dim.props[row+1][col].x;
-    } else if (self.dim.props[row-1] && self.dim.props[row-1][col-1] && self.dim.props[row-1][col-1].x) { // diagonal left above
-      mlen = self.dim.props[row-1][col-1].x + self.dim.props[row-1][col-1].width;
+    } else if (self.dim.symbols[row+1] && self.dim.symbols[row+1][col] && self.dim.symbols[row+1][col].x) { // directly below
+      mlen = self.dim.symbols[row+1][col].x;
+    } else if (self.dim.symbols[row-1] && self.dim.symbols[row-1][col-1] && self.dim.symbols[row-1][col-1].x) { // diagonal left above
+      mlen = self.dim.symbols[row-1][col-1].x + self.dim.symbols[row-1][col-1].width;
     } else { // same column below
-      for (let i=row; i<self.dim.props.length; i++) {
-        if (self.dim.props[i] && self.dim.props[i][col] && mlen < self.dim.props[i][col].x + self.dim.props[i][col].width) {
-          mlen = self.dim.props[i][col].x;
+      for (let i=row; i<self.dim.symbols.length; i++) {
+        if (self.dim.symbols[i] && self.dim.symbols[i][col] && mlen < self.dim.symbols[i][col].x + self.dim.symbols[i][col].width) {
+          mlen = self.dim.symbols[i][col].x;
         }
       }
       // found nothing in the rows below
@@ -396,8 +400,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     mlen = 0;
     for (let i=rowf; i<=rowt; i++) {
-      if (self.dim.props[i] && self.dim.props[i][col] && mlen < self.dim.props[i][col].x + self.dim.props[i][col].width) {
-        mlen = self.dim.props[i][col].x + self.dim.props[i][col].width;
+      if (self.dim.symbols[i] && self.dim.symbols[i][col] && mlen < self.dim.symbols[i][col].x + self.dim.symbols[i][col].width) {
+        mlen = self.dim.symbols[i][col].x + self.dim.symbols[i][col].width;
       }
     }
     // console.log(deb,rowf,rowt,col,'--> ' + mlen,debug_dim());
@@ -405,19 +409,19 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } //}}}
   var get_x_width = this.dim.get_x_width = function(maxcol) { //{{{
     let cwidth = 0;
-    for (let i=0; i < self.dim.props.length; i++) {
+    for (let i=0; i < self.dim.symbols.length; i++) {
       let lwidth = 0;
       for (let j=0; j <= maxcol; j++) {
-        if (typeof self.dim.props[i] !== 'undefined' && typeof self.dim.props[i][j] !== 'undefined') {
-          lwidth += self.dim.props[i][j].width;
+        if (typeof self.dim.symbols[i] !== 'undefined' && typeof self.dim.symbols[i][j] !== 'undefined') {
+          lwidth += self.dim.symbols[i][j].width;
         } else {
           // go up the column and find the next valid value
           let x = i;
           let found = false;
           while (x > 0 && !found) {
             x -= 1;
-            if (typeof self.dim.props[x] !== 'undefined' && typeof self.dim.props[x][j] !== 'undefined') {
-              lwidth += self.dim.props[x][j].width;
+            if (typeof self.dim.symbols[x] !== 'undefined' && typeof self.dim.symbols[x][j] !== 'undefined') {
+              lwidth += self.dim.symbols[x][j].width;
               found = true;
             }
           }
@@ -636,7 +640,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             if (xtr.length > 0) {
               xtr.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
             }
-            set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + 2 * self.width_shift_label);
+            set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + 2 * self.width_shift_label,sname);
           } else {
             let tdim = 0;
             if (self.rotated_labels && self.elements[sname].rotatelabels != false) {
@@ -645,14 +649,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             } else {
               tdim = self.width + width + self.width_shift_label;
             }
-            set_x_cond(row,col,dstart,tdim);
+            set_x_cond(row,col,dstart,tdim,sname);
           }
         } else {
-          set_x_cond(row,col,dstart,self.width);
+          set_x_cond(row,col,dstart,self.width,sname);
         }
         if (nor.length > 0) { nor.remove(); }
       } else {
-        set_x_cond(row,col,dstart,self.width);
+        set_x_cond(row,col,dstart,self.width,sname);
         if (sta.length > 0) { sta.remove(); }
         if (mid.length > 0) { mid.remove(); }
         if (end.length > 0) { end.remove(); }
@@ -661,7 +665,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       $('.part-start',sym).remove();
       $('.part-middle',sym).remove();
       $('.part-end',sym).remove();
-      set_x_cond(row,col,dstart,self.width);
+      set_x_cond(row,col,dstart,self.width,sname);
     }
 
     sym.attr('class','activities');
@@ -715,6 +719,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let sr = Math.min(start.row,end.row);
     let cstart = get_x(sr,start.col,'conn from');
     let cend = get_x(sr,end.col,'conn to');
+    self.dim.connections.push({from: {row: start.row, col: start.col}, to: {row: end.row, col: end.col}});
 
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
     var line;
@@ -749,8 +754,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       }
     } else if(end['row']-start['row'] < 0) { // upwards
       line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15) +" "+
-                            String(cstart) + "," + String((self.dim.props.length-1)*self.height+4) +" "+
-                            String(cend+15) + "," + String((self.dim.props.length-1)*self.height+4) +" "+
+                            String(cstart) + "," + String((self.dim.symbols.length-1)*self.height+4) +" "+
+                            String(cend+15) + "," + String((self.dim.symbols.length-1)*self.height+4) +" "+
                             String(cend+15) + "," + String(end['row']*self.height+15)+" "+
                             String(cend) + "," + String(end['row']*self.height-15)
       );
@@ -982,12 +987,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(root_expansion == 'horizontal')  {
         // for noindent themes do not indent the first column
         if (!pos.noindent || (pos.noindent && endnodes.length > 1)) {
-          illustrator.dim.set_x(pos.row,pos.col,illustrator.width);
+          illustrator.dim.set_x(pos.row,pos.col,illustrator.width,sname);
           pos.col++;
         }
         if (!illustrator.compact) {
           if (block.max.row) {
-            illustrator.dim.set_x(pos.row,pos.col,illustrator.width);
+            illustrator.dim.set_x(pos.row,pos.col,illustrator.width,sname);
             pos.row = block.max.row + 1;
           }
         }
@@ -997,7 +1002,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg) pos.row--;
         // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
 
-        illustrator.dim.set_x(pos.row,pos.col,illustrator.width);
+        illustrator.dim.set_x(pos.row,pos.col,illustrator.width,sname);
         // but fuuuuu, we calculate the gateways only later, so we couldnt even have them bigger for now
 
         // console.log('----> down', tname, parent_pos.row, pos.row, parent_pos.col, pos.col, illustrator.dim.debug());
