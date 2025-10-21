@@ -29,8 +29,8 @@
   --wfadaptor-hover: #f57900;
   --wfadaptor-stripe: #e9e9e9;
   --wfadaptor-background: #ffffff;
-  --wfadaptor-menu: #ef2929;
   --wfadaptor-border: #a1a1a1;
+  --wfadaptor-important: #ef2929;
 }
 
 svg {
@@ -86,11 +86,6 @@ svg g.vote .execstylethin {
   stroke-width: 2;
   stroke-linecap:round;
   stroke-linejoin:round;
-}
-
-svg .menu {
-  fill: var(--wfadaptor-menu) !important;
-  fill-opacity:1 !important;
 }
 
 svg line.edge, svg path.edge {

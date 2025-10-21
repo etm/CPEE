@@ -117,7 +117,7 @@ function WFAdaptorManifestationBase(adaptor) {
       nodes.reverse();
       var iconm = contextMenuHandling_clean_icon(self.resources['arrow']);
       var iconc = contextMenuHandling_clean_icon(self.resources['arrow']);
-      iconm.children('.colorstyle').css('fill','var(--wfadaptor-menu');
+      iconm.children('.colorstyle').css('fill','var(--wfadaptor-important');
       if (myid == localStorage.getItem('marked_from')) {
         menu.push(
           {
@@ -186,7 +186,7 @@ function WFAdaptorManifestationBase(adaptor) {
 
     if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
       var icon = contextMenuHandling_clean_icon(self.elements[xml_node.get(0).tagName].illustrator.svg);
-      icon.find('.colorstyle').css('fill','var(--wfadaptor-menu');
+      icon.find('.colorstyle').css('fill','var(--wfadaptor-important');
       menu['Delete'] = [{
         'label': 'Remove Element',
         'function_call': function(selector,target,selected){
@@ -203,7 +203,7 @@ function WFAdaptorManifestationBase(adaptor) {
       nodes = JSON.parse(nodes);
       if (nodes && nodes.length > 0) {
         var icond = contextMenuHandling_clean_icon(self.resources['delete']);
-        icond.find('.colorstyle').css('stroke','var(--wfadaptor-menu)');
+        icond.find('.colorstyle').css('stroke','var(--wfadaptor-important)');
         menu['Delete'].push({
           'label': 'Remove Marked Elements',
           'function_call': function(){
@@ -235,7 +235,7 @@ function WFAdaptorManifestationBase(adaptor) {
     }
     if($('> code', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
       var icon = contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg);
-      icon.find('.part-extra .colorstyle').css('fill','var(--wfadaptor-menu');
+      icon.find('.part-extra .colorstyle').css('fill','var(--wfadaptor-important');
       menu['Delete'].push({
         'label': 'Remove Scripts',
         'function_call': self.adaptor.description.remove,
