@@ -117,7 +117,7 @@ function WFAdaptorManifestationBase(adaptor) {
       nodes.reverse();
       var iconm = contextMenuHandling_clean_icon(self.resources['arrow']);
       var iconc = contextMenuHandling_clean_icon(self.resources['arrow']);
-      iconm.children('.rfill').addClass('menu');
+      iconm.children('.colorstyle').css('fill','var(--wfadaptor-menu');
       if (myid == localStorage.getItem('marked_from')) {
         menu.push(
           {
@@ -186,8 +186,7 @@ function WFAdaptorManifestationBase(adaptor) {
 
     if(xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
       var icon = contextMenuHandling_clean_icon(self.elements[xml_node.get(0).tagName].illustrator.svg);
-      icon.find('.rfill').addClass('menu');
-      icon.find('.hfill').addClass('menu');
+      icon.find('.colorstyle').css('fill','var(--wfadaptor-menu');
       menu['Delete'] = [{
         'label': 'Remove Element',
         'function_call': function(selector,target,selected){
@@ -204,7 +203,7 @@ function WFAdaptorManifestationBase(adaptor) {
       nodes = JSON.parse(nodes);
       if (nodes && nodes.length > 0) {
         var icond = contextMenuHandling_clean_icon(self.resources['delete']);
-        icond.children('.standfat').addClass('menu');
+        icond.find('.colorstyle').css('stroke','var(--wfadaptor-menu)');
         menu['Delete'].push({
           'label': 'Remove Marked Elements',
           'function_call': function(){
@@ -236,7 +235,7 @@ function WFAdaptorManifestationBase(adaptor) {
     }
     if($('> code', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
       var icon = contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg);
-      icon.children('.rfill:last').addClass('menu');
+      icon.find('.part-extra .colorstyle').css('fill','var(--wfadaptor-menu');
       menu['Delete'].push({
         'label': 'Remove Scripts',
         'function_call': self.adaptor.description.remove,
@@ -247,7 +246,7 @@ function WFAdaptorManifestationBase(adaptor) {
     }
     if (xml_node.get(0).tagName == "call" || xml_node.get(0).tagName == "manipulate" || xml_node.get(0).tagName == "stop") {
       var icon = contextMenuHandling_clean_icon(self.elements.call.illustrator.svg);
-      icon.children('g.replace').addClass('passive');
+      icon.find('.part-normal').addClass('passive');
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
         if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
