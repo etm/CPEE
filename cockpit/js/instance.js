@@ -1190,6 +1190,7 @@ function save_svgfile() {// {{{
     }
   });
   gc.attr('width',start+1);
+  gc.find('.duration').remove();
   $.ajax({
     type: "GET",
     url: url + "/properties/attributes/info/",

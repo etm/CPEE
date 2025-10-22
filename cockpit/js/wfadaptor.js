@@ -269,7 +269,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_duration = function(start) { //{{{
     self.svg.container.append(
       $X('<text class="duration" transform="translate(3,' + self.height_shift + ') rotate(90)" xmlns="http://www.w3.org/2000/svg">' +
-         (performance.now()-start) + ' ms' +
+         Math.trunc(performance.now()-start) + ' ms' +
          '</text>')
     );
   } //}}}
