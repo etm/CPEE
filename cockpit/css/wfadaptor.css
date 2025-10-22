@@ -23,7 +23,7 @@
   --wfadaptor-highlight: #0081c7;
   --wfadaptor-base: #000000;
   --wfadaptor-base-light: #A9A9A9;
-  --wfadaptor-label: #d4d4d4;
+  --wfadaptor-label: #e4e4e4;
   --wfadaptor-mark: #d4d4d4;
   --wfadaptor-selected: #f57900;
   --wfadaptor-hover: #f57900;
@@ -37,6 +37,10 @@ svg {
   display:inline;
   margin:0;
   padding:0;
+}
+
+svg .duration {
+  stroke: var(--wfadaptor-label);
 }
 
 svg rect.group {

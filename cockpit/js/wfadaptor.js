@@ -266,6 +266,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.svg.container.attr('data-pos-matrix', JSON.stringify(self.dim.symbols));
     self.svg.container.attr('data-con-list', JSON.stringify(self.dim.connections));
   } // }}}
+  this.set_duration = function(start) { //{{{
+    self.svg.container.append(
+      $X('<text class="duration" transform="translate(3,' + self.height_shift + ') rotate(90)" xmlns="http://www.w3.org/2000/svg">' +
+         (performance.now()-start) + ' ms' +
+         '</text>')
+    );
+  } //}}}
+
   this.get_node_by_svg_id = function(svg_id) { // {{{
     return $('[element-id = \'' + svg_id + '\'] g.activities', self.svg.container);
   } // }}}
@@ -808,10 +816,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     id_counter = {};
     labels = [];
+    let start = performance.now();
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
     illustrator.set_svg(graph);
     self.set_labels(graph);
+    illustrator.set_duration(start);
   } // }}}
   var gd = this.get_description = function() { //  public {{{
     var serxml = $(description.get(0).documentElement).clone(true);
@@ -859,20 +869,24 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var refresh = this.refresh = function(doit) {
     id_counter = {};
     labels = [];
+    let start = performance.now();
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0});
     illustrator.set_svg(graph);
     self.set_labels(graph);
+    illustrator.set_duration(start);
     doit(self);
   }
   var update = this.update = function(svgid) { // {{{
     id_counter = {};
     if(update_illustrator){
+      let start = performance.now();
       labels = [];
       illustrator.clear();
       var graph = parse(description.children('description').get(0), {'row':0,'col':0});
       illustrator.set_svg(graph);
       self.set_labels(graph);
+      illustrator.set_duration(start);
     }
 
     var newn = $('*[new=true]',description);

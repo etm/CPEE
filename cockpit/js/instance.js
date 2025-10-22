@@ -586,14 +586,14 @@ function adaptor_init(url,theme,dslx) { //{{{
     suspended_redrawing = true;
     save['graph_theme'] = theme;
     save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
-      graphrealization.illustrator.get_symbol = (target) => {
+      graphrealization.illustrator.get_symbol = (target) => { //{{{
         if (save['endpoints_cache'][target]) {
           return save['endpoints_cache'][target].symbol;
         } else {
           return undefined;
         }
-      }
-      graphrealization.draw_labels = (max,labels,dimensions,striped) => {
+      } //}}}
+      graphrealization.draw_labels = (max,labels,dimensions,striped) => { //{{{
         // highlight
         if (graph_highlight) {
           graph_highlight_tasks.forEach((ele) => {
@@ -764,7 +764,7 @@ function adaptor_init(url,theme,dslx) { //{{{
           var ele = $('<div element-row="' + i + '" class="graphlast ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
           $('#graphgrid').append(ele);
         }
-      };
+      }; //}}}
       graphrealization.set_svg_container($('#graphcanvas'));
       graphrealization.set_label_container($('#graphgrid'));
       graphrealization.set_description($(dslx), true);
@@ -944,7 +944,6 @@ function monitor_instance_pos_change(content) {// {{{
   if (content['at']) {
     $.each(content['at'],function(a,b){
       format_visual_add(b.position,"passive",false);
-      console.log('rrrrrr add', b.position);
     });
   }
   if (content['after']) {
@@ -955,7 +954,6 @@ function monitor_instance_pos_change(content) {// {{{
   if (content['unmark']) {
     $.each(content['unmark'],function(a,b){
       format_visual_remove(b.position,"passive",false)
-      console.log('rrrrrr remove', b.position);
     });
   }
   if (!content['at'] && !content['unmark'] && !content['after'] && !content['wait']) {
