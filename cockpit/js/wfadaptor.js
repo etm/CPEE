@@ -720,7 +720,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift - self.group_extend) + '" ' +
         'y="' + ((p1.row-1)*self.height+self.height_shift/2-self.group_extend) + '" ' +
         'width="' + (bend-bstart+2*self.group_extend) + '" ' +
-        'height="' + (((p2.row+1)-p1.row)*self.height+5*self.group_extend) + '" ' +
+        'height="' + (((p2.row+1)-p1.row)*self.height+2*self.group_extend) + '" ' +
         'class="tile" rx="12" ry="12" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_connection = this.draw.draw_connection = function(group, start, end, context_row, arrow) { // {{{
