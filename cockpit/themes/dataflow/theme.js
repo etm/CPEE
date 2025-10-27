@@ -80,8 +80,8 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         ret.push({ column: 'Duration', value: '~T = ' + adur + 'm' });
       }
       return ret;
-    };
-    this.elements.manipulate.illustrator.label = function(node) {
+    }; //}}}
+    this.elements.manipulate.illustrator.label = function(node) { //{{{
       var lab = $(node).attr('label');
       var ret = [ { column: 'ID', value: $(node).attr('id') } ];
 

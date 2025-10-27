@@ -46,7 +46,11 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::inform_connectionwrapper_error(arguments,err) # {{{
     controller = arguments[0]
     begin
-      controller.notify("executionhandler/error", :message => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):\s(.*)/)[4] + err.message, :line => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[3], :where => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[1])
+      if err.backtrace[0] !~ / ,Line/
+        controller.notify("executionhandler/error", :message => err.backtrace[0].gsub(/(Activity a\d+)/,'\1:'), :line => -1, :where => err.backtrace[0].match(/Activity a\d+/)[0])
+      else
+        controller.notify("executionhandler/error", :message => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):\s(.*)/)[4] + err.message, :line => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[3], :where => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[1])
+      end
     rescue => e
       controller.notify("executionhandler/error", :message => err.message)
     end
