@@ -10,6 +10,7 @@
       <value>#e4c3e4</value>
       <value>#ded0c5</value>
       <value>#bcbbbd</value>
+      <value>#ff77bb</value>
     </choice>
   </attribute>
   <element name="_generic" rngui:header="Process Level Generic Annotations">

@@ -800,7 +800,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         illustrator.draw.draw_stripe(i,graph.max.col);
       }
     }
-    adaptor.draw_labels(graph.max,labels,{ 'height': illustrator.height, 'height_shift': illustrator.height_shift },illustrator.striped == true ? true : false);
+    adaptor.draw_labels(graph.max,labels,{ 'height': illustrator.height, 'stripe_height': illustrator.default_height, 'height_shift': illustrator.height_shift },illustrator.striped == true ? true : false);
   } //}}}
 
   // Generic Functions {{{

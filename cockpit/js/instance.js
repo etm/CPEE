@@ -761,7 +761,7 @@ function adaptor_init(url,theme,dslx) { //{{{
         // Add the last stripe
         var j = tcolumns.length;
         for (var i = 0; i < max.row; i++) {
-          var ele = $('<div element-row="' + i + '" class="graphlast ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; padding-bottom: ' + dimensions.height_shift + 'px">&#032;</div>');
+          var ele = $('<div element-row="' + i + '" class="graphlast ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (j+2) + '; grid-row: ' + (i+2) + '; height: ' + dimensions.stripe_height + 'px">&#032;</div>');
           $('#graphgrid').append(ele);
         }
       }; //}}}
