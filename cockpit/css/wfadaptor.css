@@ -33,6 +33,7 @@
 /*--wfadaptor-hover: #4ee7d1;*/
 
   --wfadaptor-selected: #000000;
+  --wfadaptor-selected-text: #f57900;
   --wfadaptor-hover: #000000;
 
   --wfadaptor-stripe: #e9e9e9;
@@ -236,10 +237,10 @@ svg.labelsrow text.label {
   cursor: pointer;
 }
 svg.labelsrow text.label:hover, svg.labelsrow text.label.hover {
-  fill: var(--wfadaptor-selected);
+  fill: var(--wfadaptor-selected-text);
 }
 svg text.label.selected {
-  fill: var(--wfadaptor-selected);
+  fill: var(--wfadaptor-selected-text);
 }
 svg .selected .markstyle {
   stroke: var(--wfadaptor-selected);
@@ -247,8 +248,8 @@ svg .selected .markstyle {
   stroke-linejoin:round;
   stroke-miterlimit:4;
   stroke-opacity:1;
-  stroke-dasharray: 1,2;
-  stroke-width: 1;
+  stroke-dasharray: 1.5,2.5;
+  stroke-width: 1.6;
 }
 
 svg .unknown {
@@ -380,13 +381,13 @@ svg g.element[element-id].hover {
 
 svg g.element[element-id].hover .hoverstyle {
   stroke: var(--wfadaptor-hover);
-  stroke-dasharray: 1,2;
-  stroke-width: 1;
+  stroke-dasharray: 1.5,2.5;
+  stroke-width: 1.6;
 }
 svg g.element[element-id].hover .hoverstylethin {
   stroke: var(--wfadaptor-hover);
-  stroke-dasharray: 1,2;
-  stroke-width: 1;
+  stroke-dasharray: 1.5,2.5;
+  stroke-width: 1.6;
 }
 svg g.element[element-id].hover > text.label {
   color: var(--wfadaptor-selected);
