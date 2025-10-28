@@ -161,7 +161,7 @@
         </parameters>
         <code>
           <signal/>
-          <prepare>endpoints.frame_display += data.qid + '/'</prepare>
+          <prepare>endpoints.frames_display += data.qid + '/'</prepare>
           <finalize output="result"/>
           <update output="result"/>
           <rescue output="result"/>
@@ -221,7 +221,7 @@
         </parameters>
         <code>
           <signal/>
-          <prepare>endpoints.frame_display += data.qid + '/'</prepare>
+          <prepare>endpoints.frames_display += data.qid + '/'</prepare>
           <finalize output="result"/>
           <update output="result"/>
           <rescue output="result"/>
@@ -287,7 +287,7 @@
           </parameters>
           <code>
             <signal/>
-            <prepare>endpoints.frame_display += data.qid + '/'</prepare>
+            <prepare>endpoints.frames_display += data.qid + '/'</prepare>
             <finalize output="result"/>
             <update output="result"/>
             <rescue output="result"/>
@@ -342,7 +342,7 @@
           </parameters>
           <code>
             <signal/>
-            <prepare>endpoints.frame_display += data.qid + '/'</prepare>
+            <prepare>endpoints.frames_display += data.qid + '/'</prepare>
             <finalize output="result"/>
             <update output="result"/>
             <rescue output="result"/>
