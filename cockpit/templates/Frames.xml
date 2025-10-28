@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements/>
+  <dataelements>
+    <qid>simple</qid>
+  </dataelements>
   <endpoints>
     <init>https-post://cpee.org/out/frames/</init>
     <timeout>https://cpee.org/services/timeout.php</timeout>
@@ -44,7 +46,7 @@
         </parameters>
         <code>
           <signal/>
-          <prepare>endpoints.frame_init += data.qid + '/'</prepare>
+          <prepare>endpoints.frames_init += data.qid + '/'</prepare>
           <finalize output="result"/>
           <update output="result"/>
           <rescue output="result"/>
@@ -99,7 +101,7 @@
         </parameters>
         <code>
           <signal/>
-          <prepare>endpoints.frame_display += data.qid + '/'</prepare>
+          <prepare>endpoints.frames_display += data.qid + '/'</prepare>
           <finalize output="result"/>
           <update output="result"/>
           <rescue output="result"/>
