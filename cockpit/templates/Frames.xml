@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements/>
+  <dataelements>
+    <qid>a7f3ba</qid>
+  </dataelements>
   <endpoints>
+    <init>https-post://cpee.org/out/frames/</init>
     <timeout>https://cpee.org/services/timeout.php</timeout>
+    <display>https-put://cpee.org/out/frames/</display>
     <subprocess>https://cpee.org/flow/start/url/</subprocess>
     <frames_init>https-post://cpee.org/out/frames/simple/</frames_init>
     <send>https-post://cpee.org/ing/correlators/message/send/</send>
@@ -13,15 +17,15 @@
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
   </endpoints>
   <attributes>
-    <info>Frames</info>
-    <creator>Christine Ashcreek</creator>
-    <author>Christine Ashcreek</author>
-    <modeltype>CPEE</modeltype>
     <guarded>none</guarded>
+    <info>Frames</info>
+    <modeltype>CPEE</modeltype>
+    <theme>extended</theme>
+    <creator>Christine Ashcreek</creator>
     <guarded_id/>
+    <author>Christine Ashcreek</author>
     <model_uuid>5ed82f61-a382-49b5-a420-c63e01d5a9f5</model_uuid>
     <model_version/>
-    <theme>extended</theme>
     <design_dir>Templates.dir</design_dir>
     <design_stage>development</design_stage>
   </attributes>
