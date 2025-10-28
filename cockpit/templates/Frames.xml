@@ -5,16 +5,8 @@
     <qid>simple</qid>
   </dataelements>
   <endpoints>
-    <init>https-post://cpee.org/out/frames/</init>
-    <timeout>https://cpee.org/services/timeout.php</timeout>
-    <display>https-put://cpee.org/out/frames/</display>
-    <subprocess>https://cpee.org/flow/start/url/</subprocess>
-    <frames_init>https-post://cpee.org/out/frames/simple/</frames_init>
-    <send>https-post://cpee.org/ing/correlators/message/send/</send>
-    <frames_display>https-put://cpee.org/out/frames/simple/</frames_display>
-    <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
-    <user>https-post://cpee.org/services/timeout-user.php</user>
-    <auto>https-post://cpee.org/services/timeout-auto.php</auto>
+    <frames_init>https-post://cpee.org/out/frames/</frames_init>
+    <frames_display>https-put://cpee.org/out/frames/</frames_display>
   </endpoints>
   <attributes>
     <guarded>none</guarded>
@@ -46,7 +38,8 @@
         </parameters>
         <code>
           <signal/>
-          <prepare>endpoints.frames_init += data.qid + '/'</prepare>
+          <prepare>endpoints.frames_init += data.qid + '/'
+p endpoints.frames_init</prepare>
           <finalize output="result"/>
           <update output="result"/>
           <rescue output="result"/>
