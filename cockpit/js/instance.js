@@ -593,6 +593,13 @@ function adaptor_init(url,theme,dslx) { //{{{
           return undefined;
         }
       } //}}}
+      graphrealization.illustrator.get_properties = (target) => { //{{{
+        if (save['endpoints_cache'][target]) {
+          return save['endpoints_cache'][target].properties;
+        } else {
+          return undefined;
+        }
+      } //}}}
       graphrealization.draw_labels = (max,labels,dimensions,striped) => { //{{{
         // highlight
         if (graph_highlight) {
