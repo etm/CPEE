@@ -22,6 +22,7 @@
         <value>#e4c3e4</value>
         <value>#ded0c5</value>
         <value>#bcbbbd</value>
+        <value>#F57AA9</value>
       </choice>
     </element>
     <element name="method" rngui:label="Method">
