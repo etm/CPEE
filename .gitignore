@@ -3,3 +3,4 @@ server/instances
 .whitelist.old
 .statsrun
 pkg
+build.out

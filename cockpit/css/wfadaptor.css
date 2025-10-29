@@ -248,7 +248,7 @@ svg .selected .markstyle {
   stroke-linejoin:round;
   stroke-miterlimit:4;
   stroke-opacity:1;
-  stroke-dasharray: 1.5,2.5;
+  stroke-dasharray: 1,2;
   stroke-width: 1.6;
 }
 
@@ -381,12 +381,12 @@ svg g.element[element-id].hover {
 
 svg g.element[element-id].hover .hoverstyle {
   stroke: var(--wfadaptor-hover);
-  stroke-dasharray: 1.5,2.5;
+  stroke-dasharray: 1,2;
   stroke-width: 1.6;
 }
 svg g.element[element-id].hover .hoverstylethin {
   stroke: var(--wfadaptor-hover);
-  stroke-dasharray: 1.5,2.5;
+  stroke-dasharray: 1,2;
   stroke-width: 1.6;
 }
 svg g.element[element-id].hover > text.label {
