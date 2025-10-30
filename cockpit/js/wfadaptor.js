@@ -595,23 +595,26 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       }
     }
 
-    console.log(subtype);
-
     var tit = $X('<title xmlns="http://www.w3.org/2000/svg"></title>');
         tit.text(title);
     sym.prepend(tit);
     let lab = $('.label',sym);
     if (lab.length > 0 && self.compact) {
+      let l_maxlen = 40; // max label size
+      let l_split  = 18; // desired split position
+      let l_dev    = 10; // if one split line is bigger than l_split + l_dev, split was not successfull and we have to display a more truncated string
+      let l_trunc  = 18; // trucation size
+
       let sta = $('.part-start',sym);
       let mid = $('.part-middle',sym);
       let end = $('.part-end',sym);
       let xtr = $('.part-extra',sym);
       let nor = $('.part-normal',sym);
       if (title && title != '') {
-        if (title.length < 22) {
+        if (title.length < l_split) {
           lab.text(title);
         } else {
-          if (title.length > 60) { title = title.substr(0,60) + '\u2026'; }
+          if (title.length > l_maxlen) { title = title.substr(0,l_maxlen) + '\u2026'; }
           if (title.includes(' ')) {
             let len = title.length;
             let pos = -2;
@@ -628,11 +631,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             });
             let l1 = title.substr(0,it);
             let l2 = title.substr(it+1);
-            if (l1.length > 30) {
-              title = title.substr(0,30) + '\u2026';
+            if (l1.length > l_split+l_dev) {
+              title = title.substr(0,l_trunc) + '\u2026';
               lab.text(title);
             } else {
-              if (l2.length > 30) { l2 = l2.substr(0,30) + '\u2026'; }
+              if (l2.length > l_split) { l2 = l2.substr(0,l_trunc) + '\u2026'; }
               let a1 = $X('<tspan x="0" dy="-8" xmlns="http://www.w3.org/2000/svg"></tspan>');
                   a1.text(l1);
               let a2 = $X('<tspan x="0" dy="12" xmlns="http://www.w3.org/2000/svg"></tspan>');
@@ -641,7 +644,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
               lab.append(a2);
             }
           } else {
-            if (title.length > 30) { title = title.substr(0,30) + '\u2026'; }
+            if (title.length > l_split) { title = title.substr(0,l_trunc) + '\u2026'; }
             lab.text(title);
           }
         }
