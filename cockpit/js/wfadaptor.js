@@ -360,7 +360,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.dim.symbols[row][col].type = sname;
     // console.log('set_x ',row,col,debug_dim());
   } //}}}
-  var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth,sname,label,subtype) { //{{{
+  var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth,sname,label,subtype,sty) { //{{{
     if (!self.dim.symbols[row]) { self.dim.symbols[row] = []; }
     if (!self.dim.symbols[row][col] || self.dim.symbols[row][col].width < twidth) {
       self.dim.symbols[row][col] = {};
@@ -370,6 +370,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.dim.symbols[row][col].type = sname;
     self.dim.symbols[row][col].label = label;
     self.dim.symbols[row][col].subtype = subtype;
+    for (const s in sty) {
+      self.dim.symbols[row][col][s] = sty[s];
+    }
     // console.log('set_x_cond',row,col,debug_dim());
   } //}}}
 
@@ -595,6 +598,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       }
     }
 
+    sym.attr('class','activities');
+    let sty = { ...self.global_style, ...style };
+    for (const s in sty) {
+      $('.colorstyle', sym).each((_,ele) => {
+        $(ele).css(s,sty[s]);
+      });
+    }
+
     var tit = $X('<title xmlns="http://www.w3.org/2000/svg"></title>');
         tit.text(title);
     sym.prepend(tit);
@@ -662,7 +673,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             if (xtr.length > 0) {
               xtr.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
             }
-            set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + 2 * self.width_shift_label,sname,title,subtype);
+            set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + 2 * self.width_shift_label,sname,title,subtype,sty);
           } else {
             let tdim = 0;
             if (self.rotated_labels && self.elements[sname].rotatelabels != false) {
@@ -671,14 +682,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             } else {
               tdim = self.width + width + self.width_shift_label;
             }
-            set_x_cond(row,col,dstart,tdim,sname,title,subtype);
+            set_x_cond(row,col,dstart,tdim,sname,title,subtype,sty);
           }
         } else {
-          set_x_cond(row,col,dstart,self.width,sname,title,subtype);
+          set_x_cond(row,col,dstart,self.width,sname,title,subtype,sty);
         }
         if (nor.length > 0) { nor.remove(); }
       } else {
-        set_x_cond(row,col,dstart,self.width,sname,title,subtype);
+        set_x_cond(row,col,dstart,self.width,sname,title,subtype,sty);
         if (sta.length > 0) { sta.remove(); }
         if (mid.length > 0) { mid.remove(); }
         if (end.length > 0) { end.remove(); }
@@ -687,16 +698,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       $('.part-start',sym).remove();
       $('.part-middle',sym).remove();
       $('.part-end',sym).remove();
-      set_x_cond(row,col,dstart,self.width,sname,title,subtype);
+      set_x_cond(row,col,dstart,self.width,sname,title,subtype,sty);
     }
 
-    sym.attr('class','activities');
-    let sty = { ...self.global_style, ...style };
-    for (const s in sty) {
-      $('.colorstyle', sym).each((_,ele) => {
-        $(ele).css(s,sty[s]);
-      });
-    }
 
     $(g[0].childNodes[0]).append(sym);
     if (!addition) {
