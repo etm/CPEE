@@ -5,8 +5,8 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     this.striped = true;
     var dataflowExtract = function(subject,mixed,extract) { //{{{
       let dict = {};
-      var regassi =      /data\.([a-zA-Z_]+)\s*(=[^=]|\+\=|\-\=|\*\=|\/\=|<<|>>|\|\|=)/g; // we do not have to check for &gt;/&lt; version of stuff as only conditions are in attributes, and conditions can not contain assignments
-      var reg_not_assi = /data\.([a-zA-Z_]+)\s*/g;
+      var regassi =      /data\.([a-z_][a-zA-Z0-9_]*)\s*(=[^=]|\+\=|\-\=|\*\=|\/\=|<<|>>|\|\|=)/g; // we do not have to check for &gt;/&lt; version of stuff as only conditions are in attributes, and conditions can not contain assignments
+      var reg_not_assi = /data\.([a-z_][a-zA-Z0-9_]*)\s*/g;
 
       $(subject).each(function(_,ele){
         let item = extract(ele);
