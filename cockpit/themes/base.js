@@ -1360,7 +1360,6 @@ function WFAdaptorManifestationBase(adaptor) {
             });
           }
           if (item == '') { return; }
-          console.log(item);
 
           let indices = [];
           for (const match of item.matchAll(regassi)) {
