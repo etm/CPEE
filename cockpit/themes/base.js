@@ -1336,8 +1336,8 @@ function WFAdaptorManifestationBase(adaptor) {
         let alist = []
         let plist = []
 
-        var regassi =      /data\.([a-zA-Z_][a-zA-Z0-9_]*)\s*(=[^=]|\+\=|\-\=|\*\=|\/\=|<<|>>)/g; // we do not have to check for &gt;/&lt; version of stuff as only conditions are in attributes, and conditions can not contain assignments
-        var reg_not_assi = /data\.([a-zA-Z_][a-zA-Z0-9_]*)\s*/g;
+        var regassi =      /data\.([a-z_][a-zA-Z0-9_]*)\s*(=[^=]|\+\=|\-\=|\*\=|\/\=|<<|>>|\|\|=)/g; // we do not have to check for &gt;/&lt; version of stuff as only conditions are in attributes, and conditions can not contain assignments
+        var reg_not_assi = /data\.([a-z_][a-zA-Z0-9_]*)\s*/g;
 
         $('call, manipulate, loop[condition], alternative[condition]',node).each(function(i,n) {
           let item = '';
@@ -1350,16 +1350,19 @@ function WFAdaptorManifestationBase(adaptor) {
             if (n.nodeName == 'manipulate') { // css selector can not directly access manipulate
               item += n.textContent + '\n';
             }
-            $('call > parameters > arguments > *, call > code > finalize, call > code > update, call > code > rescue',n).each(function(j,m){
+            $('call > parameters > arguments *',n).each(function(j,m){
               let x = m.textContent;
-              if (m.parentNode.nodeName == 'arguments' && x.charAt(0) != '!' ) { return }
+              if (x.charAt(0) == '!') { item += x + '\n'; }
+            });
+            $('call > code > finalize, call > code > update, call > code > rescue',n).each(function(j,m){
+              let x = m.textContent;
               item += x + '\n';
             });
           }
           if (item == '') { return; }
+          console.log(item);
 
           let indices = [];
-
           for (const match of item.matchAll(regassi)) {
             indices.push(match.index);
             alist.push(match[1]);
@@ -1369,7 +1372,7 @@ function WFAdaptorManifestationBase(adaptor) {
             const arg1 = match[1];
             if (indices.includes(match.index)) { continue; }
             if (!alist.includes(arg1)) {
-              if (match.index >= indices[0] || indices.length == 0) {
+              if (indices.length == 0 || match.index < indices[0]) {
                 plist.push(arg1);
               }
             }
