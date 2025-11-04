@@ -295,7 +295,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   var get_symbol = this.get_symbol = function() { // {{{
   } // }}}
-  var get_properties = this.get_symbol = function() { // {{{
+  var get_properties = this.get_properties = function() { // {{{
   } // }}}
 
   // Helper Functions {{{
