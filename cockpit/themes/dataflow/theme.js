@@ -104,7 +104,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       var lab = $(node).attr('condition');
       var ret = [ ];
       if (lab != '') {
-        ret.unshift( { column: 'Label', value: lab } );
+        ret.unshift( { column: 'Label', value: lab.replace(/data\./,'') } );
       }
       if (avg != '') {
         ret.push({ column: 'Average', value: avg + 'ｘ' });
@@ -122,7 +122,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       var lab = $(node).attr('condition');
       var ret = [ ];
       if (lab != '') {
-        ret.unshift( { column: 'Label', value: lab } );
+        ret.unshift( { column: 'Label', value: lab.replace(/data\./,'') } );
       }
       if (avg != '') {
         ret.push({ column: 'Average', value: avg + '%' });
@@ -141,7 +141,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       var lab = $(node).attr('condition');
       var ret = [ ];
       if (lab != '') {
-        ret.unshift( { column: 'Label', value: lab } );
+        ret.unshift( { column: 'Label', value: lab.replace(/data\./,'') } );
       }
       if (avg != '') {
         ret.push({ column: 'Average', value: avg + 'ｘ' });

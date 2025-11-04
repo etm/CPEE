@@ -14,8 +14,10 @@ function show_label(x,y,deg,text) {
   let top_y = 23 * Math.cos(degrees_to_radians(deg));
   let top_x = 23 * Math.sin(degrees_to_radians(deg));
 
+  let top = y-shift-top_y;
+  if (top < 0) top = 0;
   $(clone).css('left',x-top_x);
-  $(clone).css('top',y-shift-top_y);
+  $(clone).css('top',top);
 
   $(clone).attr('height',shift + shift_plus + 2);
   $(clone).attr('width',neigh + 2);

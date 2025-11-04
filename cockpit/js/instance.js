@@ -631,7 +631,13 @@ function adaptor_init(url,theme,dslx) { //{{{
         const iconsize = 10;
         const space = 5;
 
+        let a = [];
+        let b = [];
+
         _.each(labels,function(val){
+          if (val.element_id.match(/^a\d/)) {
+            b.push(val.element_id);
+          }
           if (val.label != "") {
             _.each(val.label,function(col) {
               if (!tcolumns.includes(col.column)) {
@@ -647,6 +653,9 @@ function adaptor_init(url,theme,dslx) { //{{{
                 let firstpos = dimensions.height_shift/2 + (dimensions.height / 2);
 
                 if (col.type == "resource") {
+                  for (const [k, v] of Object.entries(col.value)) {
+                    a.push(k);
+                  }
                   for (const [k, v] of Object.entries(col.value)) {
                     var p = { AR: v };
                     if (!mapPoints.has(k)) {
@@ -721,6 +730,11 @@ function adaptor_init(url,theme,dslx) { //{{{
             });
           }
         });
+       a.sort();
+       console.log([...new Set(a)].join(';'));
+       b.sort();
+       console.log([...new Set(b)].join(';'));
+
 
         $('#graphgrid').css({
           'grid-template-rows': (dimensions.height_shift/2) + 'px repeat(' + max.row + ', 1fr) ' + (dimensions.height_shift/2) + 'px',

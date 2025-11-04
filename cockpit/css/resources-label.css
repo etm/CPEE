@@ -1,3 +1,7 @@
+svg.displaylabel {
+  pointer-events: none;
+}
+
 svg.displaylabel .displaylabel {
   fill: var(--wfadaptor-background);
   fill-opacity:1;
