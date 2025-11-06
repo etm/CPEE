@@ -5,16 +5,16 @@
     <qid>simple</qid>
   </dataelements>
   <endpoints>
-    <frames_init>https-post://cpee.org/out/frames/</frames_init>
-    <frames_display>https-put://cpee.org/out/frames/</frames_display>
+    <frames_init>https-post://cpee.org/out/frames/simple/</frames_init>
+    <frames_display>https-put://cpee.org/out/frames/simple/</frames_display>
   </endpoints>
   <attributes>
     <guarded>none</guarded>
-    <info>Frames</info>
     <modeltype>CPEE</modeltype>
     <theme>extended</theme>
-    <creator>Christine Ashcreek</creator>
     <guarded_id/>
+    <info>Frames</info>
+    <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <model_uuid>5ed82f61-a382-49b5-a420-c63e01d5a9f5</model_uuid>
     <model_version/>
