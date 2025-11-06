@@ -5,8 +5,8 @@
     <qid>simple</qid>
   </dataelements>
   <endpoints>
-    <frames_init>https-post://cpee.org/out/frames/simple/</frames_init>
-    <frames_display>https-put://cpee.org/out/frames/simple/</frames_display>
+    <frames_init>https-post://cpee.org/out/frames/</frames_init>
+    <frames_display>https-put://cpee.org/out/frames/</frames_display>
   </endpoints>
   <attributes>
     <guarded>none</guarded>
