@@ -107,7 +107,8 @@ ui-tabbed ui-tabbar ui-behind button {
 #areainstance div.section:nth-child(1) button[name=loadtestsetfile] { white-space: normal; width: 10em; height: 3.5em; margin-left: 0.2em; }
 #areainstance div.section:nth-child(1) button[name=loadmodelfile]   { white-space: normal; width: 10em; height: 2em;   margin-top: 0.2em; }
 
-#areainstance div.section:nth-child(2) button                       { white-space: normal; width: 6em; height: 5.7em; vertical-align: middle; margin: 0; padding: 0; }
+#areainstance div.section:nth-child(2) button[name=savebpmnfile]    { white-space: normal; width: 7em; height: 2em;   margin-top: 0.2em; }
+#areainstance div.section:nth-child(2) button                       { white-space: normal; width: 7em; height: 3.5em; vertical-align: middle; margin: 0; padding: 0; }
 
 #areainstance div.section:nth-child(3)                                { overflow-y: scroll; overflow-x: hidden; display: flex; flex-direction: column; flex-wrap: wrap; justify-content: flex-start; align-content: flex-start; }
 #areainstance div.section:nth-child(3) strong                         { margin:0; padding:0; white-space: normal; font-size: 0.7em; }
