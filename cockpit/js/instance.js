@@ -102,6 +102,7 @@ function cockpit() { //{{{
   $("button[name=loadmodelfile]").click(load_modelfile);
   $("button[name=loadmodeltype]").click(function(e){new CustomMenu(e).menu($('#modeltypes'),load_modeltype, $("button[name=loadmodeltype]")); });
   $("button[name=savetestsetfile]").click(function(){ save_testsetfile(); });
+  $("button[name=savebpmnfile]").click(function(){ save_bpmnfile(); });
   $("button[name=savesvgfile]").click(function(){ save_svgfile(); });
   $("button[name=state_start]").click(function(){ $(this).parent().find('button').attr("disabled","disabled");start_instance(); });
   $("button[name=state_stop]").click(function(){ $(this).parent().find('button').attr("disabled","disabled");stop_instance(); });
@@ -982,7 +983,6 @@ function monitor_instance_pos_change(content) {// {{{
   }
 } // }}}
 
-
 function monitor_instance_state_change(notification) { //{{{
   // sometimes, out of sheer network routingness, stopping comes after stopped, which fucks the UI hard
   // thus, we are having none of it
@@ -1219,6 +1219,26 @@ function save_svgfile() {// {{{
       $('#savesvgfile').attr('download',res + '.svg');
       $('#savesvgfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(gc.serializePrettyXML()));
       document.getElementById('savesvgfile').click();
+    },
+    error: report_failure
+  });
+} // }}}
+
+function save_bpmnfile() {// {{{
+  var url = $('body').attr('current-instance');
+
+  let dpm = JSON.parse($('svg[data-pos-matrix]').attr('data-pos-matrix'));
+  let dcl = JSON.parse($('svg[data-con-list]').attr('data-con-list'));
+
+  let david = david_bpmn_convert(dpm,dcl);
+
+  $.ajax({
+    type: "GET",
+    url: url + "/properties/attributes/info/",
+    success: function(res){
+      $('#savebpmnfile').attr('download',res + '.bpmn');
+      $('#savebpmnfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(david.serializePrettyXML()));
+      document.getElementById('savebpmnfile').click();
     },
     error: report_failure
   });

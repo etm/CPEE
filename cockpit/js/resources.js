@@ -40,15 +40,24 @@ function show_row_label(data) {
 
 $(document).ready(function() {
   var current_label;
+  var clicked_label;
   $('#graphgrid').on('mouseout','svg .resource-column, svg .resource-point',(data)=>{
-    $('.displaylabel').remove();
-    current_label = undefined;
+    if (clicked_label != current_label) {
+      $('.displaylabel').remove();
+      clicked_label = undefined;
+      current_label = undefined;
+    }
   });
   $('#graphcolumn').scroll((data)=>{
     if (current_label != undefined) {
       $('.displaylabel').remove();
       show_row_label(current_label);
     }
+  });
+  $('#graphgrid').on('click','svg .resource-column',(data)=>{
+    show_row_label(data.target);
+    current_label = data.target;
+    clicked_label = data.target;
   });
   $('#graphgrid').on('mouseover','svg .resource-column',(data)=>{
     show_row_label(data.target);

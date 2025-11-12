@@ -115,9 +115,11 @@ module CPEE
 
     Proc.new do
       Dir[File.join(opts[:global_executionhandlers],'*','execution.rb')].each do |h|
+        p h
         require h
       end unless opts[:global_executionhandlers].nil? || opts[:global_executionhandlers].strip == ''
-      Dir[File.join(opts[:executionhandlers],'*','execution.rb')].each do |h|
+      Dir[File.join(opts[:executionhandlers],'**','execution.rb')].each do |h|
+        p h
         require h
       end unless opts[:executionhandlers].nil? || opts[:executionhandlers].strip == ''
       CPEE::Message::set_workers(opts[:workers])

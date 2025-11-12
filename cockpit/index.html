@@ -41,9 +41,12 @@
     <script type="text/javascript" src="/js_libs/uidash.js"></script>
     <script type="text/javascript" src="/js_libs/custommenu.js"></script>
 
+    <script type="text/javascript" src="https://lehre.bpm.in.tum.de/~ge64teg/bachelor-thesis/build-bpmn.js"></script>
+
     <link   rel="stylesheet"      href="/js_libs/custommenu.css" type="text/css"/>
     <link   rel="stylesheet"      href="/js_libs/uidash.css" type="text/css"/>
 
+    <link   rel="stylesheet"      href="/js_libs/relaxngui.css" type="text/css"/>
     <link   rel="stylesheet"      href="/js_libs/relaxngui.css" type="text/css"/>
 
     <!-- modelling ui -->
@@ -176,10 +179,16 @@
                 <button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">load model</button>
               </div>
             </div><div class='section'>
-              <a id="savetestsetfile" href="" download=""></a>
-              <a id="savesvgfile" href="" download=""></a>
-              <button title='a testset includes various settings, subscriptions and a model' name="savetestsetfile">save<br>testset</button>
-              <button title='a testset includes various settings, subscriptions and a model' name="savesvgfile">save svg<br>graph</button>
+              <div>
+                <a id="savetestsetfile" href="" download=""></a>
+                <a id="savesvgfile" href="" download=""></a>
+                <button title='a testset includes various settings, subscriptions and a model' name="savetestsetfile">save<br>testset</button>
+                <button title='the SVG contains the graphical repesentation of the CPEE tree as you see it on the screen' name="savesvgfile">save svg<br>graph</button>
+              </div>
+              <div>
+                <a id="savebpmnfile" href="" download=""></a>
+                <button title='the BPMN includes a graphical representation that can be loaded in Signavio and Camundal' name="savebpmnfile">save BPMN</button>
+              </div>
             </div><div class='section' id='modifiers'>
               <template id="item">
                 <div>

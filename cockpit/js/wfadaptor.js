@@ -360,7 +360,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.dim.symbols[row][col].type = sname;
     // console.log('set_x ',row,col,debug_dim());
   } //}}}
-  var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth,sname,label,subtype,sty) { //{{{
+  var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth,sname,label,subtype,sty,eid) { //{{{
     if (!self.dim.symbols[row]) { self.dim.symbols[row] = []; }
     if (!self.dim.symbols[row][col] || self.dim.symbols[row][col].width < twidth) {
       self.dim.symbols[row][col] = {};
@@ -370,6 +370,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.dim.symbols[row][col].type = sname;
     self.dim.symbols[row][col].label = label;
     self.dim.symbols[row][col].subtype = subtype;
+    self.dim.symbols[row][col].eid = eid;
     for (const s in sty) {
       self.dim.symbols[row][col][s] = sty[s];
     }
@@ -673,7 +674,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             if (xtr.length > 0) {
               xtr.attr('transform','translate(' + (pos.x + width - self.endclipshift - 4) + ',0)');
             }
-            set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + 2 * self.width_shift_label,sname,title,subtype,sty);
+            set_x_cond(row,col,dstart,pos.x + width - self.endclipshift - 4 + this.get_width(end) + 2 * self.width_shift_label,sname,title,subtype,sty,id);
           } else {
             let tdim = 0;
             if (self.rotated_labels && self.elements[sname].rotatelabels != false) {
@@ -682,14 +683,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             } else {
               tdim = self.width + width + self.width_shift_label;
             }
-            set_x_cond(row,col,dstart,tdim,sname,title,subtype,sty);
+            set_x_cond(row,col,dstart,tdim,sname,title,subtype,sty,id);
           }
         } else {
-          set_x_cond(row,col,dstart,self.width,sname,title,subtype,sty);
+          set_x_cond(row,col,dstart,self.width,sname,title,subtype,sty,id);
         }
         if (nor.length > 0) { nor.remove(); }
       } else {
-        set_x_cond(row,col,dstart,self.width,sname,title,subtype,sty);
+        set_x_cond(row,col,dstart,self.width,sname,title,subtype,sty,id);
         if (sta.length > 0) { sta.remove(); }
         if (mid.length > 0) { mid.remove(); }
         if (end.length > 0) { end.remove(); }
@@ -698,7 +699,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       $('.part-start',sym).remove();
       $('.part-middle',sym).remove();
       $('.part-end',sym).remove();
-      set_x_cond(row,col,dstart,self.width,sname,title,subtype,sty);
+      set_x_cond(row,col,dstart,self.width,sname,title,subtype,sty,id);
     }
 
 
