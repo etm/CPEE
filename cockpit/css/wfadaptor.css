@@ -26,12 +26,6 @@
   --wfadaptor-label: #e4e4e4;
   --wfadaptor-mark: #d4d4d4;
 
-/*--wfadaptor-selected: #f57900;*/
-/*--wfadaptor-hover: #f57900;*/
-
-/*--wfadaptor-selected: #4ee7d1;*/
-/*--wfadaptor-hover: #4ee7d1;*/
-
   --wfadaptor-selected: #000000;
   --wfadaptor-selected-text: #f57900;
   --wfadaptor-hover: #000000;
@@ -51,6 +45,12 @@ svg {
 svg .duration {
   stroke: var(--wfadaptor-label);
 }
+
+/*
+svg [style*='--custom-color'] {
+	fill: url(#custom-gradient);
+}
+*/
 
 svg rect.group {
   fill: var(--wfadaptor-highlight);

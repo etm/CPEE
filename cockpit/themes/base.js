@@ -386,6 +386,8 @@ function WFAdaptorManifestationBase(adaptor) {
         let col = $('> parameters > color', node);
         if (col.length > 0 && col.text() != '') {
           sty['fill'] = col.text();
+          // sty['fill'] = "url(#custom-gradient)";
+          // sty['--custom-color'] = col.text();
         }
         return sty;
       },

@@ -19,6 +19,7 @@ var save = {};
     save['attributes'] = undefined;
     save['attributes_raw'] = {};
 var node_state = {};
+var debug = false;
 
 function global_init() {
   suspended_redrawing = false;
@@ -150,6 +151,7 @@ function cockpit() { //{{{
           graph_highlight = graph_highlight[0];
         }
       }
+      if ('debug' in q) { debug = true; }
       if (q.monitor && q.load) {
         if (q.load.match(/https?:\/\//)) {
           $('body').attr('load-testset',q.load);
@@ -399,8 +401,9 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       $("#current-track").attr('href','track.html?monitor=' + url);
       $("#current-index").show();
       $("#current-index").attr('href','index.html?monitor=' + url);
+
       var q = $.parseQuerySimple();
-      history.replaceState({}, '', '?' + (graph_position ? "position=" + graph_position + "&" : "") + (graph_highlight ? "highlight=" + graph_highlight + "&" : "") + (graph_theme ? "theme=" + graph_theme + "&" : "") + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
+      history.replaceState({}, '', '?' + ('debug' in q ? "debug&" : "") + (graph_position ? "position=" + graph_position + "&" : "") + (graph_highlight ? "highlight=" + graph_highlight + "&" : "") + (graph_theme ? "theme=" + graph_theme + "&" : "") + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").prop( "checked", false );
@@ -656,8 +659,6 @@ function adaptor_init(url,theme,dslx) { //{{{
                 if (col.type == "resource") {
                   for (const [k, v] of Object.entries(col.value)) {
                     a.push(k);
-                  }
-                  for (const [k, v] of Object.entries(col.value)) {
                     var p = { AR: v };
                     if (!mapPoints.has(k)) {
                       p.y0 = p.y0 == undefined ? pos : p.y0;
@@ -732,10 +733,11 @@ function adaptor_init(url,theme,dslx) { //{{{
           }
         });
        a.sort();
-       console.log([...new Set(a)].join(';'));
        b.sort();
-       console.log([...new Set(b)].join(';'));
-
+       // Print Tasks
+       if (debug) { console.log('Tasks',[...new Set(a)].join(';')); }
+       // Print Data Elements
+       if (debug) { console.log('Dataelements',[...new Set(b)].join(';')); }
 
         $('#graphgrid').css({
           'grid-template-rows': (dimensions.height_shift/2) + 'px repeat(' + max.row + ', 1fr) ' + (dimensions.height_shift/2) + 'px',
