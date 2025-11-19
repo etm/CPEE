@@ -40,6 +40,8 @@ svg {
   display:inline;
   margin:0;
   padding:0;
+  font-family: adawaita-sans;
+  user-select: none;
 }
 
 svg .duration {
@@ -298,7 +300,6 @@ svg text.super {
   fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
-  font-family: adawaita-sans;
 }
 svg tspan.exec {
   fill: var(--wfadaptor-exec-active-text);
@@ -309,7 +310,6 @@ svg tspan.exec {
   stroke-linecap:round;
   stroke-linejoin:round;
   paint-order: stroke markers fill;
-  font-family: adawaita-sans;
 }
 svg tspan.active {
   fill: var(--wfadaptor-exec-active-text);
@@ -320,7 +320,6 @@ svg tspan.active {
   stroke-linecap:round;
   stroke-linejoin:round;
   paint-order: stroke markers fill;
-  font-family: adawaita-sans;
 }
 svg tspan.vote {
   fill: var(--wfadaptor-exec-vote-text);
@@ -331,7 +330,6 @@ svg tspan.vote {
   stroke-linecap:round;
   stroke-linejoin:round;
   paint-order: stroke markers fill;
-  font-family: adawaita-sans;
 }
 svg tspan.colon {
   display: none;
@@ -363,7 +361,6 @@ svg text.label.standalone {
   stroke-linecap:round;
   stroke-linejoin:round;
   paint-order: stroke markers fill;
-  font-family: adawaita-sans;
 }
 svg text.label.rotate {
   transform: translateY(10px) rotate(-30deg);
