@@ -615,7 +615,13 @@ function adaptor_init(url,theme,dslx) { //{{{
           })
         }
 
-        draw_extended_columns(graphrealization,max,labels,dimensions,striped);
+        columns = draw_extended_columns(graphrealization,max,labels,dimensions,striped);
+
+        // Add the last stripe
+        for (var i = 0; i < max.row; i++) {
+          var ele = $('<div element-row="' + i + '" class="graphlast ' + (i % 2 == 0 ? 'odd' : 'even') + '" style="grid-column: ' + (columns+2) + '; grid-row: ' + (i+2) + '; height: ' + dimensions.stripe_height + 'px">&#032;</div>');
+          graphrealization.illustrator.svg.label_container.append(ele);
+        }
       }; //}}}
       graphrealization.set_svg_container($('#graphcanvas'));
       graphrealization.set_label_container($('#graphgrid'));
