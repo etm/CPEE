@@ -22,15 +22,15 @@
     <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
   </endpoints>
   <attributes>
+    <guarded>none</guarded>
+    <modeltype>CPEE</modeltype>
     <theme>extended</theme>
+    <guarded_id/>
     <info>Coopis 2010</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
-    <modeltype>CPEE</modeltype>
     <design_stage>development</design_stage>
-    <guarded>none</guarded>
-    <design_dir>Experiments.dir/Twin Engine.dir</design_dir>
-    <guarded_id/>
+    <design_dir>Templates.dir</design_dir>
     <model_uuid>a1cbb855-90e3-4d8c-b44b-d3ba7bff9f4e</model_uuid>
     <model_version/>
     <replay>https://cpee.org/replay/</replay>
@@ -194,4 +194,11 @@ data.costs += result.value('costs').to_f</finalize>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
+  <subscriptions xmlns="http://riddl.org/ns/common-patterns/notifications-producer/2.0">
+    <subscription id="_matze" url="https://lehre.bpm.in.tum.de/~mangler/a.php">
+      <topic id="state">
+        <event>change</event>
+      </topic>
+    </subscription>
+  </subscriptions>
 </testset>
