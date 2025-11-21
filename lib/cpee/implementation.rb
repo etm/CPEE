@@ -115,11 +115,9 @@ module CPEE
 
     Proc.new do
       Dir[File.join(opts[:global_executionhandlers],'*','execution.rb')].each do |h|
-        p h
         require h
       end unless opts[:global_executionhandlers].nil? || opts[:global_executionhandlers].strip == ''
       Dir[File.join(opts[:executionhandlers],'**','execution.rb')].each do |h|
-        p h
         require h
       end unless opts[:executionhandlers].nil? || opts[:executionhandlers].strip == ''
       CPEE::Message::set_workers(opts[:workers])
@@ -318,34 +316,12 @@ module CPEE
 
       doc   = XML::Smart::string(@p[0].value.read)
       doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-      doc.register_namespace 'sub', 'http://riddl.org/ns/common-patterns/notifications-producer/2.0'
+      doc.register_namespace 'np', 'http://riddl.org/ns/common-patterns/notifications-producer/2.0'
 
       name = doc.find('string(/*/p:attributes/p:info)')
 
-      id, uuid = NewInstance::create(opts,redis,name,doc)
-
-      subscriptions = []
-      (doc.find('/*/sub:subscriptions/sub:subscription') rescue []).each do |s|
-        sub = []
-        unless sub[0] = s.attributes['id']
-          sub[0] = Digest::MD5.hexdigest(Kernel::rand().to_s)
-        end
-
-        unless sub[1] = s.attributes['url']
-          raise "no url"
-        end
-
-        sub[2] = []
-        s.find('sub:topic').each do |t|
-          %w(event vote).each do |type|
-            t.find('sub:' + type).each do |e|
-              sub[2] << File.join(t.attributes['id'],type,e.text)
-            end
-          end
-        end
-
-        CPEE::Persistence::set_handler(id,opts,*sub)
-      end
+      subs = (doc.find('/*/np:subscriptions/np:subscription') rescue []).to_a
+      id, uuid = NewInstance::create(opts,redis,name,subs,doc)
 
       content = {
         :state => 'ready',
@@ -374,7 +350,19 @@ module CPEE
       File.join(*ret.reverse)
     end
 
-    def self::create(opts,redis,name,doc=nil)
+    def self::sub(multi,id,doc,key)
+      doc.register_namespace 'np', 'http://riddl.org/ns/common-patterns/notifications-producer/2.0'
+      url = doc.find('string(/np:subscription/@url)')
+      multi.sadd(CPEE::Persistence::obj + ":#{id}/handlers",key)
+      multi.set(CPEE::Persistence::obj + ":#{id}/handlers/#{key}/url",url)
+      doc.find('/np:subscription/np:topic/*').each do |e|
+        c = File.join(e.parent.attributes['id'],e.qname.name,e.text)
+        multi.sadd(CPEE::Persistence::obj + ":#{id}/handlers/#{key}",c)
+        multi.sadd(CPEE::Persistence::obj + ":#{id}/handlers/#{c}",key)
+      end
+    end
+
+    def self::create(opts,redis,name,subs,doc=nil)
       doc = XML::Smart::open_unprotected(opts[:properties_init]) if doc.nil?
       doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
       id       = CPEE::Persistence::new_object(opts)
@@ -401,18 +389,15 @@ module CPEE
         end
         Dir[File.join(opts[:notifications_init],'*','subscription.xml')].each do |f|
           XML::Smart::open_unprotected(f) do |doc|
-            doc.register_namespace 'np', 'http://riddl.org/ns/common-patterns/notifications-producer/2.0'
-            key = File.basename(File.dirname(f))
-            url = doc.find('string(/np:subscription/@url)')
-            multi.sadd(CPEE::Persistence::obj + ":#{id}/handlers",key)
-            multi.set(CPEE::Persistence::obj + ":#{id}/handlers/#{key}/url",url)
-            doc.find('/np:subscription/np:topic/*').each do |e|
-              c = File.join(e.parent.attributes['id'],e.qname.name,e.text)
-              multi.sadd(CPEE::Persistence::obj + ":#{id}/handlers/#{key}",c)
-              multi.sadd(CPEE::Persistence::obj + ":#{id}/handlers/#{c}",key)
-            end
+            NewInstance::sub(multi,id,doc,File.basename(File.dirname(f)))
           end rescue nil # all the ones that are not ok, are ignored
         end
+        subs.each do |s|
+          begin
+            NewInstance::sub(multi,id,s.to_doc,s.attributes['id'] || Digest::MD5.hexdigest(Kernel::rand().to_s))
+          end
+        end
+
         multi.set(File.join(instance, 'attributes', 'uuid'), uuid)
         multi.zadd(File.join(instance, 'attributes'), -2, 'uuid')
         multi.set(File.join(instance, 'attributes', 'info'), name)
@@ -428,7 +413,7 @@ module CPEE
       redis = opts[:redis]
       name  = @p[0].value
 
-      id, uuid = NewInstance::create(opts,redis,name)
+      id, uuid = NewInstance::create(opts,redis,name,[])
       content = {
         :state => 'ready',
         :attributes => CPEE::Persistence::extract_list(id,opts,'attributes').to_h
