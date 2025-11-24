@@ -221,7 +221,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @label = parameters[:label]
     @anno = parameters.delete(:annotations) rescue nil
     @controller.notify("status/resource_utilization", :mib => GetProcessMem.new.mb, **Process.times.to_h)
-    @controller.notify("activity/calling", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters, :annotations => @anno)
+    @controller.notify("activity/calling", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
+    @controller.notify("activity/annotation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => @anno)
     if passthrough.to_s.empty?
       proto_curl parameters
     else
@@ -231,6 +232,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end # }}}
   def activity_manipulate_handle(parameters) #{{{
     @label = parameters[:label]
+    @anno = parameters.delete(:annotations) rescue nil
+    @controller.notify("activity/annotation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => @anno)
   end #}}}
 
   def activity_result_value # {{{
@@ -295,7 +298,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       nil
     end
 
-    @controller.notify("activity/receiving", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :annotations => @anno)
+    @controller.notify("activity/receiving", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
 
     @guard_files += result
     @guard_files += ret
@@ -430,6 +433,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     recv = 'false' unless recv
     recv = (recv == 'false' || recv == 'null' || recv == 'nil' || recv == false ? false : true)
     @controller.notify("gateway/decide", :ecid => Thread.current.__id__, :instance_uuid => @controller.uuid, :code => code, :condition => recv)
+    @controller.notify("gateway/annotation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => {})
     recv
   end #}}}
   def manipulate(readonly,lock,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil) #{{{
