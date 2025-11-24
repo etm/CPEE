@@ -121,7 +121,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
       var avg = $('> _probability_avg',$(node).children('_probability')).text();
       var lab = $(node).attr('condition');
       var ret = [ ];
-      if (lab != '') {
+      if (lab && lab != '') {
         ret.unshift( { column: 'Label', value: lab.replace(/data\./,'') } );
       }
       if (avg != '') {
