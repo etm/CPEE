@@ -1081,7 +1081,6 @@ function save_bpmnfile() {// {{{
 }// }}}
 async function set_testset(testset,exec) {// {{{
   var url = $('body').attr('current-instance');
-
   var promises;
 
   var tset = $X('<properties xmlns="http://cpee.org/ns/properties/2.0"/>');
