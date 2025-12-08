@@ -1081,8 +1081,7 @@ function save_bpmnfile() {// {{{
 }// }}}
 async function set_testset(testset,exec) {// {{{
   var url = $('body').attr('current-instance');
-
-  var promises = [];
+  var promises;
 
   var tset = $X('<properties xmlns="http://cpee.org/ns/properties/2.0"/>');
   tset.append($("testset > executionhandler",testset));
@@ -1097,6 +1096,7 @@ async function set_testset(testset,exec) {// {{{
     $('properties > attributes > design_dir',tset).remove();
   }
 
+  promises = [];
   promises.push(
     $.ajax({
       type: "GET",
@@ -1111,6 +1111,9 @@ async function set_testset(testset,exec) {// {{{
       await load_testset_handlers(url,testset,vals);
     })
   );
+  await Promise.all(promises);
+
+  promises = [];
   promises.push(
     $.ajax({
       type: 'PATCH',
@@ -1124,7 +1127,6 @@ async function set_testset(testset,exec) {// {{{
       error: report_failure
     })
   );
-
   await Promise.all(promises);
 
   document.dispatchEvent(model_loaded);
