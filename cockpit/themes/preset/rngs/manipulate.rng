@@ -1,4 +1,4 @@
-<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="manipulate" rngui:label="Script" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="manipulate" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
   <attribute name="id" rngui:label="ID" rngui:default="javascript:get_free_id()">
     <data type="string" rngui:readonly="true"/>
   </attribute>
@@ -19,5 +19,14 @@
       <value>#f57aa9</value>
     </choice>
   </attribute>
-  <text rngui:label="Script that is executed"/>
+  <element name="code" rngui:label="Script">
+    <text rngui:label="Script that is executed"/>
+  </element>
+  <element name="annotations" rngui:header="Annotations">
+    <element name="_logging_behavior" rngui:header="Logging Behavior" rngui:fold="closed">
+      <element name="_exclude" rngui:label="Exclude from log">
+        <data type="boolean" rngui:label="Exclude from log"/>
+      </element>
+    </element>
+  </element>
 </element>

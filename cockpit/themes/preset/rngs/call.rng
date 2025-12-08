@@ -52,6 +52,14 @@
         </element>
       </zeroOrMore>
     </element>
+    <element name="_logging_behavior" rngui:header="Logging Behavior" rngui:fold="closed">
+      <element name="_exclude" rngui:label="Exclude from log">
+        <data type="boolean" rngui:label="Exclude from log"/>
+      </element>
+      <element name="_include" rngui:label="Include nested events">
+        <data type="boolean" rngui:label="Include nested events"/>
+      </element>
+    </element>
     <element name="_timing" rngui:header="Timing" rngui:fold="closed">
       <element name="_timing_weight" rngui:label="&#x3C9; - Weight">
         <data type="float" rngui:label="[0,1]"/>
