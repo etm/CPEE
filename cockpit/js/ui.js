@@ -102,6 +102,22 @@ $(document).on('paste', '[contenteditable]', function (e) {
         document.execCommand('insertText', false, content);
     }
 });
+$(document).on('paste', 'ol[contenteditable]', function (e) {
+    e.preventDefault();
+
+    if (window.clipboardData) {
+        content = window.clipboardData.getData('Text');
+        if (window.getSelection) {
+            var selObj = window.getSelection();
+            var selRange = selObj.getRangeAt(0);
+            selRange.deleteContents();
+            selRange.insertNode(document.createTextNode(content));
+        }
+    } else if (e.originalEvent.clipboardData) {
+        content = (e.originalEvent || e).clipboardData.getData('text/plain');
+        document.execCommand('insertText', false, content);
+    }
+});
 
 // unmark if storage changes. shit has potentially been copied or marked in other tabs.
 $(window).bind('storage', function (e) {

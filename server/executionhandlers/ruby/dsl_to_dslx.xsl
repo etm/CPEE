@@ -718,7 +718,7 @@
   </xsl:template>
   <xsl:template name="print-mcontent">
     <xsl:param name="myspace"/>
-    <xsl:if test="text()">
+    <xsl:if test="d:code/text()">
       <xsl:choose>
         <xsl:when test="@language='application/x-ruby'">
           <xsl:text> do </xsl:text>
@@ -732,7 +732,7 @@
           <xsl:text>, &lt;&lt;-END</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:for-each select="str:tokenize(text(), '&#x0A;')">
+      <xsl:for-each select="str:tokenize(d:code/text(), '&#x0A;')">
         <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),str:replace(str:replace(str:replace(string(.),'\','\\'),'&quot;','\&quot;'),'#','\#')))" />
       </xsl:for-each>
       <xsl:call-template name="print-newline"/>

@@ -7,7 +7,8 @@ $(document).ready(function() {
     clearTimeout(timer);
     timer = setTimeout(do_main_save, 5000);
   });
-  $(document).on('keypress','#dat_details [contenteditable]',function(e){
+  // only for contenteditable divs
+  $(document).on('keypress','#dat_details div[contenteditable]',function(e){
     if (e.keyCode == 13) {
       document.execCommand('insertLineBreak')
       e.preventDefault()
