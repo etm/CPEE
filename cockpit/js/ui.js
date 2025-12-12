@@ -76,7 +76,7 @@ $(document).ready(function() {
   }
 });
 
-$(document).on('copy', '[contenteditable]', function (e) {
+$(document).on('copy', 'div[contenteditable]', function (e) {
   e = e.originalEvent;
   var selectedText = window.getSelection();
   var range = selectedText.getRangeAt(0);
@@ -84,39 +84,53 @@ $(document).on('copy', '[contenteditable]', function (e) {
   e.clipboardData.setData('text/plain', selectedTextReplacement);
   e.preventDefault(); // default behaviour is to copy any selected text
 });
+$(document).on('copy', 'ol[contenteditable]', function (e) {
+  e = e.originalEvent;
+  let selectedText = window.getSelection();
+  let range = selectedText.getRangeAt(0);
+  let con = range.cloneContents();
+  let n = document.createElement("ol");
+  var selectedTextReplacement = $(n).append(con).get_val();
+  e.clipboardData.setData('text/plain', selectedTextReplacement);
+  e.preventDefault(); // default behaviour is to copy any selected text
+});
 
 // Paste fix for contenteditable
-$(document).on('paste', '[contenteditable]', function (e) {
-    e.preventDefault();
+$(document).on('paste', 'div[contenteditable]', function (e) {
+  console.log('rrr3');
+  e.preventDefault();
 
-    if (window.clipboardData) {
-        content = window.clipboardData.getData('Text');
-        if (window.getSelection) {
-            var selObj = window.getSelection();
-            var selRange = selObj.getRangeAt(0);
-            selRange.deleteContents();
-            selRange.insertNode(document.createTextNode(content));
-        }
-    } else if (e.originalEvent.clipboardData) {
-        content = (e.originalEvent || e).clipboardData.getData('text/plain');
-        document.execCommand('insertText', false, content);
+  if (window.clipboardData) {
+    content = window.clipboardData.getData('Text');
+    if (window.getSelection) {
+      var selObj = window.getSelection();
+      var selRange = selObj.getRangeAt(0);
+      selRange.deleteContents();
+      selRange.insertNode(document.createTextNode(content));
     }
+  } else if (e.originalEvent.clipboardData) {
+    content = (e.originalEvent || e).clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, content);
+  }
 });
-$(document).on('paste', 'ol[contenteditable]', function (e) {
-    e.preventDefault();
+$('document').on('paste', 'ol[contenteditable] li', function (e) {
+  console.log('rrr4');
+  e.preventDefault();
 
-    if (window.clipboardData) {
-        content = window.clipboardData.getData('Text');
-        if (window.getSelection) {
-            var selObj = window.getSelection();
-            var selRange = selObj.getRangeAt(0);
-            selRange.deleteContents();
-            selRange.insertNode(document.createTextNode(content));
-        }
-    } else if (e.originalEvent.clipboardData) {
-        content = (e.originalEvent || e).clipboardData.getData('text/plain');
-        document.execCommand('insertText', false, content);
+  if (window.clipboardData) {
+    content = window.clipboardData.getData('Text');
+    if (window.getSelection) {
+      console.log('rrr4a');
+      var selObj = window.getSelection();
+      var selRange = selObj.getRangeAt(0);
+      selRange.deleteContents();
+      selRange.insertNode(document.createTextNode(content));
     }
+  } else if (e.originalEvent.clipboardData) {
+    console.log('rrr4b');
+    content = (e.originalEvent || e).clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, content);
+  }
 });
 
 // unmark if storage changes. shit has potentially been copied or marked in other tabs.

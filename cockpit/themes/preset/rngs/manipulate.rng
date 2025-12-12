@@ -19,7 +19,7 @@
       <value>#f57aa9</value>
     </choice>
   </attribute>
-  <element name="code" rngui:label="Script">
+  <element name="code" rngui:label="Script" rngui:header="Code">
     <text rngui:label="Script that is executed"/>
   </element>
   <element name="annotations" rngui:header="Annotations">
