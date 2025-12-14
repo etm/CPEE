@@ -1084,6 +1084,18 @@ async function set_testset(testset,exec) {// {{{
   var promises;
 
   var tset = $X('<properties xmlns="http://cpee.org/ns/properties/2.0"/>');
+
+  // load old testsets. remove 12/2026
+  $("testset > description manipulate",testset).each((_,t) => {
+    if ($('code',t).length == 0) {
+      let st = $(t).text();
+      $(t).text();
+      let c = $X('<code xmlns="http://cpee.org/ns/description/1.0"/>');
+          c.text(st);
+      $(t).append(c);
+    }
+  });
+
   tset.append($("testset > executionhandler",testset));
   tset.append($("testset > positions",testset));
   tset.append($("testset > dataelements",testset));
