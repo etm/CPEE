@@ -272,7 +272,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end # }}}
   def inform_manipulate_change(status,changed_dataelements,changed_endpoints,dataelements,endpoints) # {{{
     unless status.nil?
-      @controller.notify("status/change", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :id => status.id, :message => status.message)
+      @controller.notify("status/change", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :data => { :id => status.id, :message => status.message } )
     end
     unless changed_dataelements.nil? || changed_dataelements.empty?
       de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = CPEE::EvalRuby::Translation::detect_encoding(v); (enc == 'OTHER' ? v : (v.encode('UTF-8',enc) rescue CPEE::EvalRuby::Translation::convert_to_base64(v))) }
