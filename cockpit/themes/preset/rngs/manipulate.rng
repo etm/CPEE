@@ -28,5 +28,51 @@
         <data type="boolean" rngui:label="Exclude from log"/>
       </element>
     </element>
+    <element name="_context_data_analysis" rngui:header="Context Data Analysis" rngui:hint="All data objects (written in this task and otherwise) can be consumed and transformed in data probes. All probes can be the basis for impact factors. Please go to start to define instance data probes.">
+
+      <element name="probes" rngui:header="Data Probes - Context Data Extraction" rngui:fold="closed_conditional">
+        <zeroOrMore rngui:label="Add Probe">
+          <element name="probe">
+            <element name="id" rngui:label="ID">
+              <data type="string" rngui:label="ID"/>
+            </element>
+            <element name="source" rngui:label="Source">
+              <data type="string" rngui:label="Where does the sensor value come from?"/>
+            </element>
+            <element name="extractor_type" rngui:label="Extractor Type">
+              <choice>
+                <value rngui:label='Intrinsic'>intrinsic</value>
+              </choice>
+            </element>
+            <element name="extractor_code" rngui:label="Extractor Code" rngui:hint='For intrinsic &amp; extrinsic data'>
+              <text rngui:label="Code"/>
+            </element>
+            <element name="extractor_url" rngui:label="Extractor Service" rngui:hint='For separate data'>
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="extractor_params" rngui:label="Extractor Service Arguments:">
+              <zeroOrMore rngui:label="Create Argument Pairs">
+                <element rngui:label="Name">
+                  <anyName/>
+                  <data type="string" rngui:label="Value / Json"/>
+                </element>
+              </zeroOrMore>
+            </element>
+            <element name="visualizer_url" rngui:label="Visualizer Url">
+              <data type="string" rngui:label="Service Url"/>
+            </element>
+            <element name="visualizer_params" rngui:label="Visualizer Arguments">
+              <zeroOrMore rngui:label="Create Argument Pairs">
+                <element rngui:label="Name">
+                  <anyName/>
+                  <data type="string" rngui:label="Value / Json"/>
+                </element>
+              </zeroOrMore>
+            </element>
+          </element>
+        </zeroOrMore>
+      </element>
+
+    </element>
   </element>
 </element>
