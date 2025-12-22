@@ -17,7 +17,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
   <head>
+    <meta charset="utf-8"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <title>CPEE Cockpit</title>
 
     <!-- libs, do not modify. When local than load local libs. -->
@@ -39,6 +41,8 @@
     <script type="text/javascript" src="/js_libs/uidash.js"></script>
     <script type="text/javascript" src="/js_libs/custommenu.js"></script>
 
+    <script type="text/javascript" src="/js_libs/build-bpmn.js"></script>
+
     <link   rel="stylesheet"      href="/js_libs/custommenu.css" type="text/css"/>
     <link   rel="stylesheet"      href="/js_libs/uidash.css" type="text/css"/>
 
@@ -53,6 +57,7 @@
     <script type="text/javascript" src="js/instance.js"></script>
     <script type="text/javascript" src="js/details.js"></script>
     <script type="text/javascript" src="js/parameters.js"></script>
+    <script type="text/javascript" src="js/extended_columns.js"></script>
     <script type="text/javascript" src="js/model.js"></script>
     <script type="text/javascript" src="js/edit.js"></script>
     <script type="text/javascript" src="js/modifiers.js"></script>
@@ -172,7 +177,7 @@
         <ui-behind                                                 ></ui-behind>
       </ui-tabbar>
       <ui-content>
-        <ui-area data-belongs-to-tab="details" id='graphcolumn'>
+        <ui-area data-belongs-to-tab="details" id='graphcolumn' oncontextmenu='return false'>
           <div id="modelling">
             <div id='graphgrid'>
               <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' width='1' height='1'></svg>

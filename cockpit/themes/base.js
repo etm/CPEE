@@ -88,8 +88,8 @@ function WFAdaptorManifestationBase(adaptor) {
     }
   }; //}}}
 
-  // Private methods
-  function copyOrMove(menu,group,xml_node,mode) { //{{{
+  // Menu handling and details, private a should be available through inheritance
+  var copyOrMove = self.copyOrMove = function(menu,group,xml_node,mode) { //{{{
     var nodes = localStorage.getItem('marked');
 
     if (typeof(nodes) != "string") { return; }
@@ -140,15 +140,26 @@ function WFAdaptorManifestationBase(adaptor) {
       );
     }
   } //}}}
+  var positionHandling = this.positionHandling = function(svgid) { //{{{
+    var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
+    var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+    if (vtarget.length > 0) {
+      if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
+        del_ui_pos(xml_node);
+      } else {
+        add_ui_pos(xml_node);
+      }
+    }
+  } //}}}
 
-  function contextMenuHandling_clean_icon(icon) { //{{{
+  var contextMenuHandling_clean_icon = this.contextMenuHandling_clean_icon = function(icon) { //{{{
     icon = icon.clone();
     $('.part-start',icon).remove();
     $('.part-middle',icon).remove();
     $('.part-end',icon).remove();
     return icon;
   } //}}}
-  function contextMenuHandling(svgid,e,child,sibling) { //{{{
+  var contextMenuHandling = this.contextMenuHandling = function(svgid,e,child,sibling) { //{{{
     if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
 
     var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
@@ -271,24 +282,12 @@ function WFAdaptorManifestationBase(adaptor) {
     new CustomMenu(e).contextmenu(menu);
   } //}}}
 
-  function positionHandling(svgid) { //{{{
-    var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
-    var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
-    if (vtarget.length > 0) {
-      if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
-        del_ui_pos(xml_node);
-      } else {
-        add_ui_pos(xml_node);
-      }
-    }
-  } //}}}
-
   // Events
   this.events.touchend = function(svgid, e) { // {{{
     clearTimeout(self.presstimer);
   } // }}}
   this.events.touchstart = function(svgid, e, child, sibling) { // {{{
-    self.presstimer = window.setTimeout(function() { contextMenuHandling(svgid,e,child,sibling); },1000);
+    self.presstimer = window.setTimeout(function() { self.contextMenuHandling(svgid,e,child,sibling); },1000);
     return false;
   } // }}}
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
@@ -296,7 +295,7 @@ function WFAdaptorManifestationBase(adaptor) {
     } else if(e.button == 1) { // middle-click
       positionHandling(svgid);
     } else if(e.button == 2) { // right-click
-      contextMenuHandling(svgid,e,child,sibling);
+      self.contextMenuHandling(svgid,e,child,sibling);
     }
     return false;
   } // }}}
