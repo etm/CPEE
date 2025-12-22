@@ -26,9 +26,11 @@
   --wfadaptor-label: #e4e4e4;
   --wfadaptor-mark: #d4d4d4;
 
-  --wfadaptor-selected: #000000;
+  --wfadaptor-selected: #f57900;
+  --wfadaptor-selected-border: #000000;
   --wfadaptor-selected-text: #f57900;
-  --wfadaptor-hover: #000000;
+  --wfadaptor-hover: #f57900;
+  --wfadaptor-hover-border: #000000;
 
   --wfadaptor-stripe: #e9e9e9;
   --wfadaptor-background: #ffffff;
@@ -221,20 +223,6 @@ svg .grey {
   stroke-dasharray:none;
 }
 
-svg .marked text.label {
-  color: var(--wfadaptor-label);
-  fill: var(--wfadaptor-label);
-}
-
-svg .marked .markstyle {
-  stroke: var(--wfadaptor-mark);
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  stroke-miterlimit:4;
-  stroke-opacity:1;
-  stroke-dasharray:none;
-}
-
 svg.labelsrow text.label {
   cursor: pointer;
 }
@@ -245,12 +233,9 @@ svg text.label.selected {
   fill: var(--wfadaptor-selected-text);
 }
 svg .selected .markstyle {
-  stroke: var(--wfadaptor-selected);
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  stroke-miterlimit:4;
-  stroke-opacity:1;
-  stroke-dasharray: 1,2;
+  visibility: visible !important;
+  fill: var(--wfadaptor-selected) !important;
+  stroke: var(--wfadaptor-selected-border);
   stroke-width: 1.6;
 }
 
@@ -376,16 +361,34 @@ svg g.element[element-id].hover {
   cursor: pointer;
 }
 
+svg g.element[element-id] .hoverstyle {
+  visibility: hidden;
+  stroke-width: 1.6;
+}
+svg g.element[element-id] .markstyle {
+  visibility: hidden;
+  stroke-width: 1.6;
+}
+
 svg g.element[element-id].hover .hoverstyle {
-  stroke: var(--wfadaptor-hover);
-  stroke-dasharray: 1,2;
+  visibility: visible;
+  fill: var(--wfadaptor-hover);
+  stroke: var(--wfadaptor-hover-border);
+  stroke-width: 1.6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-miterlimit:4;
+  stroke-opacity:1;
+  stroke-dasharray: 1,3;
+}
+
+svg .marked .markstyle {
+  visibility: visible !important;
+  stroke: var(--wfadaptor-mark) !important;
+  fill: var(--wfadaptor-background);
   stroke-width: 1.6;
 }
-svg g.element[element-id].hover .hoverstylethin {
-  stroke: var(--wfadaptor-hover);
-  stroke-dasharray: 1,2;
-  stroke-width: 1.6;
-}
+
 svg g.element[element-id].hover > text.label {
   color: var(--wfadaptor-selected);
   fill: var(--wfadaptor-selected);

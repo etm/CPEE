@@ -234,7 +234,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       '    <path d="m 2 2 l 6 3 l -6 3 z"/>' +
       '  </marker>' +
       '  <clipPath id="startclip">' +
-      '    <rect x="-1" y="-1" width="29" height="32"/>' +
+      '    <rect x="-4" y="-4" width="35" height="38"/>' +
       '  </clipPath>' +
       '  <clipPath id="endclip">' +
       '    <rect x="20" y="-1" width="' + self.endclipshift + '" height="35"/>' +
@@ -721,6 +721,16 @@ function WfIllustrator(wf_adaptor) { // View  {{{
           '</text>')
       );
     }
+
+    // hover
+    $(g[0].childNodes[0]).append(
+      $X(
+        '<g class="hoverstyle markstyle" xmlns="http://www.w3.org/2000/svg">' +
+          '<circle cx="2" cy="1" r="7"/>' +
+          '<path d="m -1 1 l 2 2 l 4 -4" class="standline"/>' +
+        '</g>'
+      )
+    );
 
     // Binding events for symbol
     bind_event(g,sname,true);
