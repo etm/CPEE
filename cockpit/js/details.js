@@ -117,6 +117,15 @@ function do_main_work(svgid) { //{{{
       format_instance_pos();
 
       document.dispatchEvent(graph_changed);
+
+      ////////////////////////////
+      // holy shit, f***in papercut. When blur/focusout from within relaxngui,
+      // click on original target after graph was updated. tsvgid has to be
+      // saved in mousedown because blur/focusout is between mousedown and click.
+      ////////////////////////////
+      if (save['details_target'].svgid != save['details_target'].tsvgid) {
+        manifestation.adaptor.illustrator.get_label_by_svg_id(save['details_target'].tsvgid).trigger('click');
+      }
     }
 
   });

@@ -36,7 +36,7 @@ function global_init() {
   save['endpoints_cache'] = {};
   save['endpoints_list'] = {};
   save['details'] = undefined;
-  save['details_target'] = undefined;
+  save['details_target'] = {};
   save['instance_pos'] = [];
   save['modeltype'] = 'CPEE';
   save['modifiers'] = {};

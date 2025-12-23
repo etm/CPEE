@@ -65,7 +65,8 @@ function WFAdaptorManifestationBase(adaptor) {
     var tab  = $('#dat_details');
     var node = self.adaptor.description.get_node_by_svg_id(svgid).get(0);
     if (self.adaptor.description.elements[$(node).attr('svg-subtype')]) {
-      save['details_target'] = { 'svgid': svgid, 'model': self.adaptor.description };
+      save['details_target'].svgid = svgid;
+      save['details_target'].model = self.adaptor.description;
       var rng = self.adaptor.description.elements[$(node).attr('svg-subtype')].clone();
       if (save['endpoints_cache'][$(node).attr('endpoint')] && save['endpoints_cache'][$(node).attr('endpoint')].schema) {
         var schema = save['endpoints_cache'][$(node).attr('endpoint')].schema.documentElement;
@@ -292,6 +293,7 @@ function WFAdaptorManifestationBase(adaptor) {
   } // }}}
   this.events.mousedown = function(svgid, e, child, sibling) { // {{{
     if(e.button == 0) {  // left-click
+      save['details_target'].tsvgid = svgid;
     } else if(e.button == 1) { // middle-click
       positionHandling(svgid);
     } else if(e.button == 2) { // right-click
