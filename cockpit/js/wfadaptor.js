@@ -726,8 +726,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     $(g[0].childNodes[0]).append(
       $X(
         '<g class="hoverstyle markstyle" xmlns="http://www.w3.org/2000/svg">' +
-          '<circle cx="2" cy="1" r="7"/>' +
-          '<path d="m -1 1 l 2 2 l 4 -4" class="standline"/>' +
+          '<circle cx="2" cy="0" r="7"/>' +
+          '<path d="m -1 0 l 2 2 l 4 -4" class="standline"/>' +
         '</g>'
       )
     );
