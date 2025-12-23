@@ -5,12 +5,10 @@
       <value>#d4e1f1</value>
       <value>#d8f0dd</value>
       <value>#ffffcc</value>
-      <value>#f2d8b8</value>
-      <value>#eeb3ac</value>
       <value>#e4c3e4</value>
+      <value>#f8a8c6</value>
       <value>#ded0c5</value>
-      <value>#bcbbbd</value>
-      <value>#f57aa9</value>
+      <value>#deddda</value>
     </choice>
   </attribute>
   <element name="_generic" rngui:header="Process Level Generic Annotations">

@@ -229,15 +229,6 @@ svg.labelsrow text.label {
 svg.labelsrow text.label:hover, svg.labelsrow text.label.hover {
   fill: var(--wfadaptor-selected-text);
 }
-svg text.label.selected {
-  fill: var(--wfadaptor-selected-text);
-}
-svg .selected .markstyle {
-  visibility: visible !important;
-  fill: var(--wfadaptor-selected) !important;
-  stroke: var(--wfadaptor-selected-border);
-  stroke-width: 1.6;
-}
 
 svg .unknown {
   fill: var(--wfadaptor-background);
@@ -392,4 +383,14 @@ svg .marked .markstyle {
 svg g.element[element-id].hover > text.label {
   color: var(--wfadaptor-selected);
   fill: var(--wfadaptor-selected);
+}
+
+svg text.label.selected {
+  fill: var(--wfadaptor-selected-text);
+}
+svg .selected .markstyle {
+  visibility: visible !important;
+  fill: var(--wfadaptor-selected) !important;
+  stroke: var(--wfadaptor-selected-border);
+  stroke-width: 1.6;
 }
