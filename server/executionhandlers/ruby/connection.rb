@@ -432,6 +432,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
     recv = 'false' unless recv
     recv = (recv == 'false' || recv == 'null' || recv == 'nil' || recv == false ? false : true)
+
     @controller.notify("gateway/decide", :ecid => Thread.current.__id__, :instance_uuid => @controller.uuid, :code => code, :condition => recv)
     @controller.notify("gateway/annotation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => {})
     recv

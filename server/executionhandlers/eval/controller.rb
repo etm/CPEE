@@ -125,6 +125,12 @@ class Controller
   def dataelements
     @instance.data
   end
+  def url_result_transformation
+    @opts[:url_result_transformation]
+  end
+  def url_code
+   @opts[:url_code]
+  end
 
   def start
     if vote("state/change", :state => 'running')

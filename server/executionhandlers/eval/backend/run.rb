@@ -1,5 +1,3 @@
-#!/usr/bin/ruby
-require 'rbtrace'
 require 'yaml'
 opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
 opts[:pidf] = __FILE__ + '.pid'
