@@ -52,6 +52,9 @@
       <xsl:text>, parameters: { </xsl:text>
       <xsl:apply-templates select="d:parameters"/>
       <xsl:text> }</xsl:text>
+      <xsl:if test="d:code/d:signal[text()='on']">
+        <xsl:text>, signal: true</xsl:text>
+      </xsl:if>
       <xsl:if test="(d:finalize or d:code/d:finalize) and (d:finalize/text() or d:code/d:finalize/text())">
         <xsl:text>, finalize: &lt;&lt;-END</xsl:text>
       </xsl:if>
@@ -118,6 +121,20 @@
       </xsl:call-template>
       <xsl:text>stop :</xsl:text>
       <xsl:value-of select="@id"/>
+      <xsl:call-template name="print-newline"/>
+    </xsl:if>
+    <xsl:if test="name()='wait_for_signal'">
+      <xsl:call-template name="print-space">
+        <xsl:with-param name="i">1</xsl:with-param>
+        <xsl:with-param name="count">
+          <xsl:value-of select="$myspace+$myspacemultiplier"/>
+        </xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>wait_for_signal :</xsl:text>
+      <xsl:value-of select="@id"/>
+      <xsl:text>, "</xsl:text>
+      <xsl:value-of select="str:replace(str:replace(d:label/text(),'\','\\'),'&quot;','\&quot;')"/>
+      <xsl:text>"</xsl:text>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='escape'">
@@ -453,7 +470,7 @@
   </xsl:template>
   <xsl:template match="d:parameters">
     <xsl:apply-templates select="d:label" mode="parameter"/>
-    <xsl:apply-templates select="d:*[not(name()='label')]" mode="parameter"/>
+    <xsl:apply-templates select="d:*[not(name()='label') and not(name()='color')]" mode="parameter"/>
     <xsl:if test="count(*) &gt; 0">, </xsl:if>
     <xsl:apply-templates select="../d:annotations" mode="annotations"/>
   </xsl:template>
@@ -519,7 +536,9 @@
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when test="substring(text(),1,1) = '!'">
-            <xsl:value-of select="substring(text(),2)"/>
+            <xsl:text>🠊("</xsl:text>
+            <xsl:value-of select="str:replace(str:replace(substring(text(),2),'\','\\'),'&quot;','\&quot;')"/>
+            <xsl:text>")</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>"</xsl:text>
@@ -548,7 +567,9 @@
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when test="substring(text(),1,1) = '!'">
-            <xsl:value-of select="substring(text(),2)"/>
+            <xsl:text>🠊("</xsl:text>
+            <xsl:value-of select="str:replace(str:replace(substring(text(),2),'\','\\'),'&quot;','\&quot;')"/>
+            <xsl:text>")</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>"</xsl:text>
@@ -577,7 +598,9 @@
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when test="substring(text(),1,1) = '!'">
-            <xsl:value-of select="substring(text(),2)"/>
+            <xsl:text>🠊("</xsl:text>
+            <xsl:value-of select="str:replace(str:replace(substring(text(),2),'\','\\'),'&quot;','\&quot;')"/>
+            <xsl:text>")</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>"</xsl:text>
@@ -631,14 +654,14 @@
           <!-- FUUUU, there is probably much more TODO. Updated Matthias und Juergen, we tested for ing-opcua/execute -->
           <xsl:choose>
             <xsl:when test="child::* and name(child::*)=concat(name(.),'_item') and count(child::*[not(name()=name(../child::*[1]))])=0">
-              <xsl:text>"[ </xsl:text>
+              <xsl:text>[ </xsl:text>
               <xsl:apply-templates select="*" mode="JSONArrayItem"/>
-              <xsl:text>]"</xsl:text>
+              <xsl:text>]</xsl:text>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:text>"{ </xsl:text>
+              <xsl:text>{ </xsl:text>
               <xsl:apply-templates select="*" mode="JSONSUB"/>
-              <xsl:text>}"</xsl:text>
+              <xsl:text>}</xsl:text>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:when>
@@ -695,7 +718,7 @@
   </xsl:template>
   <xsl:template name="print-mcontent">
     <xsl:param name="myspace"/>
-    <xsl:if test="text()">
+    <xsl:if test="d:code/text()">
       <xsl:choose>
         <xsl:when test="@language='application/x-ruby'">
           <xsl:text> do </xsl:text>
@@ -709,7 +732,7 @@
           <xsl:text>, &lt;&lt;-END</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:for-each select="str:tokenize(text(), '&#x0A;')">
+      <xsl:for-each select="str:tokenize(d:code/text(), '&#x0A;')">
         <xsl:value-of select="concat('&#x0A;',concat(str:padding($myspace+$myspacemultiplier+$myspacemultiplier),str:replace(str:replace(str:replace(string(.),'\','\\'),'&quot;','\&quot;'),'#','\#')))" />
       </xsl:for-each>
       <xsl:call-template name="print-newline"/>
@@ -759,9 +782,9 @@
   </xsl:template>
 
   <xsl:template match="*" mode="JSONSUB">
-    <xsl:text>\"</xsl:text>
+    <xsl:text>"</xsl:text>
     <xsl:value-of select="name()"/>
-    <xsl:text>\": </xsl:text>
+    <xsl:text>": </xsl:text>
     <xsl:call-template name="JSONProperties">
       <xsl:with-param name="parent" select="'Yes'"></xsl:with-param>
     </xsl:call-template>
@@ -804,49 +827,49 @@
               <xsl:otherwise>
                 <xsl:choose>
                   <xsl:when test="substring(.,1,1) = '!'">
-                    <xsl:text>#{(</xsl:text>
-                    <xsl:value-of select="substring(.,2)"/>
-                    <xsl:text>).to_json}</xsl:text>
+                    <xsl:text>🠊("</xsl:text>
+                    <xsl:value-of select="str:replace(str:replace(substring(.,2),'\','\\'),'&quot;','\&quot;')"/>
+                    <xsl:text>")</xsl:text>
                   </xsl:when>
                   <xsl:otherwise>
-                    <xsl:text>\"</xsl:text>
-                    <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\\\&quot;')"/>
-                    <xsl:text>\"</xsl:text>
+                    <xsl:text>"</xsl:text>
+                    <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\&quot;')"/>
+                    <xsl:text>"</xsl:text>
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>\"</xsl:text>
+            <xsl:text>"</xsl:text>
             <xsl:value-of select="name()"/>
-            <xsl:text>\": </xsl:text>
+            <xsl:text>": </xsl:text>
             <xsl:choose>
               <xsl:when test="string(number(.)) = .">
                 <xsl:value-of select="."/>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:text>\"</xsl:text>
+                <xsl:text>"</xsl:text>
                 <xsl:choose>
                   <xsl:when test="substring(.,1,1) = '!'">
-                    <xsl:text>#{</xsl:text>
-                    <xsl:value-of select="str:replace(str:replace(substring(.,2),'\','\\'),'&quot;','\\\&quot;')"/>
-                    <xsl:text>}</xsl:text>
+                    <xsl:text>>🠊("</xsl:text>
+                    <xsl:value-of select="str:replace(str:replace(substring(.,2),'\','\\'),'&quot;','\&quot;')"/>
+                    <xsl:text>")</xsl:text>
                   </xsl:when>
                   <xsl:otherwise>
-                    <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\\\&quot;')"/>
+                    <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\&quot;')"/>
                   </xsl:otherwise>
                 </xsl:choose>
-                <xsl:text>\"</xsl:text>
+                <xsl:text>"</xsl:text>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
       <xsl:when test="count(*[name()=$childName]) > 1">
-        <xsl:text>{ \"</xsl:text>
+        <xsl:text>{ "</xsl:text>
         <xsl:value-of select="$childName"/>
-        <xsl:text>\": [ </xsl:text>
+        <xsl:text>": [ </xsl:text>
         <xsl:apply-templates select="*" mode="JSONArrayElement"/>
         <xsl:text>] }</xsl:text>
       </xsl:when>
@@ -860,18 +883,18 @@
         <xsl:text>}</xsl:text>
         <xsl:if test="text()[normalize-space(.)]">
           <xsl:text>, </xsl:text>
-          <xsl:text>\"</xsl:text>
+          <xsl:text>"</xsl:text>
           <xsl:choose>
             <xsl:when test="substring(.,1,1) = '!'">
-              <xsl:text>#{</xsl:text>
-              <xsl:value-of select="str:replace(str:replace(substring(.,2),'\','\\'),'&quot;','\\\&quot;')"/>
-              <xsl:text>}</xsl:text>
+              <xsl:text>>🠊("</xsl:text>
+              <xsl:value-of select="str:replace(str:replace(substring(.,2),'\','\\'),'&quot;','\&quot;')"/>
+              <xsl:text>")</xsl:text>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\\\&quot;')"/>
+              <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\&quot;')"/>
             </xsl:otherwise>
           </xsl:choose>
-          <xsl:text>\"</xsl:text>
+          <xsl:text>"</xsl:text>
           <xsl:text>]</xsl:text>
         </xsl:if>
       </xsl:otherwise>
@@ -880,26 +903,26 @@
 
   <!-- JSON Attribute Property -->
   <xsl:template match="@*" mode="JSONSUB">
-    <xsl:text>\"@</xsl:text>
+    <xsl:text>"@</xsl:text>
     <xsl:value-of select="name()"/>
-    <xsl:text>\": </xsl:text>
+    <xsl:text>": </xsl:text>
     <xsl:choose>
       <xsl:when test="number(.) = .">
         <xsl:value-of select="."/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text>\"</xsl:text>
+        <xsl:text>"</xsl:text>
         <xsl:choose>
           <xsl:when test="substring(.,1,1) = '!'">
-            <xsl:text>#{</xsl:text>
-            <xsl:value-of select="str:replace(str:replace(substring(.,2),'\','\\'),'&quot;','\\\&quot;')"/>
-            <xsl:text>}</xsl:text>
+            <xsl:text>>🠊("</xsl:text>
+            <xsl:value-of select="str:replace(str:replace(substring(.,2),'\','\\'),'&quot;','\&quot;')"/>
+            <xsl:text>")</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\\\&quot;')"/>
+            <xsl:value-of select="str:replace(str:replace(.,'\','\\'),'&quot;','\&quot;')"/>
           </xsl:otherwise>
         </xsl:choose>
-        <xsl:text>\"</xsl:text>
+        <xsl:text>"</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:choose>
