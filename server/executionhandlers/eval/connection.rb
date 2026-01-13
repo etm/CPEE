@@ -69,8 +69,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @handler_continue = continue
     @handler_position = position
     @handler_passthrough = nil
-    @handler_returnValue = nil
-    @handler_returnOptions = nil
     @handler_activity_uuid = Digest::MD5.hexdigest(Kernel::rand().to_s)
     @label = ''
     @guard_files = []
@@ -236,13 +234,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @controller.notify("activity/annotation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => @anno)
   end #}}}
 
-  def activity_result_value # {{{
-    @handler_returnValue
-  end # }}}
-  def activity_result_options # {{{
-    @handler_returnOptions
-  end # }}}
-
   def activity_stop # {{{
     unless @handler_passthrough.nil?
       @controller.cancel_callback(@handler_passthrough)
@@ -307,24 +298,24 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
 
     if options['CPEE_STATUS'] || options['CPEE_EVENT']
-      @handler_returnValue = nil
-      @handler_returnOptions = nil
+      returnValue = nil
+      returnOptions = nil
     else
-      @handler_returnValue = recv
-      @handler_returnOptions = options
+      returnValue = recv
+      returnOptions = options
     end
 
     if options['CPEE_UPDATE']
-      @handler_continue.continue WEEL::Signal::UpdateAgain
+      @handler_continue.continue WEEL::Signal::UpdateAgain, returnValue, returnOptions
     else
       @controller.cancel_callback(@handler_passthrough)
       @handler_passthrough = nil
       if options['CPEE_SALVAGE']
-        @handler_continue.continue WEEL::Signal::Salvage
+        @handler_continue.continue WEEL::Signal::Salvage, returnValue, returnOptions
       elsif options['CPEE_STOP']
-        @handler_continue.continue WEEL::Signal::Stop
+        @handler_continue.continue WEEL::Signal::Stop, returnValue, returnOptions
       else
-        @handler_continue.continue
+        @handler_continue.continue WEEL::Signal::Proceed, returnValue, returnOptions
       end
     end
   end #}}}
