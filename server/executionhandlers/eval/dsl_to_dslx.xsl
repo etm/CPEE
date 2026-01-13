@@ -198,7 +198,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
-      <xsl:for-each select="@*[not(name()='language' or name()='mode' or name()='condition' or name()='svg-label')]">
+      <xsl:for-each select="@*[not(name()='language' or name()='mode' or (local-name()='alt_id' and namespace-uri()='http://cpee.org/ns/annotation/1.0') or name()='condition' or name()='svg-label')]">
         <xsl:text>, :</xsl:text>
         <xsl:value-of select="name(.)"/>
         <xsl:text> => "</xsl:text>
