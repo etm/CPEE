@@ -65,6 +65,10 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
 
   this.update = function(doit){ doit(self); };
 
+  this.redraw = function(){
+    description.redraw();
+  }
+
   $.getScript(theme_base, function() { //{{{
     manifestation = new WFAdaptorManifestation(self);
     illustrator.compact = manifestation.compact == true ? true : false;
@@ -911,6 +915,16 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     self.set_labels(graph);
     illustrator.set_duration(start);
     doit(self);
+  }
+  var redraw = this.redraw = function(){
+    id_counter = {};
+    labels = [];
+    let start = performance.now();
+    illustrator.clear();
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
+    illustrator.set_svg(graph);
+    self.set_labels(graph);
+    illustrator.set_duration(start);
   }
   var update = this.update = function(svgid) { // {{{
     id_counter = {};

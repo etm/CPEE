@@ -120,6 +120,13 @@ function cockpit() { //{{{
     $('#dat_details').empty();
     e.stopImmediatePropagation();
   });
+  document.addEventListener('uidash:activate_tab', function (e) {
+    if (!$('#tabdetails').hasClass('inactive')) {
+      if (save['graph_adaptor']) {
+        save['graph_adaptor'].redraw();
+      }
+    }
+  });
 
   $.ajax({
     url: $('body').attr('current-templates'),
