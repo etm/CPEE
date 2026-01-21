@@ -59,17 +59,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     illustrator.set_label_container(container);
   } // }}}
 
-  // initialize
-  this.illustrator = illustrator = new WfIllustrator(this);
-  this.description = description = new WfDescription(this, this.illustrator);
-
-  this.update = function(doit){ doit(self); };
-
-  this.redraw = function(){
-    description.redraw();
-  }
-
-  $.getScript(theme_base, function() { //{{{
+  function loadTheme(doit) { //{{{
     manifestation = new WFAdaptorManifestation(self);
     illustrator.compact = manifestation.compact == true ? true : false;
     illustrator.rotated_labels = manifestation.rotated_labels == true ? true : false;
@@ -195,8 +185,29 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     }
     $.when.apply($, deferreds).then(function(x) {
       doit(self);
+    })
+  } //}}}
+
+  // initialize
+  this.illustrator = illustrator = new WfIllustrator(this);
+  this.description = description = new WfDescription(this, this.illustrator);
+
+  this.update = function(doit){ doit(self); };
+
+  this.redraw = function(){
+    description.redraw();
+  }
+
+  $.getScript(self.theme_base).done(function() {
+    loadTheme(doit);
+  }).fail(function(){
+    // default theme
+    self.theme_base = 'themes/preset/theme.js';
+    self.theme_dir = self.theme_base.replace(/theme.js/,'');
+    $.getScript(self.theme_base,function() {
+      loadTheme(doit);
     });
-  }); //}}}
+  });
 } // }}}
 
 // WfIllustrator:
