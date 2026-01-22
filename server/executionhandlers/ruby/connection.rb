@@ -15,7 +15,6 @@
 require 'charlock_holmes'
 require 'mimemagic'
 require 'base64'
-require 'get_process_mem'
 require 'cpee-eval-ruby/translation'
 
 class ConnectionWrapper < WEEL::ConnectionWrapperBase
@@ -218,7 +217,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
     @anno = parameters.delete(:annotations) rescue nil
-    @controller.notify("status/resource_utilization", :mib => GetProcessMem.new.mb, **Process.times.to_h)
     @controller.notify("activity/calling", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
     @controller.notify("activity/annotation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => @anno)
     if passthrough.to_s.empty?
@@ -253,7 +251,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def inform_activity_done # {{{
     @controller.notify("activity/done", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
-    @controller.notify("status/resource_utilization", :mib => GetProcessMem.new.mb, **Process.times.to_h)
   end # }}}
   def inform_activity_manipulate # {{{
     @controller.notify("activity/manipulating", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)

@@ -22,6 +22,7 @@ require 'cpee/attributes_helper'
 require 'cpee/message'
 require 'cpee/redis'
 require 'cpee/persistence'
+require 'get_process_mem'
 
 require 'ostruct'
 class ParaStruct < OpenStruct
@@ -86,6 +87,12 @@ class Controller
     rescue =>  e
       sleep 1
       retry
+    end
+    Thread.new do
+      while true
+        notify("status/resource_utilization", :mib => GetProcessMem.new.mb, **Process.times.to_h)
+        sleep 3
+      end
     end
   end
 
