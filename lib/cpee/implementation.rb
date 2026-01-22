@@ -58,7 +58,7 @@ module CPEE
 
     opts[:instances]                  ||= File.expand_path(File.join(__dir__,'..','..','server','instances'))
     opts[:global_executionhandlers]   ||= File.expand_path(File.join(__dir__,'..','..','server','executionhandlers'))
-    opts[:executionhandlers]          ||= 'executionhandlers'
+    opts[:executionhandlers]          ||= ''
     opts[:topics]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','topics.xml'))
     opts[:properties_init]            ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.init'))
     opts[:properties_empty]           ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.empty'))
