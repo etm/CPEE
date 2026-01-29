@@ -31,8 +31,8 @@ Daemonite.new do |opts|
   ]
 
   on startup do
-    opts[:redis_path] ||= '/tmp/redis.sock'.freeze
-    opts[:redis_db] ||= 1
+    opts[:redis_path] ||= '/tmp/redis.sock' if opts[:redis_url].nil?
+    opts[:redis_db] ||= 1 if opts[:redis_db].nil?
     opts[:events] = []
     0.upto(opts[:workers]-1) do |w|
       opts[:events] += [

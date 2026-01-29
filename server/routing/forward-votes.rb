@@ -55,8 +55,8 @@ Daemonite.new do |opts|
   ]
 
   on startup do
-    opts[:redis_path] ||= '/tmp/redis.sock'
-    opts[:redis_db] ||= 1
+    opts[:redis_path] ||= '/tmp/redis.sock' if opts[:redis_url].nil?
+    opts[:redis_db] ||= 1 if opts[:redis_db].nil?
 
     CPEE::redis_connect opts, 'Server Routing Forward Votes'
     opts[:pubsubredis] = opts[:redis_dyn].call 'Server Routing Forward Votes Sub'

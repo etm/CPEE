@@ -32,19 +32,31 @@ module CPEE
         exit
       end
     else # we always assume file socket if redis is startet locally
-      opts[:redis_dyn] = Proc.new { |name| Redis.new(path: File.join(opts[:basepath],opts[:redis_path]), db: opts[:redis_db].to_i, id: name.gsub(/[^a-zA-Z0-9]/,'-') ) }
+      opts[:redis_dyn] = if opts[:redis_path]
+        Proc.new { |name| Redis.new(path: File.join(opts[:basepath],opts[:redis_path]), db: opts[:redis_db].to_i, id: name.gsub(/[^a-zA-Z0-9]/,'-') ) }
+      elsif opts[:redis_url]
+        Proc.new { |name| Redis.new(url: opts[:redis_url], db: opts[:redis_db], id: name.gsub(/[^a-zA-Z0-9]/,'-') ) }
+      else
+        raise
+      end
+
       tried = false
       begin
         opts[:redis] = opts[:redis_dyn].call name.gsub(/[^a-zA-Z0-9]/,'-')
         opts[:redis].dbsize
       rescue => e
-        puts e
         res = unless tried
           rcmd = opts[:redis_cmd]
-          rcmd.gsub! /#redis_path#/, File.join(opts[:basepath],opts[:redis_path])
+          if opts[:redis_path]
+            rcmd.gsub! /#redis_path#/, File.join(opts[:basepath],opts[:redis_path])
+          else
+            rcmd.gsub! /#redis_path#\s+/, ''
+          end
           rcmd.gsub! /#redis_db_dir#/, opts[:basepath]
           rcmd.gsub! /#redis_db_name#/, opts[:redis_db_name]
           rcmd.gsub! /#redis_pid#/, File.join(opts[:basepath],opts[:redis_pid])
+          rcmd.gsub! /#redis_port#/, opts[:redis_port].to_s
+          rcmd.gsub! /--unixsocket\s+/, '' if opts[:redis_unixsocket] == false
           puts 'starting redis ... it will keep running, just to let you know ...'
           system rcmd
         else
