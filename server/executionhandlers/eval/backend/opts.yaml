@@ -1,6 +1,5 @@
 :host: localhost
 :url: http://localhost:8298/
-:redis_path: /tmp/redis.sock
-:redis_db: 3
+:redis_db: 1
 :executionhandlers: ../../executionhandlers/
 :executionhandler: eval

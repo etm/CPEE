@@ -22,7 +22,6 @@ require_relative '../../lib/cpee/redis'
 Daemonite.new do |opts|
   opts[:runtime_opts] += [
     ["--url=URL", "-uURL", "Specify redis url", ->(p){ opts[:redis_url] = p }],
-    ["--path=PATH", "-pPATH", "Specify redis path, e.g. /tmp/redis.sock", ->(p){ opts[:redis_path] = p }],
     ["--db=DB", "-dDB", "Specify redis db, e.g. 1", ->(p) { opts[:redis_db] = p.to_i }],
     ["--worker=NUM", "-wNUM", "Specify the worker id, e.g. 0", ->(p) { opts[:worker] = p.to_i }]
   ]
@@ -34,7 +33,6 @@ Daemonite.new do |opts|
   end
 
   on startup do
-    opts[:redis_path] ||= '/tmp/redis.sock' if opts[:redis_url].nil?
     opts[:redis_db] ||= 1 if opts[:redis_db].nil?
     CPEE::redis_connect opts, 'Server Routing Forward Events'
     opts[:pubsubredis] = opts[:redis_dyn].call 'Server Routing Forward Events Sub'

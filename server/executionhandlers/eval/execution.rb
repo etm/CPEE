@@ -35,6 +35,7 @@ module CPEE
         hw = CPEE::Persistence::extract_item(id,opts,'executionhandler')
         endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
         dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
+        attributes = CPEE::Persistence::extract_list(id,opts,'attributes')
         positions = CPEE::Persistence::extract_set(id,opts,'positions')
         positions.map! do |k, v|
           [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
@@ -43,7 +44,6 @@ module CPEE
         iopts[:host] = opts[:host]
         iopts[:url] = opts[:url]
         iopts[:redis_url] = opts[:redis_url]
-        iopts[:redis_path] = File.join(opts[:basepath],opts[:redis_path])
         iopts[:redis_db] = opts[:redis_db]
         iopts[:workers] = opts[:workers]
         iopts[:global_executionhandlers] = opts[:global_executionhandlers]

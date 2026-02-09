@@ -25,13 +25,11 @@ EVENTS =
 Daemonite.new do |opts|
   opts[:runtime_opts] += [
     ["--url=URL", "-uURL", "Specify redis url", ->(p){ opts[:redis_url] = p }],
-    ["--path=PATH", "-pPATH", "Specify redis path, e.g. /tmp/redis.sock", ->(p){ opts[:redis_path] = p }],
     ["--db=DB", "-dDB", "Specify redis db, e.g. 1", ->(p) { opts[:redis_db] = p.to_i }],
     ["--workers=NUM", "-wNUM", "Number of workers that are expected, e.g. 3", ->(p) { opts[:workers] = p.to_i }]
   ]
 
   on startup do
-    opts[:redis_path] ||= '/tmp/redis.sock' if opts[:redis_url].nil?
     opts[:redis_db] ||= 1 if opts[:redis_db].nil?
     opts[:events] = []
     0.upto(opts[:workers]-1) do |w|

@@ -35,6 +35,7 @@ module CPEE
         hw = CPEE::Persistence::extract_item(id,opts,'executionhandler')
         endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
         dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
+        attributes = CPEE::Persistence::extract_list(id,opts,'attributes')
         positions = CPEE::Persistence::extract_set(id,opts,'positions')
         positions.map! do |k, v|
           [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
@@ -43,7 +44,6 @@ module CPEE
         iopts[:host] = opts[:host]
         iopts[:url] = opts[:url]
         iopts[:redis_url] = opts[:redis_url]
-        iopts[:redis_path] = File.join(opts[:basepath],opts[:redis_path])
         iopts[:redis_db] = opts[:redis_db]
         iopts[:workers] = opts[:workers]
         iopts[:global_executionhandlers] = opts[:global_executionhandlers]
@@ -56,13 +56,23 @@ module CPEE
         template = ERB.new(File.read(ExecutionHandler::Ruby::BACKEND_TEMPLATE), trim_mode: '-')
         res = template.result_with_hash(dsl: dsl, dataelements: dataelements, endpoints: endpoints, positions: positions)
         File.write(File.join(opts[:instances],id.to_s,ExecutionHandler::Ruby::BACKEND_INSTANCE),res)
+        # if attributes['remote']
+        #   ### scp instance files to the remote server under run (under instance id)
+        #   ### touch local .remote with connection details
+        # end
       end
 
       def self::run(id,opts)
-        exe = File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_RUN))
-        pid = Kernel.spawn(opts[:libs_preloaderrun] + ' ' + exe , :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
-        Process.detach pid
-        File.write(exe + '.pid',pid)
+        ### if File file .remote
+          ### connect to remote
+          ### run same as below
+        ### else
+          ### Determine whether we run locally or remote
+          exe = File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_RUN))
+          pid = Kernel.spawn(opts[:libs_preloaderrun] + ' ' + exe , :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
+          Process.detach pid
+          File.write(exe + '.pid',pid)
+        ### end
       end
 
       def self::stop(id,opts) ### return: bool to tell if manually changing redis is necessary

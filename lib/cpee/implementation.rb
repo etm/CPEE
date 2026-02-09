@@ -75,13 +75,16 @@ module CPEE
     opts[:dashing_frequency]          ||= 3
     opts[:dashing_target]             ||= nil
 
-    ### set redis_cmd to nil if you want to do global
-    ### at least redis_path or redis_url and redis_db have to be set if you do global
-    opts[:redis_path]                 ||= 'redis.sock' # use e.g. /tmp/redis.sock for global stuff. Look it up in your redis config
-    opts[:redis_port]                 ||= 0
-    opts[:redis_db]                   ||= 0
     ### optional redis stuff
-    opts[:redis_url]                  ||= nil
+    ### port is parsed from redis url
+    ### when redis can not be connected, it is started, user, pass and port are extracted
+    ### opts[:redis_url]              ||= unix://redis.sock
+    ### opts[:redis_url]              ||= redis-socket://redis.sock
+    ### opts[:redis_url]              ||= redis-socket:///tmp/redis.sock
+    ### opts[:redis_url]              ||= redis://echo.bpm.in.tum.de:8798
+    ### opts[:redis_url]              ||= redis://localhost:8798
+    opts[:redis_db]                   ||= 0
+    opts[:redis_url]                  ||= 'unix://redis.sock' # sadly we have to do this for now
     opts[:redis_unixsocket]           ||= true
     opts[:redis_cmd]                  ||= 'redis-server --port #redis_port# --unixsocket #redis_path# --unixsocketperm 600 --pidfile #redis_pid# --dir #redis_db_dir# --dbfilename #redis_db_name# --databases 1 --save 900 1 --save 300 10 --save 60 10000 --rdbcompression yes --daemonize yes --protected-mode no'
     opts[:redis_pid]                  ||= 'redis.pid' # use e.g. /var/run/redis.pid if you do global. Look it up in your redis config
@@ -125,9 +128,9 @@ module CPEE
       CPEE::Message::set_workers(opts[:workers])
 
       parallel do
-        CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],File.join(opts[:basepath],opts[:redis_path]),opts[:redis_db],opts[:workers],opts[:workers_single],opts[:workers_multi])
+        CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],opts[:redis_db],opts[:workers],opts[:workers_single],opts[:workers_multi])
         EM.add_periodic_timer(opts[:watchdog_frequency]) do ### start services
-          CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],File.join(opts[:basepath],opts[:redis_path]),opts[:redis_db],opts[:workers],opts[:workers_single],opts[:workers_multi])
+          CPEE::watch_services(opts[:watchdog_start_off],opts[:redis_url],opts[:redis_db],opts[:workers],opts[:workers_single],opts[:workers_multi])
         end
         EM.defer do ### catch all sse connections
           CPEE::Notifications::sse_distributor(opts)
@@ -220,7 +223,7 @@ module CPEE
     end
   end
 
-  def self::watch_services(watchdog_start_off,url,path,db,workers,workers_single,workers_multi)
+  def self::watch_services(watchdog_start_off,url,db,workers,workers_single,workers_multi)
     return if watchdog_start_off
     EM.defer do
       workers_single.each do |s|
@@ -228,11 +231,7 @@ module CPEE
         next if File.exist?(s + '.lock')
         pid = (File.read(s + '.pid').to_i rescue nil)
         if (pid.nil? || !(Process.kill(0, pid) rescue false))
-          cmd = if url.nil?
-            "-p \"#{path}\" -d #{db} -w #{workers} restart 1>/dev/null 2>&1"
-          else
-            "-u \"#{url}\" -d #{db} -w #{workers} restart 1>/dev/null 2>&1"
-          end
+          cmd = "-u \"#{url}\" -d #{db} -w #{workers} restart 1>/dev/null 2>&1"
           system "#{s}.rb " + cmd + " 1>/dev/null 2>&1"
           puts "➡ Service #{File.basename(s)} (#{cmd}) started ..."
         end

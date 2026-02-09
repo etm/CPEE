@@ -13,18 +13,13 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'redis'
+require 'uri'
 
 module CPEE
   def self::redis_connect(opts,name=nil)
     if opts[:redis_cmd].nil?
       begin
-        if opts[:redis_path]
-          opts[:redis_dyn] = Proc.new { |name| Redis.new(path: opts[:redis_path], db: opts[:redis_db], id: name.gsub(/[^a-zA-Z0-9]/,'-') ) }
-        elsif opts[:redis_url]
-          opts[:redis_dyn] = Proc.new { |name| Redis.new(url: opts[:redis_url], db: opts[:redis_db], id: name.gsub(/[^a-zA-Z0-9]/,'-') ) }
-        else
-          raise
-        end
+        opts[:redis_dyn] = Proc.new { |name| Redis.new(url: opts[:redis_url], db: opts[:redis_db], id: name.gsub(/[^a-zA-Z0-9]/,'-') ) }
         opts[:redis] = opts[:redis_dyn].call name.gsub(/[^a-zA-Z0-9]/,'-')
         opts[:redis].dbsize
       rescue
@@ -32,19 +27,31 @@ module CPEE
         exit
       end
     else # we always assume file socket if redis is startet locally
-      opts[:redis_dyn] = if opts[:redis_path]
-        Proc.new { |name| Redis.new(path: File.join(opts[:basepath],opts[:redis_path]), db: opts[:redis_db].to_i, id: name.gsub(/[^a-zA-Z0-9]/,'-') ) }
-      elsif opts[:redis_url]
-        Proc.new { |name| Redis.new(url: opts[:redis_url], db: opts[:redis_db], id: name.gsub(/[^a-zA-Z0-9]/,'-') ) }
+      uri = URI::parse(opts[:redis_url])
+      if uri.scheme == 'unix' || uri.scheme == 'redis-socket'
+        opts[:redis_path] = File.join(uri.host,uri.path).sub(/\/$/,'')
+        if !File.absolute_path? opts[:redis_path]
+          opts[:redis_url] = 'unix://' + File.join(opts[:basepath],opts[:redis_path])
+        end
+        opts[:redis_port] = 0
+        opts[:redis_unixsocket] = true
       else
-        raise
+        opts[:redis_port] = uri.port
+        opts[:redis_path] = nil
+        opts[:redis_unixsocket] = false
       end
+
+      opts[:redis_dyn] = Proc.new { |name| Redis.new(url: opts[:redis_url], db: opts[:redis_db], id: name.gsub(/[^a-zA-Z0-9]/,'-') ) }
 
       tried = false
       begin
         opts[:redis] = opts[:redis_dyn].call name.gsub(/[^a-zA-Z0-9]/,'-')
         opts[:redis].dbsize
       rescue => e
+        puts e.message
+        puts e.backtrace
+        exit
+
         res = unless tried
           rcmd = opts[:redis_cmd]
           if opts[:redis_path]
@@ -52,11 +59,22 @@ module CPEE
           else
             rcmd.gsub! /#redis_path#\s+/, ''
           end
-          rcmd.gsub! /#redis_db_dir#/, opts[:basepath]
+          if File.absolute_path? opts[:redis_db_name]
+            rcmd.gsub! /#redis_db_dir#/, File.dirname(opts[:redis_db_name])
+          else
+            rcmd.gsub! /#redis_db_dir#/, opts[:basepath]
+          end
           rcmd.gsub! /#redis_db_name#/, opts[:redis_db_name]
-          rcmd.gsub! /#redis_pid#/, File.join(opts[:basepath],opts[:redis_pid])
+          if File.absolute_path? opts[:redis_pid]
+            rcmd.gsub! /#redis_pid#/, opts[:redis_pid]
+          else
+            rcmd.gsub! /#redis_pid#/, File.join(opts[:basepath],opts[:redis_pid])
+          end
           rcmd.gsub! /#redis_port#/, opts[:redis_port].to_s
-          rcmd.gsub! /--unixsocket\s+/, '' if opts[:redis_unixsocket] == false
+          if opts[:redis_unixsocket] == false
+            rcmd.gsub! /--unixsocket\s+/, ''
+            rcmd.gsub! /--unixsocketperm\s+\d+\s+/, ''
+          end
           puts 'starting redis ... it will keep running, just to let you know ...'
           system rcmd
         else
