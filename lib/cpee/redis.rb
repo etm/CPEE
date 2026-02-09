@@ -48,10 +48,6 @@ module CPEE
         opts[:redis] = opts[:redis_dyn].call name.gsub(/[^a-zA-Z0-9]/,'-')
         opts[:redis].dbsize
       rescue => e
-        puts e.message
-        puts e.backtrace
-        exit
-
         res = unless tried
           rcmd = opts[:redis_cmd]
           if opts[:redis_path]
