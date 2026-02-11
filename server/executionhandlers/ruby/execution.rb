@@ -12,6 +12,9 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
+require 'net/ssh'
+require 'net/scp'
+
 module CPEE
 
   module ExecutionHandler
@@ -29,13 +32,14 @@ module CPEE
       end
 
       def self::prepare(id,opts) # write result to disk
+        FileUtils.rm_rf(Dir.glob(File.join(opts[:instances],id.to_s,'*')) + Dir.glob(File.join(opts[:instances],id.to_s,'.remote')))
         Dir.mkdir(File.join(opts[:instances],id.to_s)) rescue nil
         FileUtils.copy(ExecutionHandler::Ruby::BACKEND_RUN,File.join(opts[:instances],id.to_s))
         dsl = CPEE::Persistence::extract_item(id,opts,'dsl')
         hw = CPEE::Persistence::extract_item(id,opts,'executionhandler')
         endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
         dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
-        attributes = CPEE::Persistence::extract_list(id,opts,'attributes')
+        attributes = CPEE::Persistence::extract_list(id,opts,'attributes').to_h
         positions = CPEE::Persistence::extract_set(id,opts,'positions')
         positions.map! do |k, v|
           [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
@@ -46,9 +50,14 @@ module CPEE
         iopts[:redis_url] = opts[:redis_url]
         iopts[:redis_db] = opts[:redis_db]
         iopts[:workers] = opts[:workers]
-        iopts[:global_executionhandlers] = opts[:global_executionhandlers]
-        iopts[:executionhandlers] = opts[:executionhandlers]
         iopts[:executionhandler] = hw
+        if attributes.has_key?('remote')
+          uri = URI::parse(attributes['remote'])
+          iopts[:executionhandlers] = File.join(uri.path,File.basename(opts[:executionhandlers]))
+        else
+          iopts[:executionhandlers] = opts[:executionhandlers]
+          iopts[:global_executionhandlers] = opts[:global_executionhandlers]
+        end
 
         File.open(File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_OPTS)),'w') do |f|
           YAML::dump(iopts,f)
@@ -56,10 +65,14 @@ module CPEE
         template = ERB.new(File.read(ExecutionHandler::Ruby::BACKEND_TEMPLATE), trim_mode: '-')
         res = template.result_with_hash(dsl: dsl, dataelements: dataelements, endpoints: endpoints, positions: positions)
         File.write(File.join(opts[:instances],id.to_s,ExecutionHandler::Ruby::BACKEND_INSTANCE),res)
-        # if attributes['remote']
-        #   ### scp instance files to the remote server under run (under instance id)
-        #   ### touch local .remote with connection details
-        # end
+        if attributes.has_key?('remote')
+          uri = URI::parse(attributes['remote'])
+          Net::SSH.start(uri.host,uri.user,:keys => [ opts[:ssh_key] ] ) do |ssh|
+            ssh.exec!("rm -rf #{File.join(uri.path,id.to_s,'*')}")
+            ssh.scp.upload!(File.join(opts[:instances],id.to_s),uri.path,:recursive=>true)
+          end
+          File.write(File.join(opts[:instances],id.to_s,'.remote'),attributes['remote'])
+        end
       end
 
       def self::run(id,opts)

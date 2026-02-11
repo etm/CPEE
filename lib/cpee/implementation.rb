@@ -24,6 +24,7 @@ require_relative 'statemachine'
 require_relative 'implementation_properties'
 require_relative 'implementation_notifications'
 require_relative 'implementation_callbacks'
+require_relative 'constants'
 
 module CPEE
 
@@ -93,6 +94,9 @@ module CPEE
     opts[:libs_preload]               ||= ['weel', 'json', 'redis', 'securerandom', 'riddl/client', 'cpee/value_helper', 'cpee/attributes_helper', 'cpee/message', 'cpee/redis', 'cpee/persistence', 'yaml', 'charlock_holmes', 'psych', 'xml/smart', 'ostruct', 'bigdecimal', 'mimemagic', 'cpee-eval-ruby/translation', 'get_process_mem']
     opts[:libs_preloader]             ||= '~/bin/by-server'
     opts[:libs_preloaderrun]          ||= '~/bin/by'
+
+    ### for remote deployment (attribute remote)
+    opts[:ssh_key]                    ||= '~/.ssh/dist.key'
 
     CPEE::redis_connect opts, 'Server Main'
 

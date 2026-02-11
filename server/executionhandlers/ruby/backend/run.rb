@@ -1,22 +1,18 @@
+require 'cpee/constants'
 require 'yaml'
 opts = YAML::load_file(File.join(__dir__,'opts.yaml'))
 opts[:pidf] = __FILE__ + '.pid'
 opts[:pid] = Process.pid
 
-global_controller = File.join(opts[:global_executionhandlers],opts[:executionhandler],'controller.rb')
-controller        = File.join(opts[:executionhandlers],       opts[:executionhandler],'controller.rb')
-if File.exist? global_controller
-  require global_controller
-elsif File.exist? controller
-  require controller
-end
-
-global_connectionhandler = File.join(opts[:global_executionhandlers],opts[:executionhandler],'connection.rb')
-connectionhandler        = File.join(opts[:executionhandlers],       opts[:executionhandler],'connection.rb')
-if File.exist? global_connectionhandler
-  require global_connectionhandler
-elsif File.exist? connectionhandler
-  require connectionhandler
+opts[:global_executionhandlers] = CPEE::GLOBAL_EXECUTIONHANDLERS unless opts[:global_executionhandlers]
+['controller.rb','connection.rb'].each do |f|
+  global_thing = File.join(opts[:global_executionhandlers],opts[:executionhandler],f)
+  thing        = File.join(opts[:executionhandlers],       opts[:executionhandler],f)
+  if File.exist? global_thing
+    require global_thing
+  elsif File.exist? thing
+    require thing
+  end
 end
 
 require_relative 'instance'
