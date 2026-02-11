@@ -76,27 +76,44 @@ module CPEE
       end
 
       def self::run(id,opts)
-        ### if File file .remote
-          ### connect to remote
-          ### run same as below
-        ### else
-          ### Determine whether we run locally or remote
+        if File.exist? File.join(opts[:instances],id.to_s,'.remote')
+          uri = URI::parse(File.read(File.join(opts[:instances],id.to_s,'.remote')))
+          exe = File.join(uri.path,id.to_s,File.basename(BACKEND_RUN))
+          Net::SSH.start(uri.host,uri.user,:keys => [ opts[:ssh_key] ] ) do |ssh|
+            ssh.exec!("ruby #{exe} >#{exe}.out 2>#{exe}.err &")
+          end
+        else
           exe = File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_RUN))
           pid = Kernel.spawn(opts[:libs_preloaderrun] + ' ' + exe , :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
           Process.detach pid
           File.write(exe + '.pid',pid)
-        ### end
+        end
       end
 
       def self::stop(id,opts) ### return: bool to tell if manually changing redis is necessary
-        exe = File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_RUN))
-        pid = File.read(exe + '.pid') rescue nil
-        if pid && (Process.kill(0, pid.to_i) rescue false)
-          Process.kill('HUP', pid.to_i) rescue nil
-          false
-        else # its not running, so clean up
-          File.unlink(exe + '.pid') rescue nil
-          true
+        if File.exist? File.join(opts[:instances],id.to_s,'.remote')
+          uri = URI::parse(File.read(File.join(opts[:instances],id.to_s,'.remote')))
+          exe = File.join(uri.path,id.to_s,File.basename(BACKEND_RUN))
+          Net::SSH.start(uri.host,uri.user,:keys => [ opts[:ssh_key] ] ) do |ssh|
+            pid = ssh.exec!("cat #{exe}.pid 2>/dev/null")
+            if pid != '' && ssh.exec!("kill -0 #{pid} >/dev/null 2>&1; echo $?").strip == '0'
+              ssh.exec!("kill -SIGHUP #{pid}")
+              false
+            else
+              ssh.exec!("rm #{exe}.pid")
+              true
+            end
+          end
+        else
+          exe = File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_RUN))
+          pid = File.read(exe + '.pid') rescue nil
+          if pid && (Process.kill(0, pid.to_i) rescue false)
+            Process.kill('HUP', pid.to_i) rescue nil
+            false
+          else # its not running, so clean up
+            File.unlink(exe + '.pid') rescue nil
+            true
+          end
         end
       end
     end
