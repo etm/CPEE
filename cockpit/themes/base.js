@@ -21,10 +21,10 @@ function WFAdaptorManifestationBase(adaptor) {
       if (opts && opts == 'clone') {
         base = base.clone();
         if (base.attr('id')) {
-          base.attr('id',self.adaptor.description.get_free_id('a'));
+          base.attr('id',self.adaptor.description.get_free_id('a','id'));
         }
         base.find('*[id]').each(function(k,v){
-          $(v).attr('id',self.adaptor.description.get_free_id('a',base));
+          $(v).attr('id',self.adaptor.description.get_free_id('a','id',base));
         });
       }
       return base;

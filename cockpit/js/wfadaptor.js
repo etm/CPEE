@@ -899,17 +899,17 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var context_eval = this.context_eval = function(what) { // {{{
     return eval(what);
   } // }}}
-  var get_free_id = this.get_free_id = function(prefix,other) { // {{{
+  var get_free_id = this.get_free_id = function(prefix,aname,other) { // {{{
     var existing = new Array();
     if (other) {
-      if ($(other).attr('id')) {
-        existing.push($(other).attr('id'));
+      if ($(other).attr(aname)) {
+        existing.push($(other).attr(aname));
       }
-      $(other).find("[id]").each(function(k,v){
-        existing.push($(v).attr('id'));
+      $(other).find("[" + aname + "]").each(function(k,v){
+        existing.push($(v).attr(aname));
       });
     }
-    $('*[id]', description).each(function(){existing.push($(this).attr('id'))});
+    $('*[' + aname + ']', description).each(function(){existing.push($(this).attr(aname))});
     var id = 1;
     while ($.inArray(prefix + id,existing) != -1) {
       id += 1;
