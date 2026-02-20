@@ -110,7 +110,18 @@
         </xsl:with-param>
       </xsl:call-template>
       <xsl:text>terminate</xsl:text>
-      <xsl:call-template name="print-newline"/>
+      <xsl:choose>
+        <xsl:when test="@sid">
+          <xsl:text> :</xsl:text>
+          <xsl:value-of select="@sid"/>
+          <xsl:call-template name="print-newline"/>
+            <xsl:foreach
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:for-each select="">
+          </xsl:for-each>
+        </xsl:otherwise>
+      <xsl:choose>
     </xsl:if>
     <xsl:if test="name()='stop'">
       <xsl:call-template name="print-space">
