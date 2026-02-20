@@ -899,7 +899,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var context_eval = this.context_eval = function(what) { // {{{
     return eval(what);
   } // }}}
-  var get_free_id = this.get_free_id = function(other) { // {{{
+  var get_free_id = this.get_free_id = function(prefix,other) { // {{{
     var existing = new Array();
     if (other) {
       if ($(other).attr('id')) {
@@ -911,10 +911,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     }
     $('*[id]', description).each(function(){existing.push($(this).attr('id'))});
     var id = 1;
-    while ($.inArray('a' + id,existing) != -1) {
+    while ($.inArray(prefix + id,existing) != -1) {
       id += 1;
     }
-    return 'a' + id;
+    return prefix + id;
   } // }}}
   var refresh = this.refresh = function(doit) {
     id_counter = {};
