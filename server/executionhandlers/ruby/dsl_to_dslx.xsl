@@ -111,14 +111,13 @@
       </xsl:call-template>
       <xsl:text>terminate</xsl:text>
       <xsl:choose>
-        <xsl:when test="@sid">
+        <xsl:when test="@eid">
           <xsl:text> :</xsl:text>
-          <xsl:value-of select="@sid"/>
+          <xsl:value-of select="@eid"/>
           <xsl:call-template name="print-newline"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:for-each select="">
-          </xsl:for-each>
+          <xsl:for-each select="@eid"></xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:if>
