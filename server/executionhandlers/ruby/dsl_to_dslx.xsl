@@ -110,6 +110,19 @@
         </xsl:with-param>
       </xsl:call-template>
       <xsl:text>terminate</xsl:text>
+      <xsl:choose>
+        <xsl:when test="@eid">
+          <xsl:text> :</xsl:text>
+          <xsl:value-of select="@eid"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text> :e</xsl:text>
+          <xsl:for-each select="ancestor-or-self::*">
+            <xsl:text>_</xsl:text>
+            <xsl:value-of select="position()"/>
+          </xsl:for-each>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='stop'">
@@ -145,6 +158,19 @@
         </xsl:with-param>
       </xsl:call-template>
       <xsl:text>escape</xsl:text>
+      <xsl:choose>
+        <xsl:when test="@eid">
+          <xsl:text> :</xsl:text>
+          <xsl:value-of select="@eid"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text> :e</xsl:text>
+          <xsl:for-each select="ancestor-or-self::*">
+            <xsl:text>_</xsl:text>
+            <xsl:value-of select="position()"/>
+          </xsl:for-each>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='parallel'">
@@ -155,8 +181,21 @@
         </xsl:with-param>
       </xsl:call-template>
       <xsl:text>parallel</xsl:text>
+      <xsl:choose>
+        <xsl:when test="@eid">
+          <xsl:text> :</xsl:text>
+          <xsl:value-of select="@eid"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text> :e</xsl:text>
+          <xsl:for-each select="ancestor-or-self::*">
+            <xsl:text>_</xsl:text>
+            <xsl:value-of select="position()"/>
+          </xsl:for-each>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:if test="@wait">
-        <xsl:text> :wait =&gt; </xsl:text>
+        <xsl:text>, :wait =&gt; </xsl:text>
         <xsl:value-of select="@wait"/>
         <xsl:if test="@cancel">
           <xsl:text>, :cancel =&gt; :</xsl:text>
@@ -186,16 +225,29 @@
           <xsl:value-of select="$myspace+$myspacemultiplier"/>
         </xsl:with-param>
       </xsl:call-template>
-      <xsl:text>loop </xsl:text>
+      <xsl:text>loop</xsl:text>
+      <xsl:choose>
+        <xsl:when test="@eid">
+          <xsl:text> :</xsl:text>
+          <xsl:value-of select="@eid"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text> :e</xsl:text>
+          <xsl:for-each select="ancestor-or-self::*">
+            <xsl:text>_</xsl:text>
+            <xsl:value-of select="position()"/>
+          </xsl:for-each>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:if test="@mode='pre_test'">
         <xsl:choose>
           <xsl:when test="@language='application/x-ruby'">
-            <xsl:text>pre_test{</xsl:text>
+            <xsl:text>, pre_test{</xsl:text>
             <xsl:value-of select="@condition"/>
             <xsl:text>} </xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>pre_test("</xsl:text>
+            <xsl:text>, pre_test("</xsl:text>
             <xsl:value-of select="str:replace(str:replace(@condition,'\','\\'),'&quot;','\&quot;')"/>
             <xsl:text>")</xsl:text>
           </xsl:otherwise>
@@ -204,12 +256,12 @@
       <xsl:if test="@mode='post_test'">
         <xsl:choose>
           <xsl:when test="@language='application/x-ruby'">
-            <xsl:text>post_test{</xsl:text>
+            <xsl:text>, post_test{</xsl:text>
             <xsl:value-of select="@condition"/>
             <xsl:text>} </xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>post_test("</xsl:text>
+            <xsl:text>, post_test("</xsl:text>
             <xsl:value-of select="str:replace(str:replace(@condition,'\','\\'),'&quot;','\&quot;')"/>
             <xsl:text>")</xsl:text>
           </xsl:otherwise>
@@ -306,13 +358,26 @@
           <xsl:value-of select="$myspace+$myspacemultiplier"/>
         </xsl:with-param>
       </xsl:call-template>
-      <xsl:text>choose </xsl:text>
+      <xsl:text>choose</xsl:text>
       <xsl:choose>
-        <xsl:when test="@mode='exclusive'">
-          <xsl:text>:exclusive</xsl:text>
+        <xsl:when test="@eid">
+          <xsl:text> :</xsl:text>
+          <xsl:value-of select="@eid"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:text>:inclusive</xsl:text>
+          <xsl:text> :e</xsl:text>
+          <xsl:for-each select="ancestor-or-self::*">
+            <xsl:text>_</xsl:text>
+            <xsl:value-of select="position()"/>
+          </xsl:for-each>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose>
+        <xsl:when test="@mode='exclusive'">
+          <xsl:text>, :exclusive</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>, :inclusive</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
       <xsl:text> do</xsl:text>
@@ -346,7 +411,21 @@
           <xsl:value-of select="$myspace+$myspacemultiplier"/>
         </xsl:with-param>
       </xsl:call-template>
-      <xsl:text>critical :</xsl:text>
+      <xsl:text>critical</xsl:text>
+      <xsl:choose>
+        <xsl:when test="@eid">
+          <xsl:text> :</xsl:text>
+          <xsl:value-of select="@eid"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text> :e</xsl:text>
+          <xsl:for-each select="ancestor-or-self::*">
+            <xsl:text>_</xsl:text>
+            <xsl:value-of select="position()"/>
+          </xsl:for-each>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:text>, :</xsl:text>
       <xsl:value-of select="@sid"/>
       <xsl:text> do</xsl:text>
       <xsl:call-template name="print-newline"/>
@@ -373,15 +452,28 @@
         <xsl:value-of select="$myspace+$myspacemultiplier"/>
       </xsl:with-param>
     </xsl:call-template>
-    <xsl:text>alternative </xsl:text>
+    <xsl:text>alternative</xsl:text>
+    <xsl:choose>
+      <xsl:when test="@eid">
+        <xsl:text> :</xsl:text>
+        <xsl:value-of select="@eid"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text> :e</xsl:text>
+        <xsl:for-each select="ancestor-or-self::*">
+          <xsl:text>_</xsl:text>
+          <xsl:value-of select="position()"/>
+        </xsl:for-each>
+      </xsl:otherwise>
+    </xsl:choose>
     <xsl:choose>
       <xsl:when test="@language='application/x-ruby'">
-        <xsl:text>test{</xsl:text>
+        <xsl:text>, test{</xsl:text>
         <xsl:value-of select="@condition"/>
         <xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text>test("</xsl:text>
+        <xsl:text>, test("</xsl:text>
         <xsl:value-of select="str:replace(str:replace(@condition,'\','\\'),'&quot;','\&quot;')"/>
         <xsl:text>")</xsl:text>
       </xsl:otherwise>
@@ -418,7 +510,20 @@
           <xsl:value-of select="$myspace+$myspacemultiplier"/>
         </xsl:with-param>
       </xsl:call-template>
-      <xsl:text>otherwise </xsl:text>
+      <xsl:text>otherwise</xsl:text>
+      <xsl:choose>
+        <xsl:when test="@eid">
+          <xsl:text> :</xsl:text>
+          <xsl:value-of select="@eid"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text> :e</xsl:text>
+          <xsl:for-each select="ancestor-or-self::*">
+            <xsl:text>_</xsl:text>
+            <xsl:value-of select="position()"/>
+          </xsl:for-each>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:for-each select="@*[not(name()='language' or name()='condition' or name()='svg-label')]">
         <xsl:if test="position() &gt;1">, </xsl:if>
         <xsl:text>:</xsl:text>
@@ -452,7 +557,21 @@
         <xsl:value-of select="$myspace+$myspacemultiplier"/>
       </xsl:with-param>
     </xsl:call-template>
-    <xsl:text>parallel_branch do |local|</xsl:text>
+    <xsl:text>parallel_branch</xsl:text>
+    <xsl:choose>
+      <xsl:when test="@eid">
+        <xsl:text> :</xsl:text>
+        <xsl:value-of select="@eid"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text> :e</xsl:text>
+        <xsl:for-each select="ancestor-or-self::*">
+          <xsl:text>_</xsl:text>
+          <xsl:value-of select="position()"/>
+        </xsl:for-each>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text> do |local|</xsl:text>
     <xsl:call-template name="print-newline"/>
     <xsl:apply-templates>
       <xsl:with-param name="myspace">
@@ -494,7 +613,6 @@
     <xsl:text>:</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text> =&gt; </xsl:text>
-
     <xsl:choose>
       <xsl:when test="count(*) &gt; 0 and name()='arguments'">
         <xsl:text>[</xsl:text>
