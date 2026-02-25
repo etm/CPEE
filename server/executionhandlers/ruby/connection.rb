@@ -60,7 +60,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end # }}}
   def self::inform_activity_minimal(arguments,what,uuid,label,position) # {{{
     controller = arguments[0]
-    controller.notify("activity/#{what}", :ecid => Thread.current.__id__, :'activity-uuid' => uuid, :label => label, :activity => position)
+    controller.notify("activity/#{what}", :'activity-uuid' => uuid, :label => label, :activity => position)
   end # }}}
 
   def initialize(arguments,position=nil,continue=nil) # {{{
@@ -201,10 +201,10 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         callback result, headers
       elsif headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.empty?
         if headers['CPEE_INSTANTIATION']
-          @controller.notify("task/instantiation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']))
+          @controller.notify("task/instantiation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']))
         end
         if headers['CPEE_EVENT']
-          @controller.notify("task/#{headers['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint)
+          @controller.notify("task/#{headers['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint)
         end
         # do nothing, later on things will happend
       else
@@ -217,8 +217,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
     @anno = parameters.delete(:annotations) rescue nil
-    @controller.notify("activity/calling", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
-    @controller.notify("activity/annotation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => @anno)
+    @controller.notify("activity/calling", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
+    @controller.notify("activity/annotation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => @anno)
     if passthrough.to_s.empty?
       proto_curl parameters
     else
@@ -229,7 +229,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def activity_manipulate_handle(parameters) #{{{
     @label = parameters[:label]
     @anno = parameters.delete(:annotations) rescue nil
-    @controller.notify("activity/annotation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => @anno)
+    @controller.notify("activity/annotation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => @anno)
   end #}}}
 
   def activity_stop # {{{
@@ -250,17 +250,17 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end #}}}
 
   def inform_activity_done # {{{
-    @controller.notify("activity/done", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
+    @controller.notify("activity/done", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
   end # }}}
   def inform_activity_manipulate # {{{
-    @controller.notify("activity/manipulating", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
+    @controller.notify("activity/manipulating", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position)
   end # }}}
   def inform_activity_failed(err) # {{{
-    @controller.notify("activity/failed", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :message => err.backtrace[0].match(/(.*?):(\d+):\s(.*)/)[3], :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
+    @controller.notify("activity/failed", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :message => err.backtrace[0].match(/(.*?):(\d+):\s(.*)/)[3], :line => err.backtrace[0].match(/(.*?):(\d+):/)[2], :where => err.backtrace[0].match(/(.*?):(\d+):/)[1])
   end # }}}
   def inform_manipulate_change(status,changed_dataelements,changed_endpoints,dataelements,endpoints) # {{{
     unless status.nil?
-      @controller.notify("status/change", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :data => { :id => status.id, :message => status.message } )
+      @controller.notify("status/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :data => { :id => status.id, :message => status.message } )
     end
     unless changed_dataelements.nil? || changed_dataelements.empty?
       de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = CPEE::EvalRuby::Translation::detect_encoding(v); (enc == 'OTHER' ? v : (v.encode('UTF-8',enc) rescue CPEE::EvalRuby::Translation::convert_to_base64(v))) }
@@ -286,19 +286,19 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       nil
     end
 
-    @controller.notify("activity/receiving", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
+    @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
 
     @guard_files += result
     @guard_files += ret
 
     if options['CPEE_INSTANTIATION']
-      @controller.notify("task/instantiation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(options['CPEE_INSTANTIATION']))
+      @controller.notify("task/instantiation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(options['CPEE_INSTANTIATION']))
     end
     if options['CPEE_EVENT']
-      @controller.notify("task/#{options['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
+      @controller.notify("task/#{options['CPEE_EVENT'].gsub(/[^\w_-]/,'')}", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
     end
     if options['CPEE_STATUS']
-      @controller.notify("activity/status", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_STATUS'])
+      @controller.notify("activity/status", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :status => options['CPEE_STATUS'])
     end
 
     if options['CPEE_STATUS'] || options['CPEE_EVENT']
@@ -404,7 +404,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
     params
   end #}}}
-  def test_condition(dataelements,endpoints,local,additional,code,args={}) #{{{
+  def test_condition(eid,dataelements,endpoints,local,additional,code,args={}) #{{{
     send = []
     send.push Riddl::Parameter::Simple::new('code',code)
     send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
@@ -421,8 +421,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     recv = 'false' unless recv
     recv = (recv == 'false' || recv == 'null' || recv == 'nil' || recv == false ? false : true)
 
-    @controller.notify("gateway/decide", :ecid => Thread.current.__id__, :instance_uuid => @controller.uuid, :code => code, :condition => recv)
-    @controller.notify("gateway/annotation", :ecid => Thread.current.__id__, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => {})
+    @controller.notify("gateway/decide", :eid => eid, :instance_uuid => @controller.uuid, :code => code, :condition => recv)
+    @controller.notify("gateway/annotation", :eid => eid, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => {})
     recv
   end #}}}
   def manipulate(readonly,lock,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil) #{{{
@@ -461,13 +461,13 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
   end #}}}
 
-  def split_branches(id, branches = []) # factual, so for inclusive or [[a],[b],[c,d,e]] {{{
-    payload = { :instance_uuid => @controller.uuid, :ecid => id.to_s }
+  def split_branches(eid, branches = []) # factual, so for inclusive or [[a],[b],[c,d,e]] {{{
+    payload = { :instance_uuid => @controller.uuid, :eid => eid.to_s }
     payload[:branches] = branches.length if branches.length > 0
     @controller.notify("gateway/split", payload )
   end #}}}
-  def join_branches(id, branches = []) # factual, so for inclusive or [[a],[b],[c,d,e]] {{{
-    payload = { :instance_uuid => @controller.uuid, :ecid => id.to_s }
+  def join_branches(eid, branches = []) # factual, so for inclusive or [[a],[b],[c,d,e]] {{{
+    payload = { :instance_uuid => @controller.uuid, :eid => eid.to_s }
     payload[:branches] = branches if branches.length > 0
     payload[:branches_length] = branches.length if branches.length > 0
     @controller.notify("gateway/join", payload )
