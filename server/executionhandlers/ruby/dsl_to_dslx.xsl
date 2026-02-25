@@ -110,16 +110,7 @@
         </xsl:with-param>
       </xsl:call-template>
       <xsl:text>terminate</xsl:text>
-      <xsl:choose>
-        <xsl:when test="@eid">
-          <xsl:text> :</xsl:text>
-          <xsl:value-of select="@eid"/>
-          <xsl:call-template name="print-newline"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:for-each select="@eid"></xsl:for-each>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='stop'">
       <xsl:call-template name="print-space">
@@ -224,7 +215,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
-      <xsl:for-each select="@*[not(name()='language' or (local-name()='alt_id' and namespace-uri()='http://cpee.org/ns/annotation/1.0') or name()='mode' or name()='condition' or name()='svg-label')]">
+      <xsl:for-each select="@*[not(name()='language' or name()='mode' or (local-name()='alt_id' and namespace-uri()='http://cpee.org/ns/annotation/1.0') or name()='condition' or name()='svg-label')]">
         <xsl:text>, :</xsl:text>
         <xsl:value-of select="name(.)"/>
         <xsl:text> => "</xsl:text>
@@ -477,21 +468,7 @@
     <xsl:text>end</xsl:text>
     <xsl:call-template name="print-newline"/>
   </xsl:template>
-  <xsl:template name="genPath">
-    <xsl:param name="prevPath"/>
-    <xsl:variable name="currPath" select="concat('/',name(),'[',
-      count(preceding-sibling::*[name() = name(current())])+1,']',$prevPath)"/>
-    <xsl:for-each select="parent::*">
-      <xsl:call-template name="genPath">
-        <xsl:with-param name="prevPath" select="$currPath"/>
-      </xsl:call-template>
-    </xsl:for-each>
-    <xsl:if test="not(parent::*)">
-      <xsl:value-of select="$currPath"/>
-    </xsl:if>
-  </xsl:template>
   <xsl:template match="d:parameters">
-    <!--xsl:text>:path =&gt; "</xsl:text><xsl:call-template name="genPath"/><xsl:text>", </xsl:text-->
     <xsl:apply-templates select="d:label" mode="parameter"/>
     <xsl:apply-templates select="d:*[not(name()='label') and not(name()='color')]" mode="parameter"/>
     <xsl:if test="count(*) &gt; 0">, </xsl:if>
