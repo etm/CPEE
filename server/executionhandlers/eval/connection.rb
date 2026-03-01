@@ -329,6 +329,24 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     GC.start
   end #}}}
 
+  def argument_transform_value(obj, struct)
+    return nil unless obj.is_a?(Array) || obj.is_a?(Hash) || obj.is_a?(WEEL::ProcString)
+    case obj
+      when Hash
+        obj.each { |k, v| ret = argument_transform_value(v, struct); obj[k] = ret unless ret.nil? }
+        nil
+      when Array
+        obj.each_with_index { |v,i| ret = argument_transform_value(v, struct); obj[i] = ret unless ret.nil?  }
+        nil
+      when WEEL::ProcString
+        argument_eval obj.code, struct
+    end
+  end
+
+  def argument_eval(__code,__struct)
+    __struct.instance_eval __code, 'Parameter', 1
+  end
+
   def prepare(__lock,__dataelements,__endpoints,__status,__local,__additional,__code,__exec_endpoints,__exec_parameters) #{{{
     __struct = if __code
       manipulate(true,__lock,__dataelements,__endpoints,__status,__local,__additional,__code,'Parameter')
@@ -345,7 +363,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     __params[:arguments]&.map! do |__ele|
       __tmp = __ele.dup
       if __tmp.value.is_a?(WEEL::ProcString)
-        __tmp.value = __struct.instance_eval __tmp.value.code, 'Parameter', 1
+        __tmp.value = argument_eval(__tmp.value.code, __struct)
+      elsif __tmp.value.is_a?(Array) || __tmp.value.is_a?(Hash)
+        argument_transform_value __tmp.value, __struct
       end
       __tmp
     end
