@@ -119,7 +119,7 @@
           <xsl:text> :e</xsl:text>
           <xsl:for-each select="ancestor-or-self::*">
             <xsl:text>_</xsl:text>
-            <xsl:value-of select="position()"/>
+            <xsl:value-of select="count(preceding-sibling::*)+1"/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -167,7 +167,7 @@
           <xsl:text> :e</xsl:text>
           <xsl:for-each select="ancestor-or-self::*">
             <xsl:text>_</xsl:text>
-            <xsl:value-of select="position()"/>
+            <xsl:value-of select="count(preceding-sibling::*)+1"/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -190,7 +190,7 @@
           <xsl:text> :e</xsl:text>
           <xsl:for-each select="ancestor-or-self::*">
             <xsl:text>_</xsl:text>
-            <xsl:value-of select="position()"/>
+            <xsl:value-of select="count(preceding-sibling::*)+1"/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -235,7 +235,7 @@
           <xsl:text> :e</xsl:text>
           <xsl:for-each select="ancestor-or-self::*">
             <xsl:text>_</xsl:text>
-            <xsl:value-of select="position()"/>
+            <xsl:value-of select="count(preceding-sibling::*)+1"/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -368,7 +368,7 @@
           <xsl:text> :e</xsl:text>
           <xsl:for-each select="ancestor-or-self::*">
             <xsl:text>_</xsl:text>
-            <xsl:value-of select="position()"/>
+            <xsl:value-of select="count(preceding-sibling::*)+1"/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -421,7 +421,7 @@
           <xsl:text> :e</xsl:text>
           <xsl:for-each select="ancestor-or-self::*">
             <xsl:text>_</xsl:text>
-            <xsl:value-of select="position()"/>
+            <xsl:value-of select="count(preceding-sibling::*)+1"/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -462,7 +462,7 @@
         <xsl:text> :e</xsl:text>
         <xsl:for-each select="ancestor-or-self::*">
           <xsl:text>_</xsl:text>
-          <xsl:value-of select="position()"/>
+          <xsl:value-of select="count(preceding-sibling::*)+1"/>
         </xsl:for-each>
       </xsl:otherwise>
     </xsl:choose>
@@ -520,7 +520,7 @@
           <xsl:text> :e</xsl:text>
           <xsl:for-each select="ancestor-or-self::*">
             <xsl:text>_</xsl:text>
-            <xsl:value-of select="position()"/>
+            <xsl:value-of select="count(preceding-sibling::*)+1"/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -567,7 +567,7 @@
         <xsl:text> :e</xsl:text>
         <xsl:for-each select="ancestor-or-self::*">
           <xsl:text>_</xsl:text>
-          <xsl:value-of select="position()"/>
+          <xsl:value-of select="count(preceding-sibling::*)+1"/>
         </xsl:for-each>
       </xsl:otherwise>
     </xsl:choose>

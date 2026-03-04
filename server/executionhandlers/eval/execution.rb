@@ -12,6 +12,9 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
+require 'net/ssh'
+require 'net/scp'
+
 module CPEE
 
   module ExecutionHandler
