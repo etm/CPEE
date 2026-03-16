@@ -11,13 +11,13 @@
     <costs>0</costs>
   </dataelements>
   <endpoints>
-    <bookAir>http://gruppe.wst.univie.ac.at/~mangler/services/airline.php</bookAir>
+    <bookAir>https://cpee.org/services/airline.php</bookAir>
     <user>https-post://cpee.org/services/timeout-user.php</user>
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
     <timeout>https://cpee.org/services/timeout.php</timeout>
-    <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
+    <bookHotel>https://cpee.org/services/hotel.php</bookHotel>
     <subprocess>https://cpee.org/flow/start/url/</subprocess>
-    <approve>http://gruppe.wst.univie.ac.at/~mangler/services/approval.php</approve>
+    <approve>https://cpee.org//services/approval.php</approve>
     <send>https-post://cpee.org/ing/correlators/message/send/</send>
     <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
   </endpoints>
