@@ -2,13 +2,13 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <dataelements>
+    <airline>Aeroflot</airline>
     <persons>3</persons>
     <card>Visa_12345</card>
-    <airline/>
+    <costs>565.0</costs>
     <hotels>[]</hotels>
     <from>Vienna</from>
     <to>Prague</to>
-    <costs>0</costs>
   </dataelements>
   <endpoints>
     <bookAir>https://cpee.org/services/airline.php</bookAir>
@@ -138,7 +138,17 @@ data.costs += result.value('costs').to_f</finalize>
               </documentation>
             </call>
           </parallel_branch>
-          <manipulate id="a3">data.persons -= 1</manipulate>
+          <manipulate id="a3" label="">
+            <code>data.persons -= 1</code>
+            <annotations>
+              <_logging_behavior>
+                <_exclude/>
+              </_logging_behavior>
+              <_context_data_analysis>
+                <probes/>
+              </_context_data_analysis>
+            </annotations>
+          </manipulate>
         </loop>
       </parallel>
       <choose mode="exclusive">
