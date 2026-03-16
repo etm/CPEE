@@ -1350,8 +1350,8 @@ function WFAdaptorManifestationBase(adaptor) {
             $('call > code > prepare',n).each(function(j,m){
               item += m.textContent + '\n';
             });
-            if (n.nodeName == 'manipulate') { // css selector can not directly access manipulate
-              item += n.textContent + '\n';
+            $('manipulate > code ',n).each(function(j,m){
+              item += m.textContent + '\n';
             }
             $('call > parameters > arguments *',n).each(function(j,m){
               let x = m.textContent;
