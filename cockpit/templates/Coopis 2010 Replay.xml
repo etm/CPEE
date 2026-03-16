@@ -2,22 +2,22 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <dataelements>
-    <airline>Aeroflot</airline>
     <persons>3</persons>
     <card>Visa_12345</card>
-    <costs>565.0</costs>
+    <airline/>
     <hotels>[]</hotels>
     <from>Vienna</from>
     <to>Prague</to>
+    <costs>0</costs>
   </dataelements>
   <endpoints>
-    <bookAir>https://cpee.org/services/airline.php</bookAir>
+    <bookAir>http://gruppe.wst.univie.ac.at/~mangler/services/airline.php</bookAir>
     <user>https-post://cpee.org/services/timeout-user.php</user>
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
     <timeout>https://cpee.org/services/timeout.php</timeout>
-    <bookHotel>https://cpee.org/services/hotel.php</bookHotel>
+    <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
     <subprocess>https://cpee.org/flow/start/url/</subprocess>
-    <approve>https://cpee.org//services/approval.php</approve>
+    <approve>http://gruppe.wst.univie.ac.at/~mangler/services/approval.php</approve>
     <send>https-post://cpee.org/ing/correlators/message/send/</send>
     <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
   </endpoints>
@@ -26,13 +26,16 @@
     <modeltype>CPEE</modeltype>
     <theme>extended</theme>
     <guarded_id/>
-    <info>Coopis 2010</info>
+    <info>Coopis 2010 Replay</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <design_stage>development</design_stage>
-    <design_dir>Templates.dir</design_dir>
-    <model_uuid>a1cbb855-90e3-4d8c-b44b-d3ba7bff9f4e</model_uuid>
+    <design_dir>Templates.dir/</design_dir>
+    <model_uuid>8f79b49f-2747-41c1-b278-195816951bbf</model_uuid>
     <model_version/>
+    <replay>https://cpee.org/replay/</replay>
+    <replay_target>https://cpee.org/replay-data/coopis/1274c1de-286e-4d73-9375-30b363d280fa.xes.yaml</replay_target>
+    <replay_instantiate>https://cpee.org/flow/start/url/</replay_instantiate>
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">

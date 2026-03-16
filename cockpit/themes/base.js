@@ -1350,9 +1350,9 @@ function WFAdaptorManifestationBase(adaptor) {
             $('call > code > prepare',n).each(function(j,m){
               item += m.textContent + '\n';
             });
-            $('manipulate > code ',n).each(function(j,m){
+            $('manipulate > code',n).each(function(j,m){
               item += m.textContent + '\n';
-            }
+            });
             $('call > parameters > arguments *',n).each(function(j,m){
               let x = m.textContent;
               if (x.charAt(0) == '!') { item += x + '\n'; }
