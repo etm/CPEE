@@ -441,11 +441,15 @@ function monitor_instance(cin,rep,load,exec) {// {{{
   });
 }// }}}
 
+function translate_endpoint(ep) {
+  return ep.replace(/\{[^\/\}]+\}/,'*');
+}
+
 function get_resource(base, key, loc, cache) {
   cache[key] = {};
   let deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
   $.ajax({
-    url: base + 'endpoints/' + encodeURIComponent(loc) + "/symbol.svg",
+    url: base + 'endpoints/' + encodeURIComponent(translate_endpoint(loc)) + "/symbol.svg",
     success: function(res) {
       cache[key]['symbol'] = res;
       deferreds[0].resolve(true);
@@ -453,7 +457,7 @@ function get_resource(base, key, loc, cache) {
     error: deferreds[0].resolve
   })
   $.ajax({
-    url: base + 'endpoints/' + encodeURIComponent(loc) + "/schema.rng",
+    url: base + 'endpoints/' + encodeURIComponent(translate_endpoint(loc)) + "/schema.rng",
     success: function(res) {
       cache[key]['schema'] = res;
       deferreds[1].resolve(true);
@@ -461,7 +465,7 @@ function get_resource(base, key, loc, cache) {
     error: deferreds[1].resolve
   })
   $.ajax({
-    url: base + 'endpoints/' + encodeURIComponent(loc) + "/properties.json",
+    url: base + 'endpoints/' + encodeURIComponent(translate_endpoint(loc)) + "/properties.json",
     success: function(res) {
       cache[key]['properties'] = res;
       deferreds[2].resolve(true);
@@ -510,7 +514,7 @@ function monitor_instance_values(type,vals) {// {{{
             let def = new $.Deferred();
             deferreds.push(def);
             $.ajax({
-              url: rep + 'endpoints/' + encodeURIComponent($(v).text()),
+              url: rep + 'endpoints/' + encodeURIComponent(translate_endpoint($(v).text())),
               success: () => {
                 tmp[v.tagName] = {};
                 $.when.apply($, get_resource(rep,v.tagName,$(v).text(),tmp)).then(function(x) {
@@ -527,10 +531,10 @@ function monitor_instance_values(type,vals) {// {{{
               let defr = new $.Deferred();
               deferreds.push(defr);
               $.ajax({
-                url: rep + 'endpoints/' + encodeURIComponent(encodeURIComponent($(v).text())),
+                url: rep + 'endpoints/' + encodeURIComponent(encodeURIComponent(translate_endpoint($(v).text()))),
                 success: () => {
                   tmp[v.tagName] = {};
-                  $.when.apply($, get_resource(rep,v.tagName,encodeURIComponent($(v).text()),tmp)).then(function(x) {
+                  $.when.apply($, get_resource(rep,v.tagName,encodeURIComponent(translate_endpoint($(v).text())),tmp)).then(function(x) {
                     save['endpoints_cache'] = tmp;
                     def.resolve();
                     // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
