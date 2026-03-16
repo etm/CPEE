@@ -129,6 +129,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     begin
       tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
       type = $2 || parameters[:method] || 'post'
+      tendpoint.gsub!(/{([^\/\}]+)}/,'\\1')
 
       client = Riddl::Client.new(tendpoint)
 
