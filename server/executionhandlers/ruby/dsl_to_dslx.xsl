@@ -52,7 +52,7 @@
       <xsl:text>, parameters: { </xsl:text>
       <xsl:apply-templates select="d:parameters"/>
       <xsl:text> }</xsl:text>
-      <xsl:if test="d:code/d:signal[text()='on']">
+      <xsl:if test="d:code/d:signal[text()='true']">
         <xsl:text>, signal: true</xsl:text>
       </xsl:if>
       <xsl:if test="(d:finalize or d:code/d:finalize) and (d:finalize/text() or d:code/d:finalize/text())">
