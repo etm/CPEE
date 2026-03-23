@@ -22,11 +22,13 @@
     <event>manipulating</event>
     <event>status</event>
     <event>done</event>
+    <event>annotation</event>
     <vote>syncing_before</vote>
     <vote>syncing_after</vote>
   </topic>
   <topic id='gateway'>
     <event>decide</event>
+    <event>annotation</event>
     <event>split</event>
     <event>join</event>
   </topic>
