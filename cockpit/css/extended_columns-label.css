@@ -36,5 +36,5 @@ svg.displaylabel text.label {
   fill: var(--wfadaptor-base);
   fill-opacity:1;
   stroke:none;
-  font-family: adawaita-sans;
+  font-family: adwaita-sans;
 }

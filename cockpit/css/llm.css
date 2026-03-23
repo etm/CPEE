@@ -38,7 +38,7 @@
   overflow-y: scroll;
 }
 #prompt:empty:before {
-  font-family: adawaita-sans;
+  font-family: adwaita-sans;
   white-space: normal;
   content: attr(placeholder);
   display: block;

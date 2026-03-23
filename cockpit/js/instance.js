@@ -1035,12 +1035,20 @@ function save_svgfile() {// {{{
   });
   gc.find('.selected').removeClass('selected');
   var varreps = {};
+  var ffamily = '';
   $(window.document.styleSheets).each(function(i,x){
     if (x && x.href && x.ownerNode.attributes.getNamedItem('data-include-export')) {
       $(x.cssRules).each(function(j,y){
         if (y.selectorText == ":root") {
           $(y.style).each(function(k,z) {
             varreps['var\\(' + z + '\\)'] = getComputedStyle(document.documentElement).getPropertyValue(z).toString();
+          });
+        }
+        if (y.selectorText == "svg") {
+          $(y.style).each(function(k,z) {
+            if (z == 'font-family') {
+              ffamily = getComputedStyle($('#graphgrid > svg:not(#graphcanvas)')[0]).getPropertyValue(z).toString();
+            }
           });
         }
         var loc = $(gc).find(y.selectorText.replace(/svg /g,''));
@@ -1053,8 +1061,13 @@ function save_svgfile() {// {{{
           $(loco).attr('style',cst + sty);
         });
       });
-      var loc = $(gc).find('text.super');
-      loc.attr('style',loc.attr('style') + ' display: none; ');
+      $(gc).find('text.super,g.hoverstyle,g.markstyle').each(function(k,loco){
+        $(loco).attr('style',$(loco).attr('style') + ' display: none; ');
+      });
+      ffamily = ffamily.replace(/-/,' ').split(' ').map(function(word) { return word[0].toUpperCase() + word.substr(1); }).join(' ');
+      $(gc).find('text').each(function(k,loco){
+        $(loco).attr('style',$(loco).attr('style') + ' font-family: \'' + ffamily + '\'; ');
+      });
     }
   });
   gc.attr('width',start+1);
