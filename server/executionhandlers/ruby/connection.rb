@@ -127,7 +127,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
     status = result = headers = nil
     begin
-      tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete):/,'http\\1:')
+      tendpoint = @handler_endpoint.sub(/^http(s)?-(get|put|post|delete|patch):/,'http\\1:')
       type = $2 || parameters[:method] || 'post'
       tendpoint.gsub!(/{([^\/\}]+)}/,'\\1')
 

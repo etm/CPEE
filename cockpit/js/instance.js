@@ -1047,7 +1047,7 @@ function save_svgfile() {// {{{
         if (y.selectorText == "svg") {
           $(y.style).each(function(k,z) {
             if (z == 'font-family') {
-              ffamily = getComputedStyle($('#graphgrid > svg:not(#graphcanvas)')[0]).getPropertyValue(z).toString();
+              ffamily = getComputedStyle($('#graphgrid > svg')[0]).getPropertyValue(z).toString();
             }
           });
         }
