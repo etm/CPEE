@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements>
-    <res>{"select_0":"learned in class or from book","input_0":"sadff","select_1":"used on a class project","input_1":"asdfsaf","input_2":"sadfasdf"}</res>
-  </dataelements>
+  <dataelements/>
   <endpoints>
     <frames_init>https-post://cpee.org/out/frames/{simple}/</frames_init>
     <frames_display>https-put://cpee.org/out/frames/{simple}/</frames_display>
@@ -202,71 +200,71 @@
           </code>
         </documentation>
       </call>
-      <loop mode="post_test" condition="true">
-        <call id="a5" endpoint="frames_display">
-          <parameters>
-            <label>Display Graph</label>
-            <color/>
-            <arguments>
-              <type>set</type>
-              <lx>3</lx>
-              <ly>1</ly>
-              <x_amount>2</x_amount>
-              <y_amount>7</y_amount>
-              <button/>
-              <style/>
-              <urls>
-                <urls_item>
-                  <lang>de-at</lang>
-                  <url>!"https://cpee.org/flow/graph.html?monitor=" + cpee.instance_url</url>
-                </urls_item>
-              </urls>
-              <default/>
-            </arguments>
-          </parameters>
+      <call id="a5" endpoint="frames_display">
+        <parameters>
+          <label>Display Graph</label>
+          <color/>
+          <arguments>
+            <type>set</type>
+            <lx>3</lx>
+            <ly>1</ly>
+            <x_amount>2</x_amount>
+            <y_amount>7</y_amount>
+            <button/>
+            <style/>
+            <urls>
+              <urls_item>
+                <lang>de-at</lang>
+                <url>!"https://cpee.org/flow/graph.html?monitor=" + cpee.instance_url</url>
+              </urls_item>
+            </urls>
+            <default/>
+          </arguments>
+        </parameters>
+        <code>
+          <signal>false</signal>
+          <prepare/>
+          <finalize output="result"/>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
           <code>
-            <signal>false</signal>
-            <prepare/>
-            <finalize output="result"/>
-            <update output="result"/>
-            <rescue output="result"/>
+            <description/>
           </code>
-          <annotations>
-            <_generic/>
-            <_logging_behavior>
-              <_exclude>false</_exclude>
-              <_include>false</_include>
-            </_logging_behavior>
-            <_timing>
-              <_timing_weight/>
-              <_timing_avg/>
-              <explanations/>
-            </_timing>
-            <_shifting>
-              <_shifting_type>Duration</_shifting_type>
-            </_shifting>
-            <_context_data_analysis>
-              <probes/>
-              <ips/>
-            </_context_data_analysis>
-            <report>
-              <url/>
-            </report>
-            <_notes>
-              <_notes_general/>
-            </_notes>
-          </annotations>
-          <documentation>
-            <input/>
-            <output/>
-            <implementation>
-              <description/>
-            </implementation>
-            <code>
-              <description/>
-            </code>
-          </documentation>
-        </call>
+        </documentation>
+      </call>
+      <loop mode="post_test" condition="true">
         <_probability>
           <_probability_min/>
           <_probability_max/>
@@ -344,8 +342,8 @@
               <type>wait</type>
               <lx>0</lx>
               <ly>1</ly>
-              <x_amount>5</x_amount>
-              <y_amount>9</y_amount>
+              <x_amount>3</x_amount>
+              <y_amount>7</y_amount>
               <button/>
               <style/>
               <urls>
@@ -467,7 +465,6 @@
             </code>
           </documentation>
         </call>
-        <stop id="a4"/>
       </loop>
     </description>
   </description>
