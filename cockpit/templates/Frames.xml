@@ -5,8 +5,8 @@
     <res>{"select_0":"learned in class or from book","input_0":"sadff","select_1":"used on a class project","input_1":"asdfsaf","input_2":"sadfasdf"}</res>
   </dataelements>
   <endpoints>
-    <frames_init>https-post://cpee.org/out/frames/</frames_init>
-    <frames_display>https-put://cpee.org/out/frames/</frames_display>
+    <frames_init>https-post://cpee.org/out/frames/{simple}/</frames_init>
+    <frames_display>https-put://cpee.org/out/frames/{simple}/</frames_display>
   </endpoints>
   <attributes>
     <guarded>none</guarded>
@@ -20,7 +20,6 @@
     <model_version/>
     <design_dir>Templates.dir</design_dir>
     <design_stage>development</design_stage>
-    <fid>gnd</fid>
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
@@ -38,14 +37,18 @@
           </arguments>
         </parameters>
         <code>
-          <signal/>
-          <prepare>endpoints.frames_init += attributes.fid</prepare>
+          <signal>false</signal>
+          <prepare/>
           <finalize output="result"/>
           <update output="result"/>
           <rescue output="result"/>
         </code>
         <annotations>
           <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
           <_timing>
             <_timing_weight/>
             <_timing_avg/>
@@ -93,14 +96,18 @@
           </arguments>
         </parameters>
         <code>
-          <signal/>
-          <prepare>endpoints.frames_display += attributes.fid</prepare>
+          <signal>false</signal>
+          <prepare/>
           <finalize output="result"/>
           <update output="result"/>
           <rescue output="result"/>
         </code>
         <annotations>
           <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
           <_timing>
             <_timing_weight/>
             <_timing_avg/>
@@ -153,14 +160,18 @@
           </arguments>
         </parameters>
         <code>
-          <signal/>
-          <prepare>endpoints.frames_display += attributes.fid</prepare>
+          <signal>false</signal>
+          <prepare/>
           <finalize output="result"/>
           <update output="result"/>
           <rescue output="result"/>
         </code>
         <annotations>
           <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
           <_timing>
             <_timing_weight/>
             <_timing_avg/>
@@ -213,14 +224,18 @@
           </arguments>
         </parameters>
         <code>
-          <signal/>
-          <prepare>endpoints.frames_display += attributes.fid</prepare>
+          <signal>false</signal>
+          <prepare/>
           <finalize output="result"/>
           <update output="result"/>
           <rescue output="result"/>
         </code>
         <annotations>
           <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
           <_timing>
             <_timing_weight/>
             <_timing_avg/>
@@ -279,14 +294,18 @@
             </arguments>
           </parameters>
           <code>
-            <signal/>
-            <prepare>endpoints.frames_display += attributes.fid</prepare>
+            <signal>false</signal>
+            <prepare/>
             <finalize output="result"/>
             <update output="result"/>
             <rescue output="result"/>
           </code>
           <annotations>
             <_generic/>
+            <_logging_behavior>
+              <_exclude>false</_exclude>
+              <_include>false</_include>
+            </_logging_behavior>
             <_timing>
               <_timing_weight/>
               <_timing_avg/>
@@ -347,14 +366,18 @@
             </arguments>
           </parameters>
           <code>
-            <signal/>
-            <prepare>endpoints.frames_display += attributes.fid</prepare>
+            <signal>false</signal>
+            <prepare/>
             <finalize output="result">data.res = result</finalize>
             <update output="result"/>
             <rescue output="result"/>
           </code>
           <annotations>
             <_generic/>
+            <_logging_behavior>
+              <_exclude>false</_exclude>
+              <_include>false</_include>
+            </_logging_behavior>
             <_timing>
               <_timing_weight/>
               <_timing_avg/>
@@ -402,14 +425,18 @@
             </arguments>
           </parameters>
           <code>
-            <signal/>
-            <prepare>endpoints.frames_display += attributes.fid</prepare>
+            <signal>false</signal>
+            <prepare/>
             <finalize output="result"/>
             <update output="result"/>
             <rescue output="result"/>
           </code>
           <annotations>
             <_generic/>
+            <_logging_behavior>
+              <_exclude>false</_exclude>
+              <_include>false</_include>
+            </_logging_behavior>
             <_timing>
               <_timing_weight/>
               <_timing_avg/>
