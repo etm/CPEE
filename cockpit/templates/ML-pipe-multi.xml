@@ -108,7 +108,6 @@ performance = f1_score(y_test, y_predict, average='macro')
     <info>ML-pipe-multi</info>
     <modeltype>CPEE</modeltype>
     <theme>extended</theme>
-    <organisation1>http://cpee.org/~demo/orgviz/organisation_informatik.xml</organisation1>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <design_stage>development</design_stage>

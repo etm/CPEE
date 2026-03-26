@@ -123,7 +123,16 @@ function cockpit() { //{{{
   document.addEventListener('uidash:activate_tab', function (e) {
     if (!$('#tabdetails').hasClass('inactive')) {
       if (save['graph_adaptor']) {
+        var svgid = manifestation.selected();
+        var marks = manifestation.marked();
         save['graph_adaptor'].redraw();
+        let vtarget = manifestation.adaptor.illustrator.get_node_by_svg_id(svgid);
+        if (vtarget.length > 0) { vtarget.parents('g.element[element-id]').addClass('selected'); }
+        format_instance_pos();
+        marks.forEach((svgid) => {
+          let vtarget = manifestation.adaptor.illustrator.get_node_by_svg_id(svgid);
+          if (vtarget.length > 0) { vtarget.parents('g.element[element-id]').addClass('marked'); }
+        });
       }
     }
   });

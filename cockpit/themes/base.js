@@ -309,12 +309,8 @@ function WFAdaptorManifestationBase(adaptor) {
       return;
     }
 
-    $('#graphgrid .selected').removeClass('selected');
-
     if (e && (e.ctrlKey || e.metaKey)) {
       if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
-      var tab = $('#dat_details');
-          tab.empty();
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
         var vt = vtarget.parents('g.element[element-id]');
@@ -330,6 +326,8 @@ function WFAdaptorManifestationBase(adaptor) {
     } else if (e && (e.shiftKey)) {
       positionHandling(svgid);
     } else {
+      $('#graphgrid .selected').removeClass('selected');
+
       self.adaptor.illustrator.get_elements().removeClass('marked');
       localStorage.removeItem('marked');
       localStorage.removeItem('marked_from');
