@@ -245,7 +245,6 @@ $(document).ready(function() {
     $('.resource-row[element-row=' + er + '] .resource-point').each((_,e) => {
       let pos = e.getBoundingClientRect();
       let text = $('text',e).text();
-      console.log(pos);
       show_dataflow_label(pos.x + window.scrollX + 12, pos.y + window.scrollY + 5, 60, text);
     })
   });
