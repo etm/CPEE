@@ -11,10 +11,10 @@ svg .resource-point.both {
   fill: blue;
 }
 svg line.resource-column {
-  stroke: red;
+  stroke: grey;
   stroke-opacity: 0.1;
 }
 svg line.resource-column:hover {
   stroke: red;
-  stroke-opacity: 0.2;
+  stroke-opacity: 0.1;
 }

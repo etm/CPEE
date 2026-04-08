@@ -3,7 +3,7 @@ function show_dataflow_label(x,y,deg,text) {
 
   let clone = $('svg',document.querySelector('#label').content.cloneNode(true));
   $('text',clone).text(text);
-  let n = $('body').append(clone);
+  $('body').append(clone);
   let dim = $('text',clone)[0].getBBox();
   let height = $('rect',clone).attr('height');
   let width = dim.width + dim.x;
@@ -16,10 +16,15 @@ function show_dataflow_label(x,y,deg,text) {
 
   let top = y-shift-top_y;
   if (top < 0) top = 0;
+  if (top < window.scrollY) {
+    top = window.scrollY;
+    $(clone).attr('data-eq','true');
+  }
   $(clone).css('left',x-top_x);
   $(clone).css('top',top);
 
   $(clone).attr('height',shift + shift_plus + 2);
+  $(clone).attr('width',neigh + 2);
   $(clone).attr('width',neigh + 2);
   $('g',clone).attr('transform',$('g',clone).attr('transform').replace(/%%1/, shift + 1).replace(/%%2/, deg));
   $('rect',clone).attr('width',width);
@@ -40,11 +45,23 @@ function show_dataflow_row_label(data) {
 
 function show_dataflow_row_labels() {
   $('.displaylabel').remove();
+  let top = 0;
   if (manifestation.adaptor.properties['always'] == 'true') {
     $('.resource-column',manifestation.adaptor.illustrator.svg.label_container).each((_,ele)=>{
       show_dataflow_row_label(ele);
     });
   }
+  let height = 0;
+  $('svg.displaylabel').each((_,e)=>{
+    if ($(e).attr('data-eq') == 'true') {
+      if ($(e).attr('height') > height) { height = parseFloat($(e).attr('height')); }
+    }
+  });
+  $('svg.displaylabel').each((_,e)=>{
+    if ($(e).attr('data-eq') == 'true') {
+      $(e).css('top',window.scrollY + height - parseFloat($(e).attr('height')));
+    }
+  });
 }
 
 function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
@@ -96,7 +113,7 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
               mapPoints.set(k, p);
             }
 
-            let tsvg = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-row" element-row="' + (val.row-1) + '"></g>');
+            let tsvg = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-row" element-id="' + val.element_id + '" element-row="' + (val.row-1) + '"></g>');
 
             var cx = space;
             var count = 0;
@@ -145,7 +162,7 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
               tcolumnsvgs[col.column][val.row] = tsvg;
             }
           } else {
-            tsvg = $X('<text class="label" element-id="' + val.element_id + '" x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
+            tsvg = $X('<text class="label" element-row="' + (val.row - 1) + '" element-id="' + val.element_id + '" x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
             tsvg.text(col.value);
             tcolumnsvgs[col.column][val.row] = tsvg;
           }
@@ -209,6 +226,12 @@ $(document).ready(function() {
   var clicked_label;
   $('#graphgrid').on('mouseout','svg .resource-column, svg .resource-point',(data)=>{
     if (clicked_label != current_label) {
+      let rc = $(current_label).attr('resource-column');
+      $('.resource-point[resource-column=' + rc + ']').each((_,e)=>{
+        let svgid = $(e).parent().attr('element-id');
+        manifestation.events.mouseout(svgid);
+      });
+
       show_dataflow_row_labels();
       clicked_label = undefined;
       current_label = undefined;
@@ -229,14 +252,23 @@ $(document).ready(function() {
     $('.displaylabel').remove();
     show_dataflow_row_label(data.target);
     current_label = data.target;
+
+    let rc = $(data.target).attr('resource-column');
+    $('.resource-point[resource-column=' + rc + ']').each((_,e)=>{
+      let svgid = $(e).parent().attr('element-id');
+      manifestation.events.mouseover(svgid);
+    });
   });
-  $('#graphgrid').on('mouseover','svg .resource-point',(ev)=>{
+  $('#graphgrid').on('mouseover','svg .resource-point',(data)=>{
     $('.displaylabel').remove();
-    let rc = $(ev.target).attr('resource-column');
-    let data = $('.resource-column[resource-column=' + rc + ']')[0];
-    show_dataflow_row_label(data);
-    current_label = data;
+    let rc = $(data.target).attr('resource-column');
+    let rct = $('.resource-column[resource-column=' + rc + ']')[0];
+    show_dataflow_row_label(rct);
+    let svgid = $(data.target).parent().attr('element-id');
+    manifestation.events.mouseover(svgid);
+    current_label = rct;
   });
+
   $('#graphgrid').on('mouseover','svg.labelscolumn text.label, svg.graphcolumn g.element',(ev)=>{
     $('.displaylabel').remove();
     let svgid = $(ev.currentTarget).attr('element-id');
