@@ -223,10 +223,10 @@ svg .grey {
   stroke-dasharray:none;
 }
 
-svg.labelsrow text.label {
+svg.labelscolumn text.label {
   cursor: pointer;
 }
-svg.labelsrow text.label:hover, svg.labelsrow text.label.hover {
+svg.labelscolumn text.label:hover, svg.labelscolumn text.label.hover {
   fill: var(--wfadaptor-selected-text);
 }
 

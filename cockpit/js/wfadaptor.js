@@ -26,12 +26,13 @@ var high;
 // e.g. Event fires to Adaptor to insert Element and Illustrator and Description do it
 function WfAdaptor(theme_base,doit) { // Controller {{{
 
- // public variables {{{
+  // public variables {{{
     this.illustrator;
     this.description;
     this.elements = {};
     this.theme_base = theme_base;
     this.theme_dir = theme_base.replace(/theme.js/,'');
+    this.properties = {};
   // }}}
 
   // private variables {{{

@@ -35,7 +35,16 @@ function show_dataflow_row_label(data) {
   } else {
     pos_y = pos.y;
   }
-  show_dataflow_label(pos.x + 12, pos_y, 60, text);
+  show_dataflow_label(pos.x + window.scrollX + 12, pos_y + window.scrollY , 60, text);
+}
+
+function show_dataflow_row_labels() {
+  if (manifestation.adaptor.properties['always'] == 'true') {
+    $('.displaylabel').remove();
+    $('.resource-column',manifestation.adaptor.illustrator.svg.label_container).each((_,ele)=>{
+      show_dataflow_row_label(ele);
+    });
+  }
 }
 
 function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
@@ -49,7 +58,7 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
     graphrealization.illustrator.svg.label_container.removeClass('striped');
   }
 
-  $('.labelsrow, .graphlast').remove();
+  $('.labelscolumn, .graphlast').remove();
   let tcolumns = [];
   let tcolumntype = {};
   let tcolumncount = {}
@@ -138,9 +147,6 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
           } else {
             tsvg = $X('<text class="label" element-id="' + val.element_id + '" x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
             tsvg.text(col.value);
-            tsvg.mouseover(function(ev){ manifestation.events.mouseover($(ev.currentTarget).attr('element-id')); });
-            tsvg.mouseout(function(ev){ manifestation.events.mouseout($(ev.currentTarget).attr('element-id')); });
-            tsvg.click(function(ev){ manifestation.events.click($(ev.currentTarget).attr('element-id'),ev); });
             tcolumnsvgs[col.column][val.row] = tsvg;
           }
 
@@ -157,7 +163,7 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
 
   tcolumns.forEach(h => {
     if (Object.keys(tcolumnsvgs[h]).length > 0) {
-      const svgcolumn = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" class="labelsrow"></svg>');
+      const svgcolumn = $X('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" class="labelscolumn"></svg>');
       const svgback = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
       const svgfront = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
       let xwidth = 0;
@@ -193,6 +199,8 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
     }
   });
 
+  show_dataflow_row_labels();
+
   return tcolumns.length;
 }
 
@@ -201,7 +209,7 @@ $(document).ready(function() {
   var clicked_label;
   $('#graphgrid').on('mouseout','svg .resource-column, svg .resource-point',(data)=>{
     if (clicked_label != current_label) {
-      $('.displaylabel').remove();
+      show_dataflow_row_labels();
       clicked_label = undefined;
       current_label = undefined;
     }
@@ -218,16 +226,34 @@ $(document).ready(function() {
     clicked_label = data.target;
   });
   $('#graphgrid').on('mouseover','svg .resource-column',(data)=>{
+    $('.displaylabel').remove();
     show_dataflow_row_label(data.target);
     current_label = data.target;
   });
   $('#graphgrid').on('mouseover','svg .resource-point',(ev)=>{
+    $('.displaylabel').remove();
     let rc = $(ev.target).attr('resource-column');
     let data = $('.resource-column[resource-column=' + rc + ']')[0];
     show_dataflow_row_label(data);
     current_label = data;
-    // let pos = data.target.getBoundingClientRect();
-    // let text = $('text',data.target).text();
-    // show_dataflow_label(pos.x + 12, pos.y + 5, 60, text);
+  });
+  $('#graphgrid').on('mouseover','svg.labelscolumn text.label, svg.graphcolumn g.element',(ev)=>{
+    $('.displaylabel').remove();
+    let svgid = $(ev.currentTarget).attr('element-id');
+    manifestation.events.mouseover(svgid);
+    let er = manifestation.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"][element-row]').attr('element-row');
+    $('.resource-row[element-row=' + er + '] .resource-point').each((_,e) => {
+      let pos = e.getBoundingClientRect();
+      let text = $('text',e).text();
+      console.log(pos);
+      show_dataflow_label(pos.x + window.scrollX + 12, pos.y + window.scrollY + 5, 60, text);
+    })
+  });
+  $('#graphgrid').on('mouseout','svg.labelscolumn text.label, svg.graphcolumn g.element',(ev)=>{
+    manifestation.events.mouseout($(ev.currentTarget).attr('element-id'));
+    show_dataflow_row_labels();
+  });
+  $('#graphgrid').on('click','svg.labelscolumn text.label, svg.graphcolumn g.element',(ev)=>{
+    manifestation.events.click($(ev.currentTarget).attr('element-id'),ev);
   });
 });
