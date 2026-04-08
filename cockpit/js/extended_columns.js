@@ -39,8 +39,8 @@ function show_dataflow_row_label(data) {
 }
 
 function show_dataflow_row_labels() {
+  $('.displaylabel').remove();
   if (manifestation.adaptor.properties['always'] == 'true') {
-    $('.displaylabel').remove();
     $('.resource-column',manifestation.adaptor.illustrator.svg.label_container).each((_,ele)=>{
       show_dataflow_row_label(ele);
     });
