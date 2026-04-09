@@ -1147,7 +1147,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     if(root.tagName == 'description' && illustrator.elements[root.tagName].closing_symbol) {
       pos.row++;
       max.row = pos.row;
-      draw_position(illustrator.elements['start'].closing_symbol,parent_pos,pos,prev,block,[],this,{svg: block.svg, pos: pos});
+      draw_position(illustrator.elements['start'].closing_symbol,parent_pos,pos,prev,block,[],root,{svg: block.svg, pos: pos});
     }
 
     return {'endnodes': endnodes, 'max':max, 'svg': block.svg};

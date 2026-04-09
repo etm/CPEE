@@ -4,11 +4,23 @@ svg rect.border {
 svg .resource-point.read {
   fill: green;
 }
+svg .resource-point.read text {
+  font-size: 11px;
+  fill: black;
+}
 svg .resource-point.write {
   fill: orange;
 }
+svg .resource-point.write text {
+  font-size: 11px;
+  fill: black;
+}
 svg .resource-point.both {
   fill: blue;
+}
+svg .resource-point.both text {
+  font-size: 11px;
+  fill: black;
 }
 svg line.resource-column {
   stroke: grey;
