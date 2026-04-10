@@ -40,8 +40,6 @@ function show_dataflow_row_label(data) {
   } else {
     pos_y = pos.y;
   }
-  console.log(data);
-  console.log(pos);
   show_dataflow_label(pos.x + window.scrollX + 12, pos_y + window.scrollY , 60, text);
 }
 
@@ -254,6 +252,14 @@ $(document).ready(function() {
       show_dataflow_row_labels();
       clicked_label = undefined;
       current_label = undefined;
+    }
+  });
+  $(window).scroll((data)=>{
+    if (current_label != undefined) {
+      $('.displaylabel').remove();
+      show_dataflow_row_label(current_label);
+    } else {
+      show_dataflow_row_labels();
     }
   });
   $('#graphcolumn').scroll((data)=>{
