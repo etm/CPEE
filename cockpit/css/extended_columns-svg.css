@@ -22,11 +22,11 @@ svg .resource-point.both text {
   font-size: 11px;
   fill: black;
 }
-svg line.resource-column {
-  stroke: grey;
-  stroke-opacity: 0.1;
+svg rect.resource-column {
+  fill: grey;
+  fill-opacity: 0.1;
 }
-svg line.resource-column:hover {
-  stroke: red;
-  stroke-opacity: 0.1;
+svg rect.resource-column:hover {
+  fill: red;
+  fill-opacity: 0.1;
 }

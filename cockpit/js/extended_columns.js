@@ -34,12 +34,14 @@ function show_dataflow_row_label(data) {
   let pos = data.getBoundingClientRect();
   let pos_top = $('#graphgrid').parent()[0].getBoundingClientRect();
   let pos_y;
-  let text = $('text',data).text();
+  let text = $('text.label',data).text();
   if (pos.y < (pos_top.y + 10)) {
     pos_y = pos_top.y + 10;
   } else {
     pos_y = pos.y;
   }
+  console.log(data);
+  console.log(pos);
   show_dataflow_label(pos.x + window.scrollX + 12, pos_y + window.scrollY , 60, text);
 }
 
@@ -126,23 +128,23 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
                 let inner;
 
                 if (p.AR == "Read") {
-                  inner = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point read" resource-column="' + count + '"><polygon points="' + (p.x) + ',' + pos + ' ' + (p.x + iconsize) + ',' + (pos + iconsize/2) + ' ' + (p.x + iconsize) + ',' + (pos - iconsize/2) + '"></polygon></g>');
+                  inner = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point read" resource-column="' + count + '"><polygon class="target" points="' + (p.x) + ',' + pos + ' ' + (p.x + iconsize) + ',' + (pos + iconsize/2) + ' ' + (p.x + iconsize) + ',' + (pos - iconsize/2) + '"></polygon></g>');
                   if (manifestation.adaptor.properties['iolabels'] == 'true') {
                     inner.append($X('<text xmlns="http://www.w3.org/2000/svg" x="' + (p.x + 3) + '" y="' + (pos+12) + '">r</text>'));
                   }
                   if (pos == p.y0) { firstAssignFlag = true; }
                 } else if (p.AR == "Assign") {    // Define points for a triangle pointing to the left
-                  inner = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point write" resource-column="' + count + '"><polygon points="' + (p.x + iconsize) + ',' + pos + ' ' + (p.x) + ',' + (pos + iconsize/2) + ' ' + (p.x) + ',' + (pos - iconsize/2) + '"></polygon></g>');
+                  inner = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point write" resource-column="' + count + '"><polygon class="target" points="' + (p.x + iconsize) + ',' + pos + ' ' + (p.x) + ',' + (pos + iconsize/2) + ' ' + (p.x) + ',' + (pos - iconsize/2) + '"></polygon></g>');
                   if (manifestation.adaptor.properties['iolabels'] == 'true') {
                     inner.append($X('<text xmlns="http://www.w3.org/2000/svg" x="' + (p.x) + '" y="' + (pos+12) + '">w</text>'));
                   }
                 } else if (p.AR == "AssignRead") {
-                  inner = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point both" resource-column="' + count + '"><circle cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '"></circle></g>');
+                  inner = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point both" resource-column="' + count + '"><circle class="target" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '"></circle></g>');
                   if (manifestation.adaptor.properties['iolabels'] == 'true') {
                     inner.append($X('<text xmlns="http://www.w3.org/2000/svg" x="' + (p.x-1.5) + '" y="' + (pos+13) + '">rw</text>'));
                   }
                 } else if (p.AR == "ReadAssign") {
-                  inner = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point both" resource-column="' + count + '"><circle cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '"></circle></g>');
+                  inner = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point both" resource-column="' + count + '"><circle class="target" cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '"></circle></g>');
                   if (manifestation.adaptor.properties['iolabels'] == 'true') {
                     inner.append($X('<text xmlns="http://www.w3.org/2000/svg" x="' + (p.x-1.5) + '" y="' + (pos+13) + '">rw</text>'));
                   }
@@ -154,7 +156,7 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
                   p.ymax = pos;
                 }
 
-                inner.children().first().append($X('<text xmlns="http://www.w3.org/2000/svg"></text>').text(k));
+                inner.children().first().append($X('<text class="label" xmlns="http://www.w3.org/2000/svg"></text>').text(k));
                 tsvg.append(inner);
               }
 
@@ -164,11 +166,11 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
                 if (tcolumnsvgs[col.column][1] == undefined) {
                   tcolumnsvgs[col.column][1] = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-row" element-row="' + 0 + '"></g>');
                 }
-                let i = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point write" resource-column="' + count + '"><polygon points="' + (p.x + iconsize) + ',' + firstpos + ' ' + (p.x) + ',' + (firstpos + iconsize/2) + ' ' + (p.x) + ',' + (firstpos - iconsize/2) + '"></polygon></g>');
+                let i = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point write" resource-column="' + count + '"><polygon class="target" points="' + (p.x + iconsize) + ',' + firstpos + ' ' + (p.x) + ',' + (firstpos + iconsize/2) + ' ' + (p.x) + ',' + (firstpos - iconsize/2) + '"></polygon></g>');
                 if (manifestation.adaptor.properties['iolabels'] == 'true') {
-                  i.append($X('<text xmlns="http://www.w3.org/2000/svg" x="' + (p.x-1.5) + '" y="' + (firstpos+12) + '">w</text>'));
+                  i.append($X('<text xmlns="http://www.w3.org/2000/svg" x="' + (p.x) + '" y="' + (firstpos+12) + '">w</text>'));
                 }
-                i.children().first().append($X('<text xmlns="http://www.w3.org/2000/svg"></text>').text(k));
+                i.children().first().append($X('<text class="label" xmlns="http://www.w3.org/2000/svg"></text>').text(k));
                 tcolumnsvgs[col.column][1].append(i);
               }
               cx += iconsize + space;
@@ -222,7 +224,7 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
       if (tcolumntype[h] == 'resource' || tcolumntype[h] == 'bodsod') {
         let count = 0;
         for (const [k, p] of mapPoints) {
-          svgback.append($X('<line xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x1="' + (p.x + iconsize/2) + '" y1="' + p.y0 + '" x2="' + (p.x + iconsize/2) + '" y2="' + (p.ymax + 0.01) + '" class="' + tcolumntype[h] + '-column" stroke-width="' + iconsize + '"><text>' + k + '</text></line>'));
+          svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" resource-column="' + count + '" x="' + p.x + '" y="' + p.y0 + '" width="' + iconsize + '" height="' + (p.ymax - p.y0 + 0.01) + '" class="' + tcolumntype[h] + '-column"><text class="label">' + k + '</text></rect>'));
           count += 1;
         }
       }
@@ -281,7 +283,11 @@ $(document).ready(function() {
     let tar = $(data.currentTarget);
     let rc = tar.attr('resource-column');
     let rct = $('.resource-column[resource-column=' + rc + ']')[0];
-    show_dataflow_row_label(rct);
+
+    let pos = tar.find('.target')[0].getBoundingClientRect();
+    let text = $('text.label',tar).text();
+    show_dataflow_label(pos.x + window.scrollX + 12, pos.y + window.scrollY + 5, 60, text);
+
     let svgid = tar.parent().attr('element-id');
     manifestation.events.mouseover(svgid);
     current_label = rct;
@@ -292,9 +298,9 @@ $(document).ready(function() {
     let svgid = $(ev.currentTarget).attr('element-id');
     manifestation.events.mouseover(svgid);
     let er = manifestation.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"][element-row]').attr('element-row');
-    $('.resource-row[element-row=' + er + '] .resource-point').each((_,e) => {
+    $('.resource-row[element-row=' + er + '] .resource-point .target').each((_,e) => {
       let pos = e.getBoundingClientRect();
-      let text = $('text',e).text();
+      let text = $('text.label',e).text();
       show_dataflow_label(pos.x + window.scrollX + 12, pos.y + window.scrollY + 5, 60, text);
     })
   });
