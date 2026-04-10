@@ -139,12 +139,12 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
                 } else if (p.AR == "AssignRead") {
                   inner = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point both" resource-column="' + count + '"><circle cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '"></circle></g>');
                   if (manifestation.adaptor.properties['iolabels'] == 'true') {
-                    inner.append($X('<text xmlns="http://www.w3.org/2000/svg" x="' + (p.x-1.5) + '" y="' + (pos+12) + '">rw</text>'));
+                    inner.append($X('<text xmlns="http://www.w3.org/2000/svg" x="' + (p.x-1.5) + '" y="' + (pos+13) + '">rw</text>'));
                   }
                 } else if (p.AR == "ReadAssign") {
                   inner = $X('<g xmlns="http://www.w3.org/2000/svg" class="resource-point both" resource-column="' + count + '"><circle cx="' + (p.x + iconsize/2) + '" cy="' + pos + '" r="' + (iconsize / 2) + '"></circle></g>');
                   if (manifestation.adaptor.properties['iolabels'] == 'true') {
-                    inner.append($X('<text xmlns="http://www.w3.org/2000/svg" x="' + (p.x-1.5) + '" y="' + (pos+12) + '">rw</text>'));
+                    inner.append($X('<text xmlns="http://www.w3.org/2000/svg" x="' + (p.x-1.5) + '" y="' + (pos+13) + '">rw</text>'));
                   }
                   if (pos == p.y0) { firstAssignFlag = true; }
                 }
