@@ -186,6 +186,11 @@
         <text rngui:wrap="true" rngui:label="Notes"/>
       </element>
     </element>
+    <element name="_resources" rngui:header="Resources" rngui:fold="closed">
+      <element name="_notes_general" rngui:label="General">
+          <text rngui:wrap="true" rngui:label="Notes"/>
+      </element>
+    </element>
   </element>
 
   <element name="documentation" rngui:header="Documentation">
@@ -214,24 +219,5 @@
         <text rngui:wrap="true" rngui:label="What is supposed to happen?"/>
       </element>
     </element>
-  </element>
-  <element name="resources" rngui:header="Resources">
-    <zeroOrMore rngui:label="Create Resources">
-      <element name='resource' rngui:label="Resource" rngui:labeltype="xml">
-        <data type="string" rngui:label="Name"/>
-      </element>
-    </zeroOrMore>
-     <attribute name="allocated_to" rngui:label="allocated_to" rngui:default="not_allocated">
-        <data type="string" rngui:readonly="true"/>
-      </attribute>
-  </element>
-  <element name="expectedready" rngui:label="Expected Ready">
-    <data name="expectedready" type="decimal" rngui:readonly="true"/>
-  </element>
-  <element name="plannedstart" rngui:label="Planned Start Time">
-    <data name="plannedstart" type="decimal" rngui:readonly="true"/>
-  </element>
-  <element name="plannedend" rngui:label="Planned End Time">
-    <data name="plannedend" type="decimal" rngui:readonly="true"/>
   </element>
 </element>
