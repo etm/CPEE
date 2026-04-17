@@ -152,6 +152,21 @@ function WFAdaptorManifestationBase(adaptor) {
       }
     }
   } //}}}
+  var markHandling = this.markHandling = function(svgid) { //{{{
+    if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
+    var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+    if (vtarget.length > 0) {
+      var vt = vtarget.parents('g.element[element-id]');
+          vt.toggleClass('marked');
+      if (vt.hasClass('marked')) {
+        localStorage.setItem('marked',self.marked_text());
+        localStorage.setItem('marked_from',myid);
+      } else {
+        localStorage.removeItem('marked');
+        localStorage.removeItem('marked_from');
+      }
+    }
+  } //}}}
 
   var contextMenuHandling_clean_icon = this.contextMenuHandling_clean_icon = function(icon) { //{{{
     icon = icon.clone();
@@ -257,26 +272,44 @@ function WFAdaptorManifestationBase(adaptor) {
       });
     }
     if (xml_node.get(0).tagName == "call" || xml_node.get(0).tagName == "manipulate" || xml_node.get(0).tagName == "stop") {
-      var icon = contextMenuHandling_clean_icon(self.elements.call.illustrator.svg);
-      icon.find('.part-normal').addClass('passive');
+      let exec_icon = contextMenuHandling_clean_icon(self.elements.call.illustrator.svg);
+      let mark_icon = self.resources.mark;
+      exec_icon.find('.part-normal').addClass('passive');
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
         if (vtarget.parents('g.activities.passive, g.activities.active').length > 0) {
           menu['Position'] = [{
-            'label': 'No Execution from here',
+            'label': 'No Execution from here (SHIFT-Click)',
             'function_call': del_ui_pos,
-            'menu_icon': icon,
+            'menu_icon': exec_icon,
             'type': undefined,
             'params': xml_node
           }];
         } else {
           menu['Position'] = [{
-            'label': 'Execute from here',
+            'label': 'Execute from here (SHIFT-Click)',
             'function_call': add_ui_pos,
-            'menu_icon': icon,
+            'menu_icon': exec_icon,
             'type': undefined,
             'params': xml_node
           }];
+        }
+        if (vtarget.parents('g.element.marked').length > 0) {
+          menu['Position'].push({
+            'label': 'Unmark for copy/move (' + ($.pressCmd() ? '⌘-Click' : 'CTRL-Click') + ')',
+            'function_call': markHandling,
+            'menu_icon': mark_icon,
+            'type': undefined,
+            'params': [svgid]
+          });
+        } else {
+          menu['Position'].push({
+            'label': 'Mark for copy/move (' + ($.pressCmd() ? '⌘-Click' : 'CTRL-Click') + ')',
+            'function_call': markHandling,
+            'menu_icon': mark_icon,
+            'type': undefined,
+            'params': [svgid]
+          });
         }
       }
     }
@@ -314,19 +347,7 @@ function WFAdaptorManifestationBase(adaptor) {
     }
 
     if (e && (e.ctrlKey || e.metaKey)) {
-      if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
-      var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
-      if (vtarget.length > 0) {
-        var vt = vtarget.parents('g.element[element-id]');
-            vt.toggleClass('marked');
-        if (vt.hasClass('marked')) {
-          localStorage.setItem('marked',self.marked_text());
-          localStorage.setItem('marked_from',myid);
-        } else {
-          localStorage.removeItem('marked');
-          localStorage.removeItem('marked_from');
-        }
-      }
+      markHandling(svgid);
     } else if (e && (e.shiftKey)) {
       positionHandling(svgid);
     } else {
@@ -367,6 +388,7 @@ function WFAdaptorManifestationBase(adaptor) {
   // Other resources
   this.resources.arrow =  self.adaptor.theme_dir + 'symbols/arrow.svg';
   this.resources.delete =  self.adaptor.theme_dir + 'symbols/delete.svg';
+  this.resources.mark =  self.adaptor.theme_dir + 'symbols/mark.svg';
 
   // Primitive Elements
   this.elements.call = { /*{{{*/

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <g class="marked">
+    <g class="markstyle" transform="translate(12,15) scale(2,2)">
+      <circle cx="2" cy="0" r="7"/>
+      <path d="m -1 0 l 2 2 l 4 -4" class="standline"/>
+    </g>
+  </g>
+</svg>
