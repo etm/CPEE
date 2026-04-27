@@ -2,4 +2,7 @@
   <attribute name="eid" rngui:label="ID" rngui:default="javascript:get_free_id('e','eid')">
     <data type="string" rngui:readonly="true"/>
   </attribute>
+  <attribute name="abandon" rngui:label="Abandon instance">
+    <data type="boolean" rngui:label="Abandon instance instead of finishing it"/>
+  </attribute>
 </element>
