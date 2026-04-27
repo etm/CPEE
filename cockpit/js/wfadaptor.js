@@ -14,8 +14,6 @@
   <http://www.gnu.org/licenses/>.
 */
 
-var high;
-
 // TODO: changes in svg-script:
 // 1) drawing functions
 // 2) creation of svg-container (Bug: arrows on lines)
@@ -195,6 +193,13 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
 
   this.update = function(doit){ doit(self); };
 
+  this.draw_element = function(type,id,label) {
+    let pos = {'row': 1,'col': 0};
+    let block = { 'max': {'row': pos.row, 'col': pos.col}, 'endnodes': [], 'svg': $X('<g class="group" xmlns="http://www.w3.org/2000/svg"/>') };
+    illustrator.draw.draw_symbol(type, id, label, pos.row, pos.row, pos.row, pos.col, block.svg, false, {}, {})
+    self.illustrator.set_svg(block);
+  }
+
   this.redraw = function(){
     description.redraw();
   }
@@ -282,8 +287,12 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   this.set_svg = function(graph) { // {{{
     self.svg.container.append(graph.svg);
     let bb = graph.svg[0].getBBox();
+
+    let w = self.dim.get_x_plus(0,graph.max.row,graph.max.col);
+    // the alternative is bb.x + bb.width + self.width_shift, but this is bad when clipped elements
+
     self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom
-    self.svg.container.attr('width',  bb.x + bb.width + self.width_shift);  // small border on the right
+    self.svg.container.attr('width', w);  // small border on the right
     self.svg.container.attr('data-pos-matrix', JSON.stringify(self.dim.symbols));
     self.svg.container.attr('data-con-list', JSON.stringify(self.dim.connections));
   } // }}}
