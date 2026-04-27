@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.homepage         = 'http://cpee.org/'
 
   s.add_runtime_dependency 'riddl', '~> 1.0'
-  s.add_runtime_dependency 'weel', '~> 1.99', '>= 1.99.148'
+  s.add_runtime_dependency 'weel', '~> 1.99', '>= 1.99.149'
   s.add_runtime_dependency 'highline', '~> 2.0'
   s.add_runtime_dependency 'redis', '~> 5.4'
   s.add_runtime_dependency 'net-ssh', '~> 7.3'
