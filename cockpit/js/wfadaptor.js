@@ -289,6 +289,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let bb = graph.svg[0].getBBox();
 
     let w = self.dim.get_x_plus(0,graph.max.row,graph.max.col);
+    if (w == 0) { w = bb.x + bb.width + self.width_shift; }
     // the alternative is bb.x + bb.width + self.width_shift, but this is bad when clipped elements
 
     self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom

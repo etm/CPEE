@@ -23,6 +23,14 @@
     </element>
   </element>
   <element name="_annotations" rngui:header="Annotations">
+    <element name="_generic" rngui:header="Generic" rngui:fold="closed">
+      <zeroOrMore rngui:label="Create Annotation Pair">
+        <element rngui:label="Name" rngui:labeltype="xml">
+          <anyName/>
+          <data type="string" rngui:label="Value"/>
+        </element>
+      </zeroOrMore>
+    </element>
     <element name="_logging_behavior" rngui:header="Logging Behavior" rngui:fold="closed">
       <element name="_iteration" rngui:label="Log per iteration">
         <data type="boolean" rngui:label="Log per iteration"/>
