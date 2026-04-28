@@ -123,8 +123,10 @@
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:text>, </xsl:text>
-      <xsl:value-of select="@abandon"/>
+      <xsl:if test="@abandon">
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="@abandon"/>
+      </xsl:if>
       <xsl:call-template name="print-newline"/>
     </xsl:if>
     <xsl:if test="name()='stop'">
