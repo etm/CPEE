@@ -451,7 +451,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
 }// }}}
 
 function translate_endpoint(ep) {
-  return ep.replace(/\{[^\/\}]+\}/,'*');
+  return ep.replace(/\{[^\/\}]+\}/g,'*');
 }
 
 function get_resource(base, key, loc, cache) {

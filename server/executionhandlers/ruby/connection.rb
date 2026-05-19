@@ -44,6 +44,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end# }}}
   def self::inform_connectionwrapper_error(arguments,err) # {{{
     controller = arguments[0]
+    p err.message
+    puts err.backtrace
     begin
       if err.backtrace[0] !~ /, Line/
         controller.notify("executionhandler/error", :message => err.backtrace[0].gsub(/(Activity a\d+)/,'\1:'), :line => -1, :where => err.backtrace[0].match(/Activity a\d+/)[0])
@@ -348,6 +350,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       else
         raise 'something bad happened, but we dont know what.'
     end
+  rescue
+    raise 'external script handler probably not running'
   end #}}}
 
   def argument_transform_value(obj, struct)
