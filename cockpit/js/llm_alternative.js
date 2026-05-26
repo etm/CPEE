@@ -25,7 +25,7 @@ function call_llm_service(status_id,prompt_id) {
   formData.append("rpst_xml", blob1);
   const blob2 = new Blob([text], { type: "text/plain" });
   formData.append("user_input", blob2);
-  const blob3 = new Blob(['gemini-2.0-flash'], { type: "text/plain" });
+  const blob3 = new Blob(['gemini-2.5-flash'], { type: "text/plain" });
   formData.append("llm", blob3);
 
   jQuery.ajax({

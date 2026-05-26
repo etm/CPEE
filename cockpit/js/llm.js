@@ -1,11 +1,21 @@
 var last_generated_model = undefined;
 var last_model_before_generation =undefined;
+var default_llm = "gemini-2.5-flash-lite";
 
 function clean_llm_ui(status_id) {
   status_div = $(`#${status_id}`);
   status_div.empty();
   status_div.removeClass('error').removeClass('success');
-  return
+  status_div.removeClass('error').removeClass('error');
+  status_div.removeClass('error').removeClass('loading');
+}
+
+function querying_llm_ui(status_id,llm_id='xxxx') {
+  status_div = $(`#${status_id}`);
+  let myllm = $(`#${llm_id}`).find(":selected").val();
+  if (myllm === undefined){ myllm = default_llm; }
+  status_div.addClass('loading');
+  status_div.text('Workflow Modelling Agent Thinks (' + myllm + ')');
 }
 
 function add_prompt(prompt_id,content) {
@@ -16,16 +26,13 @@ function add_prompt(prompt_id,content) {
   selection.removeAllRanges();
   selection.addRange(range);
   document.execCommand('insertText', false, content);
-  return ;
 }
 
 function call_llm_service(status_id,prompt_id,llm_id) {
   let input = $(`#${prompt_id}`);
   let text = input[0].innerText;
   let myllm = $(`#${llm_id}`).find(":selected").val();
-  if (myllm === undefined){
-    myllm = "gemini-2.0-flash";
-  }
+  if (myllm === undefined){ myllm = default_llm; }
   const formData = new FormData();
   const blob1 = new Blob([save['dslx']], { type: "text/xml" });
   formData.append("rpst_xml", blob1);
@@ -44,22 +51,27 @@ function call_llm_service(status_id,prompt_id,llm_id) {
     success: function(data){
       last_model_before_generation = save['dslx'];
       last_generated_model = data.output_cpee;
-      set_cpee_model(data.output_cpee,["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee]);
+      let send = $X(data.output_cpee);
+      $('label',send).each((_,ele)=>{
+        if ($(ele).text() == "Start Fermenter") {
+          $(ele).parent().parent().attr('endpoint','fermenter');
+        }
+      });
+      set_cpee_model(send.serializePrettyXML(),["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee]);
       set_success(status_id,data.status);
     },
     error:  function(xhr, status, data) {
+      console.log(xhr);
       set_error(status_id,xhr.responseJSON.error);
     }
   });
 
- input.empty();
+  input.empty();
 }
 
 function call_llm_text_service(status_id,prompt_id,llm_id,action) {
   let myllm = $(`#${llm_id}`).find(":selected").val();
-  if (myllm === undefined){
-    myllm = "gemini-2.0-flash";
-  }
+  if (myllm === undefined){ myllm = default_llm; }
   const info = save.attributes_raw.info;
   const formData = new FormData();
   const first = new Blob([save['dslx']], { type: "text/xml" });
@@ -95,7 +107,6 @@ function call_llm_text_service(status_id,prompt_id,llm_id,action) {
 }
 
 function set_cpee_model(cpee_xml,expositions=[]) {
-
   const form_data = new FormData();
   const blob = new Blob([cpee_xml], { type: "text/xml" });
   form_data.append("dslx", blob);
@@ -117,13 +128,23 @@ function set_cpee_model(cpee_xml,expositions=[]) {
 function set_success(status_id,success_text) {
   $(`#${status_id}`).text(success_text);
   $(`#${status_id}`).addClass('success');
+  $(`#${status_id}`).removeClass('loading');
+  $(`#${status_id}`).removeClass('error');
 }
 
 function set_error(status_id,error_text) {
-   $(`#${status_id}`).text(error_text);
-   $(`#${status_id}`).addClass('error');
+  $(`#${status_id}`).text(error_text);
+  $(`#${status_id}`).addClass('error');
+  $(`#${status_id}`).removeClass('success');
+  $(`#${status_id}`).removeClass('loading');
 }
 
+function empty_model(){
+  set_cpee_model('<description xmlns="http://cpee.org/ns/description/1.0" xmlns:a="http://cpee.org/ns/annotation/1.0"/>',["Reset Context!"]);
+}
+function load_last_generated_model() {
+  set_cpee_model(last_generated_model === undefined ? save['dslx'] : last_generated_model);
+}
 function load_last_generated_model() {
   set_cpee_model(last_generated_model === undefined ? save['dslx'] : last_generated_model);
 }
@@ -151,23 +172,32 @@ $(document).ready(function() {
   $(document).on('keydown','#prompt',function(e){
     clean_llm_ui('status');
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      querying_llm_ui('status','llms');
       call_llm_service('status',this.id,'llms');
     }
   });
   $(document).on('click','#prompt_submit_button',function(e){
     clean_llm_ui('status');
+    querying_llm_ui('status','llms');
     call_llm_service('status','prompt','llms');
+  });
+  $(document).on('click','#prompt_reset_button',function(e){
+    clean_llm_ui('status');
+    empty_model();
   });
   $(document).on('click','#generate_itext_button',function(e){
     clean_llm_ui('status');
+    querying_llm_ui('status','llms');
     call_llm_text_service('status','prompt','llms','file');
   });
   $(document).on('click','#generate_text_button',function(e){
     clean_llm_ui('status');
+    querying_llm_ui('status','llms');
     call_llm_text_service('status','prompt','llms','show');
   });
   $(document).on('click','#prompt_undo_button',function(e){
     clean_llm_ui('status');
+    querying_llm_ui('status','llms');
     load_last_model_before_generation();
   });
   $(document).on('click','#prompt_attach_button',function(e){
