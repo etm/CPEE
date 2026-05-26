@@ -141,6 +141,7 @@ function set_error(status_id,error_text) {
 
 function empty_model(){
   set_cpee_model('<description xmlns="http://cpee.org/ns/description/1.0" xmlns:a="http://cpee.org/ns/annotation/1.0"/>',["Reset Context!"]);
+  $('#dat_details').empty();
 }
 function load_last_generated_model() {
   set_cpee_model(last_generated_model === undefined ? save['dslx'] : last_generated_model);
