@@ -15,11 +15,30 @@
 #status.success {
   background-color: var(--wfadaptor-exec-vote);
 }
+#status.loading {
+  background-color: #99c1f1;
+}
+
+#status.loading::after {
+  display: inline-block;
+  animation: dotty steps(1,end) 1s infinite;
+  content: '';
+}
+
+@keyframes dotty {
+  0%   { content: ''; }
+  16%  { content: '.'; }
+  32%  { content: '..'; }
+  48%  { content: '...'; }
+  64%  { content: '..'; }
+  80%  { content: '.'; }
+  100% { content: ''; }
+}
 
 #prompt_container {
   padding: 0.2em 0.5em;
   outline: none;
-  min-height: 2.66em;
+  min-height: 9em;
   display: flex;
   flex-wrap: nowrap;
 }
@@ -71,7 +90,11 @@
 
 .llm_button {
   width: 100%;
+  min-width: 2.5em;
   height: 100%;
+}
+.llm_button.small:nth-child(2) {
+  margin-top: 0.5em;
 }
 
 .llm_button:hover {

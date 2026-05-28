@@ -3,8 +3,8 @@
   <executionhandler>ruby</executionhandler>
   <dataelements/>
   <endpoints>
-    <frames_init>https-post://cpee.org/out/frames/{simple}/</frames_init>
-    <frames_display>https-put://cpee.org/out/frames/{simple}/</frames_display>
+    <frames_init>https-post://{cpee.org}/out/frames/{simple}/</frames_init>
+    <frames_display>https-put://{cpee.org}/out/frames/{simple}/</frames_display>
   </endpoints>
   <attributes>
     <guarded>none</guarded>
@@ -14,16 +14,16 @@
     <info>Frames</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
-    <model_uuid>5ed82f61-a382-49b5-a420-c63e01d5a9f5</model_uuid>
+    <model_uuid>90882be6-e4f3-470c-b1ae-d0e7b04e2e56</model_uuid>
     <model_version/>
-    <design_dir>Templates.dir</design_dir>
+    <design_dir>Templates.dir/</design_dir>
     <design_stage>development</design_stage>
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="frames_init">
         <parameters>
-          <label>"Init Frame"</label>
+          <label>Init Frame</label>
           <color/>
           <arguments>
             <style_url>https://cpee.org/form/frames.css</style_url>
@@ -79,7 +79,7 @@
       </call>
       <call id="a3" endpoint="frames_display">
         <parameters>
-          <label>Clear </label>
+          <label>Clear Frame</label>
           <color/>
           <arguments>
             <type>set</type>
@@ -87,8 +87,6 @@
             <ly>0</ly>
             <x_amount>5</x_amount>
             <y_amount>8</y_amount>
-            <button/>
-            <style/>
             <urls/>
             <default/>
           </arguments>
@@ -138,7 +136,7 @@
       </call>
       <call id="a6" endpoint="frames_display">
         <parameters>
-          <label>Show Header</label>
+          <label>Show Header </label>
           <color/>
           <arguments>
             <type>set</type>
@@ -146,8 +144,6 @@
             <ly>0</ly>
             <x_amount>5</x_amount>
             <y_amount>1</y_amount>
-            <button/>
-            <style/>
             <urls>
               <urls_item>
                 <lang>de-at</lang>
@@ -202,7 +198,7 @@
       </call>
       <call id="a5" endpoint="frames_display">
         <parameters>
-          <label>Display Graph</label>
+          <label>Display Graph </label>
           <color/>
           <arguments>
             <type>set</type>
@@ -210,8 +206,6 @@
             <ly>1</ly>
             <x_amount>2</x_amount>
             <y_amount>7</y_amount>
-            <button/>
-            <style/>
             <urls>
               <urls_item>
                 <lang>de-at</lang>
@@ -219,6 +213,70 @@
               </urls_item>
             </urls>
             <default/>
+          </arguments>
+        </parameters>
+        <code>
+          <signal>false</signal>
+          <prepare/>
+          <finalize output="result"/>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <call id="a4" endpoint="frames_display">
+        <parameters>
+          <label>Display Text </label>
+          <color/>
+          <arguments>
+            <type>set</type>
+            <lx>1</lx>
+            <ly>1</ly>
+            <x_amount>1</x_amount>
+            <y_amount>1</y_amount>
+            <urls>
+              <urls_item>
+                <lang>de-at</lang>
+                <url>/out/frames/examples/text.html</url>
+              </urls_item>
+            </urls>
+            <default>
+              <text>Hallo ***aaa***.</text>
+            </default>
           </arguments>
         </parameters>
         <code>
@@ -272,7 +330,7 @@
         </_probability>
         <call id="a2" endpoint="frames_display">
           <parameters>
-            <label>Show Button</label>
+            <label>Show The Button</label>
             <color/>
             <arguments>
               <type>wait</type>
@@ -280,12 +338,10 @@
               <ly>1</ly>
               <x_amount>1</x_amount>
               <y_amount>1</y_amount>
-              <button/>
-              <style/>
               <urls>
                 <urls_item>
                   <lang>de-at</lang>
-                  <url>https://cpee.org/form/button.html</url>
+                  <url>/out/frames/examples/button.html</url>
                 </urls_item>
               </urls>
               <default/>
@@ -336,7 +392,7 @@
         </call>
         <call id="a8" endpoint="frames_display">
           <parameters>
-            <label>Experience</label>
+            <label>Show Experience Questions</label>
             <color/>
             <arguments>
               <type>wait</type>
@@ -344,12 +400,10 @@
               <ly>1</ly>
               <x_amount>3</x_amount>
               <y_amount>7</y_amount>
-              <button/>
-              <style/>
               <urls>
                 <urls_item>
                   <lang>de-at</lang>
-                  <url>https://cpee.org/quests/dataflow/questions.html</url>
+                  <url>/out/frames/examples/questions.html</url>
                 </urls_item>
               </urls>
               <default>
@@ -408,7 +462,7 @@
         </call>
         <call id="a7" endpoint="frames_display">
           <parameters>
-            <label>Clear Button</label>
+            <label>Clear The Button</label>
             <color/>
             <arguments>
               <type>set</type>
@@ -416,8 +470,6 @@
               <ly>1</ly>
               <x_amount>1</x_amount>
               <y_amount>1</y_amount>
-              <button/>
-              <style/>
               <urls/>
               <default/>
             </arguments>
