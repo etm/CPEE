@@ -336,7 +336,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       end
       true
     end
-    GC.start
+    ### Only do it when you want always the least mem used, but it been 4 times slower
+    # GC.start
   end #}}}
 
   def code_error_handling(ret,where,what=RuntimeError) #{{{
@@ -443,6 +444,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       send.push  Riddl::Parameter::Complex::new('call_headers','application/json', JSON::generate(options))
 
       stat, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
+
       if stat >= 200 && stat < 300
         ret.shift # drop result
         signal = changed_status = nil

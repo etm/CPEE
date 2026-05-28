@@ -327,7 +327,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       end
       true
     end
-    GC.start
+    ### Only do it when you want always the least mem used, but it been 4 times slower
+    # GC.start
   end #}}}
 
   def argument_transform_value(obj, struct)
