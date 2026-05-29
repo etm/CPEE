@@ -184,7 +184,7 @@ module CPEE
             content['mem_available'] = mem_ava
             content['mem_bufferedandcached'] = mem_buc
             content['mem_used'] = mem_usd
-            CPEE::Message::send_url(:event,'node/resource_utilization',File.join(opts[:url],'/'),content,File.join(opts[:dashing_target],'/dash/events'))
+            CPEE::Message::send_url(:event,'node/resource_utilization',File.join(opts[:url],'/'),content,opts[:dashing_target])
 
             # Keep this as last for our next read
             idl_last = sci

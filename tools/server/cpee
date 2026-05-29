@@ -1,6 +1,11 @@
 #!/usr/bin/ruby
-require 'rubygems'
-require 'cpee/implementation'
+if File.exist?(File.join(__dir__,'..','lib','cpee','implementation.rb'))
+  require_relative File.join(__dir__,'..','lib','cpee','implementation')
+elsif File.exist?(File.join(Dir.home,'Projects','cpee','lib','cpee','implementation.rb'))
+  require_relative File.join(Dir.home, 'Projects','cpee','lib','cpee','implementation')
+else
+  require 'cpee/implementation'
+end
 
 Riddl::Server.new(CPEE::SERVER, :host => 'localhost', :port => 8298) do |opts|
   opts[:instances]          = File.join(__dir__,'instances')
