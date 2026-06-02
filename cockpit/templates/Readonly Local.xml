@@ -1,33 +1,228 @@
+<?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
-  <dataelements/>
   <executionhandler>ruby</executionhandler>
+  <dataelements>
+    <a>2</a>
+    <b>{"a":2,"b":12}</b>
+    <c>{"a":2}</c>
+  </dataelements>
   <endpoints>
     <user>https-post://cpee.org/services/timeout-user.php</user>
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
-    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
     <timeout>https-post://cpee.org/services/timeout.php</timeout>
+    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
     <send>https-post://cpee.org/ing/correlators/message/send/</send>
     <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
   </endpoints>
+  <attributes>
+    <guarded>none</guarded>
+    <info>Readonly Local</info>
+    <modeltype>CPEE</modeltype>
+    <theme>preset</theme>
+    <creator>Christine Ashcreek</creator>
+    <guarded_id/>
+    <author>Christine Ashcreek</author>
+    <model_uuid>5b08fb27-26dd-4d18-8cc1-7907e79af97c</model_uuid>
+    <model_version/>
+    <design_dir>Templates.dir</design_dir>
+    <design_stage>development</design_stage>
+  </attributes>
   <description>
-    <description xmlns="http://cpee.org/ns/description/1.0"/>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <manipulate id="a1" label="Set data.a to 2">
+        <code>data.a = 2</code>
+        <annotations>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+          </_logging_behavior>
+          <_context_data_analysis>
+            <probes/>
+          </_context_data_analysis>
+        </annotations>
+      </manipulate>
+      <parallel eid="e1" wait="-1" cancel="last">
+        <parallel_branch>
+          <call id="a3" endpoint="timeout">
+            <parameters>
+              <label>Wait 2</label>
+              <color/>
+              <arguments>
+                <timeout>2</timeout>
+                <data/>
+              </arguments>
+            </parameters>
+            <annotations>
+              <_generic/>
+              <_logging_behavior>
+                <_exclude>false</_exclude>
+                <_include>false</_include>
+              </_logging_behavior>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_shifting>
+                <_shifting_type>Duration</_shifting_type>
+              </_shifting>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+            </documentation>
+          </call>
+          <choose eid="e2" mode="exclusive" label="">
+            <alternative eid="e3" condition="local.a == 2">
+              <call id="a2" endpoint="timeout">
+                <parameters>
+                  <label>local.a as param</label>
+                  <color/>
+                  <arguments>
+                    <timeout>1</timeout>
+                    <data>
+                      <a>!local.a</a>
+                      <b>12</b>
+                    </data>
+                  </arguments>
+                </parameters>
+                <code>
+                  <signal>false</signal>
+                  <prepare/>
+                  <finalize output="result">data.b = result</finalize>
+                  <update output="result"/>
+                  <rescue output="result"/>
+                </code>
+                <annotations>
+                  <_generic/>
+                  <_logging_behavior>
+                    <_exclude>false</_exclude>
+                    <_include>false</_include>
+                  </_logging_behavior>
+                  <_timing>
+                    <_timing_weight/>
+                    <_timing_avg/>
+                    <explanations/>
+                  </_timing>
+                  <_shifting>
+                    <_shifting_type>Duration</_shifting_type>
+                  </_shifting>
+                  <_context_data_analysis>
+                    <probes/>
+                    <ips/>
+                  </_context_data_analysis>
+                  <report>
+                    <url/>
+                  </report>
+                  <_notes>
+                    <_notes_general/>
+                  </_notes>
+                </annotations>
+                <documentation>
+                  <input/>
+                  <output/>
+                  <implementation>
+                    <description/>
+                  </implementation>
+                  <code>
+                    <description/>
+                  </code>
+                </documentation>
+              </call>
+              <_probability>
+                <_probability_min/>
+                <_probability_max/>
+                <_probability_avg/>
+              </_probability>
+            </alternative>
+            <otherwise/>
+          </choose>
+        </parallel_branch>
+        <parallel_branch>
+          <manipulate id="a4" label="Set local.a to 1">
+            <code>local.a = 1</code>
+            <annotations>
+              <_logging_behavior>
+                <_exclude>false</_exclude>
+              </_logging_behavior>
+              <_context_data_analysis>
+                <probes/>
+              </_context_data_analysis>
+            </annotations>
+          </manipulate>
+          <call id="a5" endpoint="timeout">
+            <parameters>
+              <label>local.a as param</label>
+              <color/>
+              <arguments>
+                <timeout/>
+                <data>
+                  <a>!local.a</a>
+                </data>
+              </arguments>
+            </parameters>
+            <code>
+              <signal>false</signal>
+              <prepare/>
+              <finalize output="result">data.c = result</finalize>
+              <update output="result"/>
+              <rescue output="result"/>
+            </code>
+            <annotations>
+              <_generic/>
+              <_logging_behavior>
+                <_exclude>false</_exclude>
+                <_include>false</_include>
+              </_logging_behavior>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_shifting>
+                <_shifting_type>Duration</_shifting_type>
+              </_shifting>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </parallel_branch>
+      </parallel>
+    </description>
   </description>
   <transformation>
     <description type="copy"/>
     <dataelements type="none"/>
     <endpoints type="none"/>
   </transformation>
-  <attributes>
-    <info>Readonly Local</info>
-    <creator>Christine Ashcreek</creator>
-    <author>Christine Ashcreek</author>
-    <modeltype>CPEE</modeltype>
-    <guarded>none</guarded>
-    <guarded_id/>
-    <model_uuid>5b08fb27-26dd-4d18-8cc1-7907e79af97c</model_uuid>
-    <model_version/>
-    <theme>extended</theme>
-    <design_dir>Templates.dir</design_dir>
-    <design_stage>development</design_stage>
-  </attributes>
 </testset>
