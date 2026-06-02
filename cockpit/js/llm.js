@@ -42,7 +42,7 @@ function call_llm_service(status_id,prompt_id,llm_id) {
   formData.append("llm", blob3);
 
   jQuery.ajax({
-    url: '/llm/',
+    url: $('body').attr('current-llm-service'),
     data: formData,
     cache: false,
     contentType: false,
@@ -80,7 +80,7 @@ function call_llm_text_service(status_id,prompt_id,llm_id,action) {
   formData.append("llm", second);
 
   jQuery.ajax({
-    url: '/llm/text/llm/',
+    url: $('body').attr('current-llm-service') + '/text/llm/',
     data: formData,
     cache: false,
     contentType: false,
