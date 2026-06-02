@@ -38,6 +38,9 @@ $(document).ready(function() {
         if (res['log-url']) { // just leave it out when it is not configured
           $("body").attr('current-logs',res['log-url'].replace("%host",window.location.host));
         }
+        if (res['llm-url']) { // just leave it out when it is not configured
+          $("body").attr('current-llm-service',res['llm-url'].replace("%host",window.location.host));
+        }
         if (res['res-url']) {
           $("body").attr('current-resources',res['res-url'].replace("%host",window.location.host));
         } else {
