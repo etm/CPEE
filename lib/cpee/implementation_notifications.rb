@@ -129,7 +129,7 @@ module CPEE
         if opts[:statemachine].final? id
           @status = 410
         else
-          key = @p[0].name == 'id' ? @p.shift.value : Digest::MD5.hexdigest(Kernel::rand().to_s)
+          key = @p[0].name == 'id' ? @p.shift.value : SecureRandom.hex(16)
           url = @p[0].name == 'url' ? @p.shift.value : nil
           values = []
           while @p.length > 0

@@ -15,6 +15,7 @@
 require 'charlock_holmes'
 require 'mimemagic'
 require 'base64'
+require 'securerandom'
 require 'cpee-eval-ruby/translation'
 
 class ConnectionWrapper < WEEL::ConnectionWrapperBase
@@ -68,7 +69,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @handler_continue = continue
     @handler_position = position
     @handler_passthrough = nil
-    @handler_activity_uuid = Digest::MD5.hexdigest(Kernel::rand().to_s)
+    @handler_activity_uuid = SecureRandom.hex(16)
     @label = ''
     @guard_files = []
     @guard_items = []
@@ -93,7 +94,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def proto_curl(parameters) #{{{
     params = []
-    callback = Digest::MD5.hexdigest(Kernel::rand().to_s)
+    callback = SecureRandom.hex(16)
     (parameters[:arguments] || []).each do |s|
       if s.respond_to?(:mimetype)
         params <<  Riddl::Parameter::Complex.new(s.name.to_s,v.mimetype,v.value)

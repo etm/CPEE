@@ -15,6 +15,7 @@
 module CPEE
 
   module Message
+    @@mutex = Mutex.new
     @@who = 'cpee'
     @@type = 'instance'
     @@tworkers = 1
@@ -39,19 +40,19 @@ module CPEE
     end
 
     def self::target
-      @@last < @@tworkers-1 ? @@last += 1 : @@last = 0
+      @@mutex.synchronize { @@last < @@tworkers-1 ? @@last += 1 : @@last = 0 }
     end
 
     def self::wait(backend,sub,tt=nil)
       target = '%02i' % (tt || CPEE::Message::target)
-      wid = Digest::MD5.hexdigest(Kernel::rand().to_s)
+      wid = SecureRandom.hex(16)
       begin
-        sub.subscribe_with_timeout(2,'event:' + target + ':transaction/finished') do |on|
+        sub.subscribe_with_timeout(2,"event:#{target}:transaction/finished") do |on|
           on.message do |what,message|
             mess = message[0...message.index(' ')]
-            sub.unsubscribe('event:' + target + ':transaction/finished') if mess == wid
+            sub.unsubscribe("event:#{target}:transaction/finished") if mess == wid
           end
-          backend.publish('event:' + target + ':transaction/start',wid + ' {}')
+          backend.publish("event:#{target}:transaction/start","#{wid} {}")
         end
       rescue => e
         puts "timeout error"
@@ -65,7 +66,7 @@ module CPEE
       name = ::File::basename(event)
       payload = {
         @@who => cpee,
-        @@type + '-url' => File.join(cpee,instance.to_s),
+        "#{@@type}-url" => File.join(cpee,instance.to_s),
         @@type => instance,
         'topic' => topic,
         'type' => type,
@@ -73,13 +74,10 @@ module CPEE
         'timestamp' =>  Time.now.xmlschema(6),
         'content' => content
       }
-      payload[@@type + '-uuid'] = instance_uuid if instance_uuid
-      payload[@@type + '-name'] = instance_name if instance_name
+      payload["#{@@type}-uuid"] = instance_uuid if instance_uuid
+      payload["#{@@type}-name"] = instance_name if instance_name
 
-      backend.publish(type.to_s + ':' + target + ':' + event.to_s,
-        instance.to_s + ',' + instance_uuid.to_s + ' ' +
-        JSON::generate(payload)
-      )
+      backend.publish("#{type}:#{target}:#{event}", "#{instance},#{instance_uuid} #{JSON::generate(payload)}")
     end
 
     def self::send_url(type, event, cpee, content={}, backend)

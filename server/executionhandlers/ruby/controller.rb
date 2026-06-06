@@ -185,7 +185,7 @@ class Controller
     votes = []
 
     CPEE::Persistence::extract_handler(id,@opts,handler).each do |client|
-      voteid = Digest::MD5.hexdigest(Kernel::rand().to_s)
+      voteid = SecureRandom.hex(16)
       content[:key] = voteid
       content[:attributes] = attributes_translated
       content[:subscription] = client

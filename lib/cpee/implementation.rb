@@ -399,7 +399,7 @@ module CPEE
         end
         subs.each do |s|
           begin
-            NewInstance::sub(multi,id,s.to_doc,s.attributes['id'] || Digest::MD5.hexdigest(Kernel::rand().to_s))
+            NewInstance::sub(multi,id,s.to_doc,s.attributes['id'] || SecureRandom.hex(16)
           end
         end
 
