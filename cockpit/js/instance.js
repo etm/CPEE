@@ -808,7 +808,6 @@ function monitor_instance_running(content,event) {// {{{
     }
   } else if (event == "done") {
     if ((cur && cur.state == 'active') || save['instance_pos'].filter( (_,e) => { return e.nodeName == content.activity }).length > 0) {
-      console.log('remove',content.activity);
       format_visual_remove(content.activity,"active");
     }
     save['activity_red_states'][uuid] = { position: content.activity, state: 'done' };
