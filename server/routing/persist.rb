@@ -66,10 +66,10 @@ Daemonite.new do |opts|
             key = mess.dig('content','key')
             opts[:redis].multi do |multi|
               multi.sadd("instance:#{instance}/callbacks",key)
-              multi.set("instance:#{instance}/callback/#{key}/uuid",mess.dig('content','activity-uuid'))
-              multi.set("instance:#{instance}/callback/#{key}/label",mess.dig('content','label'))
-              multi.set("instance:#{instance}/callback/#{key}/position",mess.dig('content','activity'))
-              multi.set("instance:#{instance}/callback/#{key}/type",'callback')
+              multi.set("instance:#{instance}/callbacks/#{key}/uuid",mess.dig('content','activity-uuid'))
+              multi.set("instance:#{instance}/callbacks/#{key}/label",mess.dig('content','label'))
+              multi.set("instance:#{instance}/callbacks/#{key}/position",mess.dig('content','activity'))
+              multi.set("instance:#{instance}/callbacks/#{key}/type",'callback')
             end
           when /event:\d+:state\/change/
             opts[:redis].multi do |multi|

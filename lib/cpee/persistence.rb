@@ -152,11 +152,11 @@ module CPEE
       res += cbs
       res += Persistence::keys_extract_name(opts,id,'callbacks')
       cbs.each do |c|
-        ckey = Persistence::keys_extract_set_raw(opts,c)
-        res << File.join(ckey,'position')
-        res << File.join(ckey,'label')
-        res << File.join(ckey,'uuid')
-        res << File.join(ckey,'type')
+        res << "#{c}/position"
+        res << "#{c}/label"
+        res << "#{c}/uuid"
+        res << "#{c}/type"
+        res << "#{c}/subscription"
       end
       res += Persistence::keys_extract_name(opts,id,'dsl')
       res += Persistence::keys_extract_name(opts,id,'dslx')

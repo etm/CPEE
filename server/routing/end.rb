@@ -41,11 +41,11 @@ Daemonite.new do |opts|
         instance, uuid = message[0...index].split(',')
         opts[:redis].multi do |multi|
           multi.srem("instance:#{instance}/callbacks",key)
-          multi.del("instance:#{instance}/callback/#{key}/uuid")
-          multi.del("instance:#{instance}/callback/#{key}/label")
-          multi.del("instance:#{instance}/callback/#{key}/position")
-          multi.del("instance:#{instance}/callback/#{key}/type")
-          multi.del("instance:#{instance}/callback/#{key}/subscription")
+          multi.del("instance:#{instance}/callbacks/#{key}/uuid")
+          multi.del("instance:#{instance}/callbacks/#{key}/label")
+          multi.del("instance:#{instance}/callbacks/#{key}/position")
+          multi.del("instance:#{instance}/callbacks/#{key}/type")
+          multi.del("instance:#{instance}/callbacks/#{key}/subscription")
         end
       rescue => e
         puts e.message

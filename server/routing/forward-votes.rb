@@ -24,11 +24,11 @@ require_relative '../../lib/cpee/redis'
 def persist_handler(instance,key,mess,redis) #{{{
   redis.multi do |multi|
     multi.sadd("instance:#{instance}/callbacks",key)
-    multi.set("instance:#{instance}/callback/#{key}/subscription",mess.dig('content','subscription'))
-    multi.set("instance:#{instance}/callback/#{key}/uuid",mess.dig('content','activity-uuid'))
-    multi.set("instance:#{instance}/callback/#{key}/label",mess.dig('content','label'))
-    multi.set("instance:#{instance}/callback/#{key}/position",mess.dig('content','activity'))
-    multi.set("instance:#{instance}/callback/#{key}/type",'vote')
+    multi.set("instance:#{instance}/callbacks/#{key}/subscription",mess.dig('content','subscription'))
+    multi.set("instance:#{instance}/callbacks/#{key}/uuid",mess.dig('content','activity-uuid'))
+    multi.set("instance:#{instance}/callbacks/#{key}/label",mess.dig('content','label'))
+    multi.set("instance:#{instance}/callbacks/#{key}/position",mess.dig('content','activity'))
+    multi.set("instance:#{instance}/callbacks/#{key}/type",'vote')
   end
 end #}}}
 

@@ -58,11 +58,11 @@ module CPEE
 
         if CPEE::Persistence::is_member?(id,opts,'callbacks',callback)
           res = {}
-          res[:uuid]     = CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/uuid")
-          res[:type]     = CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type")
-          res[:position] = CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/position")
-          res[:label]    = CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/label")
-          if sub = CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/subscription")
+          res[:uuid]     = CPEE::Persistence::extract_item(id,opts,"callbacks/#{callback}/uuid")
+          res[:type]     = CPEE::Persistence::extract_item(id,opts,"callbacks/#{callback}/type")
+          res[:position] = CPEE::Persistence::extract_item(id,opts,"callbacks/#{callback}/position")
+          res[:label]    = CPEE::Persistence::extract_item(id,opts,"callbacks/#{callback}/label")
+          if sub = CPEE::Persistence::extract_item(id,opts,"callbacks/#{callback}/subscription")
             res[:subscription] = sub
           end
 
@@ -82,7 +82,7 @@ module CPEE
         if opts[:statemachine].final? id
           @status = 410
         else
-          if CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'callback'
+          if CPEE::Persistence::extract_item(id,opts,"callbacks/#{callback}/type") == 'callback'
             CPEE::Message::send(
               :'callback-end',
               callback,
@@ -93,7 +93,7 @@ module CPEE
               {},
               opts[:redis]
             )
-          elsif CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'vote'
+          elsif CPEE::Persistence::extract_item(id,opts,"callbacks/#{callback}/type") == 'vote'
             CPEE::Message::send(
               :'vote-response',
               callback,
@@ -128,7 +128,7 @@ module CPEE
         if opts[:statemachine].final? id
           @status = 410
         else
-          if CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'callback'
+          if CPEE::Persistence::extract_item(id,opts,"callbacks/#{callback}/type") == 'callback'
             ret = {}
             ret['values'] = @p.map{ |e|
               # bei complex wenn kleiner 500KiB statt e.value.path e.value.read
@@ -159,7 +159,7 @@ module CPEE
               ret,
               opts[:redis]
             )
-          elsif CPEE::Persistence::extract_item(id,opts,"callback/#{callback}/type") == 'vote'
+          elsif CPEE::Persistence::extract_item(id,opts,"callbacks/#{callback}/type") == 'vote'
             if @p.length == 1 && @p[0].name == 'continue' && @p[0].class == Riddl::Parameter::Simple
               CPEE::Message::send(
                 :'vote-response',
