@@ -100,14 +100,13 @@ class Controller
   attr_reader :attributes
   attr_reader :loop_guard
 
+  def attributes_translated
+    @attributes_translated || @attributes_translated = @attributes_helper.translate(attributes,dataelements,endpoints)
+  end
+
   def uuid
     @attributes['uuid']
   end
-
-  def attributes_translated
-    @attributes_helper.translate(attributes,dataelements,endpoints)
-  end
-
   def host
     @opts[:host]
   end

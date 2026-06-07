@@ -16,8 +16,11 @@
 
 require 'redis'
 require 'daemonite'
+require 'concurrent-ruby'
 require 'riddl/client'
 require_relative '../../lib/cpee/redis'
+
+HTTP_POOL = Concurrent::FixedThreadPool.new(32)
 
 Daemonite.new do |opts|
   opts[:runtime_opts] += [
@@ -48,32 +51,35 @@ Daemonite.new do |opts|
         topic = ::File::dirname(event)
         name = ::File::basename(event)
         long = File.join(topic,type,name)
-        opts[:redis].smembers("instance:#{instance}/handlers").each do |key|
-          if opts[:redis].smembers("instance:#{instance}/handlers/#{key}").include? long
-            url = opts[:redis].get("instance:#{instance}/handlers/#{key}/url")
-            if url.nil? || url == ""
-              opts[:redis].publish("forward:#{instance}/#{key}",mess)
-            else
-              # Ractor.new(url,type,topic,name,mess) do |url,type,topic,name,mess|
-              # sadly typhoes does not support ractors
-              Thread.new do
-                Riddl::Client.new(url).post [
-                  Riddl::Header.new("CPEE-INSTANCE",instance),
-                  Riddl::Header.new("CPEE-INSTANCE-UUID",uuid),
-                  Riddl::Parameter::Simple::new('type',type),
-                  Riddl::Parameter::Simple::new('topic',topic),
-                  Riddl::Parameter::Simple::new('event',name),
-                  Riddl::Parameter::Complex::new('notification','application/json',mess)
-                ]
-              end
+
+        keys = opts[:redis].smembers("instance:#{instance}/handlers")
+        checks = opts[:redis].pipelined { |p| keys.each { |k| p.sismember("instance:#{instance}/handlers/#{k}", long) } }
+        matched = keys.zip(checks).select { |_, hit| hit }.map(&:first)
+        urls = opts[:redis].pipelined { |p| matched.each { |k| p.get("instance:#{instance}/handlers/#{k}/url") } }
+        matched.zip(urls).each do |key, url|
+          if url.nil? || url == ""
+            opts[:redis].publish("forward:#{instance}/#{key}",mess)
+          else
+            # Ractor.new(url,type,topic,name,mess) do |url,type,topic,name,mess|
+            # sadly typhoes does not support ractors
+            HTTP_POOL.post do
+              Riddl::Client.new(url).post [
+                Riddl::Header.new("CPEE-INSTANCE",instance),
+                Riddl::Header.new("CPEE-INSTANCE-UUID",uuid),
+                Riddl::Parameter::Simple::new('type',type),
+                Riddl::Parameter::Simple::new('topic',topic),
+                Riddl::Parameter::Simple::new('event',name),
+                Riddl::Parameter::Complex::new('notification','application/json',mess)
+              ]
             end
           end
         end
         unless opts[:redis].exists?("instance:#{instance}/state")
-          empt = opts[:redis].keys("instance:#{instance}/*").to_a
-          opts[:redis].multi do |multi|
-            multi.del empt
-          end
+          ### delete everything under instance
+          ### how can there be stuff under an instance (handlers, subscriptions)? Are they created later?
+          empt = []
+          opts[:redis].scan_each("instance:#{instance}/*") { |k| empt << k }
+          opts[:redis].del(*empt) unless empt.empty?
         end
       rescue => e
         puts e.message

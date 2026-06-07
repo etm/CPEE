@@ -37,7 +37,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     # TODO extract spot (code) where error happened for better error handling (ruby 3.1 only)
     # https://github.com/rails/rails/pull/45818/commits/3beb2aff3be712e44c34a588fbf35b79c0246ca5
     controller = arguments[0]
-    p err.message
+    puts err.message
     puts err.backtrace
     begin
       controller.notify("description/error", :message => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):\s(.*)/)[4] + err.message, :line => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[3], :where => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[1])
@@ -47,7 +47,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end# }}}
   def self::inform_connectionwrapper_error(arguments,err) # {{{
     controller = arguments[0]
-    p err.message
+    puts err.message
     puts err.backtrace
     begin
       if err.backtrace[0] !~ /, Line/
@@ -297,8 +297,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @guard_files += result
     @guard_files += ret
 
-    pp options
-
     if options['CPEE_INSTANTIATION']
       @controller.notify("task/instantiation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(options['CPEE_INSTANTIATION']))
     end
@@ -346,7 +344,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end #}}}
 
   def code_error_handling(ret,where,what=RuntimeError) #{{{
-    p 'rrrra'
     sig = ret.find{|e| e.name == "signal" }.value
     sigt = ret.find{|e| e.name == "signal_text" }.value
     case sig

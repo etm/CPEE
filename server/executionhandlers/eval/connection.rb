@@ -37,6 +37,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     # TODO extract spot (code) where error happened for better error handling (ruby 3.1 only)
     # https://github.com/rails/rails/pull/45818/commits/3beb2aff3be712e44c34a588fbf35b79c0246ca5
     controller = arguments[0]
+    puts err.message
+    puts err.backtrace
     begin
       controller.notify("description/error", :message => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):\s(.*)/)[4] + err.message, :line => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[3], :where => err.backtrace[0].match(/(.*?)(, Line |:)(\d+):/)[1])
     rescue => e
@@ -45,6 +47,8 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end# }}}
   def self::inform_connectionwrapper_error(arguments,err) # {{{
     controller = arguments[0]
+    puts err.message
+    puts err.backtrace
     begin
       if err.backtrace[0] !~ /, Line/
         controller.notify("executionhandler/error", :message => err.backtrace[0].gsub(/(Activity a\d+)/,'\1:'), :line => -1, :where => err.backtrace[0].match(/Activity a\d+/)[0])
