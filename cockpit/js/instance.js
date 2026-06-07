@@ -779,11 +779,19 @@ function monitor_instance_state() {// {{{
   });
 }// }}}
 
+function reapply_active_states() {//{{{
+  Object.values(save['activity_red_states']).forEach(s => {
+    if (s && s.state == 'active') {
+      format_visual_add(s.position, 'active');
+    }
+  });
+}//}}}
 function monitor_instance_pos() {// {{{
   if (graph_position && graph_position == 'false') {
     save['instance_pos'] = [];
     format_visual_clear();
     format_instance_pos();
+    reapply_active_states();
     return;
   };
   var url = $('body').attr('current-instance');
@@ -794,27 +802,25 @@ function monitor_instance_pos() {// {{{
       save['instance_pos'] = $("positions > *",res);
       format_visual_clear();
       format_instance_pos();
+      reapply_active_states();
     }
   });
 }// }}}
 
 function monitor_instance_running(content,event) {// {{{
-  if (event == "calling") {
-    if (!save['activity_red_states'][content['activity-uuid']]) {
-      save['activity_red_states'][content['activity-uuid']] = true
-      format_visual_add(content.activity,"active")
-    }
-  } else if (event == "manipulating") {
-    if (!save['activity_red_states'][content['activity-uuid']]) {
-      save['activity_red_states'][content['activity-uuid']] = true
-      format_visual_add(content.activity,"active")
+  let uuid = content['activity-uuid'];
+  let cur = save['activity_red_states'][uuid];
+  if (event == "calling" || event == "manipulating") {
+    if (!cur || cur.state != 'done') {
+      save['activity_red_states'][uuid] = { position: content.activity, state: 'active' };
+      format_visual_add(content.activity,"active");
     }
   } else if (event == "done") {
-    if (save['activity_red_states'][content['activity-uuid']]) {
+    if (cur && cur.state == 'active') {
       format_visual_remove(content.activity,"active");
     }
-    save['activity_red_states'][content['activity-uuid']] = true
-    setTimeout(() => {delete save['activity_red_states'][content['activity-uuid']]},1);
+    save['activity_red_states'][uuid] = { position: content.activity, state: 'done' };
+    setTimeout(() => {delete save['activity_red_states'][uuid]},2000);
   }
 } // }}}
 function monitor_instance_pos_change(content) {// {{{
