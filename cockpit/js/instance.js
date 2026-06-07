@@ -779,19 +779,11 @@ function monitor_instance_state() {// {{{
   });
 }// }}}
 
-function reapply_active_states() {//{{{
-  Object.values(save['activity_red_states']).forEach(s => {
-    if (s && s.state == 'active') {
-      format_visual_add(s.position, 'active');
-    }
-  });
-}//}}}
 function monitor_instance_pos() {// {{{
   if (graph_position && graph_position == 'false') {
     save['instance_pos'] = [];
     format_visual_clear();
     format_instance_pos();
-    reapply_active_states();
     return;
   };
   var url = $('body').attr('current-instance');
@@ -802,7 +794,6 @@ function monitor_instance_pos() {// {{{
       save['instance_pos'] = $("positions > *",res);
       format_visual_clear();
       format_instance_pos();
-      reapply_active_states();
     }
   });
 }// }}}
@@ -811,16 +802,17 @@ function monitor_instance_running(content,event) {// {{{
   let uuid = content['activity-uuid'];
   let cur = save['activity_red_states'][uuid];
   if (event == "calling" || event == "manipulating") {
-    if (!cur || cur.state != 'done') {
+    if (!cur && save['instance_pos'].filter( (_,e) => { return e.nodeName == content.activity }).length == 0) {
       save['activity_red_states'][uuid] = { position: content.activity, state: 'active' };
       format_visual_add(content.activity,"active");
     }
   } else if (event == "done") {
-    if (cur && cur.state == 'active') {
+    if ((cur && cur.state == 'active') || save['instance_pos'].filter( (_,e) => { return e.nodeName == content.activity }).length > 0) {
+      console.log('remove',content.activity);
       format_visual_remove(content.activity,"active");
     }
     save['activity_red_states'][uuid] = { position: content.activity, state: 'done' };
-    setTimeout(() => {delete save['activity_red_states'][uuid]},2000);
+    setTimeout(() => {delete save['activity_red_states'][uuid]},1000);
   }
 } // }}}
 function monitor_instance_pos_change(content) {// {{{
