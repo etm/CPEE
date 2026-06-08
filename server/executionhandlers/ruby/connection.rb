@@ -372,79 +372,79 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
   end
 
-  def argument_eval(code,struct)
+  def argument_eval(__code,__struct)
     send = []
-    send.push Riddl::Parameter::Simple::new('code',code)
-    send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(struct.data))
-    send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(struct.local)) if struct.local
-    send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(struct.endpoints))
-    send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(struct.additional))
+    send.push Riddl::Parameter::Simple::new('code',__code)
+    send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(__struct.data))
+    send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(__struct.local)) if __struct.local
+    send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(__struct.endpoints))
+    send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(__struct.additional))
 
     status, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
     recv = if status >= 200 && status < 300
       ret.empty? ? nil : JSON::parse(ret[0].value.read)
     else
-      code_error_handling ret, 'Parameter ' + code
+      code_error_handling ret, 'Parameter ' + __code
     end
     recv
   end
 
-  def prepare(lock,dataelements,endpoints,status,local,additional,code,exec_endpoints,exec_parameters) #{{{
-    struct = if code
-      manipulate(true,lock,dataelements,endpoints,status,local,additional,code,'prepare')
+  def prepare(__lock,__dataelements,__endpoints,__status,__local,__additional,__code,__exec_endpoints,__exec_parameters) #{{{
+    __struct = if __code
+      manipulate(true,__lock,__dataelements,__endpoints,__status,__local,__additional,__code,'prepare')
     else
-      WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
+      WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional)
     end
-    @handler_endpoint = exec_endpoints.is_a?(Array) ? exec_endpoints.map{ |ep| struct.endpoints[ep] }.compact : struct.endpoints[exec_endpoints]
+    @handler_endpoint = __exec_endpoints.is_a?(Array) ? __exec_endpoints.map{ |ep| __struct.endpoints[ep] }.compact : __struct.endpoints[__exec_endpoints]
     if @controller.attributes['sim_engine']
       @handler_endpoint_orig = @handler_endpoint
       @handler_endpoint = @controller.attributes['sim_engine'].to_s + '?original_endpoint=' + Riddl::Protocols::Utils::escape(@handler_endpoint)
     end
-    params = exec_parameters.dup
-    params[:arguments] = params[:arguments].dup if params[:arguments]
-    params[:arguments]&.map! do |ele|
-      t = ele.dup
-      if t.value.is_a?(WEEL::ProcString)
-        t.value = argument_eval t.value.code, struct
-      elsif t.value.is_a?(Array) || t.value.is_a?(Hash)
-        argument_transform_value t.value, struct
+    __params = __exec_parameters.dup
+    __params[:arguments] = __params[:arguments].dup if __params[:arguments]
+    __params[:arguments]&.map! do |__ele|
+      __tmp = __ele.dup
+      if __tmp.value.is_a?(WEEL::ProcString)
+        __tmp.value = argument_eval(__tmp.value.code, __struct)
+      elsif __tmp.value.is_a?(Array) || __tmp.value.is_a?(Hash)
+        argument_transform_value __tmp.value, __struct
       end
-      t
+      __tmp
     end
-    params
+    __params
   end #}}}
-  def test_condition(eid,dataelements,endpoints,local,additional,code,args={}) #{{{
+  def test_condition(__eid,__dataelements,__endpoints,__local,__additional,__code,__args={}) #{{{
     send = []
-    send.push Riddl::Parameter::Simple::new('code',code)
-    send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
-    send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(local)) if local
-    send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(endpoints))
-    send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(additional))
+    send.push Riddl::Parameter::Simple::new('code',__code)
+    send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(__dataelements))
+    send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(__local)) if __local
+    send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(__endpoints))
+    send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(__additional))
 
     status, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
-    recv = if status >= 200 && status < 300
+    __struct = if status >= 200 && status < 300
       ret.empty? ? nil : JSON::parse(ret[0].value.read)
     else
       code_error_handling ret, 'Condition ' + code, WEEL::Signal::Error
     end
-    recv = 'false' unless recv
-    recv = (recv == 'false' || recv == 'null' || recv == 'nil' || recv == false ? false : true)
+    __struct = 'false' unless __struct
+    __struct = (__struct == 'false' || __struct == 'null' || __struct == 'nil' || __struct == false ? false : true)
 
-    @controller.notify("gateway/decide", :eid => eid, :instance_uuid => @controller.uuid, :code => code, :condition => recv)
-    @controller.notify("gateway/annotation", :eid => eid, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => {})
-    recv
+    @controller.notify("gateway/decide", :eid => __eid, :instance_uuid => @controller.uuid, :code => __code, :condition => __struct)
+    @controller.notify("gateway/annotation", :eid => __eid, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => {})
+    __struct
   end #}}}
-  def manipulate(readonly,lock,dataelements,endpoints,status,local,additional,code,where,result=nil,options=nil) #{{{
-    lock.synchronize do
+  def manipulate(__readonly,__lock,__dataelements,__endpoints,__status,__local,__additional,__code,__where,__result=nil,__options=nil) #{{{
+    __lock.synchronize do
       send = []
-      send.push  Riddl::Parameter::Simple::new('code',code)
-      send.push  Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(dataelements))
-      send.push  Riddl::Parameter::Complex::new('local','application/json', JSON::generate(local)) if local
-      send.push  Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(endpoints))
-      send.push  Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(additional))
-      send.push  Riddl::Parameter::Complex::new('status','application/json', JSON::generate(status)) if status
-      send.push  Riddl::Parameter::Complex::new('call_result','application/json', JSON::generate(result))
-      send.push  Riddl::Parameter::Complex::new('call_headers','application/json', JSON::generate(options))
+      send.push  Riddl::Parameter::Simple::new('code',__code)
+      send.push  Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(__dataelements))
+      send.push  Riddl::Parameter::Complex::new('local','application/json', JSON::generate(__local)) if __local
+      send.push  Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(__endpoints))
+      send.push  Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(__additional))
+      send.push  Riddl::Parameter::Complex::new('status','application/json', JSON::generate(__status)) if __status
+      send.push  Riddl::Parameter::Complex::new('call_result','application/json', JSON::generate(__result))
+      send.push  Riddl::Parameter::Complex::new('call_headers','application/json', JSON::generate(__options))
 
       stat, ret, headers = Riddl::Client.new(@controller.url_code).request 'put' => send
 
@@ -457,16 +457,16 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         changed_endpoints = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_endpoints'
         changed_status = JSON::parse(ret.shift.value.read) if ret.any? && ret[0].name == 'changed_status'
 
-        struct = if readonly
-          WEEL::ReadStructure.new(dataelements,endpoints,local,additional)
+        __struct = if __readonly
+          WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional)
         else
-          WEEL::ManipulateStructure.new(dataelements, endpoints, status, local, additional)
+          WEEL::ManipulateStructure.new(__dataelements, __endpoints, __status, __local, __additional)
         end
-        struct.update(changed_dataelements,changed_endpoints,changed_status)
+        __struct.update(changed_dataelements,changed_endpoints,changed_status)
 
-        struct
+        __struct
       else
-        code_error_handling ret, where
+        code_error_handling ret, __where
       end
     end
   end #}}}

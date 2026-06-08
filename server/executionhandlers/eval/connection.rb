@@ -356,7 +356,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def prepare(__lock,__dataelements,__endpoints,__status,__local,__additional,__code,__exec_endpoints,__exec_parameters) #{{{
     __struct = if __code
-      manipulate(true,__lock,__dataelements,__endpoints,__status,__local,__additional,__code,'Parameter')
+      manipulate(true,__lock,__dataelements,__endpoints,__status,__local,__additional,__code,'prepare')
     else
       WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional)
     end
@@ -381,7 +381,10 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def test_condition(__eid,__dataelements,__endpoints,__local,__additional,__code,__args={}) #{{{
     __struct = WEEL::ReadStructure.new(__dataelements,__endpoints,__local,__additional).instance_eval(__code,'Condition',1)
 
-    @controller.notify("gateway/decide", :eid => __eid, :instance_uuid => @controller.uuid, :code => __code, :condition => (__struct ? "true" : "false"))
+    __struct = 'false' unless __struct
+    __struct = (__struct == 'false' || __struct == 'null' || __struct == 'nil' || __struct == false ? false : true)
+
+    @controller.notify("gateway/decide", :eid => __eid, :instance_uuid => @controller.uuid, :code => __code, :condition => __struct)
     @controller.notify("gateway/annotation", :eid => __eid, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => {})
     __struct
   end #}}}

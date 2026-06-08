@@ -22,6 +22,7 @@ require 'cpee/attributes_helper'
 require 'cpee/message'
 require 'cpee/redis'
 require 'cpee/persistence'
+require 'get_process_mem'
 
 require 'ostruct'
 class ParaStruct < OpenStruct
@@ -47,7 +48,6 @@ class Controller
     end
 
     @attributes_helper = AttributesHelper.new
-    @attributes_translated = @attributes_helper.translate(attributes,dataelements,endpoints)
     @thread = nil
     @opts = opts
     @instance = nil
@@ -99,12 +99,14 @@ class Controller
   attr_reader :id
   attr_reader :attributes
   attr_reader :loop_guard
-  attr_reader :attributes_translated
+
+  def attributes_translated
+    @attributes_translated || @attributes_translated = @attributes_helper.translate(attributes,dataelements,endpoints)
+  end
 
   def uuid
     @attributes['uuid']
   end
-
   def host
     @opts[:host]
   end
