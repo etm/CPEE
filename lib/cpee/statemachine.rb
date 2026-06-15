@@ -17,7 +17,7 @@ module CPEE
   class DummyStateMachine
     def setable?(id,nval); true end
     def readonly?(id); true end
-    def final?(id); true end
+    def final?(id); false end
   end
 
   class StateMachine
