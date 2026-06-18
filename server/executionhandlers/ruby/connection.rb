@@ -29,9 +29,12 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     tso + 2 > tsn && count > 100
   end # }}}
 
-  def self::inform_state_change(arguments,newstate) # {{{
+  def self::inform_state_change(arguments,newstate,data) # {{{
     controller = arguments[0]
 		controller.notify("state/change", :state => newstate)
+    if newstate.to_sym == :stopped || newstate.to_sym == :finished
+      @controller.notify("dataelements/modify", :values => data)
+    end
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{
     # TODO extract spot (code) where error happened for better error handling (ruby 3.1 only)
