@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'mimemagic', '~>0'
   s.add_runtime_dependency 'get_process_mem', '~>0.2'
   s.add_runtime_dependency 'webrick', '~>1.7'
+  s.add_runtime_dependency 'msgpack', '~>1.8'
   s.add_runtime_dependency 'by', '~> 1.1', '>= 1.1.0'
   s.add_runtime_dependency 'concurrent-ruby', '~> 1.3', '>= 1.3.5'
 end

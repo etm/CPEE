@@ -12,6 +12,7 @@
 # CPEE (file COPYING in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
+require 'msgpack'
 require_relative 'attributes_helper'
 require_relative 'message'
 
@@ -30,11 +31,16 @@ module CPEE
       CPEE::Message::wait(opts[:redis],opts[:redis_dyn].call('Temporary Storage Transaction Subscriber'))
     end
 
-    def self::set_list(id,opts,item,values,deleted=[]) #{{{
+    def self::set_list(id,opts,item,values,orig=nil,deleted=[]) #{{{
       ah = AttributesHelper.new
       attributes = Persistence::extract_list(id,opts,'attributes').to_h
       dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
       endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
+      unless orig.nil?
+        values.delete_if! do |k,v|
+          orig[k] && orig[k].to_msgpack == v.to_msgpack
+        end
+      end
       CPEE::Message::send(
         :event,
         File.join(item,'change'),

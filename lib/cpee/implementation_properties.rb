@@ -424,10 +424,9 @@ module CPEE
         doc.find("/*/*").each do |ele|
           val[ele.qname.name] = ele.text unless val.has_key?(ele.qname.name)
         end
-        oldkeys = CPEE::Persistence::extract_list(id,opts,item).to_h.keys
-        newkeys = val.keys
-        del = oldkeys - newkeys
-        CPEE::Persistence::set_list(id,opts,item,val,del)
+        old = CPEE::Persistence::extract_list(id,opts,item)
+        del = old.to_h.keys - val.keys
+        CPEE::Persistence::set_list(id,opts,item,val,old,del)
       end
 
       def response
@@ -514,7 +513,7 @@ module CPEE
           @status = 410
         else
           if CPEE::Persistence::extract_item(id,opts,@r.join('/'))
-            CPEE::Persistence::set_list(id,opts,item,val,val.keys)
+            CPEE::Persistence::set_list(id,opts,item,val,val,val.keys)
           else
             @status = 404
           end
