@@ -1173,22 +1173,23 @@ async function set_testset(testset,exec) {// {{{
 
   document.dispatchEvent(model_loaded);
 
-  $.ajax({
-    type: "GET",
-    url: url + "/properties/state/",
-    dataType: "text",
-    success: function(res){
-      $.ajax({
-        type: "PUT",
-        url: url + "/properties/state/",
-        data: ({value: res}),
-        error: report_failure,
-        success: function(res){
-          if (exec) start_instance();
-        }
-      });
-    }
-  });
+  // $.ajax({
+  //   type: "GET",
+  //   url: url + "/properties/state/",
+  //   dataType: "text",
+  //   success: function(res){
+  //     console.log('xxx');
+  //     $.ajax({
+  //       type: "PUT",
+  //       url: url + "/properties/state/",
+  //       data: ({value: res}),
+  //       error: report_failure,
+  //       success: function(res){
+  //         if (exec) start_instance();
+  //       }
+  //     });
+  //   }
+  // });
 
 
 }// }}}
