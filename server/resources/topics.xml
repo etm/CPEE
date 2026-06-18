@@ -50,6 +50,7 @@
   </topic>
   <topic id='dataelements'>
     <event>change</event>
+    <event>modify</event>
   </topic>
   <topic id='endpoints'>
     <event>change</event>
