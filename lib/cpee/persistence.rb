@@ -31,15 +31,15 @@ module CPEE
       CPEE::Message::wait(opts[:redis],opts[:redis_dyn].call('Temporary Storage Transaction Subscriber'))
     end
 
-    def self::set_list(id,opts,item,values,diff=false,deleted=false,deletions=[]) #{{{
+    def self::set_list(id,opts,item,values,diff=false,delete=false,deletions=[]) #{{{
       ah = AttributesHelper.new
       attributes = Persistence::extract_list(id,opts,'attributes').to_h
       dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
       endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
       oldvalues = case item
-        when 'attributes': attributes
-        when 'endpoints': endpoints
-        when 'dataelements': dataelements
+        when 'attributes' then attributes
+        when 'endpoints' then endpoints
+        when 'dataelements' then dataelements
       end
       payload = {
         :values => oldvalues.transform_values{|val| JSON::parse(val) rescue val },
@@ -56,17 +56,13 @@ module CPEE
         opts[:redis]
       )
       if diff
-        values.delete_if! do |k,v|
-          if orig[k] && oldvalues[k] == v
-            deletions << k
-            true
-          else
-            false
-          end
+        deletions = oldvalues.keys - values.keys
+        values.delete_if do |k,v|
+          oldvalues[k] && oldvalues[k] == v
         end
       end
-      payload.delete(:values)
-      payload[:changed] = values.keys,
+      payload[:values] = values.transform_values{|val| JSON::parse(val) rescue val }
+      payload[:changed] = values.keys
       if delete
         payload[:deleted] = deletions
       end
@@ -216,7 +212,7 @@ module CPEE
       attributes = Persistence::extract_list(id,opts,'attributes').to_h
       dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
       endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
-old
+
       deleted = exis - values
 
       CPEE::Message::send(
