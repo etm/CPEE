@@ -31,15 +31,44 @@ module CPEE
       CPEE::Message::wait(opts[:redis],opts[:redis_dyn].call('Temporary Storage Transaction Subscriber'))
     end
 
-    def self::set_list(id,opts,item,values,orig=nil,deleted=[]) #{{{
+    def self::set_list(id,opts,item,values,diff=false,deleted=false,deletions=[]) #{{{
       ah = AttributesHelper.new
       attributes = Persistence::extract_list(id,opts,'attributes').to_h
       dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
       endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
-      unless orig.nil?
+      oldvalues = case item
+        when 'attributes': attributes
+        when 'endpoints': endpoints
+        when 'dataelements': dataelements
+      end
+      payload = {
+        :values => oldvalues.transform_values{|val| JSON::parse(val) rescue val },
+        :attributes => ah.translate(attributes,dataelements,endpoints),
+      }
+      CPEE::Message::send(
+        :event,
+        File.join(item,'modify'),
+        opts[:url],
+        id,
+        Persistence::extract_item(id,opts,'attributes/uuid'),
+        Persistence::extract_item(id,opts,'attributes/info'),
+        payload,
+        opts[:redis]
+      )
+      if diff
         values.delete_if! do |k,v|
-          orig[k] && orig[k].to_msgpack == v.to_msgpack
+          if orig[k] && oldvalues[k] == v
+            deletions << k
+            true
+          else
+            false
+          end
         end
+      end
+      payload.delete(:values)
+      payload[:changed] = values.keys,
+      if delete
+        payload[:deleted] = deletions
       end
       CPEE::Message::send(
         :event,
@@ -48,12 +77,7 @@ module CPEE
         id,
         Persistence::extract_item(id,opts,'attributes/uuid'),
         Persistence::extract_item(id,opts,'attributes/info'),
-        {
-          :changed => values.keys,
-          :deleted => deleted,
-          :values => values.transform_values{|val| JSON::parse(val) rescue val },
-          :attributes => ah.translate(attributes,dataelements,endpoints),
-        },
+        payload,
         opts[:redis]
       )
     end #}}}
@@ -192,7 +216,7 @@ module CPEE
       attributes = Persistence::extract_list(id,opts,'attributes').to_h
       dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
       endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
-
+old
       deleted = exis - values
 
       CPEE::Message::send(
