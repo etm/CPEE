@@ -148,9 +148,6 @@ function modifiers_select() {
           save['modifiers_active'][top] = it;
         }
         modifiers_display_ui(rep + 'modifiers/',top,it,save['modifiers_active'][top] == it);
-        // if (save['modifiers_active'][top] != it) {
-        //   modifiers_update({"target": $('select',r)});
-        // }
         save['modifiers_active'][top] = it;
       }
     });
