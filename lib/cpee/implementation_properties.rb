@@ -158,7 +158,11 @@ module CPEE
             CPEE::Properties::PutStatus::set id, opts, node.first.dump
           end
           if (node = doc.find('/p:properties/p:executionhandler')).any?
-            CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text
+            if doc.find('/p:properties/p:description/*').any?
+              CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text, false
+            else
+              CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text
+            end
           end
 
           %w{dataelements endpoints attributes}.each do |item|
