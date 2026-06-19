@@ -70,7 +70,7 @@ class Controller
                   resp << Riddl::Parameter::Complex.new(e[0],e[1][1],e[1][2])
                 end
               end
-              @callback_keys[identifier].send(:callback,resp,m['content']['headers'])
+              @callback_keys[identifier].send(:callback,resp,m['content']['headers'],dataelements)
            end
           end
           if pat == 'callback-end:*'

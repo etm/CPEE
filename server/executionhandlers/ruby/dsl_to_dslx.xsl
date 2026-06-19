@@ -91,9 +91,12 @@
     </xsl:if>
     <xsl:if test="name()='manipulate'">
       <xsl:if test="@label">
-        <xsl:text>, { :label => "</xsl:text>
-          <xsl:value-of select="@label"/>
-        <xsl:text>" }</xsl:text>
+        <xsl:text>, { </xsl:text>
+          <xsl:text>:label => "</xsl:text>
+            <xsl:value-of select="@label"/>
+          <xsl:text>", </xsl:text>
+          <xsl:apply-templates select="d:annotations" mode="annotations"/>
+        <xsl:text> }</xsl:text>
       </xsl:if>
       <xsl:call-template name="print-mcontent">
         <xsl:with-param name="myspace">

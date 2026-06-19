@@ -99,7 +99,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     }
   end #}}}
 
-  def proto_curl(parameters) #{{{
+  def proto_curl(parameters, dataelements) #{{{
     params = []
     callback = SecureRandom.hex(16)
     (parameters[:arguments] || []).each do |s|
@@ -203,11 +203,11 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       headers['CPEE_SALVAGE'] = true
       c = result[0]&.value
       c = c.read if c.respond_to? :read
-      callback([ Riddl::Parameter::Complex.new('error','application/json',StringIO.new(JSON::generate({ 'status' => status, 'error' => c }))) ], headers)
+      callback([ Riddl::Parameter::Complex.new('error','application/json',StringIO.new(JSON::generate({ 'status' => status, 'error' => c }))) ], headers, dataelements)
     else
       if headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.any?
         headers['CPEE_UPDATE'] = true
-        callback result, headers
+        callback result, headers, dataelements
       elsif headers['CPEE_CALLBACK'] && headers['CPEE_CALLBACK'] == 'true' && result.empty?
         if headers['CPEE_INSTANTIATION']
           @controller.notify("task/instantiation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => CPEE::ValueHelper.parse(headers['CPEE_INSTANTIATION']))
@@ -217,19 +217,19 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
         end
         # do nothing, later on things will happend
       else
-        callback result, headers
+        callback result, headers, dataelements
       end
     end
   end #}}}
 
-  def activity_handle(passthrough, parameters) # {{{
+  def activity_handle(passthrough, parameters, dataelements) # {{{
     raise "Wrong endpoint" if @handler_endpoint.nil? || @handler_endpoint.empty?
     @label = parameters[:label]
     @anno = parameters.delete(:annotations) rescue nil
     @controller.notify("activity/calling", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :passthrough => passthrough, :endpoint => @handler_endpoint, :parameters => parameters)
     @controller.notify("activity/annotation", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => @anno)
     if passthrough.to_s.empty?
-      proto_curl parameters
+      proto_curl parameters, dataelements
     else
       @controller.callback(self,passthrough,:'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position)
       @handler_passthrough = passthrough
@@ -274,8 +274,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     unless changed_dataelements.nil? || changed_dataelements.empty?
       de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = CPEE::EvalRuby::Translation::detect_encoding(v); (enc == 'OTHER' ? v : (v.encode('UTF-8',enc) rescue CPEE::EvalRuby::Translation::convert_to_base64(v))) }
       @controller.notify("dataelements/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => de)
-      p @anno
-      @controller.notify("task/probe", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :data => de, :probes => @anno[:_context_data_analysis]&.[](:probes))
+      if @anno[:_context_data_analysis] && @anno[:_context_data_analysis][:probes] && @anno[:_context_data_analysis][:probes].find{ |p| p.dig(:probe,:extractor_type) == 'intrinsic' }
+        @controller.notify("task/probe", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :data => dataelements, :probes => @anno[:_context_data_analysis][:probes])
+      end
     end
     unless changed_endpoints.nil? || changed_endpoints.empty?
       @controller.notify("endpoints/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_endpoints, :values => endpoints.slice(*changed_endpoints))
@@ -289,7 +290,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @controller.vote("activity/syncing_before", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters)
   end # }}}
 
-  def callback(result=nil,options={}) #{{{
+  def callback(result=nil,options={}, dataelements) #{{{
     status, ret, headers = Riddl::Client.new(@controller.url_result_transformation).request 'put' => result
     recv = if status >= 200 && status < 300
       JSON::parse(ret[0].value.read)
@@ -298,6 +299,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
 
     @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
+    if @anno[:_context_data_analysis] && @anno[:_context_data_analysis][:probes] && @anno[:_context_data_analysis][:probes].find{ |p| p.dig(:probe,:extractor_type) == 'extrinsic' }
+      @controller.notify("task/probe", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :data => dataelements, :probes => @anno[:_context_data_analysis]&.[](:probes))
+    end
 
     @guard_files += result
     @guard_files += ret
