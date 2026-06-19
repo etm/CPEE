@@ -27,14 +27,14 @@ module CPEE
       BACKEND_TEMPLATE = File.expand_path(File.join(__dir__,'backend','instance.template'))
 
       def self::dslx_to_dsl(dslx,ep) # transpile
-        trans = XML::Smart::open_unprotected(ExecutionHandler::Ruby::DSL_TO_DSLX_XSL)
+        trans = XML::Smart::open_unprotected(DSL_TO_DSLX_XSL)
         dslx.transform_with(trans).to_s
       end
 
       def self::prepare(id,opts) # write result to disk
         FileUtils.rm_rf(Dir.glob(File.join(opts[:instances],id.to_s,'*')) + Dir.glob(File.join(opts[:instances],id.to_s,'.remote')))
         Dir.mkdir(File.join(opts[:instances],id.to_s)) rescue nil
-        FileUtils.copy(ExecutionHandler::Ruby::BACKEND_RUN,File.join(opts[:instances],id.to_s))
+        FileUtils.copy(BACKEND_RUN,File.join(opts[:instances],id.to_s))
         dsl = CPEE::Persistence::extract_item(id,opts,'dsl')
         hw = CPEE::Persistence::extract_item(id,opts,'executionhandler')
         endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
@@ -44,7 +44,8 @@ module CPEE
         positions.map! do |k, v|
           [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
         end
-        iopts = YAML::load_file(ExecutionHandler::Ruby::BACKEND_OPTS)
+        iopts = YAML::load_file(BACKEND_OPTS)
+        iopts[:instance_id] = id
         iopts[:host] = opts[:host]
         iopts[:url] = opts[:url]
         iopts[:redis_url] = opts[:redis_url]
@@ -58,13 +59,26 @@ module CPEE
           iopts[:executionhandlers] = opts[:executionhandlers]
           iopts[:global_executionhandlers] = opts[:global_executionhandlers]
         end
+        iopts[:attributes] = attributes
+        iopts[:votes] = {}
+        CPEE::Persistence::extract_handlers(id,opts).each do |de|
+          if de[1] && de[1]&.empty?.!
+            CPEE::Persistence::extract_handler(id,opts,de[0]).each do |ele|
+              topic, type, name = ele.split('/')
+              if type == 'vote'
+                iopts[:votes][ele] ||= []
+                iopts[:votes][ele] << de[0]
+              end
+            end
+          end
+        end
 
-        File.open(File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_OPTS)),'w') do |f|
+        File.open(File.join(opts[:instances],id.to_s,File.basename(BACKEND_OPTS)),'w') do |f|
           YAML::dump(iopts,f)
         end
-        template = ERB.new(File.read(ExecutionHandler::Ruby::BACKEND_TEMPLATE), trim_mode: '-')
+        template = ERB.new(File.read(BACKEND_TEMPLATE), trim_mode: '-')
         res = template.result_with_hash(dsl: dsl, dataelements: dataelements, endpoints: endpoints, positions: positions)
-        File.write(File.join(opts[:instances],id.to_s,ExecutionHandler::Ruby::BACKEND_INSTANCE),res)
+        File.write(File.join(opts[:instances],id.to_s,BACKEND_INSTANCE),res)
         if attributes.has_key?('remote')
           uri = URI::parse(attributes['remote'])
           Net::SSH.start(uri.host,uri.user,:keys => [ opts[:ssh_key] ] ) do |ssh|
@@ -83,7 +97,7 @@ module CPEE
             ssh.exec!("ruby #{exe} >#{exe}.out 2>#{exe}.err &")
           end
         else
-          exe = File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_RUN))
+          exe = File.join(opts[:instances],id.to_s,File.basename(BACKEND_RUN))
           pid = Kernel.spawn(opts[:libs_preloaderrun] + ' ' + exe , :pgroup => true, :in => '/dev/null', :out => exe + '.out', :err => exe + '.err')
           Process.detach pid
           File.write(exe + '.pid',pid)
@@ -105,7 +119,7 @@ module CPEE
             end
           end
         else
-          exe = File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Ruby::BACKEND_RUN))
+          exe = File.join(opts[:instances],id.to_s,File.basename(BACKEND_RUN))
           pid = File.read(exe + '.pid') rescue nil
           if pid && (Process.kill(0, pid.to_i) rescue false)
             Process.kill('HUP', pid.to_i) rescue nil

@@ -32,6 +32,7 @@ module CPEE
       end
 
       def self::prepare(id,opts) # write result to disk
+        FileUtils.rm_rf(Dir.glob(File.join(opts[:instances],id.to_s,'*')) + Dir.glob(File.join(opts[:instances],id.to_s,'.remote')))
         Dir.mkdir(File.join(opts[:instances],id.to_s)) rescue nil
         FileUtils.copy(ExecutionHandler::Eval::BACKEND_RUN,File.join(opts[:instances],id.to_s))
         dsl = CPEE::Persistence::extract_item(id,opts,'dsl')
@@ -44,6 +45,7 @@ module CPEE
           [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
         end
         iopts = YAML::load_file(ExecutionHandler::Eval::BACKEND_OPTS)
+        iopts[:instance_id] = id
         iopts[:host] = opts[:host]
         iopts[:url] = opts[:url]
         iopts[:redis_url] = opts[:redis_url]
@@ -56,6 +58,19 @@ module CPEE
         else
           iopts[:executionhandlers] = opts[:executionhandlers]
           iopts[:global_executionhandlers] = opts[:global_executionhandlers]
+        end
+        iopts[:attributes] = attributes
+        iopts[:votes] = {}
+        CPEE::Persistence::extract_handlers(id,opts).each do |de|
+          if de[1] && de[1]&.empty?.!
+            CPEE::Persistence::extract_handler(id,opts,de[0]).each do |ele|
+              topic, type, name = ele.split('/')
+              if type == 'vote'
+                iopts[:votes][ele] ||= []
+                iopts[:votes][ele] << de[0]
+              end
+            end
+          end
         end
 
         File.open(File.join(opts[:instances],id.to_s,File.basename(ExecutionHandler::Eval::BACKEND_OPTS)),'w') do |f|

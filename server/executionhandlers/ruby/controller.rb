@@ -21,7 +21,6 @@ require 'cpee/value_helper'
 require 'cpee/attributes_helper'
 require 'cpee/message'
 require 'cpee/redis'
-require 'cpee/persistence'
 require 'get_process_mem'
 
 require 'ostruct'
@@ -42,12 +41,9 @@ class Controller
 
     @id = id
 
-    @attributes = {}
-    CPEE::Persistence::extract_list(id,opts,'attributes').each do |de|
-      @attributes[de[0]] = de[1]
-    end
-
+    @attributes = opts[:attributes]
     @attributes_helper = AttributesHelper.new
+
     @thread = nil
     @opts = opts
     @instance = nil
@@ -183,7 +179,7 @@ class Controller
     handler = File.join(topic,'vote',name)
     votes = []
 
-    CPEE::Persistence::extract_handler(id,@opts,handler).each do |client|
+    @opts[:votes][handler]&.each do |client|
       voteid = SecureRandom.hex(16)
       content[:key] = voteid
       content[:attributes] = attributes_translated
