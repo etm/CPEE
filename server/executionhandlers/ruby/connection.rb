@@ -31,9 +31,9 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
 
   def self::inform_state_change(arguments,newstate,data) # {{{
     controller = arguments[0]
-		controller.notify("state/change", :state => newstate)
-    if newstate.to_sym == :stopped || newstate.to_sym == :finished
-      @controller.notify("dataelements/modify", :values => data)
+		controller.notify('state/change', :state => newstate)
+    if newstate == :stopped || newstate == :finished
+      controller.notify('dataelements/modify', :eid => 'ex-post', :values => data)
     end
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{
