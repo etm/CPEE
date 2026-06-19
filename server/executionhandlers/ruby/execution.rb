@@ -19,7 +19,7 @@ module CPEE
 
   module ExecutionHandler
 
-    module Ruby
+    self.const_set File.basename(__dir__).capitalize, Module.new {
       BACKEND_INSTANCE = 'instance.rb'
       DSL_TO_DSLX_XSL  = File.expand_path(File.join(__dir__,'dsl_to_dslx.xsl'))
       BACKEND_RUN      = File.expand_path(File.join(__dir__,'backend','run.rb'))
@@ -130,7 +130,7 @@ module CPEE
           end
         end
       end
-    end
+    }
 
   end
 
