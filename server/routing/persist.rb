@@ -88,10 +88,11 @@ Daemonite.new do |opts|
             end
           when /event:\d+:dataelements\/change/, /event:\d+:endpoints\/change/, /event:\d+:attributes\/change/
             topic = mess.dig('topic')
+            max = opts[:redis].zrange("instance:#{instance}/#{topic}", -1, -1, :withscores => true)&.dig(0,1).to_i
             opts[:redis].multi do |multi|
               mess.dig('content','changed')&.each_with_index do |c,i|
                 unless what =~ /event:\d+:attributes\/change/ && c == 'uuid'
-                  multi.zadd("instance:#{instance}/#{topic}",i,c)
+                  multi.zadd("instance:#{instance}/#{topic}",max + 1 + i,c,nx: true)
                   if what =~ /event:\d+:dataelements\/change/
                     multi.set("instance:#{instance}/#{topic}/#{c}",CPEE::ValueHelper::generate(mess.dig('content','values',c)))
                   else

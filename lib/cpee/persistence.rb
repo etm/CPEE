@@ -66,16 +66,18 @@ module CPEE
       if delete
         payload[:deleted] = deletions
       end
-      CPEE::Message::send(
-        :event,
-        File.join(item,'change'),
-        opts[:url],
-        id,
-        Persistence::extract_item(id,opts,'attributes/uuid'),
-        Persistence::extract_item(id,opts,'attributes/info'),
-        payload,
-        opts[:redis]
-      )
+      if values.any? || deletions.any?
+        CPEE::Message::send(
+          :event,
+          File.join(item,'change'),
+          opts[:url],
+          id,
+          Persistence::extract_item(id,opts,'attributes/uuid'),
+          Persistence::extract_item(id,opts,'attributes/info'),
+          payload,
+          opts[:redis]
+        )
+      end
     end #}}}
     def self::extract_set(id,opts,item) #{{{
       opts[:redis].smembers(@@obj + ":#{id}/#{item}").map do |e|
