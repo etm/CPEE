@@ -41,15 +41,19 @@ module CPEE
         when 'endpoints' then endpoints
         when 'dataelements' then dataelements
       end
+      sort = []
       if diff
         deletions = oldvalues.keys - values.keys
+        if oldvalues.length > 1 && oldvalues.length == values.length && deletions.length == 0 && oldvalues.keys != values.keys
+          sort = values.keys
+        end
         values.delete_if do |k,v|
           oldvalues[k] && oldvalues[k] == v
         end
       end
       payload = {
         :values => oldvalues.merge(values).transform_values{|val| JSON::parse(val) rescue val },
-        :attributes => ah.translate(attributes,dataelements,endpoints),
+        :attributes => ah.translate(attributes,dataelements,endpoints)
       }
       CPEE::Message::send(
         :event,
@@ -66,7 +70,10 @@ module CPEE
       if delete
         payload[:deleted] = deletions
       end
-      if values.any? || deletions.any?
+      if sort.any?
+        payload[:sort] = sort
+      end
+      if values.any? || deletions.any? || sort.any?
         CPEE::Message::send(
           :event,
           File.join(item,'change'),

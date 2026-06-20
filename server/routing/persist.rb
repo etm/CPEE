@@ -89,6 +89,13 @@ Daemonite.new do |opts|
           when /event:\d+:dataelements\/change/, /event:\d+:endpoints\/change/, /event:\d+:attributes\/change/
             topic = mess.dig('topic')
             max = opts[:redis].zrange("instance:#{instance}/#{topic}", -1, -1, :withscores => true)&.dig(0,1).to_i
+            if (eles = mess.dig('content','sort'))&.any?
+              opts[:redis].multi do |multi|
+                eles.each_with_index do |e,i|
+                  multi.zadd("instance:#{instance}/#{topic}",i,e,xx: true)
+                end
+              end
+            end
             opts[:redis].multi do |multi|
               mess.dig('content','changed')&.each_with_index do |c,i|
                 unless what =~ /event:\d+:attributes\/change/ && c == 'uuid'
