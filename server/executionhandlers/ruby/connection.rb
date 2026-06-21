@@ -274,7 +274,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     unless changed_dataelements.nil? || changed_dataelements.empty?
       de = dataelements.slice(*changed_dataelements).transform_values { |v| enc = CPEE::EvalRuby::Translation::detect_encoding(v); (enc == 'OTHER' ? v : (v.encode('UTF-8',enc) rescue CPEE::EvalRuby::Translation::convert_to_base64(v))) }
       @controller.notify("dataelements/change", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :changed => changed_dataelements, :values => de)
-      if @anno[:_context_data_analysis] && @anno[:_context_data_analysis][:probes] && @anno[:_context_data_analysis][:probes].find{ |p| p.dig(:probe,:extractor_type) == 'intrinsic' }
+      if @anno && @anno[:_context_data_analysis] && @anno[:_context_data_analysis][:probes] && @anno[:_context_data_analysis][:probes].find{ |p| p.dig(:probe,:extractor_type) == 'intrinsic' }
         @controller.notify("task/probe", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :label => @label, :activity => @handler_position, :data => dataelements, :probes => @anno[:_context_data_analysis][:probes])
       end
     end
