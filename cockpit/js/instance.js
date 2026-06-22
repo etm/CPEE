@@ -586,13 +586,18 @@ function monitor_instance_values(type,vals) {// {{{
             var uuid = $(" > attributes > uuid",res).text();
             $("#current-log").show();
             $("#shifted-log").show();
+            $("#xml-log").show();
             $("#current-log").attr('href',$('body').attr('current-logs') + uuid + '.xes.yaml');
+            $("#xml-log").attr('href',$('body').attr('current-logs') + uuid + '.xes.xml');
             $("#shifted-log").attr('href',$('body').attr('current-logs') + uuid + '.xes.shift.yaml');
             if ($("#current-log").text() == '') {
               $("#current-log").text(uuid + '.xes.yaml');
             }
             if ($("#shifted-log").text() == '') {
               $("#shifted-log").text(uuid + '.xes.shift.yaml');
+            }
+            if ($("#xml-log").text() == '') {
+              $("#shifted-log").text(uuid + '.xes.xml');
             }
           }
         }
