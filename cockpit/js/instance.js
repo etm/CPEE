@@ -1380,9 +1380,9 @@ function format_visual_add(what,cls,sum=true) {//{{{
   if (node_state[what][cls] == undefined)
     node_state[what][cls] = 0;
   node_state[what][cls] += 1;
-  // if (sum == false && node_state[what][cls] > 1) {
-  //  node_state[what][cls] = 1;
-  // }
+  if (sum == false && node_state[what][cls] > 1) {
+    node_state[what][cls] = 1;
+  }
   format_visual_set(what);
 }//}}}
 function format_visual_remove(what,cls,sum=true) {//{{{
@@ -1391,11 +1391,11 @@ function format_visual_remove(what,cls,sum=true) {//{{{
   if (node_state[what][cls] == undefined)
     node_state[what][cls] = 0;
   node_state[what][cls] -= 1;
-  if (sum && node_state[what][cls] < 0)
+  if (node_state[what][cls] < 0)
     node_state[what][cls] = 0;
-  // if (sum == false && node_state[what][cls] < 0) {
-  //   node_state[what][cls] = 0;
-  // }
+  if (sum == false && node_state[what][cls] < 0) {
+    node_state[what][cls] = 0;
+  }
   format_visual_set(what);
 }//}}}
 
