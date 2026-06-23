@@ -215,14 +215,17 @@
       <ui-content>
         <ui-area data-belongs-to-tab="details" id='graphcolumn' oncontextmenu='return false'>
           <div id='prompt_container' class="stand_alone">
-            <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here... CTRL-ENTER or press '➤' to submit ..." placeholder="Please enter your modelling instructions here... CTRL-ENTER or press '➤' to submit ..."></div>
+            <div id='prompt' contenteditable="true" title="CTRL-ENTER or press '➤' to submit ..." placeholder="Please enter your modelling instructions here..."></div>
           </div>
           <div id='status'></div>
           <div id='llm_params' class="multi">
-            <label id="llmlabel" for="llms">Choose LLM:</label>
+             <select name="generation" id="generation" class='hidden'>
+               <option value="model" selected="selected">Only Model</option>
+               <option value="dataflow">Model and Dataflow</option>
+               <option value="endpointsfirst">Model and Dataflow Alternative</option>
+            </select>
             <select name="llms" id="llms">
-              <!--<option value="gemini-2.0-flash" selected>gemini 2 Flash</option>-->
-              <option value="gemini-2.5-flash-lite" selected>gemini 2.5 Flash Lite</option>
+              <option value="gemini-2.5-flash-lite" selected="selected">gemini 2.5 Flash Lite</option>
               <option value="gemini-2.5-flash">gemini 2.5 Flash</option>
               <option value="gemini-2.5-pro">gemini 2.5 Pro</option>
               <option value="gpt-4">gpt 4</option>
@@ -240,6 +243,7 @@
           <div><input id="loadtxt" accept=".txt" type="file"/></div>
           <div id='prompt_submit_container' class="multi">
             <button id='prompt_undo_button' class='llm_button' title='undo (reset to state before your last submit)'>&#10554;</button>
+            <button id='prompt_reset_button' title="Reset Context" class="llm_button">🗲</button>
             <button id='prompt_attach_button' class='llm_button' title='load text from (txt) file'>&#128206;</button>
             <button id='prompt_submit_button' class='llm_button' title='submit'>&#x27A4;</button>
           </div>
