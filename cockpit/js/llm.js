@@ -218,7 +218,10 @@ function create(status,prompt,llms) {
   });
 }
 
-$(document).ready(function() { //{{{
+$(document).ready(async function() { //{{{
+  let llm_inactive = await $.get('css/llm_inactive.svg', 'xml').then(function(data) { return $(data.documentElement); });
+  let llm_active = await $.get('css/llm_active.svg', 'xml').then(function(data) { return $(data.documentElement); });
+
   $(document).on('keydown','#prompt',function(e){
     clean_llm_ui($('#status'));
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
@@ -249,6 +252,23 @@ $(document).ready(function() { //{{{
   });
   $(document).on('click','#prompt_attach_button',function(e){
     document.getElementById('loadtxt').click();
+  });
+  $(document).on('click','#prompt_prop_button',function(e){
+    var menu = new CustomMenu(e);
+    var entries = [];
+    $('#llms option').each(function(){
+      entries.push({
+        label: $(this).text(),
+        menu_icon: $(this).is(':selected') ? llm_active : llm_inactive,
+        function_call: function(val){
+          $('#llms').val(val);
+          $('#llms option').removeAttr('selected');
+          $('#llms option[value="' + val + '"]').attr('selected', 'selected');
+        },
+        params: [$(this).val()]
+      });
+    });
+    menu.contextmenu({ 'LLMs': entries });
   });
   $("#loadtxt").change(function(e){
     let files = document.getElementById('loadtxt').files;
