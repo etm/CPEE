@@ -2,44 +2,42 @@ var last_generated_model = undefined;
 var last_model_before_generation =undefined;
 var default_llm = "gemini-2.5-flash-lite";
 
-function clean_llm_ui(status_id) {
-  status_div = $(`#${status_id}`);
-  status_div.empty();
-  status_div.removeClass('error').removeClass('success');
-  status_div.removeClass('error').removeClass('error');
-  status_div.removeClass('error').removeClass('loading');
-}
+function clean_llm_ui(status) { //{{{
+  status.empty();
+  status.removeClass('error').removeClass('success');
+  status.removeClass('error').removeClass('error');
+  status.removeClass('error').removeClass('loading');
+} //}}}
 
-function querying_llm_ui(status_id,llm_id='xxxx') {
-  status_div = $(`#${status_id}`);
-  let myllm = $(`#${llm_id}`).find(":selected").val();
+function querying_llm_ui(status,llm,what) { //{{{
+  console.log('rrr');
+  let myllm = llm.find(":selected").val();
+  console.log(myllm);
+  console.log(status);
   if (myllm === undefined){ myllm = default_llm; }
-  status_div.addClass('loading');
-  status_div.text('Workflow Modelling Agent Thinks (' + myllm + ')');
-}
+  status.addClass('loading');
+  status.text('Workflow Modelling Agent ' + what + ' (' + myllm + ')');
+} //}}}
 
-function add_prompt(prompt_id,content) {
-  let input = $(`#${prompt_id}`);
+function add_prompt(input,content) { //{{{
   const range = document.createRange();
   const selection = window.getSelection();
   range.selectNodeContents(input[0]);
   selection.removeAllRanges();
   selection.addRange(range);
   document.execCommand('insertText', false, content);
-}
+} //}}}
 
-function call_llm_service(status_id,prompt_id,llm_id) {
-  let input = $(`#${prompt_id}`);
-  let text = input[0].innerText;
-  let myllm = $(`#${llm_id}`).find(":selected").val();
-  if (myllm === undefined){ myllm = default_llm; }
+function call_llm_service_model(dslx,input,llm) { //{{{
   const formData = new FormData();
-  const blob1 = new Blob([save['dslx']], { type: "text/xml" });
+  const blob1 = new Blob([dslx], { type: "text/xml" });
   formData.append("rpst_xml", blob1);
-  const blob2 = new Blob([text], { type: "text/plain" });
+  const blob2 = new Blob([input], { type: "text/plain" });
   formData.append("user_input", blob2);
-  const blob3 = new Blob([myllm], { type: "text/plain" });
+  const blob3 = new Blob([llm], { type: "text/plain" });
   formData.append("llm", blob3);
+
+  let def = new $.Deferred();
 
   jQuery.ajax({
     url: $('body').attr('current-llm-service'),
@@ -49,28 +47,46 @@ function call_llm_service(status_id,prompt_id,llm_id) {
     processData: false,
     method: 'POST',
     success: function(data){
-      last_model_before_generation = save['dslx'];
-      last_generated_model = data.output_cpee;
-      let send = $X(data.output_cpee);
-      $('label',send).each((_,ele)=>{
-        if ($(ele).text() == "Start Fermenter") {
-          $(ele).parent().parent().attr('endpoint','fermenter');
-        }
-      });
-      set_cpee_model(send.serializePrettyXML(),["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee]);
-      set_success(status_id,data.status);
+      def.resolve(data);
     },
     error:  function(xhr, status, data) {
       console.log(xhr);
-      set_error(status_id,xhr.responseJSON.error);
+      def.reject(xhr);
     }
   });
 
-  input.empty();
-}
+  return def.promise();
+} //}}}
+function call_llm_service_dataflow(model,llm) { //{{{
+  const formData = new FormData();
+  const blob1 = new Blob([model], { type: "text/xml" });
+  formData.append("rpst_xml", blob1);
+  const blob2 = new Blob([llm], { type: "text/plain" });
+  formData.append("llm", blob2);
 
-function call_llm_text_service(status_id,prompt_id,llm_id,action) {
-  let myllm = $(`#${llm_id}`).find(":selected").val();
+  let def = new $.Deferred();
+
+  jQuery.ajax({
+    url: $('body').attr('current-llm-service') + '/dataflow/',
+    data: formData,
+    cache: false,
+    contentType: false,
+    processData: false,
+    method: 'POST',
+    success: function(data){
+      def.resolve(data);
+    },
+    error:  function(xhr, status, data) {
+      console.log(xhr);
+      def.reject(xhr);
+    }
+  });
+
+  return def.promise();
+} //}}}
+
+function call_llm_text_service(status,prompt,llms,action) { //{{{
+  let myllm = llms.find(":selected").val();
   if (myllm === undefined){ myllm = default_llm; }
   const info = save.attributes_raw.info;
   const formData = new FormData();
@@ -88,7 +104,7 @@ function call_llm_text_service(status_id,prompt_id,llm_id,action) {
     method: 'POST',
     success: function(data){
       if (action=="show"){
-        add_prompt(prompt_id,data["output_text"]);
+        add_prompt(prompt,data["output_text"]);
       } else if (action=="file") {
         $('#savetext').attr('download', info + '.txt');
         const encodedText = encodeURIComponent(data["output_text"]);
@@ -98,15 +114,15 @@ function call_llm_text_service(status_id,prompt_id,llm_id,action) {
         link.click();
       };
       last_model_before_generation = save['dslx'];
-      set_success(status_id,data.status);
+      set_success(status,data.status);
     },
-    error:  function(xhr, status, data) {
-      set_error(status_id,xhr.responseJSON.error);
+    error:  function(xhr, stat, data) {
+      set_error(status,xhr.responseJSON.error);
     }
   });
-}
+} //}}}
 
-function set_cpee_model(cpee_xml,expositions=[]) {
+function set_cpee_model(cpee_xml,expositions=[]) { //{{{
   const form_data = new FormData();
   const blob = new Blob([cpee_xml], { type: "text/xml" });
   form_data.append("dslx", blob);
@@ -123,82 +139,112 @@ function set_cpee_model(cpee_xml,expositions=[]) {
     processData: false,
     data: form_data
   });
-}
+} //}}}
 
-function set_success(status_id,success_text) {
-  $(`#${status_id}`).text(success_text);
-  $(`#${status_id}`).addClass('success');
-  $(`#${status_id}`).removeClass('loading');
-  $(`#${status_id}`).removeClass('error');
-}
+function set_success(status,success_text) { //{{{
+  status.text(success_text);
+  status.addClass('success');
+  status.removeClass('loading');
+  status.removeClass('error');
+} //}}}
 
-function set_error(status_id,error_text) {
+function set_error(status_id,error_text) { //{{{
   $(`#${status_id}`).text(error_text);
   $(`#${status_id}`).addClass('error');
   $(`#${status_id}`).removeClass('success');
   $(`#${status_id}`).removeClass('loading');
-}
+} //}}}
 
-function empty_model(){
+function empty_model(){ //{{{
   set_cpee_model('<description xmlns="http://cpee.org/ns/description/1.0" xmlns:a="http://cpee.org/ns/annotation/1.0"/>',["Reset Context!"]);
   $('#dat_details').empty();
-}
-function load_last_generated_model() {
+} //}}}
+function load_last_generated_model() { //{{{
   set_cpee_model(last_generated_model === undefined ? save['dslx'] : last_generated_model);
-}
-function load_last_generated_model() {
+} //}}}
+function load_last_generated_model() { //{{{
   set_cpee_model(last_generated_model === undefined ? save['dslx'] : last_generated_model);
-}
+} //}}}
 
-function load_last_model_before_generation() {
+function load_last_model_before_generation() { //{{{
   set_cpee_model(last_model_before_generation === undefined ? save['dslx'] : last_model_before_generation);
-}
+} //}}}
 
-function load_file_content(files) {
+function load_file_content(files) { //{{{
   if (typeof window.FileReader !== 'function') {
     console.log('FileReader not yet supported');
     return;
   }
   var reader = new FileReader();
   reader.onload = function(){
-    clean_llm_ui('status');
+    clean_llm_ui($('#status'));
     add_prompt('prompt',reader.result);
   }
   reader.onerror = function(){ console.log("reader error"); }
   reader.onabort = function(){ console.log("reader abort"); }
   reader.readAsText(files[0]);
+} //}}}
+
+function create(status,prompt,llms) {
+  clean_llm_ui(status);
+
+  // Imagine I want to implement a smart home system to control the lights in
+  // the dining room.  Depending on the current lighting conditions, the
+  // system would automatically adjust the brightness—either increasing or
+  // reducing it as needed—and turn the lights off completely at night.
+
+  let input = prompt.text(); prompt.empty();
+  let myllm = llms.find(":selected").val();
+  if (myllm === undefined){ myllm = default_llm; }
+
+  querying_llm_ui(status,llms,'creates model');
+  call_llm_service_model(save['dslx'],input,myllm).done((data) => {
+    let expositions = ["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee];
+    querying_llm_ui(status,llms,'selects endpoints and calculates dataflow');
+    call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
+      // for undo button
+      last_model_before_generation = save['dslx'];
+      last_generated_model = data.output_cpee;
+
+      set_cpee_model($X(data.final_cpee).serializePrettyXML(),expositions);
+      set_success(status,"Success");
+    })
+    .fail((xhr) => {
+      set_error(status,xhr.responseJSON.error);
+    });
+  })
+  .fail((xhr) => {
+    set_error(status,xhr.responseJSON.error);
+  });
 }
 
-$(document).ready(function() {
+$(document).ready(function() { //{{{
   $(document).on('keydown','#prompt',function(e){
-    clean_llm_ui('status');
+    clean_llm_ui($('#status'));
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-      querying_llm_ui('status','llms');
-      call_llm_service('status',this.id,'llms');
+      create($('#status'),$('#prompt'),$('#llms'));
     }
   });
   $(document).on('click','#prompt_submit_button',function(e){
-    clean_llm_ui('status');
-    querying_llm_ui('status','llms');
-    call_llm_service('status','prompt','llms');
+    create($('#status'),$('#prompt'),$('#llms'));
   });
   $(document).on('click','#prompt_reset_button',function(e){
-    clean_llm_ui('status');
+    clean_llm_ui($('#status'));
     empty_model();
   });
   $(document).on('click','#generate_itext_button',function(e){
-    clean_llm_ui('status');
-    querying_llm_ui('status','llms');
-    call_llm_text_service('status','prompt','llms','file');
+    clean_llm_ui($('#status'));
+    querying_llm_ui($('#status'),$('#llms'),'thinks');
+    call_llm_text_service($('#status'),'prompt','#llms','file');
   });
   $(document).on('click','#generate_text_button',function(e){
-    clean_llm_ui('status');
-    querying_llm_ui('status','llms');
-    call_llm_text_service('status','prompt','llms','show');
+    clean_llm_ui($('#status'));
+    querying_llm_ui($('#status'),$('#llms'),'thinks');
+    call_llm_text_service($('#status'),$('#prompt'),$('#llms'),'show');
   });
   $(document).on('click','#prompt_undo_button',function(e){
-    clean_llm_ui('status');
-    querying_llm_ui('status','llms');
+    clean_llm_ui($('#status'));
+    querying_llm_ui($('#status'),$('#llms'),'thinks');
     load_last_model_before_generation();
   });
   $(document).on('click','#prompt_attach_button',function(e){
@@ -213,4 +259,4 @@ $(document).ready(function() {
     e.stopPropagation();
     load_file_content(e.originalEvent.dataTransfer.files);
   });
-});
+}); //}}}

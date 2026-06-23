@@ -267,10 +267,16 @@
               <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' class='graphcolumn' width='1' height='1'></svg>
             </div>
           </div>
-          <div id='status'></div>
-          <div id='prompt_container' class="max">
-            <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here..." placeholder="Please enter your modelling instructions here..."></div>
-            <div id='prompt_submit_container' class="single"><button id='prompt_submit_button' title="CTRL-ENTER to Submit"  class="llm_button small">➤</button><button id='prompt_reset_button' title="Reset Context"  class="llm_button small">🗲</button></div>
+          <ui-resizehandle class='hidden'>drag to resize</ui-resizehandle>
+          <div id='input'>
+            <div id='status'></div>
+            <div id='prompt_container' class="max">
+              <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here..." placeholder="Please enter your modelling instructions here..."></div>
+              <div id='prompt_submit_container' class="single">
+                <button id='prompt_submit_button' title="CTRL-ENTER to Submit" class="llm_button small">➤</button>
+                <button id='prompt_reset_button' title="Reset Context"  class="llm_button small">🗲</button>
+              </div>
+            </div>
           </div>
         </ui-area>
         <ui-resizehandle data-belongs-to-tab="details" data-label="drag to resize"></ui-resizehandle>

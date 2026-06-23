@@ -156,6 +156,9 @@ function cockpit() { //{{{
         uidash_toggle_vis_tab($('#instance'));
         uidash_toggle_vis_tab($('#parameters'));
       }
+      if (q.dea || q.dea == "") {
+        uidash_toggle_vis_tab($('#instance'));
+      }
       if (q.theme) { graph_theme = q.theme; }
       if (q.position) { graph_position = q.position == 'false' ? 'false' : 'true'; }
       if (q.highlight) {
