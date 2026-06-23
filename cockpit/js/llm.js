@@ -182,7 +182,7 @@ function load_file_content(files) { //{{{
   reader.readAsText(files[0]);
 } //}}}
 
-function create(status,prompt,llms) {
+function create(status,prompt,llms,generation) {
   clean_llm_ui(status);
 
   // Imagine I want to implement a smart home system to control the lights in
@@ -192,35 +192,44 @@ function create(status,prompt,llms) {
 
   let input = prompt.text(); prompt.empty();
   let myllm = llms.find(":selected").val();
+  let gen = generation.find(":selected").val();
   if (myllm === undefined){ myllm = default_llm; }
 
   querying_llm_ui(status,llms,'creates model');
   call_llm_service_model(save['dslx'],input,myllm).done((data) => {
     let expositions = ["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee];
-    querying_llm_ui(status,llms,'selects endpoints and calculates dataflow');
-    call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
-      // for undo button
+    if (gen == "dataflow") {
+      querying_llm_ui(status,llms,'selects endpoints and calculates dataflow');
+      call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
+        let url = $('body').attr('current-instance');
+        $.ajax({
+          type: "PATCH",
+          url: url + "/properties/endpoints/",
+          contentType: 'text/xml',
+          headers: {
+            'Content-ID': 'endpoints',
+            'CPEE-Event-Source': myid
+          },
+          data: data.endpoints
+        });
+
+        // for undo button
+        last_model_before_generation = save['dslx'];
+        last_generated_model = data.output_cpee;
+        set_cpee_model($X(data.final_cpee).serializePrettyXML(),expositions);
+        set_success(status,"Success");
+      })
+      .fail((xhr) => {
+        set_error(status,xhr.responseJSON.error);
+      });
+    } else if (gen == "model") {
       last_model_before_generation = save['dslx'];
       last_generated_model = data.output_cpee;
-
-      let url = $('body').attr('current-instance');
-      $.ajax({
-        type: "PATCH",
-        url: url + "/properties/endpoints/",
-        contentType: 'text/xml',
-        headers: {
-          'Content-ID': 'endpoints',
-          'CPEE-Event-Source': myid
-        },
-        data: data.endpoints
-      });
-
-      set_cpee_model($X(data.final_cpee).serializePrettyXML(),expositions);
-      set_success(status,"Success");
-    })
-    .fail((xhr) => {
-      set_error(status,xhr.responseJSON.error);
-    });
+      set_cpee_model(data.output_cpee,expositions);
+      set_success(status,data.status);
+    } else {
+      set_success(status,"Successfully done nothing");
+    }
   })
   .fail((xhr) => {
     set_error(status,xhr.responseJSON.error);
@@ -234,11 +243,11 @@ $(document).ready(async function() { //{{{
   $(document).on('keydown','#prompt',function(e){
     clean_llm_ui($('#status'));
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-      create($('#status'),$('#prompt'),$('#llms'));
+      create($('#status'),$('#prompt'),$('#llms'),$('#generation'));
     }
   });
   $(document).on('click','#prompt_submit_button',function(e){
-    create($('#status'),$('#prompt'),$('#llms'));
+    create($('#status'),$('#prompt'),$('#llms'),$('#generation'));
   });
   $(document).on('click','#prompt_reset_button',function(e){
     clean_llm_ui($('#status'));
