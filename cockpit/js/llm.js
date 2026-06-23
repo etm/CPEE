@@ -10,10 +10,7 @@ function clean_llm_ui(status) { //{{{
 } //}}}
 
 function querying_llm_ui(status,llm,what) { //{{{
-  console.log('rrr');
   let myllm = llm.find(":selected").val();
-  console.log(myllm);
-  console.log(status);
   if (myllm === undefined){ myllm = default_llm; }
   status.addClass('loading');
   status.text('Agent ' + what + ' (' + myllm + ')');
@@ -206,7 +203,17 @@ function create(status,prompt,llms) {
       last_model_before_generation = save['dslx'];
       last_generated_model = data.output_cpee;
 
-      console.log(data.endpoints);
+      let url = $('body').attr('current-instance');
+      $.ajax({
+        type: "PATCH",
+        url: url + "/properties/endpoints/",
+        contentType: 'text/xml',
+        headers: {
+          'Content-ID': 'endpoints',
+          'CPEE-Event-Source': myid
+        },
+        data: data.endpoints
+      });
 
       set_cpee_model($X(data.final_cpee).serializePrettyXML(),expositions);
       set_success(status,"Success");

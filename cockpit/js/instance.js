@@ -521,7 +521,8 @@ function monitor_instance_values(type,vals) {// {{{
           var tmp = {};
           let deferreds = [];
           $(res).find(" > endpoints > *").each(function(k,v) {
-            save['endpoints_list'][v.localName] = v.lastChild.nodeValue;
+            let val = v.lastChild ? v.lastChild.nodeValue : '';
+            save['endpoints_list'][v.localName] = val;
             let rep = $('body').attr('current-resources');
             let def = new $.Deferred();
             deferreds.push(def);

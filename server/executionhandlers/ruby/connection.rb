@@ -299,7 +299,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
 
     @controller.notify("activity/receiving", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv)
-    if @anno[:_context_data_analysis] && @anno[:_context_data_analysis][:probes] && @anno[:_context_data_analysis][:probes].find{ |p| p.dig(:probe,:extractor_type) == 'extrinsic' }
+    if @anno && @anno[:_context_data_analysis] && @anno[:_context_data_analysis][:probes] && @anno[:_context_data_analysis][:probes].find{ |p| p.dig(:probe,:extractor_type) == 'extrinsic' }
       @controller.notify("task/probe", :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :endpoint => @handler_endpoint, :received => recv, :data => dataelements, :probes => @anno[:_context_data_analysis]&.[](:probes))
     end
 
