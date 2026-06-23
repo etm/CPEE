@@ -186,8 +186,18 @@ span.vote {
 }
 
 #modelling {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
+  height: 100%;
   overflow: scroll;
+}
+#input {
+  flex: 1 0 auto;
+  min-height: 8em;
+}
+
+#graphcolumn ui-resizehandle {
+  margin-right: 0.2em;
+  margin-bottom: 0.2em;
 }
 
 #graphcolumn {
