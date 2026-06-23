@@ -16,7 +16,7 @@ function querying_llm_ui(status,llm,what) { //{{{
   console.log(status);
   if (myllm === undefined){ myllm = default_llm; }
   status.addClass('loading');
-  status.text('Workflow Modelling Agent ' + what + ' (' + myllm + ')');
+  status.text('Agent ' + what + ' (' + myllm + ')');
 } //}}}
 
 function add_prompt(input,content) { //{{{
@@ -205,6 +205,8 @@ function create(status,prompt,llms) {
       // for undo button
       last_model_before_generation = save['dslx'];
       last_generated_model = data.output_cpee;
+
+      console.log(data.endpoints);
 
       set_cpee_model($X(data.final_cpee).serializePrettyXML(),expositions);
       set_success(status,"Success");
