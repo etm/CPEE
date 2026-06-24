@@ -276,7 +276,10 @@
                 <select name="generation" id="generation" class='hidden'>
                   <option value="model">Only Model</option>
                   <option value="dataflow" selected="selected">Model and Dataflow</option>
-                  <option value="endpointsfirst">Model and Dataflow Alternative</option>
+                </select>
+                <select name="mode" id="mode" class='hidden'>
+                  <option value="noendpoints" selected="selected">Generate/Adapt from Scratch</option>
+                  <option value="endpoints">Generate/Adapt with Endpoint Knowledge</option>
                 </select>
                 <button id='prompt_submit_button' title="CTRL-ENTER to Submit" class="llm_button small">➤</button>
                 <button id='prompt_reset_button' title="Reset Context" class="llm_button small">🗲</button>

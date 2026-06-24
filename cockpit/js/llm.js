@@ -240,6 +240,9 @@ $(document).ready(async function() { //{{{
   let llm_inactive = await $.get('css/llm_inactive.svg', 'xml').then(function(data) { return $(data.documentElement); });
   let llm_active = await $.get('css/llm_active.svg', 'xml').then(function(data) { return $(data.documentElement); });
 
+  let option_inactive = await $.get('css/mode_inactive.svg', 'xml').then(function(data) { return $(data.documentElement); });
+  let option_active = await $.get('css/mode_active.svg', 'xml').then(function(data) { return $(data.documentElement); });
+
   $(document).on('keydown','#prompt',function(e){
     clean_llm_ui($('#status'));
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
@@ -273,7 +276,22 @@ $(document).ready(async function() { //{{{
   });
   $(document).on('click','#prompt_prop_button',function(e){
     var menu = new CustomMenu(e);
-    var entries = [];
+
+    var mode_entries = [];
+    $('#mode option').each(function(){
+      mode_entries.push({
+        label: $(this).text(),
+        menu_icon: $(this).is(':selected') ? llm_active : llm_inactive,
+        function_call: function(val){
+          $('#mode').val(val);
+          $('#mode option').removeAttr('selected');
+          $('#mode option[value="' + val + '"]').attr('selected', 'selected');
+        },
+        params: [$(this).val()]
+      });
+    });
+
+    var llm_entries = [];
     $('#llms option').each(function(){
       entries.push({
         label: $(this).text(),
@@ -286,7 +304,8 @@ $(document).ready(async function() { //{{{
         params: [$(this).val()]
       });
     });
-    menu.contextmenu({ 'LLMs': entries });
+
+    menu.contextmenu({ 'Modes': mode_entries, 'LLMs': llm_entries });
   });
   $("#loadtxt").change(function(e){
     let files = document.getElementById('loadtxt').files;
