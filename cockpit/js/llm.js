@@ -25,7 +25,7 @@ function add_prompt(input,content) { //{{{
   document.execCommand('insertText', false, content);
 } //}}}
 
-function call_llm_service_model(dslx,input,llm) { //{{{
+function call_llm_service_model(dslx,input,llm,mode="noendpoints") { //{{{
   const formData = new FormData();
   const blob1 = new Blob([dslx], { type: "text/xml" });
   formData.append("rpst_xml", blob1);
@@ -33,6 +33,22 @@ function call_llm_service_model(dslx,input,llm) { //{{{
   formData.append("user_input", blob2);
   const blob3 = new Blob([llm], { type: "text/plain" });
   formData.append("llm", blob3);
+
+  len = $X(dslx).children().children().length;
+
+  if (len == 0 && mode == "noendpoints") {
+    const blob4 = new Blob(['generate'], { type: "text/plain" });
+    formData.append("prompt", blob4);
+  } else if (len > 0 && mode == "noendpoints") {
+    const blob4 = new Blob(['adapt'], { type: "text/plain" });
+    formData.append("prompt", blob4);
+  } else if (len == 0 && mode == "endpoints") {
+    const blob4 = new Blob(['generate_with_endpoints'], { type: "text/plain" });
+    formData.append("prompt", blob4);
+  } else if (len > 0 && mode == "endpoints") {
+    const blob4 = new Blob(['adapt_with_endpoints'], { type: "text/plain" });
+    formData.append("prompt", blob4);
+  }
 
   let def = new $.Deferred();
 
@@ -182,7 +198,7 @@ function load_file_content(files) { //{{{
   reader.readAsText(files[0]);
 } //}}}
 
-function create(status,prompt,llms,generation) {
+function create(status,prompt,llms,generation,mode) {
   clean_llm_ui(status);
 
   // Imagine I want to implement a smart home system to control the lights in
@@ -192,11 +208,12 @@ function create(status,prompt,llms,generation) {
 
   let input = prompt.text(); prompt.empty();
   let myllm = llms.find(":selected").val();
+  let mymode = mode.find(":selected").val();
   let gen = generation.find(":selected").val();
   if (myllm === undefined){ myllm = default_llm; }
 
   querying_llm_ui(status,llms,'creates model');
-  call_llm_service_model(save['dslx'],input,myllm).done((data) => {
+  call_llm_service_model(save['dslx'],input,myllm,mymode).done((data) => {
     let expositions = ["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee];
     if (gen == "dataflow") {
       querying_llm_ui(status,llms,'selects endpoints and calculates dataflow');
@@ -240,17 +257,17 @@ $(document).ready(async function() { //{{{
   let llm_inactive = await $.get('css/llm_inactive.svg', 'xml').then(function(data) { return $(data.documentElement); });
   let llm_active = await $.get('css/llm_active.svg', 'xml').then(function(data) { return $(data.documentElement); });
 
-  let option_inactive = await $.get('css/mode_inactive.svg', 'xml').then(function(data) { return $(data.documentElement); });
-  let option_active = await $.get('css/mode_active.svg', 'xml').then(function(data) { return $(data.documentElement); });
+  let mode_inactive = await $.get('css/mode_inactive.svg', 'xml').then(function(data) { return $(data.documentElement); });
+  let mode_active = await $.get('css/mode_active.svg', 'xml').then(function(data) { return $(data.documentElement); });
 
   $(document).on('keydown','#prompt',function(e){
     clean_llm_ui($('#status'));
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-      create($('#status'),$('#prompt'),$('#llms'),$('#generation'));
+      create($('#status'),$('#prompt'),$('#llms'),$('#generation'),$('#mode'));
     }
   });
   $(document).on('click','#prompt_submit_button',function(e){
-    create($('#status'),$('#prompt'),$('#llms'),$('#generation'));
+    create($('#status'),$('#prompt'),$('#llms'),$('#generation'),$('#mode'));
   });
   $(document).on('click','#prompt_reset_button',function(e){
     clean_llm_ui($('#status'));
@@ -281,7 +298,7 @@ $(document).ready(async function() { //{{{
     $('#mode option').each(function(){
       mode_entries.push({
         label: $(this).text(),
-        menu_icon: $(this).is(':selected') ? llm_active : llm_inactive,
+        menu_icon: $(this).is(':selected') ? mode_active : mode_inactive,
         function_call: function(val){
           $('#mode').val(val);
           $('#mode option').removeAttr('selected');
@@ -293,7 +310,7 @@ $(document).ready(async function() { //{{{
 
     var llm_entries = [];
     $('#llms option').each(function(){
-      entries.push({
+      llm_entries.push({
         label: $(this).text(),
         menu_icon: $(this).is(':selected') ? llm_active : llm_inactive,
         function_call: function(val){
@@ -305,7 +322,7 @@ $(document).ready(async function() { //{{{
       });
     });
 
-    menu.contextmenu({ 'Modes': mode_entries, 'LLMs': llm_entries });
+    menu.contextmenu({ 'Models': mode_entries, 'LLMs': llm_entries });
   });
   $("#loadtxt").change(function(e){
     let files = document.getElementById('loadtxt').files;
