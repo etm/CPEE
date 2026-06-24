@@ -233,6 +233,7 @@ function create(status,prompt,llms,generation,mode) {
         // for undo button
         last_model_before_generation = save['dslx'];
         last_generated_model = data.output_cpee;
+        expositions.push("# Dataflow:\n"+data.dataflow);
         set_cpee_model($X(data.final_cpee).serializePrettyXML(),expositions);
         set_success(status,"Success");
       })
