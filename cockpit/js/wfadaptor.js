@@ -879,7 +879,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     let start = performance.now();
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
+    var graph = parse($(description.get(0).documentElement).clone(true).get(0), {'row':0,'col':0,final:false,wide:false});
     illustrator.set_svg(graph);
     self.set_labels(graph);
     illustrator.set_duration(start);
@@ -932,7 +932,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     let start = performance.now();
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+    var graph = parse($(description.get(0).documentElement).clone(true).get(0), {'row':0,'col':0,final:false,wide:false});
     illustrator.set_svg(graph);
     self.set_labels(graph);
     illustrator.set_duration(start);
@@ -943,7 +943,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     let start = performance.now();
     illustrator.clear();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
+    var graph = parse($(description.get(0).documentElement).clone(true).get(0), {'row':0,'col':0,final:false,wide:false});
     illustrator.set_svg(graph);
     self.set_labels(graph);
     illustrator.set_duration(start);
@@ -954,7 +954,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       let start = performance.now();
       labels = [];
       illustrator.clear();
-      var graph = parse(description.children('description').get(0), {'row':0,'col':0});
+      var graph = parse($(description.get(0).documentElement).clone(true).get(0), {'row':0,'col':0,final:false,wide:false});
       illustrator.set_svg(graph);
       self.set_labels(graph);
       illustrator.set_duration(start);
