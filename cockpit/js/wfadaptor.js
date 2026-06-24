@@ -850,6 +850,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var adaptor;
   var illustrator;
   var description;
+  var orig_description;
   var id_counter = {};
   var update_illustrator = true;
   var labels = [];
@@ -875,11 +876,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       alert("WfDescription: unknown description type:\nConstructor-Name: " + desc.constructor + " / TypeOf: " + (typeof desc));
       description = null;
     }
+    orig_description = $($X(description.serializeXML()).get(0).ownerDocument);
     id_counter = {};
     labels = [];
     let start = performance.now();
     illustrator.clear();
-    var graph = parse($(description.get(0).documentElement).clone(true).get(0), {'row':0,'col':0,final:false,wide:false});
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
     illustrator.set_svg(graph);
     self.set_labels(graph);
     illustrator.set_duration(start);
@@ -932,7 +934,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     let start = performance.now();
     illustrator.clear();
-    var graph = parse($(description.get(0).documentElement).clone(true).get(0), {'row':0,'col':0,final:false,wide:false});
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
     illustrator.set_svg(graph);
     self.set_labels(graph);
     illustrator.set_duration(start);
@@ -940,10 +942,22 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   }
   var redraw = this.redraw = function(){
     id_counter = {};
-    labels = [];
     let start = performance.now();
+    labels = [];
     illustrator.clear();
-    var graph = parse($(description.get(0).documentElement).clone(true).get(0), {'row':0,'col':0,final:false,wide:false});
+    $('*[svg-id]',description).each(function(){
+      $(this).removeAttr('svg-id');
+    });
+    $('*[svg-type]',description).each(function(){
+      $(this).removeAttr('svg-type');
+    });
+    $('*[svg-subtype]',description).each(function(){
+      $(this).removeAttr('svg-subtype');
+    });
+    $('*[svg-label]',description).each(function(){
+      $(this).removeAttr('svg-label');
+    });
+    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
     illustrator.set_svg(graph);
     self.set_labels(graph);
     illustrator.set_duration(start);
@@ -954,7 +968,19 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       let start = performance.now();
       labels = [];
       illustrator.clear();
-      var graph = parse($(description.get(0).documentElement).clone(true).get(0), {'row':0,'col':0,final:false,wide:false});
+      $('*[svg-id]',description).each(function(){
+        $(this).removeAttr('svg-id');
+      });
+      $('*[svg-type]',description).each(function(){
+        $(this).removeAttr('svg-type');
+      });
+      $('*[svg-subtype]',description).each(function(){
+        $(this).removeAttr('svg-subtype');
+      });
+      $('*[svg-label]',description).each(function(){
+        $(this).removeAttr('svg-label');
+      });
+      var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
       illustrator.set_svg(graph);
       self.set_labels(graph);
       illustrator.set_duration(start);
