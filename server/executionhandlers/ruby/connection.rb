@@ -434,7 +434,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     __struct = if status >= 200 && status < 300
       ret.empty? ? nil : JSON::parse(ret[0].value.read)
     else
-      code_error_handling ret, 'Condition ' + code, WEEL::Signal::Error
+      code_error_handling ret, 'Condition ' + __code, WEEL::Signal::Error
     end
     __struct = 'false' unless __struct
     __struct = (__struct == 'false' || __struct == 'null' || __struct == 'nil' || __struct == false ? false : true)
