@@ -97,6 +97,33 @@ function call_llm_service_dataflow(model,llm) { //{{{
 
   return def.promise();
 } //}}}
+function call_llm_service_validation(model,llm) { //{{{
+  const formData = new FormData();
+  const blob1 = new Blob([model], { type: "text/xml" });
+  formData.append("rpst_xml", blob1);
+  const blob2 = new Blob([llm], { type: "text/plain" });
+  formData.append("llm", blob2);
+
+  let def = new $.Deferred();
+
+  jQuery.ajax({
+    url: $('body').attr('current-llm-service') + '/validate/xml/',
+    data: formData,
+    cache: false,
+    contentType: false,
+    processData: false,
+    method: 'POST',
+    success: function(data){
+      def.resolve(data);
+    },
+    error:  function(xhr, status, data) {
+      console.log(xhr);
+      def.reject(xhr);
+    }
+  });
+
+  return def.promise();
+} //}}}
 
 function call_llm_text_service(status,prompt,llms,action) { //{{{
   let myllm = llms.find(":selected").val();
@@ -230,12 +257,16 @@ function create(status,prompt,llms,generation,mode) {
           data: data.endpoints
         });
 
-        // for undo button
-        last_model_before_generation = save['dslx'];
-        last_generated_model = data.output_cpee;
+        querying_llm_ui(status,llms,'validates dataflow');
         expositions.push("# Dataflow:\n"+data.dataflow);
-        set_cpee_model($X(data.final_cpee).serializePrettyXML(),expositions);
-        set_success(status,"Success");
+        call_llm_service_validation($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
+          // for undo button
+          last_model_before_generation = save['dslx'];
+          last_generated_model = data.output_cpee;
+          set_cpee_model($X(data.output_cpee).serializePrettyXML(),expositions);
+          set_success(status,data.status);
+        });
+
       })
       .fail((xhr) => {
         set_error(status,xhr.responseJSON.error);
