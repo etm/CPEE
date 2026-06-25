@@ -934,6 +934,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     labels = [];
     let start = performance.now();
     illustrator.clear();
+    clean_description();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
     illustrator.set_svg(graph);
     self.set_labels(graph);
@@ -945,18 +946,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     let start = performance.now();
     labels = [];
     illustrator.clear();
-    $('*[svg-id]',description).each(function(){
-      $(this).removeAttr('svg-id');
-    });
-    $('*[svg-type]',description).each(function(){
-      $(this).removeAttr('svg-type');
-    });
-    $('*[svg-subtype]',description).each(function(){
-      $(this).removeAttr('svg-subtype');
-    });
-    $('*[svg-label]',description).each(function(){
-      $(this).removeAttr('svg-label');
-    });
+    clean_description();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
     illustrator.set_svg(graph);
     self.set_labels(graph);
@@ -968,18 +958,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       let start = performance.now();
       labels = [];
       illustrator.clear();
-      $('*[svg-id]',description).each(function(){
-        $(this).removeAttr('svg-id');
-      });
-      $('*[svg-type]',description).each(function(){
-        $(this).removeAttr('svg-type');
-      });
-      $('*[svg-subtype]',description).each(function(){
-        $(this).removeAttr('svg-subtype');
-      });
-      $('*[svg-label]',description).each(function(){
-        $(this).removeAttr('svg-label');
-      });
+      clean_description();
       var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false});
       illustrator.set_svg(graph);
       self.set_labels(graph);
@@ -1059,6 +1038,20 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
   // }}}
   // Helper Functions {{{
+  var clean_description = function() { // private {{{
+    $('*[svg-id]',description).each(function(){
+      $(this).removeAttr('svg-id');
+    });
+    $('*[svg-type]',description).each(function(){
+      $(this).removeAttr('svg-type');
+    });
+    $('*[svg-subtype]',description).each(function(){
+      $(this).removeAttr('svg-subtype');
+    });
+    $('*[svg-label]',description).each(function(){
+      $(this).removeAttr('svg-label');
+    });
+  } //}}}
   var parse = function(root, parent_pos)  { // private {{{
     var pos = JSON.parse(JSON.stringify(parent_pos));
     var max = {'row': 0,'col': 0};
