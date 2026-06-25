@@ -849,6 +849,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var self = this;
   var adaptor;
   var illustrator;
+  var used_id_list = [];
   var description;
   var orig_description;
   var id_counter = {};
@@ -912,6 +913,11 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   var context_eval = this.context_eval = function(what) { // {{{
     return eval(what);
   } // }}}
+
+  var reset_used_id_list = this.reset_used_id_list = function() { // {{{
+    console.log('bbbbb');
+    used_id_list = [];
+  } // }}}
   var get_free_id = this.get_free_id = function(prefix,aname,other) { // {{{
     var existing = new Array();
     if (other) {
@@ -927,6 +933,10 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     while ($.inArray(prefix + id,existing) != -1) {
       id += 1;
     }
+    while ($.inArray(prefix + id,used_id_list) != -1) {
+      id += 1;
+    }
+    used_id_list.push(prefix + id);
     return prefix + id;
   } // }}}
   var refresh = this.refresh = function(doit) {

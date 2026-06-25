@@ -14,6 +14,7 @@ function WFAdaptorManifestationBase(adaptor) {
   this.source = function(base,opts) {
     if (base[0].namespaceURI == "http://relaxng.org/ns/structure/1.0") {
       $('#relaxngworker').empty();
+      self.adaptor.description.reset_used_id_list();
       var rngw = new RelaxNGui(base,$('#relaxngworker'),self.adaptor.description.context_eval);
       var nnew = $(rngw.save().documentElement);
       return(nnew);
