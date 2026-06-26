@@ -63,7 +63,6 @@ function call_llm_service_model(dslx,input,llm,mode="noendpoints") { //{{{
       def.resolve(data);
     },
     error:  function(xhr, status, data) {
-      console.log(xhr);
       def.reject(xhr);
     }
   });
@@ -90,7 +89,6 @@ function call_llm_service_dataflow(model,llm) { //{{{
       def.resolve(data);
     },
     error:  function(xhr, status, data) {
-      console.log(xhr);
       def.reject(xhr);
     }
   });
@@ -117,7 +115,6 @@ function call_llm_service_validation(model,llm) { //{{{
       def.resolve(data);
     },
     error:  function(xhr, status, data) {
-      console.log(xhr);
       def.reject(xhr);
     }
   });
@@ -188,11 +185,11 @@ function set_success(status,success_text) { //{{{
   status.removeClass('error');
 } //}}}
 
-function set_error(status_id,error_text) { //{{{
-  $(`#${status_id}`).text(error_text);
-  $(`#${status_id}`).addClass('error');
-  $(`#${status_id}`).removeClass('success');
-  $(`#${status_id}`).removeClass('loading');
+function set_error(status,error_text) { //{{{
+  status.text(error_text);
+  status.addClass('error');
+  status.removeClass('success');
+  status.removeClass('loading');
 } //}}}
 
 function empty_model(){ //{{{
