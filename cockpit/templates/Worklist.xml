@@ -165,7 +165,12 @@
             <priority>1</priority>
             <handling>single</handling>
             <restrictions/>
-            <data/>
+            <data>
+              <location>data.location</location>
+              <description>data.description</description>
+              <materials_needed>data.materials_needed</materials_needed>
+              <materials_list>data.materials_list</materials_list>
+            </data>
           </arguments>
         </parameters>
         <code>
@@ -224,7 +229,10 @@
                 <priority>1</priority>
                 <handling>single</handling>
                 <restrictions/>
-                <data/>
+                <data>
+                  <materials_list>data.materials_list</materials_list>
+                  <materials_issued>data.materials_issued</materials_issued>
+                </data>
               </arguments>
             </parameters>
             <code>
@@ -289,7 +297,9 @@
             <priority>1</priority>
             <handling>single</handling>
             <restrictions/>
-            <data/>
+            <data>
+              <repair_notes>data.repair_notes</repair_notes>
+            </data>
           </arguments>
         </parameters>
         <code>
@@ -347,7 +357,11 @@
               <priority>1</priority>
               <handling>single</handling>
               <restrictions/>
-              <data/>
+              <data>
+                <satisfied>data.satisfied</satisfied>
+                <rating>data.rating</rating>
+                <feedback>data.feedback</feedback>
+              </data>
             </arguments>
           </parameters>
           <code>
