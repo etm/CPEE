@@ -43,8 +43,10 @@
             <handling>single</handling>
             <restrictions/>
             <data>
-              <schaden>10000</schaden>
-              <text>destroyed</text>
+              <location>data.location</location>
+              <category>data.category</category>
+              <description>data.description</description>
+              <urgency>data.urgency</urgency>
             </data>
           </arguments>
         </parameters>
@@ -102,7 +104,11 @@
             <priority>1</priority>
             <handling>single</handling>
             <restrictions/>
-            <data/>
+            <data>
+              <location>data.location</location>
+              <priority>data.priority</priority>
+              <technician_id>data.technician_id</technician_id>
+            </data>
           </arguments>
         </parameters>
         <code>
