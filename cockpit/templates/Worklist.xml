@@ -43,7 +43,13 @@
               <priority>1</priority>
               <handling>single</handling>
               <restrictions/>
-              <data/>
+              <data>
+                <location>data.location</location>
+                <category>data.category</category>
+                <description>data.description</description>
+                <urgency>data.urgency</urgency>
+                <admin_note>data.admin_note</admin_note>
+              </data>
             </arguments>
           </parameters>
           <code>
@@ -100,7 +106,16 @@
               <priority>1</priority>
               <handling>single</handling>
               <restrictions/>
-              <data/>
+              <data>
+                <location>data.location</location>
+                <category>data.category</category>
+                <description>data.description</description>
+                <urgency>data.urgency</urgency>
+                <admin_decision>data.admin_decision</admin_decision>
+                <admin_note>data.admin_note</admin_note>
+                <priority>data.priority</priority>
+                <technician_id>data.technician_id</technician_id>
+              </data>
             </arguments>
           </parameters>
           <code>
