@@ -36,7 +36,7 @@
           <label>Student submits request</label>
           <color/>
           <arguments>
-            <orgmodel>https://cpee.org/~demo/orgviz/organisation_informatik.xml</orgmodel>
+            <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
             <form>https://cpee.org/~demo/form/form-f.html</form>
             <role>Student</role>
             <priority>42</priority>
@@ -98,7 +98,7 @@
           <label>Admin review &amp; dispatch</label>
           <color/>
           <arguments>
-            <orgmodel/>
+            <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
             <form/>
             <role>Admin</role>
             <priority>1</priority>
@@ -159,7 +159,7 @@
           <label>Technician on-site assessment</label>
           <color/>
           <arguments>
-            <orgmodel/>
+            <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
             <form/>
             <role>Technician</role>
             <priority>1</priority>
@@ -223,7 +223,7 @@
               <label>Inventory approval</label>
               <color/>
               <arguments>
-                <orgmodel/>
+                <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
                 <form/>
                 <role>Inventory Manager</role>
                 <priority>1</priority>
@@ -291,7 +291,7 @@
           <label>Carry out repair &amp; mark complete</label>
           <color/>
           <arguments>
-            <orgmodel/>
+            <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
             <form/>
             <role>Technician</role>
             <priority>1</priority>
@@ -351,7 +351,7 @@
             <label>Student confirmation &amp; rating</label>
             <color/>
             <arguments>
-              <orgmodel/>
+              <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
               <form/>
               <role>Student</role>
               <priority>1</priority>
