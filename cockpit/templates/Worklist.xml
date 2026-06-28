@@ -31,7 +31,18 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <loop eid="e5" mode="post_test" condition="">
+      <loop eid="e5" mode="post_test" condition="data.admin_decision == &quot;approved&quot; || data.admin_decision == &quot;rejected&quot;">
+        <_probability>
+          <_probability_min/>
+          <_probability_max/>
+          <_probability_avg/>
+        </_probability>
+        <_annotations>
+          <_generic/>
+          <_logging_behavior>
+            <_iteration>false</_iteration>
+          </_logging_behavior>
+        </_annotations>
         <call id="a7" endpoint="worklist">
           <parameters>
             <label>Student submits request</label>
@@ -161,18 +172,18 @@
             </code>
           </documentation>
         </call>
-        <_probability>
-          <_probability_min/>
-          <_probability_max/>
-          <_probability_avg/>
-        </_probability>
-        <_annotations>
-          <_generic/>
-          <_logging_behavior>
-            <_iteration>false</_iteration>
-          </_logging_behavior>
-        </_annotations>
       </loop>
+      <choose eid="e6" mode="exclusive" label="">
+        <alternative eid="e7" condition="data.admin_decision == &quot;rejected&quot;">
+          <terminate eid="e9" abandon="false"/>
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
+        </alternative>
+        <otherwise eid="e8"/>
+      </choose>
       <call id="a4" endpoint="worklist">
         <parameters>
           <label>Technician on-site assessment</label>
