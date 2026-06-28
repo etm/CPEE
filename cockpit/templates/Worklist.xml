@@ -31,136 +31,140 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <call id="a1" endpoint="worklist">
-        <parameters>
-          <label>Student submits request</label>
-          <color/>
-          <arguments>
-            <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-            <form>https://cpee.org/~demo/form/form-f.html</form>
-            <role>Student</role>
-            <priority>42</priority>
-            <handling>single</handling>
-            <restrictions/>
-            <data>
-              <location>data.location</location>
-              <category>data.category</category>
-              <description>data.description</description>
-              <urgency>data.urgency</urgency>
-            </data>
-          </arguments>
-        </parameters>
-        <code>
-          <signal>false</signal>
-          <prepare/>
-          <finalize output="result">data.bla = result</finalize>
-          <update output="result"/>
-          <rescue output="result"/>
-        </code>
-        <annotations>
+      <loop eid="e5" mode="post_test" condition="">
+        <call id="a7" endpoint="worklist">
+          <parameters>
+            <label>Student submits request</label>
+            <color/>
+            <arguments>
+              <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
+              <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/student_request.html</form>
+              <role>Student</role>
+              <priority>1</priority>
+              <handling>single</handling>
+              <restrictions/>
+              <data/>
+            </arguments>
+          </parameters>
+          <code>
+            <signal>false</signal>
+            <prepare/>
+            <finalize output="result"/>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_logging_behavior>
+              <_exclude>false</_exclude>
+              <_include>false</_include>
+            </_logging_behavior>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+        <call id="a8" endpoint="worklist">
+          <parameters>
+            <label>Admin review &amp; dispatch</label>
+            <color/>
+            <arguments>
+              <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
+              <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/admin_review.html</form>
+              <role>Admin</role>
+              <priority>1</priority>
+              <handling>single</handling>
+              <restrictions/>
+              <data/>
+            </arguments>
+          </parameters>
+          <code>
+            <signal>false</signal>
+            <prepare/>
+            <finalize output="result"/>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_logging_behavior>
+              <_exclude>false</_exclude>
+              <_include>false</_include>
+            </_logging_behavior>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+        <_probability>
+          <_probability_min/>
+          <_probability_max/>
+          <_probability_avg/>
+        </_probability>
+        <_annotations>
           <_generic/>
           <_logging_behavior>
-            <_exclude>false</_exclude>
-            <_include>false</_include>
+            <_iteration>false</_iteration>
           </_logging_behavior>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_shifting>
-            <_shifting_type>Duration</_shifting_type>
-          </_shifting>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <call id="a2" endpoint="worklist">
-        <parameters>
-          <label>Admin review &amp; dispatch</label>
-          <color/>
-          <arguments>
-            <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-            <form/>
-            <role>Admin</role>
-            <priority>1</priority>
-            <handling>single</handling>
-            <restrictions/>
-            <data>
-              <location>data.location</location>
-              <priority>data.priority</priority>
-              <technician_id>data.technician_id</technician_id>
-            </data>
-          </arguments>
-        </parameters>
-        <code>
-          <signal>false</signal>
-          <prepare/>
-          <finalize output="result"/>
-          <update output="result"/>
-          <rescue output="result"/>
-        </code>
-        <annotations>
-          <_generic/>
-          <_logging_behavior>
-            <_exclude>false</_exclude>
-            <_include>false</_include>
-          </_logging_behavior>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_shifting>
-            <_shifting_type>Duration</_shifting_type>
-          </_shifting>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
+        </_annotations>
+      </loop>
       <call id="a4" endpoint="worklist">
         <parameters>
           <label>Technician on-site assessment</label>
           <color/>
           <arguments>
             <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-            <form/>
+            <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/technician_assessment.html</form>
             <role>Technician</role>
             <priority>1</priority>
             <handling>single</handling>
@@ -224,7 +228,7 @@
               <color/>
               <arguments>
                 <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-                <form/>
+                <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/inventory_approval.html</form>
                 <role>Inventory Manager</role>
                 <priority>1</priority>
                 <handling>single</handling>
@@ -292,7 +296,7 @@
           <color/>
           <arguments>
             <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-            <form/>
+            <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/repair_complete.html</form>
             <role>Technician</role>
             <priority>1</priority>
             <handling>single</handling>
@@ -352,7 +356,7 @@
             <color/>
             <arguments>
               <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-              <form/>
+              <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/student_confirmation.html</form>
               <role>Student</role>
               <priority>1</priority>
               <handling>single</handling>
