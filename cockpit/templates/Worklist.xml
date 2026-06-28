@@ -1,7 +1,21 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements/>
+  <dataelements>
+    <location/>
+    <category/>
+    <description/>
+    <urgency/>
+    <priority/>
+    <technician_id/>
+    <materials_needed>false</materials_needed>
+    <materials_list/>
+    <materials_issued>false</materials_issued>
+    <repair_notes/>
+    <satisfied>false</satisfied>
+    <rating/>
+    <feedback/>
+  </dataelements>
   <endpoints>
     <worklist>https-post://cpee.org/worklist/server/</worklist>
   </endpoints>
@@ -19,11 +33,12 @@
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="worklist">
         <parameters>
-          <label>OK OR NOT OK</label>
+          <label>Student submits request</label>
+          <color/>
           <arguments>
             <orgmodel>https://cpee.org/~demo/orgviz/organisation_informatik.xml</orgmodel>
             <form>https://cpee.org/~demo/form/form-f.html</form>
-            <role>Assistant</role>
+            <role>Student</role>
             <priority>42</priority>
             <handling>single</handling>
             <restrictions/>
@@ -34,6 +49,7 @@
           </arguments>
         </parameters>
         <code>
+          <signal>false</signal>
           <prepare/>
           <finalize output="result">data.bla = result</finalize>
           <update output="result"/>
@@ -41,6 +57,10 @@
         </code>
         <annotations>
           <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
           <_timing>
             <_timing_weight/>
             <_timing_avg/>
@@ -71,6 +91,314 @@
           </code>
         </documentation>
       </call>
+      <call id="a2" endpoint="worklist">
+        <parameters>
+          <label>Admin review &amp; dispatch</label>
+          <color/>
+          <arguments>
+            <orgmodel/>
+            <form/>
+            <role>Admin</role>
+            <priority>1</priority>
+            <handling>single</handling>
+            <restrictions/>
+            <data/>
+          </arguments>
+        </parameters>
+        <code>
+          <signal>false</signal>
+          <prepare/>
+          <finalize output="result"/>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <call id="a4" endpoint="worklist">
+        <parameters>
+          <label>Technician on-site assessment</label>
+          <color/>
+          <arguments>
+            <orgmodel/>
+            <form/>
+            <role>Technician</role>
+            <priority>1</priority>
+            <handling>single</handling>
+            <restrictions/>
+            <data/>
+          </arguments>
+        </parameters>
+        <code>
+          <signal>false</signal>
+          <prepare/>
+          <finalize output="result"/>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <choose eid="e1" mode="exclusive" label="Materials needed?">
+        <alternative eid="e2" condition="data.materials_needed == true">
+          <call id="a5" endpoint="worklist">
+            <parameters>
+              <label>Inventory approval</label>
+              <color/>
+              <arguments>
+                <orgmodel/>
+                <form/>
+                <role>Inventory Manager</role>
+                <priority>1</priority>
+                <handling>single</handling>
+                <restrictions/>
+                <data/>
+              </arguments>
+            </parameters>
+            <code>
+              <signal>false</signal>
+              <prepare/>
+              <finalize output="result"/>
+              <update output="result"/>
+              <rescue output="result"/>
+            </code>
+            <annotations>
+              <_generic/>
+              <_logging_behavior>
+                <_exclude>false</_exclude>
+                <_include>false</_include>
+              </_logging_behavior>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_shifting>
+                <_shifting_type>Duration</_shifting_type>
+              </_shifting>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+          <_probability>
+            <_probability_min/>
+            <_probability_max/>
+            <_probability_avg/>
+          </_probability>
+        </alternative>
+        <otherwise eid="e3"/>
+      </choose>
+      <call id="a3" endpoint="worklist">
+        <parameters>
+          <label>Carry out repair &amp; mark complete</label>
+          <color/>
+          <arguments>
+            <orgmodel/>
+            <form/>
+            <role>Technician</role>
+            <priority>1</priority>
+            <handling>single</handling>
+            <restrictions/>
+            <data/>
+          </arguments>
+        </parameters>
+        <code>
+          <signal>false</signal>
+          <prepare/>
+          <finalize output="result"/>
+          <update output="result"/>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <loop eid="e4" mode="post_test" condition="data.satisfied == true">
+        <call id="a6" endpoint="worklist">
+          <parameters>
+            <label>Student confirmation &amp; rating</label>
+            <color/>
+            <arguments>
+              <orgmodel/>
+              <form/>
+              <role>Student</role>
+              <priority>1</priority>
+              <handling>single</handling>
+              <restrictions/>
+              <data/>
+            </arguments>
+          </parameters>
+          <code>
+            <signal>false</signal>
+            <prepare/>
+            <finalize output="result"/>
+            <update output="result"/>
+            <rescue output="result"/>
+          </code>
+          <annotations>
+            <_generic/>
+            <_logging_behavior>
+              <_exclude>false</_exclude>
+              <_include>false</_include>
+            </_logging_behavior>
+            <_timing>
+              <_timing_weight/>
+              <_timing_avg/>
+              <explanations/>
+            </_timing>
+            <_shifting>
+              <_shifting_type>Duration</_shifting_type>
+            </_shifting>
+            <_context_data_analysis>
+              <probes/>
+              <ips/>
+            </_context_data_analysis>
+            <report>
+              <url/>
+            </report>
+            <_notes>
+              <_notes_general/>
+            </_notes>
+          </annotations>
+          <documentation>
+            <input/>
+            <output/>
+            <implementation>
+              <description/>
+            </implementation>
+            <code>
+              <description/>
+            </code>
+          </documentation>
+        </call>
+        <_probability>
+          <_probability_min/>
+          <_probability_max/>
+          <_probability_avg/>
+        </_probability>
+        <_annotations>
+          <_generic/>
+          <_logging_behavior>
+            <_iteration>false</_iteration>
+          </_logging_behavior>
+        </_annotations>
+      </loop>
     </description>
   </description>
   <transformation>
