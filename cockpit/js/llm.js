@@ -25,7 +25,7 @@ function add_prompt(input,content) { //{{{
   document.execCommand('insertText', false, content);
 } //}}}
 
-function call_llm_service_model(dslx,input,llm,mode="noendpoints") { //{{{
+function call_llm_service_model(dslx,input,llm,prompt_type) { //{{{
   const formData = new FormData();
   const blob1 = new Blob([dslx], { type: "text/xml" });
   formData.append("rpst_xml", blob1);
@@ -33,22 +33,8 @@ function call_llm_service_model(dslx,input,llm,mode="noendpoints") { //{{{
   formData.append("user_input", blob2);
   const blob3 = new Blob([llm], { type: "text/plain" });
   formData.append("llm", blob3);
-
-  len = $X(dslx).children().children().length;
-
-  if (len == 0 && mode == "noendpoints") {
-    const blob4 = new Blob(['generate'], { type: "text/plain" });
-    formData.append("prompt", blob4);
-  } else if (len > 0 && mode == "noendpoints") {
-    const blob4 = new Blob(['adapt'], { type: "text/plain" });
-    formData.append("prompt", blob4);
-  } else if (len == 0 && mode == "endpoints") {
-    const blob4 = new Blob(['generate_with_endpoints'], { type: "text/plain" });
-    formData.append("prompt", blob4);
-  } else if (len > 0 && mode == "endpoints") {
-    const blob4 = new Blob(['adapt_with_endpoints'], { type: "text/plain" });
-    formData.append("prompt", blob4);
-  }
+  const blob4 = new Blob([prompt_type], { type: "text/plain" });
+  formData.append("promp_type", blob4);
 
   let def = new $.Deferred();
 
@@ -232,12 +218,18 @@ function create(status,prompt,llms,generation,mode) {
 
   let input = prompt.text(); prompt.empty();
   let myllm = llms.find(":selected").val();
-  let mymode = mode.find(":selected").val();
+  let prompt_type = mode.find(":selected").val();
   let gen = generation.find(":selected").val();
   if (myllm === undefined){ myllm = default_llm; }
 
+  if ($X(save['dslx']).get(0).childElementCount == 0) {
+    prompt_type = 'generate_' + prompt_type;
+  } else {
+    prompt_type = 'adapt_' + prompt_type;
+  }
+
   querying_llm_ui(status,llms,'creates model');
-  call_llm_service_model(save['dslx'],input,myllm,mymode).done((data) => {
+  call_llm_service_model(save['dslx'],input,myllm,prompt_type).done((data) => {
     let expositions = ["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee];
     if (gen == "dataflow") {
       querying_llm_ui(status,llms,'selects endpoints and calculates dataflow');

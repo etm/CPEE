@@ -37,6 +37,16 @@
   100% { content: ''; }
 }
 
+@keyframes dotty {
+  0%   { content: 'ₒₒₒ'; }
+  16%  { content: 'ₒₒ∘'; }
+  32%  { content: 'ₒ∘ᵒ'; }
+  48%  { content: '∘ᵒ∘'; }
+  64%  { content: 'ᵒ∘ₒ'; }
+  80%  { content: '∘ₒₒ'; }
+  100% { content: 'ₒₒₒ'; }
+}
+
 #prompt_container {
   padding: 0.2em 0.5em;
   outline: none;

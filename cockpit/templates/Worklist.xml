@@ -1,21 +1,7 @@
 <?xml version="1.0"?>
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
-  <dataelements>
-    <location/>
-    <category/>
-    <description/>
-    <urgency/>
-    <priority/>
-    <technician_id/>
-    <materials_needed>false</materials_needed>
-    <materials_list/>
-    <materials_issued>false</materials_issued>
-    <repair_notes/>
-    <satisfied>false</satisfied>
-    <rating/>
-    <feedback/>
-  </dataelements>
+  <dataelements/>
   <endpoints>
     <worklist>https-post://cpee.org/worklist/server/</worklist>
   </endpoints>
@@ -31,191 +17,30 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <loop eid="e5" mode="post_test" condition="data.admin_decision == &quot;approved&quot; || data.admin_decision == &quot;rejected&quot;">
-        <_probability>
-          <_probability_min/>
-          <_probability_max/>
-          <_probability_avg/>
-        </_probability>
-        <_annotations>
-          <_generic/>
-          <_logging_behavior>
-            <_iteration>false</_iteration>
-          </_logging_behavior>
-        </_annotations>
-        <call id="a7" endpoint="worklist">
-          <parameters>
-            <label>Student submits request</label>
-            <color/>
-            <arguments>
-              <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-              <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/student_request.html</form>
-              <role>Student</role>
-              <priority>1</priority>
-              <handling>single</handling>
-              <restrictions/>
-              <data>
-                <location>data.location</location>
-                <category>data.category</category>
-                <description>data.description</description>
-                <urgency>data.urgency</urgency>
-                <admin_note>data.admin_note</admin_note>
-              </data>
-            </arguments>
-          </parameters>
-          <code>
-            <signal>false</signal>
-            <prepare/>
-            <finalize output="result"/>
-            <update output="result"/>
-            <rescue output="result"/>
-          </code>
-          <annotations>
-            <_generic/>
-            <_logging_behavior>
-              <_exclude>false</_exclude>
-              <_include>false</_include>
-            </_logging_behavior>
-            <_timing>
-              <_timing_weight/>
-              <_timing_avg/>
-              <explanations/>
-            </_timing>
-            <_shifting>
-              <_shifting_type>Duration</_shifting_type>
-            </_shifting>
-            <_context_data_analysis>
-              <probes/>
-              <ips/>
-            </_context_data_analysis>
-            <report>
-              <url/>
-            </report>
-            <_notes>
-              <_notes_general/>
-            </_notes>
-          </annotations>
-          <documentation>
-            <input/>
-            <output/>
-            <implementation>
-              <description/>
-            </implementation>
-            <code>
-              <description/>
-            </code>
-          </documentation>
-        </call>
-        <call id="a8" endpoint="worklist">
-          <parameters>
-            <label>Admin review &amp; dispatch</label>
-            <color/>
-            <arguments>
-              <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-              <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/admin_review.html</form>
-              <role>Admin</role>
-              <priority>1</priority>
-              <handling>single</handling>
-              <restrictions/>
-              <data>
-                <location>data.location</location>
-                <category>data.category</category>
-                <description>data.description</description>
-                <urgency>data.urgency</urgency>
-                <admin_decision>data.admin_decision</admin_decision>
-                <admin_note>data.admin_note</admin_note>
-                <priority>data.priority</priority>
-                <technician_id>data.technician_id</technician_id>
-              </data>
-            </arguments>
-          </parameters>
-          <code>
-            <signal>false</signal>
-            <prepare/>
-            <finalize output="result"/>
-            <update output="result"/>
-            <rescue output="result"/>
-          </code>
-          <annotations>
-            <_generic/>
-            <_logging_behavior>
-              <_exclude>false</_exclude>
-              <_include>false</_include>
-            </_logging_behavior>
-            <_timing>
-              <_timing_weight/>
-              <_timing_avg/>
-              <explanations/>
-            </_timing>
-            <_shifting>
-              <_shifting_type>Duration</_shifting_type>
-            </_shifting>
-            <_context_data_analysis>
-              <probes/>
-              <ips/>
-            </_context_data_analysis>
-            <report>
-              <url/>
-            </report>
-            <_notes>
-              <_notes_general/>
-            </_notes>
-          </annotations>
-          <documentation>
-            <input/>
-            <output/>
-            <implementation>
-              <description/>
-            </implementation>
-            <code>
-              <description/>
-            </code>
-          </documentation>
-        </call>
-      </loop>
-      <choose eid="e6" mode="exclusive" label="">
-        <alternative eid="e7" condition="data.admin_decision == &quot;rejected&quot;">
-          <terminate eid="e9" abandon="false"/>
-          <_probability>
-            <_probability_min/>
-            <_probability_max/>
-            <_probability_avg/>
-          </_probability>
-        </alternative>
-        <otherwise eid="e8"/>
-      </choose>
-      <call id="a4" endpoint="worklist">
+      <call id="a1" endpoint="worklist">
         <parameters>
-          <label>Technician on-site assessment</label>
-          <color/>
+          <label>OK OR NOT OK</label>
           <arguments>
-            <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-            <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/technician_assessment.html</form>
-            <role>Technician</role>
-            <priority>1</priority>
+            <orgmodel>https://cpee.org/~demo/orgviz/organisation_informatik.xml</orgmodel>
+            <form>https://cpee.org/~demo/form/form-f.html</form>
+            <role>Assistant</role>
+            <priority>42</priority>
             <handling>single</handling>
             <restrictions/>
             <data>
-              <location>data.location</location>
-              <description>data.description</description>
-              <materials_needed>data.materials_needed</materials_needed>
-              <materials_list>data.materials_list</materials_list>
+              <schaden>10000</schaden>
+              <text>destroyed</text>
             </data>
           </arguments>
         </parameters>
         <code>
-          <signal>false</signal>
           <prepare/>
-          <finalize output="result"/>
+          <finalize output="result">data.bla = result</finalize>
           <update output="result"/>
           <rescue output="result"/>
         </code>
         <annotations>
           <_generic/>
-          <_logging_behavior>
-            <_exclude>false</_exclude>
-            <_include>false</_include>
-          </_logging_behavior>
           <_timing>
             <_timing_weight/>
             <_timing_avg/>
@@ -246,209 +71,6 @@
           </code>
         </documentation>
       </call>
-      <choose eid="e1" mode="exclusive" label="Materials needed?">
-        <alternative eid="e2" condition="data.materials_needed == true">
-          <call id="a5" endpoint="worklist">
-            <parameters>
-              <label>Inventory approval</label>
-              <color/>
-              <arguments>
-                <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-                <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/inventory_approval.html</form>
-                <role>Inventory Manager</role>
-                <priority>1</priority>
-                <handling>single</handling>
-                <restrictions/>
-                <data>
-                  <materials_list>data.materials_list</materials_list>
-                  <materials_issued>data.materials_issued</materials_issued>
-                </data>
-              </arguments>
-            </parameters>
-            <code>
-              <signal>false</signal>
-              <prepare/>
-              <finalize output="result"/>
-              <update output="result"/>
-              <rescue output="result"/>
-            </code>
-            <annotations>
-              <_generic/>
-              <_logging_behavior>
-                <_exclude>false</_exclude>
-                <_include>false</_include>
-              </_logging_behavior>
-              <_timing>
-                <_timing_weight/>
-                <_timing_avg/>
-                <explanations/>
-              </_timing>
-              <_shifting>
-                <_shifting_type>Duration</_shifting_type>
-              </_shifting>
-              <_context_data_analysis>
-                <probes/>
-                <ips/>
-              </_context_data_analysis>
-              <report>
-                <url/>
-              </report>
-              <_notes>
-                <_notes_general/>
-              </_notes>
-            </annotations>
-            <documentation>
-              <input/>
-              <output/>
-              <implementation>
-                <description/>
-              </implementation>
-              <code>
-                <description/>
-              </code>
-            </documentation>
-          </call>
-          <_probability>
-            <_probability_min/>
-            <_probability_max/>
-            <_probability_avg/>
-          </_probability>
-        </alternative>
-        <otherwise eid="e3"/>
-      </choose>
-      <call id="a3" endpoint="worklist">
-        <parameters>
-          <label>Carry out repair &amp; mark complete</label>
-          <color/>
-          <arguments>
-            <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-            <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/repair_complete.html</form>
-            <role>Technician</role>
-            <priority>1</priority>
-            <handling>single</handling>
-            <restrictions/>
-            <data>
-              <repair_notes>data.repair_notes</repair_notes>
-            </data>
-          </arguments>
-        </parameters>
-        <code>
-          <signal>false</signal>
-          <prepare/>
-          <finalize output="result"/>
-          <update output="result"/>
-          <rescue output="result"/>
-        </code>
-        <annotations>
-          <_generic/>
-          <_logging_behavior>
-            <_exclude>false</_exclude>
-            <_include>false</_include>
-          </_logging_behavior>
-          <_timing>
-            <_timing_weight/>
-            <_timing_avg/>
-            <explanations/>
-          </_timing>
-          <_shifting>
-            <_shifting_type>Duration</_shifting_type>
-          </_shifting>
-          <_context_data_analysis>
-            <probes/>
-            <ips/>
-          </_context_data_analysis>
-          <report>
-            <url/>
-          </report>
-          <_notes>
-            <_notes_general/>
-          </_notes>
-        </annotations>
-        <documentation>
-          <input/>
-          <output/>
-          <implementation>
-            <description/>
-          </implementation>
-          <code>
-            <description/>
-          </code>
-        </documentation>
-      </call>
-      <loop eid="e4" mode="post_test" condition="data.satisfied == true">
-        <call id="a6" endpoint="worklist">
-          <parameters>
-            <label>Student confirmation &amp; rating</label>
-            <color/>
-            <arguments>
-              <orgmodel>https://lehre.bpm.in.tum.de/~go34sat/prak26/org/organisation.xml</orgmodel>
-              <form>https://lehre.bpm.in.tum.de/~go34sat/prak26/forms/student_confirmation.html</form>
-              <role>Student</role>
-              <priority>1</priority>
-              <handling>single</handling>
-              <restrictions/>
-              <data>
-                <satisfied>data.satisfied</satisfied>
-                <rating>data.rating</rating>
-                <feedback>data.feedback</feedback>
-              </data>
-            </arguments>
-          </parameters>
-          <code>
-            <signal>false</signal>
-            <prepare/>
-            <finalize output="result"/>
-            <update output="result"/>
-            <rescue output="result"/>
-          </code>
-          <annotations>
-            <_generic/>
-            <_logging_behavior>
-              <_exclude>false</_exclude>
-              <_include>false</_include>
-            </_logging_behavior>
-            <_timing>
-              <_timing_weight/>
-              <_timing_avg/>
-              <explanations/>
-            </_timing>
-            <_shifting>
-              <_shifting_type>Duration</_shifting_type>
-            </_shifting>
-            <_context_data_analysis>
-              <probes/>
-              <ips/>
-            </_context_data_analysis>
-            <report>
-              <url/>
-            </report>
-            <_notes>
-              <_notes_general/>
-            </_notes>
-          </annotations>
-          <documentation>
-            <input/>
-            <output/>
-            <implementation>
-              <description/>
-            </implementation>
-            <code>
-              <description/>
-            </code>
-          </documentation>
-        </call>
-        <_probability>
-          <_probability_min/>
-          <_probability_max/>
-          <_probability_avg/>
-        </_probability>
-        <_annotations>
-          <_generic/>
-          <_logging_behavior>
-            <_iteration>false</_iteration>
-          </_logging_behavior>
-        </_annotations>
-      </loop>
     </description>
   </description>
   <transformation>
