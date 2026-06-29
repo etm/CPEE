@@ -34,7 +34,7 @@ function call_llm_service_model(dslx,input,llm,prompt_type) { //{{{
   const blob3 = new Blob([llm], { type: "text/plain" });
   formData.append("llm", blob3);
   const blob4 = new Blob([prompt_type], { type: "text/plain" });
-  formData.append("promp_type", blob4);
+  formData.append("prompt_type", blob4);
 
   let def = new $.Deferred();
 
