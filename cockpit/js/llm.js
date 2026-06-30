@@ -35,6 +35,10 @@ function call_llm_service_model(dslx,input,llm,prompt_type) { //{{{
   formData.append("llm", blob3);
   const blob4 = new Blob([prompt_type], { type: "text/plain" });
   formData.append("prompt_type", blob4);
+  if (prompt_type == 'adapt_endpoints') {
+    const blob5 = new Blob([save['endpoints'].save_text()], { type: "text/xml" });
+    formData.append("endpoints", blob5);
+  }
 
   let def = new $.Deferred();
 
@@ -226,47 +230,70 @@ function create(status,prompt,llms,generation,mode) {
     prompt_type = 'generate_' + prompt_type;
   } else {
     prompt_type = 'adapt_' + prompt_type;
+    // always use adapt_endpoints when in dataflow mode
+    if (gen == 'dataflow') { prompt_type = 'adapt_endpoints'; }
   }
 
   querying_llm_ui(status,llms,'creates model');
   call_llm_service_model(save['dslx'],input,myllm,prompt_type).done((data) => {
     let expositions = ["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee];
-    if (gen == "dataflow") {
-      querying_llm_ui(status,llms,'selects endpoints and calculates dataflow');
-      call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
-        let url = $('body').attr('current-instance');
-        $.ajax({
-          type: "PATCH",
-          url: url + "/properties/endpoints/",
-          contentType: 'text/xml',
-          headers: {
-            'Content-ID': 'endpoints',
-            'CPEE-Event-Source': myid
-          },
-          data: data.endpoints
-        });
-
-        querying_llm_ui(status,llms,'validates dataflow');
-        expositions.push("# Dataflow:\n"+data.dataflow);
-        call_llm_service_validation($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
-          // for undo button
-          last_model_before_generation = save['dslx'];
-          last_generated_model = data.output_cpee;
-          set_cpee_model($X(data.output_cpee).serializePrettyXML(),expositions);
-          set_success(status,data.status);
-        });
-
-      })
-      .fail((xhr) => {
-        set_error(status,xhr.responseJSON.error);
+    if (prompt_type == 'adapt_endpoints') {
+      let testset = $X(data.output_cpee);
+      let model = $('> dslx > description',testset);
+      let endpoints = $('> endpoints',testset);
+      $.ajax({
+        type: "PATCH",
+        url: url + "/properties/endpoints/",
+        contentType: 'text/xml',
+        headers: {
+          'Content-ID': 'endpoints',
+          'CPEE-Event-Source': myid
+        },
+        data: endpoints.serializePrettyXML()
       });
-    } else if (gen == "model") {
+
       last_model_before_generation = save['dslx'];
-      last_generated_model = data.output_cpee;
-      set_cpee_model(data.output_cpee,expositions);
+      last_generated_model = model.serializePrettyXML();
+      set_cpee_model(model.serializePrettyXML(),expositions);
       set_success(status,data.status);
     } else {
-      set_success(status,"Successfully done nothing");
+      if (gen == "dataflow") {
+        querying_llm_ui(status,llms,'selects endpoints and calculates dataflow');
+        call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
+          let url = $('body').attr('current-instance');
+          $.ajax({
+            type: "PATCH",
+            url: url + "/properties/endpoints/",
+            contentType: 'text/xml',
+            headers: {
+              'Content-ID': 'endpoints',
+              'CPEE-Event-Source': myid
+            },
+            data: data.endpoints
+          });
+
+          querying_llm_ui(status,llms,'validates dataflow');
+          expositions.push("# Dataflow:\n"+data.dataflow);
+          call_llm_service_validation($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
+            // for undo button
+            last_model_before_generation = save['dslx'];
+            last_generated_model = data.output_cpee;
+            set_cpee_model($X(data.output_cpee).serializePrettyXML(),expositions);
+            set_success(status,data.status);
+          });
+
+        })
+        .fail((xhr) => {
+          set_error(status,xhr.responseJSON.error);
+        });
+      } else if (gen == "model") {
+        last_model_before_generation = save['dslx'];
+        last_generated_model = data.output_cpee;
+        set_cpee_model(data.output_cpee,expositions);
+        set_success(status,data.status);
+      } else {
+        set_success(status,"Successfully done nothing");
+      }
     }
   })
   .fail((xhr) => {

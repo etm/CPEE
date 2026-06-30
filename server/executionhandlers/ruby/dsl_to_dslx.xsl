@@ -531,7 +531,7 @@
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:for-each select="@*[not(name()='language' or name()='condition' or name()='svg-label')]">
+      <xsl:for-each select="@*[not(name()='language' or name()='condition' or name()='eid' or name()='svg-label')]">
         <xsl:if test="position() &gt;1">, </xsl:if>
         <xsl:text>:</xsl:text>
         <xsl:value-of select="name(.)"/>
