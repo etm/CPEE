@@ -596,7 +596,8 @@
   </xsl:template>
   <xsl:template match="d:parameters">
     <xsl:apply-templates select="d:label" mode="parameter"/>
-    <xsl:apply-templates select="d:*[not(name()='label') and not(name()='color')]" mode="parameter"/>
+    <xsl:apply-templates select="d:method" mode="parameter"/>
+    <xsl:apply-templates select="d:*[not(name()='label') and not(name()='color') and not(name()='method')]" mode="parameter"/>
     <xsl:if test="count(*) &gt; 0">, </xsl:if>
     <xsl:apply-templates select="../d:annotations" mode="annotations"/>
   </xsl:template>
@@ -607,6 +608,20 @@
     <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
     <xsl:text>"</xsl:text>
   </xsl:template>
+  <xsl:template match="d:method" mode="parameter">
+    <xsl:text>, :</xsl:text>
+    <xsl:value-of select="name()"/>
+    <xsl:text> =&gt; </xsl:text>
+    <xsl:choose>
+      <xsl:when test="substring(text(),1,1) = ':'">
+        <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>:</xsl:text>
+        <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
   <xsl:template match="d:annotations" mode="annotations">
     <xsl:text>:</xsl:text>
     <xsl:value-of select="name()"/>
@@ -615,7 +630,7 @@
     <xsl:apply-templates select="d:*" mode="simplemulti"/>
     <xsl:text> }</xsl:text>
   </xsl:template>
-  <xsl:template match="d:*[not(name()='label')]" mode="parameter">
+  <xsl:template match="d:*[not(name()='label') and not(name()='color') and not(name()='method')]" mode="parameter">
     <xsl:if test="count(preceding-sibling::*) &gt; 0">, </xsl:if>
     <xsl:text>:</xsl:text>
     <xsl:value-of select="name()"/>
