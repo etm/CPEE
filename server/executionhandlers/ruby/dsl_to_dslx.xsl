@@ -609,18 +609,20 @@
     <xsl:text>"</xsl:text>
   </xsl:template>
   <xsl:template match="d:method" mode="parameter">
-    <xsl:text>, :</xsl:text>
-    <xsl:value-of select="name()"/>
-    <xsl:text> =&gt; </xsl:text>
-    <xsl:choose>
-      <xsl:when test="substring(text(),1,1) = ':'">
-        <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:text>:</xsl:text>
-        <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:if test="string-length(text()) > 0">
+      <xsl:text>, :</xsl:text>
+      <xsl:value-of select="name()"/>
+      <xsl:text> =&gt; </xsl:text>
+      <xsl:choose>
+        <xsl:when test="substring(text(),1,1) = ':'">
+          <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>:</xsl:text>
+          <xsl:value-of select="str:replace(str:replace(text(),'\','\\'),'&quot;','\&quot;')"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:if>
   </xsl:template>
   <xsl:template match="d:annotations" mode="annotations">
     <xsl:text>:</xsl:text>
