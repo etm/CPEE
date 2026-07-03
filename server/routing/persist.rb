@@ -100,11 +100,7 @@ Daemonite.new do |opts|
               mess.dig('content','changed')&.each_with_index do |c,i|
                 unless what =~ /event:\d+:attributes\/change/ && c == 'uuid'
                   multi.zadd("instance:#{instance}/#{topic}",max + 1 + i,c,nx: true)
-                  if what =~ /event:\d+:dataelements\/change/
-                    multi.set("instance:#{instance}/#{topic}/#{c}",CPEE::ValueHelper::generate(mess.dig('content','values',c)))
-                  else
-                    multi.set("instance:#{instance}/#{topic}/#{c}",mess.dig('content','values',c))
-                  end
+                  multi.set("instance:#{instance}/#{topic}/#{c}",CPEE::ValueHelper::generate(mess.dig('content','values',c)))
                 end
               end
               mess.dig('content','deleted')&.to_a&.each do |c|
