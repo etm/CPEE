@@ -563,6 +563,7 @@ function monitor_instance_values(type,vals) {// {{{
           $(" > attributes > *",res).each((k,v)=>{
             save['attributes_raw'][v.nodeName] = v.textContent;
           });
+          document.dispatchEvent(eval(type + '_changed'));
           if ($(" > attributes > resources",res).length > 0) {
             save['resources'] = $(" > attributes > resources",res).text();
           } else {

@@ -1,4 +1,7 @@
 var parameters_changed = new Event("parameters:changed", {"bubbles":true, "cancelable":false});
+var attributes_changed = new Event("attributes:changed", {"bubbles":true, "cancelable":false});
+var endpoints_changed = new Event("endpoints:changed", {"bubbles":true, "cancelable":false});
+var dataelements_changed = new Event("dataelements:changed", {"bubbles":true, "cancelable":false});
 
 $(document).ready(function() {
   // hook up dataelements with relaxngui //{{{
@@ -63,19 +66,23 @@ $(document).ready(function() {
 function do_parameters_save(event) { //{{{
   var visid = $('ui-tabbar ui-tab',$(event.target).parents('ui-tabbed')).not('.switch').not('.inactive').attr('data-tab');
   if (save[visid].has_changed()) {
-    var url = $('body').attr('current-instance');
     save[visid].set_checkpoint();
-    var send = save[visid].save_text();
+    var url = $('body').attr('current-instance');
     document.dispatchEvent(parameters_changed);
-    $.ajax({
-      type: "PUT",
-      url: url + "/properties/" + visid + "/",
-      contentType: 'text/xml',
-      headers: {
-        'Content-ID': visid,
-        'CPEE-Event-Source': myid
-      },
-      data: send
-    });
+    document.dispatchEvent(eval(visid + '_changed'));
+    do_parameters_save_part(visid,save[visid].save_text());
   }
+} //}}}
+
+function do_parameters_save_part(visid,send) { //{{{
+  $.ajax({
+    type: "PUT",
+    url: url + "/properties/" + visid + "/",
+    contentType: 'text/xml',
+    headers: {
+      'Content-ID': visid,
+      'CPEE-Event-Source': myid
+    },
+    data: send
+  });
 } //}}}

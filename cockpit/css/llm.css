@@ -7,6 +7,8 @@
   border-top: 0.1em solid var(--x-ui-border-color);
   background-color: var(--x-tab-inactive-color);
   min-height: 1.4em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   overflow:hidden;
 }
 #status.error {
@@ -33,6 +35,16 @@
   64%  { content: '..'; }
   80%  { content: '.'; }
   100% { content: ''; }
+}
+
+@keyframes dotty {
+  0%   { content: 'ₒₒₒ'; }
+  16%  { content: 'ₒₒ∘'; }
+  32%  { content: 'ₒ∘ᵒ'; }
+  48%  { content: '∘ᵒ∘'; }
+  64%  { content: 'ᵒ∘ₒ'; }
+  80%  { content: '∘ₒₒ'; }
+  100% { content: 'ₒₒₒ'; }
 }
 
 #prompt_container {

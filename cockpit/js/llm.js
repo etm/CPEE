@@ -25,7 +25,7 @@ function add_prompt(input,content) { //{{{
   document.execCommand('insertText', false, content);
 } //}}}
 
-function call_llm_service_model(dslx,input,llm,mode="noendpoints") { //{{{
+function call_llm_service_model(dslx,input,llm,prompt_type) { //{{{
   const formData = new FormData();
   const blob1 = new Blob([dslx], { type: "text/xml" });
   formData.append("rpst_xml", blob1);
@@ -33,21 +33,11 @@ function call_llm_service_model(dslx,input,llm,mode="noendpoints") { //{{{
   formData.append("user_input", blob2);
   const blob3 = new Blob([llm], { type: "text/plain" });
   formData.append("llm", blob3);
-
-  len = $X(dslx).children().children().length;
-
-  if (len == 0 && mode == "noendpoints") {
-    const blob4 = new Blob(['generate'], { type: "text/plain" });
-    formData.append("prompt", blob4);
-  } else if (len > 0 && mode == "noendpoints") {
-    const blob4 = new Blob(['adapt'], { type: "text/plain" });
-    formData.append("prompt", blob4);
-  } else if (len == 0 && mode == "endpoints") {
-    const blob4 = new Blob(['generate_with_endpoints'], { type: "text/plain" });
-    formData.append("prompt", blob4);
-  } else if (len > 0 && mode == "endpoints") {
-    const blob4 = new Blob(['adapt_with_endpoints'], { type: "text/plain" });
-    formData.append("prompt", blob4);
+  const blob4 = new Blob([prompt_type], { type: "text/plain" });
+  formData.append("prompt_type", blob4);
+  if (prompt_type == 'adapt_endpoints') {
+    const blob5 = new Blob([save['endpoints'].save_text()], { type: "text/xml" });
+    formData.append("endpoints", blob5);
   }
 
   let def = new $.Deferred();
@@ -63,7 +53,6 @@ function call_llm_service_model(dslx,input,llm,mode="noendpoints") { //{{{
       def.resolve(data);
     },
     error:  function(xhr, status, data) {
-      console.log(xhr);
       def.reject(xhr);
     }
   });
@@ -90,7 +79,32 @@ function call_llm_service_dataflow(model,llm) { //{{{
       def.resolve(data);
     },
     error:  function(xhr, status, data) {
-      console.log(xhr);
+      def.reject(xhr);
+    }
+  });
+
+  return def.promise();
+} //}}}
+function call_llm_service_validation(model,llm) { //{{{
+  const formData = new FormData();
+  const blob1 = new Blob([model], { type: "text/xml" });
+  formData.append("rpst_xml", blob1);
+  const blob2 = new Blob([llm], { type: "text/plain" });
+  formData.append("llm", blob2);
+
+  let def = new $.Deferred();
+
+  jQuery.ajax({
+    url: $('body').attr('current-llm-service') + '/validate/xml/',
+    data: formData,
+    cache: false,
+    contentType: false,
+    processData: false,
+    method: 'POST',
+    success: function(data){
+      def.resolve(data);
+    },
+    error:  function(xhr, status, data) {
       def.reject(xhr);
     }
   });
@@ -161,11 +175,11 @@ function set_success(status,success_text) { //{{{
   status.removeClass('error');
 } //}}}
 
-function set_error(status_id,error_text) { //{{{
-  $(`#${status_id}`).text(error_text);
-  $(`#${status_id}`).addClass('error');
-  $(`#${status_id}`).removeClass('success');
-  $(`#${status_id}`).removeClass('loading');
+function set_error(status,error_text) { //{{{
+  status.text(error_text);
+  status.addClass('error');
+  status.removeClass('success');
+  status.removeClass('loading');
 } //}}}
 
 function empty_model(){ //{{{
@@ -208,45 +222,78 @@ function create(status,prompt,llms,generation,mode) {
 
   let input = prompt.text(); prompt.empty();
   let myllm = llms.find(":selected").val();
-  let mymode = mode.find(":selected").val();
+  let prompt_type = mode.find(":selected").val();
   let gen = generation.find(":selected").val();
   if (myllm === undefined){ myllm = default_llm; }
 
-  querying_llm_ui(status,llms,'creates model');
-  call_llm_service_model(save['dslx'],input,myllm,mymode).done((data) => {
-    let expositions = ["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee];
-    if (gen == "dataflow") {
-      querying_llm_ui(status,llms,'selects endpoints and calculates dataflow');
-      call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
-        let url = $('body').attr('current-instance');
-        $.ajax({
-          type: "PATCH",
-          url: url + "/properties/endpoints/",
-          contentType: 'text/xml',
-          headers: {
-            'Content-ID': 'endpoints',
-            'CPEE-Event-Source': myid
-          },
-          data: data.endpoints
-        });
+  if ($X(save['dslx']).get(0).childElementCount == 0) {
+    prompt_type = 'generate_' + prompt_type;
+  } else {
+    prompt_type = 'adapt_' + prompt_type;
+    // always use adapt_endpoints when in dataflow mode
+    if (gen == 'dataflow') { prompt_type = 'adapt_endpoints'; }
+  }
 
-        // for undo button
-        last_model_before_generation = save['dslx'];
-        last_generated_model = data.output_cpee;
-        expositions.push("# Dataflow:\n"+data.dataflow);
-        set_cpee_model($X(data.final_cpee).serializePrettyXML(),expositions);
-        set_success(status,"Success");
-      })
-      .fail((xhr) => {
-        set_error(status,xhr.responseJSON.error);
+  querying_llm_ui(status,llms,'creates model');
+  call_llm_service_model(save['dslx'],input,myllm,prompt_type).done((data) => {
+    let expositions = ["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee];
+    if (prompt_type == 'adapt_endpoints') {
+      let testset = $X(data.output_cpee);
+      let model = $('> dslx > description',testset);
+      let endpoints = $('> endpoints',testset);
+      $.ajax({
+        type: "PATCH",
+        url: url + "/properties/endpoints/",
+        contentType: 'text/xml',
+        headers: {
+          'Content-ID': 'endpoints',
+          'CPEE-Event-Source': myid
+        },
+        data: endpoints.serializePrettyXML()
       });
-    } else if (gen == "model") {
+
       last_model_before_generation = save['dslx'];
-      last_generated_model = data.output_cpee;
-      set_cpee_model(data.output_cpee,expositions);
+      last_generated_model = model.serializePrettyXML();
+      set_cpee_model(model.serializePrettyXML(),expositions);
       set_success(status,data.status);
     } else {
-      set_success(status,"Successfully done nothing");
+      if (gen == "dataflow") {
+        querying_llm_ui(status,llms,'selects endpoints and calculates dataflow');
+        call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
+          let url = $('body').attr('current-instance');
+          $.ajax({
+            type: "PATCH",
+            url: url + "/properties/endpoints/",
+            contentType: 'text/xml',
+            headers: {
+              'Content-ID': 'endpoints',
+              'CPEE-Event-Source': myid
+            },
+            data: data.endpoints
+          });
+
+          querying_llm_ui(status,llms,'validates dataflow');
+          expositions.push("# Dataflow:\n"+data.dataflow);
+          call_llm_service_validation($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
+            // for undo button
+            last_model_before_generation = save['dslx'];
+            last_generated_model = data.output_cpee;
+            set_cpee_model($X(data.output_cpee).serializePrettyXML(),expositions);
+            set_success(status,data.status);
+          });
+
+        })
+        .fail((xhr) => {
+          set_error(status,xhr.responseJSON.error);
+        });
+      } else if (gen == "model") {
+        last_model_before_generation = save['dslx'];
+        last_generated_model = data.output_cpee;
+        set_cpee_model(data.output_cpee,expositions);
+        set_success(status,data.status);
+      } else {
+        set_success(status,"Successfully done nothing");
+      }
     }
   })
   .fail((xhr) => {

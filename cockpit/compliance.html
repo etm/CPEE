@@ -19,6 +19,7 @@
   <head>
     <meta charset="utf-8"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <title>CPEE Cockpit</title>
 
     <!-- libs, do not modify. When local than load local libs. -->
@@ -40,6 +41,8 @@
     <script type="text/javascript" src="/js_libs/uidash.js"></script>
     <script type="text/javascript" src="/js_libs/custommenu.js"></script>
 
+    <script type="text/javascript" src="/js_libs/build-bpmn.js"></script>
+
     <link   rel="stylesheet"      href="/js_libs/custommenu.css" type="text/css"/>
     <link   rel="stylesheet"      href="/js_libs/uidash.css" type="text/css"/>
 
@@ -57,15 +60,13 @@
     <script type="text/javascript" src="js/extended_columns.js"></script>
     <script type="text/javascript" src="js/modifiers.js"></script>
     <script type="text/javascript" src="themes/base.js"></script>
-
-    <script type="text/javascript" src="js/llm.js"></script>
-    <link   rel="stylesheet"      href="css/llm.css" type="text/css"/>
-
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="css/extended_columns-label.css" type="text/css"/>
     <link rel="stylesheet" href="css/extended_columns-svg.css" type="text/css" data-include-export="true"/>
     <link rel="stylesheet" href="/global_ui/uicpee.css" type="text/css"/>
-    <style></style>
+
+    <script type="text/javascript" src="js/compliance.js"></script>
+    <link rel="stylesheet" href="css/compliance.css" type="text/css"/>
   </head>
   <body data-base-port="8298" data-res-port="9303" data-theme-base="themes" is="x-ui-">
      <div id='disclaimer' class='hidden'> <!--{{{-->
@@ -176,10 +177,16 @@
                 <button title='a standalone process model is only loadable if the currently loaded testset sucessfully prepared the current instance for the type of model' name="loadmodelfile">load model</button>
               </div>
             </div><div class='section'>
-              <a id="savetestsetfile" href="" download=""></a>
-              <a id="savesvgfile" href="" download=""></a>
-              <button title='a testset includes various settings, subscriptions and a model' name="savetestsetfile">save<br>testset</button>
-              <button title='a testset includes various settings, subscriptions and a model' name="savesvgfile">save svg<br>graph</button>
+              <div>
+                <a id="savetestsetfile" href="" download=""></a>
+                <a id="savesvgfile" href="" download=""></a>
+                <button title='a testset includes various settings, subscriptions and a model' name="savetestsetfile">save<br>testset</button>
+                <button title='the SVG contains the graphical repesentation of the CPEE tree as you see it on the screen' name="savesvgfile">save svg<br>graph</button>
+              </div>
+              <div>
+                <a id="savebpmnfile" href="" download=""></a>
+                <button title='the BPMN includes a graphical representation that can be loaded in Signavio and Camundal' name="savebpmnfile">save BPMN</button>
+              </div>
             </div><div class='section' id='modifiers'>
               <template id="item">
                 <div>
@@ -231,6 +238,7 @@
         <ui-tab class=""         data-tab="dataelements" id="tabdataelements">Data Objects</ui-tab>
         <ui-tab class="inactive" data-tab="endpoints"    id="tabendpoints"   >Endpoints</ui-tab>
         <ui-tab class="inactive" data-tab="attributes"   id="tabattributes"  >Attributes</ui-tab>
+        <ui-tab class="inactive" data-tab="requirements"   id="tabrequirements">Requirements</ui-tab>
         <ui-behind                                                           ></ui-behind>
       </ui-tabbar>
       <ui-content>
@@ -245,6 +253,10 @@
         <ui-area data-belongs-to-tab="attributes" id="areaattributes" class="inactive"> <!--{{{-->
           <button title='add entry'><span>New</span></button>
           <div id="dat_attributes"></div>
+        </ui-area> <!--}}}-->
+        <ui-area data-belongs-to-tab="requirements" id="arearequirements" class="inactive"> <!--{{{-->
+          <button title='add entry'><span>New</span></button>
+          <div id="dat_requirements"></div>
         </ui-area> <!--}}}-->
       </ui-content>
     </ui-tabbed>
@@ -261,44 +273,12 @@
       </ui-tabbar>
       <ui-content>
         <ui-area data-belongs-to-tab="details" id='graphcolumn' oncontextmenu='return false'>
-          <ui-part id="modelling">
+          <div id="modelling">
             <div id='graphgrid'>
               <div class="resource-label" style="display: none"></div>
               <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' class='graphcolumn' width='1' height='1'></svg>
             </div>
-          </ui-part>
-          <ui-resizehandle class='hidden'>drag to resize</ui-resizehandle>
-          <ui-part id='input'>
-            <div id='status'></div>
-            <div id='prompt_container' class="max">
-              <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here..." placeholder="Please enter your modelling instructions here..."></div>
-              <div id='prompt_submit_container' class="single">
-                <select name="generation" id="generation" class='hidden'>
-                  <option value="model">Only Model</option>
-                  <option value="dataflow" selected="selected">Model and Dataflow</option>
-                </select>
-                <select name="mode" id="mode" class='hidden'>
-                  <option value="noendpoints" selected="selected">Generate/Adapt from Scratch</option>
-                  <option value="endpoints">Generate/Adapt with Endpoint Knowledge</option>
-                </select>
-                <button id='prompt_submit_button' title="CTRL-ENTER to Submit" class="llm_button small">➤</button>
-                <button id='prompt_reset_button' title="Reset Context" class="llm_button small">🗲</button>
-                <button id='prompt_prop_button' title="Properties" class="llm_button small">⚙</button>
-                <select name="llms" id="llms" class='hidden'>
-                  <option value="gemini-2.5-flash-lite" selected="selected">gemini 2.5 Flash Lite</option>
-                  <option value="gemini-2.5-flash">gemini 2.5 Flash</option>
-                  <option value="gemini-2.5-pro">gemini 2.5 Pro</option>
-                  <option value="gpt-4o">gpt 4o</option>
-                  <option value="gpt-4o-mini">gpt 4o mini</option>
-                  <option value="gpt-5.4-nano-2026-03-17">gpt 5.4 nano</option>
-                  <option value="mistralai/Ministral-3-14B-Reasoning-2512"> Morp. Ministral 3</option>
-                  <option value="google/gemma-4-31B-it">Morp. Gemma 4</option>
-                  <option value="Qwen/Qwen3.6-35B-A3B">Morp. Qwen 3.6</option>
-                  <option value="qwen-35-35b-coding">Morp. Qwen 35B Coding</option>
-                </select>
-              </div>
-            </div>
-          </ui-part>
+          </div>
         </ui-area>
         <ui-resizehandle data-belongs-to-tab="details" data-label="drag to resize"></ui-resizehandle>
         <ui-area data-belongs-to-tab="details" id="detailcolumn">
