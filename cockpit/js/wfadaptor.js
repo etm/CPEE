@@ -438,7 +438,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return mlen;
   } //}}}
   var get_x_plus = this.dim.get_x_plus = function(rowf,rowt,col,deb='') { //{{{
-    if (rowf<0) { row = 0 };
+    if (rowf<0) { rowf = 0 };
 
     mlen = 0;
     for (let i=rowf; i<=rowt; i++) {
@@ -450,11 +450,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return mlen;
   } //}}}
   var get_x_max = this.dim.get_x_max = function(rowf,rowt,colt,deb='') { //{{{
-    if (rowf<0) { row = 0 };
+    if (rowf<0) { rowf = 0 };
 
     mlen = 0;
     for (let i=rowf; i<=rowt; i++) {
-      for (let j=0; j<colt; j++) {
+      for (let j=0; j<=colt; j++) {
         if (self.dim.symbols[i] && self.dim.symbols[i][j] && mlen < self.dim.symbols[i][j].x + self.dim.symbols[i][j].width) {
           mlen = self.dim.symbols[i][j].x + self.dim.symbols[i][j].width;
         }
