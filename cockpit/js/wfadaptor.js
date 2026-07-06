@@ -288,7 +288,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.svg.container.append(graph.svg);
     let bb = graph.svg[0].getBBox();
 
-    let w = self.dim.get_x_plus(0,graph.max.row,graph.max.col);
+    let w = self.dim.get_x_max(0,graph.max.row,graph.max.col,'start');
     if (w == 0) { w = bb.x + bb.width + self.width_shift; }
     // the alternative is bb.x + bb.width + self.width_shift, but this is bad when clipped elements
 
@@ -453,6 +453,20 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       }
     }
     // console.log(deb,rowf,rowt,col,'--> ' + mlen,debug_dim());
+    return mlen;
+  } //}}}
+  var get_x_max = this.dim.get_x_max = function(rowf,rowt,colt,deb='') { //{{{
+    if (rowf<0) { row = 0 };
+
+    mlen = 0;
+    for (let i=rowf; i<=rowt; i++) {
+      for (let j=0; j<colt; j++) {
+        if (self.dim.symbols[i] && self.dim.symbols[i][j] && mlen < self.dim.symbols[i][j].x + self.dim.symbols[i][j].width) {
+          mlen = self.dim.symbols[i][j].x + self.dim.symbols[i][j].width;
+        }
+      }
+    }
+    // console.log(deb,rowf,rowt,colt,'--> ' + mlen,debug_dim());
     return mlen;
   } //}}}
   var get_x_width = this.dim.get_x_width = function(maxcol) { //{{{
