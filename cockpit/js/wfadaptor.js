@@ -278,12 +278,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         self.svg.defs[element] = sym;
       }
   } // }}}
-  this.set_svg_direct = function(svg) { // {{{
-    self.svg.container.append(svg);
-    let bb = svg[0].getBBox();
-    self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom
-    self.svg.container.attr('width',  bb.x + bb.width + self.width_shift);  // small border on the right
-  } // }}}
   this.set_svg = function(graph) { // {{{
     self.svg.container.append(graph.svg);
     let bb = graph.svg[0].getBBox();
@@ -1341,7 +1335,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     // }}}
 
     ///////// show graph step by step
-    // illustrator.set_svg_direct(block.svg);
+    // illustrator.set_svg(block);
     // debugger;
 
     return [g, endnodes];
