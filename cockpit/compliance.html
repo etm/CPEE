@@ -269,6 +269,7 @@
         <ui-tab class=""         data-tab="details" id="tabdetails">Graph</ui-tab>
         <ui-tab class="inactive" data-tab="dsl"     id="tabdsl"    >Description</ui-tab>
         <ui-tab class="inactive" data-tab="log"     id="tablog"    >Log</ui-tab>
+        <ui-tab class="inactive" data-tab="comp"    id="tabcomp">Compliance</ui-tab>
         <ui-behind                                                 ><a style='display:none' target='_blank' id='current-track'>T</a><a style='display:none' target='_blank' id='current-graph'>G</a></ui-behind>
       </ui-tabbar>
       <ui-content>
@@ -288,6 +289,10 @@
         <ui-area data-belongs-to-tab="log" id="arealog" class="inactive"> <!--{{{-->
           <div>Persistent Log: <a style='display:none' target='_blank' id='current-log'></a> [<a style='display:none' target='_blank' id='xml-log'>X</a>,<a style='display:none' target='_blank' id='shifted-log'>S</a>]</div>
           <table id="dat_log" class="x-ui-layout"></table>
+        </ui-area> <!--}}}-->
+        <ui-area data-belongs-to-tab="comp" id="areacomp" class="inactive"> <!--{{{-->
+          <div>Compliance: <button id="verify">Verify</button> <a style='display:none' target='_blank' id='comp-current-log'></a> [<a style='display:none' target='_blank' id='comp-all-log'>all</a>]</div>
+          <div id="comp_log" class="x-ui-layout"></div>
         </ui-area> <!--}}}-->
       </ui-content>
     </ui-rest>
