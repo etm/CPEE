@@ -2,6 +2,8 @@ server/instances
 .stats
 .whitelist.old
 .blacklist
+.excludelist
+.includelist
 .statsrun
 pkg
 build.out
