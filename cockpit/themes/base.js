@@ -4,6 +4,7 @@ function WFAdaptorManifestationBase(adaptor) {
   this.adaptor = adaptor;
   this.resources = {};
   this.elements = {};
+  this.strings = {};
   this.events = {};
   this.compact = false;
   this.striped = false;
@@ -261,17 +262,19 @@ function WFAdaptorManifestationBase(adaptor) {
         })
       }
     }
-    if($('> code', xml_node).length > 0 && xml_node.get(0).tagName == 'call') {
-      var icon = contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg);
-      icon.find('.part-extra .colorstyle').css('fill','var(--wfadaptor-important');
-      menu['Delete'].push({
-        'label': 'Remove Scripts',
-        'function_call': self.adaptor.description.remove,
-        'menu_icon': icon,
-        'type': undefined,
-        'params': ['> code', xml_node]
-      });
+
+    if (self.elements[xml_node.get(0).tagName].removable_children) {
+      let group = self.elements[xml_node.get(0).tagName].removable_children(xml_node);
+      if  (group.length > 0) {
+        if (!('Delete' in menu)) {
+          menu['Delete'] = [];
+        }
+        $(group).each((_,e)=>{
+          menu['Delete'].push(e);
+        });
+      }
     }
+
     if (xml_node.get(0).tagName == "call" || xml_node.get(0).tagName == "manipulate" || xml_node.get(0).tagName == "stop") {
       let exec_icon = contextMenuHandling_clean_icon(self.elements.call.illustrator.svg);
       let mark_icon = self.resources.mark;
@@ -386,6 +389,9 @@ function WFAdaptorManifestationBase(adaptor) {
   this.events.dragstart = function (svgid, e) { //{{{
   } //}}}
 
+  // Other Strings
+  this.strings.scripts = 'Scripts';
+
   // Other resources
   this.resources.arrow =  self.adaptor.theme_dir + 'symbols/arrow.svg';
   this.resources.delete =  self.adaptor.theme_dir + 'symbols/delete.svg';
@@ -442,13 +448,30 @@ function WFAdaptorManifestationBase(adaptor) {
     'permissible_children': function(node,mode) { //{{{
       if(node.children('code').length < 1)
         return [
-         {'label': 'Scripts',
+         {'label': self.strings.scripts,
           'function_call': self.adaptor.description.insert_last_into,
           'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
           'type': undefined,
           'params': [self.adaptor.description.elements.scripts, node]}
         ];
       return [];
+    }, //}}}
+    'removable_children': function(node) { //{{{
+      if(node.children('code').length > 0) {
+        var icon = contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg);
+        icon.find('.part-extra .colorstyle').css('fill','var(--wfadaptor-important');
+        return [
+          {
+            'label': 'Remove ' + self.strings.scripts,
+            'function_call': self.adaptor.description.remove,
+            'menu_icon': icon,
+            'type': undefined,
+            'params': ['> code', node]
+          }
+        ];
+      } else {
+        return [];
+      }
     }, //}}}
     'adaptor': {//{{{
       'mousedown': function (node,e) { self.events.mousedown(node,e,true,true); },
@@ -760,7 +783,7 @@ function WFAdaptorManifestationBase(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Service Call with ' + self.strings.scripts,
          'function_call': func,
          'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
          'type': 'callmanipulate',
@@ -857,7 +880,7 @@ function WFAdaptorManifestationBase(adaptor) {
          'params': [self.adaptor.description.elements.parallel_branch, node]}];
       }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Service Call with ' + self.strings.scripts,
          'function_call': func,
          'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
          'type': 'callmanipulate',
@@ -948,7 +971,7 @@ function WFAdaptorManifestationBase(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Service Call with ' + self.strings.scripts,
          'function_call': func,
          'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
          'type': 'callmanipulate',
@@ -1069,7 +1092,7 @@ function WFAdaptorManifestationBase(adaptor) {
       if (mode.match(/into/)) { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs =  [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Service Call with ' + self.strings.scripts,
          'function_call': func,
          'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
          'type': 'callmanipulate',
@@ -1147,7 +1170,7 @@ function WFAdaptorManifestationBase(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Service Call with ' + self.strings.scripts,
          'function_call': func,
          'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
          'type': 'callmanipulate',
@@ -1237,7 +1260,7 @@ function WFAdaptorManifestationBase(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Service Call with ' + self.strings.scripts,
          'function_call': func,
          'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
          'type': 'callmanipulate',
@@ -1412,7 +1435,7 @@ function WFAdaptorManifestationBase(adaptor) {
       if (mode == 'into') { func = self.adaptor.description.insert_first_into }
       else { func = self.adaptor.description.insert_after }
       var childs = [
-        {'label': 'Service Call with Scripts',
+        {'label': 'Service Call with ' + self.strings.scripts,
          'function_call': func,
          'menu_icon': contextMenuHandling_clean_icon(self.elements.callmanipulate.illustrator.svg),
          'type': 'callmanipulate',

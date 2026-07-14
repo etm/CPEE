@@ -923,7 +923,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   } // }}}
 
   var reset_used_id_list = this.reset_used_id_list = function() { // {{{
-    console.log('bbbbb');
     used_id_list = [];
   } // }}}
   var get_free_id = this.get_free_id = function(prefix,aname,other) { // {{{
@@ -990,7 +989,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       adaptor.notify(newn.attr('svg-id'));
     else if (svgid != undefined)
       adaptor.notify(svgid);
-    else if (newn.parent('[svg-id]').length > 0)
+    else if (newn.parents('[svg-id]').length > 0)
       adaptor.notify(newn.parent('[svg-id]').attr('svg-id'));
     else
       console.info('Something went horribly wrong');

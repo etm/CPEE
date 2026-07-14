@@ -1,0 +1,24 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" name="parallel" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+  <attribute name="eid" rngui:label="ID" rngui:default="javascript:get_free_id('e','eid')">
+    <data type="string" rngui:readonly="true"/>
+  </attribute>
+  <attribute name="wait" rngui:label="Wait" rngui:default="-1" rngui:hint="-1 to wait for all branches.">
+    <data type="integer"/>
+  </attribute>
+  <attribute name="cancel" rngui:label="Cancel" rngui:default="last" rngui:hint="Set 'Wait' to 1 for standard Event-based Gateway.">
+    <choice>
+      <value rngui:label='After Last Task in Branch'>last</value>
+      <value rngui:label='After First Task in Branch (Event-Based Gateway)'>first</value>
+    </choice>
+  </attribute>
+  <element rngui:ignore="true" name="parallel_branch">
+    <attribute name="eid" rngui:label="ID" rngui:default="javascript:get_free_id('e','eid')">
+      <data type="string" rngui:readonly="true"/>
+    </attribute>
+  </element>
+  <element rngui:ignore="true" name="parallel_branch">
+    <attribute name="eid" rngui:label="ID" rngui:default="javascript:get_free_id('e','eid')">
+      <data type="string" rngui:readonly="true"/>
+    </attribute>
+  </element>
+</element>

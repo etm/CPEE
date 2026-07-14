@@ -1,0 +1,9 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="colorstyle stand"/>
+  <circle cx="15.5" cy="15.5" r="8" class="standthin colorstyle"/>
+  <circle cx="15.5" cy="15.5" r="6" class="standthin colorstyle"/>
+  <path
+    d="m 15.500001,11.435193 3.825246,2.779205 -1.461114,4.496849 h -4.728265 l -1.461115,-4.496849 z"
+    class="stand colorstyle"/>
+</svg>
+

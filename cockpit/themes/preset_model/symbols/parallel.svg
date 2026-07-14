@@ -1,0 +1,6 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="colorstyle stand"/>
+  <line x1="15.5" y1="9.5" x2="15.5" y2="21.5" class="stand"/>
+  <line x1="9.5" y1="15.5" x2="21.5" y2="15.5" class="stand"/>
+</svg>
+

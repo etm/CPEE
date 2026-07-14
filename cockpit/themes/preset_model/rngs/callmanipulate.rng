@@ -1,0 +1,39 @@
+<element xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:version="1.2" ns="http://cpee.org/ns/description/1.0" name="call" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <attribute name="id" rngui:label="ID" rngui:default="javascript:get_free_id('a','id')">
+    <data type="string" rngui:readonly="true"/>
+  </attribute>
+  <element name="parameters" rngui:header="Properties">
+    <element name="label" rngui:label="Label">
+      <data type="string" rngui:label="Short description of the task"/>
+    </element>
+    <element name="color" rngui:label="Task Color">
+      <choice rngui:type='color'>
+        <value>#ffffff</value>
+        <value>#d4e1f1</value>
+        <value>#d8f0dd</value>
+        <value>#ffffcc</value>
+        <value>#e4c3e4</value>
+        <value>#f8a8c6</value>
+        <value>#ded0c5</value>
+        <value>#deddda</value>
+      </choice>
+    </element>
+  </element>
+  <element name="documentation" rngui:header="Documentation">
+    <element name="implementation" rngui:header="Implementation" rngui:fold="closed">
+      <element name="description" rngui:label="Description">
+        <text rngui:wrap="true" rngui:label="What is supposed to happen?"/>
+      </element>
+    </element>
+    <element name="in" rngui:header="Input" rngui:fold="closed">
+      <element name="description" rngui:label="Description">
+        <text rngui:wrap="true" rngui:label="Which data is required by this task?"/>
+      </element>
+    </element>
+    <element name="out" rngui:header="Output" rngui:fold="closed">
+      <element name="description" rngui:label="Description">
+        <text rngui:wrap="true" rngui:label="Which data is produced by this task?"/>
+      </element>
+    </element>
+  </element>
+</element>

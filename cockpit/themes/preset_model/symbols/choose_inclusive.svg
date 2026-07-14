@@ -1,0 +1,13 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <g class="part-normal">
+    <rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="colorstyle stand"/>
+    <circle cx="15.5" cy="15.5" r="7" class="stand"/>
+  </g>
+  <g class="part-start">
+    <rect transform="rotate(45,14,12)" x="7" y="3" width="21" height="21" class="colorstyle stand"/>
+    <circle cx="15.5" cy="15.5" r="7" class="stand"/>
+  </g>
+  <g class="part-middle" transform="translate(28,0)">
+    <text transform="translate(5,15)" class="label standalone"></text>
+  </g>
+</svg>

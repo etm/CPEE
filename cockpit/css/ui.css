@@ -185,6 +185,11 @@ span.vote {
   color: #73d216;
 }
 
+#details {
+  flex: 0 1 auto;
+  height: 100%;
+  overflow: scroll;
+}
 #modelling {
   flex: 0 1 auto;
   height: 100%;
@@ -196,6 +201,10 @@ span.vote {
 
 #graphcolumn ui-resizehandle {
   margin-right: 0.2em;
+  margin-bottom: 0.2em;
+}
+#detailcolumn ui-resizehandle {
+  margin-right: 0.5em;
   margin-bottom: 0.2em;
 }
 
@@ -210,6 +219,8 @@ span.vote {
 }
 #detailcolumn {
   padding-left: 1.5em;
+  display: flex;
+  flex-direction: column;
 }
 
 #dat_log tr:nth-child(odd) { background-color: #e8e8e8; color: #333; }

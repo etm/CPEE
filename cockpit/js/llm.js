@@ -343,7 +343,7 @@ $(document).ready(async function() { //{{{
     var menu = new CustomMenu(e);
 
     var mode_entries = [];
-    $('#mode option').each(function(){
+    $('#mode.active option').each(function(){
       mode_entries.push({
         label: $(this).text(),
         menu_icon: $(this).is(':selected') ? mode_active : mode_inactive,
@@ -357,7 +357,7 @@ $(document).ready(async function() { //{{{
     });
 
     var llm_entries = [];
-    $('#llms option').each(function(){
+    $('#llms.active option').each(function(){
       llm_entries.push({
         label: $(this).text(),
         menu_icon: $(this).is(':selected') ? llm_active : llm_inactive,
@@ -370,7 +370,15 @@ $(document).ready(async function() { //{{{
       });
     });
 
-    menu.contextmenu({ 'Models': mode_entries, 'LLMs': llm_entries });
+    let res = {};
+    if (mode_entries.length > 0) {
+      res['Models'] = mode_entries;
+    }
+    if (llm_entries.length > 0) {
+      res['LLMs'] = llm_entries;
+    }
+
+    menu.contextmenu(res);
   });
   $("#loadtxt").change(function(e){
     let files = document.getElementById('loadtxt').files;

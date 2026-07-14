@@ -2,6 +2,10 @@
   display: none;
 }
 
+#graphcolumn {
+  min-width: 30em !important;
+}
+
 #status {
   padding: 0.2em 0.5em;
   border-top: 0.1em solid var(--x-ui-border-color);
@@ -110,4 +114,12 @@
 
 .llm_button:hover {
   background-color: var(--wfadaptor-selected);
+}
+
+#detailcolumn {
+  padding-left: 0em !important;
+}
+#details {
+  padding-left: 1.5em;
+  min-height: 7em;
 }

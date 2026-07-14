@@ -1,0 +1,21 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <g class="part-normal">
+    <circle cx="15.5" cy="15" r="14" class="stand"/>
+    <circle cx="15.5" cy="15" r="11" class="colorstyle execstyle stand"/>
+    <line x1="15.5" y1="08" x2="09.5" y2="19" class="stand"/>
+    <line x1="09.5" y1="19" x2="21.5" y2="19" class="stand"/>
+    <line x1="21.5" y1="19" x2="15.5" y2="08" class="stand"/>
+  </g>
+  <g class="part-start">
+    <circle cx="15.5" cy="15" r="14" class="stand"/>
+    <circle cx="15.5" cy="15" r="11" class="colorstyle execstyle stand"/>
+    <line x1="15.5" y1="08" x2="09.5" y2="19" class="stand"/>
+    <line x1="09.5" y1="19" x2="21.5" y2="19" class="stand"/>
+    <line x1="21.5" y1="19" x2="15.5" y2="08" class="stand"/>
+  </g>
+  <g class="part-middle" transform="translate(32,0)">
+    <text transform="translate(0,20)" class="label"></text>
+  </g>
+  <g class="part-extra" transform="">
+  </g>
+</svg>
