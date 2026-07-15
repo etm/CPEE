@@ -186,7 +186,9 @@
         </ui-area>
         <ui-resizehandle data-belongs-to-tab="details" data-label="drag to resize"></ui-resizehandle>
         <ui-area data-belongs-to-tab="details" id="detailcolumn">
-          <div id="dat_details" class='x-ui-layout'></div>
+          <ui-part id='details'>
+            <div id="dat_details" class='x-ui-layout'></div>
+          </ui-part>
         </ui-area>
         <ui-area data-belongs-to-tab="log" id="arealog" class="inactive"> <!--{{{-->
           <table id="dat_log" class="x-ui-layout"></table>
