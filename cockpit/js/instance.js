@@ -95,6 +95,47 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'handlers' + '&' +
                'events' + '=' + 'change';// }}}
 
+function sanitize_url(url) { //{{{
+  var lastChar = url.substr(url.length - 1)
+  if (lastChar != '/') {
+    url = (url + '/');
+  }
+  return url;
+}
+ //}}}
+function translate_endpoint(ep) { //{{{
+  return ep.replace(/\{[^\/\}]+\}/g,'*');
+} //}}}
+function get_resource(base, key, loc, cache) { //{{{
+  cache[key] = {};
+  let deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
+  $.ajax({
+    url: base + 'endpoints/' + encodeURIComponent(translate_endpoint(loc)) + "/symbol.svg",
+    success: function(res) {
+      cache[key]['symbol'] = res;
+      deferreds[0].resolve(true);
+    },
+    error: deferreds[0].resolve
+  })
+  $.ajax({
+    url: base + 'endpoints/' + encodeURIComponent(translate_endpoint(loc)) + "/schema.rng",
+    success: function(res) {
+      cache[key]['schema'] = res;
+      deferreds[1].resolve(true);
+    },
+    error: deferreds[1].resolve
+  })
+  $.ajax({
+    url: base + 'endpoints/' + encodeURIComponent(translate_endpoint(loc)) + "/properties.json",
+    success: function(res) {
+      cache[key]['properties'] = res;
+      deferreds[2].resolve(true);
+    },
+    error: deferreds[2].resolve
+  })
+  return deferreds;
+} //}}}
+
 function cockpit() { //{{{
   $("button[name=base]").click(function(){ create_instance($("input[name=base-url]").val(),null,false,false); });
   $("button[name=instance]").click(function(){ uidash_activate_tab("#tabinstance"); monitor_instance($("input[name=instance-url]").val(),$("input[name=res-url]").val(),false,false); });
@@ -229,14 +270,6 @@ function cockpit() { //{{{
   });
 } //}}}
 
-function sanitize_url(url) { //{{{
-  var lastChar = url.substr(url.length - 1)
-  if (lastChar != '/') {
-    url = (url + '/');
-  }
-  return url;
-}
- //}}}
 function check_subscription() { // {{{
   var url = $('body').attr('current-instance');
   var num = 0;
@@ -452,40 +485,6 @@ function monitor_instance(cin,rep,load,exec) {// {{{
     }
   });
 }// }}}
-
-function translate_endpoint(ep) {
-  return ep.replace(/\{[^\/\}]+\}/g,'*');
-}
-
-function get_resource(base, key, loc, cache) {
-  cache[key] = {};
-  let deferreds = [new $.Deferred(), new $.Deferred(), new $.Deferred()];
-  $.ajax({
-    url: base + 'endpoints/' + encodeURIComponent(translate_endpoint(loc)) + "/symbol.svg",
-    success: function(res) {
-      cache[key]['symbol'] = res;
-      deferreds[0].resolve(true);
-    },
-    error: deferreds[0].resolve
-  })
-  $.ajax({
-    url: base + 'endpoints/' + encodeURIComponent(translate_endpoint(loc)) + "/schema.rng",
-    success: function(res) {
-      cache[key]['schema'] = res;
-      deferreds[1].resolve(true);
-    },
-    error: deferreds[1].resolve
-  })
-  $.ajax({
-    url: base + 'endpoints/' + encodeURIComponent(translate_endpoint(loc)) + "/properties.json",
-    success: function(res) {
-      cache[key]['properties'] = res;
-      deferreds[2].resolve(true);
-    },
-    error: deferreds[2].resolve
-  })
-  return deferreds;
-}
 
 function monitor_instance_values(type,vals) {// {{{
   if (type == "dataelements" && save['state'] == "running") {
@@ -1600,9 +1599,7 @@ function append_to_log(what,type,message) {//{{{
   }
 }//}}}
 
-function report_failure(){}
-
-function ui_pos(e,bl) {
+function ui_pos(e,bl) { //{{{
   var url = $('body').attr('current-instance');
   var coll = [];
   $('g.element.primitive > g.activities.active, g.element.primitive > g.activities.passive').each(function(a,b){
@@ -1626,16 +1623,18 @@ function ui_pos(e,bl) {
     success: monitor_instance_pos,
     error: report_failure
   });
-}
-function del_ui_pos(e) {
+} //}}}
+function del_ui_pos(e) { //{{{
   ui_pos(e,function(coll){
     coll.splice(coll.findIndex((ele)=>ele[0] == $(e).attr('id')),1);
     return coll;
   });
-}
-function add_ui_pos(e) {
+} //}}}
+function add_ui_pos(e) { //{{{
   ui_pos(e,function(coll){
     coll.push([$(e).attr('id'), e.nodeName == 'stop' ? 'after' : 'at']);
     return coll;
   });
-}
+} //}}}
+
+function report_failure(){}
