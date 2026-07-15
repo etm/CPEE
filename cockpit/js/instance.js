@@ -359,6 +359,7 @@ async function sse() { //{{{
             break;
           case 'description':
             monitor_instance_dsl();
+            monitor_graph_change(false);
             break;
           case 'endpoints':
             monitor_instance_values("endpoints");
@@ -406,6 +407,7 @@ async function sse() { //{{{
   await monitor_instance_values("attributes"); // attributes first, to catch the <resources> attribute which overrides current-resources
   monitor_instance_values("dataelements");
   monitor_instance_dsl();
+  monitor_graph_change(false);
   monitor_instance_state();
 } //}}}
 
@@ -770,7 +772,6 @@ function monitor_instance_dsl() {// {{{
         res = res.replace(/activity\s+\[:([A-Za-z][a-zA-Z0-9_]+)([^\]]*\])/g,"<span class='activities' id=\"activity-$1\">activity [:$1$2</span>");
 
         ctv.append(res);
-        monitor_graph_change(false);
       }
     }
   });
