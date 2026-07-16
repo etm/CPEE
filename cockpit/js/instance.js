@@ -360,6 +360,7 @@ async function sse() { //{{{
           case 'description':
             monitor_instance_dsl();
             monitor_graph_change(false);
+            document.dispatchEvent(graph_changed);
             break;
           case 'endpoints':
             monitor_instance_values("endpoints");
@@ -740,7 +741,6 @@ function monitor_graph_change(force) { //{{{
     success: function(dslx){
       save['dslx'] = $(dslx.documentElement).serializePrettyXML();
       if (force || !save['graph'] || (save['graph'] && save['graph'].serializePrettyXML() != $(dslx.documentElement).serializePrettyXML())) {
-        document.dispatchEvent(graph_changed);
         $.ajax({
           type: "GET",
           url: url + "/properties/attributes/theme/",
