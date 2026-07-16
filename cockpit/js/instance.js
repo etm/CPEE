@@ -740,6 +740,7 @@ function monitor_graph_change(force) { //{{{
     success: function(dslx){
       save['dslx'] = $(dslx.documentElement).serializePrettyXML();
       if (force || !save['graph'] || (save['graph'] && save['graph'].serializePrettyXML() != $(dslx.documentElement).serializePrettyXML())) {
+        document.dispatchEvent(graph_changed);
         $.ajax({
           type: "GET",
           url: url + "/properties/attributes/theme/",
