@@ -82,7 +82,7 @@ function do_main_work(svgid) { //{{{
   var tnewnode = ttarget.parents('g.element[element-id]');
   var tnewtype = tnewnode.attr('element-type') + '_' + tnewnode.attr('element-endpoint');
 
-  desc.refresh(function(graphrealization){
+  desc.redraw(function(graphrealization){
     var vtarget = manifestation.adaptor.illustrator.get_node_by_svg_id(svgid);
     if (vtarget.length > 0) {
       vtarget.parents('g.element[element-id]').addClass('selected');

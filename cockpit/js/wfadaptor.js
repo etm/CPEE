@@ -198,8 +198,8 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     self.illustrator.set_svg(block);
   }
 
-  this.redraw = function(){
-    description.redraw();
+  this.redraw = function(doit){
+    description.redraw(doit);
   }
 
   $.getScript(self.theme_base).done(function() {
@@ -949,7 +949,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     used_id_list.push(prefix + id);
     return prefix + id;
   } // }}}
-  var refresh = this.refresh = function(doit) {
+  var redraw = this.redraw = function(doit) {
     id_counter = {};
     let start = performance.now();
     labels = [];
@@ -960,9 +960,6 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     self.set_labels(graph);
     illustrator.set_duration(start);
     if (doit) doit(self);
-  }
-  var redraw = this.redraw = function(){
-    self.refresh();
   }
   var update = this.update = function(svgid) { // {{{
     id_counter = {};
@@ -980,7 +977,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         console.info('Something went horribly wrong');
     };
     if (update_illustrator) {
-      self.refresh(notify_target);
+      self.redraw(notify_target);
     } else {
       notify_target();
     }
