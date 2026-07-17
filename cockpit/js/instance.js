@@ -560,7 +560,11 @@ function monitor_instance_values(type,vals) {// {{{
               });
             }
           });
-          $.when.apply($, deferreds).done();
+          $.when.apply($, deferreds).done(function(){
+            if (save['graph_adaptor'] && !suspended_redrawing) {
+              save['graph_adaptor'].redraw();
+            }
+          });
         } else if(type == "attributes") {
           $(" > attributes > *",res).each((k,v)=>{
             save['attributes_raw'][v.nodeName] = v.textContent;
@@ -724,12 +728,10 @@ function adaptor_init(url,theme,dslx) { //{{{
       suspended_redrawing = false;
     });
   } else {
-    save['graph_adaptor'].update(function(graphrealization){
-      var svgid = manifestation.selected();
-      graphrealization.set_description($(dslx));
-      manifestation.events.click(svgid);
-      format_instance_pos();
-    });
+    var svgid = manifestation.selected();
+    save['graph_adaptor'].set_description($(dslx));
+    manifestation.events.click(svgid);
+    format_instance_pos();
   }
 } //}}}
 

@@ -191,8 +191,6 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   this.illustrator = illustrator = new WfIllustrator(this);
   this.description = description = new WfDescription(this, this.illustrator);
 
-  this.update = function(doit){ doit(self); };
-
   this.draw_element = function(type,id,label) {
     let pos = {'row': 1,'col': 0};
     let block = { 'max': {'row': pos.row, 'col': pos.col}, 'endnodes': [], 'svg': $X('<g class="group" xmlns="http://www.w3.org/2000/svg"/>') };
@@ -953,51 +951,39 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   } // }}}
   var refresh = this.refresh = function(doit) {
     id_counter = {};
-    labels = [];
     let start = performance.now();
+    labels = [];
     illustrator.clear();
     clean_description();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false,yoffset:0});
     illustrator.set_svg(graph);
     self.set_labels(graph);
     illustrator.set_duration(start);
-    doit(self);
+    if (doit) doit(self);
   }
   var redraw = this.redraw = function(){
-    id_counter = {};
-    let start = performance.now();
-    labels = [];
-    illustrator.clear();
-    clean_description();
-    var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false,yoffset:0});
-    illustrator.set_svg(graph);
-    self.set_labels(graph);
-    illustrator.set_duration(start);
+    self.refresh();
   }
   var update = this.update = function(svgid) { // {{{
     id_counter = {};
-    if(update_illustrator){
-      let start = performance.now();
-      labels = [];
-      illustrator.clear();
-      clean_description();
-      var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false,yoffset:0});
-      illustrator.set_svg(graph);
-      self.set_labels(graph);
-      illustrator.set_duration(start);
+    var notify_target = () => {
+      var newn = $('*[new=true]',description);
+      newn.removeAttr('new');
+
+      if (newn.attr('svg-id') != undefined)
+        adaptor.notify(newn.attr('svg-id'));
+      else if (svgid != undefined)
+        adaptor.notify(svgid);
+      else if (newn.parents('[svg-id]').length > 0)
+        adaptor.notify(newn.parent('[svg-id]').attr('svg-id'));
+      else
+        console.info('Something went horribly wrong');
+    };
+    if (update_illustrator) {
+      self.refresh(notify_target);
+    } else {
+      notify_target();
     }
-
-    var newn = $('*[new=true]',description);
-    newn.removeAttr('new');
-
-    if (newn.attr('svg-id') != undefined)
-      adaptor.notify(newn.attr('svg-id'));
-    else if (svgid != undefined)
-      adaptor.notify(svgid);
-    else if (newn.parents('[svg-id]').length > 0)
-      adaptor.notify(newn.parent('[svg-id]').attr('svg-id'));
-    else
-      console.info('Something went horribly wrong');
   } // }}}
   // }}}
   // Adaption functions {{{
