@@ -277,7 +277,6 @@ function WFAdaptorManifestationBase(adaptor) {
 
     if (xml_node.get(0).tagName == "call" || xml_node.get(0).tagName == "manipulate" || xml_node.get(0).tagName == "stop") {
       let exec_icon = contextMenuHandling_clean_icon(self.elements.call.illustrator.svg);
-      let mark_icon = self.resources.mark;
       exec_icon.find('.part-normal').addClass('passive');
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
@@ -298,6 +297,14 @@ function WFAdaptorManifestationBase(adaptor) {
             'params': xml_node
           }];
         }
+      }
+    }
+
+    if (xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
+      let mark_icon = self.resources.mark;
+      var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+      if (vtarget.length > 0) {
+        if (!menu['Position']) { menu['Position'] = []; }
         if (vtarget.parents('g.element.marked').length > 0) {
           menu['Position'].push({
             'label': 'Unmark for copy/move (' + ($.pressCmd() ? '⌘-Click' : 'CTRL-Click') + ')',

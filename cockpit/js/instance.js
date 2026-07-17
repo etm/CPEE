@@ -1403,7 +1403,7 @@ function format_visual_remove(what,cls,sum=true) {//{{{
 
 function scroll_into_view(what) { //{{{
   if (save['state'] != "running") return;
-  var tcontainer = $('#graphcolumn')[0];
+  var tcontainer = $('#modelling')[0];
   if ($('g[element-id="' + what + '"]').length > 0) {
     var telement = $('g[element-id="' + what + '"]')[0].getBBox().y;
     if (tcontainer.scrollTop > telement) {
