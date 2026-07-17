@@ -30,17 +30,6 @@
   animation: dotty steps(1,end) 1s infinite;
   content: '';
 }
-
-@keyframes dotty {
-  0%   { content: ''; }
-  16%  { content: '.'; }
-  32%  { content: '..'; }
-  48%  { content: '...'; }
-  64%  { content: '..'; }
-  80%  { content: '.'; }
-  100% { content: ''; }
-}
-
 @keyframes dotty {
   0%   { content: 'ₒₒₒ'; }
   16%  { content: 'ₒₒ∘'; }
@@ -54,22 +43,33 @@
 #prompt_container {
   padding: 0.2em 0.5em;
   outline: none;
-  min-height: 7.3em;
   display: flex;
+  align-items: stretch;
   flex-wrap: nowrap;
+  height: 100%;
 }
 
-.max {
-  max-height: 2.66em;
+#input {
+  min-height: 9.5em;
 }
 
 .stand_alone {
   height: 100%;
 }
+
+#details {
+  padding-left: 1.5em;
+  min-height: 9em;
+}
 #prompt {
   flex: 1 1 auto;
+  height: 100%;
+  overflow: scroll;
   outline: none;
-  overflow-y: scroll;
+}
+#prompt_submit_container {
+  flex: 0 0 auto;
+  align-self: stretch;
 }
 #prompt:empty:before {
   font-family: adwaita-sans;
@@ -83,10 +83,6 @@
   box-sizing: border-box;
   outline: none;
   min-height: 2.66em;
-}
-
-#llmlabel {
-  width: 20%;
 }
 
 .single {
@@ -118,8 +114,4 @@
 
 #detailcolumn {
   padding-left: 0em !important;
-}
-#details {
-  padding-left: 1.5em;
-  min-height: 7em;
 }
