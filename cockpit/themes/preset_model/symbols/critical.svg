@@ -1,5 +1,15 @@
 <svg class="clickable" xmlns="http://www.w3.org/2000/svg">
-  <path class="colorstyle execstyle stand" d="m 3.5 27 l 12 -24 l 12 24 z"/>
-  <path class="normal" style="fill:#000000;" d="m 16.5 11 l 0 8 l -2 0 l 0 -8 z"/>
-  <path class="normal" style="fill:#000000;" d="m 16.5 21 l 0 2 l -2 0 l 0 -2 z"/>
+  <g class="part-normal">
+    <circle cx="15" cy="15" r="14" class="colorstyle execstyle stand"/>
+    <path d="M 11,14 L 11,10 A 4,4 0 0 1 19,10 L 19,14" class="stand" style="fill:none;"/>
+    <rect x="9.5" y="13.5" width="11" height="9" rx="1.5" class="black"/>
+  </g>
+  <g class="part-start">
+    <circle cx="15" cy="15" r="14" class="colorstyle execstyle stand"/>
+    <path d="M 11,14 L 11,10 A 4,4 0 0 1 19,10 L 19,14" class="stand" style="fill:none;"/>
+    <rect x="9.5" y="13.5" width="11" height="9" rx="1.5" class="black"/>
+  </g>
+  <g class="part-middle" transform="translate(32,0)">
+    <text transform="translate(0,20)" class="label"></text>
+  </g>
 </svg>
