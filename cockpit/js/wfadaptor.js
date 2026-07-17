@@ -255,8 +255,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       '  <marker id="arrow" viewBox="0 0 10 10" refX="28.5" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="14" markerHeight="3.5">' +
       '    <path d="m 2 2 l 6 3 l -6 3 z"/>' +
       '  </marker>' +
-      '  <marker id="endarrow" viewBox="0 0 10 10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="14" markerHeight="3.5">' +
-      '    <path d="m 2 2 l 6 3 l -6 3 z"/>' +
+      '  <marker id="endarrow" viewBox="0 0 10 10" refX="7" refY="5" orient="auto" markerUnits="strokeWidth" markerWidth="14" markerHeight="5.2">' +
+      '    <path d="M 2,2 L 6.21,4.11 Q 8,5 6.21,5.89 L 2,8 Z"/>' +
       '  </marker>' +
       '  <clipPath id="startclip">' +
       '    <rect x="-4" y="-4" width="35" height="38"/>' +
@@ -778,23 +778,23 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     return g;
   } // }}}
-  var draw_border = this.draw.draw_border = function(id, p1, p2, group, tighten) { // {{{
-    tighten = tighten || 0;
+  var draw_border = this.draw.draw_border = function(id, p1, p2, group, yshrink) { // {{{
+    yshrink = yshrink || 0;
     let bstart = get_x(p1.row,p1.col,'border from');
     let bend = get_x_plus(p1.row,p2.row,p2.col,'border to');
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift - self.group_extend) + '" ' +
-        'y="' + ((p1.row-1)*self.height+self.height_shift/2-self.group_extend+tighten) + '" ' +
+        'y="' + ((p1.row-1)*self.height+self.height_shift/2-self.group_extend+yshrink) + '" ' +
         'width="' + (bend-bstart+2*self.group_extend) + '" ' +
-        'height="' + (((p2.row+1)-p1.row)*self.height+2*self.group_extend-2*tighten) + '" ' +
+        'height="' + (((p2.row+1)-p1.row)*self.height+2*self.group_extend-2*yshrink) + '" ' +
         'class="block" rx="12" ry="12" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
-  var draw_tile = this.draw.draw_tile = function(id, p1, p2, group) { // {{{
+  var draw_tile = this.draw.draw_tile = function(id, p1, p2, group, yshrink=0) { // {{{
     let bstart = get_x(p1.row,p1.col,'tile from');
     let bend = get_x_plus(p1.row,p2.row,p2.col,'tile to');
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift - self.group_extend) + '" ' +
-        'y="' + ((p1.row-1)*self.height+self.height_shift/2-self.group_extend) + '" ' +
+        'y="' + ((p1.row-1)*self.height+self.height_shift/2-self.group_extend+yshrink) + '" ' +
         'width="' + (bend-bstart+2*self.group_extend) + '" ' +
-        'height="' + (((p2.row+1)-p1.row)*self.height+2*self.group_extend) + '" ' +
+        'height="' + (((p2.row+1)-p1.row)*self.height+2*self.group_extend-2*yshrink) + '" ' +
         'class="tile" rx="12" ry="12" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_connection = this.draw.draw_connection = function(group, start, end, context_row, arrow) { // {{{
@@ -1270,19 +1270,20 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       } else { console.log("no icon "+ sname);}
       if (illustrator.elements[sname] && illustrator.elements[sname].border) {
         let wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
-        let tighten = illustrator.elements[sname].border == 'structural' ? illustrator.structural_tighten : 0;
+        let yshrink = illustrator.elements[sname].border == 'structural' ? illustrator.structural_tighten : 0;
         if (illustrator.elements[sname].closing_symbol) {
-          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg, tighten);
+          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg, yshrink);
         } else {
-          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg, tighten);
+          illustrator.draw.draw_border($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg, yshrink);
         }
       }
       if (illustrator.elements[sname] && illustrator.elements[sname].type == 'complex') {
         let wide = (illustrator.elements[sname].wide == true && block.max.col == pos.col) ? pos.col + 1 : block.max.col;
+        let yshrink = illustrator.elements[sname].border == 'structural' ? illustrator.structural_tighten : 0;
         if (illustrator.elements[sname].closing_symbol) {
-          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg);
+          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row + 1 }, block.svg, yshrink);
         } else {
-          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg);
+          illustrator.draw.draw_tile($(context).attr('svg-id'), pos, { col: wide, row: block.max.row }, block.svg, yshrink);
         }
       }
     }
