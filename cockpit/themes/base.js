@@ -1252,7 +1252,7 @@ function WFAdaptorManifestationBase(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'aggregate',
       'closeblock': false,
-      'border': true,
+      'border': 'structural',
       'closing_symbol': 'critical_finish',
       'expansion': function(node) {
         return 'vertical';
@@ -1347,7 +1347,7 @@ function WFAdaptorManifestationBase(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'aggregate',
       'closeblock': false,
-      'border': 'injectiongroup', // other value than true,false inidcates the used class for the svg-object
+      'border': 'visual',
       'expansion': function(node) {
         return 'vertical';
       },
@@ -1665,7 +1665,7 @@ function WFAdaptorManifestationBase(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'noarrow': false,
-      'border': true,
+      'border': 'visual',
       'wide': true,
       'closing_symbol': 'event_end',
       'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_event.svg'
