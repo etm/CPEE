@@ -186,12 +186,9 @@ span.vote {
 }
 
 #details {
-  flex: 0 1 auto;
-  height: 100%;
   overflow: scroll;
 }
 #modelling {
-  flex: 0 1 auto;
   height: 100%;
   overflow: scroll;
 }
@@ -221,7 +218,7 @@ span.vote {
   padding-left: 1.5em;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow: hidden;
 }
 
 #dat_log tr:nth-child(odd) { background-color: #e8e8e8; color: #333; }

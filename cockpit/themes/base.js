@@ -277,7 +277,6 @@ function WFAdaptorManifestationBase(adaptor) {
 
     if (xml_node.get(0).tagName == "call" || xml_node.get(0).tagName == "manipulate" || xml_node.get(0).tagName == "stop") {
       let exec_icon = contextMenuHandling_clean_icon(self.elements.call.illustrator.svg);
-      let mark_icon = self.resources.mark;
       exec_icon.find('.part-normal').addClass('passive');
       var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
       if (vtarget.length > 0) {
@@ -298,6 +297,14 @@ function WFAdaptorManifestationBase(adaptor) {
             'params': xml_node
           }];
         }
+      }
+    }
+
+    if (xml_node.get(0).tagName != 'description' && !self.elements[xml_node.get(0).tagName].neverdelete) {
+      let mark_icon = self.resources.mark;
+      var vtarget = self.adaptor.illustrator.get_node_by_svg_id(svgid);
+      if (vtarget.length > 0) {
+        if (!menu['Position']) { menu['Position'] = []; }
         if (vtarget.parents('g.element.marked').length > 0) {
           menu['Position'].push({
             'label': 'Unmark for copy/move (' + ($.pressCmd() ? '⌘-Click' : 'CTRL-Click') + ')',
@@ -1243,14 +1250,16 @@ function WFAdaptorManifestationBase(adaptor) {
   this.elements.critical = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
+      'label': function(node){ return [ { column: 'Label', value: $(node).attr('sid') } ]; },
       'endnodes': 'aggregate',
       'closeblock': false,
-      'border': true,
+      'border': 'structural',
+      'closing_symbol': 'critical_finish',
       'expansion': function(node) {
         return 'vertical';
       },
       'col_shift': function(node) {
-        return true;
+        return false;
       },
       'svg': self.adaptor.theme_dir + 'symbols/critical.svg'
     },//}}}
@@ -1327,12 +1336,19 @@ function WFAdaptorManifestationBase(adaptor) {
       'mouseout': self.events.mouseout,
     }//}}}
   };  /*}}}*/
+  this.elements.critical_finish = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/event_end.svg'
+    }//}}}
+  };  /*}}}*/
   this.elements.group = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
       'endnodes': 'aggregate',
       'closeblock': false,
-      'border': 'injectiongroup', // other value than true,false inidcates the used class for the svg-object
+      'border': 'visual',
       'expansion': function(node) {
         return 'vertical';
       },
@@ -1650,7 +1666,7 @@ function WFAdaptorManifestationBase(adaptor) {
     'illustrator': {//{{{
       'endnodes': 'this',
       'noarrow': false,
-      'border': true,
+      'border': 'visual',
       'wide': true,
       'closing_symbol': 'event_end',
       'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_event.svg'
