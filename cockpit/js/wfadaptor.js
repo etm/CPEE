@@ -1168,17 +1168,16 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
           set_details(ctname,csname,pos,context,true);
           [undefined, endnodes] = draw_position(ctname,parent_pos,pos,prev,block,[],context,{svg: g, pos: origpos});
         }
-        prev = JSON.parse(JSON.stringify(endnodes));
         if (illustrator.elements[sname].border == 'structural') {
-          // structural border: outgoing arrow starts at the group border instead of leaving from the icon
-          // small y offset
-          prev = prev.map(function(p) {
-            if (!p) return p;
+          // structural border: outgoing arrow starts at the group border instead of from the icon
+          // small y offset.
+          endnodes = endnodes.map(function(p) {
             var np = JSON.parse(JSON.stringify(p));
             np.yoffset = illustrator.height_shift/2 + illustrator.group_extend + 15 - illustrator.structural_tighten;
             return np;
           });
         }
+        prev = JSON.parse(JSON.stringify(endnodes));
       }
     });
 
