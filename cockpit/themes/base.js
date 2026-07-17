@@ -1253,11 +1253,12 @@ function WFAdaptorManifestationBase(adaptor) {
       'endnodes': 'aggregate',
       'closeblock': false,
       'border': true,
+      'closing_symbol': 'critical_finish',
       'expansion': function(node) {
         return 'vertical';
       },
       'col_shift': function(node) {
-        return true;
+        return false;
       },
       'svg': self.adaptor.theme_dir + 'symbols/critical.svg'
     },//}}}
@@ -1332,6 +1333,13 @@ function WFAdaptorManifestationBase(adaptor) {
       'dblclick': self.events.dblclick,
       'mouseover': self.events.mouseover,
       'mouseout': self.events.mouseout,
+    }//}}}
+  };  /*}}}*/
+  this.elements.critical_finish = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'svg': self.adaptor.theme_dir + 'symbols/event_end.svg'
     }//}}}
   };  /*}}}*/
   this.elements.group = { /*{{{*/
