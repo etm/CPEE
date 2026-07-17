@@ -1250,6 +1250,7 @@ function WFAdaptorManifestationBase(adaptor) {
   this.elements.critical = { /*{{{*/
     'type': 'complex',
     'illustrator': {//{{{
+      'label': function(node){ return [ { column: 'Label', value: $(node).attr('sid') } ]; },
       'endnodes': 'aggregate',
       'closeblock': false,
       'border': 'structural',
