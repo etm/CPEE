@@ -46,10 +46,14 @@
   display: flex;
   align-items: stretch;
   flex-wrap: nowrap;
-  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 #input {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
   min-height: 9.5em;
 }
 
