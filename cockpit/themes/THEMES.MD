@@ -4,17 +4,17 @@ This document explains, in detail, how `themes` works and how to build your own 
 
 ## Table of contents
 
-1. [The anatomy of a theme directory](#2-the-anatomy-of-a-theme-directory)
-2. [Creating your own theme, step by step](#4-creating-your-own-theme-step-by-step)
-3. [The `theme.js` file: class skeleton and instance flags](#5-the-themejs-file-class-skeleton-and-instance-flags)
-4. [The element hierarchy (`this.elements`)](#6-the-element-hierarchy-thiselements)
-   1. [Parameter reference: an element definition](#7-full-parameter-reference-an-element-definition)
-   2. [Parameter reference: the `illustrator` block](#8-full-parameter-reference-the-illustrator-block)
-   3. [The `adaptor` block and `self.events`](#9-the-adaptor-block-and-selfevents)
-5. [RelaxNG schemas (`.rng`) — the details panel](#10-relaxng-schemas-rng--the-details-panel)
-6. [Anatomy of an SVG symbol](#11-anatomy-of-an-svg-symbol)
-7. [CSS class reference](#12-css-class-reference)
-8. [Worked example: adding a new element end-to-end](#13-worked-example-adding-a-new-element-end-to-end)
+1. [The anatomy of a theme directory](#1-the-anatomy-of-a-theme-directory)
+2. [Creating your own theme, step by step](#2-creating-your-own-theme-step-by-step)
+3. [The `theme.js` file: class skeleton and instance flags](#3-the-themejs-file-class-skeleton-and-instance-flags)
+4. [The element hierarchy (`this.elements`)](#4-the-element-hierarchy-thiselements)
+   1. [Parameter reference: an element definition](#1-full-parameter-reference-an-element-definition)
+   2. [Parameter reference: the `illustrator` block](#2-full-parameter-reference-the-illustrator-block)
+   3. [The `adaptor` block and `self.events`](#3-the-adaptor-block-and-selfevents)
+5. [RelaxNG schemas (`.rng`) — the details panel](#5-relaxng-schemas-rng--the-details-panel)
+6. [Anatomy of an SVG symbol](#6-anatomy-of-an-svg-symbol)
+7. [CSS class reference](#7-css-class-reference)
+8. [Worked example: adding a new element end-to-end](#8-worked-example-adding-a-new-element-end-to-end)
 
 ---
 
