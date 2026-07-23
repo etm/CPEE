@@ -351,7 +351,6 @@ one-off tweaks, e.g. `style="fill:none;"`).
 | `.duration` | Stroke color for duration-annotation strokes. |
 | `.super` / `tspan.exec` / `.active` / `.vote` / `.colon` / `.necessary` | The small execution-count indicator (`▶ 0,0`) appended automatically above every icon unless `addition` is suppressed at draw time. |
 | `.stripe.even` / `.stripe.odd` | Alternating row backgrounds, only drawn when the manifestation sets `this.striped = true`. |
-| `rect.resource-column`, `.resource-point.read/write/both` | Defined in `extended_columns-svg.css`. Belong to the separate "extended columns" resource-visualization feature, not core icon anatomy — only relevant if you're theming that sidebar too. |
 
 CSS custom properties (in `:root`, top of `wfadaptor.css`) drive the actual colors:
 `--wfadaptor-exec-passive/active/vote`, `--wfadaptor-base`, `--wfadaptor-base-light`,
