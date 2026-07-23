@@ -7,13 +7,13 @@ This document explains, in detail, how `themes` works and how to build your own 
 1. [The anatomy of a theme directory](#1-the-anatomy-of-a-theme-directory)
 2. [Creating your own theme, step by step](#2-creating-your-own-theme-step-by-step)
 3. [The `theme.js` file: class skeleton and instance flags](#3-the-themejs-file-class-skeleton-and-instance-flags)
-4. [The element hierarchy (`this.elements`)](#4-the-element-hierarchy-thiselements)
-   1. [Parameter reference: an element definition](#1-full-parameter-reference-an-element-definition)
-   2. [Parameter reference: the `illustrator` block](#2-full-parameter-reference-the-illustrator-block)
-   3. [The `adaptor` block and `self.events`](#3-the-adaptor-block-and-selfevents)
-5. [RelaxNG schemas (`.rng`) — the details panel](#5-relaxng-schemas-rng--the-details-panel)
-6. [Anatomy of an SVG symbol](#6-anatomy-of-an-svg-symbol)
-7. [CSS class reference](#7-css-class-reference)
+4. [Inside `theme.js` - the element hierarchy](#4-inside-themejs-the-element-hierarchy)
+   1. [Defining an element](#41-full-parameter-reference-an-element-definition)
+   2. [Handling element rendering](#42-full-parameter-reference-the-illustrator-block)
+   3. [Handling interaction with the element](#43-the-adaptor-block-and-selfevents)
+5. [Defining a UI for elements - RelaxNG schemas (`.rng`)](#5-relaxng-schemas-rng--the-details-panel)
+6. [Defining Element looks - SVG symbols](#6-anatomy-of-an-svg-symbol)
+7. [Styling Elements - CSS class reference](#7-css-class-reference)
 8. [Worked example: adding a new element end-to-end](#8-worked-example-adding-a-new-element-end-to-end)
 
 ---
@@ -101,7 +101,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
 
 ---
 
-## 4. The element hierarchy (`this.elements`)
+## 4. Inside `theme.js` - the element hierarchy
 
 `this.elements.<tagname>` maps 1:1 to an XML tag name in the process description (e.g. `this.elements.critical` describes `<critical>...</critical>` nodes). Two ways to add or extend elements:
 
@@ -133,7 +133,7 @@ this.elements.critical_finish = {
 
 ---
 
-### 4.1. Full parameter reference: an element definition
+### 4.1. Defining an element
 
 Every key that appears as a **direct** property of `this.elements.<tag>` (not nested inside `illustrator`):
 
@@ -141,7 +141,7 @@ Every key that appears as a **direct** property of `this.elements.<tag>` (not ne
 |---|---|---|
 | `type` | `'complex' or 'primitive' or 'abstract' `| Drives whether `parse()` recurses and whether a tile background is drawn. |
 | `illustrator` | `Object` | Everything about how/where this element is drawn. |
-| `description` | `string (path) `| Path to this element's `.rng` schema, used to render the attribute-editing panel on the right of the graph view. See §10. |
+| `description` | `string (path) `| Path to this element's `.rng` schema, used to render the attribute-editing panel on the right of the graph view. |
 | `parent` | `string (tag name)` | Inherit `illustrator` / `type` /`description` / `adaptor` keys not explicitly set on this element, from the named parent element. |
 | `permissible_children` | `function(node, mode)` | Returns the array of `{label, function_call, menu_icon, type, params}` entries shown in the right-click "Insert into" / "Insert after" menu, depending on `mode` (`'into'` or `'after'`). |
 | `permissible_children_expert` | `function(node, mode)` | Same shape, shown under a separate "…(Experts Only!)" submenu — used for structures that are technically legal but not part of the guided/simple menu (e.g. nesting `parallel` inside `critical`). |
@@ -151,10 +151,9 @@ Every key that appears as a **direct** property of `this.elements.<tag>` (not ne
 
 ---
 
-### 4.2. Full parameter reference: the `illustrator` block
+### 4.2. Handling element rendering
 
-These are the keys read by the layout/rendering engine (`WfDescription.parse()` /
-`draw_position()` / `draw_symbol()` in `cockpit/js/wfadaptor.js`). All are optional unless
+These are the keys read by the layout/rendering engine. All are optional unless
 noted; unset booleans behave as `false`/absent.
 
 | Key | Type | Purpose |
@@ -181,7 +180,7 @@ noted; unset booleans behave as `false`/absent.
 
 ---
 
-### 4.3. The `adaptor` block and `self.events`
+### 4.3. Handling interaction with the element
 
 ```js
 'adaptor': {
@@ -213,7 +212,7 @@ the shared interaction vocabulary:
 
 ---
 
-## 5. RelaxNG schemas (`.rng`) — the details panel
+## 5. Defining a UI for elements - RelaxNG schemas (`.rng`)
 
 `<yourtheme>/rngs/<tag>.rng` is a single `<element>` RelaxNG fragment (namespaced
 `rngui` extensions layered on top for the UI form generator, `RelaxNGui`). It defines which
@@ -262,10 +261,10 @@ add an `<attribute>` for it.
 
 ---
 
-## 6. Anatomy of an SVG symbol
+## 6. Defining Element looks - SVG symbols
 
 Every icon file is a small, **viewBox-less** SVG fragment. There is no `<svg width= height=>`
-sizing — instead every icon is drawn on the same implicit **40×40 unit grid** (`illustrator.width`/`illustrator.height`, both `40`, `wfadaptor.js:225-226`), with a small
+sizing — instead every icon is drawn on the same implicit **40×40 unit grid** (`illustrator.width`/`illustrator.height`, both `40`), with a small
 built-in margin (a circle icon uses `r="14"` centered at `(15,15)`, i.e. roughly a
 1–2 unit margin on every side). Stick to that scale for any new icon so it lines up with
 everything else.
@@ -320,39 +319,39 @@ and just put shapes directly under `<svg>` — that's what most simple icons (`s
 
 ---
 
-## 7. CSS class reference
+## 7. Styling Elements - CSS class reference
 
-All symbol styling lives in one shared, global stylesheet — `cockpit/css/wfadaptor.css` —
+All symbol styling lives in one shared, global stylesheet — `wfadaptor.css` —
 loaded once regardless of theme. **Themes do not ship their own CSS.** Icon files only
 ever reference classes already defined there (or use inline `style="..."` overrides for
 one-off tweaks, e.g. `style="fill:none;"`).
 
-| Class | Defined? | Purpose |
-|---|---|---|
-| `.colorstyle` | **No CSS rule — a JS hook only** | Marks which shapes inside an icon should receive the element's *per-instance* `illustrator.style(node)` inline style (e.g. a user-chosen color). `draw_symbol` selects `.colorstyle` elements and applies `$(ele).css(prop,val)` directly (`wfadaptor.js:643-649`). If nothing sets a `style`, elements with this class just render per whatever other classes they also carry. |
-| `.execstyle` / `.execstylethin` | Yes | Stroke color/width driven by the *execution state* of the enclosing `<g class="passive\|active\|vote">` (blue/red/green respectively) — put this on the "primary ring" of an icon so it visibly reflects running/failed/voting state. `execstylethin` is the same idea at `stroke-width:2` instead of `4`. |
-| `.stand` | Yes | The default outline style: background-colored fill, dark stroke (`stroke-width:1.6`). Use for the main outline of most shapes. |
-| `.standthin` | Yes | Same as `.stand` but forces `stroke-width:1` — for secondary/inner rings (dashed clock rings, etc). |
-| `.standfat` | Yes | Same as `.stand` but `stroke-width:3` — for emphasis (e.g. `end.svg`'s thick ring). |
-| `.greyfat` | Yes | Like `.standfat` but stroked in the light/muted grey variable — de-emphasized elements. |
-| `.normal` | Yes | Solid dark fill, near-zero stroke — flat black glyph fill (e.g. `critical.svg`'s original exclamation mark). |
-| `.white` | Yes | Background-colored fill *and* stroke — used to visually "punch a hole"/cover the layer beneath (e.g. `parallel.svg`'s notch). |
-| `.black` | Yes | Solid dark fill and stroke, `stroke-width:1.6` — flat black shapes (e.g. the padlock body in `critical.svg`). |
-| `.grey` | Yes | Like `.black` but in the light/muted grey variable. |
-| `.unknown` | Yes | Fallback style used for the placeholder icon when an element type can't be resolved. |
-| `.gen` | Yes | `fill:ButtonFace` themed generic/system look — rarely used directly in icons. |
-| `.standwithout` / `.standtrans` | Yes | Background-colored fill only, no stroke rule of its own — thin helper classes for shapes that only need a fill. |
-| `.edge` (on `<line>`/`<path>`) | Yes | The connection/arrow line style (`stroke-width:2`, no fill). Applied automatically by `draw_connection`, not something you put in an icon file. |
-| `.block` (on the border `<rect>`) | Yes | The dashed outline box drawn by `draw_border` (`border: 'visual' \| 'structural'`). Applied automatically, not authored in an icon. |
-| `.tile` (on the background `<rect>`) | Yes | The translucent highlight box drawn by `draw_tile` for every `type: 'complex'` element. Applied automatically. |
-| `.label` (on `<text>`) | Yes | The node label text style. Put this on the `<text>` inside `part-middle` (§11); leave its content empty, it's filled in at render time. |
-| `.label.standalone` | Yes | Adds a background-colored outline stroke behind the label text (for readability over busy backgrounds) — used e.g. on `loop.svg`'s inline label. |
-| `.label.rotate` | Yes | Applied automatically when the manifestation's `rotated_labels`/an element's `rotatelabels` is active. |
-| `.duration` | Yes | Stroke color for duration-annotation strokes. |
-| `.hoverstyle` / `.markstyle` | Yes | The two decoration shapes `draw_symbol` appends automatically to every icon (a small hover checkmark-in-circle, and the "marked for copy/move" ring) — hidden by default, shown via `g.element.hover` / `.marked` / `.selected` state classes. You never add these yourself; they come for free. |
-| `.super` / `tspan.exec` / `.active` / `.vote` / `.colon` / `.necessary` | Yes | The small execution-count indicator (`▶ 0,0`) appended automatically above every icon unless `addition` is suppressed at draw time. |
-| `.stripe.even` / `.stripe.odd` | Yes | Alternating row backgrounds, only drawn when the manifestation sets `this.striped = true`. |
-| `rect.resource-column`, `.resource-point.read/write/both` | Yes (`extended_columns-svg.css`) | Belong to the separate "extended columns" resource-visualization feature, not core icon anatomy — only relevant if you're theming that sidebar too. |
+| Class | Purpose |
+|---|---|
+| `.execstyle` / `.execstylethin` | Stroke color/width driven by the *execution state* of the enclosing `<g class="passive\|active\|vote">` (blue/red/green respectively) — put this on the "primary ring" of an icon so it visibly reflects running/failed/voting state. `execstylethin` is the same idea at `stroke-width:2` instead of `4`. |
+| `.hoverstyle` / `.markstyle` | The two decoration shapes `draw_symbol` appends automatically to every icon (a small hover checkmark-in-circle, and the "marked for copy/move" ring) — hidden by default, shown via `g.element.hover` / `.marked` / `.selected` state classes. You never add these yourself; they come for free. |
+| `.colorstyle` | **No CSS rule — a JS hook only.** Marks which shapes inside an icon should receive the element's *per-instance* `illustrator.style(node)` inline style (e.g. a user-chosen color). The engine selects `.colorstyle` elements and applies the style directly as inline CSS. If nothing sets a `style`, elements with this class just render per whatever other classes they also carry. |
+| `.stand` | The default outline style: background-colored fill, dark stroke (`stroke-width:1.6`). Use for the main outline of most shapes. |
+| `.standthin` | Same as `.stand` but forces `stroke-width:1` — for secondary/inner rings (dashed clock rings, etc). |
+| `.standfat` | Same as `.stand` but `stroke-width:3` — for emphasis (e.g. `end.svg`'s thick ring). |
+| `.greyfat` | Like `.standfat` but stroked in the light/muted grey variable — de-emphasized elements. |
+| `.normal` | Solid dark fill, near-zero stroke — flat black glyph fill (e.g. `critical.svg`'s original exclamation mark). |
+| `.white` | Background-colored fill *and* stroke — used to visually "punch a hole"/cover the layer beneath (e.g. `parallel.svg`'s notch). |
+| `.black` | Solid dark fill and stroke, `stroke-width:1.6` — flat black shapes (e.g. the padlock body in `critical.svg`). |
+| `.grey` | Like `.black` but in the light/muted grey variable. |
+| `.unknown` | Fallback style used for the placeholder icon when an element type can't be resolved. |
+| `.gen` | `fill:ButtonFace` themed generic/system look — rarely used directly in icons. |
+| `.standwithout` / `.standtrans` | Background-colored fill only, no stroke rule of its own — thin helper classes for shapes that only need a fill. |
+| `.edge` (on `<line>`/`<path>`) | The connection/arrow line style (`stroke-width:2`, no fill). Applied automatically by `draw_connection`, not something you put in an icon file. |
+| `.block` (on the border `<rect>`) | The dashed outline box drawn by `draw_border` (`border: 'visual' \| 'structural'`). Applied automatically, not authored in an icon. |
+| `.tile` (on the background `<rect>`) | The translucent highlight box drawn by `draw_tile` for every `type: 'complex'` element. Applied automatically. |
+| `.label` (on `<text>`) | The node label text style. Put this on the `<text>` inside `part-middle`; leave its content empty, it's filled in at render time. |
+| `.label.standalone` | Adds a background-colored outline stroke behind the label text (for readability over busy backgrounds) — used e.g. on `loop.svg`'s inline label. |
+| `.label.rotate` | Applied automatically when the manifestation's `rotated_labels`/an element's `rotatelabels` is active. |
+| `.duration` | Stroke color for duration-annotation strokes. |
+| `.super` / `tspan.exec` / `.active` / `.vote` / `.colon` / `.necessary` | The small execution-count indicator (`▶ 0,0`) appended automatically above every icon unless `addition` is suppressed at draw time. |
+| `.stripe.even` / `.stripe.odd` | Alternating row backgrounds, only drawn when the manifestation sets `this.striped = true`. |
+| `rect.resource-column`, `.resource-point.read/write/both` | Defined in `extended_columns-svg.css`. Belong to the separate "extended columns" resource-visualization feature, not core icon anatomy — only relevant if you're theming that sidebar too. |
 
 CSS custom properties (in `:root`, top of `wfadaptor.css`) drive the actual colors:
 `--wfadaptor-exec-passive/active/vote`, `--wfadaptor-base`, `--wfadaptor-base-light`,
@@ -412,8 +411,7 @@ recipe):
      'adaptor': { /* copy the standard 7-handler block from a sibling complex element */ }
    };
    ```
-4. **Schema** (`rngs/critical.rng`) declaring the `sid` attribute the label function reads
-   (§10's example).
+4. **Schema** (`rngs/critical.rng`) declaring the `sid` attribute the label function reads.
 5. Add a menu entry somewhere permissible (e.g. inside `parallel_branch`'s
    `permissible_children`) so the element is actually reachable from the editor UI.
 
