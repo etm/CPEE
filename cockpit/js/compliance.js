@@ -19,7 +19,9 @@ $(document).ready(function() { //{{{
     var currentUrl = baseUrl + uuid + '.xes.yaml';
     var allUrl    = baseUrl + uuid + '.all.xes.yaml';
 
-    $('#comp-verify-all-log').attr('href', allUrl).show();
+    $('#comp-verify-all-log').attr('href', allUrl);
+    $('#areacomp .yourlog').show();
+    $('#areacomp .yourlog [style]').show();
 
     function tryLoad(url, fallback) {
       $.ajax({
@@ -34,7 +36,7 @@ $(document).ready(function() { //{{{
           if (fallback) {
             tryLoad(fallback, null);
           } else {
-            $('#comp-verify_log').html('<p>Could not load compliance log.</p>');
+            $('#comp_log').html('Could not load compliance log.');
           }
         }
       });
@@ -148,7 +150,7 @@ $(document).ready(function() { //{{{
   $("#verify").click(function(){
     var uuid = save.attributes_raw && save.attributes_raw.uuid;
     if (!uuid) {
-      $('#comp-verify_log').html('<p>No instance loaded.</p>');
+      $('#comp_log').html('No instance loaded.');
       return;
     }
 
@@ -158,21 +160,21 @@ $(document).ready(function() { //{{{
   $("#semantic_verify").click(function(){
     var uuid = save.attributes_raw && save.attributes_raw.uuid;
     if (!uuid) {
-      $('#comp-verify_log').html('<p>No instance loaded.</p>');
+      $('#comp_log').html('No instance loaded.');
       return;
     }
 
-    $('#comp-verify_log').html('<p>Preparing semantic verification payload...</p>');
+    $('#comp_log').html('Preparing semantic verification payload...');
 
     getCurrentTestsetXml(
       function(testsetXml) {
-        $('#comp-verify_log').html('<p>Running semantic verification...</p>');
+        $('#comp_log').html('Running semantic verification...');
 
         var notification;
         try {
           notification = buildSubscriptionLikeNotification(testsetXml, uuid);
         } catch (error) {
-          $('#comp-verify_log').html('<p>' + escapeHtml(error.message || 'Failed to build semantic verification payload.') + '</p>');
+          $('#comp_log').html(escapeHtml(error.message || 'Failed to build semantic verification payload.'));
           return;
         }
 
@@ -197,16 +199,16 @@ $(document).ready(function() { //{{{
             }
 
             var body = xhr && xhr.responseText ? xhr.responseText : 'Semantic verification returned an unexpected response.';
-            $('#comp-verify_log').html('<pre>' + escapeHtml(body) + '</pre>');
+            $('#comp_log').html('<pre>' + escapeHtml(body) + '</pre>');
           },
           error: function(xhr) {
             var body = xhr && xhr.responseText ? xhr.responseText : 'Semantic verification failed.';
-            $('#comp-verify_log').html('<pre>' + escapeHtml(body) + '</pre>');
+            $('#comp_log').html('<pre>' + escapeHtml(body) + '</pre>');
           }
         });
       },
       function(message) {
-        $('#comp-verify_log').html('<p>' + escapeHtml(message) + '</p>');
+        $('#comp_log').html(escapeHtml(message));
       }
     );
   });
@@ -214,11 +216,11 @@ $(document).ready(function() { //{{{
   $("#identify-violations").click(function(){
     var uuid = save.attributes_raw && save.attributes_raw.uuid;
     if (!uuid) {
-      $('#comp-repair_log').html('<p>No instance loaded.</p>');
+      $('#comp_log').html('No instance loaded.');
       return;
     }
 
-    $('#comp-repair_log').html('<p>Loading compliance log...</p>');
+    $('#comp_log').html('Loading compliance log...');
 
     var baseUrl = 'https://cpee.org/comp-log/';
     var currentUrl = baseUrl + uuid + '.xes.yaml';
@@ -237,7 +239,7 @@ $(document).ready(function() { //{{{
             fileName
           );
 
-          $('#comp-repair_log').html('<p>Identifying violations...</p>');
+          $('#comp_log').html('Identifying violations...');
 
           $.ajax({
             type: 'POST',
@@ -252,7 +254,7 @@ $(document).ready(function() { //{{{
             },
             error: function(xhr) {
               var detail = xhr && xhr.responseText ? xhr.responseText : 'Unknown error';
-              $('#comp-repair_log').html('<p>Violation identification failed: ' + $('<span>').text(detail).html() + '</p>');
+              $('#comp_log').html('Violation identification failed: ' + detail);
             }
           });
         },
@@ -260,7 +262,7 @@ $(document).ready(function() { //{{{
           if (fallback) {
             tryLoad(fallback, null);
           } else {
-            $('#comp-repair_log').html('<p>Could not load compliance log.</p>');
+            $('#comp_log').html('Could not load compliance log.');
           }
         }
       });
@@ -272,18 +274,18 @@ $(document).ready(function() { //{{{
   $("#repair-violations").click(function(){
     var uuid = save.attributes_raw && save.attributes_raw.uuid;
     if (!uuid) {
-      $('#comp-repair_log').html('<p>No instance loaded.</p>');
+      $('#comp_log').html('No instance loaded.');
       return;
     }
 
     if (!latestComplianceResult) {
-      $('#comp-repair_log').html('<p>No compliance result available. Run Identify Violations first.</p>');
+      $('#comp_log').html('No compliance result available. Run Identify Violations first.');
       return;
     }
 
     var originalPstXml = getCurrentProcessXml();
     if (!originalPstXml) {
-      $('#comp-repair_log').html('<p>Could not extract the current process XML.</p>');
+      $('#comp_log').html('Could not extract the current process XML.');
       return;
     }
 
@@ -299,7 +301,7 @@ $(document).ready(function() { //{{{
       'compliance_result.json'
     );
 
-    $('#comp-repair_log').html('<p>Repairing violations...</p>');
+    $('#comp_log').html('Repairing violations...');
 
     $.ajax({
       type: 'POST',
@@ -315,11 +317,11 @@ $(document).ready(function() { //{{{
         }
 
         var pretty = JSON.stringify(result, null, 2);
-        $('#comp-repair_log').html('<pre>' + escapeHtml(pretty) + '</pre>');
+        $('#comp_log').html('<pre>' + escapeHtml(pretty) + '</pre>');
       },
       error: function(xhr) {
         var detail = xhr && xhr.responseText ? xhr.responseText : 'Unknown error';
-        $('#comp-repair_log').html('<p>Repair failed: ' + escapeHtml(detail) + '</p>');
+        $('#comp_log').html('Repair failed: ' + escapeHtml(detail));
       }
     });
   });
@@ -743,7 +745,7 @@ function displayComplianceMessages(yaml, options) { //{{{
   }
 
   if (messages.length === 0) {
-    $('#comp-verify_log').html('<div>No messages found.</div>');
+    $('#comp_log').html('<div>No messages found.</div>');
     return;
   }
 
@@ -754,7 +756,7 @@ function displayComplianceMessages(yaml, options) { //{{{
     var cls = isHeader ? '' : ' class="indent"';
     html += '<div' + cls + '>' + $('<span>').text(msg).html() + '</div>';
   }
-  $('#comp-verify_log').html(html);
+  $('#comp_log').html(html);
 } //}}}
 
 function renderViolationMessages(result) { //{{{
@@ -766,7 +768,7 @@ function renderViolationMessages(result) { //{{{
 
   if (violations.length === 0) {
     html += '<div class="indent">None</div>';
-    $('#comp-repair_log').html(html);
+    $('#comp_log').html(html);
     return;
   }
 
@@ -787,7 +789,7 @@ function renderViolationMessages(result) { //{{{
     }
   }
 
-  $('#comp-repair_log').html(html);
+  $('#comp_log').html(html);
 } //}}}
 
 function hasResolutionStrategies(result) { //{{{
@@ -802,7 +804,7 @@ function renderResolutionStrategies(result) { //{{{
 
   if (!Array.isArray(strategies)) {
     var pretty = JSON.stringify(result, null, 2);
-    $('#comp-repair_log').html('<pre>' + escapeHtml(pretty) + '</pre>');
+    $('#comp_log').html('<pre>' + escapeHtml(pretty) + '</pre>');
     return;
   }
 
@@ -831,7 +833,7 @@ function renderResolutionStrategies(result) { //{{{
     html = '<pre>' + escapeHtml(JSON.stringify(result, null, 2)) + '</pre>';
   }
 
-  $('#comp-repair_log').html(html);
+  $('#comp_log').html(html);
 } //}}}
 
 function extractRiskValue(changeRisk) { //{{{

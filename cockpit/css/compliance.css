@@ -93,20 +93,14 @@
 
 #tabnlrequirements { color: #c01c28ff; }
 #tabrequirements { color: #c01c28ff; }
-#tabcomp-verify { color: #c01c28ff; }
-#tabcomp-repair { color: #c01c28ff; }
+#tabcomp { color: #c01c28ff; }
 
-#areacomp-verify > div:first-child {  padding-left: 1em; padding-top: 1em; }
-#areacomp-repair > div:first-child {  padding-left: 1em; padding-top: 1em; }
+#areacomp > div:first-child {  padding-left: 1em; padding-top: 1em; }
 
-#comp-verify_log { overflow-y: scroll; overflow-x: hidden; user-select: text; }
-#comp-verify_log div { padding: 0.2em 0.5em; }
-#comp-verify_log div.indent { padding-left: 2em; }
-#comp-verify_log div:nth-child(odd) { background-color: #e8e8e8; color: #333; }
+#comp_log { overflow-y: scroll; overflow-x: hidden; user-select: text; }
+#comp_log div { padding: 0.2em 0.5em; }
+#comp_log div.indent { padding-left: 2em; }
+#comp_log div.indent-level-2 { padding-left: 3.5em; }
+#comp_log div:nth-child(odd) { background-color: #e8e8e8; color: #333; }
+#comp_log div.error { color: #b30000; font-weight: 600; }
 
-#comp-repair_log { overflow-y: scroll; overflow-x: hidden; user-select: text; }
-#comp-repair_log div { padding: 0.2em 0.5em; }
-#comp-repair_log div.indent { padding-left: 2em; }
-#comp-repair_log div.indent-level-2 { padding-left: 3.5em; }
-#comp-repair_log div.error { color: #b30000; font-weight: 600; }
-#comp-repair_log div:nth-child(odd) { background-color: #e8e8e8; color: #333; }

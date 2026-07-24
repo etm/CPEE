@@ -122,6 +122,23 @@
 
     <div class='hidden' id='relaxngworker'></div>
 
+    <div id="areanew" class="hidden">
+      <table class='x-ui-layout'>
+      <tr>
+        <td>Resources:</td>
+        <td><input name="res-url" type="text" value=""/></td>
+      </tr>
+      <tr>
+        <td>Engine:</td>
+        <td><input name="base-url" type="text" value=""/></td>
+      </tr>
+      <tr>
+        <td>Instance:</td>
+        <td><input name="instance-url" type="text" value=""/></td>
+      </tr>
+      </table>
+    </div> <!--}}}-->
+
     <div class='menu' id='templates'></div>
     <div class='menu' id='modeltypes'></div>
 
@@ -139,29 +156,12 @@
     <ui-tabbed id="instance">
       <ui-tabbar>
         <ui-tab class="switch"                                                ></ui-tab>
-        <ui-tab class=""                data-tab="new"       id="tabnew"      >Config</ui-tab>
         <ui-tab class="inactive hidden" data-tab="instance"  id="tabinstance" >Instance</ui-tab>
         <ui-tab class="inactive hidden" data-tab="execution" id="tabexecution">Execution</ui-tab>
         <ui-behind                                                            ><a style='display:none' target='_blank' id='current-instance'></a><a style='display:none' target='_blank' id='current-instance-properties'>P</a><a style='display:none' target='_blank' id='current-instance-subscriptions'>S</a><a style='display:none' target='_blank' id='current-instance-callbacks'>C</a></ui-behind>
         <ui-last                                                              ><a class="logo" href=".."></a></ui-last>
       </ui-tabbar>
       <ui-content>
-        <ui-area data-belongs-to-tab="new" id="areanew"> <!--{{{-->
-          <table class='x-ui-layout'>
-          <tr>
-            <td>Resources:</td>
-            <td><input name="res-url" type="text" value=""/></td>
-          </tr>
-          <tr>
-            <td>Engine:</td>
-            <td><input name="base-url" type="text" value=""/></td>
-          </tr>
-          <tr>
-            <td>Instance:</td>
-            <td><input name="instance-url" type="text" value=""/></td>
-          </tr>
-          </table>
-        </ui-area> <!--}}}-->
         <ui-area data-belongs-to-tab="instance" id="areainstance" class="inactive"> <!--{{{-->
           <div>
             <div class='section'>
@@ -272,10 +272,8 @@
       <ui-tabbar>
         <ui-before                                                 ></ui-before>
         <ui-tab class=""         data-tab="details" id="tabdetails">Graph</ui-tab>
-        <ui-tab class="inactive" data-tab="dsl"     id="tabdsl"    >Description</ui-tab>
         <ui-tab class="inactive" data-tab="log"     id="tablog"    >Log</ui-tab>
-        <ui-tab class="inactive" data-tab="comp-verify"    id="tabcomp-verify">③ Compliance Verify</ui-tab>
-        <ui-tab class="inactive" data-tab="comp-repair"    id="tabcomp-repair">④ Compliance Repair</ui-tab>
+        <ui-tab class="inactive" data-tab="comp"    id="tabcomp"   >③ Compliance</ui-tab>
         <ui-behind                                                 ><a style='display:none' target='_blank' id='current-track'>T</a><a style='display:none' target='_blank' id='current-graph'>G</a></ui-behind>
       </ui-tabbar>
       <ui-content>
@@ -293,18 +291,21 @@
             <div id="dat_details" class='x-ui-layout'></div>
           </ui-part>
         </ui-area>
-        <ui-area data-belongs-to-tab="dsl" id="areadsl" class="inactive"></ui-area>
         <ui-area data-belongs-to-tab="log" id="arealog" class="inactive"> <!--{{{-->
           <div>Persistent Log: <a style='display:none' target='_blank' id='current-log'></a> [<a style='display:none' target='_blank' id='xml-log'>X</a>,<a style='display:none' target='_blank' id='shifted-log'>S</a>]</div>
           <table id="dat_log" class="x-ui-layout"></table>
         </ui-area> <!--}}}-->
-        <ui-area data-belongs-to-tab="comp-verify" id="areacomp-verify" class="inactive"> <!--{{{-->
-          <div>Compliance Verification: <button id="verify">Verify</button> <button id="semantic_verify">Semantic Verify (Slow)</button> <a style='display:none' target='_blank' id='comp-verify-current-log'></a> [<a style='display:none' target='_blank' id='comp-verify-all-log'>all</a>]</div>
-          <div id="comp-verify_log" class="x-ui-layout"></div>
-        </ui-area> <!--}}}-->
-        <ui-area data-belongs-to-tab="comp-repair" id="areacomp-repair" class="inactive"> <!--{{{-->
-          <div>Compliance Repair: <button id="identify-violations">Identify Violations</button> <button id="repair-violations">Repair Violations</button></div>
-          <div id="comp-repair_log" class="x-ui-layout"></div>
+        <ui-area data-belongs-to-tab="comp" id="areacomp" class="inactive"> <!--{{{-->
+          <div>
+            This tab groups all of your <strong>compliance verification and repair</strong> tools. You can perform the following operations:
+            <ul>
+              <li><strong>Strict Verification</strong> of the graph / your modelling decisions: <button id="verify">Strict Verify</button><span class='yourlog' style="display:none">. Your compliance log: <a style='display:none' target='_blank' id='comp-verify-current-log'></a> <span style="display:none">[</span><a style='display:none' target='_blank' id='comp-verify-all-log'>Full Verification History</a><span style="display:none">]</span></span></li>
+              <li><strong>Fuzzy Label Verification</strong> of the graph / your modelling decisions to identify minor label mismatches: <button id="semantic_verify">Fuzzy Verify (Slow)</button></li>
+              <li><strong>Violation Identification</strong> for the graph based on the compliance log (see above): <button id="identify-violations">Identify Violations</button></li>
+              <li><strong>Identify Repair Actions</strong> for the graph based on the identified violations (see above): <button id="repair-violations">Identify Repair Actions</button></li>
+            </ul>
+          </div>
+          <div id="comp_log" class="x-ui-layout"></div>
         </ui-area> <!--}}}-->
       </ui-content>
     </ui-rest>
