@@ -70,7 +70,7 @@
     <script type="text/javascript" src="js/compliance.js"></script>
     <link rel="stylesheet" href="css/compliance.css" type="text/css"/>
   </head>
-  <body data-base-port="8298" data-res-port="9303" data-theme-base="themes" is="x-ui-">
+  <body data-base-port="8298" data-res-port="9303" data-theme-base="themes" data-singlerule-endpoint="https://power.bpm.cit.tum.de/compextract/singlerule" is="x-ui-">
      <div id='disclaimer' class='hidden'> <!--{{{-->
        <h1>Disclaimer</h1>
 
@@ -238,7 +238,8 @@
         <ui-tab class=""         data-tab="dataelements" id="tabdataelements">Data Objects</ui-tab>
         <ui-tab class="inactive" data-tab="endpoints"    id="tabendpoints"   >Endpoints</ui-tab>
         <ui-tab class="inactive" data-tab="attributes"   id="tabattributes"  >Attributes</ui-tab>
-        <ui-tab class="inactive" data-tab="requirements" id="tabrequirements">Requirements</ui-tab>
+        <ui-tab class="inactive" data-tab="nlrequirements" id="tabnlrequirements">① NL-Requirements</ui-tab>
+        <ui-tab class="inactive" data-tab="requirements" id="tabrequirements">② AST-Requirements</ui-tab>
         <ui-behind                                                           ></ui-behind>
       </ui-tabbar>
       <ui-content>
@@ -258,6 +259,10 @@
           <button title='add entry'><span>New</span></button>
           <div id="dat_requirements"></div>
         </ui-area> <!--}}}-->
+        <ui-area data-belongs-to-tab="nlrequirements" id="areanlrequirements" class="inactive"> <!--{{{-->
+          <button title='add entry' id="nlreq_add"><span>New</span></button>
+          <div id="dat_nlrequirements"></div>
+        </ui-area> <!--}}}-->
       </ui-content>
     </ui-tabbed>
 
@@ -269,7 +274,8 @@
         <ui-tab class=""         data-tab="details" id="tabdetails">Graph</ui-tab>
         <ui-tab class="inactive" data-tab="dsl"     id="tabdsl"    >Description</ui-tab>
         <ui-tab class="inactive" data-tab="log"     id="tablog"    >Log</ui-tab>
-        <ui-tab class="inactive" data-tab="comp"    id="tabcomp">Compliance</ui-tab>
+        <ui-tab class="inactive" data-tab="comp-verify"    id="tabcomp-verify">③ Compliance Verify</ui-tab>
+        <ui-tab class="inactive" data-tab="comp-repair"    id="tabcomp-repair">④ Compliance Repair</ui-tab>
         <ui-behind                                                 ><a style='display:none' target='_blank' id='current-track'>T</a><a style='display:none' target='_blank' id='current-graph'>G</a></ui-behind>
       </ui-tabbar>
       <ui-content>
@@ -292,9 +298,13 @@
           <div>Persistent Log: <a style='display:none' target='_blank' id='current-log'></a> [<a style='display:none' target='_blank' id='xml-log'>X</a>,<a style='display:none' target='_blank' id='shifted-log'>S</a>]</div>
           <table id="dat_log" class="x-ui-layout"></table>
         </ui-area> <!--}}}-->
-        <ui-area data-belongs-to-tab="comp" id="areacomp" class="inactive"> <!--{{{-->
-          <div>Compliance: <button id="verify">Verify</button> <a style='display:none' target='_blank' id='comp-current-log'></a> [<a style='display:none' target='_blank' id='comp-all-log'>all</a>]</div>
-          <div id="comp_log" class="x-ui-layout"></div>
+        <ui-area data-belongs-to-tab="comp-verify" id="areacomp-verify" class="inactive"> <!--{{{-->
+          <div>Compliance Verification: <button id="verify">Verify</button> <button id="semantic_verify">Semantic Verify (Slow)</button> <a style='display:none' target='_blank' id='comp-verify-current-log'></a> [<a style='display:none' target='_blank' id='comp-verify-all-log'>all</a>]</div>
+          <div id="comp-verify_log" class="x-ui-layout"></div>
+        </ui-area> <!--}}}-->
+        <ui-area data-belongs-to-tab="comp-repair" id="areacomp-repair" class="inactive"> <!--{{{-->
+          <div>Compliance Repair: <button id="identify-violations">Identify Violations</button> <button id="repair-violations">Repair Violations</button></div>
+          <div id="comp-repair_log" class="x-ui-layout"></div>
         </ui-area> <!--}}}-->
       </ui-content>
     </ui-rest>
