@@ -186,6 +186,7 @@ span.vote {
 }
 
 #details {
+  height: 50%;
   overflow: scroll;
 }
 #modelling {
