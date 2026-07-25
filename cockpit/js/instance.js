@@ -193,13 +193,6 @@ function cockpit() { //{{{
     },
     complete: function() {
       var q = $.parseQuerySimple();
-      if (q.min || q.min == "") {
-        uidash_toggle_vis_tab($('#instance'));
-        uidash_toggle_vis_tab($('#parameters'));
-      }
-      if (q.dea || q.dea == "") {
-        uidash_toggle_vis_tab($('#instance'));
-      }
       if (q.theme) { graph_theme = q.theme; }
       if (q.position) { graph_position = q.position == 'false' ? 'false' : 'true'; }
       if (q.highlight) {
@@ -255,6 +248,13 @@ function cockpit() { //{{{
         }
         uidash_activate_tab("#tabexecution");
         create_instance($("body").attr('current-base'),q.exec,true,true);
+      }
+      if (q.min || q.min == "") {
+        uidash_toggle_vis_tab($('#instance'));
+        uidash_toggle_vis_tab($('#parameters'));
+      }
+      if (q.dea || q.dea == "") {
+        uidash_toggle_vis_tab($('#instance'));
       }
     }
   });
