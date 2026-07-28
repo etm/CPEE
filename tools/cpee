@@ -91,7 +91,7 @@ def js_libs(cockpit)
     end
     true
   else
-    puts 'Internet access required to download javascript libs from "http://cpee.org/js_libs/js_libs.zip".'
+    puts 'Internet access required to download javascript libs from "https://cpee.org/js_libs/js_libs.zip".'
     false
   end
 end
