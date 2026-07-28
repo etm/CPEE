@@ -68,7 +68,7 @@
 #prompt {
   flex: 1 1 auto;
   height: 100%;
-  overflow: scroll;
+  overflow: auto;
   outline: none;
 }
 #prompt_submit_container {

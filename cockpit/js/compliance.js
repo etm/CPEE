@@ -31,18 +31,102 @@ $(document).ready(function() { //{{{
         success: function(yaml) {
           $('#comp-verify-current-log').attr('href', url).text(url.split('/').pop()).show();
           displayComplianceMessages(yaml, renderOptions);
+          if (typeof renderOptions.onLoaded === 'function') {
+            renderOptions.onLoaded({ yaml: yaml, url: url });
+          }
         },
         error: function() {
           if (fallback) {
             tryLoad(fallback, null);
           } else {
             $('#comp_log').html('Could not load compliance log.');
+            if (typeof renderOptions.onError === 'function') {
+              renderOptions.onError('Could not load compliance log.');
+            }
           }
         }
       });
     }
 
     tryLoad(currentUrl, baseUrl + uuid + '.current.xes.yaml');
+  }
+
+  function extractLatestLogTimestamp(yamlText) {
+    if (typeof yamlText !== 'string' || !yamlText.trim()) {
+      return null;
+    }
+
+    // Match ISO timestamps such as 2026-07-28T10:11:12Z or with timezone offsets.
+    var matches = yamlText.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})/g);
+    if (!matches || matches.length === 0) {
+      return null;
+    }
+
+    var latest = null;
+    for (var i = 0; i < matches.length; i++) {
+      var ts = Date.parse(matches[i]);
+      if (!isNaN(ts) && (latest == null || ts > latest)) {
+        latest = ts;
+      }
+    }
+
+    return latest;
+  }
+
+  function isLogOlderThanSeconds(yamlText, seconds) {
+    var latestTimestamp = extractLatestLogTimestamp(yamlText);
+    if (latestTimestamp == null) {
+      return false;
+    }
+
+    var ageMs = Date.now() - latestTimestamp;
+    return ageMs > (seconds * 1000);
+  }
+
+  function triggerComplianceSubscriber(uuid, onSuccess, onError) {
+    getCurrentTestsetXml(
+      function(testsetXml) {
+        var notification;
+        try {
+          notification = buildSubscriptionLikeNotification(testsetXml, uuid);
+        } catch (error) {
+          onError(error.message || 'Failed to build compliance notification payload.');
+          return;
+        }
+
+        var formData = new FormData();
+        formData.append('notification', JSON.stringify(notification));
+        formData.append('type', 'event');
+        formData.append('topic', 'description');
+        formData.append('event', 'change');
+
+        $.ajax({
+          method: 'POST',
+          type: 'POST',
+          url: 'https://power.bpm.cit.tum.de/compliance/Subscriber',
+          data: formData,
+          processData: false,
+          contentType: false,
+          dataType: 'text',
+          success: function(_response, _textStatus, xhr) {
+            if (xhr && xhr.status === 200) {
+              onSuccess();
+              return;
+            }
+
+            var body = xhr && xhr.responseText ? xhr.responseText : 'Compliance verify returned an unexpected response.';
+            onError(body);
+          },
+          error: function(xhr) {
+            var body = xhr && xhr.responseText ? xhr.responseText : 'Compliance verify failed.';
+            onError(body);
+          }
+        });
+      },
+      function(message) {
+        onError(message);
+      }
+    );
   }
 
   function getCurrentTestsetXml(onSuccess, onError) {
@@ -154,7 +238,30 @@ $(document).ready(function() { //{{{
       return;
     }
 
-    loadComplianceLog(uuid);
+    $('#comp_log').html('Loading compliance log...');
+
+    loadComplianceLog(uuid, {
+      onLoaded: function(result) {
+        if (!result || !result.yaml) {
+          return;
+        }
+
+        if (!isLogOlderThanSeconds(result.yaml, 60)) {
+          return;
+        }
+
+        $('#comp_log').html('Last log is older than 60 seconds. Requesting fresh verification...');
+        triggerComplianceSubscriber(
+          uuid,
+          function() {
+            loadComplianceLog(uuid);
+          },
+          function(message) {
+            $('#comp_log').html('<pre>' + escapeHtml(message || 'Failed to request fresh verification.') + '</pre>');
+          }
+        );
+      }
+    });
   });
 
   $("#semantic_verify").click(function(){
@@ -383,40 +490,6 @@ function initialize_nl_requirements_tab() { //{{{
     do_nl_requirements_save();
   });
 
-  $(document).on('click', '.nlreq-extract', function() {
-    var row = $(this).closest('.nlreq-row');
-    var requirementId = row.attr('data-requirement-id');
-    var naturalText = row.find('.nlreq-text').val().trim();
-    var status = row.find('.nlreq-status');
-    var button = $(this);
-
-    if (!naturalText) {
-      status.text('Enter text').removeClass('ok').addClass('error');
-      return;
-    }
-    if (!save['requirements']) {
-      status.text('Not ready').removeClass('ok').addClass('error');
-      return;
-    }
-
-    status.text('Extracting...').removeClass('ok error');
-    button.prop('disabled', true);
-
-    extract_ast_from_natural_language(
-      naturalText,
-      function(ast) {
-        upsert_requirement_ast(requirementId, ast);
-        do_nl_requirements_save();
-        status.text('Added').removeClass('error').addClass('ok');
-        button.prop('disabled', false);
-      },
-      function(message) {
-        status.text(message || 'Failed').removeClass('ok').addClass('error');
-        button.prop('disabled', false);
-      }
-    );
-  });
-
   if ($('#dat_nlrequirements .nlreq-row').length === 0) {
     add_nl_requirement_row();
   }
@@ -444,7 +517,43 @@ function add_nl_requirement_row(requirementId, textValue) { //{{{
       .val(textValue || '')
   );
   row.append('<span class="nlreq-status"></span>');
+  row.find('.nlreq-extract').on('click', function() {
+    extract_single_nl_requirement(row);
+  });
   $('#dat_nlrequirements').append(row);
+} //}}}
+
+function extract_single_nl_requirement(row) { //{{{
+  var requirementId = row.attr('data-requirement-id');
+  var naturalText = row.find('.nlreq-text').val().trim();
+  var status = row.find('.nlreq-status');
+  var button = row.find('.nlreq-extract');
+
+  if (!naturalText) {
+    status.text('Enter text').removeClass('ok').addClass('error');
+    return;
+  }
+  if (!save['requirements']) {
+    status.text('Not ready').removeClass('ok').addClass('error');
+    return;
+  }
+
+  status.text('Extracting...').removeClass('ok error');
+  button.prop('disabled', true);
+
+  extract_ast_from_natural_language(
+    naturalText,
+    function(ast) {
+      upsert_requirement_ast(requirementId, ast);
+      do_nl_requirements_save();
+      status.text('Added').removeClass('error').addClass('ok');
+      button.prop('disabled', false);
+    },
+    function(message) {
+      status.text(message || 'Failed').removeClass('ok').addClass('error');
+      button.prop('disabled', false);
+    }
+  );
 } //}}}
 
 function sync_nl_rows_to_requirement_keys(requirementsObject, pruneMissing) { //{{{
@@ -822,7 +931,10 @@ function renderResolutionStrategies(result) { //{{{
     html += '<div class="indent">Repair Action: ' + escapeHtml(changeDescription) + '</div>';
     html += '<div class="indent">Risk: ' + escapeHtml(riskValue) + '</div>';
 
-    if (status === 'success' && pstXml) {
+	if (
+	  (status === 'success' || status === 'warning') &&
+  	pstXml
+	) {
       html += '<div class="indent">PST: ' + buildPstDownloadLink(pstXml, requirementId, i) + '</div>';
     } else {
       html += '<div class="indent error">Error</div>';
