@@ -1,0 +1,8 @@
+<element rngui:version="1.2" name="documents" ns="http://cpee.org/ns/properties/2.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <zeroOrMore rngui:label="Create Document">
+    <element rngui:label='Name'>
+      <anyName/>
+      <data type="string" rngui:label="Value" rngui:filehandler="console.log(file); '/storage/3/' + file.name;"/>
+    </element>
+  </zeroOrMore>
+</element>

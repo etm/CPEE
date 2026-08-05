@@ -162,7 +162,7 @@ function cockpit() { //{{{
     e.stopImmediatePropagation();
   });
   document.addEventListener('uidash:activate_tab', function (e) {
-    if (!$('#tabdetails').hasClass('inactive')) {
+    if (e.detail.active == 'details') {
       if (save['graph_adaptor']) {
         var svgid = manifestation.selected();
         var marks = manifestation.marked();

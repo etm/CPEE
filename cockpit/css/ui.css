@@ -70,25 +70,26 @@ ui-tabbed ui-tabbar ui-behind button {
 }
 #parameters ui-content { height: 8.5em; min-height: 2.7em; }
 
-#areadataelements, #areaendpoints, #areaattributes {
+#areadataelements, #areaendpoints, #areaattributes, #areadocuments {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   height: 100%;
 }
-#areadataelements > button, #areaendpoints > button, #areaattributes > button {
+#areadataelements > button, #areaendpoints > button, #areaattributes > button, #areadocuments > button {
   height: 100%;
   padding: 0;
   margin-right: 0.5em;
 }
-#areadataelements > button span, #areaendpoints > button span, #areaattributes > button span {
+#areadataelements > button span, #areaendpoints > button span, #areaattributes > button span,  #areadocuments > button span {
   display: inline-block;
   transform: rotate(-90deg);
 }
-#areadataelements.inactive, #areaendpoints.inactive, #areaattributes.inactive { display: none; }
+#areadataelements.inactive, #areaendpoints.inactive, #areaattributes.inactive, #areadocuments.inactive { display: none; }
 #areadataelements button.relaxngui_control { display: none; }
 #areaendpoints button.relaxngui_control { display: none; }
 #areaattributes button.relaxngui_control { display: none; }
+#areadocuments button.relaxngui_control { display: none; }
 
 #areainstance                          { height: 100%; }
 #areainstance > div                    { display: flex; height: 100%; }
@@ -129,30 +130,7 @@ ui-tabbed ui-tabbar ui-behind button {
 
 #arealog > div {  padding-left: 1em; padding-top: 1em; }
 
-#dat_endpoints {
-  border-collapse:collapse;
-  border-spacing:0;
-  border:0 none;
-  margin:0;
-  padding:0;
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
-
-#dat_dataelements {
-  border-collapse:collapse;
-  border-spacing:0;
-  border:0 none;
-  margin:0;
-  padding:0;
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
-#dat_attributes {
+#dat_endpoints, #dat_dataelements, #dat_attributes, #dat_documents {
   border-collapse:collapse;
   border-spacing:0;
   border:0 none;

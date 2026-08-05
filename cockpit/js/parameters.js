@@ -2,6 +2,7 @@ var parameters_changed = new Event("parameters:changed", {"bubbles":true, "cance
 var attributes_changed = new Event("attributes:changed", {"bubbles":true, "cancelable":false});
 var endpoints_changed = new Event("endpoints:changed", {"bubbles":true, "cancelable":false});
 var dataelements_changed = new Event("dataelements:changed", {"bubbles":true, "cancelable":false});
+var documents_changed = new Event("documents:changed", {"bubbles":true, "cancelable":false});
 
 $(document).ready(function() {
   // hook up dataelements with relaxngui //{{{
@@ -31,10 +32,19 @@ $(document).ready(function() {
       save['attributes'] = new RelaxNGui(rng,$('#dat_attributes'));
     }
   }); //}}}
+  // hook up documents with relaxngui //{{{
+  $.ajax({
+    type: "GET",
+    dataType: "xml",
+    url: "rngs/documents.rng",
+    success: function(rng){
+      save['documents'] = new RelaxNGui(rng,$('#dat_documents'));
+    }
+  }); //}}}
 
   // new entry //{{{
   $('#parameters ui-content ui-area > button').click(function(event){
-    var but = $(document).find('#parameters ui-content ui-area:not(.inactive) > div button');
+    var but = $(document).find('#parameters ui-content ui-area:not(.inactive) > div button.relaxngui_control');
         but.click();
     var inp = $(document).find('#parameters ui-content ui-area:not(.inactive) > div input');
         $(inp[inp.length-2]).focus();
