@@ -18,7 +18,6 @@ require 'redis'
 require 'securerandom'
 require 'riddl/client'
 require 'cpee/value_helper'
-require 'cpee/attributes_helper'
 require 'cpee/message'
 require 'cpee/redis'
 require 'get_process_mem'
@@ -42,7 +41,6 @@ class Controller
     @id = id
 
     @attributes = opts[:attributes]
-    @attributes_helper = AttributesHelper.new
 
     @thread = nil
     @opts = opts
@@ -95,10 +93,6 @@ class Controller
   attr_reader :id
   attr_reader :attributes
   attr_reader :loop_guard
-
-  def attributes_translated
-    @attributes_translated || @attributes_translated = @attributes_helper.translate(attributes,dataelements,endpoints)
-  end
 
   def uuid
     @attributes['uuid']
@@ -170,7 +164,7 @@ class Controller
   end
 
   def notify(what,content={})
-    content[:attributes] = attributes_translated
+    content[:attributes] = attributes
     CPEE::Message::send(:event,what,base,@id,uuid,info,content,@redis)
   end
 
@@ -182,7 +176,7 @@ class Controller
     @opts[:votes][handler]&.each do |client|
       voteid = SecureRandom.hex(16)
       content[:key] = voteid
-      content[:attributes] = attributes_translated
+      content[:attributes] = attributes
       content[:subscription] = client
       votes << voteid
       CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)

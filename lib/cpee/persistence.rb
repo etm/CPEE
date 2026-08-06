@@ -32,7 +32,6 @@ module CPEE
     end
 
     def self::set_list(id,opts,item,values,diff=false,delete=false,deletions=[]) #{{{
-      ah = AttributesHelper.new
       attributes = Persistence::extract_list(id,opts,'attributes').to_h
       dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
       endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
@@ -53,7 +52,7 @@ module CPEE
       end
       payload = {
         :values => oldvalues.merge(values).transform_values{|val| JSON::parse(val) rescue val },
-        :attributes => ah.translate(attributes,dataelements,endpoints)
+        :attributes => attributes
       }
       CPEE::Message::send(
         :event,
@@ -217,7 +216,6 @@ module CPEE
         return 405
       end
 
-      ah = AttributesHelper.new
       attributes = Persistence::extract_list(id,opts,'attributes').to_h
       dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
       endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
@@ -236,7 +234,7 @@ module CPEE
           :url => url,
           :changed => values,
           :deleted => deleted,
-          :attributes => ah.translate(attributes,dataelements,endpoints),
+          :attributes => attributes
         },
         opts[:redis]
       )

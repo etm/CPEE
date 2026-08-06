@@ -66,7 +66,7 @@ module CPEE
               end
             end
           end
-          %w{dataelements endpoints attributes}.each do |ele|
+          %w{dataelements endpoints attributes documents}.each do |ele|
             on resource ele do
               run CPEE::Properties::GetItems, ele, id, opts if get
               run CPEE::Properties::PatchItems, ele, id, opts if patch ele
@@ -111,7 +111,7 @@ module CPEE
         doc.find('/p:properties/p:status/p:id').first.text = CPEE::Persistence::extract_item(id,opts,'status/id')
         doc.find('/p:properties/p:status/p:message').first.text = CPEE::Persistence::extract_item(id,opts,'status/message')
         doc.find('/p:properties/p:executionhandler').first.text = CPEE::Persistence::extract_item(id,opts,'executionhandler')
-        %w{dataelements endpoints attributes}.each do |item|
+        %w{dataelements endpoints attributes documents}.each do |item|
           des = doc.find("/p:properties/p:#{item}").first
           CPEE::Persistence::extract_list(id,opts,item).each{ |de| des.add(*de) }
         end
@@ -136,9 +136,11 @@ module CPEE
         end #}}}
         doc.find('/p:properties/p:transformation/p:description').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/description')
         doc.find('/p:properties/p:transformation/p:dataelements').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dataelements')
+        doc.find('/p:properties/p:transformation/p:documents').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/documents')
         doc.find('/p:properties/p:transformation/p:endpoints').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/endpoints')
         doc.find('/p:properties/p:transformation/p:description/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/description/@type')
         doc.find('/p:properties/p:transformation/p:dataelements/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dataelements/@type')
+        doc.find('/p:properties/p:transformation/p:documents/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/documents/@type')
         doc.find('/p:properties/p:transformation/p:endpoints/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type')
         Riddl::Parameter::Complex.new('properties','application/xml',doc.to_s)
       end
@@ -165,7 +167,7 @@ module CPEE
             end
           end
 
-          %w{dataelements endpoints attributes}.each do |item|
+          %w{dataelements endpoints attributes documents}.each do |item|
             if (node = doc.find('/p:properties/p:' + item)).any?
               CPEE::Properties::PatchItems::set item, id, opts, node.first.dump
             end
@@ -200,7 +202,7 @@ module CPEE
           CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text, false
         end
 
-        %w{dataelements endpoints attributes}.each do |item|
+        %w{dataelements endpoints attributes documents}.each do |item|
           if (node = doc.find('/*/p:' + item)).any?
             CPEE::Properties::PutItems::set item, id, opts, node.first.dump
           end
@@ -828,6 +830,7 @@ module CPEE
           )
         end
         attrs = CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+        do = CPEE::Persistence::extract_list(id,opts,'documents').to_h
         change_uuid = Digest::SHA1.hexdigest(dslx)
         CPEE::Persistence::set_item(id,opts,'description',
           :description => xml,
@@ -835,10 +838,12 @@ module CPEE
           :change_uuid => change_uuid,
           :dsl => dsl,
           :dataelements => CPEE::Persistence::extract_list(id,opts,'dataelements').to_h,
+          :documents => CPEE::Persistence::extract_list(id,opts,'documents').to_h,
           :endpoints => CPEE::Persistence::extract_list(id,opts,'endpoints').to_h,
           :attributes => attrs
         )
         PatchItems::set_hash('dataelements',id,opts,de) unless de.empty?
+        PatchItems::set_hash('documents',id,opts,do) unless do.empty?
         PatchItems::set_hash('endpoints',id,opts,ep) unless ep.empty?
         exposition.each do |exp|
           content = {
