@@ -2,7 +2,7 @@
   <zeroOrMore rngui:label="Create Document">
     <element rngui:label='Name'>
       <anyName/>
-      <data type="string" rngui:label="Value" rngui:filehandler="console.log(file); '/storage/3/' + file.name;"/>
+      <data type="string" rngui:label="Value" rngui:filehandler="do_parameters_save_document(file)"/>
     </element>
   </zeroOrMore>
 </element>

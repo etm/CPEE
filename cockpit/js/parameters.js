@@ -96,3 +96,10 @@ function do_parameters_save_part(visid,send) { //{{{
     data: send
   });
 } //}}}
+
+function do_parameters_save_document(file,content) { //{{{
+  console.log(file);
+  console.log(content);
+} //}}}
+
+

@@ -103,6 +103,17 @@
     </parameter>
   </message> <!--}}}-->
 
+  <message name="document"> <!--{{{-->
+    <parameter name="document" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/t_simple.rng"/>
+    </parameter>
+  </message> <!--}}}-->
+  <message name="documents"> <!--{{{-->
+    <parameter name="documents" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/t_documents.rng"/>
+    </parameter>
+  </message> <!--}}}-->
+
   <message name="endpoint"> <!--{{{-->
     <parameter name="endpoint" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
       <xi:include href="properties/t_simple.rng"/>
@@ -193,6 +204,17 @@
       <post in="dataelement" out="id"/>
       <patch in="dataelements"/>
       <put in="dataelements"/>
+      <resource>
+        <get out="string"/>
+        <put in="string"/>
+        <delete/>
+      </resource>
+    </resource> <!--}}}-->
+    <resource relative="documents"> <!--{{{-->
+      <get out="documents"/>
+      <post in="document" out="id"/>
+      <patch in="documents"/>
+      <put in="documents"/>
       <resource>
         <get out="string"/>
         <put in="string"/>
