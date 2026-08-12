@@ -4,6 +4,7 @@
   <include href="executionhandler.rng"/>
   <include href="positions.rng"/>
   <include href="dataelements.rng"/>
+  <include href="documents.rng"/>
   <include href="endpoints.rng"/>
   <include href="attributes.rng"/>
   <include href="dsl.rng"/>
@@ -18,6 +19,7 @@
       <ref name="executionhandler"/>
       <ref name="positions"/>
       <ref name="dataelements"/>
+      <ref name="documents"/>
       <ref name="endpoints"/>
       <ref name="attributes"/>
       <ref name="dsl"/>

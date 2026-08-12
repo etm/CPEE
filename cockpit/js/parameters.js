@@ -100,6 +100,6 @@ function do_parameters_save_part(visid,send) { //{{{
 function do_parameters_save_document(file,content) { //{{{
   console.log(file);
   console.log(content);
+  // todo store in dstore
+  return $.path_join($('body').attr('current-document-store'),save.attributes_raw.uuid,file.name);
 } //}}}
-
-

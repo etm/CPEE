@@ -35,6 +35,7 @@ module CPEE
     /p:*/p:positions/p:*/@*
     /p:*/p:attributes/p:*
     /p:*/p:dataelements/p:*
+    /p:*/p:documents/p:*
     /p:*/p:endpoints/p:*
     /p:*/p:transformation/p:*
     /p:*/p:transformation/p:*/@*
@@ -51,6 +52,7 @@ module CPEE
   }
   PROPERTIES_PATHS_INDEX_ORDERED = %w{
     /p:*/p:dataelements/p:*
+    /p:*/p:documents/p:*
     /p:*/p:endpoints/p:*
     /p:*/p:attributes/p:*
   }
@@ -91,7 +93,7 @@ module CPEE
     opts[:redis_pid]                  ||= 'redis.pid' # use e.g. /var/run/redis.pid if you do global. Look it up in your redis config
     opts[:redis_db_name]              ||= 'redis.rdb' # use e.g. /var/lib/redis.rdb for global stuff. Look it up in your redis config
 
-    opts[:libs_preload]               ||= ['weel', 'json', 'redis', 'securerandom', 'riddl/client', 'cpee/value_helper', 'cpee/attributes_helper', 'cpee/message', 'cpee/redis', 'cpee/persistence', 'yaml', 'charlock_holmes', 'psych', 'xml/smart', 'ostruct', 'bigdecimal', 'mimemagic', 'cpee-eval-ruby/translation', 'get_process_mem']
+    opts[:libs_preload]               ||= ['weel', 'json', 'redis', 'securerandom', 'riddl/client', 'cpee/value_helper', 'cpee/message', 'cpee/redis', 'cpee/persistence', 'yaml', 'charlock_holmes', 'psych', 'xml/smart', 'ostruct', 'bigdecimal', 'mimemagic', 'cpee-eval-ruby/translation', 'get_process_mem']
     opts[:libs_preloader]             ||= '~/bin/by-server'
     opts[:libs_preloaderrun]          ||= '~/bin/by'
 

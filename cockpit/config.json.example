@@ -1,8 +1,9 @@
 {
-  "log-url": "https://cpee.org/logs/",
-  "templates-url": "https://cpee.org/design/server/Templates.dir/?stage=developm
-  "res-url": "https://cpee.org/flow/resources/",
-  "base-url": "https://cpee.org/flow/engine/",
-  "save-url": "https://cpee.org/design/server/",
-  "llm-url": "https://cpee.org/llm/"
+  "logs-url": "https://%host/logs/",
+  "templates-url": "https://%host/design/server/Templates.dir/?stage=development",
+  "resources-url": "https://%host/flow/resources/",
+  "base-url": "https://%host/flow/engine/",
+  "save-url": "https://%host/hub/server/",
+  "llm-service-url": "https://%host/llm/",
+  "document-store-url": "https://%host/document-store-url/"
 }

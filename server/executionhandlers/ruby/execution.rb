@@ -40,6 +40,7 @@ module CPEE
         endpoints = CPEE::Persistence::extract_list(id,opts,'endpoints')
         dataelements = CPEE::Persistence::extract_list(id,opts,'dataelements')
         attributes = CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+        documents = CPEE::Persistence::extract_list(id,opts,'documents').to_h
         positions = CPEE::Persistence::extract_set(id,opts,'positions')
         positions.map! do |k, v|
           [ k, v, CPEE::Persistence::extract_item(id,opts,File.join('positions',k,'@passthrough')) ]
@@ -60,6 +61,7 @@ module CPEE
           iopts[:global_executionhandlers] = opts[:global_executionhandlers]
         end
         iopts[:attributes] = attributes
+        iopts[:documents] = documents
         iopts[:votes] = {}
         CPEE::Persistence::extract_handlers(id,opts).each do |de|
           if de[1] && de[1]&.empty?.!

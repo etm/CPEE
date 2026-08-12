@@ -32,6 +32,9 @@
           <ref name="dataelements"/>
         </optional>
         <optional>
+          <ref name="documents"/>
+        </optional>
+        <optional>
           <ref name="endpoints"/>
         </optional>
         <optional>

@@ -2,13 +2,11 @@ function config_defaults(){
   var default_values = {};
   // logs is missing, so that the button is not shown, when there is no info
   if (location.protocol.match(/^file/)) {
-    default_values['res-url']  = 'http://localhost:' + $('body').data('res-port');
     default_values['base-url'] = 'http://localhost:' + $('body').data('base-port');
-    default_values['save-url'] = 'http://localhost:' + $('body').data('base-port') + '/design';
+  } else if (location.port == '') {
+    default_values['base-url'] = $.path_join(location.protocol + "//", location.hostname, location.pathname, $('body').data('base-engine'));
   } else {
-    default_values['res-url']  = location.protocol + "//" + location.hostname + ":" + $('body').data('res-port');
     default_values['base-url'] = location.protocol + "//" + location.hostname + ":" + $('body').data('base-port');
-    default_values['save-url'] = location.protocol + "//" + location.hostname + ":" + $('body').data('base-port') + '/design';
   }
   default_values['templates-url'] = 'templates/';
   return default_values;
@@ -35,45 +33,17 @@ $(document).ready(function() {
       url: "config.json",
       success: function(res){
         var res_def = config_defaults();
-        if (res['log-url']) { // just leave it out when it is not configured
-          $("body").attr('current-logs',res['log-url'].replace("%host",window.location.host));
-        }
-        if (res['llm-url']) { // just leave it out when it is not configured
-          $("body").attr('current-llm-service',res['llm-url'].replace("%host",window.location.host));
-        }
-        if (res['res-url']) {
-          $("body").attr('current-resources',res['res-url'].replace("%host",window.location.host));
-        } else {
-          $("body").attr('current-resources',res_def['res-url'].replace("%host",window.location.host));
-        }
-        if (res['base-url']) {
-          $("body").attr('current-base',res['base-url'].replace("%host",window.location.host));
-        } else {
-          $("body").attr('current-base',res_def['base-url'].replace("%host",window.location.host));
-        }
-        if (res['save-url']) {
-          $("body").attr('current-save',res['save-url'].replace("%host",window.location.host));
-        } else {
-          $("body").attr('current-save',res_def['save-url'].replace("%host",window.location.host));
-        }
-        if (res['templates-url']) {
-          $("body").attr('current-templates',res['templates-url'].replace("%host",window.location.host));
-        } else {
-          $("body").attr('current-templates',res_def['templates-url'].replace("%host",window.location.host));
-        }
-        $("input[name=res-url]").val($("body").attr('current-resources').replace("%host",window.location.host));
-        $("input[name=base-url]").val($("body").attr('current-base').replace("%host",window.location.host));
+        $("body").attr('current-base',(res['base-url'] || res_def['base-url']).replace("%host",window.location.host));
+        $("body").attr('current-templates',(res['templates-url'] || res_def['templates-url']).replace("%host",window.location.host));
+        $.each(res, function(key, value){ // just leave it out when it is not configured
+          if (key != 'base-url' && key != 'templates-url') {
+            $("body").attr('current-' + key.replace(/-url$/,''), value.replace("%host",window.location.host));
+          }
+        });
         cockpit();
       },
       error: function(){
-        var res = config_defaults();
-        $("body").attr('current-resources',res['res-url'].replace("%host",window.location.host));
-        $("body").attr('current-base',res['base-url'].replace("%host",window.location.host));
-        $("body").attr('current-save',res['save-url'].replace("%host",window.location.host));
-        $("body").attr('current-templates',res['templates-url'].replace("%host",window.location.host));
-        $("input[name=res-url]").val($("body").attr('current-resources'));
-        $("input[name=base-url]").val($("body").attr('current-base'));
-        cockpit();
+        alert('fix your config.json');
       }
     });
   }

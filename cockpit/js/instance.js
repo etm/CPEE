@@ -625,7 +625,7 @@ function adaptor_init(url,theme,dslx) { //{{{
     // while inside and svgs are reloaded, do nothing here
     suspended_redrawing = true;
     save['graph_theme'] = theme;
-    save['graph_adaptor'] = new WfAdaptor($('body').data('theme-base') + '/' + theme + '/theme.js',function(graphrealization){
+    save['graph_adaptor'] = new WfAdaptor($('body').data('base-themes') + '/' + theme + '/theme.js',function(graphrealization){
       graphrealization.illustrator.get_symbol = (target) => { //{{{
         if (save['endpoints_cache'][target]) {
           return save['endpoints_cache'][target].symbol;

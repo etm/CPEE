@@ -41,6 +41,7 @@ class Controller
     @id = id
 
     @attributes = opts[:attributes]
+    @documents = opts[:documents]
 
     @thread = nil
     @opts = opts

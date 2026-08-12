@@ -13,7 +13,6 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'msgpack'
-require_relative 'attributes_helper'
 require_relative 'message'
 
 module CPEE
@@ -34,11 +33,13 @@ module CPEE
     def self::set_list(id,opts,item,values,diff=false,delete=false,deletions=[]) #{{{
       attributes = Persistence::extract_list(id,opts,'attributes').to_h
       dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
+      documents = Persistence::extract_list(id,opts,'documents').to_h
       endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
       oldvalues = case item
         when 'attributes' then attributes
         when 'endpoints' then endpoints
         when 'dataelements' then dataelements
+        when 'documents' then documents
       end
       sort = []
       if diff
@@ -165,6 +166,8 @@ module CPEE
       res = []
       res += Persistence::keys_extract_zset(opts,id,'dataelements')
       res += Persistence::keys_extract_name(opts,id,'dataelements')
+      res += Persistence::keys_extract_zset(opts,id,'documents')
+      res += Persistence::keys_extract_name(opts,id,'documents')
       res += Persistence::keys_extract_zset(opts,id,'attributes')
       res += Persistence::keys_extract_name(opts,id,'attributes')
       res += Persistence::keys_extract_zset(opts,id,'endpoints')
@@ -217,8 +220,6 @@ module CPEE
       end
 
       attributes = Persistence::extract_list(id,opts,'attributes').to_h
-      dataelements = Persistence::extract_list(id,opts,'dataelements').to_h
-      endpoints = Persistence::extract_list(id,opts,'endpoints').to_h
 
       deleted = exis - values
 

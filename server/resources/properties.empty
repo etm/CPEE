@@ -25,6 +25,7 @@
   <executionhandler>ruby</executionhandler>
   <positions/>
   <dataelements/>
+  <documents/>
   <endpoints/>
   <attributes/>
   <dsl/>

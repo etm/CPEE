@@ -25,6 +25,7 @@
   <executionhandler>ruby</executionhandler>
   <positions/>
   <dataelements/>
+  <documents/>
   <endpoints>
     <user>https-post://cpee.org/services/timeout-user.php</user>
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>

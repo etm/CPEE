@@ -39,6 +39,7 @@ Daemonite.new do |opts|
         'event:' + ('%02i' % w) + ':executionhandler/change',
         'event:' + ('%02i' % w) + ':description/change',
         'event:' + ('%02i' % w) + ':dataelements/change',
+        'event:' + ('%02i' % w) + ':documents/change',
         'event:' + ('%02i' % w) + ':endpoints/change',
         'event:' + ('%02i' % w) + ':attributes/change',
         'event:' + ('%02i' % w) + ':transformation/change',
@@ -86,7 +87,7 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/dslx",mess.dig('content','dslx'))
               multi.set("instance:#{instance}/dsl",mess.dig('content','dsl'))
             end
-          when /event:\d+:dataelements\/change/, /event:\d+:endpoints\/change/, /event:\d+:attributes\/change/
+          when /event:\d+:dataelements\/change/, /event:\d+:documents\/change/, /event:\d+:endpoints\/change/, /event:\d+:attributes\/change/
             topic = mess.dig('topic')
             max = opts[:redis].zrange("instance:#{instance}/#{topic}", -1, -1, :withscores => true)&.dig(0,1).to_i
             if (eles = mess.dig('content','sort'))&.any?
