@@ -16,6 +16,7 @@ var model_loaded = new Event("model:loaded", {"bubbles":true, "cancelable":false
 var save = {};
     save['endpoints'] = undefined;
     save['dataelements'] = undefined;
+    save['documents'] = undefined;
     save['attributes'] = undefined;
     save['attributes_raw'] = {};
 var node_state = {};
@@ -60,6 +61,8 @@ var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'dataelements' + '&' +
                'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'documents' + '&' +
+               'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'attributes' + '&' +
@@ -81,6 +84,8 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'state' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'dataelements' + '&' +
+               'events' + '=' + 'change' + '&' +
+               'topic'  + '=' + 'documents' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'endpoints' + '&' +
                'events' + '=' + 'change' + '&' +
@@ -357,6 +362,9 @@ async function sse() { //{{{
           case 'dataelements':
             monitor_instance_values("dataelements",data.content.values);
             break;
+          case 'documents':
+            monitor_instance_values("documents",data.content.values);
+            break;
           case 'description':
             monitor_instance_dsl();
             monitor_graph_change(false);
@@ -407,6 +415,7 @@ async function sse() { //{{{
   await monitor_instance_values("endpoints"); // we cant render before we know specialized endpoint symbols
   await monitor_instance_values("attributes"); // attributes first, to catch the <resources> attribute which overrides current-resources
   monitor_instance_values("dataelements");
+  monitor_instance_values("documents");
   monitor_instance_dsl();
   monitor_graph_change(false);
   monitor_instance_state();
@@ -1142,6 +1151,7 @@ async function set_testset(testset,exec) {// {{{
   tset.append($("testset > executionhandler",testset));
   tset.append($("testset > positions",testset));
   tset.append($("testset > dataelements",testset));
+  tset.append($("testset > documents",testset));
   tset.append($("testset > endpoints",testset));
   tset.append($("testset > attributes",testset));
   tset.append($("testset > description",testset));

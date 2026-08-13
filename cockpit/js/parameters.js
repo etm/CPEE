@@ -55,19 +55,19 @@ $(document).ready(function() {
 
   var timer;
   // when input in one of the inputs, save
-  $(document).on('input','#dat_dataelements input, #dat_endpoints input, #dat_attributes input',function(event){
+  $(document).on('input','#dat_dataelements input, #dat_endpoints input, #dat_attributes input, #dat_documents input',function(event){
     clearTimeout(timer);
     timer = setTimeout(function(){ do_parameters_save(event); }, 5000);
   });
-  $(document).on('relaxngui_remove', '#dat_dataelements, #dat_endpoints, #dat_attributes', function(event){
+  $(document).on('relaxngui_remove', '#dat_dataelements, #dat_endpoints, #dat_attributes, #dat_documents', function(event){
     clearTimeout(timer);
     do_parameters_save(event);
   });
-  $(document).on('relaxngui_move', '#dat_dataelements, #dat_endpoints, #dat_attributes', function(event){
+  $(document).on('relaxngui_move', '#dat_dataelements, #dat_endpoints, #dat_attributes, #dat_documents', function(event){
     clearTimeout(timer);
     do_parameters_save(event);
   });
-  $(document).on('relaxngui_change', '#dat_dataelements, #dat_endpoints, #dat_attributes', function(event){
+  $(document).on('relaxngui_change', '#dat_dataelements, #dat_endpoints, #dat_attributes, #dat_documents', function(event){
     clearTimeout(timer);
     do_parameters_save(event);
   });
@@ -97,9 +97,15 @@ function do_parameters_save_part(visid,send) { //{{{
   });
 } //}}}
 
-function do_parameters_save_document(file,content) { //{{{
-  console.log(file);
-  console.log(content);
-  // todo store in dstore
-  return $.path_join($('body').attr('current-document-store'),save.attributes_raw.uuid,file.name);
+function do_parameters_save_document(id,file,content) { //{{{
+  let name = $('input#' + id).parent().find('input.relaxngui_cell').first().get_val();
+  if (!name) {
+    return '';
+  } else {
+    // todo store in dstore
+    // console.log(file);
+    // console.log(content);
+
+    return $.path_join($('body').attr('current-document-store'),save.attributes_raw.uuid,name);
+  }
 } //}}}
