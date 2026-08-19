@@ -103,9 +103,18 @@ function do_parameters_save_document(id,file,content) { //{{{
     return '';
   } else {
     // todo store in dstore
-    // console.log(file);
-    // console.log(content);
+    let surl = $.path_join($('body').attr('current-document-store'),save.attributes_raw.uuid,name);
 
-    return $.path_join($('body').attr('current-document-store'),save.attributes_raw.uuid,name);
+    $.ajax({
+      type: "PUT",
+      url: surl,
+      contentType: (file.type == "" ? "application/octet-stream" : file.type),
+      headers: {
+        'Content-ID': 'file'
+      },
+      data: content.result
+    });
+
+    return surl;
   }
 } //}}}
