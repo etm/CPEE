@@ -93,6 +93,7 @@ class Controller
 
   attr_reader :id
   attr_reader :attributes
+  attr_reader :documents
   attr_reader :loop_guard
 
   def uuid

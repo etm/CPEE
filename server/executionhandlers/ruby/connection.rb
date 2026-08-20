@@ -85,6 +85,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def additional #{{{
     {
       :attributes => @controller.attributes,
+      :documents => @controller.documents,
       :cpee => {
         'base' => @controller.base_url,
         'instance' => @controller.instance_id,
