@@ -106,6 +106,14 @@
 .llm_button {
   width: 100%;
   min-width: 2.5em;
+
+  display: flex;
+  justify-content: center; /* Horizontal zentrieren */
+  align-items: center;     /* Vertikal zentrieren */
+
+  /* Wichtig bei Symbolen und Icons */
+  line-height: 0.9;       /* Verhindert Störungen durch Standard-Zeilenabstände */
+
   height: 2em;
 }
 .llm_button.small:nth-child(n+2) {
