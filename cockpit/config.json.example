@@ -1,6 +1,6 @@
 {
   "logs-url": "https://%host/logs/",
-  "templates-url": "https://%host/design/server/Templates.dir/?stage=development",
+  "templates-url": "https://%host/hub/server/Templates.dir/?stage=development",
   "resources-url": "https://%host/flow/resources/",
   "base-url": "https://%host/flow/engine/",
   "save-url": "https://%host/hub/server/",
