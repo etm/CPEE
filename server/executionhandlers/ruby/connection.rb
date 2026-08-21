@@ -386,7 +386,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     send = []
     send.push Riddl::Parameter::Simple::new('code',__code)
     send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(__struct.data))
-    send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(__struct.local)) if __struct.local
+    send.push Riddl::Parameter::Complex::new('local','application/json', JSON::generate(__struct.local)) if __struct.local.any?
     send.push Riddl::Parameter::Complex::new('endpoints','application/json', JSON::generate(__struct.endpoints))
     send.push Riddl::Parameter::Complex::new('additional','application/json', JSON::generate(__struct.additional))
 
