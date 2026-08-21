@@ -432,7 +432,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
   $("input[name=instance-url]").val($("body").attr('current-instance'));
   $("input[name=res-url]").val($("body").attr('current-resources'));
 
-  $('#parameters ui-content ui-area > button').attr('disabled','disabled');
+  $('#parameters ui-content ui-area > button, ui-tabbed.parameters ui-content ui-area > button').attr('disabled','disabled');
   $('#dat_details').empty();
 
   $('#modifiers > div').remove();
@@ -917,10 +917,10 @@ function monitor_instance_state_change(notification) { //{{{
     }
 
     if (notification != "ready" && notification != "stopped" && notification != "running") {
-      $('#parameters ui-content ui-area > button').attr('disabled','disabled');
+      $('#parameters ui-content ui-area > button, ui-tabbed.parameters ui-content ui-area > button').attr('disabled','disabled');
       $('#state_any').hide();
     } else {
-      $('#parameters ui-content ui-area > button').removeAttr('disabled');
+      $('#parameters ui-content ui-area > button, ui-tabbed.parameters ui-content ui-area > button').removeAttr('disabled');
       $('#state_any').show();
     }
 

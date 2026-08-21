@@ -43,13 +43,13 @@ $(document).ready(function() {
   }); //}}}
 
   // new entry //{{{
-  $('#parameters ui-content ui-area > button').click(function(event){
-    var but = $(document).find('#parameters ui-content ui-area:not(.inactive) > div button.relaxngui_control');
+  $('#parameters ui-content ui-area > button, ui-tabbed.parameters ui-content ui-area > button').click(function(event){
+    var but = $(document).find('#parameters ui-content ui-area:not(.inactive) > div button.relaxngui_control, ui-tabbed.parameters ui-content ui-area:not(.inactive) > div button.relaxngui_control');
         but.click();
-    var inp = $(document).find('#parameters ui-content ui-area:not(.inactive) > div input');
+    var inp = $(document).find('#parameters ui-content ui-area:not(.inactive) > div input, ui-tabbed.parameters ui-content ui-area:not(.inactive) > div input');
         $(inp[inp.length-2]).focus();
-    var are = $(document).find('#parameters ui-content ui-area:not(.inactive) > div');
-    var tab = $(document).find('#parameters ui-content ui-area:not(.inactive) > div > div');
+    var are = $(document).find('#parameters ui-content ui-area:not(.inactive) > div, ui-tabbed.parameters ui-content ui-area:not(.inactive) > div');
+    var tab = $(document).find('#parameters ui-content ui-area:not(.inactive) > div > div, ui-tabbed.parameters ui-content ui-area:not(.inactive) > div > div');
         are.animate({ scrollTop: tab.height() }, "slow");
   }); //}}}
 
