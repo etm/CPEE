@@ -34,10 +34,14 @@ $(document).ready(function() {
       success: function(res){
         var res_def = config_defaults();
         $("body").attr('current-base',(res['base-url'] || res_def['base-url']).replace("%host",window.location.host));
+        $("input[name=base-url]").val($("body").attr('current-base').replace("%host",window.location.host));
         $("body").attr('current-templates',(res['templates-url'] || res_def['templates-url']).replace("%host",window.location.host));
         $.each(res, function(key, value){ // just leave it out when it is not configured
           if (key != 'base-url' && key != 'templates-url') {
             $("body").attr('current-' + key.replace(/-url$/,''), value.replace("%host",window.location.host));
+          }
+          if (key == 'resources-url') {
+            $("input[name=res-url]").val($("body").attr('current-resources'));
           }
         });
         cockpit();
