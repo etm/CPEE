@@ -16,4 +16,10 @@
   <topic id="task">
     <event>instantiation</event>
   </topic>
+  <topic id="state">
+    <event>change</event>
+  </topic>
+  <topic id="description">
+    <event>change</event>
+  </topic>
 </subscription>
