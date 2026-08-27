@@ -6,6 +6,9 @@ ui-resizehandle.overlay {
 ui-resizehandle.overlay span {
   position: absolute;
   right: 0.5em;
+  background-color: var(--x-ui-background-color);
+  padding: 0.1em 0.2em;
+  margin-top: 0.1em;
 }
 #graphcolumn {
   min-width: 30em !important;
@@ -17,20 +20,20 @@ ui-resizehandle.overlay span {
   border-top: 0.1em solid var(--x-ui-border-color);
   min-height: 1.4em;
   white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow:hidden;
+  overflow: auto;
+
 }
-#status.error {
+#status.error, #status .error {
   background-color: var(--wfadaptor-selected);
 }
-#status.success {
+#status.success, #status .success {
   background-color: var(--wfadaptor-exec-vote);
 }
 #status.loading {
   background-color: #99c1f1;
 }
 
-#status.loading::after {
+#status.loading::after, #status .loading::after {
   display: inline-block;
   animation: dotty steps(1,end) 1s infinite;
   content: '';
@@ -43,6 +46,29 @@ ui-resizehandle.overlay span {
   64%  { content: 'ᵒ∘ₒ'; }
   80%  { content: '∘ₒₒ'; }
   100% { content: 'ₒₒₒ'; }
+}
+
+.chat.bubble {
+  max-width: 75%;
+  width: fit-content;
+  margin: 0.3em 0;
+  padding: 0.4em 0.7em;
+  border-radius: 1em;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+.chat.bubble.input:first-child {
+  margin-top: 1.5em;
+}
+.chat.bubble.input {
+  margin-left: auto;
+  background-color: var(--x-ui-speech-me-back);
+  color: var(--x-ui-speech-me-front);
+}
+.chat.bubble.response {
+  margin-right: auto;
+  background-color: var(--x-ui-speech-you-back);
+  color: var(--x-ui-speech-you-front);
 }
 
 #prompt_container {
