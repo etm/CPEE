@@ -1,3 +1,115 @@
+ui-resizehandle.overlay {
+  margin: 0 !important;
+  position: relative;
+}
+
+ui-resizehandle.overlay span {
+  position: absolute;
+  right: 0.5em;
+}
+#graphcolumn {
+  min-width: 30em !important;
+}
+
+#status {
+  padding: 0.2em 0.5em;
+  border-top: 0.1em solid var(--x-ui-border-color);
+  background-color: var(--x-tab-inactive-color);
+  min-height: 1.4em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow:hidden;
+}
+#status.error {
+  background-color: var(--wfadaptor-selected);
+}
+#status.success {
+  background-color: var(--wfadaptor-exec-vote);
+}
+#status.loading {
+  background-color: #99c1f1;
+}
+
+#status.loading::after {
+  display: inline-block;
+  animation: dotty steps(1,end) 1s infinite;
+  content: '';
+}
+@keyframes dotty {
+  0%   { content: 'ₒₒₒ'; }
+  16%  { content: 'ₒₒ∘'; }
+  32%  { content: 'ₒ∘ᵒ'; }
+  48%  { content: '∘ᵒ∘'; }
+  64%  { content: 'ᵒ∘ₒ'; }
+  80%  { content: '∘ₒₒ'; }
+  100% { content: 'ₒₒₒ'; }
+}
+
+#prompt_container {
+  padding: 0.2em 0.5em;
+  outline: none;
+  display: flex;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+#input {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 9.5em;
+}
+
 #details {
   height: 50%;
+  padding-left: 0.5em;
+  min-height: 9em;
+}
+#prompt {
+  flex: 1 1 auto;
+  height: 100%;
+  overflow: auto;
+  outline: none;
+}
+#prompt_submit_container {
+  flex: 0 0 auto;
+  align-self: stretch;
+}
+#prompt:empty:before {
+  font-family: adwaita-sans;
+  white-space: normal;
+  content: attr(placeholder);
+  display: block;
+}
+
+.single {
+  width: 2.3em;
+  height: 2.3em;
+}
+
+.llm_button {
+  width: 100%;
+  min-width: 2.5em;
+
+  display: flex;
+  justify-content: center; /* Horizontal zentrieren */
+  align-items: center;     /* Vertikal zentrieren */
+
+  /* Wichtig bei Symbolen und Icons */
+  line-height: 0.9;       /* Verhindert Störungen durch Standard-Zeilenabstände */
+
+  height: 2em;
+}
+.llm_button.small:nth-child(n+2) {
+  margin-top: 0.5em;
+}
+
+.llm_button:hover {
+  background-color: var(--wfadaptor-selected);
+}
+
+#detailcolumn {
+  padding-left: 0em !important;
 }
