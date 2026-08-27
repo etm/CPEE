@@ -164,7 +164,7 @@ module CPEE
             end
           end
 
-          %w{dataelements documents endpoints documents}.each do |item|
+          %w{dataelements documents endpoints attributes}.each do |item|
             if (node = doc.find('/p:properties/p:' + item)).any?
               CPEE::Properties::PatchItems::set item, id, opts, node.first.dump
             end
