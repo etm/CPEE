@@ -1,40 +1,15 @@
 var last_generated_model = undefined;
 var last_model_before_generation =undefined;
 var default_llm = "gemini-2.5-flash-lite";
-var current_bubble;
 
-function clean_bubble_ui_type(type) { //{{{
-  let status = $('#' + current_bubble);
-  if (type == 'loading') {
-    status.removeClass('success');
-    status.removeClass('error');
-  } else if (type == 'success') {
-    status.removeClass('loading');
-    status.removeClass('error');
-  } else if (type == 'error') {
-    status.removeClass('success');
-    status.removeClass('loading');
-  } else {
-    status.removeClass('success');
-    status.removeClass('error');
-    status.removeClass('loading');
+function xhr_error(xhr) { //{{{
+  if (xhr.responseJSON && xhr.responseJSON.error) {
+    return xhr.responseJSON.error;
   }
-} //}}}
-function set_bubble_ui(llms,what,type='') { //{{{
-  let status = $('#' + current_bubble);
-  clean_bubble_ui_type(type);
-  status.addClass(type);
-  if (what.match(/Agent/)) {
-    let myllm = llms.find(":selected").val();
-    if (myllm === undefined){ myllm = default_llm; }
-    what += ' (' + myllm + ')';
+  if (xhr.responseText) {
+    return 'LLM Service not reachable (request status ' + xhr.status + ')!'
   }
-  status.text(what);
-} //}}}
-function add_bubble_ui(type) { //{{{
-  let id = Math.random().toString(36).substring(2, 10);
-  $('<div></div>').attr('id',id).addClass(type).appendTo('#status');
-  return id;
+  return xhr.statusText;
 } //}}}
 
 function add_prompt(input,content) { //{{{
@@ -133,7 +108,7 @@ function call_llm_service_validation(model,llm) { //{{{
   return def.promise();
 } //}}}
 
-function call_llm_text_service(status,prompt,llms,action) { //{{{
+function call_llm_text_service(prompt,llms,action) { //{{{
   let myllm = llms.find(":selected").val();
   if (myllm === undefined){ myllm = default_llm; }
   const info = save.attributes_raw.info;
@@ -162,10 +137,10 @@ function call_llm_text_service(status,prompt,llms,action) { //{{{
         link.click();
       };
       last_model_before_generation = save['dslx'];
-      set_bubble_ui(llms,data.status,'success');
+      ui.success(llms,data.status);
     },
     error:  function(xhr, stat, data) {
-      set_bubble_ui(llms,xhr.responseJSON.error,'error');
+      ui.error(llms,xhr_error(xhr));
     }
   });
 } //}}}
@@ -211,7 +186,7 @@ function load_file_content(files) { //{{{
   }
   var reader = new FileReader();
   reader.onload = function(){
-    clean_bubble_ui_type();
+    ui.clean();
     add_prompt('prompt',reader.result);
   }
   reader.onerror = function(){ console.log("reader error"); }
@@ -219,8 +194,8 @@ function load_file_content(files) { //{{{
   reader.readAsText(files[0]);
 } //}}}
 
-function create(status,prompt,llms,generation,mode) {
-  clean_bubble_ui_type();
+function create(prompt,llms,generation,mode) {
+  ui.clean();
 
   // Imagine I want to implement a smart home system to control the lights in
   // the dining room.  Depending on the current lighting conditions, the
@@ -228,9 +203,7 @@ function create(status,prompt,llms,generation,mode) {
   // reducing it as needed—and turn the lights off completely at night.
 
   let input = prompt.text(); prompt.empty();
-  current_bubble = add_bubble_ui('chat bubble input');
-  set_bubble_ui(llms,input);
-  current_bubble = add_bubble_ui('chat bubble response');
+  ui.input(llms,input);
   let myllm = llms.find(":selected").val();
   let prompt_type = mode.find(":selected").val();
   let gen = generation.find(":selected").val();
@@ -244,7 +217,7 @@ function create(status,prompt,llms,generation,mode) {
     if (gen == 'dataflow') { prompt_type = 'adapt_endpoints'; }
   }
 
-  set_bubble_ui(llms,'Agent creates model','loading');
+  ui.querying(llms,'creates model');
   call_llm_service_model(save['dslx'],input,myllm,prompt_type).done((data) => {
     let expositions = ["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee];
     if (prompt_type == 'adapt_endpoints') {
@@ -265,10 +238,10 @@ function create(status,prompt,llms,generation,mode) {
       last_model_before_generation = save['dslx'];
       last_generated_model = model.serializePrettyXML();
       set_cpee_model(model.serializePrettyXML(),expositions);
-      set_bubble_ui(llms,data.status,'success');
+      ui.success(llms,data.status);
     } else {
       if (gen == "dataflow") {
-        set_bubble_ui(llms,'selects endpoints and calculates dataflow','loading');
+        ui.querying(llms,'selects endpoints and calculates dataflow');
         call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
           let url = $('body').attr('current-instance');
           $.ajax({
@@ -282,32 +255,32 @@ function create(status,prompt,llms,generation,mode) {
             data: data.endpoints
           });
 
-          set_bubble_ui(llms,'Agent validates dataflow','loading');
+          ui.querying(llms,'validates dataflow');
           expositions.push("# Dataflow:\n"+data.dataflow);
           call_llm_service_validation($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
             // for undo button
             last_model_before_generation = save['dslx'];
             last_generated_model = data.output_cpee;
             set_cpee_model($X(data.output_cpee).serializePrettyXML(),expositions);
-            set_bubble_ui(llms,data.status,'success');
+            ui.success(llms,data.status);
           });
 
         })
         .fail((xhr) => {
-          set_bubble_ui(llms,xhr.responseJSON.error,'error');
+          ui.error(llms,xhr_error(xhr));
         });
       } else if (gen == "model") {
         last_model_before_generation = save['dslx'];
         last_generated_model = data.output_cpee;
         set_cpee_model(data.output_cpee,expositions);
-        set_bubble_ui(llms,data.status,'success');
+        ui.success(llms,data.status);
       } else {
-        set_bubble_ui(llms,"Successfully done nothing",'success');
+        ui.success(llms,"Successfully done nothing");
       }
     }
   })
   .fail((xhr) => {
-    set_bubble_ui(llms,xhr.responseJSON.error,'error');
+    ui.error(llms,xhr_error(xhr));
   });
 }
 
@@ -319,31 +292,31 @@ $(document).ready(async function() { //{{{
   let mode_active = await $.get('css/mode_active.svg', 'xml').then(function(data) { return $(data.documentElement); });
 
   $(document).on('keydown','#prompt',function(e){
-    clean_bubble_ui_type();
+    ui.clean();
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-      create($('#status'),$('#prompt'),$('#llms'),$('#generation'),$('#mode'));
+      create($('#prompt'),$('#llms'),$('#generation'),$('#mode'));
     }
   });
   $(document).on('click','#prompt_submit_button',function(e){
-    create($('#status'),$('#prompt'),$('#llms'),$('#generation'),$('#mode'));
+    create($('#prompt'),$('#llms'),$('#generation'),$('#mode'));
   });
   $(document).on('click','#prompt_reset_button',function(e){
-    clean_bubble_ui_type();
+    ui.clean();
     empty_model();
   });
   $(document).on('click','#generate_itext_button',function(e){
-    clean_bubble_ui_type();
-    set_bubble_ui($('#llms'),'Agent thinks','loading');
-    call_llm_text_service($('#status'),'prompt','#llms','file');
+    ui.clean();
+    ui.querying($('#llms'),'thinks');
+    call_llm_text_service('prompt','#llms','file');
   });
   $(document).on('click','#generate_text_button',function(e){
-    clean_bubble_ui_type();
-    set_bubble_ui($('#llms'),'Agent thinks','loading');
-    call_llm_text_service($('#status'),$('#prompt'),$('#llms'),'show');
+    ui.clean();
+    ui.querying($('#llms'),'thinks');
+    call_llm_text_service($('#prompt'),$('#llms'),'show');
   });
   $(document).on('click','#prompt_undo_button',function(e){
-    clean_bubble_ui_type();
-    set_bubble_ui($('#llms'),'Agent thinks','loading');
+    ui.clean();
+    ui.querying($('#llms'),'thinks');
     load_last_model_before_generation();
   });
   $(document).on('click','#prompt_attach_button',function(e){
