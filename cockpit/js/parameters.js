@@ -38,7 +38,8 @@ $(document).ready(function() {
     dataType: "xml",
     url: "rngs/documents.rng",
     success: function(rng){
-      save['documents'] = new RelaxNGui(rng,$('#dat_documents'));
+      let cds = $('body').attr('current-document-store');
+      save['documents'] = new RelaxNGui(rng,$('#dat_documents'),undefined,false,typeof(cds) != "undefined");
     }
   }); //}}}
 
