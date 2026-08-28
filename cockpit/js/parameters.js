@@ -3,6 +3,10 @@ var attributes_changed = new Event("attributes:changed", {"bubbles":true, "cance
 var endpoints_changed = new Event("endpoints:changed", {"bubbles":true, "cancelable":false});
 var dataelements_changed = new Event("dataelements:changed", {"bubbles":true, "cancelable":false});
 var documents_changed = new Event("documents:changed", {"bubbles":true, "cancelable":false});
+var attributes_loaded = new Event("attributes:loaded", {"bubbles":true, "cancelable":false});
+var endpoints_loaded = new Event("endpoints:loaded", {"bubbles":true, "cancelable":false});
+var dataelements_loaded = new Event("dataelements:loaded", {"bubbles":true, "cancelable":false});
+var documents_loaded = new Event("documents:loaded", {"bubbles":true, "cancelable":false});
 
 $(document).ready(function() {
   // hook up dataelements with relaxngui //{{{
@@ -103,19 +107,43 @@ function do_parameters_save_document(id,file,content) { //{{{
   if (!name) {
     return '';
   } else {
-    // todo store in dstore
-    let surl = $.path_join($('body').attr('current-document-store'),save.attributes_raw.uuid,name);
-
-    $.ajax({
-      type: "PUT",
-      url: surl,
-      contentType: (file.type == "" ? "application/octet-stream" : file.type),
-      headers: {
-        'Content-ID': 'file'
-      },
-      data: content.result
-    });
-
-    return surl;
+    return do_parameters_save_document_exec(name,file.type,content.result);
   }
 } //}}}
+
+function do_parameters_save_document_exec(name,filetype,content,type='replace') {
+  let surl = $.path_join($('body').attr('current-document-store'),save.attributes_raw.uuid,name);
+
+  let append = '';
+  if (type != 'replace') {
+    append = '?append';
+  }
+
+  $.ajax({
+    type: "PUT",
+    url: surl + append,
+    contentType: (filetype == "" ? "application/octet-stream" : filetype),
+    headers: {
+      'Content-ID': 'file'
+    },
+    data: content
+  });
+
+  return surl;
+}
+
+function do_parameters_get_document_exec(name,lines=0) {
+  let surl = $.path_join($('body').attr('current-document-store'),save.attributes_raw.uuid,name);
+
+  let append = '';
+  if (parseInt(lines) > 0) {
+    append = '?tail=' + parseInt(lines);
+  }
+
+  return $.ajax({
+    type: "GET",
+    url: surl + append
+  }).then(function(content){
+    return content.split('\n').filter(function(line){ return line.trim() != ''; }).map(function(line){ return JSON.parse(line); });
+  });
+}

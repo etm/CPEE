@@ -412,10 +412,10 @@ async function sse() { //{{{
       // setTimeout(sse,10000);
     };
   }
-  await monitor_instance_values("endpoints"); // we cant render before we know specialized endpoint symbols
-  await monitor_instance_values("attributes"); // attributes first, to catch the <resources> attribute which overrides current-resources
-  monitor_instance_values("dataelements");
-  monitor_instance_values("documents");
+  await monitor_instance_values("endpoints",undefined,true); // we cant render before we know specialized endpoint symbols
+  await monitor_instance_values("attributes",undefined,true); // attributes first, to catch the <resources> attribute which overrides current-resources
+  monitor_instance_values("documents",undefined,true);
+  monitor_instance_values("dataelements",undefined,true);
   monitor_instance_dsl();
   monitor_graph_change(false);
   monitor_instance_state();
@@ -498,7 +498,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
   });
 }// }}}
 
-function monitor_instance_values(type,vals) {// {{{
+function monitor_instance_values(type,vals,first=false) {// {{{
   if (type == "dataelements" && save['state'] == "running") {
     let de = save[type].save();
     Object.entries(vals).forEach(([key,value]) => {
@@ -527,6 +527,9 @@ function monitor_instance_values(type,vals) {// {{{
       url: url + "/properties/" + type + "/",
       success: function(res){
         save[type].content(res);
+        if (first) {
+          document.dispatchEvent(eval(type + '_loaded'));
+        }
         if (type == "endpoints") {
           save['endpoints_list'] = {};
           var tmp = {};

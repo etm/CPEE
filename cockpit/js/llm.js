@@ -599,4 +599,9 @@ $(document).ready(async function() { //{{{
     e.stopPropagation();
     load_file_content(e.originalEvent.dataTransfer.files);
   });
+
+  document.addEventListener('documents:loaded', function (e) {
+    console.log('aga');
+    ui.init();
+  }, { capture: false, once: true } );
 }); //}}}
