@@ -1,4 +1,3 @@
-var last_generated_model = undefined;
 var last_model_before_generation =undefined;
 var default_llm = "gemini-2.5-flash-lite";
 
@@ -168,12 +167,6 @@ function empty_model(){ //{{{
   set_cpee_model('<description xmlns="http://cpee.org/ns/description/1.0" xmlns:a="http://cpee.org/ns/annotation/1.0"/>',["Reset Context!"]);
   $('#dat_details').empty();
 } //}}}
-function load_last_generated_model() { //{{{
-  set_cpee_model(last_generated_model === undefined ? save['dslx'] : last_generated_model);
-} //}}}
-function load_last_generated_model() { //{{{
-  set_cpee_model(last_generated_model === undefined ? save['dslx'] : last_generated_model);
-} //}}}
 
 function load_last_model_before_generation() { //{{{
   set_cpee_model(last_model_before_generation === undefined ? save['dslx'] : last_model_before_generation);
@@ -236,7 +229,6 @@ function create(prompt,llms,generation,mode) {
       });
 
       last_model_before_generation = save['dslx'];
-      last_generated_model = model.serializePrettyXML();
       set_cpee_model(model.serializePrettyXML(),expositions);
       ui.success(llms,data.status);
     } else {
@@ -260,7 +252,6 @@ function create(prompt,llms,generation,mode) {
           call_llm_service_validation($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
             // for undo button
             last_model_before_generation = save['dslx'];
-            last_generated_model = data.output_cpee;
             set_cpee_model($X(data.output_cpee).serializePrettyXML(),expositions);
             ui.success(llms,data.status);
           });
@@ -271,7 +262,6 @@ function create(prompt,llms,generation,mode) {
         });
       } else if (gen == "model") {
         last_model_before_generation = save['dslx'];
-        last_generated_model = data.output_cpee;
         set_cpee_model(data.output_cpee,expositions);
         ui.success(llms,data.status);
       } else {
