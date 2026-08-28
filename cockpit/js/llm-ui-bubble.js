@@ -25,6 +25,7 @@ function set_bubble_ui(llms,what,type='') { //{{{
     what += ' (' + myllm + ')';
   }
   status.text(what);
+  status[0].parentElement.scrollTo({ top: status[0].parentElement.scrollHeight, behavior: 'smooth' });
 } //}}}
 function add_bubble_ui(type) { //{{{
   let id = Math.random().toString(36).substring(2, 10);

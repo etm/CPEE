@@ -5,8 +5,8 @@ ui-resizehandle.overlay {
 
 ui-resizehandle.overlay span {
   position: absolute;
-  right: 0.5em;
-  background-color: var(--x-ui-background-color);
+  right: 0em;
+  background-color: color-mix(in srgb, var(--x-ui-background-color) 90%, transparent);
   padding: 0.1em 0.2em;
   margin-top: 0.1em;
 }
