@@ -9,7 +9,7 @@
 #status {
   padding: 0.2em 0.5em;
   border-top: 0.1em solid var(--x-ui-border-color);
-  background-color: var(--x-tab-inactive-color);
+  background-color: var(--x-ui-tab-inactive-color);
   min-height: 1.4em;
   white-space: nowrap;
   text-overflow: ellipsis;

@@ -72,7 +72,7 @@ ui-resizehandle.overlay span {
 }
 
 #prompt_container {
-  background-color: var(--x-tab-inactive-color);
+  background-color: var(--x-ui-tab-inactive-color);
   outline: none;
   display: flex;
   align-items: stretch;

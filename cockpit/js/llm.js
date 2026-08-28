@@ -1,4 +1,4 @@
-var last_model_before_generation =undefined;
+var last_model_before_generation = undefined;
 var default_llm = "gemini-2.5-flash-lite";
 
 function xhr_error(xhr) { //{{{
