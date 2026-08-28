@@ -345,30 +345,31 @@ function diff_summary(model_old, model_new) { //{{{
     return text.charAt(0).toUpperCase() + text.slice(1);
   } else {
     let sentences = [];
-    const action = { added: 'added', deleted: 'deleted', moved: 'moved' };
+    const action = { added: 'added', deleted: 'deleted', moved: 'moved', changed: 'changed' };
     categories.forEach(function(c){
-      if (c === 'changed') { return; }
       ['task','gateway','branch'].forEach(function(t){
         let entries = lists[c].filter(function(e){ return e.type === t; });
         if (entries.length === 0) { return; }
+        if (c === 'changed' && entries.length === 1) {
+          let e = entries[0];
+          let subj = e.type === 'task' ? 'Task ' : (e.type === 'branch' ? 'Branch ' : 'Gateway ');
+          let field_text;
+          if (e.fields.length === 0) {
+            field_text = 'parameters';
+          } else if (e.fields.length === 1) {
+            field_text = e.fields[0];
+          } else {
+            field_text = join_names(e.fields);
+          }
+          sentences.push(subj + e.id + ' had its "' + field_text + '" changed.');
+          return;
+        }
         let names = join_names(entries.map(function(e){ return e.id; }));
         let subj = type_word(t, entries.length);
         subj = subj.charAt(0).toUpperCase() + subj.slice(1) + ' ';
         let verb = entries.length === 1 ? ' has been ' : ' have been ';
         sentences.push(subj + names + verb + action[c] + '.');
       });
-    });
-    lists.changed.forEach(function(e){
-      let subj = e.type === 'task' ? 'Task ' : (e.type === 'branch' ? 'Branch ' : 'Gateway ');
-      let field_text;
-      if (e.fields.length === 0) {
-        field_text = 'parameters';
-      } else if (e.fields.length === 1) {
-        field_text = e.fields[0];
-      } else {
-        field_text = join_names(e.fields);
-      }
-      sentences.push(subj + e.id + ' had its "' + field_text + '" changed.');
     });
     return sentences.join(' ');
   }
