@@ -303,6 +303,16 @@ function diff_summary(model_old, model_new) { //{{{
     }
   });
 
+  // when the llm fucks up the ids or eids, this result is fucked as well. And
+  // by fucking up i mean, omitting the ids, or changing them all. Oh well.
+  // Better than nothing.
+
+  let affected = new Set(added.concat(deleted,moved,changed).map(function(e){ return e.type + ':' + e.id; }));
+  if (affected.size === 0) {
+    return "No changes to the model have been made.";
+  }
+
+  // constructing the output
   function join_names(names) {
     if (names.length <= 1) { return names.join(''); }
     if (names.length === 2) { return names[0] + ' and ' + names[1]; }
@@ -313,11 +323,6 @@ function diff_summary(model_old, model_new) { //{{{
     if (type === 'task') { return count === 1 ? 'task' : 'tasks'; }
     if (type === 'branch') { return count === 1 ? 'branch' : 'branches'; }
     return count === 1 ? 'gateway' : 'gateways';
-  }
-
-  let affected = new Set(added.concat(deleted,moved,changed).map(function(e){ return e.type + ':' + e.id; }));
-  if (affected.size === 0) {
-    return "No changes to the model have been made.";
   }
 
   const categories = ['added','deleted','moved','changed'];
