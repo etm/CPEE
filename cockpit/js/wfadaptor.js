@@ -985,6 +985,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // }}}
   // Adaption functions {{{
   this.insert_after = function(new_node, target, source_opts) { // {{{
+    reset_used_id_list();
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
         var nn = self.source(v,source_opts);
@@ -999,6 +1000,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     update();
   } // }}}
   this.insert_first_into = function(new_node, target, source_opts) { // {{{
+    reset_used_id_list();
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
         var nn = self.source(v,source_opts);
@@ -1013,6 +1015,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     update();
   } // }}}
   this.insert_last_into = function(new_node, target) { // {{{
+    reset_used_id_list();
     if ($.isArray(new_node)) {
       $.each(new_node,function(k,v){
         var nn = self.source(v);
