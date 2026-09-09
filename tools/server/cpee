@@ -7,7 +7,7 @@ else
   require 'cpee/implementation'
 end
 
-Riddl::Server.new(CPEE::SERVER, :host => 'localhost', :port => 8298) do |opts|
+Riddl::Server.new(CPEE::SERVER, :host => 'localhost', :port => 9298) do |opts|
   opts[:instances]          = File.join(__dir__,'instances')
   opts[:executionhandlers]  = File.join(__dir__,'executionhandlers')
   opts[:notifications_init] = File.join(__dir__,'resources','notifications')
