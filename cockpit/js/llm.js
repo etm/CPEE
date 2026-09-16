@@ -65,6 +65,7 @@ function call_llm_service_intent(input, llm, llms, dslx, messages, documents) { 
       });
 
       let response;
+      console.log(intent.url);
       try {
         response = await $.ajax({
           url: intent.url,
@@ -75,8 +76,8 @@ function call_llm_service_intent(input, llm, llms, dslx, messages, documents) { 
           method: 'PUT'
         });
       } catch (xhr) {
-        // the plugin behind this intent could not be reached: behave as if no intent had matched at all
-        ui.success(llms,"Your request seems to be not about process modelling (or anything covered by the installed plugins).");
+        let trimmed_url = intent.url.replace(/\/+$/, '');
+        ui.error(llms,"The intent plugin \'" + trimmed_url.substr(trimmed_url.lastIndexOf('/') + 1) + "\' is not working properly.");
         def.resolve(null);
         return;
       }
@@ -548,7 +549,7 @@ function create(prompt,llms,generation,mode) {
     if (gen == 'dataflow') { prompt_type = 'adapt_endpoints'; }
   }
 
-  ui.querying(llms,'analysing intention');
+  ui.querying(llms,'analyses user intent');
 
   let documents = save['documents'] ? save['documents'].save_object() : {};
   let history_promise = (typeof($('body').attr('current-document-store')) != "undefined" && save['documents'] && ('chat_history' in save['documents'].save_object()))
@@ -558,6 +559,7 @@ function create(prompt,llms,generation,mode) {
   history_promise.then(function(history){
     let messages = JSON.stringify(history);
     call_llm_service_intent(input,myllm,llms,save['dslx'],messages,documents).done((piped) => {
+      console.log(piped);
       if (piped !== null) {
         ui.querying(llms,'creates model');
         call_llm_service_model(save['dslx'],piped,myllm,prompt_type).done((data) => {
