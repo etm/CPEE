@@ -16,7 +16,6 @@ Sorted numerically.
 | 9303 | cpee-resources | |
 | 9304 | cpee-dstore | |
 | 9305 | cpee-llm | |
-| 9310 | cpee-llm-documents | forwards to cpee-llm's `/generic/` (9305) by default |
 | 9311 | cpee-correlator-message | |
 | 9312 | cpee-correlator-sync | |
 | 9313 | cpee-complex-rest | |
@@ -28,5 +27,7 @@ Sorted numerically.
 | 9350 | cpee-mqtt-op | |
 | 9351 | cpee-testing-framework | |
 | 9352 | cpee-logging-experiments | shared by all four experiment scripts (azure.rb, elasticsearch.rb, non_tamp.rb, xes_xml.rb) |
+| 9360 | cpee-llm-documents | forwards to cpee-llm's `/generic/` (9305) by default |
+| 9361 | cpee-llm-documents_name | |
 | 9398 | cpee-worklist | |
 | 9399 | cpee-replay | |

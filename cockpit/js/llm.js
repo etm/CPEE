@@ -20,6 +20,102 @@ function add_prompt(input,content) { //{{{
   document.execCommand('insertText', false, content);
 } //}}}
 
+function call_llm_service_intent(input, llm, llms, dslx, messages, documents) { //{{{
+  let def = new $.Deferred();
+
+  (async () => {
+    try {
+      const intent_form = new FormData();
+      intent_form.append("user_input", new Blob([input], { type: "text/plain" }));
+      intent_form.append("llm", new Blob([llm], { type: "text/plain" }));
+
+      let intent = await $.ajax({
+        url: $('body').attr('current-llm-service') + '/intent/',
+        data: intent_form,
+        contentType: false,
+        processData: false,
+        cache: false,
+        method: 'POST'
+      });
+
+      if (intent === null) {
+        // no intent matched at all
+        ui.success(llms,"Your request seems to be not about process modelling (or anything covered by the installed plugins).");
+        def.resolve(null);
+        return;
+      }
+
+      if (typeof intent === 'object' && Object.keys(intent).length === 0) {
+        // no specific plugin matched: proceed normally with the original input
+        def.resolve(input);
+        return;
+      }
+
+      const call_form = new FormData();
+      call_form.append("user_input", new Blob([input], { type: "text/plain" }));
+      call_form.append("llm", new Blob([llm], { type: "text/plain" }));
+      (intent.required_input || []).forEach(function(name){
+        if (name === 'model') {
+          call_form.append("dslx", new Blob([dslx], { type: "text/xml" }));
+        } else if (name === 'documents') {
+          call_form.append("documents", new Blob([JSON.stringify(documents)], { type: "application/json" }));
+        } else if (name === 'messages') {
+          call_form.append("messages", new Blob([messages], { type: "text/plain" }));
+        }
+      });
+
+      let response;
+      try {
+        response = await $.ajax({
+          url: intent.url,
+          data: call_form,
+          cache: false,
+          contentType: false,
+          processData: false,
+          method: 'PUT'
+        });
+      } catch (xhr) {
+        // the plugin behind this intent could not be reached: behave as if no intent had matched at all
+        ui.success(llms,"Your request seems to be not about process modelling (or anything covered by the installed plugins).");
+        def.resolve(null);
+        return;
+      }
+
+      let filled_output;
+      if (intent.output_template) {
+        filled_output = intent.output_template;
+        if (response !== null && typeof response === 'object') {
+          Object.keys(response).forEach(function(key){
+            filled_output = filled_output.split('%%%' + key).join(response[key]);
+          });
+        } else {
+          filled_output = filled_output.replace('%%%', response);
+        }
+      } else {
+        filled_output = response;
+      }
+
+      if (intent.output == 'chat') {
+        ui.success(llms,filled_output);
+        def.resolve(null);
+      } else if (intent.output == 'reintent' && filled_output !== input) {
+        // repeat the process of looking for a plugin/intent, using the filled output as the new input
+        call_llm_service_intent(filled_output,llm,llms,dslx,messages,documents).done((result) => {
+          def.resolve(result);
+        }).fail((xhr) => {
+          def.reject(xhr);
+        });
+      } else {
+        def.resolve(filled_output);
+      }
+    } catch (xhr) {
+      def.reject(xhr);
+    }
+  })();
+
+  return def.promise();
+} //}}}
+
 function call_llm_service_model(dslx,input,llm,prompt_type) { //{{{
   const formData = new FormData();
   const blob1 = new Blob([dslx], { type: "text/xml" });
@@ -452,68 +548,84 @@ function create(prompt,llms,generation,mode) {
     if (gen == 'dataflow') { prompt_type = 'adapt_endpoints'; }
   }
 
-  ui.querying(llms,'creates model');
-  call_llm_service_model(save['dslx'],input,myllm,prompt_type).done((data) => {
-    let expositions = ["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee];
-    if (prompt_type == 'adapt_endpoints') {
-      let testset = $X(data.output_cpee);
-      let model = $('> dslx > description',testset);
-      let endpoints = $('> endpoints',testset);
-      $.ajax({
-        type: "PATCH",
-        url: url + "/properties/endpoints/",
-        contentType: 'text/xml',
-        headers: {
-          'Content-ID': 'endpoints',
-          'CPEE-Event-Source': myid
-        },
-        data: endpoints.serializePrettyXML()
-      });
+  ui.querying(llms,'analysing intention');
 
-      last_model_before_generation = save['dslx'];
-      set_cpee_model(model.serializePrettyXML(),expositions);
+  let documents = save['documents'] ? save['documents'].save_object() : {};
+  let history_promise = (typeof($('body').attr('current-document-store')) != "undefined" && save['documents'] && ('chat_history' in save['documents'].save_object()))
+    ? do_parameters_get_document_exec('chat_history',10)
+    : $.Deferred().resolve([]).promise();
 
-      ui.success(llms,diff_summary(last_model_before_generation,model));
-    } else {
-      if (gen == "dataflow") {
-        ui.querying(llms,'selects endpoints and calculates dataflow');
-        call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
-          let url = $('body').attr('current-instance');
-          $.ajax({
-            type: "PATCH",
-            url: url + "/properties/endpoints/",
-            contentType: 'text/xml',
-            headers: {
-              'Content-ID': 'endpoints',
-              'CPEE-Event-Source': myid
-            },
-            data: data.endpoints
-          });
+  history_promise.then(function(history){
+    let messages = JSON.stringify(history);
+    call_llm_service_intent(input,myllm,llms,save['dslx'],messages,documents).done((piped) => {
+      if (piped !== null) {
+        ui.querying(llms,'creates model');
+        call_llm_service_model(save['dslx'],piped,myllm,prompt_type).done((data) => {
+          let expositions = ["<!-- Input CPEE-Tree -->\n"+data.input_cpee,"# User Input:\n"+data.user_input,"# Used LLM:\n"+data.used_llm,"%% Input Intermediate\n"+data.input_intermediate,"%% Output Intermediate\n"+data.output_intermediate,"<!-- Output CPEE-Tree -->\n"+data.output_cpee];
+          if (prompt_type == 'adapt_endpoints') {
+            let testset = $X(data.output_cpee); //{{{
+            let model = $('> dslx > description',testset);
+            let endpoints = $('> endpoints',testset);
+            $.ajax({
+              type: "PATCH",
+              url: url + "/properties/endpoints/",
+              contentType: 'text/xml',
+              headers: {
+                'Content-ID': 'endpoints',
+                'CPEE-Event-Source': myid
+              },
+              data: endpoints.serializePrettyXML()
+            });
 
-          ui.querying(llms,'validates dataflow');
-          expositions.push("# Dataflow:\n"+data.dataflow);
-          call_llm_service_validation($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
-            // for undo button
             last_model_before_generation = save['dslx'];
-            set_cpee_model($X(data.output_cpee).serializePrettyXML(),expositions);
-            ui.success(llms,diff_summary(last_model_before_generation,data.output_cpee));
-          });
+            set_cpee_model(model.serializePrettyXML(),expositions);
 
+            ui.success(llms,diff_summary(last_model_before_generation,model)); //}}}
+          } else {
+            if (gen == "dataflow") {
+              ui.querying(llms,'selects endpoints and calculates dataflow'); //{{{
+              call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
+                let url = $('body').attr('current-instance');
+                $.ajax({
+                  type: "PATCH",
+                  url: url + "/properties/endpoints/",
+                  contentType: 'text/xml',
+                  headers: {
+                    'Content-ID': 'endpoints',
+                    'CPEE-Event-Source': myid
+                  },
+                  data: data.endpoints
+                });
+
+                ui.querying(llms,'validates dataflow');
+                expositions.push("# Dataflow:\n"+data.dataflow);
+                call_llm_service_validation($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
+                  // for undo button
+                  last_model_before_generation = save['dslx'];
+                  set_cpee_model($X(data.output_cpee).serializePrettyXML(),expositions);
+                  ui.success(llms,diff_summary(last_model_before_generation,data.output_cpee));
+                });
+
+              })
+              .fail((xhr) => {
+                ui.error(llms,xhr_error(xhr));
+              }); //}}}
+            } else if (gen == "model") {
+              last_model_before_generation = save['dslx']; //{{{
+              set_cpee_model(data.output_cpee,expositions);
+              ui.success(llms,diff_summary(last_model_before_generation,data.output_cpee)); //}}}
+            } else {
+              ui.success(llms,"Successfully done nothing");
+            }
+          }
         })
         .fail((xhr) => {
           ui.error(llms,xhr_error(xhr));
         });
-      } else if (gen == "model") {
-        last_model_before_generation = save['dslx'];
-        set_cpee_model(data.output_cpee,expositions);
-        ui.success(llms,diff_summary(last_model_before_generation,data.output_cpee));
-      } else {
-        ui.success(llms,"Successfully done nothing");
       }
-    }
-  })
-  .fail((xhr) => {
-    ui.error(llms,xhr_error(xhr));
+    }).fail((xhr) => {
+      ui.error(llms,xhr_error(xhr));
+    });
   });
 }
 
@@ -607,7 +719,6 @@ $(document).ready(async function() { //{{{
   });
 
   document.addEventListener('documents:loaded', function (e) {
-    console.log('aga');
     ui.init();
   }, { capture: false, once: true } );
 }); //}}}

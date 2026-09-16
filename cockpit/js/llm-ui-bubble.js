@@ -16,6 +16,7 @@ function clean_bubble_ui_type(type) { //{{{
   }
 } //}}}
 function set_bubble_ui(llms,what,type='') { //{{{
+  if (!what) { what = 'Unknown Error'; }
   let status = $('#' + ui.current_bubble);
   clean_bubble_ui_type(type);
   status.addClass(type);
