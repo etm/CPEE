@@ -440,7 +440,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
 
   cpee.url = $("body").attr('current-instance');
   cpee.base = $("body").attr('current-base');
-  cpee.instance = $("#current-instance").text(url.match(/(\d+)\/?$/)[1]);
+  cpee.instance = url.match(/(\d+)\/?$/)[1];
 
   $("input[name=instance-url]").val($("body").attr('current-instance'));
   $("input[name=res-url]").val($("body").attr('current-resources'));
