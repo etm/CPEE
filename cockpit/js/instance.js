@@ -22,6 +22,13 @@ var save = {};
 var node_state = {};
 var debug = false;
 
+var cpee= {
+  'instance': undefined,
+  'base': undefined,
+  'attributes': {},
+  'url': undefined
+}
+
 function global_init() {
   suspended_redrawing = false;
   loading = false;
@@ -429,6 +436,12 @@ function monitor_instance(cin,rep,load,exec) {// {{{
   $("body").attr('current-instance',sanitize_url(cin));
   $("body").attr('current-resources',sanitize_url(rep));
 
+  url = $("body").attr('current-instance');
+
+  cpee.url = $("body").attr('current-instance');
+  cpee.base = $("body").attr('current-base');
+  cpee.instance = $("#current-instance").text(url.match(/(\d+)\/?$/)[1]);
+
   $("input[name=instance-url]").val($("body").attr('current-instance'));
   $("input[name=res-url]").val($("body").attr('current-resources'));
 
@@ -436,8 +449,6 @@ function monitor_instance(cin,rep,load,exec) {// {{{
   $('#dat_details').empty();
 
   $('#modifiers > div').remove();
-
-  url = $("body").attr('current-instance');
 
   $.ajax({
     type: "GET",
@@ -580,6 +591,7 @@ function monitor_instance_values(type,vals,first=false) {// {{{
         } else if(type == "attributes") {
           $(" > attributes > *",res).each((k,v)=>{
             save['attributes_raw'][v.nodeName] = v.textContent;
+            cpee.attributes[v.nodeName] = v.textContent;
           });
           document.dispatchEvent(eval(type + '_changed'));
           if ($(" > attributes > resources",res).length > 0) {
