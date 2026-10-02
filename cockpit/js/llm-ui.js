@@ -34,9 +34,9 @@ class LLMUI { //{{{
     if (this.has_bubble_ui) {
       if (typeof($('body').attr('current-document-store')) != "undefined") {
         if (save['documents'] && ('chat_history' in save['documents'].save_object())) {
-          do_parameters_save_document_exec('chat_history','text/plain',JSON.stringify({ "type": "input", "text": text }) + "\n",'append');
+          do_parameters_save_document_exec('chat_history','chat_history.txt','text/plain',JSON.stringify({ "type": "input", "text": text }) + "\n",'append');
         } else {
-          let surl = do_parameters_save_document_exec('chat_history','text/plain',JSON.stringify({ "type": "input", "text": text }) + "\n",'append');
+          let surl = do_parameters_save_document_exec('chat_history','chat_history.txt','text/plain',JSON.stringify({ "type": "input", "text": text }) + "\n",'append');
           $.ajax({
             type: 'PATCH',
             url: url + "/properties/documents/",
@@ -64,7 +64,7 @@ class LLMUI { //{{{
       set_bubble_ui(llms,text,'success');
       if (typeof($('body').attr('current-document-store')) != "undefined") {
         if (save['documents'] && ('chat_history' in save['documents'].save_object())) {
-          do_parameters_save_document_exec('chat_history','text/plain',JSON.stringify({ "type": "output", "status": "success", "text": text }) + "\n",'append');
+          do_parameters_save_document_exec('chat_history','chat_history.txt','text/plain',JSON.stringify({ "type": "output", "status": "success", "text": text }) + "\n",'append');
         }
       }
     }
@@ -74,7 +74,7 @@ class LLMUI { //{{{
     if (this.has_bubble_ui)  {
       if (typeof($('body').attr('current-document-store')) != "undefined") {
         if (save['documents'] && ('chat_history' in save['documents'].save_object())) {
-          do_parameters_save_document_exec('chat_history','text/plain',JSON.stringify({ "type": "output", "status": "error", "text": text }) + "\n",'append');
+          do_parameters_save_document_exec('chat_history','chat_history.txt','text/plain',JSON.stringify({ "type": "output", "status": "error", "text": text }) + "\n",'append');
         }
       }
       set_bubble_ui(llms,text,'error');

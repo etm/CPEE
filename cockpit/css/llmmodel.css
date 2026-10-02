@@ -56,6 +56,7 @@ ui-resizehandle.overlay span {
   border-radius: 1em;
   overflow-wrap: break-word;
   white-space: pre-wrap;
+  user-select: text;
 }
 .chat.bubble.input:first-child {
   margin-top: 1.5em;

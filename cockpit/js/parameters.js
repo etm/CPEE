@@ -107,11 +107,11 @@ function do_parameters_save_document(id,file,content) { //{{{
   if (!name) {
     return '';
   } else {
-    return do_parameters_save_document_exec(name,file.type,content.result);
+    return do_parameters_save_document_exec(name,file.name,file.type,content.result);
   }
 } //}}}
 
-function do_parameters_save_document_exec(name,filetype,content,type='replace') {
+function do_parameters_save_document_exec(name,filename,filetype,content,type='replace') {
   let surl = $.path_join($('body').attr('current-document-store'),save.attributes_raw.uuid,name);
 
   let append = '';
@@ -123,8 +123,10 @@ function do_parameters_save_document_exec(name,filetype,content,type='replace') 
     type: "PUT",
     url: surl + append,
     contentType: (filetype == "" ? "application/octet-stream" : filetype),
+    processData: false,
     headers: {
-      'Content-ID': 'file'
+      'Content-ID': 'file',
+      'Content-Disposition': 'attachment; filename="' + filename + '"'
     },
     data: content
   });
