@@ -1,5 +1,5 @@
 var last_model_before_generation = undefined;
-var default_llm = "gemini-2.5-flash-lite";
+var default_llm = "gemini-3.1-flash-lite";
 
 function xhr_error(xhr) { //{{{
   if (xhr.responseJSON && xhr.responseJSON.error) {
@@ -20,7 +20,7 @@ function add_prompt(input,content) { //{{{
   document.execCommand('insertText', false, content);
 } //}}}
 
-function call_llm_service_intent(input, llm, llms, dslx, messages, documents) { //{{{
+function call_llm_service_intent(input, llm, llms, dslx, messages, documents, depth=0) { //{{{
   let def = new $.Deferred();
 
   (async () => {
@@ -99,9 +99,10 @@ function call_llm_service_intent(input, llm, llms, dslx, messages, documents) { 
       if (intent.output == 'chat') {
         ui.success(llms,filled_output);
         def.resolve(null);
-      } else if (intent.output == 'reintent' && filled_output !== input) {
+      } else if (intent.output == 'reintent' && filled_output !== input && depth < 3) {
         // repeat the process of looking for a plugin/intent, using the filled output as the new input
-        call_llm_service_intent(filled_output,llm,llms,dslx,messages,documents).done((result) => {
+        // (at most 3 times, to avoid endless plugin loops)
+        call_llm_service_intent(filled_output,llm,llms,dslx,messages,documents,depth + 1).done((result) => {
           def.resolve(result);
         }).fail((xhr) => {
           def.reject(xhr);
@@ -457,13 +458,11 @@ function diff_summary(model_old, model_new) { //{{{
           let subj = e.type === 'task' ? 'Task ' : (e.type === 'branch' ? 'Branch ' : 'Gateway ');
           let field_text;
           if (e.fields.length === 0) {
-            field_text = 'parameters';
-          } else if (e.fields.length === 1) {
-            field_text = e.fields[0];
+            field_text = '"parameters"';
           } else {
-            field_text = join_names(e.fields);
+            field_text = join_names(e.fields.map(function(f){ return '"' + f + '"'; }));
           }
-          sentences.push(subj + e.id + ' had its "' + field_text + '" changed.');
+          sentences.push(subj + e.id + ' had its ' + field_text + ' changed.');
           return;
         }
         let names = join_names(entries.map(function(e){ return e.id; }));
@@ -493,7 +492,7 @@ function set_cpee_model(cpee_xml,expositions=[]) { //{{{
     form_data.append("exposition", blobi);
   }
 
-  $.ajax({
+  return $.ajax({
     type: "PUT",
     url: url + "/properties/dslx/",
     contentType: false,
@@ -508,7 +507,7 @@ function empty_model(){ //{{{
 } //}}}
 
 function load_last_model_before_generation() { //{{{
-  set_cpee_model(last_model_before_generation === undefined ? save['dslx'] : last_model_before_generation);
+  return set_cpee_model(last_model_before_generation === undefined ? save['dslx'] : last_model_before_generation);
 } //}}}
 
 function load_file_content(files) { //{{{
@@ -519,7 +518,7 @@ function load_file_content(files) { //{{{
   var reader = new FileReader();
   reader.onload = function(){
     ui.clean();
-    add_prompt('prompt',reader.result);
+    add_prompt($('#prompt'),reader.result);
   }
   reader.onerror = function(){ console.log("reader error"); }
   reader.onabort = function(){ console.log("reader abort"); }
@@ -534,7 +533,9 @@ function create(prompt,llms,generation,mode) {
   // system would automatically adjust the brightness—either increasing or
   // reducing it as needed—and turn the lights off completely at night.
 
-  let input = prompt.text(); prompt.empty();
+  let input = prompt.text();
+  if (input.trim() === '') { return; }
+  prompt.empty();
   ui.input(llms,input);
   let myllm = llms.find(":selected").val();
   let prompt_type = mode.find(":selected").val();
@@ -606,6 +607,9 @@ function create(prompt,llms,generation,mode) {
                   last_model_before_generation = save['dslx'];
                   set_cpee_model($X(data.output_cpee).serializePrettyXML(),expositions);
                   ui.success(llms,diff_summary(last_model_before_generation,data.output_cpee));
+                })
+                .fail((xhr) => {
+                  ui.error(llms,xhr_error(xhr));
                 });
 
               })
@@ -654,7 +658,7 @@ $(document).ready(async function() { //{{{
   $(document).on('click','#generate_itext_button',function(e){
     ui.clean();
     ui.querying($('#llms'),'thinks');
-    call_llm_text_service('prompt','#llms','file');
+    call_llm_text_service($('#prompt'),$('#llms'),'file');
   });
   $(document).on('click','#generate_text_button',function(e){
     ui.clean();
@@ -664,7 +668,11 @@ $(document).ready(async function() { //{{{
   $(document).on('click','#prompt_undo_button',function(e){
     ui.clean();
     ui.querying($('#llms'),'thinks');
-    load_last_model_before_generation();
+    load_last_model_before_generation().done(() => {
+      ui.success($('#llms'),'Previous model restored.');
+    }).fail((xhr) => {
+      ui.error($('#llms'),xhr_error(xhr));
+    });
   });
   $(document).on('click','#prompt_attach_button',function(e){
     document.getElementById('loadtxt').click();
