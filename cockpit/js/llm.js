@@ -667,6 +667,7 @@ $(document).ready(async function() { //{{{
   });
   $(document).on('click','#prompt_undo_button',function(e){
     ui.clean();
+    ui.input($('#llms'),'Undo');
     ui.querying($('#llms'),'thinks');
     load_last_model_before_generation().done(() => {
       ui.success($('#llms'),'Previous model restored.');
