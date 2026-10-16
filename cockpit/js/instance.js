@@ -1,4 +1,5 @@
 var es;
+var es_reconnect;
 var suspended_redrawing = false;
 var skip_location = false;
 var myid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
@@ -355,6 +356,31 @@ function create_instance(base,name,load,exec) {// {{{
   }
 }// }}}
 
+function subscribe(url,retry,success) { //{{{
+  es_reconnect = undefined;
+  if ($('body').attr('current-instance') != url) { return; } // instance switched while waiting for reconnect
+  $.ajax({
+    type: "POST",
+    url: url + "/notifications/subscriptions/",
+    data: subscription_state == 'more' ? sub_more : sub_less,
+    success: function(res){
+      subscription = res;
+      append_to_log("monitoring", "id", subscription);
+      sse(); // also (re)loads everything, so a reconnect catches up on what was missed
+      if (success) { success(); }
+    },
+    error: function(xhr) {
+      if (retry && (xhr.status == 0 || xhr.status >= 500)) {
+        append_to_log("monitoring", "closed", "server not reachable, reconnecting in 5 seconds.");
+        es_reconnect = setTimeout(() => subscribe(url,true), 5000);
+      } else {
+        subscription = undefined;
+        append_to_log("monitoring", "closed", "For Good.");
+        sse();
+      }
+    }
+  });
+} //}}}
 async function sse() { //{{{
   var url = $('body').attr('current-instance');
   if (subscription) {
@@ -415,8 +441,15 @@ async function sse() { //{{{
       append_to_log(data['type'], data['topic'] + '/' + data['name'], JSON.stringify(data['content']));
     };
     es.onerror = function() {
-      append_to_log("monitoring", "closed", "finished or abandoned or not existing or server down. one of these, i assume.");
-      // setTimeout(sse,10000);
+      // the server deletes the subscription when the connection closes, so the
+      // native EventSource retry can never succeed. resubscribe instead.
+      this.close();
+      if (save['state'] == 'finished' || save['state'] == 'abandoned') {
+        append_to_log("monitoring", "closed", "instance " + save['state'] + ".");
+        return;
+      }
+      append_to_log("monitoring", "closed", "connection lost, reconnecting in 5 seconds.");
+      es_reconnect = setTimeout(() => subscribe(url,true), 5000);
     };
   }
   await monitor_instance_values("endpoints",undefined,true); // we cant render before we know specialized endpoint symbols
@@ -429,6 +462,8 @@ async function sse() { //{{{
 } //}}}
 
 function monitor_instance(cin,rep,load,exec) {// {{{
+  if (es) { es.close(); }
+  clearTimeout(es_reconnect);
   global_init();
   format_visual_clear();
   format_visual_vote_clear();
@@ -483,22 +518,9 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").prop( "checked", false );
 
-      $.ajax({
-        type: "POST",
-        url: url + "/notifications/subscriptions/",
-        data: sub_less,
-        success: function(res){
-          subscription = res;
-          append_to_log("monitoring", "id", subscription);
-          sse();
-          if (load || exec) {
-            load_testset(exec);
-          }
-        },
-        error: function() {
-          subscription = undefined;
-          append_to_log("monitoring", "closed", "For Good.");
-          sse();
+      subscribe(url,false,function(){
+        if (load || exec) {
+          load_testset(exec);
         }
       });
     },
