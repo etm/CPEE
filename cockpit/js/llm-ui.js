@@ -33,6 +33,7 @@ class LLMUI { //{{{
   input(llms,text) {
     if (this.has_bubble_ui) {
       if (typeof($('body').attr('current-document-store')) != "undefined") {
+
         if (save['documents'] && ('chat_history' in save['documents'].save_object())) {
           do_parameters_save_document_exec('chat_history','chat_history.txt','text/plain',JSON.stringify({ "type": "input", "text": text }) + "\n",'append');
         } else {
