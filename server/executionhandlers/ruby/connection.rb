@@ -354,6 +354,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end #}}}
 
   def code_error_handling(ret,where,what=RuntimeError) #{{{
+    raise 'external script handler probably not running' if ret.empty?
     sig = ret.find{|e| e.name == "signal" }.value
     sigt = ret.find{|e| e.name == "signal_text" }.value
     case sig
@@ -364,8 +365,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
       else
         raise 'something bad happened, but we dont know what.'
     end
-  rescue
-    raise 'external script handler probably not running'
   end #}}}
 
   def argument_transform_value(obj, struct)
