@@ -553,7 +553,7 @@ function create(prompt,llms,generation,mode) {
   ui.querying(llms,'analyses user intent');
 
   let documents = save['documents'] ? save['documents'].save_object() : {};
-  let history_promise = (typeof($('body').attr('current-document-store')) != "undefined" && save['documents'] && ('chat_history' in save['documents'].save_object()))
+  let history_promise = (typeof($('body').attr('current-document-store')) != "undefined" && documents && ('chat_history' in documents))
     ? do_parameters_get_document_exec('chat_history',10)
     : $.Deferred().resolve([]).promise();
 
