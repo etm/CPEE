@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
 
   s.description      = "see http://cpee.org"
 
-  s.files            = Dir['{example/**/*,server/**/*,tools/**/*,tools/archive,lib/**/*,cockpit/**/*,cockpit/templates/.templates.xml,cockpit/templates/.transformations.xml,cockpit/templates/.Signavio.xml,cockpit/templates/.CPEE.xml,cockpit/*.html,cockpit/themes/*/*,cockpit/themes/*/*/*,contrib/logo*,contrib/Screen*,contrib/transform.rb}'] - Dir['{server/instances/**/*,server/executionhandlers/rust/**/*,cockpit/js_libs/**/*,server/redis*}'] + %w(COPYING FEATURES.md INSTALL.md Rakefile cpee.gemspec README.md AUTHORS)
+  s.files            = Dir['{example/**/*,server/**/*,tools/**/*,tools/archive,lib/**/*,cockpit/**/*,cockpit/templates/.templates.xml,cockpit/templates/.transformations.xml,cockpit/templates/.Signavio.xml,cockpit/templates/.CPEE.xml,cockpit/*.html,cockpit/themes/*/*,cockpit/themes/*/*/*,contrib/logo*,contrib/Screen*,contrib/transform.rb}'] - Dir['{server/instances/**/*,server/executionhandlers/rust/**/*,cockpit/js_libs/**/*,server/redis*}'] + %w(LICENSE FEATURES.md INSTALL.md Rakefile cpee.gemspec README.md AUTHORS)
   s.require_path     = 'lib'
   s.extra_rdoc_files = ['README.md']
   s.bindir           = 'tools'
