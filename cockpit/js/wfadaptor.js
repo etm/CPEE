@@ -63,6 +63,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     illustrator.compact = manifestation.compact == true ? true : false;
     illustrator.rotated_labels = manifestation.rotated_labels == true ? true : false;
     illustrator.striped = manifestation.striped == true ? true : false;
+    illustrator.lr = manifestation.lr == true ? true : false;
     description.source = manifestation.source;
     var deferreds = [];
     // copy parent stuff
@@ -235,9 +236,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.dim = {};
     this.dim.symbols = [];
     this.dim.connections = [];
+    this.dim.rows = []; // lr only: start and size of each symbol along the rows
     this.compact = true;
     this.rotated_labels = true;
     this.striped = true;
+    this.lr = false;
     this.global_style = {};
     // private
     var self = this;
@@ -288,8 +291,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     if (w == 0) { w = bb.x + bb.width + self.width_shift; }
     // the alternative is bb.x + bb.width + self.width_shift, but this is bad when clipped elements
 
-    self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom
-    self.svg.container.attr('width', w);  // small border on the right
+    if (self.lr) { // mirror at the diagonal: rows go to the right, columns go down
+      graph.svg.attr('transform',lr_matrix());
+      self.svg.container.attr('height', w - lr_shift() + self.height_shift);
+      self.svg.container.attr('width', bb.y + bb.height + self.height_shift + lr_shift());
+    } else {
+      self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom
+      self.svg.container.attr('width', w);  // small border on the right
+    }
     self.svg.container.attr('data-pos-matrix', JSON.stringify(self.dim.symbols));
     self.svg.container.attr('data-con-list', JSON.stringify(self.dim.connections));
   } // }}}
@@ -320,6 +329,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     $('> defs > [belongs-to=element]', self.svg.container).each(function() {$(this).remove()});
     self.dim.symbols = [];
     self.dim.connections = [];
+    self.dim.rows = [];
   } // }}}
   var get_symbol = this.get_symbol = function() { // {{{
   } // }}}
@@ -389,6 +399,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     // console.log('set_x ',row,col,debug_dim());
   } //}}}
   var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth,sname,label,subtype,sty,eid) { //{{{
+    if (self.lr) { // labels widen the row, not the column
+      set_row(row,col,[]);
+      self.dim.rows[row][col].size = Math.max(self.dim.rows[row][col].size || 0, twidth);
+      twidth = self.width;
+    }
     if (!self.dim.symbols[row]) { self.dim.symbols[row] = []; }
     if (!self.dim.symbols[row][col] || self.dim.symbols[row][col].width < twidth) {
       self.dim.symbols[row][col] = {};
@@ -496,6 +511,57 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   var get_y = this.draw.get_y = function(row) { // {{{
     return { y: row * self.height - self.height, height_shift: self.height_shift};
   } // }}}
+  var lr_shift = function() { // {{{
+    // mirroring swaps the left (width - width_shift) and top (height_shift) margins, so shift them back
+    return self.width - self.width_shift - self.height_shift;
+  } // }}}
+  var lr_matrix = function() { // {{{
+    return 'matrix(0,1,1,0,' + lr_shift() + ',' + (self.height_shift - lr_shift()) + ')'; // top margin is twice the height_shift
+  } // }}}
+  var set_row = this.dim.set_row = function(row,col,prev) { // {{{
+    // lr: a symbol starts where its predecessors end, so only things in the same block are aligned
+    if (!self.lr) { return; }
+    if (!self.dim.rows[row]) { self.dim.rows[row] = []; }
+    if (self.dim.rows[row][col]) { return; }
+    let mx = 0;
+    prev.forEach((p) => {
+      if (!p) { return; }
+      if (p.row == 0 || p.col == 0) { p = { row: 1, col: 1 }; } // first element connects to description
+      mx = Math.max(mx, get_row_end(p.row,p.col));
+    });
+    for (let i=1; i<row; i++) { // and after everything before in this and the following columns, e.g. blocks in vertical parallels share columns
+      for (let j=col; self.dim.rows[i] && j<self.dim.rows[i].length; j++) {
+        if (self.dim.rows[i][j]) { mx = Math.max(mx, get_row_end(i,j)); }
+      }
+    }
+    self.dim.rows[row][col] = { start: mx };
+  } // }}}
+  var get_row = this.dim.get_row = function(row,col) { // {{{
+    if (!self.lr) { return (row - 1) * self.height; }
+    for (let j=col; j>=0; j--) { // e.g. wide connections point to empty columns
+      if (self.dim.rows[row] && self.dim.rows[row][j]) { return self.dim.rows[row][j].start; }
+    }
+    return 0;
+  } // }}}
+  var get_row_end = this.dim.get_row_end = function(row,col) { // {{{
+    if (!self.lr) { return row * self.height; }
+    let size = self.dim.rows[row] && self.dim.rows[row][col] && self.dim.rows[row][col].size;
+    return get_row(row,col) + (size || self.height);
+  } // }}}
+  var get_row_max = this.dim.get_row_max = function(rowf,rowt,colf,colt) { // {{{
+    if (!self.lr) { return rowt * self.height; }
+    let mx = 0;
+    let last = false;
+    for (let i=rowf; i<=rowt; i++) {
+      for (let j=colf; j<=colt; j++) {
+        if (self.dim.rows[i] && self.dim.rows[i][j]) {
+          mx = Math.max(mx, get_row_end(i,j));
+          if (i == rowt) { last = true; }
+        }
+      }
+    }
+    return last ? mx : mx + self.height; // closing symbols are drawn after the border
+  } // }}}
 
   var get_width = this.draw.get_width = function(g) { //{{{
     let t = g.clone();
@@ -589,11 +655,11 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     let dstart = get_x(parent_row,col,'symbol ' + sname);
 
-    let sstart = dstart            + center_x - self.width_shift;
-    let stop   = row * self.height + center_y - (self.height-self.height_shift);
+    let sstart = dstart           + center_x - self.width_shift;
+    let stop   = get_row(row,col) + center_y + self.height_shift;
 
     var g = $X('<g class="element" element-row="' + (row-1) + '" element-type="' + sname + '" element-id="' + id  + '" xmlns="http://www.w3.org/2000/svg">' +
-                  '<g transform="translate(' + String(sstart) + ',' + String(stop) + ')"></g>' +
+                  '<g transform="translate(' + String(sstart) + ',' + String(stop) + ')' + (self.lr ? ' matrix(0,1,1,0,0,0)' : '') + '"></g>' + // lr: mirror back, so that the symbol is upright
                '</g>');
 
     // add the element-endpoint and other stuff to each symbol (from theme info function)
@@ -781,18 +847,18 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let bstart = get_x(p1.row,p1.col,'border from');
     let bend = get_x_plus(p1.row,p2.row,p2.col,'border to');
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift - self.group_extend) + '" ' +
-        'y="' + ((p1.row-1)*self.height+self.height_shift/2-self.group_extend+yshrink) + '" ' +
+        'y="' + (get_row(p1.row,p1.col)+self.height_shift/2-self.group_extend+yshrink) + '" ' +
         'width="' + (bend-bstart+2*self.group_extend) + '" ' +
-        'height="' + (((p2.row+1)-p1.row)*self.height+2*self.group_extend-2*yshrink) + '" ' +
+        'height="' + (get_row_max(p1.row,p2.row,p1.col,p2.col)-get_row(p1.row,p1.col)+2*self.group_extend-2*yshrink) + '" ' +
         'class="block" rx="12" ry="12" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_tile = this.draw.draw_tile = function(id, p1, p2, group, yshrink=0) { // {{{
     let bstart = get_x(p1.row,p1.col,'tile from');
     let bend = get_x_plus(p1.row,p2.row,p2.col,'tile to');
     group.prepend($X('<rect element-id="' + id + '" x="' + (bstart - 1.1 * self.width_shift - self.group_extend) + '" ' +
-        'y="' + ((p1.row-1)*self.height+self.height_shift/2-self.group_extend+yshrink) + '" ' +
+        'y="' + (get_row(p1.row,p1.col)+self.height_shift/2-self.group_extend+yshrink) + '" ' +
         'width="' + (bend-bstart+2*self.group_extend) + '" ' +
-        'height="' + (((p2.row+1)-p1.row)*self.height+2*self.group_extend-2*yshrink) + '" ' +
+        'height="' + (get_row_max(p1.row,p2.row,p1.col,p2.col)-get_row(p1.row,p1.col)+2*self.group_extend-2*yshrink) + '" ' +
         'class="tile" rx="12" ry="12" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
   var draw_connection = this.draw.draw_connection = function(group, start, end, context_row, arrow) { // {{{
@@ -807,39 +873,43 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       line = $X('<path xmlns="http://www.w3.org/2000/svg" class="edge" marker-end="url(#' + (end.structural ? 'endarrow' : 'arrow') + ')"/>');
     else
       line = $X('<path xmlns="http://www.w3.org/2000/svg" class="edge"/>');
+    let sy = get_row(start['row'],start['col']) + self.height - 15 + start.yoffset; // center of the symbols
+    let ey = get_row(end['row'],end['col']) + self.height - 15 + end.yoffset;
     if (end['row']-start['row'] == 0 || end['col']-start['col'] == 0) { // straight line
-      line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15+start.yoffset) +" "+
-                            String(cend) +   "," + String(end['row']*self.height-15+end.yoffset)
+      line.attr("d", "M " + String(cstart) + "," + String(sy) +" "+
+                            String(cend) +   "," + String(ey)
       );
     } else if (end['row']-start['row'] > 0) { // downwards
       if (end['col']-start['col'] > 0) {// left - right
         if (self.compact) {
-          line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15+start.yoffset) +" "+
-                                String(cstart+14) + "," + String((end['row']-1)*self.height) +" "+ // first turn of horizontal-line going away from node
-                                String(cend) + "," + String((end['row']-1)*self.height) +" "+
-                                String(cend) + "," + String(end['row']*self.height-15+end.yoffset)
+          line.attr("d", "M " + String(cstart) + "," + String(sy) +" "+
+                                String(cstart+14) + "," + String(get_row(end['row'],end['col'])) +" "+ // first turn of horizontal-line going away from node
+                                String(cend) + "," + String(get_row(end['row'],end['col'])) +" "+
+                                String(cend) + "," + String(ey)
           );
         } else {
-          line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15+start.yoffset) +" "+
-                                String(cend) + "," + String(start['row']*self.height-15+start.yoffset) +" "+
-                                String(cend) + "," + String(end['row']*self.height-15+end.yoffset)
+          line.attr("d", "M " + String(cstart) + "," + String(sy) +" "+
+                                String(cend) + "," + String(sy) +" "+
+                                String(cend) + "," + String(ey)
           );
         }
       } else { // right - left
-        line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15+start.yoffset) +" "+
-                              String(cstart) + "," + String(end['row']*self.height-32) +" "+
-                              String(cend+14) + "," + String(end['row']*self.height-32) +" "+ // last turn of horizontal-line going into the node
-                              String(cend) + "," + String(end['row']*self.height-15+end.yoffset)
+        line.attr("d", "M " + String(cstart) + "," + String(sy) +" "+
+                              String(cstart) + "," + String(get_row(end['row'],end['col'])+self.height-32) +" "+
+                              String(cend+14) + "," + String(get_row(end['row'],end['col'])+self.height-32) +" "+ // last turn of horizontal-line going into the node
+                              String(cend) + "," + String(ey)
         );
       }
     } else if(end['row']-start['row'] < 0) { // upwards
-      line.attr("d", "M " + String(cstart) + "," + String(start['row']*self.height-15+start.yoffset) +" "+
-                            String(cstart) + "," + String((self.dim.symbols.length-1)*self.height+4) +" "+
-                            String(cend+15) + "," + String((self.dim.symbols.length-1)*self.height+4) +" "+
-                            String(cend+15) + "," + String(end['row']*self.height+15)+" "+
-                            String(cend) + "," + String(end['row']*self.height-15+end.yoffset)
+      let by = (self.lr ? get_row_end(start['row'],start['col']) : (self.dim.symbols.length-1)*self.height) + 4;
+      line.attr("d", "M " + String(cstart) + "," + String(sy) +" "+
+                            String(cstart) + "," + String(by) +" "+
+                            String(cend+15) + "," + String(by) +" "+
+                            String(cend+15) + "," + String(get_row(end['row'],end['col'])+self.height+15)+" "+
+                            String(cend) + "," + String(ey)
       );
     }
+    if (self.lr) { line.attr('transform',lr_matrix()); } // connections are not part of the graph group
     self.svg.container.append(line);
   } //  }}}
   // }}}
@@ -1115,6 +1185,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
 
         illustrator.dim.set_x(pos.row,pos.col,illustrator.width,sname);
+        illustrator.dim.set_row(pos.row,pos.col,prev);
+        if (illustrator.lr && illustrator.elements[sname].svg && illustrator.elements[tname].expansion(context) == 'vertical' && !illustrator.elements[tname].col_shift(context)) { // the content follows the label in the same column, so measure the symbol before it is drawn
+          let lab = (illustrator.elements[sname].label ? illustrator.elements[sname].label(context) : []) || [];
+          let tit = lab.find((l) => l && l.column == 'Label' && l.value);
+          illustrator.draw.draw_symbol(sname, 'measure', tit ? tit.value : undefined, pos.row, pos.row, pos.row, pos.col, $X('<g xmlns="http://www.w3.org/2000/svg"/>'), true, {}, {});
+        }
         // but fuuuuu, we calculate the gateways only later, so we couldnt even have them bigger for now
 
         // console.log('----> down', tname, parent_pos.row, pos.row, parent_pos.col, pos.col, illustrator.dim.debug());
@@ -1236,6 +1312,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     // console.log('----- pos ' + sname, parent_pos.row, block.max.row, parent_pos.col, block.max.col, block, illustrator.dim.debug());
 
     // Draw Symbol {{{
+    illustrator.dim.set_row(pos.row,pos.col,prev);
     let style = {};
     if (illustrator.elements[sname].style && context) {
       style = illustrator.elements[sname].style(context);
