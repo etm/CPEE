@@ -384,8 +384,15 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } // }}}
   this.get_svg_metrics = function() { // {{{
     // the layout of the last drawing (a copy, empty cells are null): pos_matrix
-    // holds the symbols per row and column, con_list the connections between them
-    return JSON.parse(JSON.stringify({ pos_matrix: self.dim.symbols, con_list: self.dim.connections }));
+    // holds the symbols per row and column, con_list the connections between
+    // them. Rows and columns are 0-indexed here, the layout counts from 1
+    var metrics = JSON.parse(JSON.stringify({ pos_matrix: self.dim.symbols, con_list: self.dim.connections }));
+    metrics.pos_matrix = metrics.pos_matrix.slice(1).map(function(row) { return row ? row.slice(1) : null; });
+    metrics.con_list.forEach(function(c) {
+      c.from.row--; c.from.col--;
+      c.to.row--; c.to.col--;
+    });
+    return metrics;
   } // }}}
   var specificity = function(sel) { // {{{ ids, classes/attributes/pseudo classes, types
     var s = sel.replace(/::[\w-]+/g,'');
