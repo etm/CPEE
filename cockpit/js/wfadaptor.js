@@ -383,16 +383,39 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return svg;
   } // }}}
   this.get_svg_metrics = function() { // {{{
-    // the layout of the last drawing (a copy, empty cells are null): pos_matrix
-    // holds the symbols per row and column, con_list the connections between
-    // them. Rows and columns are 0-indexed here, the layout counts from 1
-    var metrics = JSON.parse(JSON.stringify({ pos_matrix: self.dim.symbols, con_list: self.dim.connections }));
-    metrics.pos_matrix = metrics.pos_matrix.slice(1).map(function(row) { return row ? row.slice(1) : null; });
-    metrics.con_list.forEach(function(c) {
-      c.from.row--; c.from.col--;
-      c.to.row--; c.to.col--;
+    // the layout of the last drawing as it is shown (a copy, empty cells are
+    // null): pos_matrix holds the symbols per row and column, x and width are
+    // horizontal; con_list the connections between them. Rows and columns are
+    // 0-indexed here, the layout counts from 1. lr is laid out top to bottom
+    // and mirrored at the diagonal, so rows and columns are swapped back, and x
+    // and width come from the rows (as in get_x, x is the symbol position plus
+    // width_shift)
+    var pos = function(r,c) { return self.lr ? { row: c - 1, col: r - 1 } : { row: r - 1, col: c - 1 }; };
+    var row_start = function(r,c) { // like get_row, but symbols without an own entry (e.g. alternative) also find one to the right
+      var rs = self.dim.rows[r] || [];
+      for (var j = c; j >= 0; j--) { if (rs[j]) { return rs[j].start; } }
+      for (var j = c + 1; j < rs.length; j++) { if (rs[j]) { return rs[j].start; } }
+      return 0;
+    };
+    var pos_matrix = [];
+    self.dim.symbols.forEach(function(row,r) {
+      if (!row) { return; }
+      row.forEach(function(sym,c) {
+        if (!sym || r == 0 || c == 0) { return; }
+        var p = pos(r,c);
+        var s = $.extend({}, sym);
+        if (self.lr) {
+          s.x = row_start(r,c) + self.width;
+          s.width = (self.dim.rows[r] && self.dim.rows[r][c] && self.dim.rows[r][c].size) || self.height;
+        }
+        if (!pos_matrix[p.row]) { pos_matrix[p.row] = []; }
+        pos_matrix[p.row][p.col] = s;
+      });
     });
-    return metrics;
+    var con_list = self.dim.connections.map(function(c) {
+      return { from: pos(c.from.row,c.from.col), to: pos(c.to.row,c.to.col) };
+    });
+    return JSON.parse(JSON.stringify({ pos_matrix: pos_matrix, con_list: con_list })); // holes become null
   } // }}}
   var specificity = function(sel) { // {{{ ids, classes/attributes/pseudo classes, types
     var s = sel.replace(/::[\w-]+/g,'');
