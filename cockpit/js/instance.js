@@ -1157,11 +1157,10 @@ function save_svgfile() {// {{{
 
 function save_bpmnfile() {// {{{
   var url = $('body').attr('current-instance');
+  if (!save['graph_adaptor']) { return; } // no instance loaded
 
-  let dpm = JSON.parse($('svg[data-pos-matrix]').attr('data-pos-matrix'));
-  let dcl = JSON.parse($('svg[data-con-list]').attr('data-con-list'));
-
-  let david = david_bpmn_convert(dpm,dcl);
+  let metrics = save['graph_adaptor'].get_svg_metrics();
+  let david = david_bpmn_convert(metrics.pos_matrix,metrics.con_list);
 
   $.ajax({
     type: "GET",
