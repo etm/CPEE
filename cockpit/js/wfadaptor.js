@@ -57,6 +57,9 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   this.set_label_container = function(container) { // {{{
     illustrator.set_label_container(container);
   } // }}}
+  this.get_svg = function() { // {{{
+    return illustrator.get_svg();
+  } // }}}
 
   function loadTheme(doit) { //{{{
     manifestation = new WFAdaptorManifestation(self);
@@ -316,6 +319,74 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     }
     self.svg.container.attr('data-pos-matrix', JSON.stringify(self.dim.symbols));
     self.svg.container.attr('data-con-list', JSON.stringify(self.dim.connections));
+  } // }}}
+  this.get_svg = function() { // {{{
+    // standalone copy for export: the rules of all stylesheets marked with
+    // data-include-export are inlined into the style attributes (var()
+    // resolved, in cascade order), further columns from the label container are
+    // merged in, and interaction state and the render time are removed
+    var svgs = [self.svg.container.get(0)];
+    if (self.svg.label_container) {
+      self.svg.label_container.children('svg').not(self.svg.container).each(function(_,ele) { svgs.push(ele); });
+    }
+    var clones = svgs.map(function(s) { return s.cloneNode(true); });
+
+    var root = getComputedStyle(document.documentElement);
+    var rules = [];
+    var family = '';
+    $.each(document.styleSheets, function(_,sheet) {
+      if (!sheet.ownerNode || !sheet.ownerNode.hasAttribute('data-include-export')) { return; }
+      $.each(sheet.cssRules, function(_,rule) {
+        if (!rule.selectorText || rule.selectorText == ':root') { return; }
+        if (rule.selectorText == 'svg') {
+          if (rule.style.getPropertyValue('font-family') != '') {
+            family = getComputedStyle(svgs[0]).getPropertyValue('font-family').replace(/["']/g,'').trim();
+          }
+          return;
+        }
+        var css = rule.style.cssText.replace(/var\((--[\w-]+)\)/g, function(m,v) { return root.getPropertyValue(v).trim() || m; });
+        rule.selectorText.split(',').forEach(function(sel) {
+          rules.push({ sel: sel.trim(), spec: specificity(sel), order: rules.length, css: css });
+        });
+      });
+    });
+    rules.sort(function(a,b) { return a.spec - b.spec || a.order - b.order; });
+    family = family.replace(/-/,' ').split(' ').map(function(w) { return w[0].toUpperCase() + w.substr(1); }).join(' '); // adwaita-sans -> Adwaita Sans, the installed name
+
+    clones.forEach(function(clone) {
+      $(clone).find('.duration').remove();
+      $(clone).find('.selected').removeClass('selected');
+      $(clone).find('.hover').removeClass('hover');
+      $(clone).find('*').each(function(_,el) {
+        var decl = [];
+        rules.forEach(function(r) {
+          try { if (el.matches(r.sel)) { decl.push(r.css); } } catch (e) { } // e.g. unsupported pseudo classes
+        });
+        var own = el.getAttribute('style');
+        if (own && own.trim() != '') { decl.push(own.trim().replace(/;?$/,';')); }
+        if ($(el).is('text.super, g.hoverstyle, g.markstyle')) { decl.push('display: none;'); }
+        if (el.nodeName == 'text' && family != '') { decl.push('font-family: \'' + family + '\';'); }
+        if (decl.length > 0) { el.setAttribute('style', decl.join(' ')); }
+      });
+    });
+
+    var svg = clones.shift();
+    var width = parseInt(svg.getAttribute('width'));
+    clones.forEach(function(clone) {
+      var gr = $X('<g transform="translate(' + width + ')" xmlns="http://www.w3.org/2000/svg"></g>');
+      gr.append($(clone).children());
+      width += parseInt(clone.getAttribute('width'));
+      $(svg).append(gr);
+    });
+    svg.setAttribute('width', width + 1);
+    return svg;
+  } // }}}
+  var specificity = function(sel) { // {{{ ids, classes/attributes/pseudo classes, types
+    var s = sel.replace(/::[\w-]+/g,'');
+    var a = (s.match(/#[\w-]+/g) || []).length;
+    var b = (s.match(/\.[\w-]+|\[[^\]]*\]|:[\w-]+/g) || []).length;
+    var c = (s.replace(/\[[^\]]*\]/g,'').match(/(^|[\s>+~(])[a-zA-Z][\w-]*/g) || []).length;
+    return a * 10000 + b * 100 + c;
   } // }}}
   this.set_duration = function(start) { //{{{
     self.svg.container.append(

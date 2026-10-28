@@ -82,7 +82,6 @@ function WFAdaptorManifestationBase(adaptor) {
           nn.removeAttr('svg-subtype');
           nn.removeAttr('svg-label');
 
-      details_leave(true);
       tab.empty();
       save['details'] = new RelaxNGui(rng,tab,self.adaptor.description.context_eval,true);
       save['details'].content(nn);

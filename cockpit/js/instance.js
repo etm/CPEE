@@ -1140,56 +1140,9 @@ function get_testset(deferred) {// {{{
 }// }}}
 function save_svgfile() {// {{{
   var url = $('body').attr('current-instance');
+  if (!save['graph_adaptor']) { return; } // no instance loaded
 
-  var gc = $('#graphcanvas').clone();
-  var start = parseInt(gc.attr('width'));
-  $('#graphgrid > svg:not(#graphcanvas)').each( (i,ele) => {
-    const gr = $X('<g transform="translate(' + start + ')" xmlns="http://www.w3.org/2000/svg"></g>');
-    start = start + parseInt(ele.getAttribute('width'));
-    $('g',ele).each((j,g) => {
-      gr.append($(g).clone());
-    });
-    gc.append(gr);
-  });
-  gc.find('.selected').removeClass('selected');
-  var varreps = {};
-  var ffamily = '';
-  $(window.document.styleSheets).each(function(i,x){
-    if (x && x.href && x.ownerNode.attributes.getNamedItem('data-include-export')) {
-      $(x.cssRules).each(function(j,y){
-        if (y.selectorText == ":root") {
-          $(y.style).each(function(k,z) {
-            varreps['var\\(' + z + '\\)'] = getComputedStyle(document.documentElement).getPropertyValue(z).toString();
-          });
-        }
-        if (y.selectorText == "svg") {
-          $(y.style).each(function(k,z) {
-            if (z == 'font-family') {
-              ffamily = getComputedStyle($('#graphgrid > svg')[0]).getPropertyValue(z).toString();
-            }
-          });
-        }
-        var loc = $(gc).find(y.selectorText.replace(/svg /g,''));
-        var cst = y.style.cssText;
-        for (k in varreps) {
-          cst = cst.replace(new RegExp(k,'g'),varreps[k]);
-        }
-        loc.each(function(k,loco) {
-          var sty = $(loco).attr('style') == undefined ? '' : $(loco).attr('style');
-          $(loco).attr('style',cst + sty);
-        });
-      });
-      $(gc).find('text.super,g.hoverstyle,g.markstyle').each(function(k,loco){
-        $(loco).attr('style',$(loco).attr('style') + ' display: none; ');
-      });
-      ffamily = ffamily.replace(/-/,' ').split(' ').map(function(word) { return word[0].toUpperCase() + word.substr(1); }).join(' ');
-      $(gc).find('text').each(function(k,loco){
-        $(loco).attr('style',$(loco).attr('style') + ' font-family: \'' + ffamily + '\'; ');
-      });
-    }
-  });
-  gc.attr('width',start+1);
-  gc.find('.duration').remove();
+  var gc = $(save['graph_adaptor'].get_svg());
   $.ajax({
     type: "GET",
     url: url + "/properties/attributes/info/",
