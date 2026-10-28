@@ -1,0 +1,11 @@
+<svg class="clickable" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4.2" y="1" width="24" height="24" rx="4" class="colorstyle execstyle stand"/>
+
+  <circle cx="27.2" cy="13" r="9" class="execstyle standthin" style="stroke-dasharray: 1,2"/>
+  <circle cx="27.2" cy="13" r="7" class="execstyle standthin" style="stroke-dasharray: 1,2"/>
+  <line x1="27.2" y1="9" x2="23.2" y2="16" class="stand"/>
+  <line x1="23.2" y1="16" x2="31.2" y2="16" class="stand"/>
+  <line x1="31.2" y1="16" x2="27.2" y2="9" class="stand"/>
+
+  <circle cx="16.2" cy="55.5" r="14" class="colorstyle execstyle standfat"/>
+</svg>

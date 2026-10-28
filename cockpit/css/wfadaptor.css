@@ -342,7 +342,7 @@ svg text.label.rotate {
   transform: translateY(10px) rotate(-30deg);
 }
 
-#arrow {
+#arrow, #arrowrev, #arrowdiag, #arrowdiagrev {
   stroke: var(--wfadaptor-base);
   stroke-width: 2;
   fill: var(--wfadaptor-base);
