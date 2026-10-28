@@ -1,11 +1,15 @@
 var details_updated = new Event("details:updated", {"bubbles":true, "cancelable":false});
+var details_timer;
 
 $(document).ready(function() {
-  var timer;
-
   $(document).on('input','#dat_details input, #dat_details textarea, #dat_details [contenteditable]',function(e){
-    clearTimeout(timer);
-    timer = setTimeout(do_main_save, 5000);
+    clearTimeout(details_timer);
+    let details = save['details'];
+    details_timer = setTimeout(() => {
+      details_timer = undefined;
+      // safety net, details_leave should have been called when details were emptied or replaced
+      if (details === save['details'] && $('#dat_details').children().length > 0) { do_main_save(); }
+    }, 5000);
   });
   // only for contenteditable divs
   $(document).on('keypress','#dat_details div[contenteditable]',function(e){
@@ -15,18 +19,30 @@ $(document).ready(function() {
     }
   });
   $(document).on('relaxngui_remove', '#dat_details', function(e){
-    clearTimeout(timer);
+    details_leave(false);
     do_main_save();
   });
   $(document).on('relaxngui_move', '#dat_details', function(e){
-    clearTimeout(timer);
+    details_leave(false);
     do_main_save();
   });
   $(document).on('relaxngui_change', '#dat_details', function(e){
-    clearTimeout(timer);
+    details_leave(false);
     do_main_save();
   });
 });
+
+// call before details are emptied or replaced. a pending (not yet saved)
+// change is saved when flush is true (same model stays), otherwise dropped
+// (model is replaced, saving would overwrite the new one).
+function details_leave(flush) { //{{{
+  let pending = details_timer != undefined;
+  clearTimeout(details_timer);
+  details_timer = undefined;
+  if (flush && pending && save['details'] && $('#dat_details').children().length > 0) {
+    do_main_save();
+  }
+} //}}}
 
 function do_main_save() { //{{{
   if (save['details'].has_changed()) {

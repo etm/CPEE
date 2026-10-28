@@ -174,6 +174,7 @@ function cockpit() { //{{{
     save['graph_adaptor'].illustrator.get_elements().removeClass('marked');
     localStorage.removeItem('marked');
     localStorage.removeItem('marked_from');
+    details_leave(true);
     $('#dat_details').empty();
     e.stopImmediatePropagation();
   });
@@ -484,6 +485,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
   $("input[name=res-url]").val($("body").attr('current-resources'));
 
   $('#parameters ui-content ui-area > button, ui-tabbed.parameters ui-content ui-area > button').attr('disabled','disabled');
+  details_leave(false);
   $('#dat_details').empty();
 
   $('#modifiers > div').remove();
@@ -584,6 +586,7 @@ function monitor_instance_values(type,vals,first=false) {// {{{
                   save['endpoints_cache'] = tmp;
                   def.resolve();
                   // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
+                  details_leave(true);
                   $('#dat_details').empty();
                 });
               },
@@ -601,6 +604,7 @@ function monitor_instance_values(type,vals,first=false) {// {{{
                     save['endpoints_cache'] = tmp;
                     def.resolve();
                     // when updating attributes clear the attributes, because they might change as well. New arguments are possible.
+                    details_leave(true);
                     $('#dat_details').empty();
                   });
                 },
@@ -766,11 +770,13 @@ function adaptor_init(url,theme,dslx) { //{{{
         manifestation.events.click(svgid);
         format_instance_pos();
         if (manifestation.selected() == "unknown") { // nothing selected
+          details_leave(false);
           $('#dat_details').empty();
         }
       };
 
       monitor_instance_pos();
+      details_leave(false);
       $('#dat_details').empty();
 
       // while inside and svgs are reloaded, do nothing here
@@ -1351,6 +1357,7 @@ function load_testset(exec) {// {{{
       url: url,
       success: function(res){
         save['dsl'] = null; // reload dsl and position under all circumstances
+        details_leave(false);
         $('#dat_details').empty();
 
         document.title = "Untitled";

@@ -502,6 +502,7 @@ function set_cpee_model(cpee_xml,expositions=[]) { //{{{
 } //}}}
 
 function empty_model(){ //{{{
+  details_leave(false);
   set_cpee_model('<description xmlns="http://cpee.org/ns/description/1.0" xmlns:a="http://cpee.org/ns/annotation/1.0"/>',["Reset Context!"]);
   $('#dat_details').empty();
 } //}}}
