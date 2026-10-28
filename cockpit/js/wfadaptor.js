@@ -320,22 +320,17 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom
       self.svg.container.attr('width', w);  // small border on the right
     }
-    self.svg.container.attr('data-pos-matrix', JSON.stringify(self.dim.symbols));
-    self.svg.container.attr('data-con-list', JSON.stringify(self.dim.connections));
   } // }}}
   this.get_svg = function() { // {{{
     // standalone copy for export: the rules of all stylesheets marked with
     // data-include-export are inlined into the style attributes (var()
     // resolved, in cascade order), further columns from the label container are
-    // merged in, and interaction state and the render time are removed. The
-    // layout data is left out, get_svg_metrics returns it
+    // merged in, and interaction state and the render time are removed
     var svgs = [self.svg.container.get(0)];
     if (self.svg.label_container) {
       self.svg.label_container.children('svg').not(self.svg.container).each(function(_,ele) { svgs.push(ele); });
     }
     var clones = svgs.map(function(s) { return s.cloneNode(true); });
-    clones[0].removeAttribute('data-pos-matrix');
-    clones[0].removeAttribute('data-con-list');
 
     var root = getComputedStyle(document.documentElement);
     var rules = [];
@@ -388,12 +383,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return svg;
   } // }}}
   this.get_svg_metrics = function() { // {{{
-    // the layout of the last drawing (copies): pos_matrix holds the symbols per
-    // row and column, con_list the connections between them
-    return {
-      pos_matrix: JSON.parse(self.svg.container.attr('data-pos-matrix')),
-      con_list: JSON.parse(self.svg.container.attr('data-con-list'))
-    };
+    // the layout of the last drawing (a copy, empty cells are null): pos_matrix
+    // holds the symbols per row and column, con_list the connections between them
+    return JSON.parse(JSON.stringify({ pos_matrix: self.dim.symbols, con_list: self.dim.connections }));
   } // }}}
   var specificity = function(sel) { // {{{ ids, classes/attributes/pseudo classes, types
     var s = sel.replace(/::[\w-]+/g,'');
