@@ -60,6 +60,9 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   this.get_svg = function() { // {{{
     return illustrator.get_svg();
   } // }}}
+  this.get_svg_metrics = function() { // {{{
+    return illustrator.get_svg_metrics();
+  } // }}}
 
   function loadTheme(doit) { //{{{
     manifestation = new WFAdaptorManifestation(self);
@@ -324,12 +327,15 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     // standalone copy for export: the rules of all stylesheets marked with
     // data-include-export are inlined into the style attributes (var()
     // resolved, in cascade order), further columns from the label container are
-    // merged in, and interaction state and the render time are removed
+    // merged in, and interaction state and the render time are removed. The
+    // layout data is left out, get_svg_metrics returns it
     var svgs = [self.svg.container.get(0)];
     if (self.svg.label_container) {
       self.svg.label_container.children('svg').not(self.svg.container).each(function(_,ele) { svgs.push(ele); });
     }
     var clones = svgs.map(function(s) { return s.cloneNode(true); });
+    clones[0].removeAttribute('data-pos-matrix');
+    clones[0].removeAttribute('data-con-list');
 
     var root = getComputedStyle(document.documentElement);
     var rules = [];
@@ -380,6 +386,14 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     });
     svg.setAttribute('width', width + 1);
     return svg;
+  } // }}}
+  this.get_svg_metrics = function() { // {{{
+    // the layout of the last drawing (copies): pos_matrix holds the symbols per
+    // row and column, con_list the connections between them
+    return {
+      pos_matrix: JSON.parse(self.svg.container.attr('data-pos-matrix')),
+      con_list: JSON.parse(self.svg.container.attr('data-con-list'))
+    };
   } // }}}
   var specificity = function(sel) { // {{{ ids, classes/attributes/pseudo classes, types
     var s = sel.replace(/::[\w-]+/g,'');
