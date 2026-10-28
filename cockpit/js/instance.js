@@ -21,6 +21,7 @@ var save = {};
     save['attributes'] = undefined;
     save['attributes_raw'] = {};
 var node_state = {};
+var tracking_memory = 10000; // ms finished uuids are remembered, to drop late events
 var debug = false;
 
 var cpee= {
@@ -47,6 +48,8 @@ function global_init() {
   save['details'] = undefined;
   save['details_target'] = {};
   save['instance_pos'] = [];
+  save['instance_pos_anon'] = {};
+  save['position_states'] = {};
   save['modeltype'] = 'CPEE';
   save['modifiers'] = {};
   save['modifiers_active'] = {};
@@ -842,7 +845,7 @@ function monitor_instance_pos() {// {{{
   if (graph_position && graph_position == 'false') {
     save['instance_pos'] = [];
     format_visual_clear();
-    format_instance_pos();
+    format_instance_pos_load();
     return;
   };
   var url = $('body').attr('current-instance');
@@ -852,42 +855,84 @@ function monitor_instance_pos() {// {{{
     success: function(res){
       save['instance_pos'] = $("positions > *",res);
       format_visual_clear();
-      format_instance_pos();
+      format_instance_pos_load();
     }
   });
 }// }}}
 
+function track_start(states,uuid,what,cls) {// {{{
+  if (states[uuid]) { return; } // already running, or a late start after the end
+  states[uuid] = { position: what, state: 'running' };
+  let anon = save['instance_pos_anon'][what];
+  if (anon && anon[cls] > 0) {
+    anon[cls] -= 1; // most likely the snapshot entry itself, so it is already counted
+    return;
+  }
+  format_visual_add(what,cls);
+} // }}}
+function track_end(states,uuid,what,cls) {// {{{
+  let cur = states[uuid];
+  if (cur && cur.state == 'done') { return; }
+  states[uuid] = { position: what, state: 'done' };
+  setTimeout(() => {delete states[uuid]},tracking_memory);
+  let anon = save['instance_pos_anon'][what];
+  if (!cur) { // start never seen, so it belongs to a snapshot entry, if any
+    if (!anon || !(anon[cls] > 0)) { return; }
+    anon[cls] -= 1;
+  }
+  format_visual_remove(what,cls);
+} // }}}
+function track_forget_running(states,what) {// {{{
+  // counts were reset, so running uuids are no longer counted. ends of them
+  // consume snapshot entries instead.
+  for (const [uuid, ele] of Object.entries(states)) {
+    if (ele.state == 'running' && (what == undefined || ele.position == what)) { delete states[uuid]; }
+  }
+} // }}}
+
 function monitor_instance_running(content,event) {// {{{
-  let uuid = content['activity-uuid'];
-  let cur = save['activity_red_states'][uuid];
   if (event == "calling" || event == "manipulating") {
-    if (!cur && save['instance_pos'].filter( (_,e) => { return e.nodeName == content.activity }).length == 0) {
-      save['activity_red_states'][uuid] = { position: content.activity, state: 'active' };
-      format_visual_add(content.activity,"active");
-    }
+    track_start(save['activity_red_states'],content['activity-uuid'],content.activity,"active");
   } else if (event == "done") {
-    if ((cur && cur.state == 'active') || save['instance_pos'].filter( (_,e) => { return e.nodeName == content.activity }).length > 0) {
-      format_visual_remove(content.activity,"active");
-    }
-    save['activity_red_states'][uuid] = { position: content.activity, state: 'done' };
-    setTimeout(() => {delete save['activity_red_states'][uuid]},1000);
+    track_end(save['activity_red_states'],content['activity-uuid'],content.activity,"active");
+  }
+} // }}}
+function monitor_instance_pos_mark(b) {// {{{
+  if (b.uuid) {
+    track_start(save['position_states'],b.uuid,b.position,"passive");
+  } else { // set by user, behaves like a snapshot entry
+    let anon = save['instance_pos_anon'][b.position] ??= {};
+    if (anon['passive'] > 0) { return; }
+    anon['passive'] = 1;
+    format_visual_add(b.position,"passive");
+  }
+} // }}}
+function monitor_instance_pos_unmark(b) {// {{{
+  if (b.uuid) {
+    track_end(save['position_states'],b.uuid,b.position,"passive");
+  } else { // set by user, clears the node
+    track_forget_running(save['position_states'],b.position);
+    if (save['instance_pos_anon'][b.position]) { save['instance_pos_anon'][b.position]['passive'] = 0; }
+    if (node_state[b.position]) { node_state[b.position]['passive'] = 0; }
+    format_visual_set(b.position);
   }
 } // }}}
 function monitor_instance_pos_change(content) {// {{{
   if (graph_position && graph_position == 'false') { return; }
+  // unmark first, a single change may unmark and mark the same node (e.g. loops)
+  if (content['unmark']) {
+    $.each(content['unmark'],function(a,b){
+      monitor_instance_pos_unmark(b);
+    });
+  }
   if (content['at']) {
     $.each(content['at'],function(a,b){
-      format_visual_add(b.position,"passive",false);
+      monitor_instance_pos_mark(b);
     });
   }
   if (content['after']) {
     $.each(content['after'],function(a,b){
-      format_visual_add(b.position,"passive",false);
-    });
-  }
-  if (content['unmark']) {
-    $.each(content['unmark'],function(a,b){
-      format_visual_remove(b.position,"passive",false)
+      monitor_instance_pos_mark(b);
     });
   }
   if (!content['at'] && !content['unmark'] && !content['after'] && !content['wait']) {
@@ -919,6 +964,8 @@ function monitor_instance_state_change(notification) { //{{{
       monitor_instance_pos();
     }
     if (notification == "running") {
+      track_forget_running(save['position_states']);
+      for (const [key, ele] of Object.entries(save['instance_pos_anon'])) { ele['passive'] = 0; }
       for (const [key, ele] of Object.entries(node_state)) {
         for (i=0; i<ele.passive; i++) {
           format_visual_remove(key,'passive');
@@ -1547,12 +1594,26 @@ function format_visual_vote_clear() {//{{{
   $("#votes").empty();
  }//}}}
 
-function format_instance_pos() { //{{{
+function format_instance_pos_load() { //{{{
+  // counts were just cleared, they are rebuilt from the snapshot
+  save['instance_pos_anon'] = {};
+  track_forget_running(save['activity_red_states']);
+  track_forget_running(save['position_states']);
   $(save['instance_pos']).each(function(){
     var taskname = this.nodeName;
     var taskstate = this.textContent;
-    format_visual_add(taskname,save['state'] == 'running' ? (taskstate == 'at' ? 'active' : 'passive') : 'passive');
+    var anon = save['instance_pos_anon'][taskname] ??= {};
+    var clss = ['passive']; // like position events, at and after are passive
+    if (save['state'] == 'running' && taskstate == 'at') { clss.push('active'); }
+    clss.forEach((cls) => {
+      anon[cls] = (anon[cls] ?? 0) + 1;
+      format_visual_add(taskname,cls);
+    });
   });
+} //}}}
+function format_instance_pos() { //{{{
+  // graph was redrawn, so only render the current state again
+  Object.keys(node_state).forEach((what) => { format_visual_set(what); });
 } //}}}
 
 function format_visual_forms() { //{{{
