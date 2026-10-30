@@ -9,7 +9,7 @@
     <line x1="10.5" y1="20.5" x2="20.5" y2="10.5" class="stand"/>
     <line x1="10.5" y1="10.5" x2="20.5" y2="20.5" class="stand"/>
   </g>
-  <g class="part-middle" transform="translate(30,0)">
-    <text transform="translate(0,6)" class="label standalone"></text>
+  <g class="part-middle">
+    <text transform="translate(4,6)" class="label standalone" style="text-anchor: end"></text>
   </g>
 </svg>

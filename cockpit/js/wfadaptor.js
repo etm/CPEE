@@ -311,6 +311,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let w = self.dim.get_x_max(0,graph.max.row,graph.max.col,'start');
     if (w == 0) { w = bb.x + bb.width + self.width_shift; }
     // the alternative is bb.x + bb.width + self.width_shift, but this is bad when clipped elements
+    if (self.lr) { w = Math.max(w, bb.x + bb.width + self.width_shift); } // lr: labels can reach across the flow, e.g. rotated below a gateway; clipped labels only reach along it
 
     if (self.lr) { // mirror at the diagonal: rows go to the right, columns go down
       graph.svg.attr('transform',lr_matrix());
@@ -693,6 +694,22 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     t.remove();
     return w;
   } //}}}
+  var get_label_end = this.draw.get_label_end = function(lab,frame) { //{{{
+    // where a label ends, in the coordinates of frame (one of its ancestors),
+    // including all transforms in between, so it does not matter if the label
+    // is beside the icon, below it, rotated or right aligned
+    let inner = lab.clone();
+    lab.parentsUntil(frame).each(function(_,p) {
+      let w = $X('<g xmlns="http://www.w3.org/2000/svg"></g>');
+      if ($(p).attr('transform')) { w.attr('transform',$(p).attr('transform')); }
+      inner = w.append(inner);
+    });
+    let g = $X('<g xmlns="http://www.w3.org/2000/svg"></g>').append(inner);
+    self.svg.container.append(g);
+    let bb = g[0].getBBox();
+    g.remove();
+    return Math.max(0, bb.x + bb.width);
+  } //}}}
   var get_height = this.draw.get_height = function(g) { //{{{
     let t = g.clone();
     self.svg.container.append(t);
@@ -890,9 +907,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             lab.text(title);
           }
         }
-        let width = this.get_width(lab);
+        if (self.elements[sname].hidelabel) { lab.addClass('invisible'); } // still takes its space
         if (mid.length > 0) {
           if (end.length > 0) {
+            let width = this.get_label_end(lab,mid); // the clip path is inside part-middle
             let pos = get_dim(mid);
             mid.attr('clip-path','url(#ele-' + id + ')');
             let clip = $X('<clipPath belongs-to="element" id="ele-' + id + '" xmlns="http://www.w3.org/2000/svg">' +
@@ -911,7 +929,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
               lab.addClass('rotate');
               tdim = self.width;
             } else {
-              tdim = self.width + width + self.width_shift_label;
+              tdim = Math.max(self.width, this.get_label_end(lab,sym) + self.width_shift_label);
             }
             set_x_cond(row,col,dstart,tdim,sname,title,subtype,sty,id);
           }
@@ -946,10 +964,10 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       );
     }
 
-    // hover
+    // hover, top left of the symbol, or top right if the theme says so (e.g. because of a label on the left)
     $(g[0].childNodes[0]).append(
       $X(
-        '<g class="hoverstyle markstyle" xmlns="http://www.w3.org/2000/svg">' +
+        '<g class="hoverstyle markstyle"' + (self.elements[sname].mark_position == 'right' ? ' transform="translate(27,0)"' : '') + ' xmlns="http://www.w3.org/2000/svg">' +
           '<circle cx="2" cy="0" r="7"/>' +
           '<path d="m -1 0 l 2 2 l 4 -4" class="standline"/>' +
         '</g>'
@@ -983,7 +1001,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         'height="' + (get_row_max(p1.row,p2.row,p1.col,p2.col)-get_row(p1.row,p1.col)+2*self.group_extend-2*yshrink) + '" ' +
         'class="tile" rx="12" ry="12" xmlns="http://www.w3.org/2000/svg"/>'));
   } // }}}
-  var draw_connection = this.draw.draw_connection = function(group, start, end, context_row, arrow) { // {{{
+  var draw_connection = this.draw.draw_connection = function(group, start, end, context_row, arrow, around=false) { // {{{
     let sr = Math.min(start.row,end.row);
     let cstart = get_x(sr,start.col,'conn from');
     let cend = get_x(sr,end.col,'conn to');
@@ -994,7 +1012,15 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let diag = false; // the arrow sits on a diagonal segment (into a gateway), so it has to be closer to the center
     let sy = get_row(start['row'],start['col']) + self.height - 15 + start.yoffset; // center of the symbols
     let ey = get_row(end['row'],end['col']) + self.height - 15 + end.yoffset;
-    if (end['row']-start['row'] == 0 || end['col']-start['col'] == 0) { // straight line
+    if (around) { // e.g. back in an empty loop: leave at 45 degrees to the right, go straight, enter at 45 degrees
+      diag = true;
+      let off = 7.5 + 7; // from the center to the corner of the gateway, then 7 further
+      line.attr("d", "M " + String(cstart) + "," + String(sy) +" "+
+                            String(cstart+off) + "," + String(sy-off) +" "+
+                            String(cend+off) + "," + String(ey+off) +" "+
+                            String(cend) + "," + String(ey)
+      );
+    } else if (end['row']-start['row'] == 0 || end['col']-start['col'] == 0) { // straight line
       line.attr("d", "M " + String(cstart) + "," + String(sy) +" "+
                             String(cend) +   "," + String(ey)
       );
@@ -1379,7 +1405,11 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         pos.row++;
         max.row++;
         block.max.row = pos.row;
-        if (reversed_loop(context)) { illustrator.inverted = !illustrator.inverted; } // the arrows to the closing symbol belong to the loop
+        // the arrows to the closing symbol belong to the loop. empty loops: the
+        // straight arrow comes from the opening symbol, not from the content, and
+        // the way back goes around the side, so both point the other way
+        let flip = reversed_loop(context) != (illustrator.elements[csname].closeblock == true && pos.row == origpos.row + 1);
+        if (flip) { illustrator.inverted = !illustrator.inverted; }
         if (illustrator.elements[sname].endnodes == 'this') {
           pos.col++;
           if (pos.col > max.col) {
@@ -1393,7 +1423,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
           set_details(ctname,csname,pos,context,true);
           [undefined, endnodes] = draw_position(ctname,parent_pos,pos,prev,block,[],context,{svg: g, pos: origpos});
         }
-        if (reversed_loop(context)) { illustrator.inverted = !illustrator.inverted; }
+        if (flip) { illustrator.inverted = !illustrator.inverted; }
         if (illustrator.elements[sname].border == 'structural') {
           // structural border: outgoing arrow starts at the group border instead of from the icon
           // small y offset.
@@ -1533,6 +1563,9 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
           connection_case = 1;
           // console.log('++ case 1',prev[node].row,pos.row,illustrator.dim.debug());
           illustrator.draw.draw_connection(block.svg, pos, second.pos, 0, true);
+        } else { // no content: the way back goes around the side
+          connection_case = 7;
+          illustrator.draw.draw_connection(block.svg, pos, second.pos, 0, true, true);
         }
       } else {
         for (let node=0; node < block.endnodes.length; node++) {

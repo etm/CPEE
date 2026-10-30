@@ -341,6 +341,9 @@ svg text.label.standalone {
 svg text.label.rotate {
   transform: translateY(10px) rotate(-30deg);
 }
+svg text.label.invisible {
+  visibility: hidden;
+}
 
 #arrow, #arrowrev, #arrowdiag, #arrowdiagrev {
   stroke: var(--wfadaptor-base);
