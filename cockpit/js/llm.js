@@ -497,7 +497,8 @@ function set_cpee_model(cpee_xml,expositions=[]) { //{{{
     url: url + "/properties/dslx/",
     contentType: false,
     processData: false,
-    data: form_data
+    data: form_data,
+    error: report_model_failure
   });
 } //}}}
 

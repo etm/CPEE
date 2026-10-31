@@ -1,0 +1,344 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://cpee.org/ns/description/1.0">
+  <!-- intentionally loose: the constructs, their attributes and where they may
+       occur are checked. all other elements (annotations, documentation,
+       _probability, ...) and attributes from other namespaces are passed
+       through. -->
+  <include href="arbitrary.rng"/>
+
+  <start>
+    <element name="description">
+      <ref name="dslx_attributes"/>
+      <ref name="dslx_block"/>
+    </element>
+  </start>
+
+  <define name="dslx_attributes">
+    <zeroOrMore>
+      <attribute><anyName/></attribute>
+    </zeroOrMore>
+  </define>
+  <!-- attributes of constructs are explicit, only other namespaces are free -->
+  <define name="dslx_foreign_attributes">
+    <zeroOrMore>
+      <attribute><anyName><except><nsName ns=""/></except></anyName></attribute>
+    </zeroOrMore>
+  </define>
+  <define name="dslx_eid">
+    <optional><attribute name="eid"/></optional>
+  </define>
+  <define name="dslx_language">
+    <optional><attribute name="language"/></optional>
+  </define>
+
+  <!-- everything that is not a construct -->
+  <define name="dslx_extra">
+    <element>
+      <anyName>
+        <except>
+          <name>call</name>
+          <name>manipulate</name>
+          <name>stop</name>
+          <name>terminate</name>
+          <name>escape</name>
+          <name>wait_for_signal</name>
+          <name>parallel</name>
+          <name>parallel_branch</name>
+          <name>loop</name>
+          <name>choose</name>
+          <name>alternative</name>
+          <name>otherwise</name>
+          <name>critical</name>
+          <name>group</name>
+          <name>closed_loop</name>
+          <name>closed_loop_measuring</name>
+          <name>closed_loop_control</name>
+          <name>closed_loop_cancel</name>
+        </except>
+      </anyName>
+      <ref name="dslx_attributes"/>
+      <ref name="arbitrary"/>
+    </element>
+  </define>
+
+  <define name="dslx_block">
+    <zeroOrMore>
+      <choice>
+        <ref name="dslx_call"/>
+        <ref name="dslx_manipulate"/>
+        <ref name="dslx_stop"/>
+        <ref name="dslx_terminate"/>
+        <ref name="dslx_escape"/>
+        <ref name="dslx_wait_for_signal"/>
+        <ref name="dslx_parallel"/>
+        <ref name="dslx_parallel_branch"/> <!-- not only directly in parallel, e.g. parallel > loop > parallel_branch -->
+        <ref name="dslx_loop"/>
+        <ref name="dslx_choose"/>
+        <ref name="dslx_critical"/>
+        <ref name="dslx_group"/>
+        <ref name="dslx_closed_loop"/>
+        <ref name="dslx_extra"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+
+  <!-- tasks -->
+  <define name="dslx_call">
+    <element name="call">
+      <attribute name="id"/>
+      <attribute name="endpoint"/>
+      <ref name="dslx_foreign_attributes"/>
+      <interleave>
+        <element name="parameters">
+          <ref name="dslx_attributes"/>
+          <interleave>
+            <element name="label"><ref name="dslx_attributes"/><text/></element>
+            <optional><element name="color"><ref name="dslx_attributes"/><text/></element></optional>
+            <optional><element name="method"><ref name="dslx_attributes"/><text/></element></optional>
+            <optional>
+              <element name="arguments">
+                <ref name="dslx_attributes"/>
+                <zeroOrMore><ref name="any"/></zeroOrMore>
+              </element>
+            </optional>
+            <zeroOrMore>
+              <element>
+                <anyName>
+                  <except>
+                    <name>label</name>
+                    <name>color</name>
+                    <name>method</name>
+                    <name>arguments</name>
+                  </except>
+                </anyName>
+                <ref name="dslx_attributes"/>
+                <ref name="arbitrary"/>
+              </element>
+            </zeroOrMore>
+          </interleave>
+        </element>
+        <optional>
+          <element name="code">
+            <ref name="dslx_attributes"/>
+            <interleave>
+              <optional><element name="prepare"><ref name="dslx_script_attributes"/><text/></element></optional>
+              <optional><element name="finalize"><ref name="dslx_script_attributes"/><text/></element></optional>
+              <optional><element name="update"><ref name="dslx_script_attributes"/><text/></element></optional>
+              <optional><element name="rescue"><ref name="dslx_script_attributes"/><text/></element></optional>
+              <optional><element name="signal"><text/></element></optional>
+            </interleave>
+          </element>
+        </optional>
+        <zeroOrMore>
+          <element>
+            <anyName>
+              <except>
+                <name>parameters</name>
+                <name>code</name>
+                <!-- old style, without surrounding code element, not allowed -->
+                <name>prepare</name>
+                <name>finalize</name>
+                <name>update</name>
+                <name>rescue</name>
+              </except>
+            </anyName>
+            <ref name="dslx_attributes"/>
+            <ref name="arbitrary"/>
+          </element>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="dslx_script_attributes">
+    <optional><attribute name="output"/></optional>
+    <ref name="dslx_language"/>
+    <ref name="dslx_foreign_attributes"/>
+  </define>
+
+  <define name="dslx_manipulate">
+    <element name="manipulate">
+      <attribute name="id"/>
+      <attribute name="label"/>
+      <optional><attribute name="color"/></optional>
+      <optional><attribute name="output"/></optional>
+      <ref name="dslx_language"/>
+      <ref name="dslx_foreign_attributes"/>
+      <interleave>
+        <optional><element name="code"><ref name="dslx_attributes"/><text/></element></optional>
+        <zeroOrMore>
+          <element>
+            <anyName>
+              <except>
+                <name>code</name>
+              </except>
+            </anyName>
+            <ref name="dslx_attributes"/>
+            <ref name="arbitrary"/>
+          </element>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="dslx_stop">
+    <element name="stop">
+      <attribute name="id"/>
+      <ref name="dslx_foreign_attributes"/>
+      <zeroOrMore><ref name="dslx_extra"/></zeroOrMore>
+    </element>
+  </define>
+
+  <define name="dslx_terminate">
+    <element name="terminate">
+      <ref name="dslx_eid"/>
+      <optional><attribute name="abandon"><data type="boolean"/></attribute></optional> <!-- default: finish -->
+
+      <ref name="dslx_foreign_attributes"/>
+      <zeroOrMore><ref name="dslx_extra"/></zeroOrMore>
+    </element>
+  </define>
+
+  <define name="dslx_escape">
+    <element name="escape">
+      <ref name="dslx_eid"/>
+      <ref name="dslx_foreign_attributes"/>
+      <zeroOrMore><ref name="dslx_extra"/></zeroOrMore>
+    </element>
+  </define>
+
+  <define name="dslx_wait_for_signal">
+    <element name="wait_for_signal">
+      <attribute name="id"/>
+      <ref name="dslx_foreign_attributes"/>
+      <zeroOrMore><ref name="dslx_extra"/></zeroOrMore>
+    </element>
+  </define>
+
+  <!-- gateways and blocks -->
+  <define name="dslx_parallel">
+    <element name="parallel">
+      <ref name="dslx_eid"/>
+      <attribute name="wait"><data type="integer"/></attribute>
+      <attribute name="cancel">
+        <choice>
+          <value>last</value>
+          <value>first</value>
+        </choice>
+      </attribute>
+      <ref name="dslx_foreign_attributes"/>
+      <ref name="dslx_block"/>
+    </element>
+  </define>
+
+  <define name="dslx_parallel_branch">
+    <element name="parallel_branch">
+      <ref name="dslx_eid"/>
+      <ref name="dslx_foreign_attributes"/>
+      <ref name="dslx_block"/>
+    </element>
+  </define>
+
+  <define name="dslx_loop">
+    <element name="loop">
+      <ref name="dslx_eid"/>
+      <attribute name="mode">
+        <choice>
+          <value>pre_test</value>
+          <value>post_test</value>
+        </choice>
+      </attribute>
+      <attribute name="condition"/>
+      <ref name="dslx_language"/>
+      <ref name="dslx_foreign_attributes"/>
+      <ref name="dslx_block"/>
+    </element>
+  </define>
+
+  <define name="dslx_choose">
+    <element name="choose">
+      <ref name="dslx_eid"/>
+      <attribute name="mode">
+        <choice>
+          <value>exclusive</value>
+          <value>inclusive</value>
+        </choice>
+      </attribute>
+      <optional><attribute name="label"/></optional>
+      <ref name="dslx_foreign_attributes"/>
+      <interleave>
+        <zeroOrMore>
+          <element name="alternative">
+            <ref name="dslx_eid"/>
+            <attribute name="condition"/>
+            <ref name="dslx_language"/>
+            <ref name="dslx_foreign_attributes"/>
+            <ref name="dslx_block"/>
+          </element>
+        </zeroOrMore>
+        <optional>
+          <element name="otherwise">
+            <ref name="dslx_eid"/>
+            <ref name="dslx_foreign_attributes"/>
+            <ref name="dslx_block"/>
+          </element>
+        </optional>
+        <zeroOrMore><ref name="dslx_extra"/></zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="dslx_critical">
+    <element name="critical">
+      <ref name="dslx_eid"/>
+      <attribute name="sid"/>
+      <ref name="dslx_foreign_attributes"/>
+      <ref name="dslx_block"/>
+    </element>
+  </define>
+
+  <define name="dslx_group">
+    <element name="group">
+      <ref name="dslx_foreign_attributes"/>
+      <ref name="dslx_block"/>
+    </element>
+  </define>
+
+  <define name="dslx_closed_loop">
+    <element name="closed_loop">
+      <attribute name="overrun">
+        <choice>
+          <value>wait</value>
+          <value>cancel</value>
+        </choice>
+      </attribute>
+      <attribute name="execution">
+        <choice>
+          <value>sequential</value>
+          <value>parallel</value>
+        </choice>
+      </attribute>
+      <ref name="dslx_foreign_attributes"/>
+      <zeroOrMore>
+        <choice>
+          <element name="closed_loop_measuring">
+            <attribute name="ctime"/>
+            <ref name="dslx_foreign_attributes"/>
+            <ref name="dslx_block"/>
+          </element>
+          <element name="closed_loop_control">
+            <attribute name="ctime"/>
+            <ref name="dslx_foreign_attributes"/>
+            <ref name="dslx_block"/>
+          </element>
+          <element name="closed_loop_cancel">
+            <attribute name="condition"/>
+            <ref name="dslx_language"/>
+            <ref name="dslx_foreign_attributes"/>
+            <zeroOrMore><ref name="dslx_extra"/></zeroOrMore>
+          </element>
+          <ref name="dslx_extra"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+</grammar>

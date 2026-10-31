@@ -140,7 +140,9 @@
     <parameter name="dsl" mimetype="text/plain"/>
   </message> <!--}}}-->
   <message name="dslx"> <!--{{{-->
-    <parameter name="dslx" mimetype="*/xml"/>
+    <parameter name="dslx" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
+      <xi:include href="properties/t_dslx.rng"/>
+    </parameter>
     <zeroOrMore>
       <parameter name="exposition" mimetype="*"/>
     </zeroOrMore>

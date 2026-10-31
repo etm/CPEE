@@ -742,14 +742,14 @@ function adaptor_init(url,theme,dslx) { //{{{
             success: function() {
               $.ajax({
                 type: "PUT",
-                url: url + "/properties/description/",
+                url: url + "/properties/dslx/",
                 contentType: 'text/xml',
                 headers: {
-                  'Content-ID': 'description',
+                  'Content-ID': 'dslx',
                   'CPEE-Event-Source': myid
                 },
                 data: g,
-                error: report_failure
+                error: report_model_failure
               });
             },
             error: report_failure
@@ -757,14 +757,14 @@ function adaptor_init(url,theme,dslx) { //{{{
         } else {
           $.ajax({
             type: "PUT",
-            url: url + "/properties/description/",
+            url: url + "/properties/dslx/",
             contentType: 'text/xml',
             headers: {
-              'Content-ID': 'description',
+              'Content-ID': 'dslx',
               'CPEE-Event-Source': myid
             },
             data: g,
-            error: report_failure
+            error: report_model_failure
           });
         }
         manifestation.events.click(svgid);
@@ -1182,8 +1182,10 @@ async function set_testset(testset,exec) {// {{{
   // load old testsets. remove 12/2026
   $("testset > description manipulate",testset).each((_,t) => {
     if ($('code',t).length == 0) {
-      let st = $(t).text();
-      $(t).text();
+      // only direct text nodes, children (if any) stay untouched
+      let txt = $(t).contents().filter((_,n) => n.nodeType == Node.TEXT_NODE);
+      let st = txt.text();
+      txt.remove();
       let c = $X('<code xmlns="http://cpee.org/ns/description/1.0"/>');
           c.text(st);
       $(t).append(c);
@@ -1708,4 +1710,14 @@ function add_ui_pos(e) { //{{{
   });
 } //}}}
 
-function report_failure(){}
+function report_failure(xhr,status,error){ //{{{
+  // used as ajax error callback, this is the request
+  append_to_log("failure", this.type + ' ' + this.url, xhr.status + ' ' + (error || status));
+} //}}}
+function report_model_failure(xhr,status,error){ //{{{
+  // model was rejected (e.g. does not conform to the dslx schema), the shown
+  // graph is no longer what the server has, so get the server's version
+  report_failure.call(this,xhr,status,error);
+  alert('The model was rejected by the server (' + xhr.status + ' ' + (error || status) + '). The last change was not saved, the model is reloaded.');
+  monitor_graph_change(true);
+} //}}}

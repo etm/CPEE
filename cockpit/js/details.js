@@ -122,13 +122,14 @@ function do_main_work(svgid) { //{{{
     } else {
       $.ajax({
         type: "PUT",
-        url: url + "/properties/description/",
+        url: url + "/properties/dslx/",
         contentType: 'text/xml',
         headers: {
-          'Content-ID': 'description',
+          'Content-ID': 'dslx',
           'CPEE-Event-Source': myid
         },
-        data: desc.get_description()
+        data: desc.get_description(),
+        error: report_model_failure
       });
       format_instance_pos();
 
