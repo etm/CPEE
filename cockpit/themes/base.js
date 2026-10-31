@@ -1668,6 +1668,7 @@ function WFAdaptorManifestationBase(adaptor) {
       'border': 'visual',
       'wide': true,
       'closing_symbol': 'event_end',
+      'implied': { 'type': 'event_start', 'x': 1 }, // the icon also draws the start circle, one cell to the right
       'svg': self.adaptor.theme_dir + 'symbols/parallel_branch_event.svg'
     }//}}}
   };  /*}}}*/

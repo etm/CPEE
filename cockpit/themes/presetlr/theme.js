@@ -35,9 +35,11 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
         return 'parallel_branch_normal';
       }
     };
+    this.elements.parallel_branch_event.illustrator.implied = { 'type': 'event_start', 'y': 1 }; // the start circle is below the signal
     this.elements.parallel_branch_event_rev = {
       'parent': 'parallel_branch_event',
       'illustrator': {
+        'implied': { 'type': 'event_end', 'y': 1 }, // the end circle is below the signal
         'closing_symbol': 'event_start',
         'svg': adaptor.theme_dir + 'symbols/parallel_branch_event_rev.svg'
       }

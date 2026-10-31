@@ -1,16 +1,18 @@
 /*
-  This file is part of CPEE.
+  This file is part of cpee-layout.
 
-  CPEE is free software: you can redistribute it and/or modify it under the terms
-  of the GNU Lesser General Public License as published by the Free Software Foundation,
-  either version 3 of the License, or (at your option) any later version.
+  cpee-layout is free software: you can redistribute it and/or modify it under
+  the terms of the GNU Lesser General Public License as published by the Free
+  Software Foundation, either version 3 of the License, or (at your option) any
+  later version.
 
-  CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
-  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-  PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+  cpee-layout is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+  details.
 
-  You should have received a copy of the GNU Lesser General Public License along with
-  CPEE (file LICENSE in the main directory).  If not, see
+  You should have received a copy of the GNU Lesser General Public License
+  along with cpee-layout (file LICENSE in the main directory). If not, see
   <http://www.gnu.org/licenses/>.
 */
 

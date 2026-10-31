@@ -1,16 +1,18 @@
 /*
-  This file is part of CPEE.
+  This file is part of cpee-layout.
 
-  CPEE is free software: you can redistribute it and/or modify it under the terms
-  of the GNU Lesser General Public License as published by the Free Software Foundation,
-  either version 3 of the License, or (at your option) any later version.
+  cpee-layout is free software: you can redistribute it and/or modify it under
+  the terms of the GNU Lesser General Public License as published by the Free
+  Software Foundation, either version 3 of the License, or (at your option) any
+  later version.
 
-  CPEE is distributed in the hope that it will be useful, but WITHOUT ANY
-  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-  PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+  cpee-layout is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+  details.
 
-  You should have received a copy of the GNU Lesser General Public License along with
-  CPEE (file LICENSE in the main directory).  If not, see
+  You should have received a copy of the GNU Lesser General Public License
+  along with cpee-layout (file LICENSE in the main directory). If not, see
   <http://www.gnu.org/licenses/>.
 */
 
@@ -243,6 +245,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.dim = {};
     this.dim.symbols = [];
     this.dim.connections = [];
+    this.dim.implied = []; // symbols that an icon draws in a neighbouring cell (theme: implied), for the metrics only
+    this.dim.labels = {}; // the shown label of each cell ('row,col'), for the metrics only
     this.dim.rows = []; // lr only: start and size of each symbol along the rows
     this.compact = true;
     this.rotated_labels = true;
@@ -390,8 +394,15 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     // 0-indexed here, the layout counts from 1. lr is laid out top to bottom
     // and mirrored at the diagonal, so rows and columns are swapped back, and x
     // and width come from the rows (as in get_x, x is the symbol position plus
-    // width_shift)
-    var pos = function(r,c) { return self.lr ? { row: c - 1, col: r - 1 } : { row: r - 1, col: c - 1 }; };
+    // width_shift). geometry: a symbol is drawn shift left of its x, and the
+    // symbols of row r start at top + r * row. label_box is where the label is
+    // shown, in the coordinates of the svg
+    var center_x = (self.width - self.default_width) / 2;
+    var center_y = (self.height - self.default_height) / 2;
+    var geometry = self.lr ? // lr: x runs along the internal rows, the rows are the internal columns, lr_matrix moves both by lr_shift
+      { shift: self.width_shift - center_y, top: 2 * self.height_shift + center_x, row: self.width } :
+      { shift: self.width_shift - center_x, top: self.height_shift + center_y, row: self.height };
+    var pos =function(r,c) { return self.lr ? { row: c - 1, col: r - 1 } : { row: r - 1, col: c - 1 }; };
     var row_start = function(r,c) { // like get_row, but symbols without an own entry (e.g. alternative) also find one to the right
       var rs = self.dim.rows[r] || [];
       for (var j = c; j >= 0; j--) { if (rs[j]) { return rs[j].start; } }
@@ -402,21 +413,37 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     self.dim.symbols.forEach(function(row,r) {
       if (!row) { return; }
       row.forEach(function(sym,c) {
-        if (!sym || r == 0 || c == 0) { return; }
+        if (!sym || !sym.type || r == 0 || c == 0) { return; } // without type the cell is only reserved (set_x), nothing is drawn there
         var p = pos(r,c);
         var s = $.extend({}, sym);
         if (self.lr) {
           s.x = row_start(r,c) + self.width;
           s.width = (self.dim.rows[r] && self.dim.rows[r][c] && self.dim.rows[r][c].size) || self.height;
         }
+        var lab = self.dim.labels[r + ',' + c];
+        if (lab) {
+          var b = get_box(lab);
+          s.label_box = { x: b.x, y: b.y, width: b.width, height: b.height };
+        }
         if (!pos_matrix[p.row]) { pos_matrix[p.row] = []; }
         pos_matrix[p.row][p.col] = s;
       });
     });
+    self.dim.implied.forEach(function(i) { // x/y are cells in the icon; lr mirrors the icon, so its x runs along the rows there
+      var dr = self.lr ? (i.x || 0) : (i.y || 0), dc = self.lr ? (i.y || 0) : (i.x || 0);
+      var r = i.row + dr, c = i.col + dc;
+      var p = pos(r,c);
+      var src = self.dim.symbols[i.row][i.col];
+      if (!pos_matrix[p.row]) { pos_matrix[p.row] = []; }
+      if (pos_matrix[p.row][p.col]) { return; } // a real symbol wins
+      pos_matrix[p.row][p.col] = self.lr ?
+        { x: row_start(i.row,i.col) + self.width + dr * self.height, width: self.height, type: i.type, eid: src.eid } :
+        { x: src.x + dc * self.width, width: self.width, type: i.type, eid: src.eid };
+    });
     var con_list = self.dim.connections.map(function(c) {
       return { from: pos(c.from.row,c.from.col), to: pos(c.to.row,c.to.col) };
     });
-    return JSON.parse(JSON.stringify({ pos_matrix: pos_matrix, con_list: con_list })); // holes become null
+    return JSON.parse(JSON.stringify({ lr: self.lr == true, geometry: geometry, pos_matrix: pos_matrix, con_list: con_list })); // holes become null
   } // }}}
   var specificity = function(sel) { // {{{ ids, classes/attributes/pseudo classes, types
     var s = sel.replace(/::[\w-]+/g,'');
@@ -452,6 +479,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     $('> defs > [belongs-to=element]', self.svg.container).each(function() {$(this).remove()});
     self.dim.symbols = [];
     self.dim.connections = [];
+    self.dim.implied = [];
+    self.dim.labels = {};
     self.dim.rows = [];
   } // }}}
   var get_symbol = this.get_symbol = function() { // {{{
@@ -478,7 +507,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return line;
   } //}}}
 
-  var set_x = this.dim.set_x = function(row,col,twidth,sname) { //{{{
+  var set_x = this.dim.set_x = function(row,col,twidth) { //{{{
+    // reserves the space of a cell; what is drawn there (type, label, ...) is set by set_x_cond
     if (!self.dim.symbols[row]) { self.dim.symbols[row] = []; }
     if (!self.dim.symbols[row][col]) { self.dim.symbols[row][col] = {}; }
 
@@ -518,7 +548,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     } else {
       self.dim.symbols[row][col].width = twidth;
     }
-    self.dim.symbols[row][col].type = sname;
     // console.log('set_x ',row,col,debug_dim());
   } //}}}
   var set_x_cond = this.dim.set_x_cond = function(row,col,tx,twidth,sname,label,subtype,sty,eid) { //{{{
@@ -721,18 +750,24 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   var get_dim = this.draw.get_dim = function(g) { //{{{
     let element = g.clone();
     self.svg.container.append(element);
-    let svg = element[0].ownerSVGElement;
+    let dim = get_box(element[0]);
+    element.remove();
+    return dim;
+  } //}}}
+  var get_box = this.draw.get_box = function(el) { //{{{
+    // the enclosing box of a drawn element, in the coordinates of its svg,
+    // including all transforms (e.g. its blocks and the lr mirroring)
+    let svg = el.ownerSVGElement;
 
-    var r = element[0].getBBox();
+    var r = el.getBBox();
 
     if (!svg) {
-      element[0].remove();
       return { x: 0, y: 0, cx: 0, cy: 0, width: 0, height: 0 };
     }
 
     var p = svg.createSVGPoint();
 
-    var matrix = svg.getScreenCTM().inverse().multiply(element[0].getScreenCTM());
+    var matrix = svg.getScreenCTM().inverse().multiply(el.getScreenCTM());
 
     p.x = r.x;
     p.y = r.y;
@@ -757,8 +792,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     var width = maxX - minX;
     var height = maxY - minY;
-
-    element.remove();
 
     return {
       x: minX,
@@ -949,6 +982,12 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       $('.part-end',sym).remove();
       set_x_cond(row,col,dstart,self.width,sname,title,subtype,sty,id);
     }
+    if (self.elements[sname].implied) { self.dim.implied.push($.extend({row: row, col: col}, self.elements[sname].implied)); }
+    if (self.elements[sname].hidelabel) { // only takes its space, it is not shown
+      self.dim.symbols[row][col].label = undefined;
+    } else if (lab.length > 0 && lab.text() != '' && $.contains(sym[0],lab[0])) {
+      self.dim.labels[row + ',' + col] = lab[0];
+    }
 
 
     $(g[0].childNodes[0]).append(sym);
@@ -1005,7 +1044,8 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     let sr = Math.min(start.row,end.row);
     let cstart = get_x(sr,start.col,'conn from');
     let cend = get_x(sr,end.col,'conn to');
-    self.dim.connections.push({from: {row: start.row, col: start.col}, to: {row: end.row, col: end.col}});
+    let from = {row: start.row, col: start.col}, to = {row: end.row, col: end.col};
+    self.dim.connections.push(self.inverted ? {from: to, to: from} : {from: from, to: to}); // inverted: the arrow points to the start
 
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
     var line = $X('<path xmlns="http://www.w3.org/2000/svg" class="edge"/>');
@@ -1306,7 +1346,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         labels.push({...{row: pos.row, element_id: 'start', tname: 'start', label: illustrator.elements[sname].label(root)},...illustrator.draw.get_y(pos.row)});
       }
       illustrator.global_style = (illustrator.elements[sname].style && root) ? illustrator.elements[sname].style(root) : {};
-      illustrator.draw.draw_symbol(sname, 'description', 'START', pos.row, pos.row, pos.row, pos.col, block.svg, false, {}, {})
+      illustrator.draw.draw_symbol(sname, 'description', '', pos.row, pos.row, pos.row, pos.col, block.svg, false, {}, {})
     } // }}}
 
     var children = $(root).children().filter(function(){ return this.localName[0] != '_'; });
@@ -1324,12 +1364,12 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       if(root_expansion == 'horizontal')  {
         // for noindent themes do not indent the first column
         if (!pos.noindent || (pos.noindent && endnodes.length > 1)) {
-          illustrator.dim.set_x(pos.row,pos.col,illustrator.width,sname);
+          illustrator.dim.set_x(pos.row,pos.col,illustrator.width);
           pos.col++;
         }
         if (!illustrator.compact) {
           if (block.max.row) {
-            illustrator.dim.set_x(pos.row,pos.col,illustrator.width,sname);
+            illustrator.dim.set_x(pos.row,pos.col,illustrator.width);
             pos.row = block.max.row + 1;
           }
         }
@@ -1341,7 +1381,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         if(illustrator.elements[tname] != undefined && !illustrator.elements[tname].svg) pos.row--;
         // TODO: Remaining problem is the order inside the svg. Thats why the connection is above the icon
 
-        illustrator.dim.set_x(pos.row,pos.col,illustrator.width,sname);
+        illustrator.dim.set_x(pos.row,pos.col,illustrator.width);
         illustrator.dim.set_row(pos.row,pos.col,prev);
         if ((bottom ? !illustrator.lr : (illustrator.lr && illustrator.elements[tname].expansion(context) == 'vertical' && !illustrator.elements[tname].col_shift(context))) && illustrator.elements[sname].svg) { // lr: the content follows the label in the same column, bottom: the marker is drawn after the next branches, so measure the symbol before it is drawn
           let lab = (illustrator.elements[sname].label ? illustrator.elements[sname].label(context) : []) || [];

@@ -17,6 +17,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     this.elements.parallel_branch_event_rev = {
       'parent': 'parallel_branch_event',
       'illustrator': {
+        'implied': { 'type': 'event_end', 'x': 1 }, // the end circle, right of the signal
         'closing_symbol': 'event_start',
         'svg': adaptor.theme_dir + 'symbols/parallel_branch_event_rev.svg'
       }

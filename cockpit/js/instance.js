@@ -1160,14 +1160,14 @@ function save_bpmnfile() {// {{{
   if (!save['graph_adaptor']) { return; } // no instance loaded
 
   let metrics = save['graph_adaptor'].get_svg_metrics();
-  let david = david_bpmn_convert(metrics.pos_matrix,metrics.con_list);
+  let bpmn = bpmn2_convert(metrics.pos_matrix,metrics.con_list,metrics.lr,metrics.geometry);
 
   $.ajax({
     type: "GET",
     url: url + "/properties/attributes/info/",
     success: function(res){
       $('#savebpmnfile').attr('download',res + '.bpmn');
-      $('#savebpmnfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(david.serializePrettyXML()));
+      $('#savebpmnfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(bpmn));
       document.getElementById('savebpmnfile').click();
     },
     error: report_failure
