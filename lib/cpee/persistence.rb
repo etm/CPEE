@@ -209,6 +209,8 @@ module CPEE
       res += Persistence::keys_extract_name(opts,id,'transformation','description','@type')
       res += Persistence::keys_extract_name(opts,id,'transformation','dataelements')
       res += Persistence::keys_extract_name(opts,id,'transformation','dataelements','@type')
+      res += Persistence::keys_extract_name(opts,id,'transformation','dslx')
+      res += Persistence::keys_extract_name(opts,id,'transformation','dslx','@type')
       res
     end
 

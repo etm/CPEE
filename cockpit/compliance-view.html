@@ -140,7 +140,6 @@
     </div> <!--}}}-->
 
     <div class='menu' id='templates'></div>
-    <div class='menu' id='modeltypes'></div>
 
     <template id="label">
       <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" style="position: absolute; top: 0; left: 0;" class="displaylabel">
@@ -169,7 +168,7 @@
                 <form id='fuckchrome'>
                   <input type='file' name='testsetfile' id='testsetfile'/>
                 </form>
-                <button title='a template includes various settings, subscriptions or a (partial) model' name="loadtestset">load template</button><button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load testset</button>
+                <button title='a template includes various settings, subscriptions or a (partial) model' name="loadtestset">load<br>template</button><button title='a testset includes various settings, subscriptions or a model' name="loadtestsetfile">load<br>testset</button>
               </div>
               <div>
                 <input type='file' name='modelfile' id='modelfile'/>
@@ -183,8 +182,8 @@
                 <button title='the SVG contains the graphical repesentation of the CPEE tree as you see it on the screen' name="savesvgfile">save svg<br>graph</button>
               </div>
               <div>
-                <a id="savebpmnfile" href="" download=""></a>
-                <button title='the BPMN includes a graphical representation that can be loaded in Signavio and Camundal' name="savebpmnfile">save BPMN</button>
+                <a id="savemodelfile" href="" download=""></a>
+                <button title='the model in the format of the current model type (e.g. CPEE, BPMN, Mermaid)' name="savemodelfile">save model</button>
               </div>
             </div><div class='section' id='modifiers'>
               <template id="item">

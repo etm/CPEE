@@ -35,6 +35,20 @@
         </attribute>
         <data type="anyURI"/>
       </element>
+      <optional>
+        <!-- backtransformation: description from a directly set dslx. missing means copy -->
+        <element name="dslx">
+          <attribute name="type">
+            <choice>
+              <value>copy</value>
+              <value>rest</value>
+              <value>xslt</value>
+              <value>none</value>
+            </choice>
+          </attribute>
+          <data type="anyURI"/>
+        </element>
+      </optional>
     </element>
   </define>
 </grammar>

@@ -50,7 +50,6 @@ function global_init() {
   save['instance_pos'] = [];
   save['instance_pos_anon'] = {};
   save['position_states'] = {};
-  save['modeltype'] = 'CPEE';
   save['modifiers'] = {};
   save['modifiers_active'] = {};
   save['modifiers_additional'] = {};
@@ -158,9 +157,8 @@ function cockpit() { //{{{
   $("button[name=loadtestset]").click(function(e){new CustomMenu(e).menu($('#templates'),function(){ load_testset(false) } ); });
   $("button[name=loadtestsetfile]").click(load_testsetfile);
   $("button[name=loadmodelfile]").click(load_modelfile);
-  $("button[name=loadmodeltype]").click(function(e){new CustomMenu(e).menu($('#modeltypes'),load_modeltype, $("button[name=loadmodeltype]")); });
   $("button[name=savetestsetfile]").click(function(){ save_testsetfile(); });
-  $("button[name=savebpmnfile]").click(function(){ save_bpmnfile(); });
+  $("button[name=savemodelfile]").click(function(){ save_modelfile(); });
   $("button[name=savesvgfile]").click(function(){ save_svgfile(); });
   $("button[name=state_start]").click(function(){ $(this).parent().find('button').attr("disabled","disabled");start_instance(); });
   $("button[name=state_stop]").click(function(){ $(this).parent().find('button').attr("disabled","disabled");stop_instance(); });
@@ -273,16 +271,6 @@ function cockpit() { //{{{
       if (q.dea || q.dea == "") {
         uidash_toggle_vis_tab($('#instance'));
       }
-    }
-  });
-  $.ajax({
-    url: "transformations.xml",
-    dataType: 'xml',
-    success: function(res){
-      $('transformation',res).each(function(){
-        var ts = $(this).text();
-        $('#modeltypes').append($("<div class='menuitem'></div>").text(ts));
-      });
     }
   });
 } //}}}
@@ -628,11 +616,6 @@ function monitor_instance_values(type,vals,first=false) {// {{{
           } else {
             save['resources'] = undefined;
           }
-          if ($(" > attributes > modeltype",res).length > 0) {
-            save['modeltype'] = $(" > attributes > modeltype",res).text();
-          } else {
-            save['modeltype'] = undefined;
-          }
           if ($('#modifiers').length > 0) {
             if ($('#modifiers > div').length == 0) {
               modifiers_display().then(function(){ modifiers_select(); });
@@ -723,50 +706,17 @@ function adaptor_init(url,theme,dslx) { //{{{
         save['graph'].removeAttr('svg-subtype');
         save['graph'].removeAttr('svg-label');
         document.dispatchEvent(graph_changed);
-        if (save['modeltype'] != 'CPEE') {
-          $.ajax({
-            type: "PUT",
-            url: url + "/properties/attributes/modeltype/",
-            data: {'value': 'CPEE'},
-            error: report_failure
-          });
-          $.ajax({
-            type: "PUT",
-            url: url + "/properties/transformation/",
-            contentType: 'text/xml',
-            headers: {
-              'Content-ID': 'transformation',
-              'CPEE-Event-Source': myid
-            },
-            data: '<transformation xmlns="http://cpee.org/ns/properties/2.0"><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation>',
-            success: function() {
-              $.ajax({
-                type: "PUT",
-                url: url + "/properties/dslx/",
-                contentType: 'text/xml',
-                headers: {
-                  'Content-ID': 'dslx',
-                  'CPEE-Event-Source': myid
-                },
-                data: g,
-                error: report_model_failure
-              });
-            },
-            error: report_failure
-          });
-        } else {
-          $.ajax({
-            type: "PUT",
-            url: url + "/properties/dslx/",
-            contentType: 'text/xml',
-            headers: {
-              'Content-ID': 'dslx',
-              'CPEE-Event-Source': myid
-            },
-            data: g,
-            error: report_model_failure
-          });
-        }
+        $.ajax({
+          type: "PUT",
+          url: url + "/properties/dslx/",
+          contentType: 'text/xml',
+          headers: {
+            'Content-ID': 'dslx',
+            'CPEE-Event-Source': myid
+          },
+          data: g,
+          error: report_model_failure
+        });
         manifestation.events.click(svgid);
         format_instance_pos();
         if (manifestation.selected() == "unknown") { // nothing selected
@@ -1155,22 +1105,21 @@ function save_svgfile() {// {{{
   });
 } // }}}
 
-function save_bpmnfile() {// {{{
+function save_modelfile() {// {{{
   var url = $('body').attr('current-instance');
   if (!save['graph_adaptor']) { return; } // no instance loaded
 
-  let metrics = save['graph_adaptor'].get_svg_metrics();
-  let bpmn = bpmn2_convert(metrics.pos_matrix,metrics.con_list,metrics.lr,metrics.geometry);
-
-  $.ajax({
-    type: "GET",
-    url: url + "/properties/attributes/info/",
-    success: function(res){
-      $('#savebpmnfile').attr('download',res + '.bpmn');
-      $('#savebpmnfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(bpmn));
-      document.getElementById('savebpmnfile').click();
-    },
-    error: report_failure
+  let extensions = { 'Signavio': 'bpmn', 'ChatGPT_Mermaid': 'mmd', 'ChatGPT_Graphviz': 'dot' };
+  Promise.all([
+    $.ajax({ type: "GET", url: url + "/properties/description/", dataType: 'text' }),
+    $.ajax({ type: "GET", url: url + "/properties/attributes/info/" }),
+    $.ajax({ type: "GET", url: url + "/properties/attributes/modeltype/" }).catch(() => 'CPEE') // instances without modeltype
+  ]).then(function([desc,info,modeltype]){
+    $('#savemodelfile').attr('download',info + '.' + (extensions[modeltype] || 'xml'));
+    $('#savemodelfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(desc));
+    document.getElementById('savemodelfile').click();
+  },function(xhr){
+    append_to_log("failure", 'GET ' + url + '/properties/description/', xhr.status + ' ' + xhr.statusText);
   });
 }// }}}
 async function set_testset(testset,exec) {// {{{
@@ -1322,32 +1271,6 @@ function load_testset(exec) {// {{{
       }
     });
   }
-}// }}}
-function load_modeltype() {// {{{
-  if (loading) return;
-  var url = $('body').attr('current-instance');
-  loading = true;
-
-  var name = $("#modeltypes div.menuitem[data-selected=selected]").text();
-  $.ajax({
-    cache: false,
-    dataType: 'xml',
-    url: name + ".xml",
-    success: function(res){
-      $.ajax({
-        type: "PUT",
-        url: url + "/properties/attributes/modeltype/",
-        data: ({value: name}),
-        success: function(){
-          set_testset(res,false);
-        },
-        error: report_failure
-      });
-    },
-    complete: function() {
-      loading = false;
-    }
-  });
 }// }}}
 
 async function load_des(url,model) { //{{{

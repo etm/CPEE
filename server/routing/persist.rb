@@ -121,6 +121,8 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/transformation/dataelements/@type",mess.dig('content','dataelements_type'))
               multi.set("instance:#{instance}/transformation/endpoints",mess.dig('content','endpoints'))
               multi.set("instance:#{instance}/transformation/endpoints/@type",mess.dig('content','endpoints_type'))
+              multi.set("instance:#{instance}/transformation/dslx",mess.dig('content','dslx'))
+              multi.set("instance:#{instance}/transformation/dslx/@type",mess.dig('content','dslx_type'))
             end
           when /event:\d+:status\/change/
             opts[:redis].multi do |multi|
