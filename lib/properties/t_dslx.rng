@@ -85,7 +85,7 @@
   <define name="dslx_call">
     <element name="call">
       <attribute name="id"/>
-      <attribute name="endpoint"/>
+      <optional><attribute name="endpoint"/></optional>
       <ref name="dslx_foreign_attributes"/>
       <interleave>
         <element name="parameters">
@@ -269,7 +269,7 @@
         <zeroOrMore>
           <element name="alternative">
             <ref name="dslx_eid"/>
-            <attribute name="condition"/>
+            <optional><attribute name="condition"/></optional>
             <ref name="dslx_language"/>
             <ref name="dslx_foreign_attributes"/>
             <ref name="dslx_block"/>
@@ -321,12 +321,14 @@
       <zeroOrMore>
         <choice>
           <element name="closed_loop_measuring">
-            <attribute name="ctime"/>
+            <optional><attribute name="ctime"/></optional>
+            <optional><attribute name="frequency"/></optional>
             <ref name="dslx_foreign_attributes"/>
             <ref name="dslx_block"/>
           </element>
           <element name="closed_loop_control">
-            <attribute name="ctime"/>
+            <optional><attribute name="ctime"/></optional>
+            <optional><attribute name="frequency"/></optional>
             <ref name="dslx_foreign_attributes"/>
             <ref name="dslx_block"/>
           </element>

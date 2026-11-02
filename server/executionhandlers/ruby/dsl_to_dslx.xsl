@@ -306,7 +306,7 @@
       </xsl:call-template>
       <xsl:text>closed_loop</xsl:text>
       <xsl:if test="@overrun">
-        <xsl:text> :overrun =&gt; </xsl:text>
+        <xsl:text> :overrun =&gt; :</xsl:text>
         <xsl:value-of select="@overrun"/>
         <xsl:if test="@execution">
           <xsl:text>, :execution =&gt; :</xsl:text>
@@ -341,6 +341,10 @@
       <xsl:if test="@ctime">
         <xsl:text>, :ctime =&gt; </xsl:text>
         <xsl:value-of select="@ctime"/>
+      </xsl:if>
+      <xsl:if test="@frequency">
+        <xsl:text>, :frequency =&gt; </xsl:text>
+        <xsl:value-of select="@frequency"/>
       </xsl:if>
       <xsl:text> do</xsl:text>
       <xsl:call-template name="print-newline"/>

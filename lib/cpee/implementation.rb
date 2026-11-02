@@ -66,6 +66,7 @@ module CPEE
     opts[:properties_init]            ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.init'))
     opts[:properties_empty]           ||= File.expand_path(File.join(__dir__,'..','..','server','resources','properties.empty'))
     opts[:empty_dslx]                 ||= File.expand_path(File.join(__dir__,'..','..','server','resources','empty_dslx.xml'))
+    opts[:dslx_rng]                   ||= File.expand_path(File.join(__dir__,'..','properties','t_dslx.rng'))
     opts[:notifications_init]         ||= File.expand_path(File.join(__dir__,'..','..','server','resources','notifications'))
     opts[:states]                     ||= File.expand_path(File.join(__dir__,'..','..','server','resources','states.xml'))
     opts[:watchdog_frequency]         ||= 7

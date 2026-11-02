@@ -896,6 +896,16 @@ module CPEE
         end
       end
 
+      def self::validate(xml,opts) # dslx against t_dslx.rng, returns the errors
+        errors = []
+        begin
+          XML::Smart::string(xml).validate_against(XML::Smart::open_unprotected(opts[:dslx_rng])) { |e| errors << e.message.strip }
+        rescue => e # not even well-formed
+          errors << e.message.strip
+        end
+        errors
+      end
+
       def response
         id = @a[0]
         opts = @a[1]
@@ -905,9 +915,17 @@ module CPEE
         elsif opts[:statemachine].final? id
           @status = 410
         else
+          # force-encoding because johannes managed to sneak in ascii special characters. why the browser is not sanitizing it is beyond me.
+          xml = @p[0].value.read.force_encoding('UTF-8')
+          errors = copy ? PutDescription::validate(xml,opts) : [] # copy: dslx, a description can be any model type
+          if errors.any?
+            attrs = CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+            CPEE::Message::send(:event,'description/error',File.join(opts[:url],'/'),id,attrs['uuid'],attrs['info'],{ :message => errors.join("\n"), :errors => errors, :attributes => attrs },opts[:redis])
+            @status = 422
+            return Riddl::Parameter::Complex.new('error','text/plain',errors.join("\n"))
+          end
           begin
-            # force-encoding because johannes managed to sneak in ascii special characters. why the browser is not sanitizing it is beyond me.
-            PutDescription::set(id,opts,@p[0].value.read.force_encoding('UTF-8'),@p[1..-1],copy)
+            PutDescription::set(id,opts,xml,@p[1..-1],copy)
           rescue => e
             puts e.message
             puts e.backtrace

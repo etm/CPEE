@@ -1638,9 +1638,7 @@ function report_failure(xhr,status,error){ //{{{
   append_to_log("failure", this.type + ' ' + this.url, xhr.status + ' ' + (error || status));
 } //}}}
 function report_model_failure(xhr,status,error){ //{{{
-  // model was rejected (e.g. does not conform to the dslx schema), the shown
-  // graph is no longer what the server has, so get the server's version
-  report_failure.call(this,xhr,status,error);
-  alert('The model was rejected by the server (' + xhr.status + ' ' + (error || status) + '). The last change was not saved, the model is reloaded.');
-  monitor_graph_change(true);
+  // if the server sends a real error, dont reload, we handle in sse, only if
+  // the server is down or we fail on riddl facade, reload
+  if (xhr.status == 0 || xhr.status >= 500) { monitor_graph_change(true); }
 } //}}}
