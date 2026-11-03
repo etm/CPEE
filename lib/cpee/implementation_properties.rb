@@ -532,6 +532,7 @@ module CPEE
         id = @a[2]
         opts = @a[3]
         if val = CPEE::Persistence::extract_item(id,opts,@r.join('/'))
+          mime = 'text/plain' if mime == 'text/xml' && (XML::Smart::string(val) rescue nil).nil? # a description can be any model type, e.g. text
           Riddl::Parameter::Complex.new(item,mime,val)
         else
           @status = 404
