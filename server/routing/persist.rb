@@ -38,6 +38,7 @@ Daemonite.new do |opts|
         'event:' + ('%02i' % w) + ':state/change',
         'event:' + ('%02i' % w) + ':executionhandler/change',
         'event:' + ('%02i' % w) + ':description/change',
+        'event:' + ('%02i' % w) + ':description/sync',
         'event:' + ('%02i' % w) + ':dataelements/change',
         'event:' + ('%02i' % w) + ':documents/change',
         'event:' + ('%02i' % w) + ':endpoints/change',
@@ -87,6 +88,14 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/dslx",mess.dig('content','dslx'))
               multi.set("instance:#{instance}/dsl",mess.dig('content','dsl'))
             end
+          when /event:\d+:description\/sync/
+            # asynchronous result, only valid when the dslx did not change in the meantime
+            # lua script
+            opts[:redis].eval(
+              "if redis.sha1hex(redis.call('GET',KEYS[1]) or '') == ARGV[1] then redis.call('SET',KEYS[2],ARGV[2]) return 1 end return 0",
+              keys: ["instance:#{instance}/dslx","instance:#{instance}/description"],
+              argv: [mess.dig('content','change_uuid'),mess.dig('content','description')]
+            )
           when /event:\d+:dataelements\/change/, /event:\d+:documents\/change/, /event:\d+:endpoints\/change/, /event:\d+:attributes\/change/
             topic = mess.dig('topic')
             max = opts[:redis].zrange("instance:#{instance}/#{topic}", -1, -1, :withscores => true)&.dig(0,1).to_i

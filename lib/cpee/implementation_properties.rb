@@ -826,6 +826,23 @@ module CPEE
         end
       end #}}}
 
+      def self::backtransform_async(id,opts,dslx,tdslx,tdslxtype) #{{{
+        change_uuid = Digest::SHA1.hexdigest(dslx)
+        Thread.new do
+          attrs = CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+          begin
+            description = PutDescription::backtransform(dslx,dslx,tdslx,tdslxtype)
+            unless description.nil?
+              CPEE::Message::send(:event,'description/sync',File.join(opts[:url],'/'),id,attrs['uuid'],attrs['info'],{ :change_uuid => change_uuid, :description => description },opts[:redis])
+            end
+          rescue => e # description stays as it is
+            puts e.message
+            puts e.backtrace
+            CPEE::Message::send(:event,'description/error',File.join(opts[:url],'/'),id,attrs['uuid'],attrs['info'],{ :message => 'backtransformation failed: ' + e.message, :change_uuid => change_uuid, :attributes => attrs },opts[:redis])
+          end
+        end
+      end #}}}
+
       def self::set(id,opts,xml,exposition=[],copy=false)
         dslx, dsl, de, ep = if copy
           PutDescription::transform(
@@ -854,14 +871,13 @@ module CPEE
             opts
           )
         end
-        description = if copy
+        tdslx = CPEE::Persistence::extract_item(id,opts,'transformation/dslx')
+        tdslxtype = CPEE::Persistence::extract_item(id,opts,'transformation/dslx/@type')
+        description = if copy && tdslxtype == 'rest'
+          nil # slow (e.g. bpmn layout), done after storing, see backtransform_async
+        elsif copy
           begin
-            PutDescription::backtransform(
-              xml,
-              dslx,
-              CPEE::Persistence::extract_item(id,opts,'transformation/dslx'),
-              CPEE::Persistence::extract_item(id,opts,'transformation/dslx/@type')
-            )
+            PutDescription::backtransform(xml,dslx,tdslx,tdslxtype)
           rescue => e # dslx is stored anyway, description stays as it is
             puts e.message
             puts e.backtrace
@@ -878,12 +894,14 @@ module CPEE
           :description => description,
           :dslx => dslx,
           :change_uuid => change_uuid,
+          :change_pending => copy && tdslxtype == 'rest', # description follows with description/sync
           :dsl => dsl,
           :dataelements => CPEE::Persistence::extract_list(id,opts,'dataelements').to_h,
           :documents => dos,
           :endpoints => CPEE::Persistence::extract_list(id,opts,'endpoints').to_h,
           :attributes => attrs
         )
+        PutDescription::backtransform_async(id,opts,dslx,tdslx,tdslxtype) if copy && tdslxtype == 'rest'
         PatchItems::set_hash('dataelements',id,opts,de) unless de.empty?
         PatchItems::set_hash('endpoints',id,opts,ep) unless ep.empty?
         exposition.each do |exp|
@@ -979,6 +997,7 @@ module CPEE
         # directly, as redis is only updated asynchronously by persist.rb
         dslx = CPEE::Persistence::extract_item(id,opts,'dslx')
         return if dslx.nil? || dslx.empty?
+        return PutDescription::backtransform_async(id,opts,dslx,tdslx,tdslxtype) if tdslxtype == 'rest'
         description = begin
           PutDescription::backtransform(dslx,dslx,tdslx,tdslxtype)
         rescue => e # description stays as it is

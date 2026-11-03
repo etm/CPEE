@@ -39,6 +39,8 @@ function global_init() {
   save['states']= {};
   save['state']= undefined;
   save['dsl'] = undefined;
+  save['change_uuid'] = undefined; // of the last description/change
+  save['description'] = undefined; // description that belongs to change_uuid, undefined means get it from the server
   save['activity_red_states'] = {}
   save['graph'] = undefined;
   save['graph_theme'] = undefined;
@@ -64,7 +66,7 @@ var sub_more = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'activity' + '&' +
                'votes'  + '=' + 'syncing_after' + '&' +
                'topic'  + '=' + 'description' + '&' +
-               'events' + '=' + 'change,error' + '&' +
+               'events' + '=' + 'change,error,sync' + '&' +
                'topic'  + '=' + 'position' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'state' + '&' +
@@ -90,7 +92,7 @@ var sub_less = 'topic'  + '=' + 'activity' + '&' +// {{{
                'topic'  + '=' + 'position' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'description' + '&' +
-               'events' + '=' + 'change,error' + '&' +
+               'events' + '=' + 'change,error,sync' + '&' +
                'topic'  + '=' + 'state' + '&' +
                'events' + '=' + 'change' + '&' +
                'topic'  + '=' + 'dataelements' + '&' +
@@ -391,6 +393,20 @@ async function sse() { //{{{
             monitor_instance_values("documents",data.content.values);
             break;
           case 'description':
+            if (data['name'] == 'sync') { // the description for a change with change_pending
+              if (data.content.change_uuid == save['change_uuid']) { // otherwise for an older change
+                save['description'] = data.content.description;
+                $("button[name=savemodelfile]").prop('disabled',false);
+              }
+              break;
+            }
+            if (data['name'] == 'change') {
+              save['change_uuid'] = data.content.change_uuid;
+              save['description'] = data.content.change_pending ? undefined : data.content.description;
+              $("button[name=savemodelfile]").prop('disabled',data.content.change_pending == true);
+            } else if (data['name'] == 'error' && data.content.change_uuid && data.content.change_uuid == save['change_uuid']) {
+              $("button[name=savemodelfile]").prop('disabled',false); // the backtransformation failed, the last description can still be saved
+            }
             monitor_instance_dsl();
             monitor_graph_change(false);
             document.dispatchEvent(graph_changed);
@@ -1111,7 +1127,7 @@ function save_modelfile() {// {{{
 
   let extensions = { 'Signavio': 'bpmn', 'ChatGPT_Mermaid': 'mmd', 'ChatGPT_Graphviz': 'dot' };
   Promise.all([
-    $.ajax({ type: "GET", url: url + "/properties/description/", dataType: 'text' }),
+    save['description'] !== undefined ? save['description'] : $.ajax({ type: "GET", url: url + "/properties/description/", dataType: 'text' }), // from the events, persist.rb might not have stored it yet
     $.ajax({ type: "GET", url: url + "/properties/attributes/info/" }),
     $.ajax({ type: "GET", url: url + "/properties/attributes/modeltype/" }).catch(() => 'CPEE') // instances without modeltype
   ]).then(function([desc,info,modeltype]){
