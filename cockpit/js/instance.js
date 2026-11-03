@@ -1605,7 +1605,7 @@ function append_to_log(what,type,message) {//{{{
   message = message.replace(/>/g, '&gt;');
   message = message.replace(/"/g, '&quot;');
   message = message.replace(/'/g, '&apos;');
-  if (type == 'description/change') {
+  if (type == 'description/change' || type == 'description/sync') {
     $("#dat_log").prepend("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>... check in persistent log ...</td></tr>");
   } else {
     $("#dat_log").prepend("<tr><td class='fixed'><a title=\"" + d.strftime("[%d/%b/%Y %H:%M:%S]") + "\">D</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'><a title=\"" + what + "\">T</a></td><td class='fixed'>&#160;-&#160;</td><td class='fixed'>" +  type + "</td><td class='fixed'>&#160;-&#160;</td><td class='long'>" +  message + "</td></tr>");
