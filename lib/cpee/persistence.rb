@@ -197,10 +197,12 @@ module CPEE
       end
       res += Persistence::keys_extract_name(opts,id,'dsl')
       res += Persistence::keys_extract_name(opts,id,'dslx')
+      res += Persistence::keys_extract_name(opts,id,'dslx','@change_uuid')
       res += Persistence::keys_extract_name(opts,id,'status','message')
       res += Persistence::keys_extract_name(opts,id,'status','id')
       res += Persistence::keys_extract_name(opts,id,'executionhandler')
       res += Persistence::keys_extract_name(opts,id,'description')
+      res += Persistence::keys_extract_name(opts,id,'description','@change_uuid')
       res += Persistence::keys_extract_name(opts,id,'state')
       res += Persistence::keys_extract_name(opts,id,'state','@changed')
       res += Persistence::keys_extract_name(opts,id,'transformation','endpoints')

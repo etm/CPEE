@@ -393,8 +393,8 @@ async function sse() { //{{{
             monitor_instance_values("documents",data.content.values);
             break;
           case 'description':
-            if (data['name'] == 'sync') { // the description for a change with change_pending
-              if (data.content.change_uuid == save['change_uuid']) { // otherwise for an older change
+            if (data['name'] == 'sync') {
+              if (data.content.change_uuid == save['change_uuid']) {
                 save['description'] = data.content.description;
                 $("button[name=savemodelfile]").prop('disabled',false);
               }
@@ -405,7 +405,7 @@ async function sse() { //{{{
               save['description'] = data.content.change_pending ? undefined : data.content.description;
               $("button[name=savemodelfile]").prop('disabled',data.content.change_pending == true);
             } else if (data['name'] == 'error' && data.content.change_uuid && data.content.change_uuid == save['change_uuid']) {
-              $("button[name=savemodelfile]").prop('disabled',false); // the backtransformation failed, the last description can still be saved
+              $("button[name=savemodelfile]").prop('disabled',false);
             }
             monitor_instance_dsl();
             monitor_graph_change(false);

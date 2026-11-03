@@ -87,15 +87,23 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/description",mess.dig('content','description'))
               multi.set("instance:#{instance}/dslx",mess.dig('content','dslx'))
               multi.set("instance:#{instance}/dsl",mess.dig('content','dsl'))
+              multi.set("instance:#{instance}/dslx/@change_uuid",mess.dig('content','change_uuid'))
+              unless mess.dig('content','change_pending') # otherwise description/sync brings it
+                multi.set("instance:#{instance}/description/@change_uuid",mess.dig('content','change_uuid'))
+              end
             end
           when /event:\d+:description\/sync/
             # asynchronous result, only valid when the dslx did not change in the meantime
-            # lua script
-            opts[:redis].eval(
-              "if redis.sha1hex(redis.call('GET',KEYS[1]) or '') == ARGV[1] then redis.call('SET',KEYS[2],ARGV[2]) return 1 end return 0",
-              keys: ["instance:#{instance}/dslx","instance:#{instance}/description"],
-              argv: [mess.dig('content','change_uuid'),mess.dig('content','description')]
-            )
+            opts[:redis].watch("instance:#{instance}/dslx/@change_uuid") do |rd|
+              if rd.get("instance:#{instance}/dslx/@change_uuid") == mess.dig('content','change_uuid')
+                rd.multi do |multi|
+                  multi.set("instance:#{instance}/description",mess.dig('content','description'))
+                  multi.set("instance:#{instance}/description/@change_uuid",mess.dig('content','change_uuid'))
+                end
+              else
+                rd.unwatch
+              end
+            end
           when /event:\d+:dataelements\/change/, /event:\d+:documents\/change/, /event:\d+:endpoints\/change/, /event:\d+:attributes\/change/
             topic = mess.dig('topic')
             max = opts[:redis].zrange("instance:#{instance}/#{topic}", -1, -1, :withscores => true)&.dig(0,1).to_i
