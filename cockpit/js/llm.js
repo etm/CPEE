@@ -480,8 +480,9 @@ function set_cpee_model(cpee_xml,expositions=[]) { //{{{
   let root = $X(cpee_xml).get(0);
   if (root.childElementCount === 0) {
     root.textContent = '';
-    cpee_xml = new XMLSerializer().serializeToString(root);
   }
+  root.setAttribute('dir', save['graph_adaptor'] && save['graph_adaptor'].illustrator.lr ? 'lr' : 'td'); // layout direction of the theme
+  cpee_xml = new XMLSerializer().serializeToString(root);
 
   const form_data = new FormData();
   const blob = new Blob([cpee_xml], { type: "text/xml" });

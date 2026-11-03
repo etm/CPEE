@@ -1159,6 +1159,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   } // }}}
   var gd = this.get_description = function() { //  public {{{
     var serxml = $(description.get(0).documentElement).clone(true);
+    serxml.attr('dir', illustrator.lr ? 'lr' : 'td'); // layout direction of the theme, e.g. for the bpmn export
     serxml.removeAttr('svg-id');
     serxml.removeAttr('svg-type');
     serxml.removeAttr('svg-subtype');

@@ -7,7 +7,17 @@
 
   <start>
     <element name="description">
-      <ref name="dslx_attributes"/>
+      <optional> <!-- layout direction of the theme, e.g. for the bpmn export -->
+        <attribute name="dir">
+          <choice>
+            <value>td</value>
+            <value>lr</value>
+          </choice>
+        </attribute>
+      </optional>
+      <zeroOrMore>
+        <attribute><anyName><except><name ns="">dir</name></except></anyName></attribute>
+      </zeroOrMore>
       <ref name="dslx_block"/>
     </element>
   </start>
