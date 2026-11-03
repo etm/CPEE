@@ -140,6 +140,9 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/transformation/endpoints/@type",mess.dig('content','endpoints_type'))
               multi.set("instance:#{instance}/transformation/dslx",mess.dig('content','dslx'))
               multi.set("instance:#{instance}/transformation/dslx/@type",mess.dig('content','dslx_type'))
+              if mess.dig('content','change_pending') # same dslx, but the description is no longer the one for it
+                multi.del("instance:#{instance}/description/@change_uuid")
+              end
             end
           when /event:\d+:status\/change/
             opts[:redis].multi do |multi|

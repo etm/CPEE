@@ -411,6 +411,13 @@ async function sse() { //{{{
             monitor_graph_change(false);
             document.dispatchEvent(graph_changed);
             break;
+          case 'transformation':
+            if (data.content.change_pending) { // the description for the new model type follows with description/sync
+              save['change_uuid'] = data.content.change_uuid;
+              save['description'] = undefined;
+              $("button[name=savemodelfile]").prop('disabled',true);
+            }
+            break;
           case 'endpoints':
             monitor_instance_values("endpoints");
             break;

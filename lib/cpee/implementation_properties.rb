@@ -980,6 +980,8 @@ module CPEE
         tdslxtype = (t = doc.find('string(/p:transformation/p:dslx/@type)')).empty? ? 'copy' : t # optional, missing means copy
         changed = tdslx != (CPEE::Persistence::extract_item(id,opts,'transformation/dslx') || '') ||
                   tdslxtype != (CPEE::Persistence::extract_item(id,opts,'transformation/dslx/@type') || 'copy')
+        dslx = CPEE::Persistence::extract_item(id,opts,'dslx')
+        dslx = nil if dslx&.empty?
         CPEE::Persistence::set_item(id,opts,'transformation',
           :description => doc.find('string(/p:transformation/p:description)'),
           :description_type => doc.find('string(/p:transformation/p:description/@type)'),
@@ -988,7 +990,9 @@ module CPEE
           :endpoints =>doc.find('string(/p:transformation/p:endpoints)'),
           :endpoints_type => doc.find('string(/p:transformation/p:endpoints/@type)'),
           :dslx => tdslx,
-          :dslx_type => tdslxtype
+          :dslx_type => tdslxtype,
+          :change_uuid => dslx ? Digest::SHA1.hexdigest(dslx) : nil,
+          :change_pending => backtrans && changed && tdslxtype == 'rest' && !dslx.nil? # description follows with description/sync
         )
         PutTransformation::backtransform(id,opts,tdslx,tdslxtype) if backtrans && changed
       end
