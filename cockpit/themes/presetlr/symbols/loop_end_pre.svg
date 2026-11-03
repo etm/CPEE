@@ -10,6 +10,6 @@
     <line x1="10.5" y1="10.5" x2="20.5" y2="20.5" class="stand"/>
   </g>
   <g class="part-middle">
-    <text transform="translate(0,49)" class="label standalone"></text>
+    <text transform="translate(3,49)" class="label standalone"></text>
   </g>
 </svg>

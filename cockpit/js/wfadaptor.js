@@ -239,6 +239,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.width_shift_label = 7;
     this.group_extend = 1;
     this.structural_tighten = 3; // 'structural' borders are smaller in y
+    this.conn_center = 15; // connectors attach to the center of the symbols, i.e. half a symbol before the end of the cell
     this.elements = {}; // the svgs
     this.svg = {};
     this.draw = {};
@@ -1050,8 +1051,12 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     if(((end['row']-start['row']) == 0) && ((end['col']-start['col']) == 0)) return;
     var line = $X('<path xmlns="http://www.w3.org/2000/svg" class="edge"/>');
     let diag = false; // the arrow sits on a diagonal segment (into a gateway), so it has to be closer to the center
-    let sy = get_row(start['row'],start['col']) + self.height - 15 + start.yoffset; // center of the symbols
-    let ey = get_row(end['row'],end['col']) + self.height - 15 + end.yoffset;
+    let sy = get_row(start['row'],start['col']) + self.height - self.conn_center + start.yoffset; // center of the symbols
+    let ssym = self.dim.symbols[start['row']] && self.dim.symbols[start['row']][start['col']];
+    if (self.lr && self.inverted && ssym && self.elements[ssym.type] && self.elements[ssym.type].svg && $('.part-end',self.elements[ssym.type].svg).length > 0) { // inverted: the arrow points into the start from its end, not under the task template (tasks are the symbols with a part-end)
+      sy = get_row_end(start['row'],start['col']) - self.conn_center + start.yoffset; // as far in from the end as other arrows are from the start
+    }
+    let ey = get_row(end['row'],end['col']) + self.height - self.conn_center + end.yoffset;
     if (around) { // e.g. back in an empty loop: leave at 45 degrees to the right, go straight, enter at 45 degrees
       diag = true;
       let off = 7.5 + 7; // from the center to the corner of the gateway, then 7 further
@@ -1470,7 +1475,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
           // small y offset.
           endnodes = endnodes.map(function(p) {
             var np = JSON.parse(JSON.stringify(p));
-            np.yoffset = illustrator.height_shift/2 + illustrator.group_extend + 15 - illustrator.structural_tighten;
+            np.yoffset = illustrator.height_shift/2 + illustrator.group_extend + illustrator.conn_center - illustrator.structural_tighten;
             return np;
           });
         }
@@ -1595,7 +1600,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
       // structural border: incoming arrow stops at the group border instead of reaching into the icon
       // (only a pixel-level yoffset, row/col stay integers so get_x() column lookups stay correct)
       conn_target = JSON.parse(JSON.stringify(pos));
-      conn_target.yoffset = -illustrator.height + illustrator.height_shift/2 - illustrator.group_extend + 15 + illustrator.structural_tighten;
+      conn_target.yoffset = -illustrator.height + illustrator.height_shift/2 - illustrator.group_extend + illustrator.conn_center + illustrator.structural_tighten;
       conn_target.structural = true;
     }
     if(illustrator.elements[sname] != undefined && illustrator.elements[sname].closeblock == true) { // Close Block if element e.g. loop
