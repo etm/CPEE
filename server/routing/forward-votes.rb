@@ -80,17 +80,17 @@ Daemonite.new do |opts|
 
             if url.nil? || url == ""
               persist_handler instance, callback_key, m, opts[:redis]
-              opts[:redis].publish("forward:#{instance}/#{subscription_key}",mess)
+              opts[:redis].publish("forward:#{instance}/#{callback_key}",mess)
             else
               client = Riddl::Client.new(url)
-              callback = File.join(m['instance-url'],'/callbacks/',subscription_key,'/')
+              callback = File.join(m['instance-url'],'/callbacks/',callback_key,'/')
               status, result, headers = (client.post [
                 Riddl::Header.new("CPEE-BASE",File.join(m['cpee'],'/')),
                 Riddl::Header.new("CPEE-INSTANCE",m['instance']),
                 Riddl::Header.new("CPEE-INSTANCE-URL",File.join(m['instance-url'],'/')),
                 Riddl::Header.new("CPEE-INSTANCE-UUID",m['instance-uuid']),
                 Riddl::Header.new("CPEE-CALLBACK",callback),
-                Riddl::Header.new("CPEE-CALLBACK-ID",subscription_key),
+                Riddl::Header.new("CPEE-CALLBACK-ID",callback_key),
                 Riddl::Parameter::Simple::new('type',type),
                 Riddl::Parameter::Simple::new('topic',topic),
                 Riddl::Parameter::Simple::new('vote',name),

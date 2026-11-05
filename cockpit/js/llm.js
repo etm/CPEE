@@ -152,12 +152,14 @@ function call_llm_service_model(dslx,input,llm,prompt_type) { //{{{
 
   return def.promise();
 } //}}}
-function call_llm_service_dataflow(model,llm) { //{{{
+function call_llm_service_dataflow(model,input,llm) { //{{{
   const formData = new FormData();
   const blob1 = new Blob([model], { type: "text/xml" });
   formData.append("rpst_xml", blob1);
-  const blob2 = new Blob([llm], { type: "text/plain" });
-  formData.append("llm", blob2);
+  const blob2 = new Blob([input], { type: "text/plain" });
+  formData.append("user_input", blob2);
+  const blob3 = new Blob([llm], { type: "text/plain" });
+  formData.append("llm", blob3);
 
   let def = new $.Deferred();
 
@@ -590,7 +592,7 @@ function create(prompt,llms,generation,mode) {
           } else {
             if (gen == "dataflow") {
               ui.querying(llms,'selects endpoints and calculates dataflow'); //{{{
-              call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),myllm).done((data) => {
+              call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),input,myllm).done((data) => {
                 let url = $('body').attr('current-instance');
                 $.ajax({
                   type: "PATCH",
