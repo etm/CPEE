@@ -422,7 +422,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     end
     __params
   end #}}}
-  def test_condition(__eid,__dataelements,__endpoints,__local,__additional,__code,__args={}) #{{{
+  def test_condition(__eid,__dataelements,__endpoints,__local,__additional,__code,__args={},__props={}) #{{{
     send = []
     send.push Riddl::Parameter::Simple::new('code',__code)
     send.push Riddl::Parameter::Complex::new('dataelements','application/json', JSON::generate(__dataelements))
@@ -439,7 +439,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     __struct = 'false' unless __struct
     __struct = (__struct == 'false' || __struct == 'null' || __struct == 'nil' || __struct == false ? false : true)
 
-    @controller.notify("gateway/decide", :eid => __eid, :instance_uuid => @controller.uuid, :code => __code, :condition => __struct)
+    @controller.notify("gateway/decide", :eid => __eid, :instance_uuid => @controller.uuid, :code => __code, :condition => __struct, **__props)
     @controller.notify("gateway/annotation", :eid => __eid, :'activity-uuid' => @handler_activity_uuid, :label => @label, :activity => @handler_position, :annotations => {})
     __struct
   end #}}}
