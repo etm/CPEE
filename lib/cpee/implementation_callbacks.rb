@@ -160,7 +160,7 @@ module CPEE
               opts[:redis]
             )
           elsif CPEE::Persistence::extract_item(id,opts,"callbacks/#{callback}/type") == 'vote'
-            if @p.length == 1 && @p[0].name == 'continue' && @p[0].class == Riddl::Parameter::Simple
+            if @p.length == 1 && (@p[0].name == 'continue' || (@p[0].name == '' && @p[0].class == Riddl::Parameter::Complex))
               CPEE::Message::send(
                 :'vote-response',
                 callback,
@@ -168,7 +168,7 @@ module CPEE
                 id,
                 {},
                 {},
-                @p[0].value,
+                @p[0].class == Riddl::Parameter::Simple ? @p[0].value : @p[0].value.read,
                 opts[:redis]
               )
             else

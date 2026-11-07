@@ -17,6 +17,7 @@ require 'mimemagic'
 require 'base64'
 require 'securerandom'
 require 'cpee-eval-ruby/translation'
+require 'cpee/json_pointer'
 
 class ConnectionWrapper < WEEL::ConnectionWrapperBase
   def self::loop_guard(arguments,id,count) # {{{
@@ -288,7 +289,14 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @controller.vote("activity/syncing_after", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label)
   end # }}}
   def vote_sync_before(parameters=nil) # {{{
-    @controller.vote("activity/syncing_before", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters)
+    @controller.vote("activity/syncing_before", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters) do |changes|
+      next unless parameters.is_a?(Hash)
+      changes.each do |pointer,value|
+        CPEE::JSONPointer::set(parameters, pointer, value)
+      rescue => e
+        puts "vote change #{pointer} ignored: #{e.message}"
+      end
+    end
   end # }}}
 
   def callback(result=nil,options={}, dataelements) #{{{

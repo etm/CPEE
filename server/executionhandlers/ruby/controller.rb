@@ -188,12 +188,15 @@ class Controller
       @votes += votes
       psredis = @opts[:redis_dyn].call "Instance #{@id} Vote"
       collect = []
+      changes = []
       psredis.subscribe(votes.map{|e| ['vote-response:00:' + e.to_s] }.flatten) do |on|
         on.message do |what, message|
           index = message.index(' ')
           mess = message[index+1..-1]
           m = JSON.parse(mess)
-          collect << ((m['content'] == true || m['content'] == 'true') || false)
+          cont, chg = vote_parse(m['content'])
+          collect << cont
+          changes << chg if chg && chg.any?
           @votes.delete m['name']
           cancel_callback m['name']
           if collect.length >= votes.length
@@ -201,9 +204,21 @@ class Controller
           end
         end
       end
-      !collect.include?(false)
+      ret = !collect.include?(false)
+      changes.each { |chg| yield chg } if ret && block_given?
+      ret
     else
       true
+    end
+  end
+
+  # single value: true / 'true' continues; hash: { 'continue' => true, '/json/pointer' => value, ... }
+  def vote_parse(content)
+    val = content.is_a?(String) ? (JSON::parse(content) rescue content) : content
+    if val.is_a?(Hash)
+      [val['continue'] == true || val['continue'] == 'true', val.select { |k,_| k.to_s.start_with?('/') }]
+    else
+      [val == true || val == 'true', nil]
     end
   end
 
