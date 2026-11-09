@@ -64,7 +64,7 @@ Daemonite.new do |opts|
     opts[:pubsubredis].psubscribe('vote:*') do |on|
       on.pmessage do |pat, what, message|
         index = message.index(' ')
-        instance, uuid = message[0...index].split(',')
+        instance, uuid, seq = message[0...index].split(',')
         mess = message[index+1..-1]
 
         type, worker, event = what.split(':',3)
@@ -76,11 +76,14 @@ Daemonite.new do |opts|
           if opts[:redis].smembers("instance:#{instance}/handlers/#{subscription_key}").include? long
             m = JSON.parse(mess)
             callback_key = m.dig('content','key')
-            url = opts[:redis].get("instance:#{instance}/handlers/#{subscription_key}/url")
+            url, sseq = opts[:redis].pipelined do |p|
+              p.get("instance:#{instance}/handlers/#{subscription_key}/url")
+              p.incr("instance:#{instance}/handlers/#{subscription_key}/seq")
+            end
 
             if url.nil? || url == ""
               persist_handler instance, callback_key, m, opts[:redis]
-              opts[:redis].publish("forward:#{instance}/#{callback_key}",mess)
+              opts[:redis].publish("forward:#{instance}/#{callback_key}","#{seq},#{sseq} #{mess}")
             else
               client = Riddl::Client.new(url)
               callback = File.join(m['instance-url'],'/callbacks/',callback_key,'/')
@@ -91,6 +94,8 @@ Daemonite.new do |opts|
                 Riddl::Header.new("CPEE-INSTANCE-UUID",m['instance-uuid']),
                 Riddl::Header.new("CPEE-CALLBACK",callback),
                 Riddl::Header.new("CPEE-CALLBACK-ID",callback_key),
+                Riddl::Header.new("CPEE-SEQ",seq),
+                Riddl::Header.new("CPEE-SSEQ",sseq),
                 Riddl::Parameter::Simple::new('type',type),
                 Riddl::Parameter::Simple::new('topic',topic),
                 Riddl::Parameter::Simple::new('vote',name),

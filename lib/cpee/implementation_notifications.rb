@@ -201,7 +201,10 @@ module CPEE
           if pat == 'forward:*'
             id, key = what.match(/forward:([^\/]+)\/(.+)/).captures
             if sse = opts.dig(:sse_connections,id,key)
-              sse.send message
+              # message is "seq,sseq {json}"; numbers go into the standard SSE id field (lastEventId), data stays pure json
+              # riddl's send_with_id(field,value) writes "field: value\n\n", so id and data are combined into one event
+              index = message.index(' ')
+              sse.send_with_id 'id', message[0...index] + "\ndata: " + message[index+1..-1]
             else
               DeleteSubscription::set(id,opts,key)
             end

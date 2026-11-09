@@ -12,9 +12,22 @@
 # CPEE (file LICENSE in the main directory).  If not, see
 # <http://www.gnu.org/licenses/>.
 
+require 'digest/sha1'
+
 module CPEE
 
   module Message
+    # INCR the per-instance sequence and PUBLISH in one round trip. The seq is
+    # appended to the prefix ("instance,uuid,seq {json}") so that routing
+    # workers can read it without parsing the JSON, and added to the JSON for
+    # consumers that only see the body. The payload is always a JSON object.
+    SEQ_PUBLISH = <<~LUA.freeze
+      local s = redis.call('INCR', KEYS[1])
+      redis.call('PUBLISH', ARGV[1], ARGV[2] .. ',' .. s .. ' ' .. string.sub(ARGV[3], 1, -2) .. ',"seq":' .. s .. '}')
+      return s
+    LUA
+    SEQ_PUBLISH_SHA = Digest::SHA1.hexdigest(SEQ_PUBLISH).freeze
+
     @@mutex = Mutex.new
     @@who = 'cpee'
     @@type = 'instance'
@@ -77,7 +90,14 @@ module CPEE
       payload["#{@@type}-uuid"] = instance_uuid if instance_uuid
       payload["#{@@type}-name"] = instance_name if instance_name
 
-      backend.publish("#{type}:#{target}:#{event}", "#{instance},#{instance_uuid} #{JSON::generate(payload)}")
+      keys = ["#{@@type}:#{instance}/seq"]
+      argv = ["#{type}:#{target}:#{event}", "#{instance},#{instance_uuid}", JSON::generate(payload)]
+      begin
+        backend.evalsha(SEQ_PUBLISH_SHA, keys: keys, argv: argv)
+      rescue Redis::CommandError => e
+        raise unless e.message.start_with?('NOSCRIPT')
+        backend.eval(SEQ_PUBLISH, keys: keys, argv: argv)
+      end
     end
 
     def self::send_url(type, event, cpee, content={}, backend)

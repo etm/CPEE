@@ -192,6 +192,7 @@ Daemonite.new do |opts|
             if opts[:redis].scard("instance:#{instance}/handlers/#{mess.dig('content','key')}") < 1
               opts[:redis].multi do |multi|
                 multi.del("instance:#{instance}/handlers/#{mess.dig('content','key')}/url")
+                multi.del("instance:#{instance}/handlers/#{mess.dig('content','key')}/seq")
                 multi.srem("instance:#{instance}/handlers",mess.dig('content','key'))
               end
             end

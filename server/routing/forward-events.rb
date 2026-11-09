@@ -46,7 +46,7 @@ Daemonite.new do |opts|
       on.pmessage do |pat, what, message|
         index = message.index(' ')
         mess = message[index+1..-1]
-        instance, uuid = message[0...index].split(',')
+        instance, uuid, seq = message[0...index].split(',')
         type, worker, event = what.split(':',3)
         topic = ::File::dirname(event)
         name = ::File::basename(event)
@@ -55,10 +55,16 @@ Daemonite.new do |opts|
         keys = opts[:redis].smembers("instance:#{instance}/handlers")
         checks = opts[:redis].pipelined { |p| keys.each { |k| p.sismember("instance:#{instance}/handlers/#{k}", long) } }
         matched = keys.zip(checks).select { |_, hit| hit }.map(&:first)
-        urls = opts[:redis].pipelined { |p| matched.each { |k| p.get("instance:#{instance}/handlers/#{k}/url") } }
-        matched.zip(urls).each do |key, url|
+        # per subscription sequence (sseq): gapless per subscription, so subscribers can detect missing messages; seq gives the order
+        res = opts[:redis].pipelined do |p|
+          matched.each do |k|
+            p.get("instance:#{instance}/handlers/#{k}/url")
+            p.incr("instance:#{instance}/handlers/#{k}/seq")
+          end
+        end
+        matched.zip(res.each_slice(2)).each do |key, (url, sseq)|
           if url.nil? || url == ""
-            opts[:redis].publish("forward:#{instance}/#{key}",mess)
+            opts[:redis].publish("forward:#{instance}/#{key}","#{seq},#{sseq} #{mess}")
           else
             # Ractor.new(url,type,topic,name,mess) do |url,type,topic,name,mess|
             # sadly typhoes does not support ractors
@@ -66,6 +72,8 @@ Daemonite.new do |opts|
               Riddl::Client.new(url).post [
                 Riddl::Header.new("CPEE-INSTANCE",instance),
                 Riddl::Header.new("CPEE-INSTANCE-UUID",uuid),
+                Riddl::Header.new("CPEE-SEQ",seq),
+                Riddl::Header.new("CPEE-SSEQ",sseq),
                 Riddl::Parameter::Simple::new('type',type),
                 Riddl::Parameter::Simple::new('topic',topic),
                 Riddl::Parameter::Simple::new('event',name),
