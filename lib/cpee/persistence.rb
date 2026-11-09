@@ -183,6 +183,7 @@ module CPEE
       res += Persistence::keys_extract_name(opts,id,'handlers')
       hnd.each do |h|
         res << File.join(h,'url')
+        res << File.join(h,'seq')
         res += Persistence::keys_extract_set_raw(opts,h)
       end
       cbs = Persistence::keys_extract_set(opts,id,'callbacks')
@@ -205,6 +206,7 @@ module CPEE
       res += Persistence::keys_extract_name(opts,id,'description','@change_uuid')
       res += Persistence::keys_extract_name(opts,id,'state')
       res += Persistence::keys_extract_name(opts,id,'state','@changed')
+      res += Persistence::keys_extract_name(opts,id,'seq')
       res += Persistence::keys_extract_name(opts,id,'transformation','endpoints')
       res += Persistence::keys_extract_name(opts,id,'transformation','endpoints','@type')
       res += Persistence::keys_extract_name(opts,id,'transformation','description')

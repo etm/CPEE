@@ -82,13 +82,6 @@ Daemonite.new do |opts|
             end
           end
         end
-        unless opts[:redis].exists?("instance:#{instance}/state")
-          ### delete everything under instance
-          ### how can there be stuff under an instance (handlers, subscriptions)? Are they created later?
-          empt = []
-          opts[:redis].scan_each("instance:#{instance}/*") { |k| empt << k }
-          opts[:redis].del(*empt) unless empt.empty?
-        end
       rescue => e
         puts e.message
         puts e.backtrace

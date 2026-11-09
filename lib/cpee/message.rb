@@ -21,8 +21,12 @@ module CPEE
     # appended to the prefix ("instance,uuid,seq {json}") so that routing
     # workers can read it without parsing the JSON, and added to the JSON for
     # consumers that only see the body. The payload is always a JSON object.
+    # Only count while the instance exists (KEYS[2] is its state), so late
+    # messages for a deleted instance do not recreate the counter (seq 0).
+    # INCR keeps the TTL that DeleteInstance set while the key expires.
     SEQ_PUBLISH = <<~LUA.freeze
-      local s = redis.call('INCR', KEYS[1])
+      local s = 0
+      if redis.call('EXISTS', KEYS[2]) == 1 then s = redis.call('INCR', KEYS[1]) end
       redis.call('PUBLISH', ARGV[1], ARGV[2] .. ',' .. s .. ' ' .. string.sub(ARGV[3], 1, -2) .. ',"seq":' .. s .. '}')
       return s
     LUA
@@ -90,7 +94,7 @@ module CPEE
       payload["#{@@type}-uuid"] = instance_uuid if instance_uuid
       payload["#{@@type}-name"] = instance_name if instance_name
 
-      keys = ["#{@@type}:#{instance}/seq"]
+      keys = ["#{@@type}:#{instance}/seq", "#{@@type}:#{instance}/state"]
       argv = ["#{type}:#{target}:#{event}", "#{instance},#{instance_uuid}", JSON::generate(payload)]
       begin
         backend.evalsha(SEQ_PUBLISH_SHA, keys: keys, argv: argv)

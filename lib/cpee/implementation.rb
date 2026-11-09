@@ -466,6 +466,11 @@ module CPEE
         @status = 404
         return
       end
+      # only ready, stopped, finished, abandoned; a running controller would keep writing into expiring keys
+      if opts[:statemachine].readonly? id
+        @status = 423
+        return
+      end
 
       content = {
         :state => 'purged',

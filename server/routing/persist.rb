@@ -68,28 +68,28 @@ Daemonite.new do |opts|
             key = mess.dig('content','key')
             opts[:redis].multi do |multi|
               multi.sadd("instance:#{instance}/callbacks",key)
-              multi.set("instance:#{instance}/callbacks/#{key}/uuid",mess.dig('content','activity-uuid'))
-              multi.set("instance:#{instance}/callbacks/#{key}/label",mess.dig('content','label'))
-              multi.set("instance:#{instance}/callbacks/#{key}/position",mess.dig('content','activity'))
-              multi.set("instance:#{instance}/callbacks/#{key}/type",'callback')
+              multi.set("instance:#{instance}/callbacks/#{key}/uuid",mess.dig('content','activity-uuid'),keepttl: true)
+              multi.set("instance:#{instance}/callbacks/#{key}/label",mess.dig('content','label'),keepttl: true)
+              multi.set("instance:#{instance}/callbacks/#{key}/position",mess.dig('content','activity'),keepttl: true)
+              multi.set("instance:#{instance}/callbacks/#{key}/type",'callback',keepttl: true)
             end
           when /event:\d+:state\/change/
             opts[:redis].multi do |multi|
               unless mess.dig('content','state') == 'purged'
-                multi.set("instance:#{instance}/state",mess.dig('content','state'))
-                multi.set("instance:#{instance}/state/@changed",mess.dig('timestamp'))
+                multi.set("instance:#{instance}/state",mess.dig('content','state'),keepttl: true)
+                multi.set("instance:#{instance}/state/@changed",mess.dig('timestamp'),keepttl: true)
               end
             end
           when /event:\d+:executionhandler\/change/
-            opts[:redis].set("instance:#{instance}/executionhandler",mess.dig('content','executionhandler'))
+            opts[:redis].set("instance:#{instance}/executionhandler",mess.dig('content','executionhandler'),keepttl: true)
           when /event:\d+:description\/change/
             opts[:redis].multi do |multi|
-              multi.set("instance:#{instance}/description",mess.dig('content','description'))
-              multi.set("instance:#{instance}/dslx",mess.dig('content','dslx'))
-              multi.set("instance:#{instance}/dsl",mess.dig('content','dsl'))
-              multi.set("instance:#{instance}/dslx/@change_uuid",mess.dig('content','change_uuid'))
+              multi.set("instance:#{instance}/description",mess.dig('content','description'),keepttl: true)
+              multi.set("instance:#{instance}/dslx",mess.dig('content','dslx'),keepttl: true)
+              multi.set("instance:#{instance}/dsl",mess.dig('content','dsl'),keepttl: true)
+              multi.set("instance:#{instance}/dslx/@change_uuid",mess.dig('content','change_uuid'),keepttl: true)
               unless mess.dig('content','change_pending') # otherwise description/sync brings it
-                multi.set("instance:#{instance}/description/@change_uuid",mess.dig('content','change_uuid'))
+                multi.set("instance:#{instance}/description/@change_uuid",mess.dig('content','change_uuid'),keepttl: true)
               end
             end
           when /event:\d+:description\/sync/
@@ -97,8 +97,8 @@ Daemonite.new do |opts|
             opts[:redis].watch("instance:#{instance}/dslx/@change_uuid") do |rd|
               if rd.get("instance:#{instance}/dslx/@change_uuid") == mess.dig('content','change_uuid')
                 rd.multi do |multi|
-                  multi.set("instance:#{instance}/description",mess.dig('content','description'))
-                  multi.set("instance:#{instance}/description/@change_uuid",mess.dig('content','change_uuid'))
+                  multi.set("instance:#{instance}/description",mess.dig('content','description'),keepttl: true)
+                  multi.set("instance:#{instance}/description/@change_uuid",mess.dig('content','change_uuid'),keepttl: true)
                 end
               else
                 rd.unwatch
@@ -118,7 +118,7 @@ Daemonite.new do |opts|
               mess.dig('content','changed')&.each_with_index do |c,i|
                 unless what =~ /event:\d+:attributes\/change/ && c == 'uuid'
                   multi.zadd("instance:#{instance}/#{topic}",max + 1 + i,c,nx: true)
-                  multi.set("instance:#{instance}/#{topic}/#{c}",CPEE::ValueHelper::generate(mess.dig('content','values',c)))
+                  multi.set("instance:#{instance}/#{topic}/#{c}",CPEE::ValueHelper::generate(mess.dig('content','values',c)),keepttl: true)
                 end
               end
               mess.dig('content','deleted')&.to_a&.each do |c|
@@ -132,22 +132,22 @@ Daemonite.new do |opts|
             opts[:redis].publish('event:' + $1 + ':transaction/finished',message)
           when /event:\d+:transformation\/change/
             opts[:redis].multi do |multi|
-              multi.set("instance:#{instance}/transformation/description",mess.dig('content','description'))
-              multi.set("instance:#{instance}/transformation/description/@type",mess.dig('content','description_type'))
-              multi.set("instance:#{instance}/transformation/dataelements",mess.dig('content','dataelements'))
-              multi.set("instance:#{instance}/transformation/dataelements/@type",mess.dig('content','dataelements_type'))
-              multi.set("instance:#{instance}/transformation/endpoints",mess.dig('content','endpoints'))
-              multi.set("instance:#{instance}/transformation/endpoints/@type",mess.dig('content','endpoints_type'))
-              multi.set("instance:#{instance}/transformation/dslx",mess.dig('content','dslx'))
-              multi.set("instance:#{instance}/transformation/dslx/@type",mess.dig('content','dslx_type'))
+              multi.set("instance:#{instance}/transformation/description",mess.dig('content','description'),keepttl: true)
+              multi.set("instance:#{instance}/transformation/description/@type",mess.dig('content','description_type'),keepttl: true)
+              multi.set("instance:#{instance}/transformation/dataelements",mess.dig('content','dataelements'),keepttl: true)
+              multi.set("instance:#{instance}/transformation/dataelements/@type",mess.dig('content','dataelements_type'),keepttl: true)
+              multi.set("instance:#{instance}/transformation/endpoints",mess.dig('content','endpoints'),keepttl: true)
+              multi.set("instance:#{instance}/transformation/endpoints/@type",mess.dig('content','endpoints_type'),keepttl: true)
+              multi.set("instance:#{instance}/transformation/dslx",mess.dig('content','dslx'),keepttl: true)
+              multi.set("instance:#{instance}/transformation/dslx/@type",mess.dig('content','dslx_type'),keepttl: true)
               if mess.dig('content','change_pending') # same dslx, but the description is no longer the one for it
                 multi.del("instance:#{instance}/description/@change_uuid")
               end
             end
           when /event:\d+:status\/change/
             opts[:redis].multi do |multi|
-              multi.set("instance:#{instance}/status/id",mess.dig('content','id'))
-              multi.set("instance:#{instance}/status/message",mess.dig('content','message'))
+              multi.set("instance:#{instance}/status/id",mess.dig('content','id'),keepttl: true)
+              multi.set("instance:#{instance}/status/message",mess.dig('content','message'),keepttl: true)
             end
           when /event:\d+:position\/change/
             opts[:redis].multi do |multi|
@@ -159,21 +159,21 @@ Daemonite.new do |opts|
               end
               c.dig('before')&.each do |ele|
                 multi.sadd("instance:#{instance}/positions",ele['position'])
-                multi.set("instance:#{instance}/positions/#{ele['position']}",'before')
+                multi.set("instance:#{instance}/positions/#{ele['position']}",'before',keepttl: true)
               end
               c.dig('at')&.each do |ele|
                 multi.sadd("instance:#{instance}/positions",ele['position'])
-                multi.set("instance:#{instance}/positions/#{ele['position']}",'at')
-                multi.set("instance:#{instance}/positions/#{ele['position']}/@passthrough",ele['passthrough']) if ele['passthrough']
+                multi.set("instance:#{instance}/positions/#{ele['position']}",'at',keepttl: true)
+                multi.set("instance:#{instance}/positions/#{ele['position']}/@passthrough",ele['passthrough'],keepttl: true) if ele['passthrough']
               end
               c.dig('wait')&.each do |ele|
                 multi.sadd("instance:#{instance}/positions",ele['position'])
-                multi.set("instance:#{instance}/positions/#{ele['position']}",'at')
-                multi.set("instance:#{instance}/positions/#{ele['position']}/@passthrough",ele['passthrough']) if ele['passthrough']
+                multi.set("instance:#{instance}/positions/#{ele['position']}",'at',keepttl: true)
+                multi.set("instance:#{instance}/positions/#{ele['position']}/@passthrough",ele['passthrough'],keepttl: true) if ele['passthrough']
               end
               c.dig('after')&.each do |ele|
                 multi.sadd("instance:#{instance}/positions",ele['position'])
-                multi.set("instance:#{instance}/positions/#{ele['position']}",'after')
+                multi.set("instance:#{instance}/positions/#{ele['position']}",'after',keepttl: true)
               end
             end
           when /event:\d+:handler\/change/
@@ -181,7 +181,7 @@ Daemonite.new do |opts|
               mess.dig('content','changed').each do |c|
                 multi.sadd("instance:#{instance}/handlers",mess.dig('content','key'))
                 multi.sadd("instance:#{instance}/handlers/#{mess.dig('content','key')}",c)
-                multi.set("instance:#{instance}/handlers/#{mess.dig('content','key')}/url",mess.dig('content','url'))
+                multi.set("instance:#{instance}/handlers/#{mess.dig('content','key')}/url",mess.dig('content','url'),keepttl: true)
                 multi.sadd("instance:#{instance}/handlers/#{c}",mess.dig('content','key'))
               end
               mess.dig('content','deleted').to_a.each do |c|
