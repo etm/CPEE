@@ -35,7 +35,7 @@ module CPEE
     end #}}}
 
     def self::set_workers(workers)
-      @@tworkers = (workers < 1 && workers > 99 ? 1 : workers).freeze
+      @@tworkers = (workers < 1 || workers > 99 ? 1 : workers).freeze
       @@last = -1
     end
 
