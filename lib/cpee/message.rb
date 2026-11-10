@@ -13,6 +13,7 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'digest/sha1'
+require_relative 'redis'
 
 module CPEE
 
@@ -96,12 +97,7 @@ module CPEE
 
       keys = ["#{@@type}:#{instance}/seq", "#{@@type}:#{instance}/state"]
       argv = ["#{type}:#{target}:#{event}", "#{instance},#{instance_uuid}", JSON::generate(payload)]
-      begin
-        backend.evalsha(SEQ_PUBLISH_SHA, keys: keys, argv: argv)
-      rescue Redis::CommandError => e
-        raise unless e.message.start_with?('NOSCRIPT')
-        backend.eval(SEQ_PUBLISH, keys: keys, argv: argv)
-      end
+      CPEE::redis_script(backend, SEQ_PUBLISH_SHA, SEQ_PUBLISH, keys, argv)
     end
 
     def self::send_url(type, event, cpee, content={}, backend)

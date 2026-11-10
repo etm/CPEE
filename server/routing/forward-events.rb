@@ -18,9 +18,25 @@ require 'redis'
 require 'daemonite'
 require 'concurrent-ruby'
 require 'riddl/client'
+require 'digest/sha1'
 require_relative '../../lib/cpee/redis'
 
 HTTP_POOL = Concurrent::FixedThreadPool.new(32)
+
+# one round trip per event: KEYS[1] is the reverse index (subscription keys for exactly
+# this topic/type/name), ARGV[1] the instance prefix. Returns key, url, sseq per match.
+# GET needs the or '', a nil (false) would truncate the returned array.
+MATCH = <<~LUA.freeze
+  local res = {}
+  for _, k in ipairs(redis.call('SMEMBERS', KEYS[1])) do
+    local b = ARGV[1] .. '/handlers/' .. k
+    res[#res+1] = k
+    res[#res+1] = redis.call('GET', b .. '/url') or ''
+    res[#res+1] = redis.call('INCR', b .. '/seq')
+  end
+  return res
+LUA
+MATCH_SHA = Digest::SHA1.hexdigest(MATCH).freeze
 
 Daemonite.new do |opts|
   opts[:runtime_opts] += [
@@ -52,24 +68,17 @@ Daemonite.new do |opts|
         name = ::File::basename(event)
         long = File.join(topic,type,name)
 
-        keys = opts[:redis].smembers("instance:#{instance}/handlers")
-        checks = opts[:redis].pipelined { |p| keys.each { |k| p.sismember("instance:#{instance}/handlers/#{k}", long) } }
-        matched = keys.zip(checks).select { |_, hit| hit }.map(&:first)
         # per subscription sequence (sseq): gapless per subscription, so subscribers can detect missing messages; seq gives the order
-        res = opts[:redis].pipelined do |p|
-          matched.each do |k|
-            p.get("instance:#{instance}/handlers/#{k}/url")
-            p.incr("instance:#{instance}/handlers/#{k}/seq")
-          end
-        end
-        matched.zip(res.each_slice(2)).each do |key, (url, sseq)|
+        res = CPEE::redis_script(opts[:redis], MATCH_SHA, MATCH, ["instance:#{instance}/handlers/#{long}"], ["instance:#{instance}"])
+        forwards = []
+        res.each_slice(3) do |key, url, sseq|
           if url.nil? || url == ""
-            opts[:redis].publish("forward:#{instance}/#{key}","#{seq},#{sseq} #{mess}")
+            forwards << ["forward:#{instance}/#{key}","#{seq},#{sseq} #{mess}"]
           else
             # Ractor.new(url,type,topic,name,mess) do |url,type,topic,name,mess|
             # sadly typhoes does not support ractors
             HTTP_POOL.post do
-              Riddl::Client.new(url).post [
+              Riddl::Client.new(url, nil, ignore_response: true).post [
                 Riddl::Header.new("CPEE-INSTANCE",instance),
                 Riddl::Header.new("CPEE-INSTANCE-UUID",uuid),
                 Riddl::Header.new("CPEE-SEQ",seq),
@@ -82,10 +91,11 @@ Daemonite.new do |opts|
             end
           end
         end
-      rescue => e
-        puts e.message
-        puts e.backtrace
-        p '-----------------'
+        # all sse subscribers in one round trip
+        opts[:redis].pipelined { |p| forwards.each { |c,m| p.publish(c,m) } } unless forwards.empty?
+      rescue
+        # deliberately silent: an exception must not end the psubscribe loop (and the
+        # worker), and subscribers detect missing messages through gaps in sseq
       end
     end
   end

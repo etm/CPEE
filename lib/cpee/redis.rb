@@ -16,6 +16,14 @@ require 'redis'
 require 'uri'
 
 module CPEE
+  # run a lua script by its sha (cached in redis), send the full script only if redis does not know it (yet)
+  def self::redis_script(backend,sha,script,keys,argv)
+    backend.evalsha(sha, keys: keys, argv: argv)
+  rescue Redis::CommandError => e
+    raise unless e.message.start_with?('NOSCRIPT')
+    backend.eval(script, keys: keys, argv: argv)
+  end
+
   def self::redis_connect(opts,name=nil)
     if opts[:redis_cmd].nil?
       begin

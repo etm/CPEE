@@ -18,8 +18,20 @@ require 'redis'
 require 'daemonite'
 require 'riddl/client'
 require 'json'
+require 'digest/sha1'
 require_relative '../../lib/cpee/message'
 require_relative '../../lib/cpee/redis'
+
+# one round trip per vote: the controller sends one vote message per subscriber
+# (content.subscription), so only check if that subscriber is still subscribed to
+# exactly this topic/type/name (KEYS[1] is the reverse index). Returns url, sseq
+# or {} if gone. GET needs the or '', a nil (false) would truncate the array.
+MATCH = <<~LUA.freeze
+  if redis.call('SISMEMBER', KEYS[1], ARGV[2]) == 0 then return {} end
+  local b = ARGV[1] .. '/handlers/' .. ARGV[2]
+  return { redis.call('GET', b .. '/url') or '', redis.call('INCR', b .. '/seq') }
+LUA
+MATCH_SHA = Digest::SHA1.hexdigest(MATCH).freeze
 
 def persist_handler(instance,key,mess,redis) #{{{
   redis.multi do |multi|
@@ -72,51 +84,47 @@ Daemonite.new do |opts|
         name = ::File::basename(event)
         long = File.join(topic,type,name)
 
-        opts[:redis].smembers("instance:#{instance}/handlers").each do |subscription_key|
-          if opts[:redis].smembers("instance:#{instance}/handlers/#{subscription_key}").include? long
-            m = JSON.parse(mess)
-            callback_key = m.dig('content','key')
-            url, sseq = opts[:redis].pipelined do |p|
-              p.get("instance:#{instance}/handlers/#{subscription_key}/url")
-              p.incr("instance:#{instance}/handlers/#{subscription_key}/seq")
-            end
+        m = JSON.parse(mess)
+        callback_key = m.dig('content','key')
+        subscription_key = m.dig('content','subscription')
+        url, sseq = CPEE::redis_script(opts[:redis], MATCH_SHA, MATCH, ["instance:#{instance}/handlers/#{long}"], ["instance:#{instance}", subscription_key.to_s])
 
-            if url.nil? || url == ""
-              persist_handler instance, callback_key, m, opts[:redis]
-              opts[:redis].publish("forward:#{instance}/#{callback_key}","#{seq},#{sseq} #{mess}")
+        if url.nil? # unsubscribed in the meantime, nobody would ever answer, so let the instance continue
+          send_response instance, callback_key, m['cpee'], true, opts[:redis]
+        elsif url == ""
+          persist_handler instance, callback_key, m, opts[:redis]
+          opts[:redis].publish("forward:#{instance}/#{subscription_key}","#{seq},#{sseq} #{mess}")
+        else
+          client = Riddl::Client.new(url)
+          callback = File.join(m['instance-url'],'/callbacks/',callback_key,'/')
+          status, result, headers = (client.post [
+            Riddl::Header.new("CPEE-BASE",File.join(m['cpee'],'/')),
+            Riddl::Header.new("CPEE-INSTANCE",m['instance']),
+            Riddl::Header.new("CPEE-INSTANCE-URL",File.join(m['instance-url'],'/')),
+            Riddl::Header.new("CPEE-INSTANCE-UUID",m['instance-uuid']),
+            Riddl::Header.new("CPEE-CALLBACK",callback),
+            Riddl::Header.new("CPEE-CALLBACK-ID",callback_key),
+            Riddl::Header.new("CPEE-SEQ",seq),
+            Riddl::Header.new("CPEE-SSEQ",sseq),
+            Riddl::Parameter::Simple::new('type',type),
+            Riddl::Parameter::Simple::new('topic',topic),
+            Riddl::Parameter::Simple::new('vote',name),
+            Riddl::Parameter::Simple::new('callback',callback),
+            Riddl::Parameter::Complex::new('notification','application/json',mess)
+          ] rescue [ 0, [], []])
+          if status >= 200 && status < 300
+            val = if result[0].class == Riddl::Parameter::Simple
+              result[0].value
             else
-              client = Riddl::Client.new(url)
-              callback = File.join(m['instance-url'],'/callbacks/',callback_key,'/')
-              status, result, headers = (client.post [
-                Riddl::Header.new("CPEE-BASE",File.join(m['cpee'],'/')),
-                Riddl::Header.new("CPEE-INSTANCE",m['instance']),
-                Riddl::Header.new("CPEE-INSTANCE-URL",File.join(m['instance-url'],'/')),
-                Riddl::Header.new("CPEE-INSTANCE-UUID",m['instance-uuid']),
-                Riddl::Header.new("CPEE-CALLBACK",callback),
-                Riddl::Header.new("CPEE-CALLBACK-ID",callback_key),
-                Riddl::Header.new("CPEE-SEQ",seq),
-                Riddl::Header.new("CPEE-SSEQ",sseq),
-                Riddl::Parameter::Simple::new('type',type),
-                Riddl::Parameter::Simple::new('topic',topic),
-                Riddl::Parameter::Simple::new('vote',name),
-                Riddl::Parameter::Simple::new('callback',callback),
-                Riddl::Parameter::Complex::new('notification','application/json',mess)
-              ] rescue [ 0, [], []])
-              if status >= 200 && status < 300
-                val = if result[0].class == Riddl::Parameter::Simple
-                  result[0].value
-                else
-                  result[0].value.read
-                end
-                if (headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true') || val == 'callback'
-                  persist_handler instance, callback_key, m, opts[:redis]
-                else # they may send true or false
-                  send_response instance, callback_key, m['cpee'], val, opts[:redis]
-                end
-              else
-                send_response instance, callback_key, m['cpee'], true, opts[:redis]
-              end
+              result[0].value.read
             end
+            if (headers["CPEE_CALLBACK"] && headers["CPEE_CALLBACK"] == 'true') || val == 'callback'
+              persist_handler instance, callback_key, m, opts[:redis]
+            else # they may send true or false
+              send_response instance, callback_key, m['cpee'], val, opts[:redis]
+            end
+          else
+            send_response instance, callback_key, m['cpee'], true, opts[:redis]
           end
         end
       rescue => e

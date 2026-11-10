@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.email            = 'juergen.mangler@gmail.com'
   s.homepage         = 'http://cpee.org/'
 
-  s.add_runtime_dependency 'riddl', '~> 1.0'
+  s.add_runtime_dependency 'riddl', '~> 1.0', '>= 1.0.21'
   s.add_runtime_dependency 'weel', '~> 1.99', '>= 1.99.158'
   s.add_runtime_dependency 'highline', '~> 2.0'
   s.add_runtime_dependency 'redis', '~> 5.4'
