@@ -289,6 +289,7 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     @controller.vote("activity/syncing_after", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label)
   end # }}}
   def vote_sync_before(parameters=nil) # {{{
+    @label = parameters[:label] if parameters.is_a?(Hash) && parameters[:label]
     @controller.vote("activity/syncing_before", :'activity-uuid' => @handler_activity_uuid, :endpoint => @handler_endpoint, :activity => @handler_position, :label => @label, :parameters => parameters) do |changes|
       next unless parameters.is_a?(Hash)
       changes.each do |pointer,value|
