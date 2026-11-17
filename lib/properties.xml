@@ -54,6 +54,10 @@
     <parameter name="status" mimetype="*/xml" handler="http://riddl.org/ns/handlers/relaxng">
       <xi:include href="properties/t_status.rng"/>
     </parameter>
+    <zeroOrMore>
+      <parameter name="exposition_info" mimetype="application/json"/>
+      <parameter name="exposition_body" mimetype="*"/>
+    </zeroOrMore>
   </message> <!--}}}-->
   <message name="integer"> <!--{{{-->
     <parameter name="value" type="integer"/>
@@ -141,16 +145,9 @@
   </message> <!--}}}-->
   <message name="dslx"> <!--{{{-->
     <parameter name="dslx" mimetype="*/xml"/>
-
-    <zeroOrMore>
-      <parameter name="exposition" mimetype="*"/>
-    </zeroOrMore>
   </message> <!--}}}-->
   <message name="description"> <!--{{{-->
     <parameter name="description" mimetype="*"/>
-    <zeroOrMore>
-      <parameter name="exposition" mimetype="*"/>
-    </zeroOrMore>
   </message> <!--}}}-->
 
   <message name="transformation"> <!--{{{-->

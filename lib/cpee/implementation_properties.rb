@@ -310,10 +310,29 @@ module CPEE
       end
     end #}}}
     class PutStatus < Riddl::Implementation #{{{
+      EXPOSITION_ONLY = 18510501 # status id that only carries expositions, the status stays as it is
+
       def self::set(id,opts,xml)
         doc = XML::Smart::string(xml)
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
-        CPEE::Persistence::set_item(id,opts,'status',:id => doc.find('string(/p:status/p:id)').to_i, :message => doc.find('string(/p:status/p:message)'))
+        sid = doc.find('string(/p:status/p:id)').to_i
+        return if sid == EXPOSITION_ONLY
+        CPEE::Persistence::set_item(id,opts,'status',:id => sid, :message => doc.find('string(/p:status/p:message)'))
+      end
+
+      def self::expositions(id,opts,expositions) # [[info,body],...]
+        return if expositions.empty?
+        attrs = CPEE::Persistence::extract_list(id,opts,'attributes').to_h
+        change_uuid = CPEE::Persistence::extract_item(id,opts,'dslx/@change_uuid')
+        expositions.each do |info,body|
+          content = {
+            :change_uuid => change_uuid,
+            :exposition => body,
+            :info => info,
+            :attributes => attrs
+          }
+          CPEE::Message::send(:event,'description/exposition',File.join(opts[:url],'/'),id,attrs['uuid'],attrs['info'],content,opts[:redis])
+        end
       end
 
       def response
@@ -324,7 +343,16 @@ module CPEE
         elsif opts[:statemachine].final? id
           @status = 410
         else
+          begin
+            expositions = @p[1..-1].each_slice(2).map do |info,body|
+              [JSON.parse(info.value.read), body.value.read]
+            end
+          rescue JSON::ParserError => e
+            @status = 400
+            return Riddl::Parameter::Complex.new('error','text/plain','exposition_info is not valid JSON: ' + e.message)
+          end
           PutStatus::set id, opts, @p[0].value.read
+          PutStatus::expositions id, opts, expositions
         end
         nil
       end
@@ -844,7 +872,7 @@ module CPEE
         end
       end #}}}
 
-      def self::set(id,opts,xml,exposition=[],copy=false)
+      def self::set(id,opts,xml,copy=false)
         dslx, dsl, de, ep = if copy
           PutDescription::transform(
             xml,
@@ -905,14 +933,6 @@ module CPEE
         PutDescription::backtransform_async(id,opts,dslx,tdslx,tdslxtype) if copy && tdslxtype == 'rest'
         PatchItems::set_hash('dataelements',id,opts,de) unless de.empty?
         PatchItems::set_hash('endpoints',id,opts,ep) unless ep.empty?
-        exposition.each do |exp|
-          content = {
-            :change_uuid => change_uuid,
-            :exposition => exp.value.read,
-            :attributes => attrs
-          }
-          CPEE::Message::send(:event,'description/exposition',File.join(opts[:url],'/'),id,attrs['uuid'],attrs['info'],content,opts[:redis])
-        end
       end
 
       def self::validate(xml,opts) # dslx against t_dslx.rng, returns the errors
@@ -944,7 +964,7 @@ module CPEE
             return Riddl::Parameter::Complex.new('error','text/plain',errors.join("\n"))
           end
           begin
-            PutDescription::set(id,opts,xml,@p[1..-1],copy)
+            PutDescription::set(id,opts,xml,copy)
           rescue => e
             puts e.message
             puts e.backtrace
