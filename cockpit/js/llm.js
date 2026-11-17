@@ -575,7 +575,10 @@ function create(prompt,llms,generation,mode) {
     if (gen == 'dataflow') { prompt_type = 'adapt_endpoints'; }
   }
 
-  send_expositions([[{ 'type': 'Intent Handling', 'lifecycle': 'start', 'artefact': 'Message', 'llm': myllm }, 'User intent analysis']]);
+  send_expositions([
+    [{ 'type': 'Intent Handling', 'lifecycle': 'start', 'artefact': 'Message', 'llm': myllm }, 'User intent analysis'],
+    [{ 'type': 'Intent Handling', 'lifecycle': 'start', 'artefact': 'User Input' }, input]
+  ]);
   ui.querying(llms,'analyses user intent');
 
   let documents = save['documents'] ? save['documents'].save_object() : {};
