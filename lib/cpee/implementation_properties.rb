@@ -310,7 +310,7 @@ module CPEE
       end
     end #}}}
     class PutStatus < Riddl::Implementation #{{{
-      EXPOSITION_ONLY = 18510501 # status id that only carries expositions, the status stays as it is
+      EXPOSITION_ONLY = 18510501
 
       def self::set(id,opts,xml)
         doc = XML::Smart::string(xml)
@@ -320,18 +320,16 @@ module CPEE
         CPEE::Persistence::set_item(id,opts,'status',:id => sid, :message => doc.find('string(/p:status/p:message)'))
       end
 
-      def self::expositions(id,opts,expositions) # [[info,body],...]
+      def self::expositions(id,opts,expositions)
         return if expositions.empty?
         attrs = CPEE::Persistence::extract_list(id,opts,'attributes').to_h
-        change_uuid = CPEE::Persistence::extract_item(id,opts,'dslx/@change_uuid')
         expositions.each do |info,body|
           content = {
-            :change_uuid => change_uuid,
             :exposition => body,
             :info => info,
             :attributes => attrs
           }
-          CPEE::Message::send(:event,'description/exposition',File.join(opts[:url],'/'),id,attrs['uuid'],attrs['info'],content,opts[:redis])
+          CPEE::Message::send(:event,'status/exposition',File.join(opts[:url],'/'),id,attrs['uuid'],attrs['info'],content,opts[:redis])
         end
       end
 

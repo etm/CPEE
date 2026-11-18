@@ -10,10 +10,13 @@ function xhr_error(xhr) { //{{{
   }
   return xhr.statusText;
 } //}}}
+function create_interaction_uuid() { //{{{
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+} //}}}
 function no_tokens() { //{{{
   return { input: 0, output: 0 };
 } //}}}
-function used_tokens(xhr) { // cpee-llm returns the tokens it used in a header, e.g. "input=1234, output=222" {{{
+function used_tokens(xhr) { //{{{
   let t = no_tokens();
   let h = xhr && xhr.getResponseHeader ? xhr.getResponseHeader('CPEE-LLM-Used-Tokens') : null;
   if (h) {
@@ -27,7 +30,7 @@ function used_tokens(xhr) { // cpee-llm returns the tokens it used in a header, 
 function add_tokens(a,b) { //{{{
   return { input: a.input + b.input, output: a.output + b.output };
 } //}}}
-function with_tokens(text,tokens) { // output text with the (summed up) tokens at the end {{{
+function with_tokens(text,tokens) { //{{{
   return text + ' (' + tokens.input + ' ￪TK, ' + tokens.output + ' ￬TK)';
 } //}}}
 
@@ -40,7 +43,7 @@ function add_prompt(input,content) { //{{{
   document.execCommand('insertText', false, content);
 } //}}}
 
-function call_llm_service_intent(input, llm, llms, dslx, messages, documents, depth=0, tokens=no_tokens()) { // resolves with (result,tokens), rejects with (xhr,tokens) {{{
+function call_llm_service_intent(input, llm, llms, dslx, messages, documents, interaction, depth=0, tokens=no_tokens()) { //{{{
   let def = new $.Deferred();
 
   (async () => {
@@ -60,14 +63,18 @@ function call_llm_service_intent(input, llm, llms, dslx, messages, documents, de
       let intent;
       try {
         intent = await intent_req;
-      } finally {
         tokens = add_tokens(tokens,used_tokens(intent_req));
+        send_expositions(interaction,[[{ 'type': 'Intent Handling', 'lifecycle': 'result', 'artefact': 'Tokens', 'llm': llm }, JSON.stringify(used_tokens(intent_req))]]);
+      } catch (xhr) {
+        tokens = add_tokens(tokens,used_tokens(xhr));
+        send_expositions(interaction,[[{ 'type': 'Intent Handling', 'lifecycle': 'failed', 'artefact': 'Tokens', 'llm': llm }, JSON.stringify(used_tokens(xhr))]]);
+        throw xhr;
       }
 
       if (intent === null) {
         // no intent matched at all
         ui.success(llms,with_tokens("Your request seems to be not about process modelling (or anything covered by the installed plugins).",tokens));
-        send_expositions([[{ 'type': 'Intent Handling', 'lifecycle': 'denied', 'artefact': 'Message', 'llm': llm, 'tokens': tokens }, "Request denied. Only process modelling allowed."]]);
+        send_expositions(interaction,[[{ 'type': 'Intent Handling', 'lifecycle': 'denied', 'artefact': 'Message', 'llm': llm }, "Request denied. Only process modelling allowed."]]);
         def.resolve(null,tokens);
         return;
       }
@@ -104,11 +111,15 @@ function call_llm_service_intent(input, llm, llms, dslx, messages, documents, de
       try {
         response = await plugin_req;
         tokens = add_tokens(tokens,used_tokens(plugin_req));
+        send_expositions(interaction,[[{ 'type': 'Intent Handling', 'lifecycle': 'result', 'artefact': 'Tokens', 'llm': llm }, JSON.stringify(used_tokens(plugin_req))]]);
       } catch (xhr) {
         tokens = add_tokens(tokens,used_tokens(xhr));
         let trimmed_url = intent.url.replace(/\/+$/, '');
         ui.error(llms,with_tokens("The intent plugin \'" + trimmed_url.substr(trimmed_url.lastIndexOf('/') + 1) + "\' is not working properly.",tokens));
-        send_expositions([[{ 'type': 'Intent Handling', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': llm, 'tokens': tokens }, "The intent plugin \'" + trimmed_url.substr(trimmed_url.lastIndexOf('/') + 1) + "\' is not working properly."]]);
+        send_expositions(interaction,[
+          [{ 'type': 'Intent Handling', 'lifecycle': 'failed', 'artefact': 'Tokens', 'llm': llm }, JSON.stringify(used_tokens(xhr))],
+          [{ 'type': 'Intent Handling', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': llm }, "The intent plugin \'" + trimmed_url.substr(trimmed_url.lastIndexOf('/') + 1) + "\' is not working properly."]
+        ]);
         def.resolve(null,tokens);
         return;
       }
@@ -129,13 +140,13 @@ function call_llm_service_intent(input, llm, llms, dslx, messages, documents, de
 
       if (intent.output == 'chat') {
         ui.success(llms,with_tokens(filled_output,tokens));
-        send_expositions([[{ 'type': 'Intent Handling', 'lifecycle': 'result', 'artefact': 'LLM Text', 'llm': llm, 'tokens': tokens }, filled_output]]);
+        send_expositions(interaction,[[{ 'type': 'Intent Handling', 'lifecycle': 'result', 'artefact': 'LLM Text', 'llm': llm }, filled_output]]);
         def.resolve(null,tokens);
       } else if (intent.output == 'reintent' && filled_output !== input && depth < 3) {
-        send_expositions([[{ 'type': 'Intent Handling', 'lifecycle': 'intermediate', 'artefact': 'LLM Text', 'llm': llm, 'tokens': tokens }, filled_output]]);
+        send_expositions(interaction,[[{ 'type': 'Intent Handling', 'lifecycle': 'intermediate', 'artefact': 'LLM Text', 'llm': llm }, filled_output]]);
         // repeat the process of looking for a plugin/intent, using the filled output as the new input
         // (at most 3 times, to avoid endless plugin loops)
-        call_llm_service_intent(filled_output,llm,llms,dslx,messages,documents,depth + 1,tokens).done((result,rtokens) => {
+        call_llm_service_intent(filled_output,llm,llms,dslx,messages,documents,interaction,depth + 1,tokens).done((result,rtokens) => {
           def.resolve(result,rtokens);
         }).fail((xhr,rtokens) => {
           def.reject(xhr,rtokens);
@@ -240,7 +251,7 @@ function call_llm_service_validation(model,llm) { //{{{
   return def.promise();
 } //}}}
 
-function call_llm_text_service(prompt,llms,action) { //{{{
+function call_llm_text_service(prompt,llms,action,interaction) { //{{{
   let myllm = llms.find(":selected").val();
   if (myllm === undefined){ myllm = default_llm; }
   const info = save.attributes_raw.info;
@@ -270,12 +281,18 @@ function call_llm_text_service(prompt,llms,action) { //{{{
         link.click();
       };
       ui.success(llms,with_tokens(data.status,tokens));
-      send_expositions([[{ 'type': 'LLM Text', 'lifecycle': 'result', 'artefact': 'Message', 'llm': myllm, 'tokens': tokens }, data.status]]);
+      send_expositions(interaction,[
+        [{ 'type': 'LLM Text', 'lifecycle': 'result', 'artefact': 'Tokens', 'llm': myllm }, JSON.stringify(tokens)],
+        [{ 'type': 'LLM Text', 'lifecycle': 'result', 'artefact': 'Message', 'llm': myllm }, data.status]
+      ]);
     },
     error:  function(xhr, stat, data) {
       let tokens = used_tokens(xhr);
       ui.error(llms,with_tokens(xhr_error(xhr),tokens));
-      send_expositions([[{ 'type': 'LLM Text', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': myllm, 'tokens': tokens }, xhr_error(xhr)]]);
+      send_expositions(interaction,[
+        [{ 'type': 'LLM Text', 'lifecycle': 'failed', 'artefact': 'Tokens', 'llm': myllm }, JSON.stringify(tokens)],
+        [{ 'type': 'LLM Text', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': myllm }, xhr_error(xhr)]
+      ]);
     }
   });
 } //}}}
@@ -537,13 +554,13 @@ function set_cpee_model(cpee_xml) { //{{{
   });
 } //}}}
 
-function send_expositions(expositions) { // [[info,body],...], info is an object, e.g. { 'type': 'Dataflow' } {{{
+function send_expositions(interaction,expositions) { //{{{
   if (expositions.length == 0) { return; }
   const form_data = new FormData();
   // 18510501 dont change status
   form_data.append("status", new Blob(['<status xmlns="http://cpee.org/ns/properties/2.0"><id>18510501</id><message></message></status>'], { type: "text/xml" }));
   for (const [info,body] of expositions) {
-    form_data.append("exposition_info", new Blob([JSON.stringify(info)], { type: "application/json" }));
+    form_data.append("exposition_info", new Blob([JSON.stringify(Object.assign({ 'interaction': interaction }, info))], { type: "application/json" }));
     form_data.append("exposition_body", new Blob([body === undefined || body === null ? '' : String(body)], { type: "text/plain" }));
   }
   return $.ajax({
@@ -557,7 +574,7 @@ function send_expositions(expositions) { // [[info,body],...], info is an object
 
 function empty_model(){ //{{{
   details_leave(false);
-  send_expositions([[{ 'type': 'Reset', 'lifecycle': 'result', 'artefact': 'Message' },'Everything empty.']]);
+  send_expositions(create_interaction_uuid(),[[{ 'type': 'Reset', 'lifecycle': 'result', 'artefact': 'Message' },'Everything empty.']]);
   set_cpee_model('<description xmlns="http://cpee.org/ns/description/1.0" xmlns:a="http://cpee.org/ns/annotation/1.0"/>');
   $('#dat_details').empty();
 } //}}}
@@ -606,10 +623,11 @@ function create(prompt,llms,generation,mode) {
     if (gen == 'dataflow') { prompt_type = 'adapt_endpoints'; }
   }
 
-  let tokens = no_tokens(); // summed up over all llm calls of this request
-  send_expositions([
-    [{ 'type': 'Intent Handling', 'lifecycle': 'start', 'artefact': 'Message', 'llm': myllm, 'tokens': tokens }, 'User intent analysis'],
-    [{ 'type': 'Intent Handling', 'lifecycle': 'start', 'artefact': 'User Input', 'tokens': tokens }, input]
+  let tokens = no_tokens();
+  let interaction = create_interaction_uuid();
+  send_expositions(interaction,[
+    [{ 'type': 'Intent Handling', 'lifecycle': 'start', 'artefact': 'Message', 'llm': myllm }, 'User intent analysis'],
+    [{ 'type': 'Intent Handling', 'lifecycle': 'input', 'artefact': 'User Input' }, input]
   ]);
   ui.querying(llms,'analyses user intent');
 
@@ -620,25 +638,26 @@ function create(prompt,llms,generation,mode) {
 
   history_promise.then(function(history){
     let messages = JSON.stringify(history);
-    call_llm_service_intent(input,myllm,llms,save['dslx'],messages,documents).done((piped,itokens) => {
+    call_llm_service_intent(input,myllm,llms,save['dslx'],messages,documents,interaction).done((piped,itokens) => {
       tokens = itokens;
       if (piped !== null) {
         ui.querying(llms,'creates model');
-        send_expositions([[{ 'type': 'Model Generation', 'lifecycle': 'start', 'artefact': 'Message', 'llm': myllm, 'tokens': tokens }, (prompt_type.startsWith('generate_') ? 'Create' : 'Adapt') + ' model']]);
+        send_expositions(interaction,[[{ 'type': 'Model Generation', 'lifecycle': 'start', 'artefact': 'Message', 'llm': myllm }, (prompt_type.startsWith('generate_') ? 'Create' : 'Adapt') + ' model']]);
         call_llm_service_model(save['dslx'],piped,myllm,prompt_type).done((data,mtokens) => {
           tokens = add_tokens(tokens,mtokens);
-          send_expositions([
-            [{ 'type': 'Model Generation', 'lifecycle': 'start', 'artefact': 'CPEE Tree', 'tokens': tokens }, data.input_cpee],
-            [{ 'type': 'Model Generation', 'lifecycle': 'start', 'artefact': 'User Input', 'tokens': tokens }, data.user_input],
-            [{ 'type': 'Model Generation', 'lifecycle': 'start', 'artefact': 'Mermaid', 'tokens': tokens }, data.input_intermediate],
-            [{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'Mermaid', 'llm': data.used_llm, 'tokens': tokens }, data.output_intermediate],
-            [{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'CPEE Tree', 'llm': data.used_llm, 'tokens': tokens }, prompt_type == 'adapt_endpoints' ? $('> dslx > description',$X(data.output_cpee)).serializePrettyXML() : data.output_cpee] // adapt_endpoints: the endpoints are a separate exposition
+          send_expositions(interaction,[
+            [{ 'type': 'Model Generation', 'lifecycle': 'input', 'artefact': 'CPEE Tree' }, data.input_cpee],
+            [{ 'type': 'Model Generation', 'lifecycle': 'input', 'artefact': 'User Input' }, data.user_input],
+            [{ 'type': 'Model Generation', 'lifecycle': 'input', 'artefact': 'Mermaid' }, data.input_intermediate],
+            [{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'Tokens', 'llm': data.used_llm }, JSON.stringify(mtokens)],
+            [{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'Mermaid', 'llm': data.used_llm }, data.output_intermediate],
+            [{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'CPEE Tree', 'llm': data.used_llm }, prompt_type == 'adapt_endpoints' ? $('> dslx > description',$X(data.output_cpee)).serializePrettyXML() : data.output_cpee]
           ]);
           if (prompt_type == 'adapt_endpoints') {
             let testset = $X(data.output_cpee); //{{{
             let model = $('> dslx > description',testset);
             let endpoints = $('> endpoints',testset);
-            send_expositions([[{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'Endpoints', 'llm': data.used_llm, 'tokens': tokens }, endpoints.serializePrettyXML()]]);
+            send_expositions(interaction,[[{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'Endpoints', 'llm': data.used_llm }, endpoints.serializePrettyXML()]]);
             $.ajax({
               type: "PATCH",
               url: url + "/properties/endpoints/",
@@ -658,7 +677,7 @@ function create(prompt,llms,generation,mode) {
           } else {
             if (gen == "dataflow") {
               ui.querying(llms,'selects endpoints and calculates dataflow'); //{{{
-              send_expositions([[{ 'type': 'Dataflow', 'lifecycle': 'start', 'artefact': 'Message', 'llm': myllm, 'tokens': tokens }, 'Select endpoints and calculate dataflow']]);
+              send_expositions(interaction,[[{ 'type': 'Dataflow', 'lifecycle': 'start', 'artefact': 'Message', 'llm': myllm }, 'Select endpoints and calculate dataflow']]);
               call_llm_service_dataflow($X(data.output_cpee).serializePrettyXML(),input,myllm).done((data,dtokens) => {
                 tokens = add_tokens(tokens,dtokens);
                 let url = $('body').attr('current-instance');
@@ -674,11 +693,12 @@ function create(prompt,llms,generation,mode) {
                 });
 
                 ui.querying(llms,'validates dataflow');
-                send_expositions([
-                  [{ 'type': 'Dataflow', 'lifecycle': 'result', 'artefact': 'LLM Text', 'llm': data.used_llm, 'tokens': tokens }, data.dataflow],
-                  [{ 'type': 'Dataflow', 'lifecycle': 'result', 'artefact': 'Endpoints', 'llm': data.used_llm, 'tokens': tokens }, data.endpoints],
-                  [{ 'type': 'Dataflow', 'lifecycle': 'intermediate', 'artefact': 'CPEE Tree', 'llm': data.used_llm, 'tokens': tokens }, $X(data.output_cpee).serializePrettyXML()],
-                  [{ 'type': 'Validation', 'lifecycle': 'start', 'artefact': 'Message', 'llm': myllm, 'tokens': tokens }, 'Validate dataflow']
+                send_expositions(interaction,[
+                  [{ 'type': 'Dataflow', 'lifecycle': 'result', 'artefact': 'Tokens', 'llm': data.used_llm }, JSON.stringify(dtokens)],
+                  [{ 'type': 'Dataflow', 'lifecycle': 'result', 'artefact': 'LLM Text', 'llm': data.used_llm }, data.dataflow],
+                  [{ 'type': 'Dataflow', 'lifecycle': 'result', 'artefact': 'Endpoints', 'llm': data.used_llm }, data.endpoints],
+                  [{ 'type': 'Dataflow', 'lifecycle': 'intermediate', 'artefact': 'CPEE Tree', 'llm': data.used_llm }, $X(data.output_cpee).serializePrettyXML()],
+                  [{ 'type': 'Validation', 'lifecycle': 'start', 'artefact': 'Message', 'llm': myllm }, 'Validate dataflow']
                 ]);
                 call_llm_service_validation($X(data.output_cpee).serializePrettyXML(),myllm).done((data,vtokens) => {
                   tokens = add_tokens(tokens,vtokens);
@@ -687,45 +707,55 @@ function create(prompt,llms,generation,mode) {
                   set_cpee_model($X(data.output_cpee).serializePrettyXML());
                   let summary = diff_summary(last_model_before_generation,data.output_cpee);
                   ui.success(llms,with_tokens(summary,tokens));
-                  send_expositions([
-                    [{ 'type': 'Validation', 'lifecycle': 'result', 'artefact': 'CPEE Tree', 'llm': myllm, 'tokens': tokens }, $X(data.output_cpee).serializePrettyXML()],
-                    [{ 'type': 'Validation', 'lifecycle': 'result', 'artefact': 'Change Summary', 'tokens': tokens }, summary]
+                  send_expositions(interaction,[
+                    [{ 'type': 'Validation', 'lifecycle': 'result', 'artefact': 'Tokens', 'llm': myllm }, JSON.stringify(vtokens)],
+                    [{ 'type': 'Validation', 'lifecycle': 'result', 'artefact': 'CPEE Tree', 'llm': myllm }, $X(data.output_cpee).serializePrettyXML()],
+                    [{ 'type': 'Validation', 'lifecycle': 'result', 'artefact': 'Change Summary' }, summary]
                   ]);
                 })
                 .fail((xhr) => {
                   tokens = add_tokens(tokens,used_tokens(xhr));
                   ui.error(llms,with_tokens(xhr_error(xhr),tokens));
-                  send_expositions([[{ 'type': 'Validation', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': myllm, 'tokens': tokens }, xhr_error(xhr)]]);
+                  send_expositions(interaction,[
+                    [{ 'type': 'Validation', 'lifecycle': 'failed', 'artefact': 'Tokens', 'llm': myllm }, JSON.stringify(used_tokens(xhr))],
+                    [{ 'type': 'Validation', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': myllm }, xhr_error(xhr)]
+                  ]);
                 });
 
               })
               .fail((xhr) => {
                 tokens = add_tokens(tokens,used_tokens(xhr));
                 ui.error(llms,with_tokens(xhr_error(xhr),tokens));
-                send_expositions([[{ 'type': 'Dataflow', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': myllm, 'tokens': tokens }, xhr_error(xhr)]]);
+                send_expositions(interaction,[
+                  [{ 'type': 'Dataflow', 'lifecycle': 'failed', 'artefact': 'Tokens', 'llm': myllm }, JSON.stringify(used_tokens(xhr))],
+                  [{ 'type': 'Dataflow', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': myllm }, xhr_error(xhr)]
+                ]);
               }); //}}}
             } else if (gen == "model") {
               last_model_before_generation = save['dslx']; //{{{
               set_cpee_model(data.output_cpee);
               let summary = diff_summary(last_model_before_generation,data.output_cpee);
               ui.success(llms,with_tokens(summary,tokens));
-              send_expositions([[{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'Change Summary', 'tokens': tokens }, summary]]); //}}}
+              send_expositions(interaction,[[{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'Change Summary' }, summary]]); //}}}
             } else {
               ui.success(llms,with_tokens("Successfully done nothing",tokens));
-              send_expositions([[{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'Message', 'tokens': tokens }, "Successfully done nothing"]]);
+              send_expositions(interaction,[[{ 'type': 'Model Generation', 'lifecycle': 'result', 'artefact': 'Message' }, "Successfully done nothing"]]);
             }
           }
         })
         .fail((xhr) => {
           tokens = add_tokens(tokens,used_tokens(xhr));
           ui.error(llms,with_tokens(xhr_error(xhr),tokens));
-          send_expositions([[{ 'type': 'Model Generation', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': myllm, 'tokens': tokens }, xhr_error(xhr)]]);
+          send_expositions(interaction,[
+            [{ 'type': 'Model Generation', 'lifecycle': 'failed', 'artefact': 'Tokens', 'llm': myllm }, JSON.stringify(used_tokens(xhr))],
+            [{ 'type': 'Model Generation', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': myllm }, xhr_error(xhr)]
+          ]);
         });
       }
     }).fail((xhr,itokens) => {
       tokens = itokens || no_tokens();
       ui.error(llms,with_tokens(xhr_error(xhr),tokens));
-      send_expositions([[{ 'type': 'Intent Handling', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': myllm, 'tokens': tokens }, xhr_error(xhr)]]);
+      send_expositions(interaction,[[{ 'type': 'Intent Handling', 'lifecycle': 'failed', 'artefact': 'Message', 'llm': myllm }, xhr_error(xhr)]]);
     });
   });
 }
@@ -753,26 +783,29 @@ $(document).ready(async function() { //{{{
   $(document).on('click','#generate_itext_button',function(e){
     ui.clean();
     ui.querying($('#llms'),'thinks');
-    send_expositions([[{ 'type': 'LLM Text', 'lifecycle': 'start', 'artefact': 'Message', 'llm': $('#llms').find(":selected").val() || default_llm, 'tokens': 0 }, 'Create text description of the CPEE-Tree (file)']]);
-    call_llm_text_service($('#prompt'),$('#llms'),'file');
+    let interaction = create_interaction_uuid();
+    send_expositions(interaction,[[{ 'type': 'LLM Text', 'lifecycle': 'start', 'artefact': 'Message', 'llm': $('#llms').find(":selected").val() || default_llm }, 'Create text description of the CPEE-Tree (file)']]);
+    call_llm_text_service($('#prompt'),$('#llms'),'file',interaction);
   });
   $(document).on('click','#generate_text_button',function(e){
     ui.clean();
     ui.querying($('#llms'),'thinks');
-    send_expositions([[{ 'type': 'LLM Text', 'lifecycle': 'start', 'artefact': 'Message', 'llm': $('#llms').find(":selected").val() || default_llm, 'tokens': 0 }, 'Create text description of the CPEE-Tree (prompt)']]);
-    call_llm_text_service($('#prompt'),$('#llms'),'show');
+    let interaction = create_interaction_uuid();
+    send_expositions(interaction,[[{ 'type': 'LLM Text', 'lifecycle': 'start', 'artefact': 'Message', 'llm': $('#llms').find(":selected").val() || default_llm }, 'Create text description of the CPEE-Tree (prompt)']]);
+    call_llm_text_service($('#prompt'),$('#llms'),'show',interaction);
   });
   $(document).on('click','#prompt_undo_button',function(e){
     ui.clean();
     ui.input($('#llms'),'Undo');
     ui.querying($('#llms'),'thinks');
-    send_expositions([[{ 'type': 'Undo', 'lifecycle': 'start', 'artefact': 'Message' }, 'Restore previous CPEE-Tree']]);
+    let interaction = create_interaction_uuid();
+    send_expositions(interaction,[[{ 'type': 'Undo', 'lifecycle': 'start', 'artefact': 'Message' }, 'Restore previous CPEE-Tree']]);
     load_last_model_before_generation().done(() => {
       ui.success($('#llms'),'Previous model restored.');
-      send_expositions([[{ 'type': 'Undo', 'lifecycle': 'result', 'artefact': 'Message' }, 'Previous CPEE-Tree restored.']]);
+      send_expositions(interaction,[[{ 'type': 'Undo', 'lifecycle': 'result', 'artefact': 'Message' }, 'Previous CPEE-Tree restored.']]);
     }).fail((xhr) => {
       ui.error($('#llms'),xhr_error(xhr));
-      send_expositions([[{ 'type': 'Undo', 'lifecycle': 'failed', 'artefact': 'Message' }, xhr_error(xhr)]]);
+      send_expositions(interaction,[[{ 'type': 'Undo', 'lifecycle': 'failed', 'artefact': 'Message' }, xhr_error(xhr)]]);
     });
   });
   $(document).on('click','#prompt_attach_button',function(e){

@@ -17,6 +17,7 @@
     <event>instantiation</event>
     <event>take</event>
     <event>giveback</event>
+    <event>probe</event>
   </topic>
   <topic id="state">
     <event>change</event>
@@ -24,7 +25,11 @@
   <topic id="description">
     <event>change</event>
   </topic>
+  <topic id="status">
+    <event>exposition</event>
+  </topic>
   <topic id="gateway">
+    <event>split</event>
     <event>decide</event>
     <event>join</event>
   </topic>
