@@ -8,6 +8,7 @@
   <include href="endpoints.rng"/>
   <include href="attributes.rng"/>
   <include href="description.rng"/>
+  <include href="dslx.rng"/>
   <include href="transformation.rng"/>
   <include href="subscriptions.rng"/>
 
@@ -43,6 +44,9 @@
         </optional>
         <optional>
           <ref name="description"/>
+        </optional>
+        <optional>
+          <ref name="dslx"/>
         </optional>
         <optional>
           <ref name="transformation"/>

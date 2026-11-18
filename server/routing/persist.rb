@@ -140,6 +140,7 @@ Daemonite.new do |opts|
               multi.set("instance:#{instance}/transformation/endpoints/@type",mess.dig('content','endpoints_type'),keepttl: true)
               multi.set("instance:#{instance}/transformation/dslx",mess.dig('content','dslx'),keepttl: true)
               multi.set("instance:#{instance}/transformation/dslx/@type",mess.dig('content','dslx_type'),keepttl: true)
+              multi.set("instance:#{instance}/transformation/dslx/@extension",mess.dig('content','dslx_extension'),keepttl: true)
               if mess.dig('content','change_pending') # same dslx, but the description is no longer the one for it
                 multi.del("instance:#{instance}/description/@change_uuid")
               end

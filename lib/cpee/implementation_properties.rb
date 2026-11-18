@@ -141,6 +141,7 @@ module CPEE
         doc.find('/p:properties/p:transformation/p:endpoints/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type')
         doc.find('/p:properties/p:transformation/p:dslx').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dslx') || ''
         doc.find('/p:properties/p:transformation/p:dslx/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dslx/@type') || 'copy' # instances from before dslx backtransformation
+        doc.find('/p:properties/p:transformation/p:dslx').first.attributes['extension'] = CPEE::Persistence::extract_item(id,opts,'transformation/dslx/@extension') || 'txt'
         Riddl::Parameter::Complex.new('properties','application/xml',doc.to_s)
       end
     end #}}}
@@ -159,7 +160,7 @@ module CPEE
             CPEE::Properties::PutStatus::set id, opts, node.first.dump
           end
           if (node = doc.find('/p:properties/p:executionhandler')).any?
-            if doc.find('/p:properties/p:description/*').any?
+            if doc.find('/p:properties/p:description/* | /p:properties/p:dslx/*').any?
               CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text, false
             else
               CPEE::Properties::PutExecutionHandler::set id, opts, node.first.text
@@ -173,9 +174,12 @@ module CPEE
           end
 
           if (node = doc.find('/p:properties/p:transformation')).any?
-            CPEE::Properties::PutTransformation::set id, opts, node.first.dump, doc.find('/p:properties/p:description/*').empty?
+            CPEE::Properties::PutTransformation::set id, opts, node.first.dump, doc.find('/p:properties/p:description/* | /p:properties/p:dslx/*').empty?
+            CPEE::Persistence::wait(opts)
           end
-          if (node = doc.find('/p:properties/p:description/*')).any?
+          if (node = doc.find('/p:properties/p:dslx/*')).any?
+            CPEE::Properties::PutDescription::set id, opts, node.first.dump, true
+          elsif (node = doc.find('/p:properties/p:description/*')).any?
             CPEE::Properties::PutDescription::set id, opts, node.first.dump
           end
 
@@ -208,9 +212,12 @@ module CPEE
         end
 
         if (node = doc.find('/*/p:transformation')).any?
-          CPEE::Properties::PutTransformation::set id, opts, node.first.dump, doc.find('/*/p:description/*').empty?
+          CPEE::Properties::PutTransformation::set id, opts, node.first.dump, doc.find('/*/p:description/* | /*/p:dslx/*').empty?
+          CPEE::Persistence::wait(opts)
         end
-        if (node = doc.find('/*/p:description/*')).any?
+        if (node = doc.find('/*/p:dslx/*')).any?
+          CPEE::Properties::PutDescription::set id, opts, node.first.dump, true
+        elsif (node = doc.find('/*/p:description/*')).any?
           CPEE::Properties::PutDescription::set id, opts, node.first.dump
         end
 
@@ -988,6 +995,7 @@ module CPEE
         des.find('p:endpoints/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/endpoints/@type')
         des.find('p:dslx').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dslx') || ''
         des.find('p:dslx/@type').first.text = CPEE::Persistence::extract_item(id,opts,'transformation/dslx/@type') || 'copy' # instances from before dslx backtransformation
+        des.find('p:dslx').first.attributes['extension'] = CPEE::Persistence::extract_item(id,opts,'transformation/dslx/@extension') || 'txt'
         Riddl::Parameter::Complex.new('status','text/xml',des.to_doc.to_s)
       end
     end #}}}
@@ -996,20 +1004,23 @@ module CPEE
         doc = XML::Smart::string(xml)
         doc.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
         tdslx = doc.find('string(/p:transformation/p:dslx)')
-        tdslxtype = (t = doc.find('string(/p:transformation/p:dslx/@type)')).empty? ? 'copy' : t # optional, missing means copy
+        type = Proc.new { |item| (t = doc.find("string(/p:transformation/p:#{item}/@type)")).empty? ? 'none' : t }
+        tdslxtype = type.call('dslx')
+        tdslxext = (t = doc.find('string(/p:transformation/p:dslx/@extension)')).empty? ? 'txt' : t
         changed = tdslx != (CPEE::Persistence::extract_item(id,opts,'transformation/dslx') || '') ||
                   tdslxtype != (CPEE::Persistence::extract_item(id,opts,'transformation/dslx/@type') || 'copy')
         dslx = CPEE::Persistence::extract_item(id,opts,'dslx')
         dslx = nil if dslx&.empty?
         CPEE::Persistence::set_item(id,opts,'transformation',
           :description => doc.find('string(/p:transformation/p:description)'),
-          :description_type => doc.find('string(/p:transformation/p:description/@type)'),
+          :description_type => type.call('description'),
           :dataelements =>doc.find('string(/p:transformation/p:dataelements)'),
-          :dataelements_type => doc.find('string(/p:transformation/p:dataelements/@type)'),
+          :dataelements_type => type.call('dataelements'),
           :endpoints =>doc.find('string(/p:transformation/p:endpoints)'),
-          :endpoints_type => doc.find('string(/p:transformation/p:endpoints/@type)'),
+          :endpoints_type => type.call('endpoints'),
           :dslx => tdslx,
           :dslx_type => tdslxtype,
+          :dslx_extension => tdslxext,
           :change_uuid => dslx ? Digest::SHA1.hexdigest(dslx) : nil,
           :change_pending => backtrans && changed && tdslxtype == 'rest' && !dslx.nil? # description follows with description/sync
         )

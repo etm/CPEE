@@ -41,6 +41,7 @@ function global_init() {
   save['dsl'] = undefined;
   save['change_uuid'] = undefined; // of the last description/change
   save['description'] = undefined; // description that belongs to change_uuid, undefined means get it from the server
+  save['transformation'] = undefined; // types of description, dataelements, endpoints, dslx transformation
   save['activity_red_states'] = {}
   save['graph'] = undefined;
   save['graph_theme'] = undefined;
@@ -396,26 +397,35 @@ async function sse() { //{{{
             if (data['name'] == 'sync') {
               if (data.content.change_uuid == save['change_uuid']) {
                 save['description'] = data.content.description;
-                $("button[name=savemodelfile]").prop('disabled',false);
+                savemodel_enable(true);
               }
               break;
             }
             if (data['name'] == 'change') {
               save['change_uuid'] = data.content.change_uuid;
               save['description'] = data.content.change_pending ? undefined : data.content.description;
-              $("button[name=savemodelfile]").prop('disabled',data.content.change_pending == true);
+              savemodel_enable(data.content.change_pending != true);
             } else if (data['name'] == 'error' && data.content.change_uuid && data.content.change_uuid == save['change_uuid']) {
-              $("button[name=savemodelfile]").prop('disabled',false);
+              savemodel_enable(true);
             }
             monitor_instance_dsl();
             monitor_graph_change(false);
             document.dispatchEvent(graph_changed);
             break;
           case 'transformation':
+            model_buttons_update({
+              description: data.content.description_type,
+              dataelements: data.content.dataelements_type,
+              endpoints: data.content.endpoints_type,
+              dslx: data.content.dslx_type,
+              extension: data.content.dslx_extension
+            });
             if (data.content.change_pending) { // the description for the new model type follows with description/sync
               save['change_uuid'] = data.content.change_uuid;
               save['description'] = undefined;
-              $("button[name=savemodelfile]").prop('disabled',true);
+              savemodel_enable(false);
+            } else {
+              savemodel_enable(true);
             }
             break;
           case 'endpoints':
@@ -534,6 +544,8 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       // Change url to return to current instance when reloading (because new subscription is made)
       $("input[name=votecontinue]").prop( "checked", false );
 
+      monitor_instance_transformation(url);
+
       subscribe(url,false,function(){
         if (load || exec) {
           load_testset(exec);
@@ -545,6 +557,30 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       uidash_activate_tab("#tabnew");
     }
   });
+}// }}}
+
+function monitor_instance_transformation(url) {// {{{
+  $.ajax({
+    type: "GET",
+    url: url + "properties/transformation/",
+    success: function(res){
+      let trans = {};
+      ['description','dataelements','endpoints','dslx'].forEach(t => {
+        trans[t] = $('transformation > ' + t,res).attr('type') || 'none';
+      });
+      trans.extension = $('transformation > dslx',res).attr('extension') || 'txt';
+      model_buttons_update(trans);
+    }
+  });
+}// }}}
+function model_buttons_update(trans) {// {{{
+  // load model needs a transformation into the instance, save model one out of it
+  save['transformation'] = trans;
+  $("button[name=loadmodelfile]").prop('disabled',['description','dataelements','endpoints'].every(t => trans[t] == 'none'));
+  if (trans.dslx == 'none') { $("button[name=savemodelfile]").prop('disabled',true); }
+}// }}}
+function savemodel_enable(enabled) {// {{{
+  $("button[name=savemodelfile]").prop('disabled',!enabled || (save['transformation'] !== undefined && save['transformation'].dslx == 'none'));
 }// }}}
 
 function monitor_instance_values(type,vals,first=false) {// {{{
@@ -1064,13 +1100,8 @@ function get_testset(deferred) {// {{{
       $('testset > status',testset).remove();
       $('testset > positions',testset).remove();
       $('testset > dsl',testset).remove();
-      $('testset > description > *',testset).remove();
-      $('testset > description',testset).append($('testset > dslx',testset).children());
-      $('testset > transformation',testset).remove();
-      $('testset > dsl',testset).remove();
-      $('testset > dslx',testset).remove();
+      $('testset > description',testset).remove();
       $('testset > attributes > uuid',testset).remove();
-      testset.append($X('<transformation xmlns="http://cpee.org/ns/properties/2.0"><description type="copy"/><dataelements type="none"/><endpoints type="none"/></transformation>'));
       var name =  $('testset > attributes > info',testset).text();
       $('[xmlns]',testset).each((idx,ele) => {
         if (ele.parentNode.namespaceURI == ele.getAttribute('xmlns')) {
@@ -1132,13 +1163,12 @@ function save_modelfile() {// {{{
   var url = $('body').attr('current-instance');
   if (!save['graph_adaptor']) { return; } // no instance loaded
 
-  let extensions = { 'Signavio': 'bpmn', 'ChatGPT_Mermaid': 'mmd', 'ChatGPT_Graphviz': 'dot' };
+  let extension = (save['transformation'] && save['transformation'].extension) || 'txt';
   Promise.all([
     save['description'] !== undefined ? save['description'] : $.ajax({ type: "GET", url: url + "/properties/description/", dataType: 'text' }), // from the events, persist.rb might not have stored it yet
-    $.ajax({ type: "GET", url: url + "/properties/attributes/info/" }),
-    $.ajax({ type: "GET", url: url + "/properties/attributes/modeltype/" }).catch(() => 'CPEE') // instances without modeltype
-  ]).then(function([desc,info,modeltype]){
-    $('#savemodelfile').attr('download',info + '.' + (extensions[modeltype] || 'xml'));
+    $.ajax({ type: "GET", url: url + "/properties/attributes/info/" })
+  ]).then(function([desc,info]){
+    $('#savemodelfile').attr('download',info + '.' + extension);
     $('#savemodelfile').attr('href','data:application/xml;charset=utf-8;base64,' + $B64(desc));
     document.getElementById('savemodelfile').click();
   },function(xhr){
@@ -1152,7 +1182,7 @@ async function set_testset(testset,exec) {// {{{
   var tset = $X('<properties xmlns="http://cpee.org/ns/properties/2.0"/>');
 
   // load old testsets. remove 12/2026
-  $("testset > description manipulate",testset).each((_,t) => {
+  $("testset > description manipulate, testset > dslx manipulate",testset).each((_,t) => {
     if ($('code',t).length == 0) {
       // only direct text nodes, children (if any) stay untouched
       let txt = $(t).contents().filter((_,n) => n.nodeType == Node.TEXT_NODE);
@@ -1171,6 +1201,7 @@ async function set_testset(testset,exec) {// {{{
   tset.append($("testset > endpoints",testset));
   tset.append($("testset > attributes",testset));
   tset.append($("testset > description",testset));
+  tset.append($("testset > dslx",testset));
   tset.append($("testset > transformation",testset));
   if (skip_location) {
     $('properties > attributes > info',tset).remove();

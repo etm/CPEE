@@ -155,7 +155,7 @@ $(document).ready(function() { //{{{
 
   function extractDescriptionXmlFromTestset(testsetXml) {
     var xmlDoc = $.parseXML(testsetXml);
-    var descriptionContainer = xmlDoc.getElementsByTagName('description')[0];
+    var descriptionContainer = xmlDoc.getElementsByTagName('dslx')[0] || xmlDoc.getElementsByTagName('description')[0];
 
     if (!descriptionContainer) {
       return null;

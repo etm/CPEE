@@ -8,6 +8,7 @@
   <include href="endpoints.rng"/>
   <include href="attributes.rng"/>
   <include href="description.rng"/>
+  <include href="dslx.rng"/>
   <include href="transformation.rng"/>
 
   <start>
@@ -21,6 +22,9 @@
       <ref name="endpoints"/>
       <ref name="attributes"/>
       <ref name="description"/>
+      <optional>
+        <ref name="dslx"/>
+      </optional>
       <ref name="transformation"/>
     </element>
   </start>
