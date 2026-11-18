@@ -710,7 +710,6 @@ function create(prompt,llms,generation,mode) {
                   send_expositions(interaction,[
                     [{ 'type': 'Validation', 'lifecycle': 'result', 'artefact': 'Tokens', 'llm': myllm }, JSON.stringify(vtokens)],
                     [{ 'type': 'Validation', 'lifecycle': 'result', 'artefact': 'CPEE Tree', 'llm': myllm }, $X(data.output_cpee).serializePrettyXML()],
-                    [{ 'type': 'Validation', 'lifecycle': 'result', 'artefact': 'Change Summary' }, summary]
                   ]);
                 })
                 .fail((xhr) => {
