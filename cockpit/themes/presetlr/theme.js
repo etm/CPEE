@@ -5,6 +5,8 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     this.rotated_labels = false;
     this.lr = true;
     this.wellformed_pre_test = true;
+    this.elements.alternative.illustrator.noindent = true;
+    this.elements.parallel_branch.illustrator.noindent = true;
     this.elements.loop.illustrator.resolve_symbol = function(node) {
       return $(node).attr('mode') == 'pre_test' ? 'loop_tail_pre' : 'loop_tail'; // pre_test loops look like post_test loops, but reversed
     };
