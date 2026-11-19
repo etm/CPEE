@@ -1,0 +1,132 @@
+#arearequirements {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  height: 100%;
+}
+#arearequirements > button {
+  height: 100%;
+  padding: 0;
+  margin-right: 0.5em;
+}
+#arearequirements > button span {
+  display: inline-block;
+  transform: rotate(-90deg);
+}
+#arearequirements.inactive { display: none; }
+#arearequirements button.relaxngui_control { display: none; }
+
+#areanlrequirements {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  height: 100%;
+}
+#areanlrequirements > button {
+  height: 100%;
+  padding: 0;
+  margin-right: 0.5em;
+}
+#areanlrequirements > button span {
+  display: inline-block;
+  transform: rotate(-90deg);
+}
+#areanlrequirements.inactive { display: none; }
+
+#dat_requirements {
+  border-collapse:collapse;
+  border-spacing:0;
+  border:0 none;
+  margin:0;
+  padding:0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+#dat_requirements .astreq-save {
+  margin-right: 0.5em;
+}
+
+#dat_requirements input.astreq-key {
+  width: 2.8em;
+  min-width: 2.8em;
+  max-width: 3.4em;
+  color: #555;
+}
+
+#dat_requirements input.astreq-key[readonly] {
+  background-color: transparent;
+  border: 0 none;
+  box-shadow: none;
+  color: #555;
+  padding-left: 0;
+  padding-right: 0;
+  caret-color: transparent;
+}
+
+#dat_requirements input.astreq-value {
+  margin-left: 0.25em;
+  width: calc(100% - 8.5em);
+}
+
+#dat_nlrequirements {
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 0 none;
+  margin: 0;
+  padding: 0.5em;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+#dat_nlrequirements .nlreq-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+#dat_nlrequirements .nlreq-id {
+  min-width: 2.6em;
+  color: #555;
+}
+
+#dat_nlrequirements .nlreq-text {
+  flex: 1;
+}
+
+#dat_nlrequirements .nlreq-status {
+  min-width: 5em;
+  color: #555;
+  font-size: 0.9em;
+}
+
+#dat_nlrequirements .nlreq-status.ok {
+  color: #2d7f2d;
+}
+
+#dat_nlrequirements .nlreq-status.error {
+  color: #b30000;
+}
+
+#dat_log div:nth-child(odd) { background-color: #e8e8e8; color: #333; }
+
+#tabnlrequirements { color: #c01c28ff; }
+#tabrequirements { color: #c01c28ff; }
+#tabcomp { color: #c01c28ff; }
+
+#areacomp > div:first-child {  padding-left: 1em; padding-top: 1em; }
+
+#comp_log { overflow-y: scroll; overflow-x: hidden; user-select: text; }
+#comp_log div { padding: 0.2em 0.5em; }
+#comp_log div.indent { padding-left: 2em; }
+#comp_log div.indent-level-2 { padding-left: 3.5em; }
+#comp_log div:nth-child(odd) { background-color: #e8e8e8; color: #333; }
+#comp_log div.error { color: #b30000; font-weight: 600; }
+
