@@ -1,0 +1,8 @@
+<element rngui:version="1.2" name="nlrequirements" ns="http://cpee.org/ns/properties/2.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <zeroOrMore rngui:label="Create NL Requirement">
+    <element rngui:label='Name' rngui:action_button_label="Extract" rngui:action_button_handler="extract_single_nl_requirement(entry)">
+      <anyName rngui:unique="true" rngui:default="javascript:next_requirement_id()" rngui:readonly="true"/>
+      <data type="string" rngui:label="Write natural-language requirement"/>
+    </element>
+  </zeroOrMore>
+</element>

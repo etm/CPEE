@@ -1,4 +1,5 @@
 var latestComplianceResult = null;
+var requirements_state = { requirements: null, nl: null };
 
 $(document).ready(function() { //{{{
   $.ajax({
@@ -7,12 +8,18 @@ $(document).ready(function() { //{{{
     dataType: "xml",
     success: function(rng){
       save['requirements'] = new RelaxNGui(rng,$('#dat_requirements'));
-      initialize_nl_requirements_from_saved_requirements();
+      load_requirements();
     }
   });
-
-  initialize_nl_requirements_tab();
-  initialize_ast_requirements_tab();
+  $.ajax({
+    type: "GET",
+    url: "rngs/nlrequirements.rng",
+    dataType: "xml",
+    success: function(rng){
+      save['nlrequirements'] = new RelaxNGui(rng,$('#dat_nlrequirements'));
+      load_requirements();
+    }
+  });
 
   function loadComplianceLog(uuid, options) {
     var renderOptions = options || {};
@@ -434,268 +441,126 @@ $(document).ready(function() { //{{{
     });
   });
 
-  document.addEventListener('attributes:changed', function (e) {
-    let req = $X("<requirements xmlns='http://cpee.org/ns/properties/2.0'/>");
-    let reqs;
-    let regex = /\"\s*=>\s*"/g
-    if (save.attributes_raw.requirements.match(regex)) {
-      reqs = save.attributes_raw.requirements.replace(regex,"\":\"");
-    } else {
-      reqs = save.attributes_raw.requirements;
-    }
-    reqj = JSON.parse(reqs);
-    for (let key in reqj) {
-      let ele = $X("<" + key + " xmlns='http://cpee.org/ns/properties/2.0'/>");
-          ele.text(reqj[key]);
-      req.append(ele);
-    }
-    save['requirements'].content(req);
-    ensure_ast_inline_save_buttons(reqj);
-    sync_nl_rows_to_requirement_keys(reqj);
-
-    let nlReqj = parse_saved_object(save.attributes_raw['NL-requirements']);
-    sync_nl_rows_to_requirement_keys(nlReqj);
-    apply_nl_requirements_values(nlReqj);
+  document.addEventListener('attributes:changed', function() {
+    load_requirements();
   });
 
-  $(document).on('relaxngui_remove', '#dat_requirements', function(event){
-    sync_nl_rows_to_requirement_keys(read_requirements_object(), true);
-    do_nl_requirements_save(event);
-    do_requirements_save(event);
-  });
-  $(document).on('relaxngui_move', '#dat_requirements', function(event){
-    do_requirements_save(event);
-  });
-  $(document).on('relaxngui_change', '#dat_requirements', function(event){
-    do_requirements_save(event);
-  });
-
-  var astButtonsTimer;
-  function schedule_ast_buttons_sync() {
-    clearTimeout(astButtonsTimer);
-    astButtonsTimer = setTimeout(function() {
-      ensure_ast_inline_save_buttons(read_requirements_object());
-    }, 250);
-  }
-
-  // Requirements RNG is generic anyName/value, so keys can be renamed live.
-  // Keep the per-requirement action list aligned with current editor content.
-  $(document).on(
-    'input change keyup blur paste',
-    '#dat_requirements input, #dat_requirements textarea, #dat_requirements select, #dat_requirements [contenteditable=true]',
-    function() {
-      schedule_ast_buttons_sync();
-    }
-  );
-
-  var nlTimer;
-  $(document).on('input', '#dat_nlrequirements .nlreq-text', function(event){
-    clearTimeout(nlTimer);
-    nlTimer = setTimeout(function(){ do_nl_requirements_save(event); }, 2000);
+  $(document).on('relaxngui_remove', '#dat_requirements', function() {
+    prune_nl_requirements();
   });
 }); //}}}
 
-function initialize_nl_requirements_tab() { //{{{
-  $('#nlreq_add').on('click', function() {
-    sync_nl_rows_to_requirement_keys(read_requirements_object(), true);
-    add_nl_requirement_row();
-    do_nl_requirements_save();
-  });
-
-  if ($('#dat_nlrequirements .nlreq-row').length === 0) {
-    add_nl_requirement_row();
-  }
+function read_requirements(editor) { //{{{
+  return editor ? parse_saved_object(editor.save_json()) : {};
 } //}}}
 
-function initialize_ast_requirements_tab() { //{{{
-  $(document).on('click', '#dat_requirements .astreq-save', function() {
-    persist_ast_requirements_inline($(this));
+function requirements_xml(rootName, reqObject) { //{{{
+  let req = $X("<" + rootName + " xmlns='http://cpee.org/ns/properties/2.0'/>");
+  Object.keys(reqObject).forEach(function(key) {
+    let ele = $X("<" + key + " xmlns='http://cpee.org/ns/properties/2.0'/>");
+    ele.text(reqObject[key]);
+    req.append(ele);
   });
-
-  ensure_ast_inline_save_buttons(read_requirements_object());
+  return req;
 } //}}}
 
-function ensure_ast_inline_save_buttons(requirementsObject) { //{{{
-  if ($('#dat_requirements').length === 0) {
+function load_requirements() { //{{{
+  if (!save['requirements'] || !save['nlrequirements'] || !save['attributes_raw']) {
     return;
   }
+  let raw = save['attributes_raw'].requirements || '';
+  let nlraw = save['attributes_raw']['NL-requirements'] || '';
+  if (raw === requirements_state.requirements && nlraw === requirements_state.nl) {
+    return;
+  }
+  requirements_state.requirements = raw;
+  requirements_state.nl = nlraw;
 
-  $('#dat_requirements input.relaxngui_cell').removeClass('astreq-key astreq-value');
-
-  var reqObject = requirementsObject && typeof requirementsObject === 'object'
-    ? requirementsObject
-    : read_requirements_object();
-
-  Object.keys(reqObject)
-    .sort(sort_requirement_ids)
-    .forEach(function(key) {
-      var keyInput = $('#dat_requirements input.relaxngui_cell').filter(function() {
-        return ($(this).val() || '').trim() === key;
-      }).first();
-
-      if (keyInput.length === 0) {
-        return;
-      }
-
-      if (keyInput.prev('.astreq-save').length === 0) {
-        $('<button type="button" class="astreq-save" title="Save requirements into attributes">Save</button>')
-          .attr('data-requirement-id', key)
-          .insertBefore(keyInput);
-      } else {
-        keyInput.prev('.astreq-save').attr('data-requirement-id', key);
-      }
-
-      keyInput.addClass('astreq-key');
-      if ((keyInput.val() || '').trim() !== '') {
-        keyInput.prop('readonly', true);
-      }
-
-      var valueInput = keyInput.parent().find('input.relaxngui_cell').not(keyInput).first();
-      if (valueInput.length > 0) {
-        valueInput.addClass('astreq-value');
-      }
-    });
-
-  apply_ast_field_roles();
-
-  $('#dat_requirements .astreq-save').each(function() {
-    var btn = $(this);
-    var nextInput = btn.next('input.relaxngui_cell');
-    if (nextInput.length === 0) {
-      btn.remove();
+  let req = parse_saved_object(raw);
+  let nl = parse_saved_object(nlraw);
+  Object.keys(req).forEach(function(key) {
+    if (!(key in nl)) {
+      nl[key] = '';
     }
   });
+  save['requirements'].content(requirements_xml('requirements', req));
+  save['nlrequirements'].content(requirements_xml('nlrequirements', nl));
 } //}}}
 
-function apply_ast_field_roles() { //{{{
-  $('#dat_requirements .astreq-key').prop('readonly', false).removeAttr('tabindex').css('pointer-events', '');
-  $('#dat_requirements .astreq-value').removeClass('astreq-value');
+function save_requirements() { //{{{
+  if (!save['requirements'] || !save['nlrequirements'] || !save['attributes']) {
+    return;
+  }
+  let req = JSON.stringify(read_requirements(save['requirements']));
+  let nl = JSON.stringify(read_requirements(save['nlrequirements']));
+  if (req === requirements_state.requirements && nl === requirements_state.nl) {
+    return;
+  }
 
-  $('#dat_requirements').find('div').each(function() {
-    var cells = $(this).children('input.relaxngui_cell');
-    if (cells.length < 2) {
-      return;
+  let att = save['attributes'].save();
+  let attributes = $(' > attributes', att);
+  if (attributes.length === 0) {
+    return;
+  }
+  [['requirements', req], ['NL-requirements', nl]].forEach(function([name, value]) {
+    let node = attributes.children(name);
+    if (node.length === 0) {
+      node = $X("<" + name + " xmlns='http://cpee.org/ns/properties/2.0'/>");
+      attributes.append(node);
     }
-
-    var keyCell = cells.first();
-    var valueCell = cells.last();
-
-    keyCell.addClass('astreq-key');
-    valueCell.addClass('astreq-value');
-
-    if ((keyCell.val() || '').trim() !== '') {
-      keyCell.prop('readonly', true);
-      keyCell.attr('tabindex', '-1');
-      keyCell.css('pointer-events', 'none');
-    }
+    node.text(value);
+    save['attributes_raw'][name] = value;
   });
+  requirements_state.requirements = req;
+  requirements_state.nl = nl;
+  save['attributes'].content(att);
+  do_parameters_save_part('attributes', $(att).serializePrettyXML());
 } //}}}
 
-function persist_ast_requirements_inline(button) { //{{{
-  if (!button || button.length === 0) {
-    return;
-  }
-
-  var originalText = button.text();
-  button.text('Saving...');
-  button.prop('disabled', true);
-
-  var reqj = current_requirements_json_string();
-  do_requirements_save({ target: $('#dat_requirements')[0] }, reqj);
-
-  button.text('Saved');
-  button.prop('disabled', false);
-  setTimeout(function() {
-    button.text(originalText);
-  }, 900);
-} //}}}
-
-function initialize_nl_requirements_from_saved_requirements() { //{{{
-  if (!save['requirements']) {
-    return;
-  }
-  var reqObject = read_requirements_object();
-  sync_nl_rows_to_requirement_keys(reqObject);
-} //}}}
-
-function add_nl_requirement_row(requirementId, textValue) { //{{{
-  var rid = requirementId || next_requirement_id();
-  if ($('#dat_nlrequirements .nlreq-row[data-requirement-id="' + rid + '"]').length > 0) {
-    return;
-  }
-
-  var row = $('<div class="nlreq-row"></div>').attr('data-requirement-id', rid);
-  row.append('<button type="button" class="nlreq-extract">Extract</button>');
-  row.append($('<span class="nlreq-id"></span>').text(rid));
-  row.append(
-    $('<input type="text" class="nlreq-text" placeholder="Write natural-language requirement"/>')
-      .val(textValue || '')
-  );
-  row.append('<span class="nlreq-status"></span>');
-  row.find('.nlreq-extract').on('click', function() {
-    extract_single_nl_requirement(row);
+function prune_nl_requirements() { //{{{
+  let current = read_requirements(save['requirements']);
+  let removed = Object.keys(parse_saved_object(requirements_state.requirements)).filter(function(key) {
+    return !(key in current);
   });
-  $('#dat_nlrequirements').append(row);
+  if (removed.length === 0) {
+    return;
+  }
+  let nl = read_requirements(save['nlrequirements']);
+  removed.forEach(function(key) {
+    delete nl[key];
+  });
+  save['nlrequirements'].content(requirements_xml('nlrequirements', nl));
 } //}}}
 
-function extract_single_nl_requirement(row) { //{{{
-  var requirementId = row.attr('data-requirement-id');
-  var naturalText = row.find('.nlreq-text').val().trim();
-  var status = row.find('.nlreq-status');
-  var button = row.find('.nlreq-extract');
+function extract_single_nl_requirement(entry) { //{{{
+  var inputs = entry.find('.relaxngui_row > input.relaxngui_cell');
+  var requirementId = inputs.first().val();
+  var naturalText = (inputs.last().val() || '').trim();
+  var button = entry.children('[data-type=act]');
 
-  if (!naturalText) {
-    status.text('Enter text').removeClass('ok').addClass('error');
-    return;
-  }
-  if (!save['requirements']) {
-    status.text('Not ready').removeClass('ok').addClass('error');
+  if (!naturalText || !save['requirements']) {
     return;
   }
 
-  status.text('Extracting...').removeClass('ok error');
   button.prop('disabled', true);
 
   extract_ast_from_natural_language(
     naturalText,
     function(ast) {
-      upsert_requirement_ast(requirementId, ast);
-      do_nl_requirements_save();
-      status.text('Added').removeClass('error').addClass('ok');
+      let req = read_requirements(save['requirements']);
+      req[requirementId] = ast;
+      save['requirements'].content(requirements_xml('requirements', req));
+      save_requirements();
       button.prop('disabled', false);
     },
-    function(message) {
-      status.text(message || 'Failed').removeClass('ok').addClass('error');
+    function() {
       button.prop('disabled', false);
     }
   );
 } //}}}
 
-function sync_nl_rows_to_requirement_keys(requirementsObject, pruneMissing) { //{{{
-  if (!requirementsObject || typeof requirementsObject !== 'object') {
-    return;
-  }
-
-  var keys = Object.keys(requirementsObject);
-
-  if (pruneMissing) {
-    $('#dat_nlrequirements .nlreq-row').each(function() {
-      var rid = $(this).attr('data-requirement-id');
-      if (rid && keys.indexOf(rid) === -1) {
-        $(this).remove();
-      }
-    });
-  }
-
-  keys.forEach(function(key) {
-    if ($('#dat_nlrequirements .nlreq-row[data-requirement-id="' + key + '"]').length === 0) {
-      add_nl_requirement_row(key, '');
-    }
-  });
-} //}}}
-
 function next_requirement_id() { //{{{
-  var currentReqs = read_requirements_object();
+  var currentReqs = Object.assign({}, read_requirements(save['nlrequirements']), read_requirements(save['requirements']));
   var used = {};
   Object.keys(currentReqs).forEach(function(key) {
     var m = key.match(/^R(\d+)$/);
@@ -710,54 +575,6 @@ function next_requirement_id() { //{{{
   }
 
   return 'R' + candidate;
-} //}}}
-
-function upsert_requirement_ast(requirementId, astText) { //{{{
-  var reqObject = read_requirements_object();
-  reqObject[requirementId] = astText;
-  write_requirements_object(reqObject);
-} //}}}
-
-function stringify_requirements_object(reqObject) { //{{{
-  var ordered = {};
-  Object.keys(reqObject || {})
-    .sort(sort_requirement_ids)
-    .forEach(function(key) {
-      ordered[key] = reqObject[key];
-    });
-  return JSON.stringify(ordered);
-} //}}}
-
-function current_requirements_json_string() { //{{{
-  if (!save['requirements']) {
-    return '{}';
-  }
-
-  var raw = save['requirements'].save_json();
-  var parsed = parse_saved_object(raw);
-  return stringify_requirements_object(parsed);
-} //}}}
-
-function read_requirements_object() { //{{{
-  if (!save['requirements']) {
-    return {};
-  }
-
-  var raw = save['requirements'].save_json();
-  if (raw == null || raw === '') {
-    return {};
-  }
-  if (typeof raw === 'string') {
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      return {};
-    }
-  }
-  if (typeof raw === 'object') {
-    return raw;
-  }
-  return {};
 } //}}}
 
 function parse_saved_object(raw) { //{{{
@@ -779,57 +596,6 @@ function parse_saved_object(raw) { //{{{
     }
   }
   return {};
-} //}}}
-
-function apply_nl_requirements_values(nlReqObject) { //{{{
-  if (!nlReqObject || typeof nlReqObject !== 'object') {
-    return;
-  }
-
-  Object.keys(nlReqObject).forEach(function(key) {
-    var row = $('#dat_nlrequirements .nlreq-row[data-requirement-id="' + key + '"]');
-    if (row.length > 0) {
-      row.find('.nlreq-text').val(nlReqObject[key] || '');
-    }
-  });
-} //}}}
-
-function read_nl_requirements_object_from_ui() { //{{{
-  var data = {};
-  $('#dat_nlrequirements .nlreq-row').each(function() {
-    var requirementId = $(this).attr('data-requirement-id');
-    if (!requirementId) {
-      return;
-    }
-    var text = $(this).find('.nlreq-text').val();
-    data[requirementId] = text == null ? '' : String(text);
-  });
-  return data;
-} //}}}
-
-function write_requirements_object(reqObject) { //{{{
-  let req = $X("<requirements xmlns='http://cpee.org/ns/properties/2.0'/>");
-  Object.keys(reqObject)
-    .sort(sort_requirement_ids)
-    .forEach(function(key) {
-      let ele = $X("<" + key + " xmlns='http://cpee.org/ns/properties/2.0'/>");
-      ele.text(reqObject[key]);
-      req.append(ele);
-    });
-  var reqj = stringify_requirements_object(reqObject);
-  save['attributes_raw'].requirements = reqj;
-  save['requirements'].content(req);
-  ensure_ast_inline_save_buttons(reqObject);
-  do_requirements_save({ target: $('#dat_requirements')[0] }, reqj);
-} //}}}
-
-function sort_requirement_ids(a, b) { //{{{
-  var am = String(a).match(/^R(\d+)$/);
-  var bm = String(b).match(/^R(\d+)$/);
-  if (am && bm) {
-    return parseInt(am[1], 10) - parseInt(bm[1], 10);
-  }
-  return String(a).localeCompare(String(b));
 } //}}}
 
 function extract_ast_from_natural_language(naturalText, onSuccess, onError) { //{{{
@@ -1124,81 +890,4 @@ function getCurrentProcessXml() { //{{{
   }
 
   return null;
-} //}}}
-
-function do_requirements_save(event, forcedRequirementsJson) { //{{{
-  if (!save['attributes'] || !save['requirements']) {
-    return;
-  }
-
-  var requirementsChanged = save['requirements'].has_changed();
-  var hasForced = typeof forcedRequirementsJson === 'string';
-  if (!requirementsChanged && !hasForced) {
-    return;
-  }
-
-  if (requirementsChanged) {
-    save['requirements'].set_checkpoint();
-  }
-
-  let reqj = hasForced ? forcedRequirementsJson : current_requirements_json_string();
-  ensure_ast_inline_save_buttons(parse_saved_object(reqj));
-  {
-    let att = save['attributes'].save();
-    let attributesNode = $(' > attributes', att);
-    if (attributesNode.length === 0) {
-      return;
-    }
-    let requirementsNode = attributesNode.children('requirements');
-    if (requirementsNode.length === 0) {
-      requirementsNode = $X("<requirements xmlns='http://cpee.org/ns/properties/2.0'/>");
-      attributesNode.append(requirementsNode);
-    }
-    requirementsNode.text(reqj);
-    save['attributes_raw'].requirements = reqj;
-    save['attributes'].content(att);
-    do_parameters_save_part('attributes',$(att).serializePrettyXML());
-  }
-} //}}}
-
-function do_nl_requirements_save(event) { //{{{
-  if (!save['attributes']) {
-    return;
-  }
-
-  // Keep regular requirements in sync when NL requirements are persisted.
-  if (save['requirements']) {
-    do_requirements_save({ target: $('#dat_requirements')[0] });
-  }
-
-  let nlReqj = JSON.stringify(read_nl_requirements_object_from_ui());
-  let att = save['attributes'].save();
-  let attributesNode = $(' > attributes', att);
-  if (attributesNode.length === 0) {
-    return;
-  }
-
-  let nlReqNode = attributesNode.children('NL-requirements');
-  if (nlReqNode.length === 0) {
-    nlReqNode = $X("<NL-requirements xmlns='http://cpee.org/ns/properties/2.0'/>");
-    attributesNode.append(nlReqNode);
-  }
-
-  if (save['requirements']) {
-    let reqj = (typeof save['attributes_raw'].requirements === 'string' && save['attributes_raw'].requirements.trim() !== '')
-      ? save['attributes_raw'].requirements
-      : current_requirements_json_string();
-    let requirementsNode = attributesNode.children('requirements');
-    if (requirementsNode.length === 0) {
-      requirementsNode = $X("<requirements xmlns='http://cpee.org/ns/properties/2.0'/>");
-      attributesNode.append(requirementsNode);
-    }
-    requirementsNode.text(reqj);
-    save['attributes_raw'].requirements = reqj;
-  }
-
-  nlReqNode.text(nlReqj);
-  save['attributes_raw']['NL-requirements'] = nlReqj;
-  save['attributes'].content(att);
-  do_parameters_save_part('attributes',$(att).serializePrettyXML());
 } //}}}

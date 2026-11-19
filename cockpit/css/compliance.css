@@ -15,6 +15,7 @@
 }
 #arearequirements.inactive { display: none; }
 #arearequirements button.relaxngui_control { display: none; }
+#areanlrequirements button.relaxngui_control { display: none; }
 
 #areanlrequirements {
   display: flex;
@@ -33,7 +34,7 @@
 }
 #areanlrequirements.inactive { display: none; }
 
-#dat_requirements {
+#dat_requirements, #dat_nlrequirements {
   border-collapse:collapse;
   border-spacing:0;
   border:0 none;
@@ -45,74 +46,12 @@
   overflow-y: scroll;
 }
 
-#dat_requirements .astreq-save {
-  margin-right: 0.5em;
-}
-
-#dat_requirements input.astreq-key {
+#dat_requirements .relaxngui_row > input.relaxngui_cell:first-child, #dat_nlrequirements .relaxngui_row > input.relaxngui_cell:first-child {
   width: 2.8em;
   min-width: 2.8em;
   max-width: 3.4em;
   color: #555;
-}
-
-#dat_requirements input.astreq-key[readonly] {
-  background-color: transparent;
-  border: 0 none;
-  box-shadow: none;
-  color: #555;
-  padding-left: 0;
-  padding-right: 0;
   caret-color: transparent;
-}
-
-#dat_requirements input.astreq-value {
-  margin-left: 0.25em;
-  width: calc(100% - 8.5em);
-}
-
-#dat_nlrequirements {
-  border-collapse: collapse;
-  border-spacing: 0;
-  border: 0 none;
-  margin: 0;
-  padding: 0.5em;
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-}
-
-#dat_nlrequirements .nlreq-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-}
-
-#dat_nlrequirements .nlreq-id {
-  min-width: 2.6em;
-  color: #555;
-}
-
-#dat_nlrequirements .nlreq-text {
-  flex: 1;
-}
-
-#dat_nlrequirements .nlreq-status {
-  min-width: 5em;
-  color: #555;
-  font-size: 0.9em;
-}
-
-#dat_nlrequirements .nlreq-status.ok {
-  color: #2d7f2d;
-}
-
-#dat_nlrequirements .nlreq-status.error {
-  color: #b30000;
 }
 
 #dat_log div:nth-child(odd) { background-color: #e8e8e8; color: #333; }
