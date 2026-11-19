@@ -66,11 +66,13 @@ module CPEE
       wid = SecureRandom.hex(16)
       begin
         sub.subscribe_with_timeout(2,"event:#{target}:transaction/finished") do |on|
+          on.subscribe do
+            backend.publish("event:#{target}:transaction/start","#{wid} {}")
+          end
           on.message do |what,message|
             mess = message[0...message.index(' ')]
             sub.unsubscribe("event:#{target}:transaction/finished") if mess == wid
           end
-          backend.publish("event:#{target}:transaction/start","#{wid} {}")
         end
       rescue => e
         puts "timeout error"
