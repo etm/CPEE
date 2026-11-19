@@ -10,6 +10,7 @@
     <from>Vienna</from>
     <to>Prague</to>
   </dataelements>
+  <documents/>
   <endpoints>
     <bookAir>https://cpee.org/services/airline.php</bookAir>
     <user>https-post://cpee.org/services/timeout-user.php</user>
@@ -22,11 +23,11 @@
     <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
   </endpoints>
   <attributes>
+    <info>Coopis 2010</info>
     <guarded>none</guarded>
     <modeltype>CPEE</modeltype>
     <theme>extended</theme>
     <guarded_id/>
-    <info>Coopis 2010</info>
     <creator>Christine Ashcreek</creator>
     <author>Christine Ashcreek</author>
     <design_stage>development</design_stage>
@@ -38,7 +39,8 @@
     <description xmlns="http://cpee.org/ns/description/1.0">
       <call id="a1" endpoint="bookAir">
         <parameters>
-          <label>Book Airline 1</label>
+          <label>Book Airline 12</label>
+          <color/>
           <method>:post</method>
           <arguments>
             <from>!data.from</from>
@@ -47,6 +49,7 @@
           </arguments>
         </parameters>
         <code>
+          <signal>false</signal>
           <prepare/>
           <finalize output="result">data.airline = result.value('id')
 data.costs += result.value('costs').to_f
@@ -55,6 +58,11 @@ status.update 1, 'Hotel'</finalize>
           <rescue output="result"/>
         </code>
         <annotations>
+          <_generic/>
+          <_logging_behavior>
+            <_exclude>false</_exclude>
+            <_include>false</_include>
+          </_logging_behavior>
           <_timing>
             <_timing_weight/>
             <_timing_avg/>
