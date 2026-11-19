@@ -70,26 +70,28 @@ ui-tabbed ui-tabbar ui-behind button {
 }
 #parameters ui-content { height: 8.5em; min-height: 2.7em; }
 
-#areadataelements, #areaendpoints, #areaattributes, #areadocuments {
+#areadataelements, #areaendpoints, #areaattributes, #areadocuments, #arearules, #areaintervals {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   height: 100%;
 }
-#areadataelements > button, #areaendpoints > button, #areaattributes > button, #areadocuments > button {
+#areadataelements > button, #areaendpoints > button, #areaattributes > button, #areadocuments > button, #arearules > button, #areaintervals > button {
   height: 100%;
   padding: 0;
   margin-right: 0.5em;
 }
-#areadataelements > button span, #areaendpoints > button span, #areaattributes > button span,  #areadocuments > button span {
+#areadataelements > button span, #areaendpoints > button span, #areaattributes > button span,  #areadocuments > button span, #arearules > button span, #areaintervals > button span {
   display: inline-block;
   transform: rotate(-90deg);
 }
-#areadataelements.inactive, #areaendpoints.inactive, #areaattributes.inactive, #areadocuments.inactive { display: none; }
+#areadataelements.inactive, #areaendpoints.inactive, #areaattributes.inactive, #areadocuments.inactive, #arearules.inactive, #areaintervals.inactive { display: none; }
 #areadataelements button.relaxngui_control { display: none; }
 #areaendpoints button.relaxngui_control { display: none; }
 #areaattributes button.relaxngui_control { display: none; }
 #areadocuments button.relaxngui_control { display: none; }
+#arearules button.relaxngui_control { display: none; }
+#areaintervals button.relaxngui_control { display: none; }
 
 #areainstance                          { height: 100%; }
 #areainstance > div                    { display: flex; height: 100%; }
@@ -130,7 +132,7 @@ ui-tabbed ui-tabbar ui-behind button {
 
 #arealog > div {  padding-left: 1em; padding-top: 1em; }
 
-#dat_endpoints, #dat_dataelements, #dat_attributes, #dat_documents {
+#dat_endpoints, #dat_dataelements, #dat_attributes, #dat_documents, #dat_rules, #dat_intervals {
   border-collapse:collapse;
   border-spacing:0;
   border:0 none;
