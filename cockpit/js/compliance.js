@@ -12,6 +12,7 @@ $(document).ready(function() { //{{{
   });
 
   initialize_nl_requirements_tab();
+  initialize_ast_requirements_tab();
 
   function loadComplianceLog(uuid, options) {
     var renderOptions = options || {};
@@ -449,6 +450,7 @@ $(document).ready(function() { //{{{
       req.append(ele);
     }
     save['requirements'].content(req);
+    ensure_ast_inline_save_buttons(reqj);
     sync_nl_rows_to_requirement_keys(reqj);
 
     let nlReqj = parse_saved_object(save.attributes_raw['NL-requirements']);
@@ -456,26 +458,35 @@ $(document).ready(function() { //{{{
     apply_nl_requirements_values(nlReqj);
   });
 
-  var timer;
-  // when input in one of the inputs, save
-  $(document).on('input','#dat_requirements input',function(event){
-    clearTimeout(timer);
-    timer = setTimeout(function(){ do_requirements_save(event); }, 5000);
-  });
   $(document).on('relaxngui_remove', '#dat_requirements', function(event){
-    clearTimeout(timer);
     sync_nl_rows_to_requirement_keys(read_requirements_object(), true);
     do_nl_requirements_save(event);
     do_requirements_save(event);
   });
   $(document).on('relaxngui_move', '#dat_requirements', function(event){
-    clearTimeout(timer);
     do_requirements_save(event);
   });
   $(document).on('relaxngui_change', '#dat_requirements', function(event){
-    clearTimeout(timer);
     do_requirements_save(event);
   });
+
+  var astButtonsTimer;
+  function schedule_ast_buttons_sync() {
+    clearTimeout(astButtonsTimer);
+    astButtonsTimer = setTimeout(function() {
+      ensure_ast_inline_save_buttons(read_requirements_object());
+    }, 250);
+  }
+
+  // Requirements RNG is generic anyName/value, so keys can be renamed live.
+  // Keep the per-requirement action list aligned with current editor content.
+  $(document).on(
+    'input change keyup blur paste',
+    '#dat_requirements input, #dat_requirements textarea, #dat_requirements select, #dat_requirements [contenteditable=true]',
+    function() {
+      schedule_ast_buttons_sync();
+    }
+  );
 
   var nlTimer;
   $(document).on('input', '#dat_nlrequirements .nlreq-text', function(event){
@@ -486,6 +497,7 @@ $(document).ready(function() { //{{{
 
 function initialize_nl_requirements_tab() { //{{{
   $('#nlreq_add').on('click', function() {
+    sync_nl_rows_to_requirement_keys(read_requirements_object(), true);
     add_nl_requirement_row();
     do_nl_requirements_save();
   });
@@ -493,6 +505,109 @@ function initialize_nl_requirements_tab() { //{{{
   if ($('#dat_nlrequirements .nlreq-row').length === 0) {
     add_nl_requirement_row();
   }
+} //}}}
+
+function initialize_ast_requirements_tab() { //{{{
+  $(document).on('click', '#dat_requirements .astreq-save', function() {
+    persist_ast_requirements_inline($(this));
+  });
+
+  ensure_ast_inline_save_buttons(read_requirements_object());
+} //}}}
+
+function ensure_ast_inline_save_buttons(requirementsObject) { //{{{
+  if ($('#dat_requirements').length === 0) {
+    return;
+  }
+
+  $('#dat_requirements input.relaxngui_cell').removeClass('astreq-key astreq-value');
+
+  var reqObject = requirementsObject && typeof requirementsObject === 'object'
+    ? requirementsObject
+    : read_requirements_object();
+
+  Object.keys(reqObject)
+    .sort(sort_requirement_ids)
+    .forEach(function(key) {
+      var keyInput = $('#dat_requirements input.relaxngui_cell').filter(function() {
+        return ($(this).val() || '').trim() === key;
+      }).first();
+
+      if (keyInput.length === 0) {
+        return;
+      }
+
+      if (keyInput.prev('.astreq-save').length === 0) {
+        $('<button type="button" class="astreq-save" title="Save requirements into attributes">Save</button>')
+          .attr('data-requirement-id', key)
+          .insertBefore(keyInput);
+      } else {
+        keyInput.prev('.astreq-save').attr('data-requirement-id', key);
+      }
+
+      keyInput.addClass('astreq-key');
+      if ((keyInput.val() || '').trim() !== '') {
+        keyInput.prop('readonly', true);
+      }
+
+      var valueInput = keyInput.parent().find('input.relaxngui_cell').not(keyInput).first();
+      if (valueInput.length > 0) {
+        valueInput.addClass('astreq-value');
+      }
+    });
+
+  apply_ast_field_roles();
+
+  $('#dat_requirements .astreq-save').each(function() {
+    var btn = $(this);
+    var nextInput = btn.next('input.relaxngui_cell');
+    if (nextInput.length === 0) {
+      btn.remove();
+    }
+  });
+} //}}}
+
+function apply_ast_field_roles() { //{{{
+  $('#dat_requirements .astreq-key').prop('readonly', false).removeAttr('tabindex').css('pointer-events', '');
+  $('#dat_requirements .astreq-value').removeClass('astreq-value');
+
+  $('#dat_requirements').find('div').each(function() {
+    var cells = $(this).children('input.relaxngui_cell');
+    if (cells.length < 2) {
+      return;
+    }
+
+    var keyCell = cells.first();
+    var valueCell = cells.last();
+
+    keyCell.addClass('astreq-key');
+    valueCell.addClass('astreq-value');
+
+    if ((keyCell.val() || '').trim() !== '') {
+      keyCell.prop('readonly', true);
+      keyCell.attr('tabindex', '-1');
+      keyCell.css('pointer-events', 'none');
+    }
+  });
+} //}}}
+
+function persist_ast_requirements_inline(button) { //{{{
+  if (!button || button.length === 0) {
+    return;
+  }
+
+  var originalText = button.text();
+  button.text('Saving...');
+  button.prop('disabled', true);
+
+  var reqj = current_requirements_json_string();
+  do_requirements_save({ target: $('#dat_requirements')[0] }, reqj);
+
+  button.text('Saved');
+  button.prop('disabled', false);
+  setTimeout(function() {
+    button.text(originalText);
+  }, 900);
 } //}}}
 
 function initialize_nl_requirements_from_saved_requirements() { //{{{
@@ -580,30 +695,47 @@ function sync_nl_rows_to_requirement_keys(requirementsObject, pruneMissing) { //
 } //}}}
 
 function next_requirement_id() { //{{{
-  var maxId = 0;
-  $('#dat_nlrequirements .nlreq-row').each(function() {
-    var rid = $(this).attr('data-requirement-id') || '';
-    var m = rid.match(/^R(\d+)$/);
-    if (m) {
-      maxId = Math.max(maxId, parseInt(m[1], 10));
-    }
-  });
-
   var currentReqs = read_requirements_object();
+  var used = {};
   Object.keys(currentReqs).forEach(function(key) {
     var m = key.match(/^R(\d+)$/);
     if (m) {
-      maxId = Math.max(maxId, parseInt(m[1], 10));
+      used[parseInt(m[1], 10)] = true;
     }
   });
 
-  return 'R' + (maxId + 1);
+  var candidate = 1;
+  while (used[candidate]) {
+    candidate += 1;
+  }
+
+  return 'R' + candidate;
 } //}}}
 
 function upsert_requirement_ast(requirementId, astText) { //{{{
   var reqObject = read_requirements_object();
   reqObject[requirementId] = astText;
   write_requirements_object(reqObject);
+} //}}}
+
+function stringify_requirements_object(reqObject) { //{{{
+  var ordered = {};
+  Object.keys(reqObject || {})
+    .sort(sort_requirement_ids)
+    .forEach(function(key) {
+      ordered[key] = reqObject[key];
+    });
+  return JSON.stringify(ordered);
+} //}}}
+
+function current_requirements_json_string() { //{{{
+  if (!save['requirements']) {
+    return '{}';
+  }
+
+  var raw = save['requirements'].save_json();
+  var parsed = parse_saved_object(raw);
+  return stringify_requirements_object(parsed);
 } //}}}
 
 function read_requirements_object() { //{{{
@@ -684,8 +816,11 @@ function write_requirements_object(reqObject) { //{{{
       ele.text(reqObject[key]);
       req.append(ele);
     });
+  var reqj = stringify_requirements_object(reqObject);
+  save['attributes_raw'].requirements = reqj;
   save['requirements'].content(req);
-  do_requirements_save({ target: $('#dat_requirements')[0] });
+  ensure_ast_inline_save_buttons(reqObject);
+  do_requirements_save({ target: $('#dat_requirements')[0] }, reqj);
 } //}}}
 
 function sort_requirement_ids(a, b) { //{{{
@@ -991,11 +1126,24 @@ function getCurrentProcessXml() { //{{{
   return null;
 } //}}}
 
-function do_requirements_save(event) { //{{{
-  if (save['requirements'].has_changed()) {
+function do_requirements_save(event, forcedRequirementsJson) { //{{{
+  if (!save['attributes'] || !save['requirements']) {
+    return;
+  }
+
+  var requirementsChanged = save['requirements'].has_changed();
+  var hasForced = typeof forcedRequirementsJson === 'string';
+  if (!requirementsChanged && !hasForced) {
+    return;
+  }
+
+  if (requirementsChanged) {
     save['requirements'].set_checkpoint();
-    var url = $('body').attr('current-instance');
-    let reqj = save['requirements'].save_json();
+  }
+
+  let reqj = hasForced ? forcedRequirementsJson : current_requirements_json_string();
+  ensure_ast_inline_save_buttons(parse_saved_object(reqj));
+  {
     let att = save['attributes'].save();
     let attributesNode = $(' > attributes', att);
     if (attributesNode.length === 0) {
@@ -1007,6 +1155,8 @@ function do_requirements_save(event) { //{{{
       attributesNode.append(requirementsNode);
     }
     requirementsNode.text(reqj);
+    save['attributes_raw'].requirements = reqj;
+    save['attributes'].content(att);
     do_parameters_save_part('attributes',$(att).serializePrettyXML());
   }
 } //}}}
@@ -1035,15 +1185,20 @@ function do_nl_requirements_save(event) { //{{{
   }
 
   if (save['requirements']) {
-    let reqj = save['requirements'].save_json();
+    let reqj = (typeof save['attributes_raw'].requirements === 'string' && save['attributes_raw'].requirements.trim() !== '')
+      ? save['attributes_raw'].requirements
+      : current_requirements_json_string();
     let requirementsNode = attributesNode.children('requirements');
     if (requirementsNode.length === 0) {
       requirementsNode = $X("<requirements xmlns='http://cpee.org/ns/properties/2.0'/>");
       attributesNode.append(requirementsNode);
     }
     requirementsNode.text(reqj);
+    save['attributes_raw'].requirements = reqj;
   }
 
   nlReqNode.text(nlReqj);
+  save['attributes_raw']['NL-requirements'] = nlReqj;
+  save['attributes'].content(att);
   do_parameters_save_part('attributes',$(att).serializePrettyXML());
 } //}}}
