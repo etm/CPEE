@@ -50,9 +50,13 @@ class Controller
 
     @callback_keys = {}
 
+    subscribed = WEEL::Continue.new
     @subs = Thread.new do
       @psredis = @opts[:redis_dyn].call "Instance #{@id} Callback Response"
       @psredis.psubscribe('callback-response:*','callback-end:*') do |on|
+        on.psubscribe do |pattern, count|
+          subscribed.continue if count == 2
+        end
         on.pmessage do |pat, what, message|
           if pat == 'callback-response:*'
             _, worker, identifier = what.split(':')
@@ -83,6 +87,7 @@ class Controller
       sleep 1
       retry
     end
+    subscribed.wait
     Thread.new do
       while true
         notify("status/resource_utilization", :mib => GetProcessMem.new.mb, **Process.times.to_h)
@@ -173,23 +178,22 @@ class Controller
   def vote(what,content={})
     topic, name = what.split('/')
     handler = File.join(topic,'vote',name)
-    votes = []
+    pending = []
 
     @opts[:votes][handler]&.each do |client|
-      voteid = SecureRandom.hex(16)
-      content[:key] = voteid
-      content[:attributes] = attributes
-      content[:subscription] = client
-      votes << voteid
-      CPEE::Message::send(:vote,what,base,@id,uuid,info,content,@redis)
+      pending << content.merge(:key => SecureRandom.hex(16), :attributes => attributes, :subscription => client)
     end
+    votes = pending.map { |c| c[:key] }
 
     if votes.length > 0
       @votes += votes
       psredis = @opts[:redis_dyn].call "Instance #{@id} Vote"
       collect = []
       changes = []
-      psredis.subscribe(votes.map{|e| ['vote-response:00:' + e.to_s] }.flatten) do |on|
+      psredis.subscribe(votes.map{|e| 'vote-response:00:' + e }) do |on|
+        on.subscribe do |channel, count|
+          pending.each { |c| CPEE::Message::send(:vote,what,base,@id,uuid,info,c,@redis) } if count == votes.length
+        end
         on.message do |what, message|
           index = message.index(' ')
           mess = message[index+1..-1]
