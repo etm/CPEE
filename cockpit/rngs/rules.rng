@@ -1,0 +1,30 @@
+<element rngui:version="1.2" name="rules" ns="http://cpee.org/ns/properties/2.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <zeroOrMore rngui:label="Create Rules">
+    <element name='rule' rngui:header='Rule'>
+      <element name='rule_id' rngui:label='Rule Identifier'>
+        <data type="string" rngui:label="value"/>
+      </element>
+      <element name='interval' rngui:label='Validity Interval (event, state, trace)'>
+        <data type="string" rngui:label="value"/>
+      </element>
+      <element name='filter' rngui:label='Event Filter (event, state)'>
+        <data type="string" rngui:label="value"/>
+      </element>
+      <element name='spawn_condition' rngui:label='Spawn Condition (event, state, trace)'>
+        <data type="string" rngui:label="value"/>
+      </element>
+      <element name='predicate' rngui:label='Predicate (event, state, trace)'>
+        <data type="string" rngui:label="value"/>
+      </element>
+      <element name='termination_predicate' rngui:label='Termination Predicate (event, state, trace)'>
+        <data type="string" rngui:label="value"/>
+      </element>
+      <element name='action_sat' rngui:label='Satisfaction Action (event, state, trace)'>
+        <data type="string" rngui:label="value"/>
+      </element>
+      <element name='action_viol' rngui:label='Compensation Action (event, state, trace)'>
+        <data type="string" rngui:label="value"/>
+      </element>
+    </element>
+  </zeroOrMore>
+</element>

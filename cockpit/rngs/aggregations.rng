@@ -1,0 +1,15 @@
+<element rngui:version="1.2" name="aggregations" ns="http://cpee.org/ns/properties/2.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <zeroOrMore rngui:label="Create Aggregation">
+    <element name='aggregation' rngui:header='Aggregation'>
+      <element name='id' rngui:label='Identifier'>
+        <data type="string" rngui:label="value"/>
+      </element>
+      <element name='aggregation-operation' rngui:label='Aggregation Operation'>
+        <data type="string" rngui:label="value"/>
+      </element>
+      <element name='window-predicate' rngui:label='Window Predicate'>
+        <data type="string" rngui:label="value"/>
+      </element>
+    </element>
+  </zeroOrMore>
+</element>

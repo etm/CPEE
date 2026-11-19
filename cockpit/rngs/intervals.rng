@@ -1,0 +1,12 @@
+<element rngui:version="1.2" name="intervals" ns="http://cpee.org/ns/properties/2.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <zeroOrMore rngui:label="Create Interval">
+    <element name='interval' rngui:header='Interval'>
+      <element name='id' rngui:label='Identifier'>
+        <data type="string" rngui:label="value"/>
+      </element>
+      <element name='validity_predicate' rngui:label='Validity Predicate (event, state, trace)'>
+        <data type="string" rngui:label="value"/>
+      </element>
+    </element>
+  </zeroOrMore>
+</element>
