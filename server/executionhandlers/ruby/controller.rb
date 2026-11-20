@@ -161,6 +161,9 @@ class Controller
     ### end all votes or it will not work
     Thread.new do # doing stuff in trap context is a nono. but in a thread its fine :-)
       @votes.each do |key|
+        # BEWARE111!!!1!! only send to worker 0, as voting goes through single worker
+        # (cause i am not smart enough to make it work with multiple workers. Also voting
+        # should not happen often, so the complexity is not worth it for now).
         CPEE::Message::send(:'vote-response',key,base,@id,uuid,info,true,@redis,0)
       end
     end
