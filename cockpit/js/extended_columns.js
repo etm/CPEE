@@ -204,7 +204,7 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
       svgcolumn.append(svgback);
       svgcolumn.append(svgfront);
       svgcolumn.css('grid-row', '1/span ' + (max.row + 2))
-      svgcolumn.css('grid-column', tcolumns.indexOf(tcolumns.first) + 2);
+      svgcolumn.css('grid-column', tcolumns.indexOf(h) + 2);
       svgcolumn.attr('height', graphrealization.illustrator.svg.container.attr('height'));
       graphrealization.illustrator.svg.label_container.append(svgcolumn);
 

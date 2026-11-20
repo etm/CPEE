@@ -13,7 +13,7 @@ function config_defaults(){
 }
 
 $(document).ready(function() {
-  if (!($.cookie('cpee_iagree')) && $("body > div[id='disclaimer']").length > 0) {
+  if (!(Cookies.get('cpee_iagree')) &&$("body > div[id='disclaimer']").length > 0) {
     $("body > :not([id='disclaimer'])").remove();
     $("body > [id='disclaimer']").removeClass('hidden');
 
@@ -25,7 +25,7 @@ $(document).ready(function() {
       }
     });
     $("#icontinue").click(function(){
-      $.cookie('cpee_iagree','yes');
+      Cookies.set('cpee_iagree','yes');
       location.reload();
     });
   } else {

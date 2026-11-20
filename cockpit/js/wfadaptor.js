@@ -171,7 +171,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
         if ( typeof manifestation.elements[element].description === 'string' ) {
           manifestation.elements[element].description = [ manifestation.elements[element].description ];
         }
-        if ($.isArray(manifestation.elements[element].description)) {
+        if (Array.isArray(manifestation.elements[element].description)) {
           manifestation.elements[element].description.forEach(function(val,ind){
             deferreds.push(
               $.ajax({
@@ -1251,7 +1251,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   // Adaption functions {{{
   this.insert_after = function(new_node, target, source_opts) { // {{{
     reset_used_id_list();
-    if ($.isArray(new_node)) {
+    if (Array.isArray(new_node)) {
       $.each(new_node,function(k,v){
         var nn = self.source(v,source_opts);
         target.after(nn);
@@ -1266,7 +1266,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   } // }}}
   this.insert_first_into = function(new_node, target, source_opts) { // {{{
     reset_used_id_list();
-    if ($.isArray(new_node)) {
+    if (Array.isArray(new_node)) {
       $.each(new_node,function(k,v){
         var nn = self.source(v,source_opts);
         target.prepend(nn);
@@ -1281,7 +1281,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
   } // }}}
   this.insert_last_into = function(new_node, target) { // {{{
     reset_used_id_list();
-    if ($.isArray(new_node)) {
+    if (Array.isArray(new_node)) {
       $.each(new_node,function(k,v){
         var nn = self.source(v);
         target.append(nn);
