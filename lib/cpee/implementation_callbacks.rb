@@ -102,7 +102,8 @@ module CPEE
               {},
               {},
               'true',
-              opts[:redis]
+              opts[:redis],
+              0
             )
           else
             @status = 404
@@ -169,7 +170,8 @@ module CPEE
                 {},
                 {},
                 @p[0].class == Riddl::Parameter::Simple ? @p[0].value : @p[0].value.read,
-                opts[:redis]
+                opts[:redis],
+                0
               )
             else
               @status = 400

@@ -161,7 +161,7 @@ class Controller
     ### end all votes or it will not work
     Thread.new do # doing stuff in trap context is a nono. but in a thread its fine :-)
       @votes.each do |key|
-        CPEE::Message::send(:'vote-response',key,base,@id,uuid,info,true,@redis)
+        CPEE::Message::send(:'vote-response',key,base,@id,uuid,info,true,@redis,0)
       end
     end
   end

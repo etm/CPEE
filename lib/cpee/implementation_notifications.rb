@@ -196,7 +196,7 @@ module CPEE
 
     def self::sse_distributor(opts) #{{{
       conn = opts[:redis_dyn].call "Server SSE"
-      conn.psubscribe('forward:*','event:state/change') do |on|
+      conn.psubscribe('forward:*','event:*:state/change') do |on|
         on.pmessage do |pat, what, message|
           if pat == 'forward:*'
             id, key = what.match(/forward:([^\/]+)\/(.+)/).captures
@@ -208,7 +208,7 @@ module CPEE
             else
               DeleteSubscription::set(id,opts,key)
             end
-          elsif pat == 'event:state/change'
+          elsif pat == 'event:*:state/change'
             mess = JSON.parse(message[message.index(' ')+1..-1])
             state = mess.dig('content','state')
             if state == 'finished' || state == 'abandoned'
