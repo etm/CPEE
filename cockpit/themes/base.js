@@ -383,7 +383,7 @@ function WFAdaptorManifestationBase(adaptor) {
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
   this.events.mouseover = function(svgid, e) { // {{{
-    let con = $(e.currentTarget).closest('svg');
+    let con = e ? $(e.currentTarget).closest('svg') : self.adaptor.illustrator.svg.container;
     con.find('.tile[element-id = "' + svgid + '"]').css('display','block');
     con.find('[element-id = "' + svgid + '"]').addClass('hover');
     if (self.adaptor.illustrator.svg.label_container) {
@@ -392,7 +392,7 @@ function WFAdaptorManifestationBase(adaptor) {
     return false;
   } // }}}
   this.events.mouseout = function(svgid, e) { // {{{
-    let con = $(e.currentTarget).closest('svg');
+    let con = e ? $(e.currentTarget).closest('svg') : self.adaptor.illustrator.svg.container;
     con.find('.tile[element-id = "' + svgid + '"]').css('display','none');
     con.find('[element-id = "' + svgid + '"]').removeClass('hover');
     if (self.adaptor.illustrator.svg.label_container) {
