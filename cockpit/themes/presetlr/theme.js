@@ -4,6 +4,7 @@ WFAdaptorManifestation = class extends WFAdaptorManifestationBase {
     this.compact = true;
     this.rotated_labels = false;
     this.lr = true;
+    this.top_gap = 20.8; // space from the top of the svg to the first symbol, more than the default
     this.wellformed_pre_test = true;
     this.elements.alternative.illustrator.noindent = true;
     this.elements.parallel_branch.illustrator.noindent = true;

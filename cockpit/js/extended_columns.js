@@ -65,6 +65,7 @@ function show_dataflow_row_labels() {
 }
 
 function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
+  let top_shift = dimensions.top_shift || 0; // the top gap of the graph beyond the default height_shift
   // labels
   graphrealization.illustrator.svg.container.css('grid-row', '1/span ' + (max.row + 2));
   if (striped == true) {
@@ -97,8 +98,8 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
           tcolumntype[col.column] = col.type;
         }
         if (col.value != undefined) {
-          let pos = dimensions.height_shift/2 + dimensions.height * (val.row - 1) + (dimensions.height / 2);
-          let firstpos = dimensions.height_shift/2 + (dimensions.height / 2);
+          let pos = top_shift + dimensions.height_shift/2 + dimensions.height * (val.row - 1) + (dimensions.height / 2);
+          let firstpos = top_shift + dimensions.height_shift/2 + (dimensions.height / 2);
 
           if (col.type == "resource") {
             for (const [k, v] of Object.entries(col.value)) {
@@ -179,7 +180,7 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
               tcolumnsvgs[col.column][val.row] = tsvg;
             }
           } else {
-            tsvg = $X('<text class="label" element-row="' + (val.row - 1) + '" element-id="' + val.element_id + '" x="' + space + '" y="' + (dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
+            tsvg = $X('<text class="label" element-row="' + (val.row - 1) + '" element-id="' + val.element_id + '" x="' + space + '" y="' + (top_shift + dimensions.height * val.row - dimensions.height_shift) + '" xmlns="http://www.w3.org/2000/svg"></text>')
             tsvg.text(col.value);
             tcolumnsvgs[col.column][val.row] = tsvg;
           }
@@ -191,7 +192,7 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
   };
 
   graphrealization.illustrator.svg.label_container.css({
-    'grid-template-rows': (dimensions.height_shift/2) + 'px repeat(' + max.row + ', 1fr) ' + (dimensions.height_shift/2) + 'px',
+    'grid-template-rows': (top_shift + dimensions.height_shift/2) + 'px repeat(' + max.row + ', 1fr) ' + (dimensions.height_shift/2) + 'px',
     'grid-template-columns': 'max-content' + (tcolumns.length > 0 ? ' repeat(' + tcolumns.length.toString() + ',max-content)' : '') + ' auto'
   });
 
@@ -215,8 +216,8 @@ function draw_extended_columns(graphrealization,max,labels,dimensions,striped) {
       xwidth = xwidth + 2 * space;
       if (striped == true) {
         for (var i = 0; i < max.row; i++) {
-          svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" width="' + (xwidth + 1) + '" height="' + dimensions.height + '"></rect>'));
-          svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="border" x="0" y="' + (dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '" width="1"></rect>'));
+          svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="stripe ' +  (i % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + (top_shift + dimensions.height * i + dimensions.height_shift/2) + '" width="' + (xwidth + 1) + '" height="' + dimensions.height + '"></rect>'));
+          svgback.append($X('<rect xmlns="http://www.w3.org/2000/svg" element-row="' + i + '" class="border" x="0" y="' + (top_shift + dimensions.height * i + dimensions.height_shift/2) + '" height="' + dimensions.height + '" width="1"></rect>'));
         }
       }
       if (tcolumntype[h] == 'resource' || tcolumntype[h] == 'bodsod') {

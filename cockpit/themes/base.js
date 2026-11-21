@@ -178,6 +178,7 @@ function WFAdaptorManifestationBase(adaptor) {
     return icon;
   } //}}}
   var contextMenuHandling = this.contextMenuHandling = function(svgid,e,child,sibling) { //{{{
+    if (self.adaptor.description.get_node_by_svg_id(svgid).length == 0) { return false; }
     if (save['state'] != "ready" && save['state'] != "stopped") { return false; }
 
     var xml_node = self.adaptor.description.get_node_by_svg_id(svgid);
@@ -382,15 +383,21 @@ function WFAdaptorManifestationBase(adaptor) {
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
   this.events.mouseover = function(svgid, e) { // {{{
-    self.adaptor.illustrator.svg.container.find('.tile[element-id = "' + svgid + '"]').css('display','block');
-    self.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"]').addClass('hover');
-    self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').addClass('hover');
+    let con = $(e.currentTarget).closest('svg');
+    con.find('.tile[element-id = "' + svgid + '"]').css('display','block');
+    con.find('[element-id = "' + svgid + '"]').addClass('hover');
+    if (self.adaptor.illustrator.svg.label_container) {
+      self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').addClass('hover');
+    }
     return false;
   } // }}}
   this.events.mouseout = function(svgid, e) { // {{{
-    self.adaptor.illustrator.svg.container.find('.tile[element-id = "' + svgid + '"]').css('display','none');
-    self.adaptor.illustrator.svg.container.find('[element-id = "' + svgid + '"]').removeClass('hover');
-    self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').removeClass('hover');
+    let con = $(e.currentTarget).closest('svg');
+    con.find('.tile[element-id = "' + svgid + '"]').css('display','none');
+    con.find('[element-id = "' + svgid + '"]').removeClass('hover');
+    if (self.adaptor.illustrator.svg.label_container) {
+      self.adaptor.illustrator.svg.label_container.find('[element-id = "' + svgid + '"]').removeClass('hover');
+    }
     return false;
   } // }}}
   this.events.dragstart = function (svgid, e) { //{{{

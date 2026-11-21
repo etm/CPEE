@@ -73,6 +73,7 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
     illustrator.striped = manifestation.striped == true ? true : false;
     illustrator.lr = manifestation.lr == true ? true : false;
     illustrator.wellformed_pre_test = manifestation.wellformed_pre_test == true ? true : false;
+    illustrator.theme_gap = { left: manifestation.left_gap, top: manifestation.top_gap }; // undefined: the defaults of set_svg
     description.source = manifestation.source;
     var deferreds = [];
     // copy parent stuff
@@ -201,11 +202,13 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
   this.illustrator = illustrator = new WfIllustrator(this);
   this.description = description = new WfDescription(this, this.illustrator);
 
-  this.draw_element = function(type,id,label) {
-    let pos = {'row': 1,'col': 0};
+  this.draw_element = function(type,id,label,opts = {}) {
+    let pos = {'row': 1,'col': 1};
     let block = { 'max': {'row': pos.row, 'col': pos.col}, 'endnodes': [], 'svg': $X('<g class="group" xmlns="http://www.w3.org/2000/svg"/>') };
-    illustrator.draw.draw_symbol(type, id, label, pos.row, pos.row, pos.row, pos.col, block.svg, false, {}, {})
-    self.illustrator.set_svg(block);
+    let g = illustrator.draw.draw_symbol(type, id, label, pos.row, pos.row, pos.row, pos.col, block.svg, false, opts.info || {}, opts.style || {});
+    if (opts.state) { g.children('g').attr('class','activities ' + opts.state); }
+    self.illustrator.set_svg(block, illustrator.theme_gap.left, 20.8); // a single symbol needs more space on top
+    return g;
   }
 
   this.redraw = function(doit){
@@ -228,6 +231,10 @@ function WfAdaptor(theme_base,doit) { // Controller {{{
 // Is in charge of displaying the Graph. It is further able insert and remove elements with given ID's from the illustration.
 function WfIllustrator(wf_adaptor) { // View  {{{
   // Variable {{{
+    // the drawing starts with row 1 and column 1 at 0,0; set_svg moves it by
+    // these, the space from the border of the svg to the first symbol
+    const LEFT_GAP = 24.4;
+    const TOP_GAP = 10.4;
     // public
     this.endclipshift = 17;
     this.height = 40;
@@ -256,6 +263,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     this.wellformed_pre_test = false; // experimental: pre_test loops are drawn reversed
     this.inverted = false; // true while drawing inside such a loop, nested pre_test loops toggle it
     this.global_style = {};
+    this.gap = { left: LEFT_GAP, top: TOP_GAP }; // the gaps of the last set_svg
     // private
     var self = this;
     var adaptor = null;
@@ -308,24 +316,32 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         $.each(self.elements[element].svg.attr('class').split(/\s+/), function(index, item) { sym.addClass(item); }); // copy all classes from the root node
         self.svg.defs[element] = sym;
       }
+    clear();
   } // }}}
-  this.set_svg = function(graph) { // {{{
+  this.set_svg = function(graph, left = LEFT_GAP, top = TOP_GAP) { // {{{
+    // left, top: the space from the border to the first symbol. symbols are
+    // drawn width_shift left of their x and height_shift below their row
+    self.gap = { left: left, top: top };
     self.svg.container.append(graph.svg);
-    let bb = graph.svg[0].getBBox();
+    let bb = graph.svg[0].getBBox(); // without the transform below
 
     let w = self.dim.get_x_max(0,graph.max.row,graph.max.col,'start');
     if (w == 0) { w = bb.x + bb.width + self.width_shift; }
     // the alternative is bb.x + bb.width + self.width_shift, but this is bad when clipped elements
     if (self.lr) { w = Math.max(w, bb.x + bb.width + self.width_shift); } // lr: labels can reach across the flow, e.g. rotated below a gateway; clipped labels only reach along it
 
+    let tr;
     if (self.lr) { // mirror at the diagonal: rows go to the right, columns go down
-      graph.svg.attr('transform',lr_matrix());
-      self.svg.container.attr('height', w - lr_shift() + self.height_shift);
-      self.svg.container.attr('width', bb.y + bb.height + self.height_shift + lr_shift());
+      tr = 'matrix(0,1,1,0,' + (left - self.height_shift) + ',' + (top + self.width_shift) + ')';
+      self.svg.container.attr('height', w + top + self.width_shift);
+      self.svg.container.attr('width', bb.y + bb.height + left);
     } else {
-      self.svg.container.attr('height', bb.y + bb.height + self.height_shift); // small border on the bottom
-      self.svg.container.attr('width', w);  // small border on the right
+      tr = 'translate(' + (left + self.width_shift) + ',' + (top - self.height_shift) + ')';
+      self.svg.container.attr('height', bb.y + bb.height + top); // small border on the bottom
+      self.svg.container.attr('width', w + left + self.width_shift);  // small border on the right
     }
+    graph.svg.attr('transform',tr);
+    $('> path.edge', self.svg.container).attr('transform',tr); // the connections are not part of the graph group
   } // }}}
   this.get_svg = function() { // {{{
     // standalone copy for export: the rules of all stylesheets marked with
@@ -394,15 +410,16 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     // horizontal; con_list the connections between them. Rows and columns are
     // 0-indexed here, the layout counts from 1. lr is laid out top to bottom
     // and mirrored at the diagonal, so rows and columns are swapped back, and x
-    // and width come from the rows (as in get_x, x is the symbol position plus
-    // width_shift). geometry: a symbol is drawn shift left of its x, and the
-    // symbols of row r start at top + r * row. label_box is where the label is
-    // shown, in the coordinates of the svg
+    // and width come from the rows (as in get_x, the first one starts at 0).
+    // geometry: in the svg a symbol starts at x - shift (shift is negative, as
+    // set_svg moves the drawing by the gaps), and the symbols of row r start at
+    // top + r * row. label_box is where the label is shown, in the coordinates
+    // of the svg
     var center_x = (self.width - self.default_width) / 2;
     var center_y = (self.height - self.default_height) / 2;
-    var geometry = self.lr ? // lr: x runs along the internal rows, the rows are the internal columns, lr_matrix moves both by lr_shift
-      { shift: self.width_shift - center_y, top: 2 * self.height_shift + center_x, row: self.width } :
-      { shift: self.width_shift - center_x, top: self.height_shift + center_y, row: self.height };
+    var geometry = self.lr ? // lr: x runs along the internal rows, the rows are the internal columns
+      { shift: -(self.gap.left + center_y), top: self.gap.top + center_x, row: self.width } :
+      { shift: -(self.gap.left + center_x), top: self.gap.top + center_y, row: self.height };
     var pos =function(r,c) { return self.lr ? { row: c - 1, col: r - 1 } : { row: r - 1, col: c - 1 }; };
     var row_start = function(r,c) { // like get_row, but symbols without an own entry (e.g. alternative) also find one to the right
       var rs = self.dim.rows[r] || [];
@@ -418,7 +435,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
         var p = pos(r,c);
         var s = $.extend({}, sym);
         if (self.lr) {
-          s.x = row_start(r,c) + self.width;
+          s.x = row_start(r,c);
           s.width = (self.dim.rows[r] && self.dim.rows[r][c] && self.dim.rows[r][c].size) || self.height;
         }
         var lab = self.dim.labels[r + ',' + c];
@@ -438,7 +455,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       if (!pos_matrix[p.row]) { pos_matrix[p.row] = []; }
       if (pos_matrix[p.row][p.col]) { return; } // a real symbol wins
       pos_matrix[p.row][p.col] = self.lr ?
-        { x: row_start(i.row,i.col) + self.width + dr * self.height, width: self.height, type: i.type, eid: src.eid } :
+        { x: row_start(i.row,i.col) + dr * self.height, width: self.height, type: i.type, eid: src.eid } :
         { x: src.x + dc * self.width, width: self.width, type: i.type, eid: src.eid };
     });
     var con_list = self.dim.connections.map(function(c) {
@@ -497,7 +514,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       if (self.dim.symbols[i]) {
         for (let j=1; j < self.dim.symbols[i].length; j++) {
           line += ' [ ';
-          if (self.dim.symbols[i] && self.dim.symbols[i][j] && self.dim.symbols[i][j].x) { line += self.dim.symbols[i][j].x.sprintf('%3d'); } else { line += '   '; }
+          if (has_x(i,j)) { line += self.dim.symbols[i][j].x.sprintf('%3d'); } else { line += '   '; }
           line += ', ';
           if (self.dim.symbols[i] && self.dim.symbols[i][j] && self.dim.symbols[i][j].width) { line += self.dim.symbols[i][j].width.sprintf('%3d'); } else { line += '   '; }
           line += ' ] ';
@@ -508,35 +525,39 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     return line;
   } //}}}
 
+  var has_x = function(row,col) { //{{{
+    // column 1 starts at 0, so an unknown x is undefined, not 0
+    return !!(self.dim.symbols[row] && self.dim.symbols[row][col] && self.dim.symbols[row][col].x !== undefined);
+  } //}}}
   var set_x = this.dim.set_x = function(row,col,twidth) { //{{{
     // reserves the space of a cell; what is drawn there (type, label, ...) is set by set_x_cond
     if (!self.dim.symbols[row]) { self.dim.symbols[row] = []; }
     if (!self.dim.symbols[row][col]) { self.dim.symbols[row][col] = {}; }
 
-    if (self.dim.symbols[row-1] && self.dim.symbols[row-1][col] && self.dim.symbols[row-1][col].x) { // row before
+    if (has_x(row-1,col)) { // row before
       self.dim.symbols[row][col].x = self.dim.symbols[row-1][col].x;
-    } else if (self.dim.symbols[row] && self.dim.symbols[row][col-1] && self.dim.symbols[row][col-1].x) { // column before
+    } else if (has_x(row,col-1)) { // column before
       let mx = 0;
       for (let i=row; i<self.dim.symbols.length; i++) {
-        if (self.dim.symbols[i][col-1] && mx < self.dim.symbols[i][col-1].x + self.dim.symbols[i][col-1].width) {
+        if (has_x(i,col-1) && mx < self.dim.symbols[i][col-1].x + self.dim.symbols[i][col-1].width) {
           mx = self.dim.symbols[i][col-1].x + self.dim.symbols[i][col-1].width;
         }
       }
       self.dim.symbols[row][col].x = mx;
-    } else if (self.dim.symbols[row-1] && self.dim.symbols[row-1][col-1] && self.dim.symbols[row-1][col-1].x) { // diagonal left above
+    } else if (has_x(row-1,col-1)) { // diagonal left above
       self.dim.symbols[row][col].x = self.dim.symbols[row-1][col-1].x + self.dim.symbols[row-1][col-1].width;
     } else if (self.dim.symbols.length > row + 1) { // same column below
-      let mx = 0;
+      let mx;
       for (let i=row; i<self.dim.symbols.length; i++) {
-        if (self.dim.symbols[i] && self.dim.symbols[i][col] && mx < self.dim.symbols[i][col].x) {
+        if (has_x(i,col) && !(mx >= self.dim.symbols[i][col].x)) {
           mx = self.dim.symbols[i][col].x;
         }
       }
       self.dim.symbols[row][col].x = mx;
     } else { // same column above
-      let mx = 0;
+      let mx;
       for (let i=row; i>0; i--) {
-        if (self.dim.symbols[i] && self.dim.symbols[i][col] && mx < self.dim.symbols[i][col].x) {
+        if (has_x(i,col) && !(mx >= self.dim.symbols[i][col].x)) {
           mx = self.dim.symbols[i][col].x;
         }
       }
@@ -577,31 +598,27 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     if (row<0) { row = 0 };
 
     let mlen = 0;
-    if (self.dim.symbols[row] && self.dim.symbols[row][col] && self.dim.symbols[row][col].x) { // this column
+    if (has_x(row,col)) { // this column
       mlen = self.dim.symbols[row][col].x;
-    } else if (self.dim.symbols[row] && !self.dim.symbols[row][col] && self.dim.symbols.length > row && self.dim.symbols[row+1] && self.dim.symbols[row+1][col] && self.dim.symbols[row+1][col].x ) { // row after
+    } else if (self.dim.symbols[row] && !self.dim.symbols[row][col] && self.dim.symbols.length > row && has_x(row+1,col)) { // row after
       mlen = self.dim.symbols[row+1][col].x;
-    } else if (self.dim.symbols[row-1] && self.dim.symbols[row-1][col] && self.dim.symbols[row-1][col].x) { // row before
+    } else if (has_x(row-1,col)) { // row before
       mlen = self.dim.symbols[row-1][col].x;
-    } else if (self.dim.symbols[row] && self.dim.symbols[row][col-1] && self.dim.symbols[row][col-1].x) { // column before
+    } else if (has_x(row,col-1)) { // column before
       for (let i=row; i<self.dim.symbols.length; i++) {
-        if (self.dim.symbols[i][col-1] && mlen < self.dim.symbols[i][col-1].x + self.dim.symbols[i][col-1].width) {
+        if (has_x(i,col-1) && mlen < self.dim.symbols[i][col-1].x + self.dim.symbols[i][col-1].width) {
           mlen = self.dim.symbols[i][col-1].x + self.dim.symbols[i][col-1].width;
         }
       }
-    } else if (self.dim.symbols[row+1] && self.dim.symbols[row+1][col] && self.dim.symbols[row+1][col].x) { // directly below
+    } else if (has_x(row+1,col)) { // directly below
       mlen = self.dim.symbols[row+1][col].x;
-    } else if (self.dim.symbols[row-1] && self.dim.symbols[row-1][col-1] && self.dim.symbols[row-1][col-1].x) { // diagonal left above
+    } else if (has_x(row-1,col-1)) { // diagonal left above
       mlen = self.dim.symbols[row-1][col-1].x + self.dim.symbols[row-1][col-1].width;
-    } else { // same column below
+    } else { // same column below, found nothing: 0, the start of column 1
       for (let i=row; i<self.dim.symbols.length; i++) {
-        if (self.dim.symbols[i] && self.dim.symbols[i][col] && mlen < self.dim.symbols[i][col].x + self.dim.symbols[i][col].width) {
+        if (has_x(i,col) && mlen < self.dim.symbols[i][col].x + self.dim.symbols[i][col].width) {
           mlen = self.dim.symbols[i][col].x;
         }
-      }
-      // found nothing in the rows below
-      if (mlen == 0) { // mostly for column 0
-        mlen = self.width;
       }
     }
     // console.log(deb,row,col,'--> ' + mlen,debug_dim());
@@ -612,7 +629,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
     mlen = 0;
     for (let i=rowf; i<=rowt; i++) {
-      if (self.dim.symbols[i] && self.dim.symbols[i][col] && mlen < self.dim.symbols[i][col].x + self.dim.symbols[i][col].width) {
+      if (has_x(i,col) && mlen < self.dim.symbols[i][col].x + self.dim.symbols[i][col].width) {
         mlen = self.dim.symbols[i][col].x + self.dim.symbols[i][col].width;
       }
     }
@@ -625,7 +642,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     mlen = 0;
     for (let i=rowf; i<=rowt; i++) {
       for (let j=0; j<=colt; j++) {
-        if (self.dim.symbols[i] && self.dim.symbols[i][j] && mlen < self.dim.symbols[i][j].x + self.dim.symbols[i][j].width) {
+        if (has_x(i,j) && mlen < self.dim.symbols[i][j].x + self.dim.symbols[i][j].width) {
           mlen = self.dim.symbols[i][j].x + self.dim.symbols[i][j].width;
         }
       }
@@ -635,9 +652,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   } //}}}
   var get_x_width = this.dim.get_x_width = function(maxcol) { //{{{
     let cwidth = 0;
-    for (let i=0; i < self.dim.symbols.length; i++) {
+    for (let i=1; i < self.dim.symbols.length; i++) { // rows and columns start with 1
       let lwidth = 0;
-      for (let j=0; j <= maxcol; j++) {
+      for (let j=1; j <= maxcol; j++) {
         if (typeof self.dim.symbols[i] !== 'undefined' && typeof self.dim.symbols[i][j] !== 'undefined') {
           lwidth += self.dim.symbols[i][j].width;
         } else {
@@ -652,7 +669,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
             }
           }
           if (!found) {
-            lwidth[i] += self.width;
+            lwidth += self.width;
           }
         }
       }
@@ -663,13 +680,6 @@ function WfIllustrator(wf_adaptor) { // View  {{{
 
   var get_y = this.draw.get_y = function(row) { // {{{
     return { y: row * self.height - self.height, height_shift: self.height_shift};
-  } // }}}
-  var lr_shift = function() { // {{{
-    // mirroring swaps the left (width - width_shift) and top (height_shift) margins, so shift them back
-    return self.width - self.width_shift - self.height_shift;
-  } // }}}
-  var lr_matrix = function() { // {{{
-    return 'matrix(0,1,1,0,' + lr_shift() + ',' + (self.height_shift - lr_shift()) + ')'; // top margin is twice the height_shift
   } // }}}
   var set_row = this.dim.set_row = function(row,col,prev) { // {{{
     // lr: a symbol starts where its predecessors end, so only things in the same block are aligned
@@ -815,9 +825,9 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     if (maxcol < 1) maxcol = 1;
 
     let cwidth = get_x_width(maxcol);
-    cwidth = cwidth + 2 * self.width - self.width_shift;
+    cwidth = cwidth + self.gap.left + self.width; // the gap on the left, a column on the right
 
-    var g = $X('<rect element-row="' + row + '" class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height+self.height_shift/2) + '" width="' + cwidth + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
+    var g = $X('<rect element-row="' + row + '" class="stripe ' + (row % 2 == 0 ? 'even' : 'odd') + '" x="0" y="' + String(row*self.height + self.height_shift/2 + self.gap.top - self.height_shift) + '" width="' + cwidth + '" height="' + (self.height) + '" xmlns="http://www.w3.org/2000/svg"></rect>');
     self.svg.container.prepend(g);
     return g;
   } // }}}
@@ -1114,8 +1124,7 @@ function WfIllustrator(wf_adaptor) { // View  {{{
       );
     }
     if (arrow) { line.attr(self.inverted ? 'marker-start' : 'marker-end', 'url(#' + (end.structural ? 'endarrow' : (diag ? 'arrowdiag' : 'arrow')) + (self.inverted ? 'rev' : '') + ')'); } // inverted: arrow points to the start
-    if (self.lr) { line.attr('transform',lr_matrix()); } // connections are not part of the graph group
-    self.svg.container.append(line);
+    self.svg.container.append(line); // not part of the graph group, set_svg moves them as well
   } //  }}}
   // }}}
 
@@ -1149,7 +1158,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
         illustrator.draw.draw_stripe(i,graph.max.col);
       }
     }
-    adaptor.draw_labels(graph.max,labels,{ 'height': illustrator.height, 'stripe_height': illustrator.default_height, 'height_shift': illustrator.height_shift },illustrator.striped == true ? true : false);
+    adaptor.draw_labels(graph.max,labels,{ 'height': illustrator.height, 'stripe_height': illustrator.default_height, 'height_shift': illustrator.height_shift, 'top_shift': illustrator.gap.top - illustrator.height_shift },illustrator.striped == true ? true : false);
   } //}}}
 
   // Generic Functions {{{
@@ -1169,7 +1178,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     let start = performance.now();
     illustrator.clear();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false,yoffset:0});
-    illustrator.set_svg(graph);
+    illustrator.set_svg(graph, illustrator.theme_gap.left, illustrator.theme_gap.top);
     self.set_labels(graph);
     illustrator.set_duration(start);
   } // }}}
@@ -1195,7 +1204,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     return serxml.serializeXML();
   } // }}}
   this.get_node_by_svg_id = function(svg_id) { // {{{
-    return $('[svg-id = \'' + svg_id + '\']', description);
+    return description ? $('[svg-id = \'' + svg_id + '\']', description) : $();
   } // }}}
   var context_eval = this.context_eval = function(what) { // {{{
     return eval(what);
@@ -1232,7 +1241,7 @@ function WfDescription(wf_adaptor, wf_illustrator) { // Model {{{
     illustrator.clear();
     clean_description();
     var graph = parse(description.children('description').get(0), {'row':0,'col':0,final:false,wide:false,yoffset:0});
-    illustrator.set_svg(graph);
+    illustrator.set_svg(graph, illustrator.theme_gap.left, illustrator.theme_gap.top);
     self.set_labels(graph);
     illustrator.set_duration(start);
     if (doit) doit(self);
