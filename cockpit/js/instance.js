@@ -269,7 +269,6 @@ function cockpit() { //{{{
       }
       if (q.min || q.min == "") {
         uidash_toggle_vis_tab($('#instance'));
-        uidash_toggle_vis_tab($('#parameters'));
       }
       if (q.dea || q.dea == "") {
         uidash_toggle_vis_tab($('#instance'));
