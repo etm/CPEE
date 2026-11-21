@@ -210,7 +210,7 @@ function cockpit() { //{{{
       $("button[name=loadtestset]").attr('disabled','disabled');
     },
     complete: function() {
-      var q = $.parseQuerySimple();
+      var q = $.query_params();
       if (q.theme) { graph_theme = q.theme; }
       if (q.position) { graph_position = q.position == 'false' ? 'false' : 'true'; }
       if (q.highlight) {
@@ -538,7 +538,7 @@ function monitor_instance(cin,rep,load,exec) {// {{{
       $("#current-index").show();
       $("#current-index").attr('href','index.html?monitor=' + url);
 
-      var q = $.parseQuerySimple();
+      var q = $.query_params();
       history.replaceState({}, '', '?' + ('debug' in q ? "debug&" : "") + (graph_position ? "position=" + graph_position + "&" : "") + (graph_highlight ? "highlight=" + graph_highlight + "&" : "") + (graph_theme ? "theme=" + graph_theme + "&" : "") + (q.min || q.min=="" ? "min&" : "") + 'monitor='+url);
 
       // Change url to return to current instance when reloading (because new subscription is made)
@@ -1587,7 +1587,7 @@ function format_code(res,skim,lnums) {// {{{
     while (m = res.match(/^ +|^(?!<div style=)|^$/m)) {
       m = m[0];
       var tm = (m.length + 2) * 0.6 + 2 * 0.6 + 4 * 0.6;
-      var ln = (lnums ? $.sprintf("%03d",l) + ':&#160;' : '');
+      var ln = (lnums ? l.sprintf("%03d") + ':&#160;' : '');
       res = res.replace(/^ +|^(?!<div style=)|^$/m,"<div style='text-indent:-" + tm + "em;margin-left:" + tm + "em'>" + ln + "&#160;".repeat(m.length));
       l++;
     }

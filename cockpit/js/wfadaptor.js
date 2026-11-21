@@ -493,13 +493,13 @@ function WfIllustrator(wf_adaptor) { // View  {{{
   var debug_dim = this.dim.debug = function() { //{{{
     line = '\n';
     for (let i=1; i < self.dim.symbols.length; i++) {
-      line += $.sprintf('%02d',i) + ': ';
+      line += i.sprintf('%02d') + ': ';
       if (self.dim.symbols[i]) {
         for (let j=1; j < self.dim.symbols[i].length; j++) {
           line += ' [ ';
-          if (self.dim.symbols[i] && self.dim.symbols[i][j] && self.dim.symbols[i][j].x) { line += $.sprintf('%3d',self.dim.symbols[i][j].x); } else { line += '   '; }
+          if (self.dim.symbols[i] && self.dim.symbols[i][j] && self.dim.symbols[i][j].x) { line += self.dim.symbols[i][j].x.sprintf('%3d'); } else { line += '   '; }
           line += ', ';
-          if (self.dim.symbols[i] && self.dim.symbols[i][j] && self.dim.symbols[i][j].width) { line += $.sprintf('%3d',self.dim.symbols[i][j].width); } else { line += '   '; }
+          if (self.dim.symbols[i] && self.dim.symbols[i][j] && self.dim.symbols[i][j].width) { line += self.dim.symbols[i][j].width.sprintf('%3d'); } else { line += '   '; }
           line += ' ] ';
         }
       }
@@ -846,32 +846,43 @@ function WfIllustrator(wf_adaptor) { // View  {{{
     if (g.attr('element-endpoint')) {
       let tsym = self.get_symbol(g.attr('element-endpoint'));
       if (tsym) {
-        let found = false;
-        $('.part-end',sym).remove();
-        if ($('.part-end',tsym).length > 0) {
-          sym.prepend($('.part-end',tsym).clone());
-          found = true;
+        let tpart = (p) => $('.part-' + p,tsym);
+        let tnor = tpart('normal');
+        if (tnor.length + tpart('start').length + tpart('middle').length + tpart('end').length == 0) {
+          // a plain icon, all of it is the normal part
+          tnor = $X('<g class="part-normal" xmlns="http://www.w3.org/2000/svg"></g>');
+          tnor.append($(tsym.documentElement.children).clone());
         }
-        if ($('.part-middle',tsym).length > 0) {
-          $('.part-middle',sym).remove();
-          sym.prepend($('.part-middle',tsym).clone());
-          found = true;
+        if (tpart('start').length + tpart('middle').length + tpart('end').length == 0) {
+          // only a normal part: the icon has no place for a label, so none is shown
+          $('.part-start, .part-middle, .part-end',sym).remove();
+        } else {
+          // an own middle without an end is not clipped after the label, so then the default end goes as well
+          if (tpart('middle').length > 0 || tpart('end').length > 0) {
+            $('.part-end',sym).remove();
+          }
+          if (tpart('end').length > 0) {
+            sym.prepend(tpart('end').clone());
+          }
+          if (tpart('middle').length > 0) {
+            $('.part-middle',sym).remove();
+            sym.prepend(tpart('middle').clone());
+          }
+          let dsta = $('.part-start',sym);
+          if (tpart('start').length > 0) {
+            dsta.remove();
+            sym.prepend(tpart('start').clone());
+          } else if (dsta.length > 0 && tnor.length > 0) {
+            // without an own start, the normal part is the start, clipped like the default start
+            let tsta = tnor.clone().attr('class','part-start');
+            if (dsta.attr('clip-path')) { tsta.attr('clip-path',dsta.attr('clip-path')); }
+            dsta.remove();
+            sym.prepend(tsta);
+          }
         }
-        if ($('.part-start',tsym).length > 0) {
-          $('.part-start',sym).remove();
-          sym.prepend($('.part-start',tsym).clone());
-          found = true;
-        }
-        if ($('.part-normal',tsym).length > 0) {
+        if (tnor.length > 0) {
           $('.part-normal',sym).remove();
-          sym.prepend($('.part-normal',tsym).clone());
-          found = true;
-        }
-        if (!found) {
-          $('.part-normal',sym).remove();
-          let ts = $X('<g class="part-normal" xmlns="http://www.w3.org/2000/svg"></g>');
-              ts.append($(tsym.documentElement.children).clone());
-          sym.prepend(ts);
+          sym.prepend(tnor.clone());
         }
       }
       let tprop = self.get_properties(g.attr('element-endpoint'));

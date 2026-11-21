@@ -34,7 +34,7 @@ function WFAdaptorManifestationBase(adaptor) {
   //{{{ Return the svgid for the selected task
   this.selected = function(){
     var svgid = 'unknown';
-    _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
+    self.adaptor.illustrator.get_elements().each(function(key,value) {
       if ($(value).hasClass('selected')) {
         svgid = $(value).attr('element-id');
       }
@@ -44,7 +44,7 @@ function WFAdaptorManifestationBase(adaptor) {
   //{{{ Return the svgids for all marked tasks
   this.marked = function(){
     var svgid = [];
-    _.each(self.adaptor.illustrator.get_elements(),function(value,key) {
+    self.adaptor.illustrator.get_elements().each(function(key,value) {
       if ($(value).hasClass('marked')) {
         svgid.push($(value).attr('element-id'));
       }
@@ -54,7 +54,7 @@ function WFAdaptorManifestationBase(adaptor) {
   //{{{ Return the json for all marked tasks
   this.marked_text = function(){
     var nodes = [];
-    var markymark = _.uniq(self.marked());
+    var markymark = self.marked().uniq();
     $(markymark).each(function(key,svgid){
       var node = self.adaptor.description.get_node_by_svg_id(svgid);
       nodes.push($(node).serializePrettyXML());
@@ -110,7 +110,8 @@ function WFAdaptorManifestationBase(adaptor) {
       check2.push(value.type);
     });
 
-    if (nodes.length > 0 && _.uniq(check1).length == _.intersection(check1,check2).length) {
+    // all types of the copied nodes are allowed in the group
+    if (nodes.length > 0 && check1.uniq().length == check1.intersection(check2).length) {
       if (myid == localStorage.getItem('marked_from')) {
         $(nodes).each(function(key,node){
           nodes[key] = self.adaptor.description.get_node_by_svg_id($(node).attr('svg-id'));
