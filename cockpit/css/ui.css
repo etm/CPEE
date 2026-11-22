@@ -177,6 +177,8 @@ span.vote {
   flex: 1 0 auto;
 }
 
+/* override from global */
+[is="x-ui-"][is] ui-rest > ui-content > ui-area { padding: 0; }
 
 #graphcolumn {
   margin: 0;
