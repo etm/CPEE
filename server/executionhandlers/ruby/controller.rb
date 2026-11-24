@@ -37,6 +37,8 @@ class Controller
 
     @redis = opts[:redis]
     @votes = []
+    @votes_mutex = Mutex.new
+    @stopping = false
 
     @id = id
 
@@ -136,7 +138,7 @@ class Controller
   end
 
   def start
-    if vote("state/change", :state => 'running')
+    if vote("state/change", :state => 'running') && !@stopping
       @thread = @instance.start
       @thread.join
     else
@@ -146,7 +148,7 @@ class Controller
   end
 
   def sim
-    if vote("state/change", :state => 'simulating')
+    if vote("state/change", :state => 'simulating') && !@stopping
       @thread = @instance.sim
       @thread.join
     else
@@ -156,11 +158,12 @@ class Controller
   end
 
   def stop
+    @stopping = true
     ### tell the instance to stop
     @instance.stop
     ### end all votes or it will not work
     Thread.new do # doing stuff in trap context is a nono. but in a thread its fine :-)
-      @votes.each do |key|
+      @votes_mutex.synchronize { @votes.dup }.each do |key|
         # BEWARE111!!!1!! only send to worker 0, as voting goes through single worker
         # (cause i am not smart enough to make it work with multiple workers. Also voting
         # should not happen often, so the complexity is not worth it for now).
@@ -189,13 +192,23 @@ class Controller
     votes = pending.map { |c| c[:key] }
 
     if votes.length > 0
-      @votes += votes
+      stopping = @votes_mutex.synchronize do
+        @votes.concat(votes) unless @stopping
+        @stopping
+      end
+      return true if stopping
       psredis = @opts[:redis_dyn].call "Instance #{@id} Vote"
       collect = []
       changes = []
       psredis.subscribe(votes.map{|e| 'vote-response:00:' + e }) do |on|
         on.subscribe do |channel, count|
-          pending.each { |c| CPEE::Message::send(:vote,what,base,@id,uuid,info,c,@redis) } if count == votes.length
+          if count == votes.length
+            if @stopping
+              psredis.unsubscribe
+            else
+              pending.each { |c| CPEE::Message::send(:vote,what,base,@id,uuid,info,c,@redis) }
+            end
+          end
         end
         on.message do |what, message|
           index = message.index(' ')
@@ -204,7 +217,7 @@ class Controller
           cont, chg = vote_parse(m['content'])
           collect << cont
           changes << chg if chg && chg.any?
-          @votes.delete m['name']
+          @votes_mutex.synchronize { @votes.delete m['name'] }
           cancel_callback m['name']
           if collect.length >= votes.length
             psredis.unsubscribe
