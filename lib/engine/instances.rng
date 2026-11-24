@@ -37,6 +37,11 @@
       <attribute name='state_changed'>
         <data type="dateTime"/>
       </attribute>
+      <optional>
+        <attribute name='highlander'>
+          <data type="string"/>
+        </attribute>
+      </optional>
       <data type="string"/>
     </element>
   </define>

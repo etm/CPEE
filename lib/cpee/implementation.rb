@@ -307,7 +307,8 @@ module CPEE
             uuid = CPEE::Persistence::extract_item(instance,opts,'attributes/uuid')
             state = CPEE::Persistence::extract_item(instance,opts,'state')
             state_changed = CPEE::Persistence::extract_item(instance,opts,'state/@changed')
-            ins.root.add('instance', info,  'uuid' => uuid, 'id' => instance, 'state' => state, 'state_changed' => state_changed )
+            highlander = CPEE::Persistence::extract_item(instance,opts,'attributes/highlander') || ''
+            ins.root.add('instance', info,  'uuid' => uuid, 'id' => instance, 'state' => state, 'state_changed' => state_changed, 'highlander' => highlander )
           end
           ins.to_s
         end

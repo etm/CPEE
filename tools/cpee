@@ -31,13 +31,15 @@ end
 ARGV.options { |opt|
   opt.summary_indent = ' ' * 2
   opt.summary_width = 20
-  opt.banner = "Usage:\n#{opt.summary_indent}#{File.basename($0)} [options] convert | ui | cpui DIR | new DIR | archive DIR URL | start URL | delete! URL | abandon URL | a_by_name URL STRING\n"
+  opt.banner = "Usage:\n#{opt.summary_indent}#{File.basename($0)} [options] convert | ui | cpui DIR | new DIR | archive DIR URL | start URL | delete! URL | abandon URL | a_by_name URL STRING | housekeeping DIR URL DAYS\n"
   opt.on("Options:")
   opt.on("--help", "-h", "This text") { puts opt; exit }
 	opt.on("")
   opt.on(wrap("[archive DIR URL]      save properties from all finished instances listed at URL into DIR. Examples:\ncpee archive ./archive http://localhost:9298/1/\ncpee archive ./archive http://localhost:9298/1-200\ncpee archive ./archive http://localhost:9298/*"))
 	opt.on("")
   opt.on(wrap("[abandon! URL]         running processes are stopped; ready or stopped processes are abandoned. Examples:\ncpee abandon! http://localhost:9298/1/\ncpee abandon http://localhost:9298/1-200\ncpee abandon http://localhost:9298/*"))
+	opt.on("")
+  opt.on(wrap("[housekeeping DIR URL DAYS] processes whose state did not change for more than DAYS days are stopped and abandoned. Afterwards the properties of all finished and abandoned processes are saved into DIR and the processes are deleted. Processes with the attribute highlander set to true are not touched. Examples:\ncpee housekeeping ./archive http://localhost:9298/1/ 7\ncpee housekeeping ./archive http://localhost:9298/1-200 7\ncpee housekeeping ./archive http://localhost:9298/* 7"))
 	opt.on("")
   opt.on(wrap("[abandon URL]          ready or stopped processes are abandoned. Examples:\ncpee abandon http://localhost:9298/1/\ncpee abandon http://localhost:9298/1-200\ncpee abandon http://localhost:9298/*"))
 	opt.on("")
@@ -64,13 +66,15 @@ if (ARGV.length == 0) ||
    (ARGV.length == 1  && !(%w(ui convert vacuum).include?(ARGV[0]))) ||
    (ARGV.length == 2  && !(%w(abandon abandon! stopping start delete! cpui new).include?(ARGV[0]))) ||
    (ARGV.length == 3  && !(%w(archive a_by_name).include?(ARGV[0]))) ||
-   (ARGV.length >  3)
+   (ARGV.length == 4  && !(%w(housekeeping).include?(ARGV[0]))) ||
+   (ARGV.length >  4)
   puts ARGV.options
   exit
 end
 command = ARGV[0]
 p1      = ARGV[1]
 p2      = ARGV[2]
+p3      = ARGV[3]
 cockpit = "#{curpath}/../cockpit/"
 
 def js_libs(cockpit)
@@ -289,6 +293,115 @@ elsif command == 'abandon!'
       end
     end
   end
+elsif command == 'housekeeping'
+  dir = p1
+  url = p2
+  unless File.directory?(dir)
+    puts 'DIR has to be an existing directory.'
+    exit
+  end
+  days = Float(p3) rescue nil
+  if days.nil? || days < 0
+    puts 'DAYS has to be a non-negative number.'
+    exit
+  end
+  limit = Time.now - (days * 60 * 60 * 24)
+  active = %w(ready running stopping stopped)
+  done = %w(finished abandoned)
+  url = File.join(url,'*') if url =~ /([a-zA-Z]|\/)$/
+  base = File.dirname(url)
+  candidates = []
+  archivable = []
+  highlanders = {}
+  if File.basename(url) == '*'
+    res = Typhoeus.get(File.join(base,'/'), headers: { 'see-instances' => 'true' })
+    if res.success?
+      XML::Smart.string(res.response_body) do |doc|
+        doc.find('//instance').each do |ele|
+          id = ele.attributes['id']
+          if done.include?(ele.attributes['state'])
+            archivable << id
+          elsif active.include?(ele.attributes['state']) && (Time.parse(ele.attributes['state_changed']) rescue Time.now) < limit
+            candidates << id
+          else
+            next
+          end
+          highlanders[id] = ele.attributes['highlander'].strip == 'true' unless ele.attributes['highlander'].nil?
+        end
+      end
+      candidates.reverse!
+      archivable.reverse!
+    else
+      exit
+    end
+  else
+    names = []
+    if File.basename(url) =~ /(\d+)-(\d+)/
+      names = ($1.to_i..$2.to_i).to_a
+    else
+      names << File.basename(url).to_i
+    end
+    names.each do |name|
+      print "Checking: " + name.to_s + "\r"
+      state = Typhoeus.get(File.join(base,name.to_s,'properties','state','/'))
+      next unless state.success?
+      if done.include?(state.response_body)
+        archivable << name
+        next
+      end
+      next unless active.include?(state.response_body)
+      changed = Typhoeus.get(File.join(base,name.to_s,'properties','state','@changed','/'))
+      next unless changed.success?
+      next unless (Time.parse(changed.response_body) rescue Time.now) < limit
+      candidates << name
+    end
+    puts
+  end
+  highlander = lambda do |name|
+    next highlanders[name] if highlanders.key?(name)
+    hl = Typhoeus.get(File.join(base,name.to_s,'properties','attributes','highlander','/'))
+    hl.success? && hl.response_body.strip == 'true'
+  end
+  archivable.reject!(&highlander)
+  pending = candidates.reject(&highlander)
+  deadline = Time.now + 60
+  until pending.empty? || Time.now > deadline
+    pending.delete_if do |name|
+      state = Typhoeus.get(File.join(base,name.to_s,'properties','state','/'))
+      if !state.success?
+        true
+      elsif state.response_body == 'ready' || state.response_body == 'stopped'
+        print "Abandoning: " + name.to_s + "\r"
+        ab = Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=abandoned")
+        archivable << name if ab.success?
+        true
+      elsif state.response_body == 'running'
+        print "Stopping: " + name.to_s + "\r"
+        Typhoeus.put(File.join(base,name.to_s,'properties','state','/'), headers: {'Content-Type' => 'application/x-www-form-urlencoded'}, body: "value=stopping")
+        false
+      elsif state.response_body == 'stopping'
+        false
+      else
+        true
+      end
+    end
+    sleep 1 unless pending.empty?
+  end
+  puts
+  puts "Still stopping (retry later): " + pending.join(', ') unless pending.empty?
+  archivable.each do |name|
+    print "Archiving: " + name.to_s + "\r"
+    prop = Typhoeus.get(File.join(base,name.to_s,'properties','/'))
+    next unless prop.success? && prop.headers['Content-Type'] =~ /^(text|application)\/xml/
+    xprop = XML::Smart::string(prop.response_body)
+    xprop.register_namespace 'p', 'http://cpee.org/ns/properties/2.0'
+    next unless done.include?(xprop.find("string(/p:properties/p:state)"))
+    uuid = xprop.find("string(/p:properties/p:attributes/p:uuid)")
+    next if uuid.empty?
+    File.write(File.join(dir,uuid + '.xml'),prop.response_body)
+    Typhoeus.delete(File.join(base,name.to_s,'/'))
+  end
+  puts
 elsif command == 'stopping'
   p1 = File.join(p1,'*') if p1 =~ /([a-zA-Z]|\/)$/
   base = File.dirname(p1)
