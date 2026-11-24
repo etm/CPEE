@@ -60,6 +60,7 @@
     <script type="text/javascript" src="js/llm-ui.js"></script>
     <script type="text/javascript" src="js/llm-ui-bubble.js"></script>
     <script type="text/javascript" src="js/llm.js"></script>
+    <script type="text/javascript" src="js/llmmodel.js"></script>
 
     <link   rel="stylesheet"      href="css/llmmodel.css" type="text/css"/>
 
@@ -169,35 +170,42 @@
         </ui-area>
         <ui-resizehandle data-belongs-to-tab="details" title="drag to resize"></ui-resizehandle>
         <ui-area data-belongs-to-tab="details" id="detailcolumn">
-          <ui-part id='details'>
-            <div id="dat_details" class='x-ui-layout'></div>
-          </ui-part>
-          <ui-resizehandle class='hidden' title="drag to resize"></ui-resizehandle>
-          <ui-part id='input'>
-            <div id='status'></div>
-            <div id='prompt_container'>
-              <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here..." placeholder="Please enter your modelling instructions here..."></div>
-              <div id='prompt_submit_container' class="single">
-                <select name="generation" id="generation" class='hidden'>
-                  <option value="model" selected="selected">Only Model</option>
-                  <option value="dataflow">Model and Dataflow</option>
-                </select>
-                <select name="mode" id="mode" class='hidden'>
-                  <option value="noendpoints_docdescription" selected="selected">Generate/Adapt DocDescription</option>
-                  <option value="noendpoints">Generate/Adapt from Scratch</option>
-                  <option value="endpoints">Generate/Adapt with Endpoint Knowledge</option>
-                </select>
-                <button id='prompt_submit_button' title="CTRL-ENTER to Submit" class="llm_button small"><i class="uidash-icon uidash-icon-send"></i></button>
-                <button id='prompt_reset_button' title="Reset Context" class="llm_button small"><i class="uidash-icon uidash-icon-reset"></i></button>
-                <button id='prompt_prop_button' title="Properties" class="llm_button small"><i class="uidash-icon uidash-icon-properties"></i></button>
-                <select name="llms" id="llms" class='active hidden'>
-                  <option value="gemini-3.1-flash-lite" selected="selected">gemini 3.1 Flash Lite</option>
-                  <option value="gemini-3.5-flash">gemini 3.5 Flash</option>
-                  <option value="gemini-3.1-pro-preview">gemini 3.1 Pro</option>
-                </select>
+          <ui-tabbar>
+            <ui-before                                                         ></ui-before>
+            <ui-tab class="inactive" data-tab="nodedetails" id="tabnodedetails">Details</ui-tab>
+            <ui-tab class=""         data-tab="chat"        id="tabchat"       >Chat</ui-tab>
+            <ui-behind                                                         ></ui-behind>
+          </ui-tabbar>
+          <ui-content>
+            <ui-area data-belongs-to-tab="nodedetails" id="areanodedetails" class="inactive">
+              <div id="dat_details" class='x-ui-layout'></div>
+            </ui-area>
+            <ui-area data-belongs-to-tab="chat" id="areachat">
+              <div id='status'></div>
+              <div id='prompt_container'>
+                <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here..." placeholder="Please enter your modelling instructions here..."></div>
+                <div id='prompt_submit_container' class="single">
+                  <select name="generation" id="generation" class='hidden'>
+                    <option value="model" selected="selected">Only Model</option>
+                    <option value="dataflow">Model and Dataflow</option>
+                  </select>
+                  <select name="mode" id="mode" class='hidden'>
+                    <option value="noendpoints_docdescription" selected="selected">Generate/Adapt DocDescription</option>
+                    <option value="noendpoints">Generate/Adapt from Scratch</option>
+                    <option value="endpoints">Generate/Adapt with Endpoint Knowledge</option>
+                  </select>
+                  <button id='prompt_submit_button' title="CTRL-ENTER to Submit" class="llm_button small"><i class="uidash-icon uidash-icon-send"></i></button>
+                  <button id='prompt_reset_button' title="Reset Context" class="llm_button small"><i class="uidash-icon uidash-icon-reset"></i></button>
+                  <button id='prompt_prop_button' title="Properties" class="llm_button small"><i class="uidash-icon uidash-icon-properties"></i></button>
+                  <select name="llms" id="llms" class='active hidden'>
+                    <option value="gemini-3.1-flash-lite" selected="selected">gemini 3.1 Flash Lite</option>
+                    <option value="gemini-3.5-flash">gemini 3.5 Flash</option>
+                    <option value="gemini-3.1-pro-preview">gemini 3.1 Pro</option>
+                  </select>
+                </div>
               </div>
-            </div>
-          </ui-part>
+            </ui-area>
+          </ui-content>
         </ui-area>
         <ui-area data-belongs-to-tab="dsl" id="areadsl" class="inactive"></ui-area>
         <ui-area data-belongs-to-tab="log" id="arealog" class="inactive"> <!--{{{-->
