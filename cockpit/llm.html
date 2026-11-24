@@ -52,15 +52,16 @@
     <script type="text/javascript" src="themes/base.js"></script>
 
     <script type="text/javascript" src="js/llm-ui.js"></script>
-    <script type="text/javascript" src="js/llm-ui-status.js"></script>
+    <script type="text/javascript" src="js/llm-ui-bubble.js"></script>
     <script type="text/javascript" src="js/llm.js"></script>
-
-    <link   rel="stylesheet"      href="css/llm.css" type="text/css"/>
+    <script type="text/javascript" src="js/llmmodel.js"></script>
 
     <link rel="stylesheet" href="css/ui.css" type="text/css"/>
     <link rel="stylesheet" href="css/extended_columns-label.css" type="text/css"/>
     <link rel="stylesheet" href="css/extended_columns-svg.css" type="text/css" data-include-export="true"/>
     <link rel="stylesheet" href="/global_ui/ui.css" type="text/css"/>
+
+    <link   rel="stylesheet"      href="css/llmmodel.css" type="text/css"/>
     <style></style>
   </head>
   <body data-base-port="9298" data-base-engine="engine/" data-base-themes="themes" is="x-ui-">
@@ -230,6 +231,7 @@
       <ui-tabbar>
         <ui-tab class="switch"                                               ></ui-tab>
         <ui-tab class=""         data-tab="dataelements" id="tabdataelements">Data Objects</ui-tab>
+        <ui-tab class="inactive" data-tab="documents"    id="tabdocuments"   >Documents</ui-tab>
         <ui-tab class="inactive" data-tab="endpoints"    id="tabendpoints"   >Endpoints</ui-tab>
         <ui-tab class="inactive" data-tab="attributes"   id="tabattributes"  >Attributes</ui-tab>
         <ui-behind                                                           ></ui-behind>
@@ -238,6 +240,10 @@
         <ui-area data-belongs-to-tab="dataelements" id="areadataelements"> <!--{{{-->
           <button title='add entry'><span>New</span></button>
           <div id="dat_dataelements"></div>
+        </ui-area> <!--}}}-->
+        <ui-area data-belongs-to-tab="documents" id="areadocuments" class="inactive"> <!--{{{-->
+          <button title='add entry'><span>New</span></button>
+          <div id="dat_documents"></div>
         </ui-area> <!--}}}-->
         <ui-area data-belongs-to-tab="endpoints" id="areaendpoints" class="inactive"> <!--{{{-->
           <button title='add entry'><span>New</span></button>
@@ -267,44 +273,51 @@
               <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:x="http://www.w3.org/1999/xlink" id='graphcanvas' class='graphcolumn' width='1' height='1'></svg>
             </div>
           </ui-part>
-          <ui-resizehandle class='hidden' title="drag to resize"></ui-resizehandle>
-          <ui-part id='input'>
-            <div id='status'></div>
-            <div id='prompt_container'>
-              <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here..." placeholder="Please enter your modelling instructions here..."></div>
-              <div id='prompt_submit_container' class="single">
-                <select name="generation" id="generation" class='hidden'>
-                  <option value="model">Only Model</option>
-                  <option value="dataflow" selected="selected">Model and Dataflow</option>
-                </select>
-                <select name="mode" id="mode" class='active hidden'>
-                  <option value="noendpoints" selected="selected">Generate/Adapt from Scratch</option>
-                  <option value="endpoints">Generate/Adapt with Endpoint Knowledge</option>
-                </select>
-                <button id='prompt_submit_button' title="CTRL-ENTER to Submit" class="llm_button small"><i class="uidash-icon uidash-icon-send"></i></button>
-                <button id='prompt_reset_button' title="Reset Context" class="llm_button small"><i class="uidash-icon uidash-icon-reset"></i></button>
-                <button id='prompt_prop_button' title="Properties" class="llm_button small"><i class="uidash-icon uidash-icon-properties"></i></button>
-                <select name="llms" id="llms" class='active hidden'>
-                  <option value="gemini-3.1-flash-lite" selected="selected">gemini 3.1 Flash Lite</option>
-                  <option value="gemini-3.6-flash">gemini 3.6 Flash</option>
-                  <option value="gemini-3.1-pro-preview">gemini 3.1 Pro</option>
-                  <option value="gpt-4o">gpt 4o</option>
-                  <option value="gpt-4o-mini">gpt 4o mini</option>
-                  <option value="gpt-5.4-nano-2026-03-17">gpt 5.4 nano</option>
-                  <option value="mistralai/Ministral-3-14B-Reasoning-2512"> Morp. Ministral 3</option>
-                  <option value="google/gemma-4-31B-it">Morp. Gemma 4</option>
-                  <option value="Qwen/Qwen3.6-35B-A3B">Morp. Qwen 3.6</option>
-                  <option value="qwen-35-35b-coding">Morp. Qwen 35B Coding</option>
-                </select>
-              </div>
-            </div>
-          </ui-part>
         </ui-area>
         <ui-resizehandle data-belongs-to-tab="details" title="drag to resize"></ui-resizehandle>
         <ui-area data-belongs-to-tab="details" id="detailcolumn">
-          <ui-part id='details'>
-            <div id="dat_details" class='x-ui-layout'></div>
-          </ui-part>
+          <ui-tabbar>
+            <ui-before                                                         ></ui-before>
+            <ui-tab class="inactive" data-tab="nodedetails" id="tabnodedetails">Details</ui-tab>
+            <ui-tab class=""         data-tab="chat"        id="tabchat"       >Chat</ui-tab>
+            <ui-behind                                                         ></ui-behind>
+          </ui-tabbar>
+          <ui-content>
+            <ui-area data-belongs-to-tab="nodedetails" id="areanodedetails" class="inactive">
+              <div id="dat_details" class='x-ui-layout'></div>
+            </ui-area>
+            <ui-area data-belongs-to-tab="chat" id="areachat">
+              <div id='status'></div>
+              <div id='prompt_container'>
+                <div id='prompt' contenteditable="true" title="Please enter your modelling instructions here..." placeholder="Please enter your modelling instructions here..."></div>
+                <div id='prompt_submit_container' class="single">
+                  <select name="generation" id="generation" class='hidden'>
+                    <option value="model">Only Model</option>
+                    <option value="dataflow" selected="selected">Model and Dataflow</option>
+                  </select>
+                  <select name="mode" id="mode" class='active hidden'>
+                    <option value="noendpoints" selected="selected">Generate/Adapt from Scratch</option>
+                    <option value="endpoints">Generate/Adapt with Endpoint Knowledge</option>
+                  </select>
+                  <button id='prompt_submit_button' title="CTRL-ENTER to Submit" class="llm_button small"><i class="uidash-icon uidash-icon-send"></i></button>
+                  <button id='prompt_reset_button' title="Reset Context" class="llm_button small"><i class="uidash-icon uidash-icon-reset"></i></button>
+                  <button id='prompt_prop_button' title="Properties" class="llm_button small"><i class="uidash-icon uidash-icon-properties"></i></button>
+                  <select name="llms" id="llms" class='active hidden'>
+                    <option value="gemini-3.1-flash-lite" selected="selected">gemini 3.1 Flash Lite</option>
+                    <option value="gemini-3.6-flash">gemini 3.6 Flash</option>
+                    <option value="gemini-3.1-pro-preview">gemini 3.1 Pro</option>
+                    <option value="gpt-4o">gpt 4o</option>
+                    <option value="gpt-4o-mini">gpt 4o mini</option>
+                    <option value="gpt-5.4-nano-2026-03-17">gpt 5.4 nano</option>
+                    <option value="mistralai/Ministral-3-14B-Reasoning-2512"> Morp. Ministral 3</option>
+                    <option value="google/gemma-4-31B-it">Morp. Gemma 4</option>
+                    <option value="Qwen/Qwen3.6-35B-A3B">Morp. Qwen 3.6</option>
+                    <option value="qwen-35-35b-coding">Morp. Qwen 35B Coding</option>
+                  </select>
+                </div>
+              </div>
+            </ui-area>
+          </ui-content>
         </ui-area>
         <ui-area data-belongs-to-tab="log" id="arealog" class="inactive"> <!--{{{-->
           <div>Persistent Log: <a style='display:none' target='_blank' id='current-log'></a> [<a style='display:none' target='_blank' id='xml-log'>X</a>,<a style='display:none' target='_blank' id='shifted-log'>S</a>]</div>

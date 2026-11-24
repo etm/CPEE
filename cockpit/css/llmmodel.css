@@ -78,6 +78,11 @@
 #areanodedetails {
   padding-left: 0.5em;
 }
+#dat_details:empty::before {
+  content: 'Select a modelling element to show details.';
+  display: block;
+  padding-top: 0.5em;
+}
 #areachat {
   height: 100%;
   display: flex;
