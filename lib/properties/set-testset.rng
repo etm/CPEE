@@ -7,6 +7,7 @@
   <include href="documents.rng"/>
   <include href="endpoints.rng"/>
   <include href="attributes.rng"/>
+  <include href="arbitrary.rng"/>
   <include href="description.rng"/>
   <include href="dslx.rng"/>
   <include href="transformation.rng"/>
