@@ -3,7 +3,7 @@
   <executionhandler>ruby</executionhandler>
   <dataelements/>
   <endpoints>
-    <worklist>https-post://cpee.org/worklist/server/</worklist>
+    <worklist>https-post://{cpee.org}/worklist/server/</worklist>
   </endpoints>
   <attributes>
     <info>Worklist</info>

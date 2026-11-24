@@ -322,7 +322,7 @@
           </code>
         </documentation>
       </call>
-      <loop mode="post_test" condition="true">
+      <loop eid="e1" mode="post_test" condition="true">
         <_probability>
           <_probability_min/>
           <_probability_max/>

@@ -5,10 +5,10 @@
     <i>0</i>
   </dataelements>
   <endpoints>
-    <start_url>https://cpee.org/flow/start/url/</start_url>
+    <start_url>https://{cpee.org}/flow/start/url/</start_url>
     <user>https-post://cpee.org/services/timeout-user.php</user>
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
-    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
+    <subprocess>https-post://{cpee.org}/flow/start/url/</subprocess>
     <timeout>https-post://cpee.org/services/timeout.php</timeout>
     <send>https-post://cpee.org/ing/correlators/message/send/</send>
     <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
@@ -26,15 +26,15 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <loop mode="pre_test" condition="true">
-        <parallel wait="-1">
-          <loop mode="pre_test" condition="data.i &lt; 4">
+      <loop eid="e1" mode="pre_test" condition="true">
+        <parallel eid="e2" wait="-1">
+          <loop eid="e3" mode="pre_test" condition="data.i &lt; 4">
             <_probability>
               <_probability_min/>
               <_probability_max/>
               <_probability_avg/>
             </_probability>
-            <parallel_branch>
+            <parallel_branch eid="e4">
               <call id="a1" endpoint="start_url">
                 <parameters>
                   <label>Start</label>

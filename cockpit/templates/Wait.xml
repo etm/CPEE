@@ -8,7 +8,7 @@
   </dataelements>
   <endpoints>
     <timeout>https://cpee.org/services/timeout.php</timeout>
-    <subprocess>https://cpee.org/flow/start/url/</subprocess>
+    <subprocess>https://{cpee.org}/flow/start/url/</subprocess>
     <orgmodel>http://localhost/data/ideas_phase1/zt.xml</orgmodel>
   </endpoints>
   <attributes>
