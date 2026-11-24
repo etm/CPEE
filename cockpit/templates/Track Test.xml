@@ -5,7 +5,7 @@
     <i>0</i>
   </dataelements>
   <endpoints>
-    <start_url>https://cpee.org/flow/start/url/</start_url>
+    <start_url>https://{cpee.org}/flow/start/url/</start_url>
   </endpoints>
   <attributes>
     <info>Track Test</info>
@@ -20,15 +20,15 @@
   </attributes>
   <description>
     <description xmlns="http://cpee.org/ns/description/1.0">
-      <loop mode="pre_test" condition="true">
-        <parallel wait="-1" cancel="last">
-          <loop mode="pre_test" condition="data.i &lt; 4">
+      <loop eid="e1" mode="pre_test" condition="true">
+        <parallel eid="e2" wait="-1" cancel="last">
+          <loop eid="e3" mode="pre_test" condition="data.i &lt; 4">
             <_probability>
               <_probability_min/>
               <_probability_max/>
               <_probability_avg/>
             </_probability>
-            <parallel_branch>
+            <parallel_branch eid="e4">
               <call id="a1" endpoint="start_url">
                 <parameters>
                   <label>Start</label>

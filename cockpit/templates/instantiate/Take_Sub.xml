@@ -2,7 +2,7 @@
   <executionhandler>ruby</executionhandler>
   <dataelements/>
   <endpoints>
-    <start_url>https://cpee.org/flow/start/url/</start_url>
+    <start_url>https://{cpee.org}/flow/start/url/</start_url>
     <timeout>https://cpee.org/services/timeout.php</timeout>
   </endpoints>
   <positions/>

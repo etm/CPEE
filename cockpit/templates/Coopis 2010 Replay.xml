@@ -16,7 +16,7 @@
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
     <timeout>https://cpee.org/services/timeout.php</timeout>
     <bookHotel>http://gruppe.wst.univie.ac.at/~mangler/services/hotel.php</bookHotel>
-    <subprocess>https://cpee.org/flow/start/url/</subprocess>
+    <subprocess>https://{cpee.org}/flow/start/url/</subprocess>
     <approve>http://gruppe.wst.univie.ac.at/~mangler/services/approval.php</approve>
     <send>https-post://cpee.org/ing/correlators/message/send/</send>
     <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
@@ -88,9 +88,9 @@ status.update 1, 'Hotel'</finalize>
           </code>
         </documentation>
       </call>
-      <parallel wait="-1" cancel="last">
-        <loop mode="pre_test" condition="data.persons &gt; 0">
-          <parallel_branch>
+      <parallel eid="e1" wait="-1" cancel="last">
+        <loop eid="e2" mode="pre_test" condition="data.persons &gt; 0">
+          <parallel_branch eid="e3">
             <call id="a2" endpoint="bookHotel">
               <parameters>
                 <label>Book Hotel</label>
@@ -151,8 +151,8 @@ data.costs += result.value('costs').to_f</finalize>
           </manipulate>
         </loop>
       </parallel>
-      <choose mode="exclusive">
-        <alternative condition="data.costs &gt; 700">
+      <choose eid="e4" mode="exclusive">
+        <alternative eid="e5" condition="data.costs &gt; 700">
           <_probability>
             <_probability_min/>
             <_probability_max/>
@@ -195,7 +195,7 @@ data.costs += result.value('costs').to_f</finalize>
             </documentation>
           </call>
         </alternative>
-        <otherwise/>
+        <otherwise eid="e6"/>
       </choose>
     </description>
   </description>

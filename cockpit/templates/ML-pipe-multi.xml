@@ -96,11 +96,11 @@ performance = f1_score(y_test, y_predict, average='macro')
   <endpoints>
     <user>https-post://cpee.org/services/timeout-user.php</user>
     <auto>https-post://cpee.org/services/timeout-auto.php</auto>
-    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
+    <subprocess>https-post://{cpee.org}/flow/start/url/</subprocess>
     <timeout>https-post://cpee.org/services/timeout.php</timeout>
     <send>https-post://cpee.org/ing/correlators/message/send/</send>
     <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
-    <worklist>https-post://cpee.org/worklist/server/</worklist>
+    <worklist>https-post://{cpee.org}/worklist/server/</worklist>
     <llm_api>https://lehre.bpm.in.tum.de/ports/17777/llm</llm_api>
     <evaluate_api>https://lehre.bpm.in.tum.de/ports/17778/evaluate</evaluate_api>
   </endpoints>
@@ -172,7 +172,7 @@ data.dataset_name = result['data']['dataset_name']
       <manipulate id="a10" label="Initialize #round, the current pipeline and its performance">data.current_pipeline = ""
 data.current_performance = 0
 data.round = 0</manipulate>
-      <loop mode="post_test" condition="data.current_performance &gt; data.best_performance &amp;&amp; data.current_performance != 1">
+      <loop eid="e1" mode="post_test" condition="data.current_performance &gt; data.best_performance &amp;&amp; data.current_performance != 1">
         <_probability>
           <_probability_min/>
           <_probability_max/>
@@ -233,8 +233,8 @@ end</prepare>
             </code>
           </documentation>
         </call>
-        <choose mode="exclusive">
-          <alternative condition="data.dec_DP == '1'">
+        <choose eid="e2" mode="exclusive">
+          <alternative eid="e3" condition="data.dec_DP == '1'">
             <_probability>
               <_probability_min/>
               <_probability_max/>
@@ -293,7 +293,7 @@ end</prepare>
               </documentation>
             </call>
           </alternative>
-          <otherwise/>
+          <otherwise eid="e4"/>
         </choose>
         <call id="a6" endpoint="llm_api">
           <parameters>
@@ -347,8 +347,8 @@ end</prepare>
             </code>
           </documentation>
         </call>
-        <choose mode="exclusive">
-          <alternative condition="data.dec_FE == '1'">
+        <choose eid="e5" mode="exclusive">
+          <alternative eid="e6" condition="data.dec_FE == '1'">
             <_probability>
               <_probability_min/>
               <_probability_max/>
@@ -407,7 +407,7 @@ end</prepare>
               </documentation>
             </call>
           </alternative>
-          <otherwise/>
+          <otherwise eid="e7"/>
         </choose>
         <call id="a8" endpoint="llm_api">
           <parameters>

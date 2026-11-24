@@ -4,7 +4,7 @@
     <time>5</time>
   </dataelements>
   <endpoints>
-    <start_url>https://localhost/flow/start/url/</start_url>
+    <start_url>https://{localhost}/flow/start/url/</start_url>
   </endpoints>
   <positions/>
   <description>
