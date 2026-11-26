@@ -7,7 +7,6 @@
       <choice>
         <value>ready</value>
         <value>running</value>
-        <value>simulating</value>
         <value>stopping</value>
         <value>stopped</value>
         <value>abandoned</value>
@@ -20,7 +19,6 @@
       <choice>
         <value>ready</value>
         <value>running</value>
-        <value>simulating</value>
         <value>stopping</value>
         <value>stopped</value>
         <value>abandoned</value>

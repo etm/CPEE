@@ -68,9 +68,6 @@
   <topic id='handler'>
     <event>change</event>
   </topic>
-  <topic id='simulating'>
-    <event>step</event>
-  </topic>
   <topic id='task'>
     <event>instantiation</event>
     <event>error</event>

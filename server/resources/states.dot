@@ -1,15 +1,11 @@
 digraph States {
   ready -> running;
-  ready -> simulating;
   ready -> abandoned;
   running -> stopping;
   stopped -> running;
-  stopped -> simulating;
   stopped -> abandoned;
 
   running -> finishing;
-  simulating -> ready;
-  simulating -> stopped;
   finishing -> finished;
   stopping -> stopped;
 }

@@ -30,11 +30,12 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
     tso + 2 > tsn && count > 100
   end # }}}
 
-  def self::inform_state_change(arguments,newstate,data) # {{{
+  def self::inform_state_change(arguments,newstate) # {{{
     controller = arguments[0]
 		controller.notify('state/change', :state => newstate)
     if newstate == :stopped || newstate == :finished
-      controller.notify('dataelements/modify', :eid => 'ex-post', :values => data)
+      controller.notify('dataelements/modify', :eid => 'ex-post', :values => controller.dataelements)
+      controller.notify('endpoints/modify', :eid => 'ex-post', :values => controller.endpoints)
     end
   end # }}}
   def self::inform_syntax_error(arguments,err,code)# {{{
@@ -250,10 +251,6 @@ class ConnectionWrapper < WEEL::ConnectionWrapperBase
   end # }}}
   def activity_passthrough_value # {{{
     @handler_passthrough
-  end # }}}
-
-  def activity_no_longer_necessary # {{{
-    true
   end # }}}
 
   def activity_uuid #{{{

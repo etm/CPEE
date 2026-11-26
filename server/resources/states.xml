@@ -4,10 +4,9 @@
 
   <setable>
     <!-- the following states change through external input -->
-    <ready><!-- in this state you can set the following four states -->
+    <ready><!-- in this state you can set the following three states -->
       <ready/>
       <running/>
-      <simulating/>
       <abandoned/>
     </ready>
     <running><!-- in this state you can set the following state -->
@@ -16,9 +15,8 @@
     <stopping><!-- in this state you can set the following state -->
       <stopping/>
     </stopping>
-    <stopped><!-- in this state you can set the following four states -->
+    <stopped><!-- in this state you can set the following three states -->
       <running/>
-      <simulating/>
       <abandoned/>
       <stopped/>
     </stopped>
@@ -30,10 +28,6 @@
       <stopping/>
       <finishing/>
     </running>
-    <simulating>
-      <ready/>
-      <stopped/>
-    </simulating>
     <finishing>
       <finished/>
     </finishing>

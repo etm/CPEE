@@ -147,16 +147,6 @@ class Controller
     end
   end
 
-  def sim
-    if vote("state/change", :state => 'simulating') && !@stopping
-      @thread = @instance.sim
-      @thread.join
-    else
-      @thread = @instance.stop
-      @thread.join
-    end
-  end
-
   def stop
     @stopping = true
     ### tell the instance to stop
