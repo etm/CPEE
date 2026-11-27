@@ -383,7 +383,7 @@ function WFAdaptorManifestationBase(adaptor) {
   this.events.dblclick = function(svgid, e) { // {{{
   } // }}}
   this.events.mouseover = function(svgid, e) { // {{{
-    let con = e ? $(e.currentTarget).closest('svg') : self.adaptor.illustrator.svg.container;
+    let con = e ? $(e.currentTarget).closest('svg') : self.adaptor.illustrator.svg.container; // without event (e.g. from wfadaptor_extended_columns.js): the graph
     con.find('.tile[element-id = "' + svgid + '"]').css('display','block');
     con.find('[element-id = "' + svgid + '"]').addClass('hover');
     if (self.adaptor.illustrator.svg.label_container) {
@@ -392,7 +392,7 @@ function WFAdaptorManifestationBase(adaptor) {
     return false;
   } // }}}
   this.events.mouseout = function(svgid, e) { // {{{
-    let con = e ? $(e.currentTarget).closest('svg') : self.adaptor.illustrator.svg.container;
+    let con = e ? $(e.currentTarget).closest('svg') : self.adaptor.illustrator.svg.container; // without event (e.g. from wfadaptor_extended_columns.js): the graph
     con.find('.tile[element-id = "' + svgid + '"]').css('display','none');
     con.find('[element-id = "' + svgid + '"]').removeClass('hover');
     if (self.adaptor.illustrator.svg.label_container) {
@@ -550,6 +550,19 @@ function WFAdaptorManifestationBase(adaptor) {
       'mouseover': self.events.mouseover,
       'mouseout': self.events.mouseout
     }//}}}
+  }; /*}}}*/
+  this.elements.empty = { /*{{{*/
+    'type': 'primitive',
+    'illustrator': {//{{{
+      'endnodes': 'this',
+      'noarrow': true, // the arrow passes through: in without arrowhead, out with one
+      'svg': self.adaptor.theme_dir + 'symbols/empty.svg'
+    },//}}}
+    'description': self.adaptor.theme_dir + 'rngs/empty.rng',
+    'permissible_children': function(node,mode) { //{{{
+      return [];
+    }, //}}}
+    'adaptor': {} // not clickable
   }; /*}}}*/
   this.elements.stop = { /*{{{*/
     'type': 'primitive',
