@@ -69,9 +69,9 @@ function mp_conformance_editor(name, item) { //{{{
     }
   });
   document.addEventListener('attributes:changed', load);
-  $(document).on('input', '#dat_' + name + ' input', function() {
+  $(document).on('input', '#dat_' + name + ' input, #dat_' + name + ' [contenteditable]', function() {
     clearTimeout(timer);
-    timer = setTimeout(store, 5000);
+    timer = setTimeout(store, 2000);
   });
   $(document).on('relaxngui_remove relaxngui_move', '#dat_' + name, function() {
     store();

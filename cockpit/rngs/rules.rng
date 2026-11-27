@@ -4,27 +4,39 @@
       <element name='rule_id' rngui:label='Rule Identifier'>
         <data type="string" rngui:label="value"/>
       </element>
-      <element name='interval' rngui:label='Validity Interval (event, state, trace)'>
-        <data type="string" rngui:label="value"/>
+      <optional>
+        <element name='interval' rngui:label='Interval Identifier'>
+          <data type="string" rngui:label="value"/>
+        </element>
+      </optional>
+      <optional>
+        <element name='trigger' rngui:label='Trigger (event, data, endpoints, trace, instance_count, instance_open_count)'>
+          <text rngui:label="value"/>
+        </element>
+      </optional>
+      <optional>
+        <element name='condition' rngui:label='Condition (event, data, endpoints, trace, instance_count, instance_open_count)'>
+          <text rngui:label="value"/>
+        </element>
+      </optional>
+      <element name='state' rngui:label='State (event, data, endpoints, trace, trigger_e, initialized_ts, interval, state, scratch_pad)'>
+        <text rngui:label="value"/>
       </element>
-      <element name='filter' rngui:label='Event Filter (event, state)'>
-        <data type="string" rngui:label="value"/>
-      </element>
-      <element name='spawn_condition' rngui:label='Spawn Condition (event, state, trace)'>
-        <data type="string" rngui:label="value"/>
-      </element>
-      <element name='predicate' rngui:label='Predicate (event, state, trace)'>
-        <data type="string" rngui:label="value"/>
-      </element>
-      <element name='termination_predicate' rngui:label='Termination Predicate (event, state, trace)'>
-        <data type="string" rngui:label="value"/>
-      </element>
-      <element name='action_sat' rngui:label='Satisfaction Action (event, state, trace)'>
-        <data type="string" rngui:label="value"/>
-      </element>
-      <element name='action_viol' rngui:label='Compensation Action (event, state, trace)'>
-        <data type="string" rngui:label="value"/>
-      </element>
+      <optional>
+        <element name='termination' rngui:label='Termination (event, data, endpoints, trace, trigger_e, initialized_ts, interval, state, scratch_pad)'>
+          <text rngui:label="value"/>
+        </element>
+      </optional>
+      <optional>
+        <element name='action_sat' rngui:label='Satisfaction Action (event, data, endpoints, trace, trigger_e, initialized_ts, interval, state, scratch_pad)'>
+          <text rngui:label="value"/>
+        </element>
+      </optional>
+      <optional>
+        <element name='action_viol' rngui:label='Compensation Action (event, data, endpoints, trace, trigger_e, initialized_ts, interval, state, scratch_pad)'>
+          <text rngui:label="value"/>
+        </element>
+      </optional>
     </element>
   </zeroOrMore>
 </element>
